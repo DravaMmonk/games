@@ -1,0 +1,202 @@
+{
+  "title": "@level.stamp.title",
+  "short": "@level.stamp.short",
+  "intro": [
+    {
+      "t": "@level.stamp.intro.0.t",
+      "fig": {
+        "table:figure-grid": {
+          "R": 3,
+          "C": 4,
+          "cells": {
+            "0,0": {
+              "value": "—",
+              "cls": "bad"
+            }
+          },
+          "robot": "0,0"
+        }
+      }
+    },
+    {
+      "t": "@level.stamp.intro.1.t"
+    },
+    {
+      "t": "@level.stamp.intro.2.t",
+      "fig": {
+        "table:figure-circuit": {
+          "taps": [
+            {
+              "id": "s",
+              "label": "@level.stamp.intro.2.fig.circuit.taps.s.label",
+              "kind": "bool"
+            }
+          ],
+          "parts": [
+            {
+              "id": "k",
+              "name": "@level.stamp.intro.2.fig.circuit.parts.k.name",
+              "tag": "= 1"
+            },
+            {
+              "id": "g",
+              "name": "@level.stamp.intro.2.fig.circuit.parts.g.name",
+              "tag": "@level.stamp.intro.2.fig.circuit.parts.g.tag"
+            }
+          ],
+          "outs": [
+            {
+              "id": "o",
+              "label": "@level.stamp.intro.2.fig.circuit.outs.o.label"
+            }
+          ],
+          "wires": [
+            {
+              "from": "s",
+              "to": "g",
+              "kind": "bool"
+            },
+            {
+              "from": "k",
+              "to": "g"
+            },
+            {
+              "from": "g",
+              "to": "o"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "mission": {
+    "goal": "@level.stamp.mission.goal",
+    "how": "@level.stamp.mission.how"
+  },
+  "robot": "table:robot-scout",
+  "adds": [
+    "table:const",
+    "table:pass"
+  ],
+  "carry": "confluence",
+  "debrief": {
+    "title": "@level.stamp.debrief.title",
+    "body": [
+      "@level.stamp.debrief.body.0",
+      "@level.stamp.debrief.body.1",
+      "@level.stamp.debrief.body.2"
+    ],
+    "note": "@level.stamp.debrief.note"
+  },
+  "tasks": [
+    {
+      "id": "stamp",
+      "mode": "table:circuit",
+      "ports": [
+        {
+          "table:port-way": {
+            "n": 1,
+            "sensor": "up"
+          }
+        },
+        {
+          "table:port-way": {
+            "n": 2,
+            "sensor": "left"
+          }
+        },
+        {
+          "table:port-start": {
+            "sensor": "start"
+          }
+        }
+      ],
+      "guide": [
+        {
+          "until": {
+            "table:condition-reads": "start"
+          },
+          "say": "@level.stamp.tasks.stamp.guide.0.say"
+        },
+        {
+          "until": {
+            "table:condition-has": "table:pass"
+          },
+          "say": "@level.stamp.tasks.stamp.guide.1.say"
+        }
+      ],
+      "diagnose": [
+        {
+          "when": {
+            "table:condition-any": [
+              {
+                "table:condition-uses": "right"
+              },
+              {
+                "table:condition-uses": "down"
+              },
+              {
+                "table:condition-uses": "ur"
+              },
+              {
+                "table:condition-uses": "dl"
+              },
+              {
+                "table:condition-uses": "dr"
+              }
+            ]
+          },
+          "say": "@level.stamp.tasks.stamp.diagnose.0.say"
+        },
+        {
+          "when": {
+            "table:condition-feeds": {
+              "from": "table:const",
+              "to": "table:msum"
+            }
+          },
+          "say": "@level.stamp.tasks.stamp.diagnose.1.say"
+        }
+      ],
+      "hints": [
+        "@level.stamp.tasks.stamp.hints.0",
+        "@level.stamp.tasks.stamp.hints.1"
+      ],
+      "world": "table:world-grid",
+      "facts": [
+        "start"
+      ],
+      "tests": [
+        {
+          "R": 3,
+          "C": 4
+        },
+        {
+          "R": 4,
+          "C": 4
+        },
+        {
+          "R": 5,
+          "C": 6
+        }
+      ],
+      "expected": [
+        10,
+        20,
+        126
+      ],
+      "solution": [
+        "k = table:const[value=1]()",
+        "g = table:pass(facts.start, k)",
+        "m = table:msum(view.up, view.left, g)",
+        "cell <- m"
+      ],
+      "publishes": [
+        {
+          "piece": "counter",
+          "variant": "base"
+        }
+      ]
+    }
+  ]
+}

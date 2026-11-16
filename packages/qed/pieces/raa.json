@@ -1,0 +1,13 @@
+{
+  "name": "@piece.raa.name",
+  "desc": "@piece.raa.desc",
+  "icon": "GitFork",
+  "family": "logic:family-rule",
+  "inputs": [
+    {
+      "name": "nna",
+      "label": "@piece.raa.inputs.0.label"
+    }
+  ],
+  "op": "logic:raa"
+}

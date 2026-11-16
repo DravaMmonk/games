@@ -1,0 +1,8 @@
+{
+  "packages": [
+    "qed"
+  ],
+  "title": "@course.title",
+  "kicker": "@course.kicker",
+  "lede": "@course.lede"
+}

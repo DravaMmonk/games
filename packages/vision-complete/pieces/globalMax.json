@@ -1,0 +1,13 @@
+{
+  "name": "@piece.globalMax.name",
+  "desc": "@piece.globalMax.desc",
+  "icon": "Network",
+  "family": "image:family-global",
+  "inputs": [
+    {
+      "name": "in",
+      "label": ""
+    }
+  ],
+  "op": "image:globalMax"
+}

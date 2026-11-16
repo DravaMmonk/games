@@ -1,0 +1,14 @@
+{
+  "kind": "order",
+  "of": "section",
+  "sequence": [
+    "play",
+    "prop",
+    "entries-proof",
+    "fol",
+    "rules",
+    "types",
+    "limits",
+    "assist"
+  ]
+}

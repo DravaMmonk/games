@@ -1,0 +1,7 @@
+{
+  "name": "@piece.multiply.name",
+  "desc": "@piece.multiply.desc",
+  "icon": "X",
+  "family": "circuit:family-value",
+  "op": "circuit:times"
+}

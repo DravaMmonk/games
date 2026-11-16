@@ -1,0 +1,8 @@
+{
+  "packages": [
+    "state-graph"
+  ],
+  "title": "@course.title",
+  "kicker": "@course.kicker",
+  "lede": "@course.lede"
+}

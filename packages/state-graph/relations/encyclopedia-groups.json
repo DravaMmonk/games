@@ -1,0 +1,11 @@
+{
+  "kind": "order",
+  "of": "section",
+  "sequence": [
+    "play",
+    "entries-basics",
+    "order",
+    "classic",
+    "further"
+  ]
+}

@@ -1,0 +1,182 @@
+---
+name: turing-complete-games
+description: Design, extend or review the Turing-Complete-style learning games in study-notes (games/, built on games/kit) — curricula, eras, levels, parts, and component-wiring interaction.
+---
+
+# Turing-Complete-style learning games
+
+## Scope
+
+Use this skill in the study-notes repository for any work on the learning games under `games/`
+(《视觉完备》《状态之图》《证明完毕》, the COMP90086 note interactions, and new games): designing a curriculum,
+adding or reordering levels, adding parts or machine abilities, or changing the shared kit's editors.
+
+## Source of truth
+
+The design rules live in the repository, not in this skill. Before designing or reviewing, read:
+
+1. `games/DIRECTION.md` decisions 22–24, especially [decision 24](../../../games/DIRECTION.md#决策二十四底座是一组基础件玩法是它们的配置) — who supplies the work and its checks, how a task gets its pieces, and how the kernel composes a way to play.
+2. [`games/PLAN.md`](../../../games/PLAN.md) — the implementation order, settled decisions, scope and acceptance checks for decision 24. Follow these two documents where the current implementation or handbook still describes an earlier architecture.
+3. `games/DESIGN.md` — the shared handbook: principles (§1), course structure and practice clusters (§2,
+   especially §2.3), level spec (§4), audit rules (§5), engine layering (§6), interface (§6.9), author workflow (§7), pitfalls (§8)
+   and case studies (§9–11).
+4. `games/<game>/DESIGN.md` (or `CURRICULUM.md`) — the topic's own design.
+5. The game's content (`games/DESIGN.md` §2, §6.1): the package it plays (`packages/<package>/`: `levels/<id>.json`,
+   level groups `groups/<id>.json`, `pieces.json`, `glossary.json`) and the game's own course
+   (`games/<game>/course.json`: chapters placing whole groups or single levels, links, map `rows`) and wording
+   over the package's texts (`overrides/<lang>.json`), written in its domain's vocabulary
+   (`games/kit/domains/<domain>/vocabulary.js`). Levels are designed a group at a time (studio's level design
+   workspace); a game arranges them into a route (studio's game arrangement workspace).
+
+Keep the relevant game design and handbook aligned with the implemented course. Document substantive design
+changes and general lessons where they help future work; use the user's scope and judgment to choose the detail.
+
+## Implementation contracts
+
+- The kernel (`games/kit/`) owns mechanisms and components: editors, judging, author checks, playback, feedback,
+  and piece availability. When a play needs a mechanism, implement it in the kernel first.
+- A domain (`games/kit/domains/<domain>/`) supplies how its values compare and read, how a work runs on a case,
+  and the subject's own properties. It declares its vocabulary and configures play using kernel components.
+  Components and templates belong to the kernel. Existing domain screens and templates are migration targets in
+  `games/PLAN.md`.
+- A work is the board, strip or table a player makes. A piece has a name and optional faces (`holes`,
+  `settings`, `regions`, `inside`, `faces`, `keeps`). Editors and judges read the faces they use. A task gets
+  pieces through the availability rule in decision 23. A piece's inside refers to the work from a task.
+- A play template is a configuration of the editor, judge, runner, check visibility and source of built works.
+  A judge returns success or the first structured failure (`{ at?, check?, want?, got?, why }`).
+  Compose it from cases, ticks, properties, reference comparisons, ordered checks and hidden checks. Sound works
+  pass every check and each wrong work fails at least one.
+- Content (`games/<game>/`) is data. It picks vocabulary items `{ item: params }` and supplies tests, copy and
+  reference / naive boards as blueprint text.
+- Where the domain gives engine resources (`op` kind), a game's primitive parts are content: `games/<game>/pieces.json`
+  (`games/DESIGN.md` §6.8) — ports, settings in the six kernel controls, an ASCII expression calling only resources
+  and kernel builtins, interaction rules and checks, and the card / tile / detail views. Change a part there (studio's
+  parts tab, or `part.*`, `pieces.set`), never in domain code; a computation no resource can express is a new resource.
+- Translatable fields reference stable keys as `"@key"`. Flat `i18n/<lang>.json` files belong to the course or the
+  content package that owns the field. Both original copy and translations use `text.set` with a field path and
+  `lang` (`games/DESIGN.md` §6.10). The `translate` pipeline step reports missing text for the selected language.
+- A level is a list of tasks (`games/DESIGN.md` §4, `kit/engine/tasks.js`): what it says once (title, intro, pass
+  text, parts brought and built) on the level, each puzzle (brief, hints, ports, tests, answers) a task; a level of one
+  task is a plain level. Every task has an id unique in the game (a level's one task usually has the level's id).
+  Ids cannot change after creation. What players keep goes by it, so tasks are inserted, reordered or moved into
+  another level with `task.add`,
+  `task.move`, `task.remove` (two levels made one: move the tasks, remove the emptied level in the same
+  changeset). A new domain writes its level schema with `taskLevel(once, task)` and reads levels task by task
+  (`taskLevels`); the prototype domains keep `kind` plus optional `tasks` without ids until they are redone.
+- Unit tests (`npm test`) never know a level: they test the kernel and domains on content written in the test or on
+  the domain's `starter/`, never a game's levels, a level or task id, or a level count. A property of every game is
+  checked game by game without naming a level; exceptions are declared by the domain or the content, not listed in a
+  test. Whether a game's levels are right is `npm run check`'s job alone, so changing levels never changes a test.
+- A domain keeps the domain contract (`games/DESIGN.md` §6.3, `kit/engine/contract.js`, checked by `npm test`). A new
+  topic picks its mechanisms from the catalogue (§6.5) and starts from `npm run new-domain -- <name> --mechanism
+  <m>`; a new game on an existing domain from `npm run new-game -- <id> --domain <d>`.
+- The agent pipeline can produce a new topic (`games/DESIGN.md` §7.2, `kit/pipeline/`, `npm run pipeline --
+  <game> …`): blueprint, domain (code, by an engineer), levels, copy, review, queue — each step a brief
+  and a gate, each product written through the operation set, every run and gate recorded in `pipeline.json`. When a
+  later step stops on an earlier one's product, hand its report back (`run <step> --from <later step>`); do not work
+  around it in the later step.
+- Choose built pieces or presets based on the learning goal and their later use. A built piece runs the player's
+  passing work by default, using the reference when no player work is available. A play can choose the reference
+  explicitly. The piece's interface and its unlocking task agree with the engine contract.
+- Content changes go through the operation set (`games/DESIGN.md` §7.1): `npm run op -- <game> …`, the MCP
+  server's `modify`, or the studio (`npm run studio`, §6.7: the same tools over HTTP; a level edited on the
+  game's own page, played from the pending changeset, a click on a field on screen opening its schema control in the
+  side panel and a + adding a task, hint, page or test where it shows; fields with no place on screen as rows), never JSON edited by hand. A changeset is checked as a whole and written
+  only when it passes. Read the game's `vocabulary` (MCP) or `npm run op -- list`
+  first. A wording changed across a game is the `replace` tool's changeset (MCP, or the studio's search), run through
+  `modify` like any other — never a find-and-replace on the files. The studio knows no domain: it picks a generic kernel control from a value's schema shape; where the shape
+  does not say how a value reads, the vocabulary adds a declarative hint to the schema (`view: 'grid' | 'ticks'`,
+  `step`, `section`; `games/DESIGN.md` §6.7), and a domain may only add a headless display (`scene` in domain.js),
+  never an editor.
+- Validate the changed scope using `games/DESIGN.md` §7.0. Curriculum checks name the affected game
+  (`npm run check -- <game>`); module changes run relevant test files. Do not default to the full kit suite,
+  all-game checks or all-game builds for a local edit. For the decision 24 refactor, capture each game's check
+  output before each numbered item and compare it byte for byte after the change as specified in `games/PLAN.md`.
+- Part types, port names and setting values are ASCII, so every board prints as a blueprint (`kit/circuit/text.js`,
+  `games/DESIGN.md` §6): symbols go in labels; a notation that is symbolic by nature gets a `parts.text` spelling.
+
+## Level authoring standards
+
+Read `games/DESIGN.md` §5.1 when authoring or reviewing levels. These are human and agent review duties,
+not kernel gates or content fields. `games/PACKAGES.md` takes precedence while the package migration is active.
+
+- Introduce a main idea through a real problem, judging cognitive load rather than counting pieces. Do not create
+  concept tags or a `concept()` mapping; tags are development collections with no runtime behavior.
+- Put a new capability to work when it appears and reuse it soon in subsequent tasks or packed works. Reconsider
+  early introductions instead of adding filler to satisfy counts or intervals (`many-new`, `idle-idea`).
+- Make first encounters observable and meaningful. A tool that a sentence explains should enter a real task;
+  an abstract tool may warrant a focused encounter with intermediate states and contrasting cases. Explain this in
+  design notes, never a `showcase` exception field (`bare-intro`).
+- Review reuse of built works and repeated structures. Prefer an appropriate abstraction where it serves the task;
+  terminal works may stand on their own (`unused`, `bypass`).
+- Review loose pieces and the actual phone workflow after staging. Eight loose pieces is a review prompt, not an
+  enforced limit; split tasks or build intermediate works when the observed load warrants it (`open-crowded`).
+- Prefer meaningful construction, but lend tools or givens through `gives` where appropriate. Avoid redundant
+  introduction declarations when they add no clarity (`granted`, `carried`).
+- Interpret attempts, hints, abandonment and time with player context and sample size. Difficulty thresholds do not
+  decide pedagogical correctness (`difficulty-spike`).
+- Check still enforces schemas, references, types, passing references, failing naive works, reachable unlocks,
+  prerequisites and introduced tray pieces/stages. A passing check does not establish teaching quality.
+- New badges follow the first introduction of each piece or stage on the prerequisite route; a new stage marks its
+  existing piece card. They are independent of how the author explains the underlying ideas.
+
+## Learning design and copy
+
+The handbook's teaching guidance is advisory: apply expert judgment to the subject, players and user request,
+not a fixed number of concepts, steps, branches or levels. Distinguish these design choices from actual schema,
+engine and automated-check behavior; report a check or implementation constraint without claiming it proves
+pedagogical quality.
+
+- Start with the field problem and what players know; select meaningful construction, exploration, observation,
+  reasoning or feedback. Scale scaffolding and task boundaries to the real conceptual load.
+- Review dependencies, reusable abilities, tests, meaningful decisions, counterexamples and transfer where useful.
+  Preserve support for multiple correct solutions. For parameter benches, verify what learners can observe and
+  how they can reason about their choice, not merely that a solver finds a passing setting.
+- Write clear context, goals, hints and explanations in the game's language. Pass text explains the principle and its scope
+  without assuming a particular reference solution. Link to available terms when helpful and compatible with
+  the content's validation; glossary access does not replace instructional evidence.
+- Check the actual desktop and phone flow when it changes. Use the optional review prompts in
+  [references/learning-review.md](references/learning-review.md) for complex curricula or interactions.
+
+## Interface checklist
+
+Read `games/DESIGN.md` §6.9 before changing any interface, and §2.6 for the map's level tree. Above all: let the
+layout speak — no secondary labels or descriptions, nothing said twice, dense use of space; every game gets the same
+layout and interactions from the shared kit; on phone, operability comes before a complete picture. Also: a left
+drawer of level trees inside a level; the pass dialog returns to the map and the map lands on that level; input cards
+hold what they read and are clicked to wire; card values repaint on every step of a run; a board's last run stays on
+it while the level is open (`lastRun` / `keepRun`, in memory); no newer JS APIs that break older iOS Safari.
+
+## Verification
+
+Before calling a change done (`games/DESIGN.md` §7.0):
+
+1. The design docs say what the change did (docs first, see above), with nothing outdated left in them.
+2. Select tests, content checks and builds from the impact matrix in handbook §7.0. Documentation-only edits need
+   no executable checks. Name the affected game and test files explicitly; broaden only for demonstrated dependency
+   effects, failures or changes whose consumers cannot be bounded. Do not repeat a passed check without a relevant change.
+3. For visual or interaction changes, inspect the changed flow on desktop and phone; add representative consumers
+   only when shared UI is affected. Pure model changes need browser review only if their displayed behaviour changes.
+   To watch a run, write the reference solution into the save, then step and run.
+4. A new domain gives its `play` hook in `domain.js` (a circuit domain through `kit/engine/play/circuit.js`): the
+   level in words and an attempt judged, which `run_tests` uses; its play tests run in `npm test`. Blind play is
+   paused (`games/DESIGN.md` §6.6).
+5. Report what was checked and what was not.
+
+## Interaction
+
+The shared editors are in `games/kit/circuit/`:
+
+- Desktop: free canvas of cards, wires dragged from an output port (dropping on a card wires its first free
+  input); clicking a wired input takes its wire off and leaves it in hand on its output, to click onto another
+  input or drop on the board; Delete removes the selection, pan / pinch / Ctrl-wheel zoom, fit-to-board.
+- Phone: slot grid with inputs on top and outputs at the bottom, no pan or zoom; tap a port, compatible ports
+  light up, tap another to wire; drags start after a short hold so swipes still scroll; tray doubles as delete.
+- Both edit the same graph; illegal wires are refused at connection time with a reason
+  (`parts.refuse`); wire colour follows its source.
+
+- Frames (`kit/circuit/frames.js`, first used by 《证明完毕》's assumption box) are shared: a domain makes a frame
+  part with `framePart(own, regions)` and evaluates each region's value by `key`; the editors, scoping and save
+  checks (`regionsFit`) come from the kit. Dragging a card over a region it can go into lights that region up.
+
+Keep a change to either editor working for every game that uses the kit.

@@ -1,0 +1,25 @@
+{
+  "words": [
+    "starter/everyday"
+  ],
+  "primitives": [
+    "gNot",
+    "gAnd"
+  ],
+  "chapters": [
+    {
+      "id": "circuits",
+      "machine": null,
+      "chapter": {
+        "title": "@course.eras.circuits.chapter.title",
+        "question": "@course.eras.circuits.chapter.question"
+      },
+      "levels": [
+        "starter/g-not",
+        "starter/g-and",
+        "starter/g-or",
+        "starter/g-use"
+      ]
+    }
+  ]
+}

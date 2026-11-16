@@ -1,0 +1,13 @@
+{
+  "name": "@piece.fqMean.name",
+  "desc": "@piece.fqMean.desc",
+  "icon": "Network",
+  "family": "image:family-global",
+  "inputs": [
+    {
+      "name": "in",
+      "label": ""
+    }
+  ],
+  "op": "image:fqMean"
+}

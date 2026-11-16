@@ -1,0 +1,21 @@
+{
+  "name": "@piece.allI.name",
+  "desc": "@piece.allI.desc",
+  "icon": "Box",
+  "family": "logic:family-box",
+  "settings": {
+    "x": {
+      "control": "select",
+      "label": "@piece.allI.settings.x.label",
+      "from": "logic:names()"
+    }
+  },
+  "regions": [
+    {
+      "name": "body",
+      "label": "@piece.allI.regions.0.label",
+      "closes": true
+    }
+  ],
+  "op": "logic:allI"
+}

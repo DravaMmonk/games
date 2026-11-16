@@ -1,0 +1,117 @@
+{
+  "title": "@level.localalign.title",
+  "short": "@level.localalign.short",
+  "intro": [
+    {
+      "t": "@level.localalign.intro.0.t"
+    },
+    {
+      "t": "@level.localalign.intro.1.t"
+    },
+    {
+      "t": "@level.localalign.intro.2.t"
+    },
+    {
+      "t": "@level.localalign.intro.3.t"
+    }
+  ],
+  "mission": {
+    "goal": "@level.localalign.mission.goal",
+    "how": "@level.localalign.mission.how"
+  },
+  "robot": "table:robot-ranger",
+  "debrief": {
+    "title": "@level.localalign.debrief.title",
+    "body": [
+      "@level.localalign.debrief.body.0",
+      "@level.localalign.debrief.body.1"
+    ],
+    "note": "@level.localalign.debrief.note"
+  },
+  "tasks": [
+    {
+      "id": "localalign",
+      "mode": "table:circuit",
+      "naive": [
+        "a = table:add(view.ul, facts.score)",
+        "k = table:const[value=-1]()",
+        "b = table:add(view.up, k)",
+        "c = table:add(view.left, k)",
+        "m = table:mmax(a, b, c)",
+        "cell <- m"
+      ],
+      "diagnose": [
+        {
+          "when": {
+            "table:condition-all": [
+              {
+                "table:condition-not": {
+                  "table:condition-has": {
+                    "part": "table:const",
+                    "value": 0
+                  }
+                }
+              },
+              {
+                "table:condition-uses": "score"
+              }
+            ]
+          },
+          "say": "@level.localalign.tasks.localalign.diagnose.0.say"
+        }
+      ],
+      "trace": "table:trace-local",
+      "after": "table:panel-local",
+      "boardOpt": {
+        "minScale": 0.62,
+        "maxScale": 1.15
+      },
+      "consts": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "hints": [
+        "@level.localalign.tasks.localalign.hints.0",
+        "@level.localalign.tasks.localalign.hints.1"
+      ],
+      "world": "table:world-local",
+      "facts": [
+        "score"
+      ],
+      "tests": [
+        {
+          "top": "AGTACGCA",
+          "left": "TATGC"
+        },
+        {
+          "top": "GGTTGACTA",
+          "left": "TGTTACGG"
+        }
+      ],
+      "expected": [
+        7,
+        9
+      ],
+      "solution": [
+        "a = table:add(view.ul, facts.score)",
+        "k = table:const[value=-1]()",
+        "z = table:const[value=0]()",
+        "b = table:add(view.up, k)",
+        "c = table:add(view.left, k)",
+        "m = table:mmax(a, b, c)",
+        "n = table:mmax(m, z)",
+        "cell <- n"
+      ],
+      "border0": true,
+      "publishes": [
+        {
+          "piece": "local",
+          "variant": "base"
+        }
+      ]
+    }
+  ]
+}

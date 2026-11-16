@@ -1,0 +1,12 @@
+{
+  "name": "@piece.const.name",
+  "desc": "@piece.const.desc",
+  "icon": "Hash",
+  "family": "image:family-pixel",
+  "settings": {
+    "c": {
+      "label": "="
+    }
+  },
+  "op": "image:const"
+}

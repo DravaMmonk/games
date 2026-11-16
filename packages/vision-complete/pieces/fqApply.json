@@ -1,0 +1,13 @@
+{
+  "name": "@piece.fqApply.name",
+  "desc": "@piece.fqApply.desc",
+  "icon": "Box",
+  "family": "image:family-other",
+  "inputs": [
+    {
+      "name": "in",
+      "label": ""
+    }
+  ],
+  "op": "image:fqApply"
+}

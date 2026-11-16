@@ -1,0 +1,119 @@
+{
+  "title": "@level.copy.title",
+  "short": "@level.copy.short",
+  "intro": [
+    {
+      "t": "@level.copy.intro.0.t"
+    },
+    {
+      "t": "@level.copy.intro.1.t",
+      "fig": {
+        "table:figure-grid": {
+          "R": 1,
+          "C": 5,
+          "arrows": false,
+          "cells": {
+            "0,0": {
+              "value": 7,
+              "cls": "lit"
+            },
+            "0,1": {
+              "value": 7,
+              "cls": "lit"
+            },
+            "0,2": {
+              "value": "?",
+              "cls": "hot"
+            }
+          },
+          "robot": "0,2"
+        }
+      }
+    },
+    {
+      "t": "@level.copy.intro.2.t",
+      "fig": {
+        "table:figure-window": {
+          "vals": {
+            "left": 7,
+            "self": "?"
+          },
+          "on": [
+            "left"
+          ]
+        }
+      }
+    },
+    {
+      "t": "@level.copy.intro.3.t"
+    }
+  ],
+  "mission": {
+    "goal": "@level.copy.mission.goal",
+    "how": "@level.copy.mission.how"
+  },
+  "robot": "table:robot-scout",
+  "debrief": {
+    "title": "@level.copy.debrief.title",
+    "body": [
+      "@level.copy.debrief.body.0"
+    ],
+    "note": "@level.copy.debrief.note"
+  },
+  "tasks": [
+    {
+      "id": "copy",
+      "mode": "table:circuit",
+      "guide": [
+        {
+          "until": {
+            "table:condition-reads": "left"
+          },
+          "say": "@level.copy.tasks.copy.guide.0.say"
+        },
+        {
+          "until": "table:condition-wired",
+          "say": "@level.copy.tasks.copy.guide.1.say"
+        },
+        {
+          "say": "@level.copy.tasks.copy.guide.2.say"
+        }
+      ],
+      "diagnose": [
+        {
+          "when": {
+            "table:condition-uses": "right"
+          },
+          "say": "@level.copy.tasks.copy.diagnose.0.say"
+        }
+      ],
+      "hints": [
+        "@level.copy.tasks.copy.hints.0"
+      ],
+      "world": "table:world-grid",
+      "tests": [
+        {
+          "R": 1,
+          "C": 5,
+          "given": {
+            "0,0": 7
+          }
+        },
+        {
+          "R": 1,
+          "C": 7,
+          "given": {
+            "0,0": 3
+          }
+        }
+      ],
+      "expected": [
+        7,
+        3
+      ],
+      "solution": [
+        "cell <- view.left"
+      ]
+    }
+  ]
+}

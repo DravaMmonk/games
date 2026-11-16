@@ -1,0 +1,7 @@
+{
+  "name": "@piece.uDecompose.name",
+  "desc": "@piece.uDecompose.desc",
+  "icon": "Sigma",
+  "family": "logic:family-tactic",
+  "op": "logic:uDecompose"
+}

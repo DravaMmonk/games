@@ -1,0 +1,13 @@
+{
+  "name": "@piece.rule.name",
+  "desc": "@piece.rule.desc",
+  "icon": "Sigma",
+  "family": "logic:family-tactic",
+  "inputs": [
+    {
+      "name": "rules",
+      "label": "@piece.rule.inputs.1.label"
+    }
+  ],
+  "op": "logic:rule"
+}

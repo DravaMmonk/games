@@ -1,0 +1,13 @@
+{
+  "name": "@piece.assumption.name",
+  "desc": "@piece.assumption.desc",
+  "icon": "Sigma",
+  "family": "logic:family-tactic",
+  "op": "logic:assumption",
+  "stages": [
+    {
+      "id": "assumption-s-results-desc",
+      "desc": "@piece.assumption.revisions.0.desc"
+    }
+  ]
+}

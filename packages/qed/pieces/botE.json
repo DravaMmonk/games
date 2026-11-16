@@ -1,0 +1,18 @@
+{
+  "name": "@piece.botE.name",
+  "desc": "@piece.botE.desc",
+  "icon": "GitFork",
+  "family": "logic:family-rule",
+  "inputs": [
+    {
+      "name": "bot",
+      "label": "@piece.botE.inputs.0.label"
+    }
+  ],
+  "settings": {
+    "C": {
+      "label": "@piece.botE.settings.C.label"
+    }
+  },
+  "op": "logic:botE"
+}

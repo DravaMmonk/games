@@ -6,7 +6,7 @@
    hues that tell wires and tiles apart, and the robot's colors. */
 :root {
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-  --serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', serif;
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Noto Serif SC', 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', serif;
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'PingFang SC', monospace;
 
   /* Type scale. Labels are small spaced mono; interface text is sans; reading text and titles are serif. */

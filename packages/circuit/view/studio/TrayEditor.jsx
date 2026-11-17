@@ -43,11 +43,11 @@ export function TrayEditor({ content, namespace, full, pending, onSelect, onEdit
           <input type="checkbox" className="field-check" checked={value.workshop ?? true} disabled={locked} onChange={(e) => write.set('workshop', e.target.checked)} />
           {tr('工坊', 'Workshop')}
         </label>
-        <label className="object-flag" title={tr('关卡里同一菜单未被折叠的元件达到这个数，才收进二级菜单', 'A menu gathers its parts only when a level shows at least this many of them')}>
-          {tr('二级菜单至少', 'Menu from')}
+        <label className="object-flag" title={tr('关卡里未折叠的元件达到这个数时，从元件最多的菜单起逐个收进二级菜单，直到少于这个数；折叠的元件总在二级菜单里', 'When a level shows at least this many parts, the fullest menus gather them one by one until fewer remain; folded parts always sit in their menus')}>
+          {tr('达到', 'Gather at')}
           <input type="number" className="field-number" min={1} step={1} value={value.menuThreshold ?? MENU_THRESHOLD} disabled={locked}
             onChange={(e) => { const n = Number(e.target.value); if (Number.isInteger(n) && n >= 1) write.set('menuThreshold', n) }} />
-          {tr('个', 'parts')}
+          {tr('个收进二级菜单', 'parts')}
         </label>
       </Head>
       {menus.map((menu, m) => (

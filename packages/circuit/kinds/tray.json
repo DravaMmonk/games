@@ -18,7 +18,11 @@
       "menuThreshold": {
         "type": "int",
         "min": 1,
-        "optional": true
+        "optional": true,
+        "about": {
+          "zh": "关卡里未折叠的元件达到这个数时，元件最多的菜单起逐个收束，直到少于这个数（默认 7）",
+          "en": "when a level shows this many parts, the fullest menus gather them one by one until fewer remain (7 by default)"
+        }
       },
       "values": {
         "type": "list",

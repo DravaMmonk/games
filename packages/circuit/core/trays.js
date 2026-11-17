@@ -14,48 +14,67 @@ export function workshopTrayNames(trays = {}, parts = {}) {
     .map(([name]) => name)
 }
 
-/** How many parts of one menu a level must show before they gather into that menu: a tray's `menuThreshold`, else this. */
-export const MENU_THRESHOLD = 3
+/** How many entries the shown tray may hold before its menus gather parts: a tray's `menuThreshold`, else this. */
+export const MENU_THRESHOLD = 7
 
 /**
- * Project available parts onto the selected trays, leaving availability to the course. A menu gathers its parts only
- * where enough of them stand together: among the parts the level shows, a menu opens when at least its tray's
- * `menuThreshold` (3 by default) of them are there, else they stand on their own; the same holds among the folded ones.
+ * Project available parts onto the selected trays, leaving availability to the course.
+ *
+ * Shown parts: while the tray would hold at least `menuThreshold` entries (7 by default; the least the selected trays
+ * set), the menu holding the most of them gathers them into one entry (on ties, the first in the tray), then the next,
+ * until the entries — menus and parts on their own — are fewer, or nothing gathers any more: the menus alone reach
+ * the threshold, or no menu holds two of the parts still on their own. A menu gathered holds its folded parts too.
+ *
+ * Folded parts: every one in a menu goes into it (one entry for each menu); the rest stand on their own.
  */
 export function trayDisplay(trays, names, shown, folded, partOf = id => id) {
-  const first = new Set(shown.map(({ type }) => type))
-  const remaining = new Map([...shown, ...folded].map((item) => [item.type, item]))
+  const set = names.map((name) => trays[name]?.menuThreshold).filter(Number.isInteger)
+  const threshold = set.length ? Math.min(...set) : MENU_THRESHOLD
   const menus = names.flatMap((name) => (trays[name]?.items ?? [])
-    .filter((entry) => typeof entry !== 'string').map((entry) => ({ ...entry, items: entry.items.map(partOf), key: JSON.stringify([name, entry.id]), at: trays[name]?.menuThreshold ?? MENU_THRESHOLD })))
-  const items = [], more = []
-  const add = (item, visible) => (visible ? items : more).push(item)
-  const done = new Set()
+    .filter((entry) => typeof entry !== 'string').map((entry) => ({ ...entry, items: entry.items.map(partOf), key: JSON.stringify([name, entry.id]) })))
   const menuOf = new Map()
-  for (const menu of menus) {
-    for (const type of menu.items) if (!menuOf.has(type)) menuOf.set(type, menu)
+  for (const menu of menus) for (const type of menu.items) if (!menuOf.has(type)) menuOf.set(type, menu)
+  const items = new Map([...shown, ...folded].map((item) => [item.type, item]))
+  const visible = [...new Map(shown.map((item) => [item.type, item])).values()]
+  const members = (menu, of) => of.filter(({ type }) => menuOf.get(type) === menu)
+  const entry = (menu, children) => ({ menu: menu.key, label: menu.title, children })
+
+  // Gather the shown parts, the fullest menu first, while the tray holds too many entries.
+  const gathered = new Set()
+  let count = visible.length
+  while (count >= threshold && gathered.size < threshold) {
+    const next = menus.filter((menu) => !gathered.has(menu)).map((menu) => [menu, members(menu, visible).length])
+      .reduce((best, candidate) => (candidate[1] > (best?.[1] ?? 1) ? candidate : best), null)
+    if (!next) break
+    gathered.add(next[0])
+    count -= next[1] - 1
   }
-  for (const item of remaining.values()) {
+  const out = []
+  const placed = new Set()
+  for (const item of visible) {
     const menu = menuOf.get(item.type)
-    if (!menu) {
-      add(item, first.has(item.type))
-      continue
+    if (!gathered.has(menu)) out.push(item)
+    else if (!placed.has(menu)) {
+      placed.add(menu)
+      // In the menu's own order: its shown parts, then its folded ones.
+      out.push(entry(menu, [...new Set(menu.items)].flatMap((type) => menuOf.get(type) === menu && items.has(type) ? [items.get(type)] : [])))
     }
-    if (done.has(menu.key)) continue
-    done.add(menu.key)
-    const children = [...new Set(menu.items)].flatMap((type) => menuOf.get(type) === menu && remaining.has(type) ? [remaining.get(type)] : [])
-    // Where the level shows enough of the menu's parts, the menu holds them all, folded ones too; else the parts
-    // shown stand on their own, and the folded ones form the menu only if there are enough of them.
-    const visible = children.filter(({ type }) => first.has(type))
-    if (visible.length >= menu.at) {
-      add({ menu: menu.key, label: menu.title, children }, true)
-      continue
-    }
-    for (const child of visible) add(child, true)
-    const hidden = children.filter(({ type }) => !first.has(type))
-    if (hidden.length >= menu.at) add({ menu: menu.key, label: menu.title, children: hidden }, false)
-    else for (const child of hidden) add(child, false)
   }
-  return { items, folded: more }
+
+  // Every folded part in a menu goes into it, unless that menu is already gathered among the shown ones.
+  const more = []
+  const foldedMenus = new Set()
+  const shownTypes = new Set(visible.map(({ type }) => type))
+  for (const item of folded) {
+    if (shownTypes.has(item.type)) continue
+    const menu = menuOf.get(item.type)
+    if (!menu) more.push(item)
+    else if (!gathered.has(menu) && !foldedMenus.has(menu)) {
+      foldedMenus.add(menu)
+      more.push(entry(menu, [...new Set(menu.items)].flatMap((type) => menuOf.get(type) === menu && items.has(type) && !shownTypes.has(type) ? [items.get(type)] : [])))
+    }
+  }
+  return { items: out, folded: more }
 }
 
 /** A task names a declared tray; membership is resolved by the content assembler. */

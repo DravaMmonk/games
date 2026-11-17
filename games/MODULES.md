@@ -1,6 +1,6 @@
 # 空壳内核：机制全部进包
 
-第 1–12 步已完成，设计已写回 `DESIGN.md`；第 13 步（平台独立成仓库）待定；第 14 步（进度层出 `circuit`，5.1.2）已完成；第 15 步（内核功能按需启用）待定；第 16 步（包的种类和名字里的符号，5.6）及第 17 步（游戏配置整理）已完成。
+第 1–12 步已完成，设计已写回 `DESIGN.md`；第 13 步（平台独立成仓库）待定；第 14 步（进度层出 `circuit`，5.1.2）已完成；第 15 步（内核功能按需启用）待定；第 19 步（能力的种类由包声明，5.7）方案已定，待实施；第 16 步（包的种类和名字里的符号，5.6）及第 17 步（游戏配置整理）已完成。
 
 **这份文档是这项开发的唯一依据。** `games/DESIGN.md` 里关于内核、模块、能力、元件和阶段、托盘、Studio 编辑器的说法，凡是和本文冲突的，以本文为准。全部做完后，把结果写回 `games/DESIGN.md`，删掉这份文档。
 
@@ -301,6 +301,24 @@ packages/<包>/
 - **不在本次范围**：名字的大小写（`formulaAnd`、`benchModel` 这样的驼峰写法）照旧。
 - **存档**：任务的 `play` 等进存档戳的字段里有这些名字，改写后四款游戏的存档清零一次（已定，不做迁移）。存档键按游戏 id，不变。
 
+### 5.7 能力的种类由包声明，内核不认识包（第 19 步）
+
+**现状。** 内核里写死了三类本该属于包的东西：
+
+- **能力的种类**（`games/kit/engine/capabilities.js`）：`BUILTIN_CAPABILITY_KINDS` 写死了 `valueType`、`operation`、`primitive`、`board`、`display`、`language`，其中 `board`、`primitive`、`display` 是电路类玩法的概念；`discriminators` 按字段名（`kind`、`mode`、`scene`、`world`、`want`）猜字段引用哪种能力，`scene` 是 image 的、`world` 是 table 的、`want` 是 logic 的；`registryKind` 写死了 `op → operation`、`part → primitive` 的别名。新玩法要加一种能力就得改内核，字段改名内核就认不出。
+- **内核代码直接认识具体的包**：`games/kit/engine/ops/fixture.js` 直接 import `qed`、`logic`、`circuit`、`progress`，被内核的十几个测试用，违反第 12 节「内核测试只用测试里现写的小内容」；`games/kit/engine/baseline-value.js` 把历次迁移的旧名映射（qed 公式名、table 世界名、各玩法名）写死在内核里，每次改名都长一截。
+- **内核自己的字段清单**里混着包的字段：第 17、18 步已经去掉大半，剩下的随本步清理。
+
+**目标。**
+
+- **能力种类用数据声明**，和对象类型（5.3）一样：包在 `capabilities/<种类>.json` 声明自己引入的能力种类——名字、要不要代码实现（显示要视图入口、运算要 `run`）、Studio 里怎么列。内核只提供「能力种类」这个机制：每种一张注册表、重名检查、实现检查。内核自带的只留真正通用的（`language`、`valueType`，实施时核对）；`board`、`primitive`、`display`、`operation` 由声明它们的玩法包（`circuit` 或 `image`）声明。
+- **字段靠 schema 说明自己引用什么，不靠字段名**：`"scene": { "type": "ref", "kind": "image/scene" }`。补全全名、存在性检查、Studio 下拉都按 `ref` 的 `kind` 走；删掉 `discriminators`、`registryKind`。
+- **内核测试不用真实的包**：内核测试改用测试里现写的小包；需要真实 qed 内容的测试搬进 `packages/qed/test/`。删掉 `ops/fixture.js` 对包的 import。
+- **基线的旧名映射是数据**：每次迁移一份映射文件，比较时传给基线工具；迁移做完、基线重存后删除。`baseline-value.js` 不写任何包名。顺手修好基线工具在序列化证明完毕时的 `Invalid string length`。
+- **守住**：`lint:kit` 加一条，`games/kit/` 下非测试代码不许 import `packages/` 下的文件，也不许出现任何包 id 的字符串字面量（和 `plugin-boundaries.js` 管包的方向相反）。
+
+**验收。** 行为不变、存档戳不变；全部检查、零内容验收通过；新写一个小包声明一种新能力并用上它，不改内核任何文件。
+
 ## 6. 包的代码要守的边界
 
 1. **只实现协议**：登记玩法、对象类型、检查、编辑器、盲玩、显示；不改内核行为，不绕开进度和检查。
@@ -396,6 +414,7 @@ packages/<包>/
 16. **包的种类和名字里的符号**（5.6，已完成）。`package.json` 写 `kind`（`play`、`ext`、`course`、`lib`），包 id 不变，Studio 按种类分组和筛选；全名一律 `<命名空间>/<名>`，代码登记的名字去掉 `:` 和拼进去的种类；对象目录不再拼包名；生成的 id 用 `-2`。四款游戏存档清零一次。
 
 17. **游戏配置整理**：game.json 一个文件；首页读 game.json；box、power 由 image 声明；borrow 只在 state-graph。
+19. **能力的种类由包声明，内核不认识包**（5.7，待实施）。能力种类用数据声明，字段靠 schema 的 `ref` 说明引用什么；内核测试不用真实的包；基线的旧名映射是数据；`lint:kit` 禁止内核引用包。
 
 ## 11. 已定
 

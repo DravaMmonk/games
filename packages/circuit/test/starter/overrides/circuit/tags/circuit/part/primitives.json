@@ -1,0 +1,8 @@
+{
+  "values": {
+    "add": [
+      "starter/add",
+      "starter/sub"
+    ]
+  }
+}

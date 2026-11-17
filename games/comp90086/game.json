@@ -14,10 +14,6 @@
     "@comp90086/2"
   ],
   "mode": "notes",
-  "primitives": [
-    "comp90086/line3",
-    "comp90086/add"
-  ],
   "power": "comp90086/default",
   "box": "comp90086/default",
   "topic": "@game.topic",

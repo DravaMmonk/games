@@ -1,7 +1,5 @@
 // How the kit shows a value (games/DESIGN.md 6.9), as data: a value's shape, the views that draw each shape, and the
-// scenes a value is drawn in. The drawing is the kit's (../views/); which views are used where is content: a game's
-// `views` (a default per shape), a task's `results` (its rows), and the values an introduction page or a pass text
-// shows (`show`).
+// scenes a value is drawn in. Content can select views for a task's `results` or a value shown beside text (`show`).
 //
 //   shapes   scalar  one value, written as words (a number, yes or no, a vector)
 //            grid    { w, h, c, data }: a matrix, an image, a row of numbers (c channels a cell, row by row)
@@ -24,7 +22,7 @@
 //                                                              shown by default; each with the views it may be drawn in,
 //                                                              the first the one it starts in
 //   rowProblems(results, entries, defaults) → [text]           what a task's rows get wrong
-//   viewsProblems(defaults) → [text]                           what a game's (or a task's) views get wrong
+//   viewsProblems(defaults) → [text]                           what a task's views get wrong
 //   usable(views, value)    the views among `views` that can draw `value` (a view may draw only some values of its
 //                           shape: `fits`, e.g. a plot only a grey grid of one or two rows)
 //   shapeOf(value)          a value's shape where nothing says it: a grid, else a scalar (a card's value, one tick's)
@@ -82,11 +80,8 @@ const LIST = S.list(VIEW, { min: 1, about: t('能用的显示方式，第一种�
 
 const BY_SHAPE = (about, more = {}) => S.obj(Object.fromEntries(SHAPES.map((shape) => [shape, S.opt(LIST)])), { about, ...more })
 
-/** game.json `views`: the views each shape is drawn in where a row names none. */
-export const GAME_VIEWS = S.opt(BY_SHAPE(t('每种形状默认的显示方式（没写的用库里的第一种）')))
-
-/** A task's `views`: the game's, changed for the shapes it names, on its cards and in its results. */
-export const TASK_VIEWS = S.opt(BY_SHAPE(t('这个任务里每种形状的显示方式（换掉游戏默认的那几种）'), { section: 'read' }))
+/** A task's `views`: the defaults for the shapes it names, on its cards and in its results. */
+export const TASK_VIEWS = S.opt(BY_SHAPE(t('这个任务里每种形状的显示方式（没写的形状沿用内核默认值）'), { section: 'read' }))
 
 /** A task port's `view`: the view its value starts in, on its card, in its detail and its results row. */
 export const START_VIEW = S.opt(S.oneOf(Object.keys(VIEWS), { about: t('这个口的值起初画成哪种显示方式（玩家在详情和结果区里换）') }))
@@ -98,7 +93,7 @@ export const RESULTS = S.opt(S.list(S.obj({
   label: S.opt(S.text()),
 }), { min: 1, section: 'read', about: t('结果区的几行，按顺序；不写就是领域默认的几行') }))
 
-/** The views a shape is drawn in by default: the game's, or the library's first. */
+/** The views a shape is drawn in by default: the task's selection, or the library's first. */
 export const viewsFor = (shape, defaults) => defaults?.[shape] ?? [Object.keys(VIEWS).find((v) => VIEWS[v].shapes.includes(shape))]
 
 export const usable = (views, value) => views.filter((v) => !VIEWS[v].fits || VIEWS[v].fits(value))

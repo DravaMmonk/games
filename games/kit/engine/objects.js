@@ -74,6 +74,15 @@ export function referenceResolver(registries, problems = [], vocabulary = regist
 
 export const referenceKind = (schema) => schema?.type === 'either' ? schema.of.map(referenceKind).find(Boolean) : schema?.reference ?? (schema?.type === 'level' ? 'level' : ['ref', 'name'].includes(schema?.type) ? (schema.kind?.includes('/') ? schema.kind : { entry: 'entry' }[schema.kind]) : null)
 
+/** Read a named tag while retaining member traversal order for presentation. */
+export function readTag(registries, member, name, active = new Set()) {
+  const key = tagKey(member, name)
+  if (active.has(key)) return []
+  const next = new Set([...active, key])
+  const values = (registries?.tag?.[key]?.values ?? []).filter(id => typeof id === 'string')
+  return [...new Set(values.flatMap(id => id.startsWith('#') ? readTag(registries, member, id.slice(1), next) : [id]))]
+}
+
 /** Expand tags structurally, using schema types rather than a list of field names. */
 export function expandReferences(value, schema, expand, vocabulary, at = 'content') {
   if (value === undefined || value === null) return value
@@ -192,8 +201,7 @@ export function orderedTags(content, kind) {
 }
 
 /** The runtime route consumed by courseLayout, maps and domains; chapter rows belong to the game. */
-export function assembleChapters(chapters, { expand, relations, optional = [], skippable = [], problems = [] }) {
-  const opt = new Set(expand(optional, 'level')), skip = new Set(expand(skippable, 'level'))
+export function assembleChapters(chapters, { expand, relations, optional = new Set(), skippable = new Set(), problems = [] }) {
   const seen = new Set()
   return chapters.map((chapter) => {
     const ids = (chapter.levels ?? []).filter((id) => {
@@ -209,7 +217,7 @@ export function assembleChapters(chapters, { expand, relations, optional = [], s
     for (const edge of relations.requires) if (!edge.game && positions.has(edge.from) && positions.has(edge.to) && positions.get(edge.from) >= positions.get(edge.to)) {
       problems.push({ at: `chapters/${chapter.id}.levels`, says: `${edge.from} must precede ${edge.to} in chapter order` })
     }
-    return { ...chapter, levels: ids.map((id) => ({ id, ...(opt.has(id) && { optional: true }), ...(skip.has(id) && { skippable: true }) })), links: relations.requires.filter((e) => ids.includes(e.to)).map(({ game, ...e }) => ({ ...e, ...(game && { fromGame: game }) })) }
+    return { ...chapter, levels: ids.map((id) => ({ id, ...(optional.has(id) && { optional: true }), ...(skippable.has(id) && { skippable: true }) })), links: relations.requires.filter((e) => ids.includes(e.to)).map(({ game, ...e }) => ({ ...e, ...(game && { fromGame: game }) })) }
   })
 }
 

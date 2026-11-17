@@ -27,7 +27,7 @@ const filter = (id, rest) => ({ id, kind: 'image/graph', brief: L('b'), scene: "
 const level = (id, tasks, once = {}) => ({ id, title: L(id), after: L('a'), intro: [{ t: L('i') }], ...once, tasks })
 const wide = ['l = image/shift[dir=left](in)', 'r = image/shift[dir=right](in)', 'h = image/max(l, r)', 'out <- h']
 const content = deepFreeze(withProgressFixture({
-  primitives: ["image/const", "image/add", "image/sub", "image/mul", "image/arith", "image/merge"],
+  registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ["image/const", "image/add", "image/sub", "image/mul", "image/arith", "image/merge"] } } },
   eras: [{ id: 0, levels: [{ id: 'wide' }, { id: 'use' }, { id: 'two' }], links: [{ from: 'wide', to: 'use' }, { from: 'use', to: 'two' }], chapter: { title: L('c'), label: L('l'), question: L('q') } }],
   levels: [
     level('wide', [filter('wide', { solution: wide, publishes: [{ part: 'widen', variant: 'base' }] })]),

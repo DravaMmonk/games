@@ -116,7 +116,7 @@ function readBuilt(content) {
  *   eras        the course's eras, one proof machine each (games/DESIGN.md 2), each with its map chapter
  *               { title, question }; a topic has a `code` for its numbers
  *   levels      every level; a level may introduce syntax parts (`adds`), see notation.js
- *   words       the word sets (wordSets, by name, merged in order) every level reads its letters, predicates and
+ *   words       the default word set every level reads its letters, predicates and
  *               names in, unless it names its own (`words`): { letter: { zh, en } } the everyday sentence each reads as
  *
  * A proof level is a schema: its test (`tests: [{ premises, goal }]`) is written in letters, and each test case
@@ -133,7 +133,7 @@ function readBuilt(content) {
  *   local       [part] parts that stay in the levels that bring them, never unlocked or carried on (../../course.js)
  *   trays       { tray: [part] } the trays (../../course.js): one per kind of circuit board (the truth circuit, the
  *               proof board, the machine board), and one for a scene that plays with its own parts alone
- *   primitives  the rules the course starts from
+ *   registries  includes the circuit tag for the rules the course starts from
  *   concept     { part: idea } parts that are one new idea together
  * }
  * A level is its tasks in order (`tasks: [{ id, kind, step?, brief, … }]`, ../../engine/tasks.js, one for most
@@ -286,7 +286,7 @@ export function* prepareLogicWorks(content) {
   const { lemmas, facts, gates, machines } = built
   // The levels as the course reads them: each with the part it builds, and each task with the equation it proves.
   const levels = content.levels.map((l) => ({ ...l, ...(built.builds.has(l.id) ? { builds: built.builds.get(l.id) } : {}), tasks: l.tasks.map((t) => (built.proves.has(t.id) ? { ...t, fact: built.proves.get(t.id) } : t)) }))
-  const words = wordsOf(content.words, wordSets)
+  const words = content.standalone ? wordsOf(Object.keys(wordSets), wordSets) : wordSets[content.words] ?? {}
   const tasksOf = new Map(levels.map((l) => [l.id, readTasks(l, wordSets, content.taskPositions)]))
   // What reading the content finds wrong with it beyond its schema (validate.js reports it).
   for (const l of levels) if (l.tasks.length > 1 && l.tasks.some((t) => !t.step)) wrong.push(`${l.id}: a level of several tasks names each (step)`)

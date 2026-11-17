@@ -19,5 +19,5 @@ import { OPS } from "../core/mechanism/ops.js"
 
 const ui = displays
 
-/** content (../../engine/content.js): { id, title, kicker, lede, primitives, concept, eras, levels, glossary, partDefs }. */
+/** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary, partDefs }. */
 export default (content, works = circuitWorks(content)) => definedGame(content, works, { kind: { id: 'circuit', icon: Binary, label: { zh: '电路', en: 'Circuit' } }, screen: ui['circuit/screen'], ops: OPS })

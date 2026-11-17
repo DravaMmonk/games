@@ -8,9 +8,5 @@
   },
   "chapters": [
     "@starter/1"
-  ],
-  "primitives": [
-    "add",
-    "sub"
   ]
 }

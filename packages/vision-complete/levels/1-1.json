@@ -1,4 +1,5 @@
 {
+  "opensViews": ["image/profile"],
   "title": "@level.1-1.title",
   "after": "@level.1-1.after",
   "intro": [

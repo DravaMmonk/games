@@ -1,6 +1,6 @@
 import { tagName } from '../tag-identity.js'
 // Where a game's content names a level: every field its domain's schema types as a level (schema.js S.level, the
-// chapters and typed object members included), every <level-ref> link inside a text, and the audit findings game.json leaves open
+// chapters and typed object members included), every <level-ref> link inside a text, and the open audit findings
 // ({ part, level }).
 import { kindSchemas } from '../plugin-kinds.js'
 import { S, find } from '../schema.js'
@@ -11,6 +11,7 @@ import { textEntries } from '../i18n.js'
 // game.json's own fields, outside its domain's schema (vocabulary.js checkContent).
 const META = ['domain', 'vocabulary', 'open']
 const own = (game) => Object.fromEntries(Object.entries(game).filter(([k]) => !META.includes(k)))
+const reference = type => type === 'level' ? S.level() : S.str({ reference: type })
 const link = (id, namespace) => new RegExp(`(<level-ref to="(?:${namespace}/)?)${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}("></level-ref>)`, 'g')
 
 /** The files of a workspace with the schema each is read by: [[name, value, schema]]. */
@@ -19,12 +20,17 @@ export const workspaceFiles = (ws, vocabulary) => [
   ...[...ws.entries].map(([id, entry]) => [`entries/${id}.json`, entry, ENTRY]),
   ...Object.entries(ws.contentObjects ?? {}).flatMap(([kind, values]) => [...values].map(([id, value]) => [`${ws.kindFolders?.[kind] ?? kind}/${id}.json`, value, kindSchemas(vocabulary)[kind]])),
   ...[...ws.levels].map(([id, level]) => [`levels/${id}.json`, level, vocabulary.level]),
+  ...[...ws.overrideFiles ?? []].flatMap(([file, value]) => {
+    const tag = /^(?:package\/)?overrides\/[^/]+\/tags\/(.+)\/[^/]+\.json$/.exec(file)
+    if (!tag) return []
+    const members = S.opt(S.set(reference(tag[1])))
+    return [[file, value, S.obj({ values: Array.isArray(value.values) ? members : S.opt(S.obj({ add: members, remove: members })) })]]
+  }),
   ...Object.entries(OBJECT_SCHEMAS).flatMap(([kind, schema]) => [...(ws[kind] ?? [])].map(([id, value]) => [`${kind}/${kind === 'tags' ? `${value.kind}/${tagName(id)}` : id}.json`, value, objectReferenceSchema(ws, kind, value, schema, vocabulary)])),
 ]
 
 // Object registries are separate: level references never name a same-named object of another type.
 function objectReferenceSchema(ws, kind, value, schema, vocabulary) {
-  const reference = (type) => type === 'level' ? S.level() : S.str({ reference: type })
   if (kind === 'tags') return { ...schema, fields: { ...schema.fields, values: S.set(reference(value.kind)) } }
   if (kind === 'relations') {
     const ref = reference(value.kind === 'requires' ? 'level' : Object.values(vocabulary.objectKinds ?? {}).map(definition => definition.relations?.[value.kind]?.from).find(Boolean) ?? 'any')

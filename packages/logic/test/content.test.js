@@ -41,13 +41,12 @@ const halfOf = (form, goal) => ({
   kind: 'logic/proof', tests: [{ premises: { p: 'A ∧ B' }, goal }], solution: ["e = andE(p)", `goal <- e.${form}`],
 })
 const CONTENT = {
-  words: ['everyday'],
-  registries: { 'logic/symbol': Object.fromEntries(Object.entries(readStarter(resolve(import.meta.dirname, '../../logic/test')).registries['logic/symbol']).map(([name, value]) => [name.split('/').at(-1), { ...value, at: ({ formulaOr: 'or', formulaImplies: 'chain', formulaAnd: 'chain', formulaForall: 'chain' })[name.split('/').at(-1)] }])), wordset: {
+  words: 'everyday',
+  registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['gNot', 'gAnd', 'mp', 'impI', 'andI', 'andE', 'allE', 'allI', 'rewrite'] } }, 'logic/symbol': Object.fromEntries(Object.entries(readStarter(resolve(import.meta.dirname, '../../logic/test')).registries['logic/symbol']).map(([name, value]) => [name.split('/').at(-1), { ...value, at: ({ formulaOr: 'or', formulaImplies: 'chain', formulaAnd: 'chain', formulaForall: 'chain' })[name.split('/').at(-1)] }])), wordset: {
     everyday: { Rain: L('下雨', 'it rains'), Wind: L('刮风', 'it is windy'), Wet: L('地湿', 'the ground is wet'), Slip: L('路滑', 'the road is slippery'), Bright: L('{0}很亮', '{0} is bright'), Seen: L('{0}看得见', '{0} can be seen'), i: L('安', 'Ann'), j: L('博', 'Bo') },
     stars: { a: L('晨星', 'the Morning Star'), b: L('昏星', 'the Evening Star'), i: L('晨星', 'the Morning Star'), j: L('昏星', 'the Evening Star') },
     properties: { P: L('{0}具有该性质', '{0} has that property'), Q: L('{0}具有该性质', '{0} has that property') },
   } },
-  primitives: ['gNot', 'gAnd', 'mp', 'impI', 'andI', 'andE', 'allE', 'allI', 'rewrite'],
   // The parts the starter defines (its parts/<name>.json: the gates and the proof rules), and the parts built here: a gate,
   // a lemma, and a lemma of two shapes, each shape the proof of a task.
   partDefs: { parts: {

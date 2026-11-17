@@ -92,7 +92,7 @@ const isCircuit = T => T.play === 'state-graph/circuit';
 
 /**
  * The course of a table game's content (content.js assemble). Returns { LEVELS, played, REQUIRES, PLACE, TRACKS,
- * CHAPTERS, LABELS, PARTS, PRIMITIVES, course, model, run, syncOwn, opening, offerIn(L, flags),
+ * CHAPTERS, LABELS, PARTS, course, model, run, syncOwn, opening, offerIn(L, flags),
  * blueprints, wrong }: LEVELS each level in play order with its chapter (`ch`) and its introduction; played its tasks
  * by level id, each the level with the task's fields over it (../../engine/tasks.js taskLevels) and, for a circuit
  * task, what its board is given, its palette, its reference (and naive) board read; model the board model of its parts
@@ -106,7 +106,7 @@ export function* prepareTableWorks(content) {
   // The content with its texts made bilingual strings (lang.js hydrate), a copy frozen as the content is: what the
   // course works out is built beside it, never written into it.
   const hydrated = deepFreeze(hydrate(content));
-  const { eras, primitives: PRIMITIVES } = hydrated;
+  const { eras } = hydrated;
   // What building the course finds wrong with its content beyond its schema (validate.js reports it).
   const wrong = [];
   const say = (level, text) => wrong.push(`${level}: ${text}`);
@@ -334,5 +334,5 @@ export function* prepareTableWorks(content) {
     return values.length ? [{ key: 'value', label: T('数值', 'Value'), values: values.map(value => ({ value, label: String(value) })) }] : [];
   };
 
-  return { LEVELS, played, REQUIRES: plan.requires, PLACE: plan.place, TRACKS: plan.tracks, ROWS: plan.rows, CHAPTERS, LABELS, PARTS, PRIMITIVES, course, model, run, syncOwn: own.sync, opening, offerIn, settingsIn, blueprints, wrong };
+  return { LEVELS, played, REQUIRES: plan.requires, PLACE: plan.place, TRACKS: plan.tracks, ROWS: plan.rows, CHAPTERS, LABELS, PARTS, course, model, run, syncOwn: own.sync, opening, offerIn, settingsIn, blueprints, wrong };
 }

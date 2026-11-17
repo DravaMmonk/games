@@ -26,14 +26,11 @@ const icons = Object.fromEntries(Object.entries(plays).map(([name, play]) => [na
 const doneText = ({ head, body = [] }) => [...(head ? [T(`<b>${head.zh ?? head.en}</b>`, `<b>${head.en ?? head.zh}</b>`)] : []), ...body]
 
 /**
- * content (../../engine/content.js): { id, title, kicker, lede, eras, primitives, partDefs (parts.json: the parts and
- * ideas its levels unlock), borrow?: { part: level id }
- * the level whose board a part that is an idea is tried on, levels, glossary }.
+ * The components box can show an idea on another level's board, as selected by the part's demoLevel.
  */
 export default function tableGame(content, table = tableWorks(content)) {
   const { LEVELS, REQUIRES, TRACKS, ROWS, CHAPTERS, LABELS, PARTS, course, played } = table
   const ERAS = content.eras
-  const borrow = content.borrow ?? {}
   // Every level's last task: the one whose board a part it builds runs, shown on the part's bench.
   const lastTasks = LEVELS.map((L) => played.get(L.id).at(-1))
   const levels = LEVELS.map((L, index) => ({
@@ -102,7 +99,8 @@ export default function tableGame(content, table = tableWorks(content)) {
       preview: (part, { progress }) => {
         table.syncOwn(progress.built)
         const key = part.key.replace(/^part:/, '')
-        const spec = partDemo(table.model, game.circuit, lastTasks, part.at ? { [key]: part.at[0] } : borrow, key)
+        const level = part.at?.[0] ?? content.registries?.['circuit/part']?.[key]?.demoLevel
+        const spec = partDemo(table.model, game.circuit, lastTasks, level, key)
         return { experiment: spec }
       },
       filters: robotFilters,

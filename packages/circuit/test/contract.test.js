@@ -10,7 +10,7 @@ const root = new URL('../../../', import.meta.url).pathname
 const fixture = () => {
   const parts = { 'sample/add': { name: 'Add', desc: 'Add inputs', family: 'circuit/value', icon: 'Plus', op: 'circuit/add' } }
   return {
-    id: 'sample', title: 'Sample', eras: [], primitives: ['sample/add'], trays: {},
+    id: 'sample', title: 'Sample', eras: [], trays: {},
     standalone: { level: 'sample/sum' }, glossary: { groups: [], entries: [] },
     partDefs: { parts }, registries: { 'circuit/part': parts },
     levels: [{ id: 'sample/sum', title: 'Sum', tasks: [{

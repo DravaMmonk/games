@@ -24,7 +24,7 @@ test('a level’s answer changes its key and those of the levels after it, not t
 })
 
 test('the game around its levels changes every key', () => {
-  const other = levelKeys({ ...content(base), primitives: ['x'] }, course).keys
+  const other = levelKeys({ ...content(base), registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['x'] } } } }, course).keys
   assert.deepEqual(changed(keys(base), other), ['a', 'b', 'c', 'd'])
 })
 

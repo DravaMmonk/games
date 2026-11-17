@@ -2,14 +2,14 @@ import { collectionProblems } from './collections.js'
 import { layerProblems, BUILTIN_POLICIES } from './kind-policy.js'
 import { schemaForKind } from './layers.js'
 import { existenceProblems } from './existence.js'
-import { tagKey, tagName } from './tag-identity.js'
+import { LEVEL_MARKS, tagKey, tagName } from './tag-identity.js'
 import { kindSchemas, BUILTIN_KIND_NAMES } from './plugin-kinds.js'
 import { encyclopedia } from './encyclopedia.js'
 import { meaningsOf, derivedFields } from './kind-meanings.js'
 import { registryVocabularies } from './objects.js'
 import { GLOSSARY } from './vocabulary.js'
 import { createRegistries, expandNames, fullName, registryOf } from './names.js'
-import { referenceResolver, expandReferences, expandRelations, assembleChapters } from './objects.js'
+import { referenceResolver, readTag, expandReferences, expandRelations, assembleChapters } from './objects.js'
 
 const schemaKey = Symbol.for('study-notes.content-schema')
 export const contentSchemas = {
@@ -81,13 +81,14 @@ export function assemble({ id, packageId = id, schemas, contentObjects = {}, cou
   const scheduled = new Set(packageTarget ? levels.map(([id]) => id) : (sourceChapters ?? []).flatMap((chapter) => resolve(chapter.levels, 'level', `chapters/${chapter.id}`)))
   const relationDefinitions = Object.assign({}, ...Object.values(objectKinds ?? {}).map(d => d.relations))
   for (const [name, relation] of Object.entries(relationMap)) if (!['requires', ...Object.keys(relationDefinitions)].includes(relation.kind)) objectProblems.push({ at: `relations/${name}`, says: `unknown relation ${relation.kind}` })
-  const relationEdges = expandRelations(relationMap, resolve, scheduled, objectProblems, new Set(resolve(game.optional ?? [], 'level')), Object.assign({}, ...Object.values(objectKinds ?? {}).map(d => d.relations)))
+  const marks = Object.fromEntries(Object.entries(LEVEL_MARKS).map(([mark, name]) => [mark, new Set(readTag(registries, 'level', name))]))
+  const relationEdges = expandRelations(relationMap, resolve, scheduled, objectProblems, marks.optional, relationDefinitions)
   levels = levels.map(([name, value]) => [name, refs(value, schemas.level)])
   glossary = refs(glossary, GLOSSARY)
   const entryObjects = glossary?.entries ?? []
   glossary = encyclopedia(entryObjects, sectionMap, resolve, game.encyclopedia)
   game = refs(game, schemas.game)
-  const eras = sourceChapters && assembleChapters(sourceChapters, { expand: resolve, relations: relationEdges, optional: game.optional, skippable: game.skippable, problems: objectProblems })
+  const eras = sourceChapters && assembleChapters(sourceChapters, { expand: resolve, relations: relationEdges, ...marks, problems: objectProblems })
   const projections = Object.assign({}, ...meaningsOf(schemas).map(meaning => meaning.assemble?.({ registries, relationEdges, resolve, problems: objectProblems, schemas })))
   const content = {
     id, ...game, ...provenance, ...(Object.keys(objectKinds ?? {}).length && { objectKinds }), ...(packageTarget && { packageTarget }), ...(eras && { eras, sourceChapters }), ...projections,

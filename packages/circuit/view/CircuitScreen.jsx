@@ -341,7 +341,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
 
   const verdict = !sampled && ended && (reportedFailure(runOf) ?? (runOf.fail?.at?.tick !== undefined ? failureText(runOf.fail) : null))
   // A task may draw a shape in views of its own (its `views`): on its cards, in its results and its details.
-  const views = useMemo(() => (level.views ? { ...game, views: { ...game.views, ...level.views } } : game), [game, level.views])
+  const views = useMemo(() => (level.views ? { ...game, views: level.views } : game), [game, level.views])
   const rows = showResults ? rowsOf(level.results, offered, views.views) : []
   // Arrows in the plane share one frame across the board and the results: as far as the test's values and the whole
   // run's reach, so it holds still while a run plays.
@@ -428,7 +428,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
           run={surface?.busy ? { ...run, select: () => {} } : run}
           className={`cs-level ${className}`.trim()}
           parts={parts}
-          trayParts={definedFaces ? undefined : { ...kind.wiring(level, course), valueView: () => game.views?.grid?.[0] ?? 'value' }}
+          trayParts={definedFaces ? undefined : { ...kind.wiring(level, course), valueView: () => 'value' }}
           defined={definedFaces}
           items={palette.map(itemOf)}
           folded={folded.map(itemOf)}

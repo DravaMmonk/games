@@ -28,7 +28,7 @@ const SKIP = ['「—」不参与；全是「—」时，输出「—」。', '�
 const MERGER = T('汇合器', 'Merger');
 const CONSTANT_VALUES = [0, 1, 2, 3, 4, 5];
 
-/** The primitives: what a course may start from (game.json primitives) and a level bring in (adds). */
+/** The primitives: what a course may start from (the circuit/primitives tag) and a level bring in (adds). */
 export const PRIMITIVES = qualifyItems('table', {
   msum: { name: MERGER, tag: T('加起来', 'sum'), ins: ['table/number-input', 'table/number-input', 'table/number-input'], out: 'circuit/number', f: merge(OPS.sum), desc: T(`把接进来的数加起来。${SKIP[0]}`, `Adds up the numbers wired into it. ${SKIP[1]}`) },
   mmin: { name: MERGER, tag: T('取较小', 'min'), ins: ['table/number-input', 'table/number-input', 'table/number-input'], out: 'circuit/number', f: merge(OPS.min), desc: T(`留下接进来的数里最小的那个。${SKIP[0]}`, `Keeps the smallest of the numbers wired into it. ${SKIP[1]}`) },

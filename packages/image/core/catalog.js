@@ -18,6 +18,13 @@ export function extendVocabulary(base, contribution, first = false) {
 
 export const meaning = {
   type: 'level', read: value => value, baselineReports: imageReports,
+  assemble({ registries, problems }) {
+    const owners = new Map()
+    for (const [level, value] of Object.entries(registries.level)) for (const view of value.opensViews ?? []) {
+      if (owners.has(view) && owners.get(view) !== level) problems.push({ at: `levels/${level}.opensViews`, says: `${view} is already opened by ${owners.get(view)}` })
+      else owners.set(view, level)
+    }
+  },
   vocabulary(base) {
     const projected = extendVocabulary(base, vocabulary, true)
     const fields = { ...base.level?.fields, ...levelSchema.fields }
@@ -31,7 +38,7 @@ export const meaning = {
     }
     const level = base.level ? S.obj({ ...fields, tasks: S.list(S.either(base.level.fields.tasks.of, levelSchema.fields.tasks.of), { min: 1 }) }) : levelSchema
     const gameFields = { ...base.game.fields }
-    const ownGame = { box: S.opt(S.name('image/box')), power: S.opt(S.name('image/power')), mode: S.opt(S.oneOf(['notes'])), primitives: S.opt(S.list(S.str({ reference: 'circuit/part' }))), views: S.opt(S.map(S.level())) }
+    const ownGame = { box: S.opt(S.name('image/box')), power: S.opt(S.name('image/power')), mode: S.opt(S.oneOf(['notes'])) }
     for (const [key, schema] of Object.entries(ownGame)) gameFields[key] = gameFields[key] ? S.opt(S.either(gameFields[key], schema)) : schema
     return { ...projected, level, game: S.obj(gameFields) }
   },

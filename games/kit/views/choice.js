@@ -10,7 +10,7 @@ import { picks, viewOf } from './picks.js'
 
 export const ViewScope = createContext({ scope: null, starts: {}, author: () => null })
 
-/** The views among `views` (by default the game's for the shape) that can draw `value`. */
+/** The views among `views` (by default the task's for the shape) that can draw `value`. */
 export function useOffered(shape, views, value) {
   const game = useContext(SettingsContext)
   return usable(views ?? viewsFor(shape, game.views), value)

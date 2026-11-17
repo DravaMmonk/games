@@ -99,7 +99,7 @@ test('earned stage flags upgrade the same card without changing its saved identi
 })
 
 test('a level award waits for its final task to pass', () => {
-  const content = { id: 'sample', primitives: ['scale'],
+  const content = { id: 'sample', registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['scale'] } } },
     partDefs: { parts: { scale: { stages: [{ id: 'advanced' }] } } },
     eras: [{ id: 0, levels: [{ id: 'only' }], links: [] }],
     levels: [{ id: 'only', adds: ['scale'], awards: ['advanced'], tasks: [{ id: 'first' }, { id: 'last' }] }] }

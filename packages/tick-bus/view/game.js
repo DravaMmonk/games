@@ -19,5 +19,5 @@ import { tickBusWorks } from '../core/work.js'
 
 
 
-/** content (../../engine/content.js): { id, title, kicker, lede, primitives, concept, eras, levels, glossary }. */
+/** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary }. */
 export default (content, works = tickBusWorks(content)) => definedGame(content, works, { ops: {}, kind: { id: 'tick', icon: Activity, label: { zh: '逐拍', en: 'Tick by tick' } }, screen: ui['tick-bus/screen'], cards: ui['tick-bus/catalog'] })

@@ -1,0 +1,27 @@
+{
+  "extends": "level",
+  "fields": {
+    "opensViews": {
+      "type": "list",
+      "of": {
+        "type": "ref",
+        "kind": "view"
+      },
+      "optional": true,
+      "section": "read",
+      "about": {
+        "zh": "到这一关时开放的图像值视图",
+        "en": "Image value views opened when this level is reached"
+      }
+    }
+  },
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  }
+}

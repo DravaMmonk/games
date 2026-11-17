@@ -6,7 +6,7 @@ import { trayMembers } from './index.js'
 
 /**
  * [{ tray (null: none), types: [type] }]. `types` the parts of parts.json; `trays` game.json's; `at(type)` the level
- * that first gives a part (null: the course does not); `order` the levels in play order; `primitives` game.json's,
+ * that first gives a part (null: the course does not); `order` the levels in play order; `primitives` the tagged starting parts,
  * at hand from the start.
  */
 export function partGroups(types, { trays = null, at = () => null, order = [], primitives = [], partOf = id => id } = {}) {

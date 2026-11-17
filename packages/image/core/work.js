@@ -71,8 +71,7 @@ function playable({ intro: _, play, ...source }, kit, keep, items) {
 
 /**
  * content: { eras (games/DESIGN.md 2: each with its chapter { title, label, question }), levels (in any order: the
- * eras give the order), views: { view: level id } the level each way of drawing a picture comes with (pixels is there
- * from the start), primitives (the parts no circuit builds), trays: { tray: { name, desc, items } } (../../course.js trays),
+ * eras give the order), levels with opensViews (pixels is there from the start), trays: { tray: { name, desc, items } } (../../course.js trays),
  * replaces: { part: [part] } the parts a part supersedes
  * once met }, mode: 'notes' for a notes edition (every level open, no audit).
  * A level is a list of tasks (../../engine/tasks.js), each read as the level with the task's fields over it. A level
@@ -90,7 +89,7 @@ function playable({ intro: _, play, ...source }, kit, keep, items) {
 export const imageWorks = (config) => readWorks(config, prepareImageWorks)
 
 export function* prepareImageWorks(config) {
-  const { eras, levels, views = {}, partDefs } = config
+  const { eras, levels, partDefs } = config
   const plan = courseLayout(config)
   // Register every package implementation before reading tasks that can place it.
   const content = Object.fromEntries(levels.map((level) => [level.id, level]))
@@ -153,9 +152,11 @@ export function* prepareImageWorks(config) {
   const { requires } = plan
 
   // Pictures start out drawn as pixels; every other way of drawing them comes in with a level, as parts do.
+  const allLevels = config.registries?.level ?? content
+  const viewLevels = config.standalone ? [] : plan.order.filter(id => allLevels[id]?.opensViews?.length)
   const viewsAt = (id) => ({
-    shows: ['image/pixels', ...Object.keys(views).filter((view) => views[view] === id || course.before(views[view], id))],
-    freshViews: Object.keys(views).filter((view) => views[view] === id),
+    shows: ['image/pixels', ...viewLevels.filter(level => level === id || course.before(level, id)).flatMap(level => allLevels[level].opensViews)],
+    freshViews: viewLevels.includes(id) ? allLevels[id].opensViews : [],
   })
 
   // What a task unlocks: the flags its level names, and the parts it publishes.

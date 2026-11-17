@@ -5,7 +5,7 @@ import { copyWithoutTextKeys, freeName } from 'kernel/view'
 import { iconOf } from '../parts/icons.js'
 
 import { partGroups } from '../../core/studio-parts.js'
-import { builtPart, partCreationOptions } from '../../core/index.js'
+import { builtPart, partCreationOptions, primitiveParts } from '../../core/index.js'
 
 import { partReference } from '../../core/index.js'
 
@@ -48,7 +48,7 @@ export default function PartsList({ content, vocabulary, namespace, game, levelO
     }
     onSelect({ part: type })
   }
-  const items = partGroups(parts.map(([id]) => id), { at: (type) => earned.get(type) ?? null, order, primitives: content.primitives ?? [] })[0]?.types ?? []
+  const items = partGroups(parts.map(([id]) => id), { at: (type) => earned.get(type) ?? null, order, primitives: primitiveParts(content) })[0]?.types ?? []
 
   const row = (type) => {
     const def = file.parts[type]

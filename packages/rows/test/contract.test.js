@@ -9,7 +9,7 @@ import { register, equationPlay, runtime, readSum } from '../core/index.js'
 
 const task = { id: 'sample/task', play: 'rows/equation', brief: 'Make five.', rows: [{ total: 5, chips: [0, 2, 3], reference: '2 + 3', naive: '0 + 3' }] }
 const content = {
-  id: 'sample', title: 'Sample', eras: [], primitives: [], trays: {},
+  id: 'sample', title: 'Sample', eras: [], trays: {},
   standalone: { level: 'sample/one' }, glossary: { groups: [], entries: [] },
   partDefs: { parts: {} }, registries: { 'circuit/part': {} },
   levels: [{ id: 'sample/one', title: 'One', tasks: [task] }],

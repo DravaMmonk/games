@@ -6,7 +6,7 @@ import { tidyImageBoard } from '../core/engine/board.js'
 
 const text = (s) => ({ zh: s, en: s })
 const course = imageWorks({
-  primitives: ["image/arith"],
+  registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ["image/arith"] } } },
   eras: [{ id: 0, levels: [{ id: 'sample' }], chapter: { title: text('c'), label: text('l'), question: text('q') } }],
   levels: [{ id: 'sample', title: text('sample'), after: text('a'), intro: [{ t: text('i') }], tasks: [{ id: 'sample', kind: 'image/graph', brief: text('b'), scene: "image/filter", setup: { target: "image/same" }, tests: [{ label: text('t'), in: "image/disk" }] }] }],
 })

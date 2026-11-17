@@ -9,7 +9,7 @@ import { runtimeOf } from "../../../../games/kit/engine/runtime.js"
 
 const sample = () => withProgressFixture({
   partDefs: { parts: { base: { settings: { border: { control: 'select', options: [{ value: 'edge' }] } }, stages: [{ id: 'base-wrap', settings: { border: { options: [{ value: 'edge' }, { value: 'wrap' }] } } }] } } },
-  id: 'sample', domain: 'irrelevant', primitives: ['base', 'local'],
+  id: 'sample', domain: 'irrelevant', registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['base', 'local'] } } },
   replaces: { built: ['base'] },
   trays: { tools: { includeUnlisted: true, items: ['base', 'local', 'built'] } },
   eras: [{ id: 'chapter', levels: [{ id: 'first' }, { id: 'next' }], links: [{ from: 'first', to: 'next' }] }],

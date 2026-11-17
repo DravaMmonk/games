@@ -1,0 +1,10 @@
+{
+  "values": {
+    "add": [
+      "table/msum",
+      "table/const",
+      "table/pass",
+      "table/block"
+    ]
+  }
+}

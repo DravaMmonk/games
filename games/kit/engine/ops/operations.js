@@ -114,21 +114,11 @@ export const OPERATIONS = {
     apply(ws, { level }, { vocabulary }) {
       const data = levelOf(ws, level)
       const references = levelRefs(ws, vocabulary, level).filter((r) => r.file !== `levels/${level}.json`)
-      const placement = ({ file, path, how }) => how === 'field' && (file === 'game.json'
-        ? ['optional', 'skippable'].includes(path[0])
-        : /^(tags|relations|sections|chapters)\//.test(file))
+      const placement = ({ file, how }) => how === 'field' && /^(tags|relations|sections|chapters)\//.test(file)
       const others = references.filter((r) => !placement(r))
       if (others.length) fail(`${level} is still named at ${others.map((r) => `${r.file} ${showPath(r.path)}`).join(', ')}`)
       const inverse = [{ op: 'level.add', level, data }]
       const matches = (id) => id === level || id === `${ws.packageId}/${level}`
-      if (references.some((r) => r.file === 'game.json')) {
-        for (const field of ['optional', 'skippable']) if (ws.game[field]) {
-          const old = ws.game[field]
-          const value = old.filter((id) => !matches(id))
-          ws.game = { ...ws.game, [field]: value }
-          inverse.push({ op: 'game.set', path: [field], value: old })
-        }
-      }
       for (const [chapter, old] of ws.contentObjects.chapter ?? []) if (old.levels.some(matches)) {
         ws.contentObjects.chapter.set(chapter, { ...old, levels: old.levels.filter(id => !matches(id)), ...(old.rows && { rows: old.rows.map(row => row.map(id => matches(id) ? null : id)) }) })
         inverse.push({ op: 'chapter.put', chapter, data: old })

@@ -155,7 +155,7 @@ test('conformance: the level that brings a point links its entry, opened there',
   const bp = base()
   const ids = ['1-1', '1-2', '1-3', '1-4', '1-5']
   const level = (id, intro = 'no link') => ({ id, title: t(id), adds: bp.eras[0].series.flatMap((x) => x.slots).find((s) => s.id === id).adds, tasks: [{ id, brief: t(intro) }], ...(id === '1-4' ? { builds: { type: 'counter' } } : {}) })
-  const content = (levels, entries) => ({ levels, eras: erasOf(bp), primitives: ['reg', 'add'], glossary: { entries } })
+  const content = (levels, entries) => ({ levels, eras: erasOf(bp), registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['reg', 'add'] } } }, glossary: { entries } })
   const spec = { course: { index: new Map(), levels: [] } }
   const terms = (c) => conformance(bp, c, spec).filter((f) => f.rule === 'bp-term' || f.rule === 'bp-entry').map((f) => `${f.rule} ${f.at}`)
   assert.deepEqual(terms(content(ids.map((id) => level(id)), [{ id: 'memory', at: '1-2' }])), ['bp-entry memory', 'bp-term 1-1', 'bp-entry count', 'bp-term 1-4'])

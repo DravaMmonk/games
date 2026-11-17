@@ -18,6 +18,15 @@ import { mapBlueprintNames } from './board/text.js'
 import { progressFieldsProblems } from './progress-fields.js'
 import { partFileSchema } from './parts/schema.js'
 
+// Presentation-only part fields are validated as objects and do not affect board checks or saved work.
+function puzzleParts(parts, vocabulary) {
+  const schema = partFileSchema(vocabulary).fields.parts.of
+  return Object.fromEntries(Object.entries(parts).map(([id, part]) => {
+    const fields = shapeAt(schema, part, [], { vocabulary })?.fields
+    return [id, Object.fromEntries(Object.entries(part).filter(([key]) => fields?.[key]?.section !== 'read'))]
+  }))
+}
+
 /** Package-owned qualification of references embedded in circuit works and grant fields. */
 export function circuitNames({ name, vocabulary, objects = {}, parts = new Set(), partRules = new Set(), context }) {
   parts = new Set([...parts, ...Object.keys(objects['circuit/part'] ?? {}).map(id => id.split('/').at(-1))])
@@ -121,7 +130,7 @@ export const partMeaning = {
   validate({ content, vocabulary }) {
     if (content.partDefs !== undefined) {
       const required = progressFieldsProblems(content, vocabulary)
-      const parts = Object.fromEntries(Object.entries(content.partDefs.parts).map(([id, { stages: _stages, ...part }]) => [id, part]))
+      const parts = Object.fromEntries(Object.entries(puzzleParts(content.partDefs.parts, vocabulary)).map(([id, { stages: _stages, ...part }]) => [id, part]))
       const tasks = taskIdsOf(content.levels)
       const problems = [...required, ...partProblems({ parts }, vocabulary, { tasks })]
       return problems.length ? problems : implementationProblems(content.partDefs)
@@ -154,7 +163,11 @@ export const partMeaning = {
       ...(edge.from === edge.to ? [{ at: `relations/${name}`, says: 'a part cannot replace itself' }] : []),
     ])
   },
-  stamp: ({ content, plain }) => plain(content.partDefs ?? null, partFileSchema(contentSchemas.get(content))),
+  stamp({ content, plain }) {
+    const vocabulary = contentSchemas.get(content)
+    const file = content.partDefs ? { parts: puzzleParts(content.partDefs.parts, vocabulary) } : null
+    return plain(file, partFileSchema(vocabulary))
+  },
 }
 
 export const trayMeaning = {

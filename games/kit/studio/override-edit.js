@@ -1,5 +1,5 @@
 // What a layer writes when it overrides a package's object from the studio (games/DESIGN.md 6.1, 2, 6.7). A game
-// overrides only copy and level relations: a relation by the edges it adds and removes.
+// overrides copy, level relations and tag membership. Collections use add/remove patches.
 import { splitTagKey } from './objects-edit.js'
 import { edgesPatch, objectOverride, setPatch } from './collection-edit.js'
 

@@ -80,7 +80,7 @@ export function checkCircuitTasks(circuit, { run, entries, failure = () => '', m
   const { LEVELS, course, board } = circuit
   const noted = (ref) => (board.ticks ? `, ${ref.runs.reduce((n, r) => n + (r.ticks?.length ?? 1), 0)} ticks` : '')
   const built = new Set(LEVELS.flatMap((L) => L.unlocks))
-  const out = [...circuit.wrong, ...viewsProblems(circuit.views)].map((text) => ({ text, fail: true }))
+  const out = circuit.wrong.map((text) => ({ text, fail: true }))
   // The values a level's introduction pages and pass text show, its own and its tasks'.
   for (const level of LEVELS) {
     const shows = [...(level.intro ?? []).map((p, k) => [p.show, `intro[${k}].show`]), [level.afterShow, 'afterShow'], ...level.tasks.flatMap((task, j) => (task.intro ?? []).map((p, k) => [p.show, `tasks[${j}].intro[${k}].show`]))]
@@ -126,8 +126,7 @@ export function checkCircuitTasks(circuit, { run, entries, failure = () => '', m
       ref.runs.forEach((r, j) => {
         if (r.error || r.fail) problems.push(`the answer fails ${where(j)}${failure(r) ? ` ${failure(r)}` : ''}`)
       })
-      const views = { ...circuit.views, ...task.views }
-      problems.push(...viewsProblems(task.views), ...rowProblems(task.results, entries({ task, test: all.tests[0], run: ref.runs[0], sample: null }), views))
+      problems.push(...viewsProblems(task.views), ...rowProblems(task.results, entries({ task, test: all.tests[0], run: ref.runs[0], sample: null }), task.views))
       if (checked.starter?.ok === false) problems.push('the board it opens on passes')
       if (checked.empty?.ok === false) problems.push('the empty board passes')
       if (task.carry && !checkWorks(inspect, { starter: circuit.opening(task) }).starter.ok) problems.push(`the board it carries on from (${task.carry}) passes as it is`)

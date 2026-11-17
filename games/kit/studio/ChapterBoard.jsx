@@ -3,7 +3,7 @@
 //
 // Order: its levels — an ordered list, the play order — one numbered column, reordered by dragging or Alt+↑/↓ and
 // taken out; each change is at once an operation of the changeset, shown before the preview comes back. Links: the chapter's levels on the wiring board with the prerequisites the packages' relations give them; a level
-// picked can be marked optional or skippable (the course's own lists). Map: the chapter's own `rows` (MapEditor.jsx),
+// picked can be marked optional or skippable (the game's level tags). Map: the chapter's own `rows` (MapEditor.jsx),
 // those the map's rules give (../course.js mapRows) until it has its own; each move is at once an operation of the
 // changeset, shown before the preview comes back (pending-view.js), beside the chapter as the player's map draws it
 // (MapPreview.jsx).
@@ -18,9 +18,10 @@ import MapEditor from './MapEditor.jsx'
 import CopyTable from './CopyTable.jsx'
 import MapPreview from './MapPreview.jsx'
 import { pendingValue, writtenBy } from './pending-view.js'
-import { addEdgeOps, removeEdgeOps } from './override-edit.js'
+import { LEVEL_MARKS } from '../engine/tag-identity.js'
+import { addEdgeOps, removeEdgeOps, tagOverrideOps } from './override-edit.js'
 import { usePref } from './prefs.js'
-import { objectsOf, tagByRef, tagMembers, tagName } from './objects-edit.js'
+import { objectsOf, tagByRef, tagKey, tagMembers, tagName } from './objects-edit.js'
 import { chapterName, chapterOrderRefusal, chapterSet, chapterUnset, importLevels } from './course-edit.js'
 import { reordered } from './list-order.js'
 import { useDragOrder } from './useDragOrder.js'
@@ -28,7 +29,7 @@ import { useDragOrder } from './useDragOrder.js'
 const MODES = [['order', '顺序', 'Order'], ['links', '依赖', 'Links'], ['map', '路线图', 'Map']]
 
 /**
- * `course`: the course as game.json writes it (`chapters`, `optional`, `skippable`); `content`: as it plays. `ops`:
+ * `course`: the authored chapters; `content`: as it plays. `ops`:
  * the pending changeset; `previewOps`: the operations the content was previewed with; `applying`: being written.
  */
 export default function ChapterBoard({ content, course, e, at, pending, ops = [], previewOps = [], applying = false, vocabulary = null, names = null, places = [], onSelect, onEdit, onOps }) {
@@ -111,7 +112,7 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
       </>}
       {played && mode !== 'order' && (mode === 'map'
         ? <ChapterMap content={content} chapter={chapter} played={played} e={e} at={at} ops={ops} previewOps={previewOps} applying={applying} titleOf={titleOf} onSelect={onSelect} onOps={onOps} />
-        : <ChapterLinks content={content} course={course} played={played} e={e} at={at} pending={pending} titleOf={titleOf} describe={describe} onSelect={onSelect} onEdit={onEdit} onOps={onOps} />)}
+        : <ChapterLinks content={content} played={played} e={e} at={at} pending={pending} titleOf={titleOf} describe={describe} onSelect={onSelect} onOps={onOps} />)}
     </article>
   )
 }
@@ -124,7 +125,7 @@ const refusal = (reason) => ({
   tagged: tr('这条先修来自标签，要在包里改。', 'This prerequisite comes through a tag: change it in the package.'),
 })[reason]
 
-function ChapterLinks({ content, course, played, e, at, pending, titleOf, describe, onSelect, onEdit, onOps }) {
+function ChapterLinks({ content, played, e, at, pending, titleOf, describe, onSelect, onOps }) {
   const ids = useMemo(() => eraLevels(played), [played])
   const links = useMemo(() => (played.links ?? []).filter((link) => !link.fromGame).map((link) => ({ ...link, source: 'course' })), [played])
   const requires = useMemo(() => new Map(ids.map((id) => [id, links.filter(({ to }) => to === id).map(({ from }) => from)])), [ids, links])
@@ -157,10 +158,11 @@ function ChapterLinks({ content, course, played, e, at, pending, titleOf, descri
     if (linkKey(edge) === highlight) reset()
     return null
   }
-  const mark = (list, on) => {
-    const now = course[list] ?? []
-    const next = on ? [...now, selected] : now.filter((id) => id !== selected)
-    onEdit(next.length ? { op: 'game.set', path: [list], value: next } : { op: 'game.unset', path: [list] })
+  const mark = (flag, on) => {
+    const key = tagKey('level', LEVEL_MARKS[flag])
+    const now = tagMembers(content, key)
+    const next = on ? [...now, selected] : now.filter(id => id !== selected)
+    onOps(tagOverrideOps(content, layer, key, next))
   }
   const entry = played.levels.find(({ id }) => id === selected)
   const badges = (id) => {
@@ -172,8 +174,8 @@ function ChapterLinks({ content, course, played, e, at, pending, titleOf, descri
       <div className="arrange-actions">
         {wire ? <strong title={`${describe(wire.from)} → ${describe(wire.to)}`}>{describe(wire.from)} → {describe(wire.to)}</strong> : entry ? <>
             <strong>{describe(selected)}</strong>
-            <label><input type="checkbox" checked={(course.optional ?? []).includes(selected)} disabled={pending} onChange={(ev) => mark('optional', ev.target.checked)} />{tr('可选', 'Optional')}</label>
-            <label><input type="checkbox" checked={(course.skippable ?? []).includes(selected)} disabled={pending} onChange={(ev) => mark('skippable', ev.target.checked)} />{tr('可跳过', 'Skippable')}</label>
+            <label><input type="checkbox" checked={Boolean(entry.optional)} disabled={pending} onChange={(ev) => mark('optional', ev.target.checked)} />{tr('可选', 'Optional')}</label>
+            <label><input type="checkbox" checked={Boolean(entry.skippable)} disabled={pending} onChange={(ev) => mark('skippable', ev.target.checked)} />{tr('可跳过', 'Skippable')}</label>
           </> : null}
       </div>
       <ArrangementBoard board={board} titleOf={titleOf} badges={badges} describe={describe} active={selected} wire={highlight} pending={pending} isExternal={(id) => !ids.includes(id)} refuse={refuse}

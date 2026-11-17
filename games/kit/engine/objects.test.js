@@ -10,14 +10,14 @@ import { referenceResolver, expandReferences, relationOrder, importLevelOrder } 
 const assemble = options => assembleContent({ ...options, schemas: circuitFixtureSchema(options.schemas) })
 
 const vocabulary = defineVocabulary({ module: 'toy', version: 1, kinds: {},
-  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), primitives: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))), ...COURSE_OPTIONS }),
+  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
   level: S.obj({ title: S.text(), adds: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))) }),
 })
 const source = () => ({ id: 'toy', schemas: vocabulary,
-  game: { vocabulary: 1, title: 'Toy', chapters: [{ id: 'main', levels: ['toy/start', 'toy/a', 'toy/b', 'toy/c', 'toy/end'], rows: [['toy/a'], ['toy/b', 'toy/c']] }], optional: ['#toy/extras'] },
+  game: { vocabulary: 1, title: 'Toy', chapters: [{ id: 'main', levels: ['toy/start', 'toy/a', 'toy/b', 'toy/c', 'toy/end'], rows: [['toy/a'], ['toy/b', 'toy/c']] }] },
   levels: ['start', 'a', 'b', 'c', 'end'].map((id) => [id, { title: id }]),
   glossary: { groups: [], entries: [] },
-  tags: [['core', { kind: 'level', title: 'Core', values: ['a', '#extras', 'b'] }], ['extras', { kind: 'level', values: ['c'] }]],
+  tags: [['core', { kind: 'level', title: 'Core', values: ['a', '#extras', 'b'] }], ['extras', { kind: 'level', values: ['c'] }], ['kernel/optional', { kind: 'level', values: ['#toy/extras'] }, 'kernel']],
   relations: [['path', { kind: 'requires', edges: [{ from: 'a', to: 'b' }, { from: 'start', to: '#core' }, { from: '#core', to: 'end' }] }]],
 })
 
@@ -62,7 +62,6 @@ test('checks reject separate relation cycles, duplicate chapter membership, inva
 test('partial courses restrict both ends of loaded level relations', () => {
   const input = source()
   input.game.chapters = [{ id: 'partial', levels: ['toy/a', 'toy/b'] }]
-  input.game.optional = []
   const content = assemble(input)
   assert.deepEqual(content.relationEdges.requires, [{ from: 'toy/a', to: 'toy/b' }])
   assert.deepEqual(checkContent({ vocabulary }, content), [])
@@ -134,7 +133,6 @@ test('chapter rows retain authored empty positions', () => {
   const input = source()
   input.game.chapters[0].levels = ['toy/a', 'toy/b']
   input.game.chapters[0].rows = [['toy/a'], ['toy/b', null]]
-  input.game.optional = []
   const content = assemble(input)
   assert.deepEqual(content.eras[0].rows, [['toy/a'], ['toy/b', null]])
   assert.deepEqual(checkContent({ vocabulary }, content), [])

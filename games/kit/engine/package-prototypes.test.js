@@ -64,7 +64,7 @@ test('a numeric library works in packages using image and table boards, with no 
     installTableFixture(root)
     const imageVocabulary = layerVocabulary(resolveLayers({ package: 'image', closure: true, root, unlocked: true }).layers)
     writeContentFixture(root, 'arithmetic', { game: { vocabulary: 1 }, glossary: { groups: [], entries: [] }, partDefs: { parts: arithmetic }, levels: {} }, circuitVocabulary)
-    const common = { title: text('Sample'), vocabulary: 1, primitives: ['arithmetic/add'] }
+    const common = { title: text('Sample'), vocabulary: 1 }
     writeContentFixture(root, 'picture', {
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {
         title: text('Copy'), after: text('Same image.'), intro: [], tasks: [{ id: 'copy', play: 'image/graph',

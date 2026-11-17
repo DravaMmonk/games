@@ -1,0 +1,16 @@
+{
+  "values": {
+    "add": [
+      "table/msum",
+      "table/mmin",
+      "table/mmax",
+      "table/many",
+      "table/const",
+      "table/pass",
+      "table/block",
+      "table/add",
+      "table/not",
+      "table/mul"
+    ]
+  }
+}

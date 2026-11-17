@@ -6,8 +6,6 @@ export const COURSE_FIELDS = {
 }
 export const COURSE_OPTIONS = {
   encyclopedia: S.opt(S.list(S.str({ reference: 'section' }))),
-  optional: S.opt(S.list(S.level())),
-  skippable: S.opt(S.list(S.level())),
 }
 
 export const CHAPTER = S.obj({

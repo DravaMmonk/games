@@ -1,0 +1,27 @@
+{
+  "values": {
+    "add": [
+      "vision-complete/const",
+      "vision-complete/add",
+      "vision-complete/sub",
+      "vision-complete/mul",
+      "vision-complete/arith",
+      "vision-complete/merge",
+      "vision-complete/sqrt",
+      "vision-complete/exp",
+      "vision-complete/globalMax",
+      "vision-complete/fqApply",
+      "vision-complete/lrnConst",
+      "vision-complete/learn3",
+      "vision-complete/lrnConv",
+      "vision-complete/warp",
+      "vision-complete/zeroUp",
+      "vision-complete/argmin4",
+      "vision-complete/dg-encode",
+      "vision-complete/dg-decode",
+      "vision-complete/dg-mu",
+      "vision-complete/dg-sigma",
+      "vision-complete/dg-sample"
+    ]
+  }
+}

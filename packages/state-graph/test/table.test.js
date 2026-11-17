@@ -90,7 +90,7 @@ test('robot blueprints refuse a second wire, sink sources and unavailable sensor
 
 test('a grouped merger stays available to blueprints under each unlocked model', () => {
   const content = readStarter(resolve(import.meta.dirname));
-  content.primitives = [...content.primitives, 'table/mmin'];
+  content.registries.tag['circuit/part:circuit/primitives'].values.push('table/mmin');
   const merge = content.levels.find((level) => level.id === 'starter/merge');
   merge.adds = [...merge.adds, 'table/mmin'];
   const course = tableWorks(content);
@@ -133,7 +133,7 @@ const t = s => ({ zh: s, en: s });
 const counterSolution = ['k = table/const[value=1]()', 'g = table/pass(facts.start, k)', 'm = table/msum(view.up, view.left, g)', 'cell <- m'];
 const counterPorts = [{ 'state-graph/way': { n: 1, sensor: 'up' } }, { 'state-graph/way': { n: 2, sensor: 'left' } }, { 'state-graph/start': { sensor: 'start' } }];
 const twoLevels = () => ({
-  id: 't', title: t('t'), primitives: ['table/msum', 'table/const', 'table/pass', 'table/block'],
+  id: 't', title: t('t'), registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['table/msum', 'table/const', 'table/pass', 'table/block'] } } },
   partDefs: { parts: { counter: { name: t('counter'), desc: t('d'), inputs: [{ name: 'up', type: 'circuit/number' }, { name: 'left', type: 'circuit/number' }, { name: 'start', type: 'circuit/boolean' }], outputType: 'circuit/number', inside: [{ id: 'base', reference: { play: 'state-graph/circuit', world: 'state-graph/grid', robot: 'state-graph/scout', facts: ['start'], solution: counterSolution, ports: counterPorts } }] } } },
   eras: [{ id: 'e', machine: 'state-graph/scout', levels: [{ id: 'build' }, { id: 'reuse' }], links: [{ from: 'build', to: 'reuse' }], chapter: { title: t('e'), desc: t('e') } }],
   levels: [

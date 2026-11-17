@@ -25,7 +25,7 @@
 
 **包提供对象，游戏编排课程。** 关卡设计在 `packages/<包>/` 里做：关卡、元件、词条各自独立，标签把同种对象收成集合，关系写先修和元件取代。标签没有教学含义，也不规定一关只能属于一个组；同一关可以出现在几个标签里。包之间可以依赖和覆盖，基础元件可以放进库包共用（第 6.1 节）。
 
-**章是游戏层的内核对象。** 游戏配置 `game.json` 的 `chapters` 是 `list<chapter>`，给出章的全名和顺序。每章独立写在 `games/<游戏>/chapters/<章>.json`，全名为 `@<游戏>/<章>`。章的 `levels: list<level>` 保存具体关卡全名，`rows` 保存路线图。章文案和现有 `machine` 字段随章保存。原本用数字 id 编号的章增加 `number`，保留现有地图编号。游戏配置的 `encyclopedia: list<section>` 保留百科分组的显示顺序，分组内顺序取其 `values`。`game.json` 也保存 `optional`、`skippable`、开局配置及工作单。导入标签会一次性展开并写入章的列表，之后由游戏维护顺序。
+**章是游戏层的内核对象。** 游戏配置 `game.json` 的 `chapters` 是 `list<chapter>`，给出章的全名和顺序。每章独立写在 `games/<游戏>/chapters/<章>.json`，全名为 `@<游戏>/<章>`。章的 `levels: list<level>` 保存具体关卡全名，`rows` 保存路线图。章文案和现有 `machine` 字段随章保存。原本用数字 id 编号的章增加 `number`，保留现有地图编号。游戏配置的 `encyclopedia: list<section>` 保留百科分组的显示顺序，分组内顺序取其 `values`。可选关和可跳过关由游戏分别加入内核的 `kernel/optional`、`kernel/skippable` 关卡标签。导入标签会一次性展开并写入章的列表，之后由游戏维护顺序。
 
 ```json
 // games/qed/game.json
@@ -40,7 +40,7 @@
 
 **先修来自关系。** 包的 `relations/<名>.json` 声明 `requires`；一条边两端都在课程里才生效。游戏要改变它，就覆盖这份关系，不另写一套依赖图。普通前置要求通过；来源关可跳过时，普通边改等它的前置，带 `required: true` 的边仍要求通过来源关。跨游戏边写 `{ "from": "qed/table", "game": "qed", "to": "…" }`，读取来源游戏的通过记录。参考解所需能力也参与技术依赖检查。关内任务的 `optional` 和课程的可选关分开。
 
-游戏只检查它选入的关；没选入的关和在那里打开的百科不进入这款游戏。托盘上的元件或阶段有没有关带来，只在完整选入相关包的游戏上判断。`primitives`、`views`、`words`、`open` 等开局设置归游戏；`adds`、`local` 归关卡或任务，`replaces` 归包的关系。游戏只能覆盖文案和关卡关系，不能改关卡内容、元件、阶段、标签或托盘；行为不同就建一个依赖原包的新包。
+游戏只检查它选入的关；没选入的关和在那里打开的百科不进入这款游戏。托盘上的元件或阶段有没有关带来，只在完整选入相关包的游戏上判断。游戏用 `circuit/primitives` 标签选开局原始元件，用 `words` 选一套默认词表。`adds`、`local` 归关卡或任务，`replaces` 归包的关系。游戏可覆盖文案、先修边和标签成员。关卡机制、元件、阶段和托盘由包维护。
 
 **包没有课程。** 它可以只有元件，也可以只有依赖别包的关卡。包检查逐关独立运行；单关试玩使用这一关的托盘和任务，没有章、解锁和进度。电路玩法不写托盘时提供全部元件。安装进度包时可以使用元件的完整阶段。内核的 `package-play.js` 提供临时单关运行壳，不生成可保存的包课程。
 
@@ -103,7 +103,7 @@
 |---|---|---|
 | 传感器 | 关卡给电路的一个有名字的值：一张测试图、机器人看到的一格、脚下格子的一条信息 | `packages/circuit/core/board/sensors.js` 的统一形状 `{ id, label, short?, type, family?, named? }` |
 | 输入元件 | 电路板上固定的输入，按传感器的种类分（《状态之图》：视野、本格信息），不能放也不能删。元件一开始没有输出口；学习者点一个传感器（在元件上，或在输入窗口里），元件就多一个读它的输出口，再点一下就去掉 | `packages/table/core/model/parts.js` 的输入元件（读到的传感器存在 `params.picks`）；kit 的 `parts.outputs` 支持一个元件多个输出 |
-| 原始元件 | 课程起点，内部不在本专题关心的范围 | 课程声明的 `primitives`（`games/kit/course.js`） |
+| 原始元件 | 课程起点，内部不在本专题关心的范围 | 游戏贡献给 `circuit/primitives` 的 `circuit/part` 成员 |
 | 中层元件 / 封装元件 | 学习者搭出、解锁后当一个元件用，打开能看里面 | `parts/<名>.json` 的 `inside` 存自带参考作品的版本，任务通过 `publishes` 声明它发布的元件版本（课程钩子 `needs` / `builds`）；`packages/circuit/core/boards.js` 的 `packed` 把通关时记下的电路当一个元件跑 |
 | 规格 | 传感器、输出、测试、隐藏测试 | 各游戏的关卡数据（数据游戏：`levels/<id>.json`，字段由内核和包声明的 schema 校验） |
 | 参考解 / naive 解 | 证明规格可解 / 证明直觉解法不够 | 数据游戏写成蓝图文本；`npm run check` 运行它们（包的 `check` 和运行时判定） |
@@ -180,7 +180,7 @@
 
 问题保留 `rule`、`layer`、`kind`、`target`、`member?`、`reason`、`at`、`says`，另有 `object: { kind, name, member?, override? }` 与 `path`。存在性问题的 `rule` 为 `exists`，`reason` 为 `missing`、`ambiguous` 或 `undeclared dependency`。`name` 是对象全名，标签带成员类型；覆盖位置设 `override: true`，覆盖目标本身的 `path` 为空串。字段路径如 `tasks[0].solution`；配置位置如 `{ kind: "package", name: "example" }` 与 `uses[0]`。同一原始字段只报告一次，不同对象、成员类型和字段分别报告。Studio 直接使用结构化位置。
 
-在 `trace-viewer/` 运行 `npm run check -- <游戏>` 或 `npm run check -- --package <包>`。包逐关独立检查，游戏另查编排和进度。省略目标时查全部游戏及未被游戏选用的包。空内容工作区也能执行。技术问题可记入游戏 `game.json` 的 `open` 工作单，新问题和已解决而未移除的项目使检查失败；教学建议由评审处理。
+在 `trace-viewer/` 运行 `npm run check -- <游戏>` 或 `npm run check -- --package <包>`。包逐关独立检查，游戏另查编排和进度。省略目标时查全部游戏及未被游戏选用的包。空内容工作区也能执行。技术问题由检查报告，教学建议由评审处理。
 
 ### 5.1 关卡开发规范
 
@@ -305,7 +305,7 @@ npm run deps -- upgrade --game qed [package]
 
 Studio 从工具元数据读取范围、锁定、manifest 与兼容性。包记录含 `compatibility` 的 `type`、`changes`、`added`、`previous`、`next`、`proposed`、`affected`、`behaviorStatus`；预览只比较结构，行为状态为 `pending-publication`。
 
-**游戏配置与首页。** 每款游戏的配置写在 `game.json`。包通过词汇表声明自己添加的配置字段，例如 `image` 的 `box` 和 `power`，以及 `state-graph` 的 `borrow`。首页构建按 `games/hub-order.json` 的游戏 id 顺序读取配置，按章计算关卡数，卡片显示 `title`、`topic`、`lede`、`author` 和 `art`。页面标题、搜索引擎描述和标签页图标分别取 `title`、`description` 和 `icon`。`dev` 给卡片加开发中标记，`hidden` 隐藏卡片，游戏仍会构建。入口文案用 `@game.*` 键，写在游戏的语言表里。
+**游戏配置与首页。** 每款游戏的 `game.json` 保存入口元数据（`title`、`author`、`kicker`、`lede`、`topic`、`description`、`hero`、`art`、`icon`、`dev`、`hidden`）、组装配置（`kernel`、`packages`、`chapters`、`encyclopedia`）和单值选择（`words`、`power`、`box`、`mode`）。首页构建按 `games/hub-order.json` 的游戏 id 顺序读取配置，按章计算关卡数，卡片显示 `title`、`topic`、`lede`、`author` 和 `art`。页面标题、搜索引擎描述和标签页图标分别取 `title`、`description` 和 `icon`。`dev` 给卡片加开发中标记，`hidden` 隐藏卡片，游戏仍会构建。入口文案用 `@game.*` 键，写在游戏的语言表里。
 
 ### 6.2 对象类型、标签与新建对象
 
@@ -317,7 +317,7 @@ Studio 从工具元数据读取范围、锁定、manifest 与兼容性。包记�
 
 **标签是带成员类型的无序集合。** 每个对象类型都能打标签。标签成员可含对象或同类型的 `#标签`，支持嵌套与成环检查；身份是「成员类型 + 全名」。它用于分组浏览、批量引用和被代码按名字读取的标记。托盘、百科分组和章分别保存自己的属性与有序列表。Studio 分组内成员按先修顺序、再按名字排列。
 
-代码读者登记标签全名与成员类型。内核登记 `kernel/studio-left`，成员类型为 `kind`，`kernel` 是保留命名空间。各包在 `overrides/kernel/tags/kind/studio-left.json` 贡献默认资源类型。默认顺序为内核类型在前，其余按全名；集合为空时列出有对象的全部类型。个人选择保存在浏览器。标签文案用 `@tag.<名>.title`、`@tag.<名>.desc`。
+代码读者登记标签全名与成员类型。内核登记 `kernel/studio-left`，成员类型为 `kind`，`kernel` 是保留命名空间。各包在 `overrides/kernel/tags/kind/studio-left.json` 贡献默认资源类型。默认顺序为内核类型在前，其余按全名；集合为空时列出有对象的全部类型。个人选择保存在浏览器。游戏通过 `overrides/kernel/tags/level/{optional,skippable}.json` 和 `overrides/circuit/tags/circuit/part/primitives.json` 用 `{ "values": { "add": […] } }` 贡献成员。Studio 编排的关卡标记写回这些标签。标签文案用 `@tag.<名>.title`、`@tag.<名>.desc`。
 
 **新对象复制已有对象或从 schema 起步。** 来源可为本包或直接依赖，复制后分配新 id 与独立文案键。空白关卡、任务的最小玩法内容由包的核心提供。精选起点用普通标签组织。对象类型定义通过 `kind.put/set/remove` 编辑，实例通过 `object.put/set/remove` 编辑；变更类型时同时迁移受影响对象。
 
@@ -344,7 +344,7 @@ Studio 从工具元数据读取范围、锁定、manifest 与兼容性。包记�
 - 视图可调 `play(name, { component, preview, modes? })`、`editor(name, { type, ...editor })`、`display(name, display)`。核心与视图的玩法名配对；孤立视图报错，游戏实际用到只有核心的玩法时报错。主区组件接收 `{ task, work, onChange, state, context, phone }`，内核负责保存、检验与通关。Studio 可直接读取 `kernel.tables.playView` 的预览、编辑模式，以及 `editor`、`display` 表。
 - 新任务用 `play: "text/answer"` 选择玩法。`text` 是无元件依赖的最小插件：五关分别演示精确匹配、忽略大小写与空白、正则、带非负容差的数值、多个可接受答案。配置为 `answerRule`、`referenceAnswer`、`wrongAnswers`、可选 `choices`；检查参考答案通过且全部错误答案失败。正则每次创建，拒绝有状态的 `g`/`y` 标志。
 - `kinds/<名>.json` 的对象声明是 `{ folder, schema, declares, overrides, references?, relations?, text?, studio? }`。`schema` 使用 `S` 的 JSON 结构；`references` 列出允许引用它的对象类型；`relations` 将关系名映射为 `{ from, to }` 对象类型；合并方式由字段类型决定；`text` 列出文案字段路径（列表元素用 `*`）；`studio` 是 `{ name, icon, group? }`。对象类型全名 `<包>/<名>`，实例全名 `<包>/<对象名>`。实例标签在 `tags/<对象类型全名>/<名>.json`，覆盖沿声明目录写入 `overrides/<命名空间>/`。
-- 字段扩展用 `{ extends: "level" | "task", fields: { 字段: schema } }`，不能重定义已有字段。内核类型与保留目录不能用包声明替换。`kind.put/set/remove` 编辑定义，`object.put/set/remove` 用 `{ kind, name, data? }` 编辑声明实例；代码目录不属于操作集。
+- 字段扩展用 `{ extends: 关卡、任务或已声明对象类型, fields: { 字段: schema } }`，不能重定义已有字段。内核类型与保留目录不能用包声明替换。`kind.put/set/remove` 编辑定义，`object.put/set/remove` 用 `{ kind, name, data? }` 编辑声明实例；代码目录不属于操作集。
 - 代码读取的标签归读者所有。内核登记 `kernel/studio-left`，成员类型为 `kind`；`kernel` 是保留命名空间，不能用作包名。包用 `kernel.tag("包/名字", "成员类型")` 登记，登记表 `kernel.tables.tag` 使用相同的复合键。自己声明写 `tags/<成员类型>/<名>.json`，贡献给读者或依赖标签写 `overrides/<命名空间>/tags/<成员类型>/<名>.json`。所有对象类型的目标都必须由所属包声明或由代码登记；标签还须匹配成员类型。不存在的目标统一由存在性检查报告。标签文案键使用 `@tag.<名>.title`、`@tag.<名>.desc`，托盘继续使用 `@tray.`。新对象复制任意已有对象或从 schema 起步；精选起点可用普通标签。Studio 的左栏、标签选择与地址均保留成员类型。
 - `plugin-boundaries.js` 用 AST 同时检查静态 import、re-export、动态 import 和 require，拒绝计算出的导入路径。核心只能引用公开无界面接口与本核心，禁止界面库、JSX、CSS、Node I/O；视图可读本核心。`npm run check` 加载代码前检查，`lint:kit` 使用同一规则覆盖包代码。核心判定应保持确定性，只使用传入种子，不访问时间、文件或网络。
 
@@ -443,7 +443,7 @@ Studio 是操作集上的编辑器，按作者的职责分成三个工作区（`
 
 ### 6.8 元件、设置和阶段
 
-`packages/circuit/kinds/` 声明元件、托盘和 `replaces`。`packages/progress/kinds/` 给元件加 `stages`、给托盘加 `workshop`，并给关卡和任务加发放字段。声明可以通过 `extends` 扩展本包或直接依赖包的对象字段。元件标签使用 `tags/circuit/part/`，覆盖保留 `overrides/<namespace>/parts/`、`trays/` 及相应标签路径。
+`packages/circuit/kinds/` 声明元件、托盘和 `replaces`。`packages/progress/kinds/` 给元件加 `stages`、给托盘加 `workshop`，并给关卡和任务加发放字段。声明可以通过 `extends` 扩展本包或直接依赖包的对象字段。`state-graph` 给 `circuit/part` 扩展可选字段 `demoLevel`，选定元件箱演示所借用的关卡电路板。元件标签使用 `tags/circuit/part/`，覆盖保留 `overrides/<namespace>/parts/`、`trays/` 及相应标签路径。
 
 Studio 由对象类型声明生成资源列表，并挂载已选各包的编辑器与扩展控件。
 
@@ -528,7 +528,7 @@ Studio 由对象类型声明生成资源列表，并挂载已选各包的编辑�
 
 **手机浏览器缩放。** 原生双指缩放时，关卡外壳仍按布局视口定高，浏览器负责平移放大后的页面。正常比例下，软件键盘打开时，外壳用可视视口调整运行栏位置。
 
-**卡片多宽。** 共用编辑器按元件的口、区域、设置、内部作品和值视图的声明计算宽度。手机格位用 `game.json` 中这块板所选的整套托盘取样，包含声明过的自搭元件。没有命名托盘的课程用全课程的原语和声明过的自搭元件作为一套。以出现最多的宽度选列数，并列取窄的。列数在 2、3、4 中取放得下该宽度与列缝的最多列数，至少两列，每格的计算下限是一个端口触区加两侧内边距。在同一可用宽度下，同一托盘的每一关列数和格宽一致。框内沿用外层格线，框默认占整行。较窄的元件拉满一格，较宽的元件按声明宽度分格，端口也必须排得下。卡面句子最多两行，余下以省略号表示，详情显示全文。 手机格位、分组和新增元件共用整块占位检查。新增元件跳过已占的格位和分组的插入行。《状态之图》只提供桌面起始位置，手机格位由 `circuit` 按实际宽度分配。
+**卡片多宽。** 共用编辑器按元件的口、区域、设置、内部作品和值视图的声明计算宽度。手机格位用这块板所选的整套托盘取样，包含声明过的自搭元件。没有命名托盘的课程用全课程的原语和声明过的自搭元件作为一套。以出现最多的宽度选列数，并列取窄的。列数在 2、3、4 中取放得下该宽度与列缝的最多列数，至少两列，每格的计算下限是一个端口触区加两侧内边距。在同一可用宽度下，同一托盘的每一关列数和格宽一致。框内沿用外层格线，框默认占整行。较窄的元件拉满一格，较宽的元件按声明宽度分格，端口也必须排得下。卡面句子最多两行，余下以省略号表示，详情显示全文。 手机格位、分组和新增元件共用整块占位检查。新增元件跳过已占的格位和分组的插入行。《状态之图》只提供桌面起始位置，手机格位由 `circuit` 按实际宽度分配。
 
 **手机落位。** 新增、拖动和点选移动共用同一套放置逻辑。框落入空格时可收窄到目标行可用的列数，较宽的卡片会占用包含目标格的连续列。与落位重叠的元件顺延到后面的空格，其他元件保留原位。进出框时按作用域规则保留接线。受保护的元件和同一区域的交换仍遵守原有约束。
 
@@ -653,8 +653,8 @@ Studio 由对象类型声明生成资源列表，并挂载已选各包的编辑�
 
 **编排是内容**
 
-- `game.json` 的 `views` 给每种形状默认的显示方式（`{ "grid": ["numbers", "pixels"] }`），没写的形状用库里的第一种。
-- 任务的 `views`（同样的写法）换掉它写到的形状的默认显示方式，管这个任务的板上元件、详情和结果区。
+- 内核按形状提供默认显示方式。任务可用 `views` 为指定形状选择板上元件、详情和结果区的画法，例如 `{ "grid": ["numbers", "pixels"] }`。
+- `image` 声明关卡的 `opensViews` 列表。图像课程从像素视图起步，关卡及其后继可使用它开放的图像值视图。同一个视图由两关开放时检查报错。
 - 任务的一个输入或输出可以写 `view`：它的值起初画成哪种（在列出的里面才算）。在工作室的画面编辑模式里，换一个输入、输出元件或它结果行的显示方式，就是写它的 `view`（作为一条待定的变更），不记成设备上的选择。
 - **结果区**：包只说一个任务的结果区能显示哪些东西（`entries`：每个口一项，形状、给出的值、结果、应得），不排它们；任务的 `results` 是结果区的几行 `[{ of: 口, views?, label? }]`，按顺序。任务不写 `results` 时是包给的默认几行：输出；逐拍的板在前面再加进线和输入。
 - **电路玩法的显示配置。** `plays.js` 可用 `results: 'hidden'` 隐藏结果区，用 `output: 'target'` 让输出元件显示当前测试的应得值。颜色取自同一份逐输出判定。单次判定的电路在有输出时更新颜色，检查过但没有输出也显示失败色。测试选择和运行栏仍可用。
@@ -849,7 +849,7 @@ npm run op -- --package <包> adopt --why "…"                将外部迁移�
 |---|---|---|---|---|
 | `blueprint` | 课程设计 agent | 课程资料（讲义、笔记、游戏文件夹里的设计文档）、手册第 1、2、4.1、6.5、8 节、内核词汇表 | `blueprint.json`（`blueprint.put`、`blueprint.set`）：先是知识点，再是 slot | 蓝图审计（`bp-…`，下面） |
 | `domain` | 工程师（代码） | 蓝图的 `requests`、`mechanisms` | 包的 `core/`、`view/` 与字段声明；每条需求的状态（`done`，或 `declined` 带 `note`） | 没有还开着的需求；包契约（第 6.3 节）；`check`；包的单元测试 |
-| `levels` | 关卡设计 agent | 蓝图（每个 slot 的问题和思维链）、词汇表、手册第 2、4、5 节 | 包内关卡和游戏的 `chapters`、`primitives`（`level.add`、`game.set`……） | `check` 清零（参考解通过、naive 解失败、审计全开）；关卡合蓝图（术语链接除外）；教学 lint（`pd-…`，下面） |
+| `levels` | 关卡设计 agent | 蓝图（每个 slot 的问题和思维链）、词汇表、手册第 2、4、5 节 | 包内关卡、游戏章节和 `circuit/primitives` 标签（`level.add`、`chapter.set`、`override.put`……） | `check` 清零（参考解通过、naive 解失败、审计全开）；关卡合蓝图（术语链接除外）；教学 lint（`pd-…`，下面） |
 | `copy` | 文案 agent | 蓝图（每个知识点的术语、出处、墙，每个 slot 的问题）、关卡、手册第 1、4 节 | 全部文字和百科（`text.set`、`entry.put`……） | `check`；合蓝图（含术语链接）；文案 lint（`copy-…`）；教学 lint |
 | `review` | 评审 agent | 手册和 skill 的两张核对单、整款游戏 | 只写发现（它最后交出的 JSON：在哪、归哪一步、违反哪一条、`fix` 要不要改） | 最后一次评审没有还没解决的 `fix` |
 | `queue` | — | — | 评审队列里的一项（`pipeline.json` 的 `review`：这款游戏修改日志里的变更集） | 上面每一道闸门此刻都还清零 |
@@ -862,7 +862,7 @@ npm run op -- --package <包> adopt --why "…"                将外部迁移�
 
 **蓝图审计**（`auditBlueprint`）在一关都还没有的时候就按第 1、2、4.1 节查编排：`bp-refs`、`bp-unique` 名字都有定义、不重复；`bp-source` 每个知识点注出处，出处是 `sources` 里的一份材料；`bp-part-point` 知识点不是原始元件（id 或术语不是原始元件的 id 或名字：工具不是知识；搭出的元件可以就是知识点）；`bp-knowledge` 每个 slot 都在做某个知识点（带来一个，或在 `uses` 里练一个），什么知识点也不做的 slot 是凑数；`bp-taught` 每个要练的知识点有一处带来；`bp-trivial` 一句话就懂的点（`intuitive`）不做成关、不当练习的内容，`bp-mentioned` 它们只由某一关提到（`mentions`）；`bp-depends` 一个点搭在其上的点，在每条通向它的路上都先出现；`bp-shallow` 难点（`hard`）之前至少有两关在教它依赖的点；`bp-core-none` 每章标出核心；只报告的 `bp-ladder`：主线上通往核心的关不到一半；`bp-main-tech` 主线（地基、练习）上的关不带来、不用技术内容的知识点，它们只在可选专题里；`bp-adds-teaches` 加原始元件的 slot 带来需要它的那个知识点；`bp-facet` 练习 slot 写出它露出的新侧面；`bp-question` 每个 slot 写出问题和至少两步的思维链；`bp-point` 每个知识点写出术语、出处和 `basis`（schema 只管能写什么，好让这些字段出现之前写成的蓝图仍然读得进来；必须写全由审计要求）；`bp-placed` 每个原始元件、搭出的元件恰好有一处带来；`bp-order` 一个 slot（和一个搭出的元件）站在的东西，在通向它的每条路上都已经有了（按先修关系，并行组的另一路不算）；`bp-first-use` 知识点在带来它的那一关用上；`bp-unused` 搭出的元件后面有人站在它上面；`bp-practice` 一组练习不重复维度、以组合或辨真伪收尾；`bp-branch` 主线上前后两个系列，后一个用不着前一个的任何东西时，该是并行组；`bp-parallel` 并行组两到三路、互不依赖；`bp-abstraction` 一章最后一个系列站在这一章搭出的元件上；`bp-machine` 用到的能力机体会；`bp-challenge` 挑战不带新东西、有 naive 解；`bp-tray` 有几套托盘时每一章都写它用哪一套。只报告、由人判断的：`bp-reuse`（一个知识点在再来两个知识点之前没有再用上，或主线后面再没用到：它是不是通过部件复用、或由后面的关链回来）、`bp-bare`（只放它带来的东西）、`bp-lonely`（一个知识点后面没有练习关：它的测试和任务够不够，看第 2.3 节）、`bp-heavy`（一个知识点占了四关以上：每关都是新侧面吗）、`bp-open`（还开着的需求）。
 
-**关卡合蓝图**（`conformance`）：每个 slot 恰好一关、内部 `eras` 投影和 `primitives` 与蓝图一致、每关的 `adds`、`builds` 是它的 slot 的、参考解用到 slot 的 `uses` 里的每一个元件、slot 有 naive 解的关也有（某个任务有）；`bp-entry` 每个知识点有同 id 的百科词条，在带来它的那一关打开；`bp-term` 带来知识点的那一关在玩家读到的文字里链接这个词条；`bp-main-link` 主线上的关不链接技术内容的词条。
+**关卡合蓝图**（`conformance`）：每个 slot 恰好一关、内部 `eras` 投影和 `circuit/primitives` 的成员与蓝图一致、每关的 `adds`、`builds` 是它的 slot 的、参考解用到 slot 的 `uses` 里的每一个元件、slot 有 naive 解的关也有（某个任务有）；`bp-entry` 每个知识点有同 id 的百科词条，在带来它的那一关打开；`bp-term` 带来知识点的那一关在玩家读到的文字里链接这个词条；`bp-main-link` 主线上的关不链接技术内容的词条。
 
 **教学 lint**（`lintPedagogy`，`kit/pipeline/pedagogy.js`，第 4.1 节里能机械看出的几种）：`pd-repeat-board` 比较包提供的作品指纹；电路包按元件、设置和接法生成指纹；`pd-repeat-text` 玩家读到的一段话（引言的一页、目标、提示、点题、naive 解为什么错）一字不差地出现在两处；只报告的 `pd-slide`：实验台的一步只开一个旋钮、目标读数实时显示，拖到变绿就能过；`pd-quiz`：一个任务只是点选答案（选择题）。它们看得见形式，看不见意思：是不是工具关、判断题是不是不看材料就能答、思维链有没有落在屏幕上，由评审逐关读。
 

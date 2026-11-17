@@ -1,5 +1,6 @@
 // One curriculum model for all task and board mechanisms. Runtime readers supply observations about works;
 // progression, item granularity, trays, local parts and replacements are interpreted here.
+import { primitiveParts } from './primitive-parts.js'
 import { defineCourse } from './course.js'
 import { contentSchemas, courseLayout } from 'kernel'
 
@@ -42,7 +43,7 @@ export function contentCourse(content, {
     levels: levels.map((level) => ({ id: level.id, unlocks: unique([...(level.unlocks ?? []), ...unlocked(level)]) })),
     eras: content.eras, plan, trays: content.trays ?? {},
     tray: (at) => trayIn(content.trays ?? {}, task(at)?.tray ?? played.get(at.id)?.tray ?? level(at).tray),
-    primitives: unique([...(content.primitives ?? []), ...intrinsic]),
+    primitives: unique([...primitiveParts(content), ...intrinsic]),
     needs: flagOf, builds: build,
     replaces: (part) => content.replaces?.[part] ?? [],
     featured: (at) => [...(level(at).featuredParts ?? []), ...(task(at)?.featuredParts ?? [])],
@@ -69,9 +70,6 @@ export function readWorks(content, prepare) {
 
 /** Read heterogeneous works in two phases; no reader builds or owns a separate curriculum. */
 export function readWorkSet(content, readers) {
-  const standalone = source => source.standalone ? { ...source, primitives: Object.keys(source.partDefs?.parts ?? source.registries?.['circuit/part'] ?? {}) } : source
-  content = standalone(content)
-  readers = readers.map(reader => ({ ...reader, content: standalone(reader.content) }))
   const pending = readers.map(({ content: scope, prepare }) => {
     const iterator = prepare(scope)
     const first = iterator.next()

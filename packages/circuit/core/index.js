@@ -1,3 +1,4 @@
+import { PRIMITIVE_TAG } from './primitive-parts.js'
 import { circuitVocabulary } from './content-meaning.js'
 import circuitRuntime from './mechanism/runtime.js'
 import { partMeaning, trayMeaning } from './content-meaning.js'
@@ -167,6 +168,7 @@ export { visibleSlot } from './board/visibleSlot.js'
 export { checkCircuitTasks } from './circuit-preset.js'
 export { definedWorks } from './board-works.js'
 export { onceRun } from './circuit-run.js'
+export { primitiveParts } from './primitive-parts.js'
 export { contentCourse } from './course-model.js'
 export { evaluate as exprEvaluate } from './parts/expr.js'
 export { BUILTINS } from './parts/builtins.js'
@@ -191,6 +193,7 @@ export { boardPlay, boardContext } from './board-play.js'
 export function register(kernel) {
   // Install operations before any consumer compiles its part definitions.
   circuitVocabulary({ kinds: {}, capabilities: {}, game: { fields: {} } })
+  kernel.tag(PRIMITIVE_TAG, 'circuit/part')
   kernel.kind('circuit/part', partMeaning)
   kernel.kind('circuit/tray', trayMeaning)
   kernel.kind('circuit/quote', { type: 'circuit/quote', read: value => value, selector: 'quote' })

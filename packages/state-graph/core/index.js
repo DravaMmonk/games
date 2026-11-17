@@ -1,6 +1,6 @@
 import { S } from 'kernel'
 import { extendVocabulary, fitted, blank } from 'table'
-import { vocabulary, gameSchema } from './vocabulary.js'
+import { vocabulary } from './vocabulary.js'
 import { levelSchema } from './level-schema.js'
 import { tableReports } from './baseline.js'
 import { tableWorks } from './work.js'
@@ -35,9 +35,7 @@ const meaning = {
    else { const alternatives = S.either(previous, fields[key]); fields[key] = previous.optional || fields[key].optional ? S.opt(alternatives) : alternatives }
   }
   const level = base.level ? S.obj({ ...fields, tasks: S.list(S.either(levelSchema.fields.tasks.of, base.level.fields.tasks.of), { min: 1 }) }) : levelSchema
-  const game = { ...base.game.fields }
-  for (const [key, field] of Object.entries(gameSchema.fields)) game[key] = game[key] ? S.opt(S.either(game[key], field)) : S.opt(field)
-  return { ...projected, level, game: S.obj(game) }
+  return { ...projected, level }
  },
 }
 export function register(kernel) {

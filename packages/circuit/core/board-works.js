@@ -38,6 +38,7 @@ import { taskLevels } from 'kernel'
 import { fitsCircuit, previousCircuitTask } from "./board-view.js"
 import { keptBoards } from "./kept-boards.js"
 import { workView } from "./board/work-extension.js"
+import { primitiveParts } from "./primitive-parts.js"
 import { readWorks, publicationEvents } from "./course-model.js"
 import { eraLevels } from 'kernel'
 
@@ -55,7 +56,8 @@ import { inheritedBoard } from './progress.js'
 export const circuitWorks = (content, options) => readWorks(content, (scope) => prepareCircuitWorks(scope, options))
 
 export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (task) => task, test: readTest = (t) => t, kinds = {}, holds = false, unwanted = () => [] }) {
-  const { eras, primitives, levels } = content
+  const { eras, levels } = content
+  const primitives = new Set(primitiveParts(content))
   const wrong = []
   const say = (where, text) => wrong.push(`${where}: ${text}`)
   const plan = courseLayout(content)
@@ -212,7 +214,7 @@ export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (t
       const boards = solutions(level)
       if (!boards.length) return null
       return [...new Set(boards.flatMap((b) => b.nodes).map((n) => n.type)
-        .filter((t) => !board.isFixed(t) && (!parts[t] || primitives.includes(t))))]
+        .filter((t) => !board.isFixed(t) && (!parts[t] || primitives.has(t))))]
     },
     carries: (level) => played.get(level.id)?.map((T) => T.carry).filter(Boolean) ?? [],
     references: partReferences(revisions, { before: (a, b) => course.before(a, b), passed: (task) => Boolean(own.board(task.taskId)) }),
@@ -316,7 +318,6 @@ export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (t
       visit(task)
       return chain
     },
-    views: content.views ?? null,
     // The shell keeps boards by task (../shell/progress.js), including the task each form publishes.
     syncOwn: (built) => {
       own.sync(built, tasksByWork.keys())

@@ -25,7 +25,7 @@ const partOfFlag = (types) => {
   return map
 }
 /**
- * content (../../engine/content.js): { id, title, kicker, lede, power, eras, primitives, concept, replaces, views,
+ * content (../../engine/content.js): { id, title, kicker, lede, power, eras, concept, replaces,
  * levels, glossary }.
  */
 export default function imageGame(content, image = imageWorks(content), { kernel } = {}) {

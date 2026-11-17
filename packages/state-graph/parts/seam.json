@@ -1,4 +1,5 @@
 {
+  "demoLevel": "state-graph/seam",
   "name": "@part.seam.name",
   "desc": "@part.seam.desc",
   "inside": [

@@ -29,7 +29,7 @@ const VOCAB = defineVocabulary({
   module: 'toy',
   version: 1,
   kinds: { part: { a: { about: 'a' }, b: { about: 'b' }, c: { about: 'c' } } },
-  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS, views: S.opt(S.map(S.level())) }),
+  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS, description: S.opt(S.text()) }),
   // What a toy level says once is its whole puzzle; its one task is only its id.
   level: taskLevel({ title: S.text(), brief: S.opt(S.text()), tests: S.opt(S.list(S.any())), adds: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))), solution: S.opt(S.board()), from: S.opt(S.level()) }, {}, { parts: true }),
 })
@@ -47,14 +47,14 @@ function toy() {
   const root = mkdtempSync(join(tmpdir(), 'ops-toy-'))
   const game = {
     vocabulary: 1, title: { en: 'Toy' },
-    chapters: [{ id: 'one', levels: ['toy/a1', 'toy/a2', 'toy/a3'] }, { id: 'two', levels: ['b1', 'b2', 'c1'] }], optional: ['a3'],
-    views: { x: 'a2' },
+    chapters: [{ id: 'one', levels: ['toy/a1', 'toy/a2', 'toy/a3'] }, { id: 'two', levels: ['b1', 'b2', 'c1'] }],
+    description: { en: 'A toy game' },
   }
   const glossary = { groups: [{ id: 'g', title: 'G' }], entries: [{ id: 'e', group: 'g', title: { en: 'E' }, body: ['see <level-ref to="a2"></level-ref>'], at: 'a2' }] }
   const levels = Object.fromEntries(['a1', 'a2', 'a3', 'b1', 'b2', 'c1'].map((id) => [id, {
     title: { en: id }, tests: [1], ...(id === 'b1' && { from: 'a2', brief: { en: 'after <level-ref to="a2"></level-ref>', zh: '接着 <level-ref to="a2"></level-ref>' } }), tasks: [{ id }],
   }]))
-  writeContentFixture(root, 'toy', { game, glossary, levels }, VOCAB)
+  writeContentFixture(root, 'toy', { game, glossary, levels, tagOverrides: { 'kernel/tags/level/optional': ['toy/a3'] } }, VOCAB)
   return { root, ws: openWorkspace('toy', root, { vocabulary: VOCAB }) }
 }
 const run = (ws, op, args) => operationsFor(circuitFixtureSchema(VOCAB))[op].apply(ws, args, { vocabulary: VOCAB, domain: DOMAIN })
@@ -198,11 +198,18 @@ test('level.add and level.remove update placement while preserving content refer
 
 })
 
+test('game tag patches update the assembled route and undo cleanly', () => {
+  const { ws } = toy()
+  const result = roundTrip(ws, 'override.put', {
+    layer: ws.layer, kind: 'tag', name: 'kernel/optional', member: 'level', data: { values: { add: ['toy/a2'] } },
+  })
+  assert.equal(result.after.eras[0].levels.find(level => level.id === 'toy/a2').optional, true)
+})
+
 test('game.set and game.unset edit the assembled configuration', () => {
   const { ws } = toy()
   roundTrip(ws, 'game.set', { path: 'title', value: { en: '玩具' } })
-  roundTrip(ws, 'game.unset', { path: 'views' })
-  assert.equal(ws.game.views, undefined)
+  roundTrip(ws, 'game.unset', { path: 'description' })
 })
 
 test('named-object operations persist typed tags, relations and sections and preserve translations', async () => {
@@ -407,17 +414,17 @@ const PVOCAB = defineVocabulary({
   module: 'ptoy',
   version: 1,
   kinds: { op: { add: { about: 'a + b', args: [{ name: 'a', type: 'circuit/number' }, { name: 'b', type: 'circuit/number' }], returns: 'circuit/number' } }, family: { value: { about: 'numbers' } } },
-  game: S.obj({ title: S.text(), primitives: S.list(S.ref('part', { reference: 'circuit/part' })), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
+  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
   level: S.obj({ title: S.text(), brief: S.opt(S.text()), adds: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))), solution: S.opt(S.board()), uses: S.opt(S.map(S.str(), { key: S.ref('part', { reference: 'circuit/part' }) })) }),
 })
 const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'circuit/number' }, { name: 'b', type: 'circuit/number' }], outputType: 'circuit/number', op: 'add' }
 function partsToy() {
   const root = mkdtempSync(join(tmpdir(), 'ops-ptoy-'))
-  const game = { vocabulary: 1, title: { en: 'Toy' }, primitives: ['sum'], chapters: [{ id: 'one', levels: ['a1'] }] }
+  const game = { vocabulary: 1, title: { en: 'Toy' }, chapters: [{ id: 'one', levels: ['a1'] }] }
   const glossary = { groups: [], entries: [] }
   const partDefs = { parts: { sum } }
   const levels = { a1: { title: 'A', brief: { en: '用 <part-ref to="sum"></part-ref>' }, adds: ['sum'], solution: ['s = sum(a, b)', 'out <- s'] } }
-  writeContentFixture(root, 'ptoy', { game, glossary, partDefs, levels }, PVOCAB)
+  writeContentFixture(root, 'ptoy', { game, glossary, partDefs, levels, tagOverrides: { 'circuit/tags/circuit/part/primitives': ['ptoy/sum'] } }, PVOCAB)
   return openWorkspace('ptoy', root, { vocabulary: PVOCAB })
 }
 const prun = (ws, op, args) => operationsFor(circuitFixtureSchema(PVOCAB))[op].apply(ws, args, { vocabulary: withParts(circuitFixtureSchema(PVOCAB), ws.partDefs), domain: { vocabulary: PVOCAB } })
@@ -441,7 +448,7 @@ test('the part operations edit parts.json, refuse to remove a part still used', 
   for (const { op, ...args } of removed.inverse) prun(ws, op, args)
   for (const done of [said, added]) for (const { op, ...args } of done.inverse) prun(ws, op, args)
   assert.equal(JSON.stringify(ws.content()), before, 'the inverses put parts.json back')
-  assert.throws(() => prun(ws, 'part.remove', { part: 'sum' }), /still named at game.json primitives\[0\], levels\/a1.json adds\[0\], levels\/a1.json brief.en, levels\/a1.json solution\[0\]/)
+  assert.throws(() => prun(ws, 'part.remove', { part: 'sum' }), /still named at levels\/a1.json adds\[0\], levels\/a1.json brief.en, levels\/a1.json solution\[0\], overrides\/circuit\/tags\/circuit\/part\/primitives\.json values\.add\[0\]/)
   assert.throws(() => prun(ws, 'parts.set', { path: 'parts.sum', value: {} }), /part.add/)
   assert.throws(() => prun(ws, 'part.add', { part: 'twice', data: sum, after: 'none' }), /no part none/)
   // A map's key naming a part also prevents removal.

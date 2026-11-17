@@ -37,7 +37,7 @@ const SIDES = S.list(SIDE)
 const BOARD = S.board({ about: t('一块电路板的蓝图文本，每行一个字符串') })
 const PART = S.ref('part', { reference: 'circuit/part', about: t('一个元件：词汇表里的元件，或 game.json 里的引理、门、等式') })
 const PARTS = S.list(PART)
-const WORDS = S.list(S.either(S.str(), S.map(S.text())), { about: t('用哪几套词（game.json wordSets 的名字，或直接写出），按顺序合并') })
+const WORDS = S.list(S.either(S.str(), S.map(S.text())), { about: t('用哪几套词（词表的名字，或直接写出），按顺序合并') })
 
 /* ---------- the parts ---------- */
 
@@ -180,8 +180,7 @@ const GAME = S.obj({
   title: S.text(),
   kicker: S.text(),
   lede: S.text({ about: t('这款游戏教什么、学完能亲手做成什么，不写关卡数', 'what the game teaches and what the player ends up building, not how many levels') }),
-  words: WORDS,
-  primitives: S.list(ITEM_REFERENCE),
+  words: S.opt(S.str({ about: t('游戏默认使用的一套词', 'The default word set for the game') })),
   chapters: CHAPTERS,
   ...COURSE_OPTIONS,
 })

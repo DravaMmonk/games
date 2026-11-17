@@ -38,7 +38,7 @@ const GAME = {
   title: T('Proofs · Test'),
   kicker: T('Test'),
   lede: T('Proofs built from Apply and the assumption box.'),
-  words: ['everyday'],
+  words: 'everyday',
   contentObjects: { 'qed/wordset': {
     everyday: {
       Rain: T('it rains'),
@@ -48,7 +48,6 @@ const GAME = {
       Rest: T('I rest'),
     },
   } },
-  primitives: ['mp', 'impI'],
   chapters: [{
     id: 'ground',
     machine: 'prover',
@@ -128,7 +127,7 @@ const LEVELS = {
 }
 
 /** Write a temporary game (its course) and package in the same format as checked-in content. */
-export function writeContentFixture(root, id, { game: sourceGame, glossary, partDefs, levels, tags = {}, relations = {}, sections = {}, trays = {} }, domainVocabulary) {
+export function writeContentFixture(root, id, { game: sourceGame, glossary, partDefs, levels, tags = {}, relations = {}, sections = {}, trays = {}, tagOverrides = {} }, domainVocabulary) {
   const { contentObjects = {}, ...game } = sourceGame
   const course = join(root, 'games', id)
   const pkg = join(root, 'packages', id)
@@ -153,6 +152,11 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   const levelText = Object.entries(levels).map(([level, value]) => [level, normalize(value, vocabulary.level, `level.${level}`)])
   const objectText = Object.entries({ tags, relations, sections, trays }).flatMap(([kind, values]) => Object.entries(values).map(([name, value]) => [kind, name, normalize(value, kind === 'trays' ? JSON.parse(readFileSync(new URL('../../../../packages/circuit/kinds/tray.json', import.meta.url))).schema : OBJECT_SCHEMAS[kind], `${kind.split('/').at(-1)}.${name}`)]))
   put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
+  for (const [path, values] of Object.entries(tagOverrides)) {
+    const file = join(course, 'overrides', path + '.json')
+    mkdirSync(join(file, '..'), { recursive: true })
+    put(file, { values: { add: values } })
+  }
   mkdirSync(join(course, 'chapters'), { recursive: true })
   for (const [name, value] of chapterText) put(join(course, 'chapters', `${name}.json`), sourceValue(expandNames(value, id, { schema: CHAPTER, vocabulary, textKeys: false })))
   put(join(pkg, 'package.json'), { kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: { circuit: '^0.0.0', progress: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0' }) } })
@@ -179,7 +183,7 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
 
 export function proofsRoot() {
   const root = mkdtempSync(join(tmpdir(), 'games-'))
-  writeContentFixture(root, ID, { game: { ...GAME, contentObjects: { ...GAME.contentObjects, 'logic/symbol': { formulaImplies: { mark: 'logic/formulaImplies', icon: 'Rows3', name: '→', desc: T('Implication'), at: 'apply' } } } }, glossary: GLOSSARY, partDefs: PARTS, levels: LEVELS, relations: { path: { kind: 'requires', edges: [{ from: 'given', to: 'apply' }, { from: 'apply', to: 'suppose' }] } } }, proofVocabulary)
+  writeContentFixture(root, ID, { game: { ...GAME, contentObjects: { ...GAME.contentObjects, 'logic/symbol': { formulaImplies: { mark: 'logic/formulaImplies', icon: 'Rows3', name: '→', desc: T('Implication'), at: 'apply' } } } }, glossary: GLOSSARY, partDefs: PARTS, levels: LEVELS, tagOverrides: { 'circuit/tags/circuit/part/primitives': ['proofs/mp', 'proofs/impI'] }, relations: { path: { kind: 'requires', edges: [{ from: 'given', to: 'apply' }, { from: 'apply', to: 'suppose' }] } } }, proofVocabulary)
   return { root, id: ID }
 }
 
@@ -310,8 +314,9 @@ export function readStarter(fixtureDir) {
   const pkg = join(root, 'packages/starter')
   const game = join(root, 'games/starter')
   mkdirSync(game, { recursive: true })
-  cpSync(source, pkg, { recursive: true, filter: file => !['game.json', 'chapters', 'i18n'].some(name => file === join(source, name)) })
-  for (const name of ['game.json', 'chapters']) cpSync(join(source, name), join(game, name), { recursive: true })
+  const gameFiles = ['game.json', 'chapters', 'overrides']
+  cpSync(source, pkg, { recursive: true, filter: file => ![...gameFiles, 'i18n'].some(name => file === join(source, name)) })
+  for (const name of gameFiles) cpSync(join(source, name), join(game, name), { recursive: true })
   cpSync(join(source, 'i18n/course'), join(game, 'i18n'), { recursive: true })
   cpSync(join(source, 'i18n/package'), join(pkg, 'i18n'), { recursive: true })
   const config = JSON.parse(readFileSync(join(game, 'game.json')))

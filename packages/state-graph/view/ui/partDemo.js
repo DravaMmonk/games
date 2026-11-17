@@ -27,12 +27,10 @@ function asTaps(b) {
 }
 
 /** The bench for a part: its level's last task (its world, robot, board) and, per test, the table that board fills. */
-// tasks: every level's last task as the course plays it (../course.js played). borrow: { part: level id } parts that
-// are an idea rather than a board show the board of the level that puts the idea to work (the game's content). model:
-// the course's board model (../model/run.js modelOf).
-function benchFor(model, tasks, borrow, key) {
+// The demo uses the selected level's board, or the board from the level that unlocks the part.
+function benchFor(model, tasks, demoLevel, key) {
   const own = tasks.find((T) => T.unlock === key)
-  const L = borrow[key] ? tasks.find((T) => T.id === borrow[key]) : own
+  const L = demoLevel ? tasks.find((T) => T.id === demoLevel) : own
   if (!L || L.play !== 'state-graph/circuit' || !L.solution) return null
   const s = L
   const V = WORLDS[s.world]
@@ -89,8 +87,8 @@ const valueOf = (values, id) => values.has(id) ? signal(values.get(id)) : ''
 const choice = (key, label, options, value, change) => ({ key, kind: 'choice', label, options, value, change })
 
 /** Describe the world and controls for the editor's shared circuit preview. */
-export function partDemo(model, course, tasks, borrow, key) {
-  const bench = benchFor(model, tasks, borrow, key)
+export function partDemo(model, course, tasks, demoLevel, key) {
+  const bench = benchFor(model, tasks, demoLevel, key)
   if (!bench) return null
   const { L, s, V, robot, runs, circuit, lit, focus, built, height } = bench
   const { def, hasValue, valueDefault, valueOptions } = model

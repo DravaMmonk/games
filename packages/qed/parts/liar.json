@@ -2,7 +2,6 @@
   "name": "@part.liar.name",
   "desc": "@part.liar.desc",
   "family": "logic:family-lemma",
-  "settings": { "A": { "control": "tree" } },
   "inside": [
     {
       "id": "base",

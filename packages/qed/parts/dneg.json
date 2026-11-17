@@ -3,9 +3,6 @@
   "desc": "@part.dneg.desc",
   "family": "logic:family-lemma",
   "settings": {
-    "A": {
-      "control": "tree"
-    },
     "form": {
       "control": "select",
       "options": [

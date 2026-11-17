@@ -3,12 +3,6 @@
   "desc": "@part.arrow.desc",
   "family": "logic:family-lemma",
   "settings": {
-    "A": {
-      "control": "tree"
-    },
-    "B": {
-      "control": "tree"
-    },
     "form": {
       "control": "select",
       "options": [

@@ -274,4 +274,24 @@ export function lemmaPortProblems(parts = {}) {
     .flatMap(({ id, reference }) => (reference.tests ?? []).map((test) => Object.keys(test.premises ?? {}))
       .filter((premises) => premises.length !== part.inputs.length)
       .map((premises) => ({ fail: true, text: `part ${type}: ${part.inputs.length} port(s) (${part.inputs.map(({ name }) => name).join(', ')}), but the proof inside it (${id}) has ${premises.length} premise(s) (${premises.join(', ')}): port k is premise k` }))))
+    .concat(fixedLetterProblems(parts))
+}
+
+/**
+ * A lemma's letters are those its proof tasks write (work.js lemmaLetters); it asks the player for a letter only where
+ * a shape leaves it open, its goal using it and its premises not: the premises wired in fix every other one, and a
+ * sentence to set for one of those would be a 拼一句 filled for nothing.
+ */
+function fixedLetterProblems(parts) {
+  const letters = (text) => String(text ?? '').match(/\b[A-Z]\b/g) ?? []
+  return Object.entries(parts).flatMap(([type, part]) => {
+    const proofs = (part.inside ?? []).map(({ reference }) => reference).filter((reference) => reference?.kind === 'logic:proof')
+    if (!proofs.length || !part.settings || Array.isArray(part.settings)) return []
+    const open = new Set(proofs.flatMap((reference) => (reference.tests ?? []).flatMap((test) => {
+      const fixed = new Set(Object.values(test.premises ?? {}).flatMap(letters))
+      return letters(test.goal).filter((letter) => !fixed.has(letter))
+    })))
+    const needless = Object.keys(part.settings).filter((key) => /^[A-Z]$/.test(key) && !open.has(key))
+    return needless.length ? [{ fail: true, text: `part ${type}: its premises fix ${needless.join(', ')}, so it should not ask for them as settings` }] : []
+  })
 }

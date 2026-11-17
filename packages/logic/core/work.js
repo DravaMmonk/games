@@ -44,12 +44,15 @@ const rulesIn = (circuit) => circuit.nodes.map((n) => n.type)
 
 // A lemma's schema written as its proof task writes it: a letter of the lemma applied to the variable a quantifier binds
 // (¬∃x. P(x)) is the letter itself, the quantifier's body (¬∃x. P).
+/** The letters a lemma's proof tasks write (their tests' premises and goals), in order: the lemma's pattern letters. */
+export const lemmaLetters = (references) => [...new Set(references.flatMap((reference) => reference?.tests ?? [])
+  .flatMap((test) => [...Object.values(test.premises ?? {}), test.goal]).flatMap((text) => String(text ?? '').match(/\b[A-Z]\b/g) ?? []))].sort()
 const asSchema = (text, metas) => metas.reduce((t, m) => t.replace(new RegExp(`\\b${m}\\(([a-z]\\w*)\\)`, 'g'), m), text)
 
 /**
  * A game's built parts (parts.json, ../../engine/parts.js builtParts) read as the course's tables. Its family says
- * what a part is: a lemma (`lemma`: each shape the premises and goal of the proof task it refers to, its letters its
- * tree settings, the first reference its first shape and the rest, by `form`, shapes an upgrade adds), a gate (`gate`:
+ * what a part is: a lemma (`lemma`: each shape the premises and goal of the proof task it refers to, its letters those its
+ * proof tasks write, the first reference its first shape and the rest, by `form`, shapes an upgrade adds), a gate (`gate`:
  * a port for each letter of its truth circuit, in order, named a, b, c…), a machine part (`built`) or an equation
  * proved (`rule`: its statement its task's goal; the task may say how it enters the rule book, `rule`). The level of a part's first reference (of
  * every one, for a chain of upgrades) builds it; a task an equation refers to proves it. Returns { lemmas, facts,
@@ -73,9 +76,11 @@ function readBuilt(content) {
     if (part.family !== 'logic:family-rule') for (const [k, ref] of refs.entries()) if (ref.level && (!ref.form || k === 0)) build(ref.level)
     const { name, desc } = part
     if (part.family === 'logic:family-lemma') {
-      const trees = settingsOf(part).filter((x) => x.control === 'tree')
-      const metas = trees.map((x) => x.key)
-      const labelled = trees.filter((x) => x.label)
+      // Its letters are those its proof tasks write: a proof task's tests are patterns in letters (vocabulary.js), so
+      // every letter of a lemma's statement stands for any sentence. Its tree settings are only the letters a shape
+      // leaves open, which the player sets on the card; their labels name them.
+      const metas = lemmaLetters(refs.map(({ reference }) => reference))
+      const labelled = settingsOf(part).filter((x) => x.control === 'tree' && x.label)
       const shapes = refs.map((ref) => {
         const schema = ref.reference.tests[0]
         const premises = Object.values(schema.premises ?? {}).map((text) => asSchema(text, metas))

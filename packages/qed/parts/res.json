@@ -2,7 +2,6 @@
   "name": "@part.res.name",
   "desc": "@part.res.desc",
   "family": "logic:family-lemma",
-  "settings": { "A": { "control": "tree" }, "B": { "control": "tree" }, "C": { "control": "tree" } },
   "inside": [
     {
       "id": "base",

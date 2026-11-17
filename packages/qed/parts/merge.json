@@ -2,7 +2,6 @@
   "name": "@part.merge.name",
   "desc": "@part.merge.desc",
   "family": "logic:family-lemma",
-  "settings": { "A": { "control": "tree" }, "B": { "control": "tree" } },
   "inside": [
     {
       "id": "base",

@@ -1,7 +1,7 @@
 import { meaningsOf } from './kind-meanings.js'
 import { contentSchemas } from './content.js'
 // The rules every game follows, over one game's content (content.js): its content against its domain's vocabulary
-// (./vocabulary.js), the course audit (../course.js), the level count on the hub (../../games.js), unique level ids
+// (./vocabulary.js), the course audit (../course.js), unique level ids
 // that require only real levels, its links, and then its domain's own
 // checks (reference answers pass, naive ones fail, …). npm run check (check.js) and every changeset (ops/changeset.js)
 // run it.
@@ -50,12 +50,12 @@ export async function checkPackage(content, { domain, root, mutants = false }) {
 }
 
 /**
- * Everything checked on game `content`, as lines [{ text, fail? }]. listed: how many levels the hub says it has.
+ * Everything checked on game `content`, as lines [{ text, fail? }].
  * `domain`: its domain module (resolver.js runtimeOf). Content that does not fit the vocabulary is not built into a course: what
  * is wrong with it is all there is to say. `mutants`: also mutation reports for supported tasks. `cache`: the game's
  * kept checks (check-cache.js), which the domain's checks of an unchanged level are read from; never with `mutants`.
  */
-export async function checkGame(content, { domain, listed, mutants = false, cache = null, root }) {
+export async function checkGame(content, { domain, mutants = false, cache = null, root }) {
   if (content.packageTarget) return checkPackage(content, { domain, root, mutants })
   const lines = []
   const fail = (text) => lines.push({ fail: true, text })
@@ -67,7 +67,6 @@ export async function checkGame(content, { domain, listed, mutants = false, cach
   const spec = domain.spec(content)
   lines.push(...await domain.checkPhase?.({ phase: 'course', spec, content }) ?? [])
 
-  if (listed != null && listed !== spec.levels.length) fail(`hub: games.js lists ${listed} levels, the game has ${spec.levels.length}`)
 
   const seen = new Set()
   for (const level of spec.levels) {

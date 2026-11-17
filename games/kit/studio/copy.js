@@ -11,7 +11,6 @@ import { find } from '../engine/schema.js'
 import { GLOSSARY } from '../engine/vocabulary.js'
 import { showPath } from '../engine/ops/edit.js'
 import { eraLevels } from '../course.js'
-import { contentFileFor } from '../engine/content.js'
 import { levelTags } from './groups.js'
 import { textKey } from '../engine/i18n.js'
 
@@ -26,9 +25,8 @@ export const textField = (path) => String(path[0] === 'tasks' ? path[2] ?? '' : 
  */
 export function copyRows(content, vocabulary, scope, order, side = 'package') {
   const rows = []
-  const ownOf = (file, path) => (file.game && ['game.json', 'course.json'].includes(contentFileFor(path)) ? 'game' : 'package')
   const add = (file, name, at) => ({ path, value }) => {
-    const own = ownOf(file, path)
+    const own = file.game ? 'game' : 'package'
     if (side === 'package' && own === 'game') return
     rows.push({ key: `${name}|${showPath(path)}`, file, name, path, value, own, field: at === 'glossary' ? String(path.at(-2) === 'body' ? 'body' : path.at(-1)) : textField(path) })
   }
@@ -97,7 +95,7 @@ export function copyFileOf(row) {
     const target = row.file.target ?? {}
     return target.entry ? `entries/${shortName(target.entry)}.json` : target.tag ? `tags/entry/${shortName(target.tag)}.json` : 'entries/'
   }
-  return contentFileFor(row.path)
+  return 'game.json'
 }
 
 /** The files `rows` are in, each with how many texts: [[file, count]], in the order they first come. */

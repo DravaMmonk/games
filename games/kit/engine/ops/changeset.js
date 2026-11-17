@@ -27,10 +27,8 @@ import { tasksSchema } from '../tasks.js'
 import { ENTRY, checkContent } from '../vocabulary.js'
 import { checkGame } from '../checks.js'
 import { runtimeOf } from '../resolver.js'
-import { courseLevelCount } from '../content.js'
 import { dependencyProblemsInProject } from '../project-dependencies.js'
 import { operationsFor, opScope } from './operations.js'
-import { hubCount } from './workspace.js'
 import { append, hashOf, headOf, readLog, withLock } from './log.js'
 
 export { LOG, readLog } from './log.js'
@@ -156,9 +154,8 @@ function sourceArguments(ws, operation, supplied, vocabulary) {
 // The whole game's check, and the write or the restore, after every operation of a changeset has run.
 async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache, texts }) {
   // The hub's count goes with the change (workspace.js), so it is checked against the levels there are now.
-  const listed = ws.packaged || hubCount(ws.hub, ws.id) === null ? null : courseLevelCount(content, ws.levels.size)
   let lines
-  if (check) lines = await checkGame(content, { domain, listed, cache, root: ws.root })
+  if (check) lines = await checkGame(content, { domain, cache, root: ws.root })
   else {
     const wrong = checkContent(domain, content)
     if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, ws.root))

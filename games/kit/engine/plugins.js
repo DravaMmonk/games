@@ -1,5 +1,4 @@
 import { CODE_NAME } from './object-name.js'
-import { registerMeaning } from './kind-meanings.js'
 import { tagKey, kernelTags } from './tag-identity.js'
 // Environment-neutral package registration. Each assembly owns its registry.
 const PACKAGE_OBJECT = /^[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9-]*$/
@@ -30,7 +29,6 @@ export function createPluginKernel() {
         }
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)
         if (['check', 'state', 'game', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
-        if (type === 'kind') registerMeaning(value)
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
       }]))
       api.object = (kind, name, value = {}) => {

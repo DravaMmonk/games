@@ -87,8 +87,12 @@ test('wording merges by key, adds translations and records before and after valu
 
 function fixture() {
   const root = mkdtempSync(resolve(tmpdir(), 'layers-'))
-  const put = (file, data) => { if (file.endsWith('/course.json') && data.chapters) { const chapters = data.chapters; const gameFile = file.replace('course.json', 'game.json'); const config = JSON.parse(readFileSync(resolve(root, gameFile))); put(gameFile, { ...config, chapters: chapters.map(chapter => '@' + file.split('/')[1] + '/' + chapter.id) }); for (const { id, ...chapter } of chapters) put(file.replace('course.json', 'chapters/' + id + '.json'), chapter); const { chapters: _, ...rest } = data; data = rest } const path = resolve(root, file); mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`) }
-  put('games/demo/game.json', { kernel: '^0.0.0', packages: { 'extra': '^1.0.0', 'base': '^1.0.0' }, title: 'Demo' }); put('games/demo/course.json', {})
+  const put = (file, data) => {
+    const path = resolve(root, file)
+    mkdirSync(dirname(path), { recursive: true })
+    writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`)
+  }
+  put('games/demo/game.json', { kernel: '^0.0.0', packages: { 'extra': '^1.0.0', 'base': '^1.0.0' }, title: 'Demo' })
   put('packages/base/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} }); put('packages/base/levels/a.json', { title: '@title', options: { x: 1 } }); put('packages/base/i18n/en.json', { title: 'Original' })
   put('packages/extra/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { 'base': '^1.0.0' } }); put('packages/extra/levels/b.json', { from: 'base/a' })
   lockFixture(root)
@@ -135,8 +139,8 @@ test('cross-package wording references retain ownership and override links resol
 
 test('multi-package sibling courses validate shared levels without rejecting their other packages', () => {
   const { root, put } = fixture()
-  put('games/peer/game.json', { kernel: '^0.0.0', packages: { 'base': '^1.0.0', 'third': '^1.0.0' } })
-  put('games/peer/course.json', { chapters: [{ id: 'one', levels: ['base/a', 'third/c'] }] })
+  put('games/peer/game.json', { kernel: '^0.0.0', packages: { base: '^1.0.0', third: '^1.0.0' }, chapters: ['@peer/one'] })
+  put('games/peer/chapters/one.json', { levels: ['base/a', 'third/c'] })
   put('packages/third/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
   put('packages/third/levels/c.json', {})
   put('packages/third/tags/level/all.json', { values: ['c'] })
@@ -262,8 +266,10 @@ test('package selection refuses missing dependencies, duplicate selection and re
   const { root, put } = fixture()
   put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
   put('packages/child/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { 'library': '^1.0.0' } })
-  put('packages/base/tags/level/course.json', { values: ['a'] })
-  put('games/demo/course.json', { chapters: [{ id: 'main', levels: ['base/a'] }] })
+  put('packages/base/tags/level/route.json', { values: ['a'] })
+  const config = JSON.parse(readFileSync(resolve(root, 'games/demo/game.json')))
+  put('games/demo/game.json', { ...config, chapters: ['@demo/main'] })
+  put('games/demo/chapters/main.json', { levels: ['base/a'] })
   lockFixture(root)
   const ws = openGame('demo', root, { vocabulary: schemas })
   const options = { check: false, domain: { vocabulary: schemas } }

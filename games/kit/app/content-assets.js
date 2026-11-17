@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto'
 import { sourceValue } from '../engine/catalogs.js'
 import { catalogsOf } from '../engine/content-text.js'
-import { assemblySource, configurationFiles } from '../engine/content.js'
+import { assemblySource } from '../engine/content.js'
 
 export const CONTENT_FILE = 'content.json'
 
@@ -14,12 +14,11 @@ export function contentAssets(content) {
   const { levels, glossary, blueprint, game, tags, relations, sections, contentObjects } = source
   const objects = [...tags, ...relations, ...sections]
   const packageObjects = [...objects.map(([, value]) => value), ...Object.entries(contentObjects).filter(([kind]) => kind !== 'chapter').flatMap(([, values]) => Object.values(values))]
-  const { 'game.json': meta, 'course.json': course, ...configuration } = configurationFiles(game)
   const assets = new Map()
   const manifests = {}
   for (const [scope, catalogs] of Object.entries({
-    course: catalogsOf('course', meta, course, blueprint, ...Object.values(contentObjects.chapter ?? {})),
-    package: catalogsOf('package', ...Object.values(configuration), levels, glossary, ...packageObjects),
+    course: catalogsOf('course', game, blueprint, ...Object.values(contentObjects.chapter ?? {})),
+    package: catalogsOf('package', levels, glossary, ...packageObjects),
   })) {
     manifests[scope] = Object.fromEntries(Object.entries(catalogs).map(([lang, entries]) => {
       const text = JSON.stringify(entries)

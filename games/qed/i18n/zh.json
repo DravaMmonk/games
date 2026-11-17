@@ -25,7 +25,9 @@
   "course.eras.simplifier.chapter.title": "化简器",
   "course.eras.tactics.chapter.question": "能不能让证明助手自己去试该用哪条规则？",
   "course.eras.tactics.chapter.title": "策略",
-  "course.kicker": "开发中 · 用电路构建证明与证明助手",
-  "course.lede": "无需逻辑学基础。从真值表出发，将推理规则连接成证明，逐步学习假设、分类讨论、量词与归纳，并搭建能够处理证明目标的证明助手。",
-  "course.title": "证明完毕"
+  "game.description": "证明完毕 Q.E.D.：把形式化证明做成一套解谜关卡。Formal proof as a set of puzzle levels.",
+  "game.kicker": "用电路构建证明与证明助手",
+  "game.lede": "无需逻辑学基础。从真值表出发，将推理规则连接成证明，逐步学习假设、分类讨论、量词与归纳，并搭建能够处理证明目标的证明助手。",
+  "game.title": "证明完毕",
+  "game.topic": "形式化证明"
 }

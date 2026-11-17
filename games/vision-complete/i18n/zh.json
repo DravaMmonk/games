@@ -35,7 +35,9 @@
   "course.eras.9.chapter.label": "分割",
   "course.eras.9.chapter.question": "给每个像素一个答案",
   "course.eras.9.chapter.title": "每个像素是什么",
-  "course.kicker": "计算机视觉",
-  "course.lede": "从把图像挪一格开始。亲手接线实现模糊、寻找边缘和角点，再从两张图像估计深度。",
-  "course.title": "视觉完备"
+  "game.description": "视觉完备 Vision Complete：用图像处理元件接线解谜。A computer vision puzzle game built around wiring image-processing circuits.",
+  "game.kicker": "计算机视觉",
+  "game.lede": "从把图像挪一格开始。亲手接线实现模糊、寻找边缘和角点，再从两张图像估计深度。",
+  "game.title": "视觉完备",
+  "game.topic": "计算机视觉"
 }

@@ -31,7 +31,7 @@
 
 - （已定，见决策二十）文字必须中英两面。
 - **词汇表每个版本存一份快照。** 现在还没有任何内容在仓库之外，却每加一个可选字段就要升版本、存一份新快照（这一轮给资源加 `symmetric` 就升了两处）。建议：发布第一个不可变的包之前只留最新一份快照，只查「相对上一次提交只增不改」；有了外部内容再逐版本保留。
-- **`games/games.js` 里的关卡数。** 同一个数存两处，靠操作集用正则改源码、再靠检查比对来保持一致，`listed` 这个参数穿过五个调用方。建议：登记表只留不随内容变的事实，关卡数由构建从内容读出。
+- **首页关卡数。** 第 17 步已改由首页构建从章节计算，标题和文案随游戏配置读取。
 - **`DESIGN.md` 的篇幅。** 见上一节。它越长，agent 每一步读进去的无关内容越多，遵守率越低；这直接影响产出质量，不只是整洁问题。
 
 ## 写进方向文档的各条的依据
@@ -41,6 +41,6 @@
 | 十三 确定性 | `domains/image/engine/parts/generative.js` 的 `dg_sample` 用 `Math.random()` 取种子 |
 | 十四 存档按任务 | `engine/stamp.js` 是整款游戏一个哈希，任何元件或谜题改动清空全部进度；内核格式没有版本号 |
 | 十五 解空间信号 | 「空板不过」「一根线直通不过」是原型阶段事后加入的检查；盲玩暂停 |
-| 十六 存储、级别 | `ops/workspace.js` 直接用 `node:fs` 和 `changes.lock`，用正则改 `games/games.js`（`hubEntry`）；`ops/` 里没有级别或角色；`pipeline.mjs` 直接 `spawnSync('claude', …)` |
+| 十六 存储、级别 | `ops/workspace.js` 直接用 `node:fs` 和 `changes.lock`；`ops/` 里没有级别或角色；`pipeline.mjs` 直接 `spawnSync('claude', …)` |
 | 十七 包与兼容语料 | 命令和依赖在 `trace-viewer/`，`engine/games.mjs`、`pipeline.mjs` 写死它的路径；ESLint 覆盖不到 `games/kit`，CI 无 lint；`@ts-check` 零处；`expr.js` 只区分纯数与非纯数；`test-kit.yml` 不读游戏、`deploy-games.yml` 只构建 |
 | 检查的耗时 | 单款 5–15 秒，约 4 秒是 vite 启动；按任务缓存见阶段 6.8 第 4 步 |

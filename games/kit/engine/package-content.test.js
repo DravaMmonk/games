@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
-import { contentTargets, runtimeOf, readContent, readPackage } from './resolver.js'
+import { contentTargets, gameCatalog, runtimeOf, readContent, readPackage } from './resolver.js'
 import { checkGame } from './checks.js'
 import { closeGames, gameOf } from './games.mjs'
 import { packageLevel, packageLevelOrder } from './package-play.js'
@@ -49,7 +49,6 @@ test('a parts-only package opens without a course, checks and writes its own log
   assert.ok(result.files.every((file) => file.startsWith('packages/library/')))
   assert.equal(readLog(ws).length, 2)
   assert.equal(existsSync(resolve(root, 'games')), false)
-  assert.equal(existsSync(resolve(ws.dir, 'course.json')), false)
   const back = await undo(openPackage('library', root), { write: true })
   assert.equal(back.ok, true, back.problems.join('\n'))
   assert.equal(readPackage('library', root).partDefs.parts['library/apply'].desc, 'Apply an implication.')
@@ -154,15 +153,15 @@ test('default check targets include every game followed by unplayed packages; na
 })
 
 
-test('game course writes maintain the derived hub count without writing package files', async () => {
+test('hub level counts follow chapter edits without writing a second file', async () => {
   const { root, id } = proofsRoot()
   roots.push(root)
+  writeFileSync(resolve(root, 'games/hub-order.json'), JSON.stringify([id]))
   const ws = openGame(id, root)
   const result = await runChangeset(ws, { ops: [{ op: 'chapter.set', chapter: 'ground', path: 'levels', value: [`${id}/given`, `${id}/apply`] }] }, { write: true, check: false })
   assert.equal(result.ok, true, result.problems.join('\n'))
-  assert.ok(result.files.includes('games/games.js'))
-  assert.ok(result.files.every((file) => file === 'games/games.js' || file.startsWith(`games/${id}/`)))
-  assert.match(readFileSync(resolve(root, 'games/games.js'), 'utf8'), /levels: 2/)
+  assert.deepEqual(result.files, [`games/${id}/chapters/ground.json`])
+  assert.equal(gameCatalog(root)[0].levels, 2)
 })
 
 

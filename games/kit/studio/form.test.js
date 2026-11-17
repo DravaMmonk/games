@@ -65,7 +65,7 @@ test('JSON editing uses catalog references and leaves locale edits on the Copy t
   const title = withTextKey({ en: 'Count', zh: '计数' }, 'level.a.title')
   const note = withTextKey({ en: 'Read', zh: '读' }, 'level.a.note')
   const value = { title, note, amount: 1 }
-  const content = { title: withTextKey({ en: 'Course' }, 'course.title'), levels: [{ id: 'a', ...value }] }
+  const content = { title: withTextKey({ en: 'Course' }, 'game.title'), levels: [{ id: 'a', ...value }] }
   const edit = (next) => sourceOps({ level: 'a' }, value, [], next, vocabulary, content)
   const source = sourceValue(value)
   assert.deepEqual(source, { title: '@level.a.title', note: '@level.a.note', amount: 1 })
@@ -74,7 +74,7 @@ test('JSON editing uses catalog references and leaves locale edits on the Copy t
     { op: 'level.set', level: 'a', path: ['title'], value: note },
     { op: 'level.set', level: 'a', path: ['note'], value: title },
   ])
-  assert.throws(() => edit({ ...source, title: '@course.title' }), /@course.title/)
+  assert.throws(() => edit({ ...source, title: '@game.title' }), /@game.title/)
   assert.throws(() => edit({ ...source, title: 'New prose' }), /Copy tab|文案页/)
 })
 

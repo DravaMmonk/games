@@ -251,7 +251,7 @@ export function NeededNote({ game, needed, onOpen }) {
         {needed.ready.length > 0 && <>{tr('现在可以进行：')}{needed.ready.map((r) => <button key={r.id} type="button" onClick={() => { needed.clear(); onOpen(r.id) }}>{game.levelLabel(r)} {L(r.title)}</button>)}</>}
         {needed.external.map(({ game: id, level }) => {
           const entry = GAMES.find(({ id: candidate }) => candidate === id)
-          return <a key={`${id}:${level}`} href={`../${entry?.href ?? `${id}/index.html`}?level=${encodeURIComponent(level)}`}>{L({ zh: entry?.title ?? id, en: entry?.en ?? id })} · {level}</a>
+          return <a key={`${id}:${level}`} href={`../${id}/index.html?level=${encodeURIComponent(level)}`}>{L(entry?.title ?? id)} · {level}</a>
         })}
       </p>
       <button type="button" className="map-needed-close" onClick={needed.clear} aria-label={tr('关闭')}><X size={14} /></button>

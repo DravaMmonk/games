@@ -1,14 +1,6 @@
-import { S } from 'kernel'
-import { displayItems } from 'image'
-import { extendVocabulary } from 'image'
+import { displayItems, extendVocabulary } from 'image'
 import { imageItems } from './image-items.js'
 export function register(kernel) {
-  kernel.kind('vision-complete/power', { type: 'vision-complete/power', read: value => value, configuration: { power: 'course.json' },
-    vocabulary: base => ({ ...base, game: S.obj({ ...base.game.fields, power: S.opt(S.name('vision-complete/power')) }) }),
-  })
-  kernel.kind('vision-complete/box', { type: 'vision-complete/box', read: value => value, configuration: { box: 'course.json' },
-    vocabulary: base => ({ ...base, game: S.obj({ ...base.game.fields, box: S.opt(S.name('vision-complete/box')) }) }),
-  })
   kernel.kind('vision-complete/imageItems', {
     type: 'level', read: value => value, derived: ['imageItems'],
     assemble: () => ({ imageItems }),

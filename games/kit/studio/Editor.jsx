@@ -15,7 +15,6 @@ import { copyWithoutTextKeys } from '../engine/catalogs.js'
 import { getAt, showPath } from '../engine/ops/edit.js'
 import { copyLevelData, fieldAt, fileForm, formOf, gameFields, opFor, placeFindings, sectionsOf } from './form.js'
 import { holdsLevels } from '../engine/schema.js'
-import { contentFileFor } from '../engine/content.js'
 import { freeName } from './names.js'
 import { Field, FieldTags } from './Fields.jsx'
 import Rows from './Rows.jsx'
@@ -153,11 +152,10 @@ function EraEditor({ content, vocabulary, order, names, levelOptions, e, field, 
 
 // The configuration a workspace edits (games/DESIGN.md 6.7): the package's (package.json, its trays), or the game's
 // (game.json, its course's settings; the chapters have their own board).
-const SIDE_FILES = { package: ['package.json'], game: ['game.json', 'course.json'] }
 
 function GameEditor({ side, content, base, vocabulary, order, names, levelOptions, field, onEdit, onPick }) {
   const { vocabulary: version, open } = content
-  const shows = (k) => k !== 'chapters' && SIDE_FILES[side].includes(contentFileFor([k]))
+  const shows = (k) => side === 'game' && k !== 'chapters'
   const strip = (c) => Object.fromEntries(Object.entries(gameFields(c)).filter(([k]) => shows(k)))
   const schema = { ...vocabulary.game, fields: Object.fromEntries(Object.entries(vocabulary.game.fields).filter(([k]) => shows(k))) }
   const ctx = ctxOf({ vocabulary, order, names, levelOptions })

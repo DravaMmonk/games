@@ -20,7 +20,6 @@ import { ENTRY } from '../vocabulary.js'
 import { TASK_ID, findTask, newTaskId } from '../tasks.js'
 import { T as t } from '../../shell/i18n.js'
 import { isLanguageCode, LANGUAGE_CODE, textKey, withTextKey } from '../i18n.js'
-import { contentFileFor } from '../content.js'
 import { schemaForKind } from '../layers.js'
 import { expandNames } from '../names.js'
 import { sourceValue } from '../catalogs.js'
@@ -311,7 +310,7 @@ export const OPERATIONS = {
 function packageText(ws, args, keys, vocabulary) {
   const { value, schema } = textTarget(ws, args, vocabulary)
   const where = args.in
-  if (where === 'game' && ['game.json', 'course.json'].includes(contentFileFor(keys))) fail(`${showPath(keys)} is the game's own text: edit it with text.set`)
+  if (where === 'game') fail(`${showPath(keys)} is the game's own text: edit it with text.set`)
   if (shapeAt(schema, value, keys, { vocabulary })?.type !== 'text') fail(`${showPath(keys)} is not a text`)
   const text = getAt(value, keys)
   if (!textKey(text)) fail(`${showPath(keys)} is a text in no language: the game has nothing to put over it`)
@@ -344,14 +343,14 @@ Object.assign(OPERATIONS, {
 })
 
 /** Which workspace an operation belongs to (games/DESIGN.md 6.7): 'package' (the levels, their groups and encyclopedia) or 'game' (the course and the game's own texts). */
-export function opScope({ op, path, in: where, layer, chapter }) {
+export function opScope({ op, in: where, layer, chapter }) {
   if (op.startsWith('game.package.')) return 'game'
   if (op.startsWith('chapter.') || chapter !== undefined) return 'game'
   if (op.startsWith('override.')) return layer?.startsWith('@') ? 'game' : 'package'
   if (/^(tag|relation|section)\./.test(op)) return 'package'
   if ( op === 'text.override' || op.startsWith('blueprint.')) return 'game'
   if (op === 'game.set' || op === 'game.unset' || (op === 'text.set' && where === 'game')) {
-    return ['game.json', 'course.json'].includes(contentFileFor(parsePath(path))) ? 'game' : 'package'
+    return 'game'
   }
   return 'package'
 }

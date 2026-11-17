@@ -28,7 +28,7 @@ import { useDragOrder } from './useDragOrder.js'
 const MODES = [['order', '顺序', 'Order'], ['links', '依赖', 'Links'], ['map', '路线图', 'Map']]
 
 /**
- * `course`: the course as course.json writes it (`chapters`, `optional`, `skippable`); `content`: as it plays. `ops`:
+ * `course`: the course as game.json writes it (`chapters`, `optional`, `skippable`); `content`: as it plays. `ops`:
  * the pending changeset; `previewOps`: the operations the content was previewed with; `applying`: being written.
  */
 export default function ChapterBoard({ content, course, e, at, pending, ops = [], previewOps = [], applying = false, vocabulary = null, names = null, places = [], onSelect, onEdit, onOps }) {

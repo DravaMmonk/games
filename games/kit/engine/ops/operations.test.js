@@ -55,7 +55,6 @@ function toy() {
     title: { en: id }, tests: [1], ...(id === 'b1' && { from: 'a2', brief: { en: 'after <level-ref to="a2"></level-ref>', zh: '接着 <level-ref to="a2"></level-ref>' } }), tasks: [{ id }],
   }]))
   writeContentFixture(root, 'toy', { game, glossary, levels }, VOCAB)
-  writeFileSync(join(root, 'games', 'games.js'), "export const GAMES = [{ id: 'toy', levels: 6 }]\n")
   return { root, ws: openWorkspace('toy', root, { vocabulary: VOCAB }) }
 }
 const run = (ws, op, args) => operationsFor(circuitFixtureSchema(VOCAB))[op].apply(ws, args, { vocabulary: VOCAB, domain: DOMAIN })

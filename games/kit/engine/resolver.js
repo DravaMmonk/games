@@ -5,14 +5,13 @@ import { layerManifest, viewRegistrations } from './manifests.js'
 import { chooseRelease, releaseSource, releaseIndex } from './release-store.js'
 import { existenceProblems, publicSurfaces } from './existence.js'
 import { createRequire } from 'node:module'
-import { pathToFileURL } from 'node:url'
 import { installPackageImports, registerPackageLocation } from './plugin-boundaries.js'
 import { createPluginKernel, pluginObjects } from './plugins.js'
 import { tagName } from './tag-identity.js'
 // Read the game configuration and its content package for the build and author tools.
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { assemble, combineConfiguration, contentRoots } from './content.js'
+import { assemble, contentRoots } from './content.js'
 import { OBJECT_SCHEMAS } from './objects.js'
 import { BLUEPRINT } from '../pipeline/blueprint.js'
 import { composeLayers, orderPackages, folders, kindForFolder } from './layers.js'
@@ -31,10 +30,18 @@ export function contentRoot(root) {
 export const packageDirectory = (id = '', root) => resolve(contentRoot(root), 'packages', id)
 export const gameDirectory = (id = '', root) => resolve(contentRoot(root), 'games', id)
 
-/** Optional site presentation data, independent of installed game discovery. */
-export async function gameCatalog(root) {
-  const file = resolve(gameDirectory('', root), 'games.js')
-  return existsSync(file) ? (await import(pathToFileURL(file).href)).GAMES : []
+/** Optional site order, independent of installed game discovery. */
+export function hubOrder(root) {
+  const file = resolve(gameDirectory('', root), 'hub-order.json')
+  return existsSync(file) ? json(file) : []
+}
+
+export function gameCatalog(root) {
+  return hubOrder(root).map(id => {
+    const { title, topic, lede, author, art, dev, hidden, eras, levels } = readContent(id, root)
+    return { id, title, topic, lede, author, art, dev, hidden,
+      levels: eras ? eras.reduce((count, chapter) => count + chapter.levels.length, 0) : levels.length }
+  })
 }
 
 export const contentVocabulary = () => vocabularyFor()
@@ -73,18 +80,8 @@ export function splitGameConfig({ packages, ...game }, root = contentRoot()) {
   return { packageId, packageDir, packageIds: ids, packageRanges: packages, game }
 }
 
-/** Configuration locations for layer-scoped authoring. */
-export const configPaths = (gameDir, packageDir) => ({
-  'package.json': resolve(packageDir, 'package.json'),
-  'course.json': resolve(gameDir, 'course.json'),
-})
-
 export function readGameConfig(id, root = contentRoot()) {
-  const gameDir = gameDirectory(id, root)
-  const { game: meta, ...location } = splitGameConfig(json(resolve(gameDir, 'game.json')), root)
-  const files = { 'game.json': meta, 'course.json': json(resolve(gameDir, 'course.json')) }
-  // Package field ownership is available after loading the selected core entries.
-  return { ...location, files, game: { ...meta, ...files['course.json'] } }
+  return splitGameConfig(json(resolve(gameDirectory(id, root), 'game.json')), root)
 }
 
 /** Named objects declared by a package or game layer, [[name, path]]. */
@@ -235,7 +232,7 @@ function resolveLayersUncached({ game, package: packageId, packages, closure = f
   const qualified = composeLayers(layers, schemas).qualifiedLayers
   for (const layer of layers) if (!layer.missing) layer.manifest = memoResolution(`manifest:${JSON.stringify([locations.get(layer.id), [...locations]])}`, () => layerManifest(qualified.find(item => item.id === layer.id), qualified, schemas, locations.get(layer.id)))
   const platform = kernelIdentity()
-  const config = game ? { ...selected.files['game.json'], packages: selected.packageRanges } : found.get(packageId)?.config
+  const config = game ? { ...selected.game, packages: selected.packageRanges } : found.get(packageId)?.config
   for (const layer of layers) if (!layer.missing) requireRange('kernel', layer.config.kernel, layer.id)
   if (game) requireRange('kernel', config.kernel, owner)
   const identities = { kernel: platform, ...Object.fromEntries(layers.filter(layer => !layer.missing && layer.id !== packageId).map(layer => [layer.id, { version: layer.config.version, hash: layer.manifest.hash }])) }
@@ -253,8 +250,7 @@ function resolveLayersUncached({ game, package: packageId, packages, closure = f
       }
     }
   }
-  if (game) selected.game = combineConfiguration(selected.files)
-  if (game) layers.push(readLayer(`@${game}`, gameDirectory(game, root), { ...config, ...selected.files['course.json'] }, definitions))
+  if (game) layers.push(readLayer(`@${game}`, gameDirectory(game, root), config, definitions))
   if (owner && problems.length && layers.length) layers.at(-1).dependencyProblems = problems
   return { layers, lock, lockStatus: { valid: !problems.length, problems }, identities, ...(selected ?? {}) }
 }
@@ -269,7 +265,6 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
   const game = Object.assign({}, ...configurations)
   delete game.uses
   delete game.packages
-  const packageFields = Object.keys(game).filter((key) => key !== 'vocabulary')
   const entries = (kind) => Object.entries(r[kind] ?? {}).map(([name, value]) => [kind === 'tag' ? tagName(name) : name, value, (kind === 'tag' ? tagName(name) : name).split('/')[0]])
   const overridden = {}
   for (const event of overrideHistory) if (event.kind === 'i18n') {
@@ -280,7 +275,7 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
   const content = assemble({ id, schemas, packageId: packageId ?? layers[0].id, game, qualified: true,
     levels: entries('level'), tags: entries('tag'), relations: entries('relation'), sections: entries('section'),
     contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, r[kind]])), glossary: { groups: [], entries: Object.entries(r.entry).map(([id, value]) => ({ id, ...value })) },
-    blueprint, declarationProblems, existenceChecked: true, overridden, fromDisk: true, objectKinds: schemas.objectKinds, ...(packageId && { packageTarget: { id: packageId, fields: packageFields } }), provenance: { sources, overrideHistory, layerOrder, layerUses },
+    blueprint, declarationProblems, existenceChecked: true, overridden, fromDisk: true, objectKinds: schemas.objectKinds, ...(packageId && { packageTarget: { id: packageId } }), provenance: { sources, overrideHistory, layerOrder, layerUses },
   })
   Object.defineProperty(content, 'resolvedDependencies', { value: { layers: result.qualifiedLayers, surfaces: publicSurfaces(result.qualifiedLayers, schemas) } })
   return content

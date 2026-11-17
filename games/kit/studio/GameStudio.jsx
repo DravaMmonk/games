@@ -101,7 +101,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     return () => window.clearTimeout(timer)
   }, [game, naming, rev, loaded])
   const vocab = useMemo(() => domainVocab && { ...domainVocab, vocabulary: contentVocabulary(domainVocab.vocabulary, content) }, [domainVocab, content])
-  // The course as course.json writes it: the forms and the side panel edit it so.
+  // The course as game.json writes it: the forms and the side panel edit it so.
   const course = useMemo(() => content && { ...content, chapters: content.sourceChapters ?? [] }, [content])
   const names = useMemo(() => rawNames && {
     level: new Map(rawNames.levels.map((l) => [l.id, l])),

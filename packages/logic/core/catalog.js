@@ -9,7 +9,6 @@ const vocabularyProjection = Symbol.for('study-notes.logic-vocabulary')
 
 export const meaning = {
   type: 'level', read: value => value, baselineReports: logicReports,
-  configuration: { words: 'course.json' },
   blueprintRules: ({ objects }) => Object.entries(objects['circuit/part'] ?? {}).filter(([, part]) => part.inside && ['logic/lemma', 'logic/rule'].includes(part.family)).map(([id]) => id.split('/').at(-1)),
   baselineStructure: ({ content }) => Object.keys(content.registries['logic/symbol'] ?? {}).length ? { symbols: content.registries['logic/symbol'] } : {},
   vocabulary(base) {

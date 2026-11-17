@@ -27,7 +27,7 @@ export function packageApp(root = contentRoot()) {
       return exportPath(id, index >= 0 ? importer.slice(0, index) : root)
     },
     async load(id) {
-      if (id === '\0virtual:game-catalog') return `export const GAMES = ${q(await gameCatalog(root))}`
+      if (id === '\0virtual:game-catalog') return `export const GAMES = ${q(gameCatalog(root))}`
       if (id !== '\0virtual:package-displays') return null
       const layers = [...new Map(packageIds(root).flatMap(id => resolveLayers({ package: id, closure: true, root, unlocked: true }).layers).map(layer => [layer.id, layer])).values()]
       const entries = packageEntries(layers, root).filter(entry => entry.view)

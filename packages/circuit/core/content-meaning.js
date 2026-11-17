@@ -34,12 +34,11 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
       const colon = target.indexOf(':')
       return `${target.slice(0, colon + 1)}${part(target.slice(colon + 1))}`
     },
-    rewrite({ value, schema, path, key, object }) {
+    rewrite({ value, schema, key, object }) {
       if (schema?.reference === 'circuit/part' || ['part', 'unlock', 'circuit/part'].includes(schema?.kind) && ['ref', 'name'].includes(schema?.type)) return { value: part(value) }
       if (schema?.type === 'board' || schema?.view === 'board') return { value: Array.isArray(value) && value.every(line => typeof line === 'string') ? mapBlueprintNames(value, type => type.includes('/') || parts.has(type) ? name(type) : type, rule) : value }
       if (['rules', 'using', 'simp'].includes(key) && Array.isArray(value)) return { value: value.map(rule) }
       if (key === 'tray') return { value: Array.isArray(value) ? value.map(name) : name(value) }
-      if (context === 'configuration' && path.at(-2) === 'borrow') return { key: part(key) }
       if (key === 'open' && context === 'configuration') return { value: Object.fromEntries(Object.entries(value).map(([rule, items]) => [rule, items.map(entry => ({ ...entry, part: part(entry.part), level: name(entry.level) }))])) }
       if (key === 'reference' && vocabulary?.level?.fields?.tasks) return { schema: { type: 'obj', fields: { ...vocabulary.level.fields, ...shapeAt(vocabulary.level.fields.tasks.of, value, [], { vocabulary })?.fields, solution: { type: 'board' } } } }
       void object
@@ -55,7 +54,6 @@ export const partMeaning = {
     collections: { 'circuit/tray': { accepts: kind => kind === 'circuit/part', members: value => [...(value.values ?? []), ...(value.menus ?? []).flatMap(menu => menu.values ?? [])], types: () => ['circuit/part'] } },
     owners: content => Object.keys(content.partDefs?.parts ?? {}).map(part => [part, part]),
   },
-  configuration: { primitives: 'course.json', borrow: 'course.json' },
   tools: circuitTools,
   quotes: ({ content }) => Object.values(content.registries?.['circuit/quote'] ?? {}).map(quote => quote.text),
   catalogKey: ({ prefix, path: [field, id, ...rest], segment }) => prefix === 'parts' && field === 'parts' ? ['part', id, ...rest].map(segment).join('.') : null,

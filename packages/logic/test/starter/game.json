@@ -1,7 +1,7 @@
 {
-  "title": "@course.title",
-  "kicker": "@course.kicker",
-  "lede": "@course.lede",
+  "title": "@game.title",
+  "kicker": "@game.kicker",
+  "lede": "@game.lede",
   "kernel": "^0.0.0",
   "packages": {
     "circuit": "^0.0.0",
@@ -10,5 +10,12 @@
   },
   "chapters": [
     "@starter/circuits"
+  ],
+  "words": [
+    "starter/everyday"
+  ],
+  "primitives": [
+    "gNot",
+    "gAnd"
   ]
 }

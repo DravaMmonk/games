@@ -1,4 +1,4 @@
-import { contentRoot, contentTargets, gameCatalog, gameDirectory } from '../games/kit/engine/resolver.js'
+import { contentRoot, contentTargets, gameDirectory, hubOrder } from '../games/kit/engine/resolver.js'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { defineConfig } from 'vite'
@@ -23,7 +23,7 @@ const localPaths = (studio) => ({
         res.setHeader('Location', `${studio ? '/studio.html' : '/game/index.html'}${url.search}`)
         return res.end()
       }
-      const moved = path === '/game.html' ? (await gameCatalog()).find(game => IDS.has(game.id))?.id ?? [...IDS][0] : null
+      const moved = path === '/game.html' ? hubOrder().find(id => IDS.has(id)) ?? [...IDS][0] : null
       if (moved || path === '/game' || path === '/game/') {
         res.statusCode = 302
         res.setHeader('Location', `${moved ? `/game/${moved}` : '/game'}/index.html${url.search}`)

@@ -7,9 +7,8 @@ import { packageDirectory } from './resolver.js'
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { contentRoot, gameDirectory, isDataGame, resolveLayers } from './resolver.js'
+import { contentRoot, gameDirectory, hubOrder, isDataGame, resolveLayers } from './resolver.js'
 import { lockTarget } from './releases.js'
-import { firstText } from './i18n.js'
 import { writeJson } from './ops/json.js'
 
 const fail = (text) => {
@@ -25,30 +24,6 @@ function fill(from, to, words) {
   }
   mkdirSync(to, { recursive: true })
   for (const name of readdirSync(from)) fill(resolve(from, name), resolve(to, put(name)), words)
-}
-
-/** The hub entry of a game (../../games.js): hidden and in development until it is ready to show. */
-const gameText = (value, lang) => value?.[lang] ?? firstText(value)
-
-function register(root, id, content) {
-  const file = resolve(gameDirectory('', root), 'games.js')
-  if (!existsSync(file)) return
-  const text = readFileSync(file, 'utf8')
-  const end = text.lastIndexOf(']')
-  if (end < 0) fail(`${file} has no list of games to add to`)
-  const q = (s) => JSON.stringify(s).replaceAll('"', "'")
-  const en = gameText(content.title, 'en')
-  const title = gameText(content.title, 'zh')
-  const entry = [
-    '  {',
-    `    id: ${q(id)}, href: ${q(`${id}/index.html`)}, title: ${q(title)}, en: ${q(en)}, topic: { zh: ${q(title)}, en: ${q(en)} },`,
-    `    desc: { zh: ${q(gameText(content.lede, 'zh'))}, en: ${q(gameText(content.lede, 'en'))} },`,
-    `    levels: ${content.levels}, dev: true, hidden: true,`,
-    `    page: { icon: 'M16 32h32M32 16v32', description: ${q(`${title} ${en}`)} },`,
-    '  },',
-    '',
-  ].join('\n')
-  writeFileSync(file, `${text.slice(0, end)}${entry}${text.slice(end)}`)
 }
 
 /** Copy an installed package or create an empty package. */
@@ -85,30 +60,34 @@ export function gameOnPackage({ root = contentRoot(), id, from, title }) {
   if (!/^[a-z][a-z0-9-]*$/.test(id ?? '')) fail(`a game id is lowercase letters, digits and dashes: ${id}`)
   const dir = gameDirectory(id, root)
   if (existsSync(resolve(dir, 'game.json'))) fail(`games/${id} is there already`)
-  if (existsSync(resolve(gameDirectory('', root), 'games.js')) && readFileSync(resolve(gameDirectory('', root), 'games.js'), 'utf8').includes(`id: '${id}'`)) fail(`games.js lists ${id} already`)
+  const order = hubOrder(root)
+  if (order.includes(id)) fail(`hub-order.json lists ${id} already`)
   if (!from || !isDataGame(from, root)) fail(`no game ${from} to take the course settings from`)
-  const { packageRanges: packages, files, layers } = resolveLayers({ game: from, root })
-  const { optional: _optional, skippable: _skippable, ...settings } = files['course.json']
-  const sourceChapter = layers.at(-1).objects.find(object => object.kind === 'chapter' && files['game.json'].chapters[0]?.endsWith(`/${object.name}`))
+  const { packageRanges: packages, game, layers } = resolveLayers({ game: from, root })
+  const { kernel, chapters, title: _title, author: _author, lede: _lede, kicker: _kicker, topic: _topic, description: _description,
+    art: _art, icon: _icon, hidden: _hidden, dev: _dev, encyclopedia: _encyclopedia, hero: _hero, optional: _optional, skippable: _skippable, ...settings } = game
+  const sourceChapter = layers.at(-1).objects.find(object => object.kind === 'chapter' && chapters?.[0]?.endsWith(`/${object.name}`))
   const { levels: _, rows: __, ...chapter } = sourceChapter?.value ?? {}
-  const course = settings
   const words = { zh: typeof title === 'string' ? title : title?.zh ?? id, en: typeof title === 'string' ? title : title?.en ?? id }
   mkdirSync(dir, { recursive: true })
   mkdirSync(resolve(dir, 'i18n'), { recursive: true })
-  const keys = refs([course, chapter])
+  const keys = refs([settings, chapter])
   for (const [lang, theirs] of Object.entries(layers.at(-1).catalogs)) {
     const own = Object.fromEntries([...keys].filter((key) => Object.hasOwn(theirs, key)).map((key) => [key, theirs[key]]))
-    own['game.title'] = words[lang] ?? words.en
+    for (const field of ['title', 'lede', 'topic']) own[`game.${field}`] = words[lang] ?? words.en
     own['game.kicker'] = lang === 'zh' ? '开发中' : 'In development'
-    own['game.lede'] = words[lang] ?? words.en
+    own['game.description'] = `${words.zh} ${words.en}`
     writeFileSync(resolve(dir, 'i18n', `${lang}.json`), writeJson(Object.fromEntries(Object.entries(own).sort(([a], [b]) => (a < b ? -1 : 1))), null))
   }
-  writeFileSync(resolve(dir, 'game.json'), writeJson({ kernel: files['game.json'].kernel, packages, chapters: [`@${id}/main`], title: '@game.title', kicker: '@game.kicker', lede: '@game.lede' }, null))
+  writeFileSync(resolve(dir, 'game.json'), writeJson({
+    kernel, packages, chapters: [`@${id}/main`], title: '@game.title', kicker: '@game.kicker', lede: '@game.lede',
+    topic: '@game.topic', description: '@game.description', icon: 'M16 32h32M32 16v32', hidden: true, dev: true, ...settings,
+  }, null))
   mkdirSync(resolve(dir, 'chapters'), { recursive: true })
   writeFileSync(resolve(dir, 'chapters/main.json'), writeJson({ ...chapter, levels: [] }, null))
-  writeFileSync(resolve(dir, 'course.json'), writeJson(course, null))
   lockTarget({ kind: 'game', id }, root)
-  register(root, id, { title: words, lede: words, levels: 0 })
+  const orderFile = resolve(gameDirectory('', root), 'hub-order.json')
+  if (existsSync(orderFile)) writeFileSync(orderFile, JSON.stringify([...order, id], null, 2) + '\n')
   return dir
 }
 

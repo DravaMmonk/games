@@ -7,10 +7,10 @@
     "image": "^0.0.0",
     "table": "^0.0.0"
   },
-  "title": "@course.title",
+  "title": "@game.title",
   "author": "DravaMmonk",
-  "kicker": "@course.kicker",
-  "lede": "@course.lede",
+  "kicker": "@game.kicker",
+  "lede": "@game.lede",
   "chapters": [
     "@state-graph/paper",
     "@state-graph/scout",
@@ -26,5 +26,54 @@
     "state-graph/order",
     "state-graph/classic",
     "state-graph/further"
-  ]
+  ],
+  "primitives": [
+    "table/msum",
+    "table/mmin",
+    "table/mmax",
+    "table/many",
+    "table/const",
+    "table/pass",
+    "table/block",
+    "table/add",
+    "table/not",
+    "table/mul"
+  ],
+  "borrow": {
+    "state-graph/seam": "state-graph/seam"
+  },
+  "optional": [
+    "state-graph/seamline",
+    "state-graph/seamslant",
+    "state-graph/seam",
+    "state-graph/carve",
+    "state-graph/lawn",
+    "state-graph/replace",
+    "state-graph/edit",
+    "state-graph/spell",
+    "state-graph/parity",
+    "state-graph/localalign",
+    "state-graph/piles",
+    "state-graph/pack",
+    "state-graph/knaptable",
+    "state-graph/knapmany",
+    "state-graph/knapmix",
+    "state-graph/coinways",
+    "state-graph/roll",
+    "state-graph/wordbreak",
+    "state-graph/wordcost",
+    "state-graph/segment",
+    "state-graph/maxsub",
+    "state-graph/twokeys",
+    "state-graph/threekeys",
+    "state-graph/enough",
+    "state-graph/ring",
+    "state-graph/treasure",
+    "state-graph/slip",
+    "state-graph/ice"
+  ],
+  "topic": "@game.topic",
+  "art": "grid",
+  "icon": "M14 14h10v10H14zM40 40h10v10H40zM24 19h21v21",
+  "description": "@game.description"
 }

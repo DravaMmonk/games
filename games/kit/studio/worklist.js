@@ -8,7 +8,6 @@ export function ruleOf(text, rules = editorRules()) {
   const body = text.replace(/^(OPEN|REPORT) /, '')
   if (body.startsWith('content: ')) return 'content'
   if (body.startsWith('text ')) return 'copy'
-  if (body.startsWith('hub: ')) return 'hub'
   if (body.startsWith('game.json.open: ')) return 'open'
   const report = /^([\w-]+): /.exec(body)
   if (text.startsWith('REPORT ') && report) return report[1]

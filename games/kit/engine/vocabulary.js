@@ -16,13 +16,13 @@ import { kindSchemas } from './plugin-kinds.js'
 //             them (its `languages`: { lang: (text) → why it cannot be read, or null }, never throwing on bad text)
 // })
 //
-import { S, validate } from './schema.js'
+import { validate } from './schema.js'
 import { dependencyCycle, eraLevels, layout } from '../course.js'
 import { courseDependencies } from './course-dependencies.js'
 import { BLUEPRINT } from '../pipeline/blueprint.js'
 import { taskIdProblems } from './tasks.js'
 
-import { contentSchemas, configurationFiles, contentFileFor, hasCatalogSource } from './content.js'
+import { contentSchemas, hasCatalogSource } from './content.js'
 import { catalogTextProblems } from './content-text.js'
 import { OBJECT_SCHEMAS, referenceResolver, expandReferences } from './objects.js'
 
@@ -49,10 +49,7 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
   if (out.some(problem => problem.rule === 'exists')) return out
   const courseKeys = new Map(), packageKeys = new Map()
   if (hasCatalogSource(content)) {
-    for (const [file, value] of Object.entries(configurationFiles(game))) {
-      if (packageTarget && ['game.json', 'course.json'].includes(file)) continue
-      out.push(...catalogTextProblems(value, vocabulary.game, file, vocabulary, file === 'game.json' || file === 'course.json' ? courseKeys : packageKeys))
-    }
+    if (!packageTarget) out.push(...catalogTextProblems(game, vocabulary.game, 'game.json', vocabulary, courseKeys))
     out.push(...catalogTextProblems(blueprint, BLUEPRINT, 'blueprint.json', vocabulary, courseKeys))
     for (const { id, group: _group, ...entry } of glossary?.entries ?? []) out.push(...catalogTextProblems(entry, ENTRY, `entries/${id}.json`, vocabulary, packageKeys))
     for (const level of levels) out.push(...catalogTextProblems(level, vocabulary.level, `levels/${level.id}.json`, vocabulary, packageKeys))
@@ -89,12 +86,7 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
     add(validate(OBJECT_SCHEMAS[kind], object, { vocabulary, levels: ids, languages, names }), `${kind}/${name}.json`)
     if (kind !== 'tags' && hasCatalogSource(content)) out.push(...catalogTextProblems(object, OBJECT_SCHEMAS[kind], `${kind}/${name}.json`, vocabulary, packageKeys))
   }
-  // Packages validate their authored configuration without requiring game or course fields.
-  const packageFields = packageTarget?.fields ?? []
-  const gameSchema = packageTarget ? S.obj(Object.fromEntries(Object.entries(vocabulary.game.fields).filter(([key]) => contentFileFor([key]) === 'package.json').map(([key, schema]) => [key, { ...schema, optional: true }]))) : vocabulary.game
-  const gameValue = packageTarget ? Object.fromEntries(packageFields.map((key) => [key, resolvedGame[key]])) : resolvedGame
-  const gameProblems = validate(gameSchema, gameValue, { vocabulary, levels: ids, languages, names })
-  add(gameProblems, packageTarget ? 'package.json' : 'game.json')
+  if (!packageTarget) add(validate(vocabulary.game, resolvedGame, { vocabulary, levels: ids, languages, names }), 'game.json')
   if (eras) {
     out.push(...courseProblems(eras))
     const dependencies = courseDependencies(content)

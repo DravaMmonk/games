@@ -25,7 +25,9 @@
   "course.eras.simplifier.chapter.title": "The simplifier",
   "course.eras.tactics.chapter.question": "Can the proof assistant try for itself which rule to use?",
   "course.eras.tactics.chapter.title": "Tactics",
-  "course.kicker": "In development · Build proofs and proof assistants as circuits",
-  "course.lede": "No logic background is required. Start with truth tables, connect inference rules into proofs, and learn assumptions, case analysis, quantifiers and induction as you build a proof assistant.",
-  "course.title": "Q.E.D."
+  "game.description": "证明完毕 Q.E.D.：把形式化证明做成一套解谜关卡。Formal proof as a set of puzzle levels.",
+  "game.kicker": "Build proofs and proof assistants as circuits",
+  "game.lede": "No logic background is required. Start with truth tables, connect inference rules into proofs, and learn assumptions, case analysis, quantifiers and induction as you build a proof assistant.",
+  "game.title": "Q.E.D.",
+  "game.topic": "Formal Proof"
 }

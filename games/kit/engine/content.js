@@ -5,7 +5,7 @@ import { existenceProblems } from './existence.js'
 import { tagKey, tagName } from './tag-identity.js'
 import { kindSchemas, BUILTIN_KIND_NAMES } from './plugin-kinds.js'
 import { encyclopedia } from './encyclopedia.js'
-import { meaningsOf, derivedFields, configurationFile } from './kind-meanings.js'
+import { meaningsOf, derivedFields } from './kind-meanings.js'
 import { registryVocabularies } from './objects.js'
 import { GLOSSARY } from './vocabulary.js'
 import { createRegistries, expandNames, fullName, registryOf } from './names.js'
@@ -21,49 +21,11 @@ export const contentRoots = new WeakMap()
 const sourceContents = new WeakSet()
 export const hasCatalogSource = (content) => sourceContents.has(content)
 
-const gameFields = new Set(['title', 'author', 'kicker', 'lede', 'chapters', 'encyclopedia'])
-const courseFields = new Set(['optional', 'skippable', 'mode', 'open', 'views'])
-
-/** The owner of a field in the assembled game configuration. */
-export function contentFileFor([field]) {
-  if (configurationFile(field)) return configurationFile(field)
-  if (courseFields.has(field)) return 'course.json'
-  if (field === undefined || gameFields.has(field)) return 'game.json'
-  return 'package.json'
-}
-
-/** Split configuration into its editable game, course and package files. */
-export function configurationFiles(configuration) {
-  const files = { 'game.json': {}, 'package.json': {}, 'course.json': {} }
-  for (const [field, value] of Object.entries(configuration)) files[contentFileFor([field])][field] = value
-  return files
-}
-
-export function combineConfiguration(files) {
-  const configuration = {}
-  for (const [file, value] of Object.entries(files)) {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${file}: expected a JSON object`)
-    for (const [field, data] of Object.entries(value)) {
-      if (['version', 'kernel', 'uses', 'packages'].includes(field) || file === 'package.json' && field === 'kind') continue
-      if (contentFileFor([field]) !== file) throw new Error(`${file}: ${field} belongs in ${contentFileFor([field])}`)
-      configuration[field] = data
-    }
-  }
-  return configuration
-}
-
-export const courseLevelCount = (configuration, total) => configuration.eras ? configuration.eras.reduce((count, chapter) => count + chapter.levels.length, 0) : total
-
 /** One content from a game's files. `levels` and named objects: [[id, value, namespace?]] in any order (they are kept sorted by id). */
 export function assemble({ id, packageId = id, schemas, contentObjects = {}, courseNamespace = `@${id}`, game, levels, tags = [], relations = [], sections = [], declarationProblems = [], glossary, blueprint, overridden = {}, fromDisk = false, qualified = false, existenceChecked = false, provenance = {}, packageTarget = null, objectKinds = schemas?.objectKinds }) {
-  game = { ...game }
-  delete game.uses
   if (!schemas) throw new Error('content assembly needs the domain vocabulary')
   const expand = (value, namespace, schema, context = '') => qualified ? value : expandNames(value, namespace, { objects: contentObjects, schema, vocabulary: schemas, context })
-  game = Object.fromEntries(Object.entries(configurationFiles(game)).flatMap(([file, value]) => {
-    const namespace = file === 'game.json' || file === 'course.json' ? courseNamespace : packageId
-    return Object.entries(expand(value, namespace, schemas.game, 'configuration'))
-  }))
+  game = expand(game, courseNamespace, schemas.game, 'configuration')
   levels = levels.map(([name, value]) => [fullName(packageId, name), expand(value, packageId, schemas?.level)])
   glossary = expand(glossary, packageId, GLOSSARY)
   blueprint = expand(blueprint, `@${id}`)

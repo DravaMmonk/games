@@ -1,5 +1,4 @@
 import { CODE_NAME } from './object-name.js'
-import { registerMeaning } from './kind-meanings.js'
 // Modules contribute closed, qualified capabilities. Packages only refer to these names.
 const BUILTIN_CAPABILITY_KINDS = ['valueType', 'operation', 'primitive', 'board', 'display', 'language']
 
@@ -38,7 +37,7 @@ export function createCapabilityRegistry() {
   const displayLoaders = Object.create(null)
   return {
     tables, kinds, schemas, languages, operations, displayLoaders, meanings: [],
-    kind(_name, meaning) { registerMeaning(meaning); this.meanings.push(meaning) },
+    kind(_name, meaning) { this.meanings.push(meaning) },
     add(kind, name, value) {
       if (!CODE_NAME.test(name)) throw new Error(`invalid capability name ${name}`)
       const table = tables[kind] ??= Object.create(null)

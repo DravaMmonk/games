@@ -459,9 +459,9 @@ export function conformance(bp, content, spec) {
   for (const s of slots) if (!levels.has(s.id)) say('bp-levels', s.id, 'the slot has no level')
   for (const id of levels.keys()) if (!slots.some((s) => s.id === id)) say('bp-levels', id, 'the level is in no slot')
   const plain = (v) => JSON.stringify(v, (_key, value) => isText(value) ? Object.fromEntries(textEntries(value)) : value)
-  if (plain(erasOf(bp)) !== plain(content.eras)) say('bp-eras', 'course.json', 'its eras differ from the blueprint’s')
+  if (plain(erasOf(bp)) !== plain(content.eras)) say('bp-eras', 'game.json', 'its eras differ from the blueprint’s')
   const prims = bp.primitives.map((p) => p.part).sort()
-  if (plain(prims) !== plain([...(content.primitives ?? [])].sort())) say('bp-primitives', 'course.json', `the blueprint has ${prims.join(', ')}`)
+  if (plain(prims) !== plain([...(content.primitives ?? [])].sort())) say('bp-primitives', 'game.json', `the blueprint has ${prims.join(', ')}`)
   const parts = new Set([...bp.primitives.map((p) => p.part), ...bp.built.map((b) => b.part)])
   const course = spec.course
   for (const s of slots) {

@@ -17,7 +17,6 @@ import { ArrowDown, ArrowUp, ArrowRightLeft, Braces, ChevronRight, Copy, MousePo
 import { L, tr } from '../shell/i18n.js'
 import { copyWithoutTextKeys, sourceValue } from '../engine/catalogs.js'
 import { getAt, setAt, showPath } from '../engine/ops/edit.js'
-import { contentFileFor } from '../engine/content.js'
 import { fieldAt, fileForm, moved, opFor, placeFindings, taskListOps } from './form.js'
 import { Field } from './Fields.jsx'
 import { AddFields } from './AddFields.jsx'
@@ -105,7 +104,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
   const header = (
     <div className="insp-bar">
       {tabsRow}
-      <Head path={path} trail={trail} file={file} onPick={openCrumb} json={asJson} onToggleJson={readOnly ? null : () => setJson(!json)}
+      <Head content={content} path={path} trail={trail} file={file} onPick={openCrumb} json={asJson} onToggleJson={readOnly ? null : () => setJson(!json)}
         pinned={pinned} onPin={hit && !at?.object ? () => onToggleTab(path) : null}
         about={L(hit?.entry?.about ?? hit?.field?.about ?? hit?.absent?.about)} onRemove={remove} root={root} />
     </div>
@@ -262,16 +261,16 @@ function longConfig(value) {
 }
 
 /** Breadcrumbs always start at the original JSON file. */
-function Head({ path, trail, file, root, onPick, json, onToggleJson, about, pinned, onPin, onRemove }) {
+function Head({ content, path, trail, file, root, onPick, json, onToggleJson, about, pinned, onPin, onRemove }) {
   // A part is a file of its own (parts/<name>.json): its crumbs start at the part.
   const part = file.parts && root?.length === 2 && root.every((key, i) => key === path[i] && key === trail[i]) ? root : null
   const base = part ?? []
   const name = file.object ? objectFileName(file.object.kind, file.object.full, file.object.tagKind, file.object.namespace, file.object.declared)
     : file.level ? `levels/${file.level.slice(file.level.indexOf('/') + 1)}.json`
     : part ? `parts/${part[1].slice(part[1].indexOf('/') + 1)}.json` : file.parts ? 'parts/'
-    : file.glossary ? glossaryFile(file.glossary, path) : contentFileFor(path)
+    : file.glossary ? glossaryFile(file.glossary, path) : content.packageTarget ? 'package.json' : 'game.json'
   const atRoot = path.length === base.length
-  const canOpenRoot = !['course.json', 'package.json'].includes(name)
+  const canOpenRoot = name !== 'package.json'
   const jsonLabel = tr('JSON 源码', 'JSON source')
   const pinLabel = tr('固定配置标签页', 'Pin configuration tab')
   return (

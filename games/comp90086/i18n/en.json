@@ -5,7 +5,9 @@
   "course.eras.2.chapter.label": "Lectures 3–4",
   "course.eras.2.chapter.question": "How do a kernel and a wave change an image?",
   "course.eras.2.chapter.title": "Processing images with fixed rules",
-  "course.kicker": "COMP90086 notes edition",
-  "course.lede": "The interactions inside the COMP90086 notes: try each idea once, predicting first and then seeing what happens.",
-  "course.title": "Computer Vision Notes"
+  "game.description": "计算机视觉笔记 Computer Vision Notes：COMP90086 笔记里的交互。The interactions inside the COMP90086 notes.",
+  "game.kicker": "COMP90086 notes edition",
+  "game.lede": "The interactions inside the COMP90086 notes: try each idea once, predicting first and then seeing what happens.",
+  "game.title": "Computer Vision Notes",
+  "game.topic": "COMP90086 notes edition"
 }

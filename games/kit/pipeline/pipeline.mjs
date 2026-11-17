@@ -84,7 +84,7 @@ function inputs(step, state, scope) {
   const lines = [
     `- Game: ${game} (its folder: ${dir}; modules: ${runtimeIds(content).join(', ')})`,
     `- Repository root: ${contentRoot()} (games/DESIGN.md is ${resolve(import.meta.dirname, '../../DESIGN.md')})`,
-    `- Course material: ${['DESIGN.md', 'CURRICULUM.md'].map((f) => resolve(dir, f)).filter(existsSync).join(', ') || '(none)'}`,
+    `- Course material: ${existsSync(resolve(dir, 'DESIGN.md')) ? resolve(dir, 'DESIGN.md') : '(none)'}`,
     // The sources the blueprint teaches from, each said to be there or not (the agent reads them; a missing one is a gap).
     ...(content.blueprint?.sources?.length ? [`- The blueprint's sources: ${content.blueprint.sources.map((f) => `${resolve(contentRoot(), f)}${existsSync(resolve(contentRoot(), f)) ? '' : ' (missing)'}`).join(', ')}`] : []),
     `- Blueprint: ${content.blueprint ? resolve(dir, 'blueprint.json') : '(none yet)'}`,

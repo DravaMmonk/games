@@ -1,7 +1,7 @@
-// The games hub: one row per game in games.js, with the player's progress, under the shared kit's top bar and hero
+// The games hub: one row per published game, with the player's progress, under the shared kit's top bar and hero
 // (kit/ui.css, kit/bar.js).
 
-import { GAMES } from './games.js';
+import { GAMES } from 'virtual:game-catalog';
 import { currentLang, tr } from './kit/lang.js';
 import { paintText } from './kit/bar.js';
 import { mountHubBar } from './hub-bar.jsx';
@@ -21,12 +21,12 @@ function render() {
   const en = currentLang() === 'en', pick = x => (typeof x === 'string' ? x : en ? x.en : x.zh);
   document.querySelector('#games').innerHTML = GAMES.filter(g => !g.hidden).map((g, i) => {
     const done = Math.min(solvedCount(g.id), g.levels), started = done > 0;
-    return `<a class="game" href="${g.href}">
+    return `<a class="game" href="${g.id}/index.html">
       <div class="game-art"${g.art ? ` data-art="${g.art}"` : ''}></div>
       <div class="game-body">
         <p class="game-meta"><span class="game-no">${String(i + 1).padStart(2, '0')}</span>${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr('开发中', 'In development')}</em>` : ''}${g.author ? `<span class="game-author">${tr('作者', 'By')} <b>${g.author}</b></span>` : ''}</p>
-        <h2 class="game-title">${en ? g.en : g.title}<small lang="${en ? 'zh-CN' : 'en'}">${en ? g.title : g.en}</small></h2>
-        <p class="game-desc">${pick(g.desc)}</p>
+        <h2 class="game-title">${pick(g.title)}<small lang="${en ? 'zh-CN' : 'en'}">${en ? g.title.zh : g.title.en}</small></h2>
+        <p class="game-desc">${pick(g.lede)}</p>
         <div class="game-foot">
           <span class="meter" aria-label="${tr(`已通过 ${done} / ${g.levels} 关`, `${done} of ${g.levels} levels cleared`)}"><i style="width:${(done / g.levels) * 100}%"></i></span>
           <span class="game-count">${tr(`${done} / ${g.levels} 关`, `${done} / ${g.levels} levels`)}</span>

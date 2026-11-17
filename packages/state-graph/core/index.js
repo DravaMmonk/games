@@ -26,7 +26,6 @@ export function tableContext({ content, task, progress }) {
 }
 const meaning = {
  type: 'level', read: value => value, baselineReports: tableReports,
- configuration: { borrow: 'course.json' },
  vocabulary(base) {
   const projected = extendVocabulary(base, vocabulary)
   const fields = { ...base.level?.fields, ...levelSchema.fields }

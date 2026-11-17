@@ -5,13 +5,24 @@
     "circuit": "^0.0.0",
     "image": "^0.0.0"
   },
-  "title": "@course.title",
+  "title": "@game.title",
   "author": "DravaMmonk",
-  "kicker": "@course.kicker",
-  "lede": "@course.lede",
+  "kicker": "@game.kicker",
+  "lede": "@game.lede",
   "chapters": [
     "@comp90086/1",
     "@comp90086/2"
   ],
-  "encyclopedia": []
+  "mode": "notes",
+  "primitives": [
+    "comp90086/line3",
+    "comp90086/add"
+  ],
+  "power": "comp90086/default",
+  "box": "comp90086/default",
+  "topic": "@game.topic",
+  "art": "pipeline",
+  "icon": "M16 32h32M32 16v32",
+  "hidden": true,
+  "description": "@game.description"
 }

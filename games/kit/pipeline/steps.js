@@ -15,10 +15,9 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { checkGame } from '../engine/checks.js'
-import { runtimeOf, readContent, gameDirectory } from '../engine/resolver.js'
+import { runtimeOf, readContent } from '../engine/resolver.js'
 import { moduleProblems, specProblems, validateProblems } from '../engine/contract.js'
 import { capabilities, modules } from '../engine/kernel.js'
-import { hubCount } from '../engine/ops/workspace.js'
 import { auditBlueprint, conformance } from './blueprint.js'
 import { lintCopy } from './lint.js'
 import { lintPedagogy } from './pedagogy.js'
@@ -31,13 +30,10 @@ import { isLanguageCode } from '../engine/i18n.js'
 const KIT_DIR = resolve(import.meta.dirname, '..')
 const finding = (rule, at, says) => ({ rule, at, says })
 
-/** npm run check's lines for a game, as findings (rule: check). The hub's level count is read afresh: an operation in
- *  the same run may have just changed it. */
+/** npm run check's lines for a game, as findings (rule: check). */
 async function checks(id) {
   const content = readContent(id)
-  const hub = resolve(gameDirectory(), 'games.js')
-  const listed = existsSync(hub) ? hubCount(readFileSync(hub, 'utf8'), id) : null
-  const lines = await checkGame(content, { domain: await runtimeOf(content), listed })
+  const lines = await checkGame(content, { domain: await runtimeOf(content) })
   return lines.filter((l) => l.fail).map((l) => finding('check', l.level ?? id, l.text))
 }
 

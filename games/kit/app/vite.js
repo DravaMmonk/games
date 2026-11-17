@@ -6,10 +6,10 @@ import { contentLayers } from '../engine/resolver.js'
 // it opens: content.json beside the page (games/DESIGN.md 6.1: the selected course and its package, assembled by
 // ../engine/content.js). A build writes content.json next to the page; the dev server reads
 // it off the files on every request. So content changes without a build. The page's title, description and tab icon
-// come from the content workspace's optional presentation catalog.
+// come from game.json.
 import { resolve } from 'node:path'
 import { firstText } from '../engine/i18n.js'
-import { contentTargets, gameCatalog, readContent } from '../engine/resolver.js'
+import { contentTargets, hubOrder, readContent } from '../engine/resolver.js'
 import { runtimeIds } from '../engine/runtime.js'
 import { CONTENT_FILE, contentAssets } from './content-assets.js'
 
@@ -44,7 +44,7 @@ export function gameApp({ game = null } = {}) {
       if (id !== '\0virtual:game') return packages.load(id)
       if (game) return `export const loadDomain = async () => (await import(${q(PREFIX + game)})).default`
       const games = contentTargets([], undefined, { game: true })
-      const first = (await gameCatalog()).find(entry => games.some(game => game.id === entry.id))?.id ?? games[0]?.id ?? null
+      const first = hubOrder().find(id => games.some(game => game.id === id)) ?? games[0]?.id ?? null
       const loaders = games.map((g) => `${q(g.id)}: () => import(${q(PREFIX + g.id)})`)
       return `const GAMES = { ${loaders.join(', ')} }
 export const loadDomain = async () => (await GAMES[location.pathname.match(/\\/game\\/([^/]+)\\//)?.[1] ?? ${q(first)}]()).default`
@@ -70,8 +70,11 @@ export const loadDomain = async () => (await GAMES[location.pathname.match(/\\/g
       const id = game ?? idOfUrl(ctx.originalUrl) ?? contentTargets([], undefined, { game: true })[0]?.id
       if (!id) return html
       const content = readContent(id)
-      const entry = (await gameCatalog()).find(entry => entry.id === id)
-      return html.replaceAll('%GAME_TITLE%', entry?.title ?? firstText(content.title) ?? id).replaceAll('%GAME_EN%', entry?.en ?? content.title?.en ?? firstText(content.title) ?? id).replaceAll('%GAME_DESCRIPTION%', entry?.page?.description ?? firstText(content.lede) ?? '').replaceAll('%GAME_ICON%', entry?.page?.icon ?? '')
+      const title = firstText(content.title) ?? id
+      return html.replaceAll('%GAME_TITLE%', content.title?.zh ?? title)
+        .replaceAll('%GAME_EN%', content.title?.en ?? title)
+        .replaceAll('%GAME_DESCRIPTION%', firstText(content.description) ?? '')
+        .replaceAll('%GAME_ICON%', content.icon ?? '')
     },
   }
 }

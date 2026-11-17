@@ -15,7 +15,7 @@ import { checkGame } from '../checks.js'
 import { checkCache } from '../check-cache.js'
 import { catalogReader } from '../catalogs.js'
 import { visibleOverrides } from '../layers.js'
-import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, gameDirectory, packageDirectory } from '../resolver.js'
+import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, packageDirectory } from '../resolver.js'
 import { gameOnPackage, newPackage } from '../scaffold.js'
 import { gameOf } from '../games.mjs'
 import { contentSchemas } from '../content.js'
@@ -26,7 +26,7 @@ import { drawDeps } from '../deps.js'
 import { getAt, parsePath, showPath } from './edit.js'
 import { objectOf, courseRoute } from '../objects.js'
 import { operationsFor } from './operations.js'
-import { hubCount, openGame, openPackage } from './workspace.js'
+import { openGame, openPackage } from './workspace.js'
 import { adopt, lastUndoable, readLog, runChangeset, undo } from './changeset.js'
 import { driftOf, headOf } from './log.js'
 import { replaceOps, searchContent } from './search.js'
@@ -39,9 +39,8 @@ export const lacking = (tool, args) => [
 
 // The tools use the repository layout, or a copy with games/ and packages/ under GAMES_ROOT.
 const ROOT = contentRoot()
-const listed = (id) => typeof id === 'object' || !existsSync(resolve(gameDirectory('', ROOT), 'games.js')) ? null : hubCount(readFileSync(resolve(gameDirectory('', ROOT), 'games.js'), 'utf8'), id)
 // The repository's games keep their checks between calls (../check-cache.js); a copy of them (GAMES_ROOT) is checked afresh.
-const kept = (id) => (!workspaceCheckCache() || typeof id === 'object' || !existsSync(resolve(gameDirectory('', ROOT), 'games.js')) ? null : checkCache(id))
+const kept = (id) => (!workspaceCheckCache() || typeof id === 'object' ? null : checkCache(id))
 const git = (...args) => execFileSync('git', ['-C', ROOT, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
 // A game the studio's game workspace makes is known at once: it is read off the folder, not off the list loaded at start.
 const dataGames = () => contentTargets([], ROOT, { game: true }).map(target => target.id)
@@ -166,7 +165,7 @@ const tools = {
       return dataGames().map((id) => {
         const resolved = resolveLayers({ game: id, root: ROOT })
         const content = readContent(id, ROOT, { resolution: resolved })
-        return { id, title: content.title, package: resolved.packageId, kernel: resolved.files['game.json'].kernel, packages: resolved.packageRanges, lock: resolved.lock, lockStatus: resolved.lockStatus }
+        return { id, title: content.title, package: resolved.packageId, kernel: resolved.game.kernel, packages: resolved.packageRanges, lock: resolved.lock, lockStatus: resolved.lockStatus }
       })
     },
   },
@@ -192,7 +191,7 @@ const tools = {
     params: { game: 'string', mutants: 'boolean?' },
     async run({ game, mutants = false }) {
       const content = readTarget(game)
-      const lines = await checkGame(content, { domain: await runtimeOf(content), listed: listed(game), mutants, cache: kept(game), root: ROOT })
+      const lines = await checkGame(content, { domain: await runtimeOf(content), mutants, cache: kept(game), root: ROOT })
       return { ok: !lines.some((l) => l.fail), failures: lines.filter((l) => l.fail).map((l) => l.text), lines: lines.map((l) => `${l.fail ? 'FAIL ' : ''}${l.text}`) }
     },
   },

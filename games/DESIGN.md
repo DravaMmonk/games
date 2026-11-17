@@ -25,7 +25,7 @@
 
 **包提供对象，游戏编排课程。** 关卡设计在 `packages/<包>/` 里做：关卡、元件、词条各自独立，标签把同种对象收成集合，关系写先修和元件取代。标签没有教学含义，也不规定一关只能属于一个组；同一关可以出现在几个标签里。包之间可以依赖和覆盖，基础元件可以放进库包共用（第 6.1 节）。
 
-**章是游戏层的内核对象。** 游戏配置 `game.json` 的 `chapters` 是 `list<chapter>`，给出章的全名和顺序。每章独立写在 `games/<游戏>/chapters/<章>.json`，全名为 `@<游戏>/<章>`。章的 `levels: list<level>` 保存具体关卡全名，`rows` 保存路线图。章文案和现有 `machine` 字段随章保存。原本用数字 id 编号的章增加 `number`，保留现有地图编号。游戏配置的 `encyclopedia: list<section>` 保留百科分组的显示顺序，分组内顺序取其 `values`。`course.json` 保留 `optional`、`skippable`、开局配置及工作单。导入标签会一次性展开并写入章的列表，之后由游戏维护顺序。
+**章是游戏层的内核对象。** 游戏配置 `game.json` 的 `chapters` 是 `list<chapter>`，给出章的全名和顺序。每章独立写在 `games/<游戏>/chapters/<章>.json`，全名为 `@<游戏>/<章>`。章的 `levels: list<level>` 保存具体关卡全名，`rows` 保存路线图。章文案和现有 `machine` 字段随章保存。原本用数字 id 编号的章增加 `number`，保留现有地图编号。游戏配置的 `encyclopedia: list<section>` 保留百科分组的显示顺序，分组内顺序取其 `values`。`game.json` 也保存 `optional`、`skippable`、开局配置及工作单。导入标签会一次性展开并写入章的列表，之后由游戏维护顺序。
 
 ```json
 // games/qed/game.json
@@ -180,7 +180,7 @@
 
 问题保留 `rule`、`layer`、`kind`、`target`、`member?`、`reason`、`at`、`says`，另有 `object: { kind, name, member?, override? }` 与 `path`。存在性问题的 `rule` 为 `exists`，`reason` 为 `missing`、`ambiguous` 或 `undeclared dependency`。`name` 是对象全名，标签带成员类型；覆盖位置设 `override: true`，覆盖目标本身的 `path` 为空串。字段路径如 `tasks[0].solution`；配置位置如 `{ kind: "package", name: "example" }` 与 `uses[0]`。同一原始字段只报告一次，不同对象、成员类型和字段分别报告。Studio 直接使用结构化位置。
 
-在 `trace-viewer/` 运行 `npm run check -- <游戏>` 或 `npm run check -- --package <包>`。包逐关独立检查，游戏另查编排和进度。省略目标时查全部游戏及未被游戏选用的包。空内容工作区也能执行。技术问题可记入游戏 `course.json` 的 `open` 工作单，新问题和已解决而未移除的项目使检查失败；教学建议由评审处理。
+在 `trace-viewer/` 运行 `npm run check -- <游戏>` 或 `npm run check -- --package <包>`。包逐关独立检查，游戏另查编排和进度。省略目标时查全部游戏及未被游戏选用的包。空内容工作区也能执行。技术问题可记入游戏 `game.json` 的 `open` 工作单，新问题和已解决而未移除的项目使检查失败；教学建议由评审处理。
 
 ### 5.1 关卡开发规范
 
@@ -278,7 +278,7 @@
 
 **检查命令**（`trace-viewer/`）：`npm run check -- <游戏>` 查课程和选入的关；`npm run check -- --package <包>` 不生成课程，先查对象、引用、依赖和覆盖，再查元件的类型与设置，最后逐关检查参考解通过、naive 解失败。课程解锁、托盘引入来源、章和进度只在游戏上查。不写目标时查全部游戏，再查没有游戏玩的包；同名时用 `--game`、`--package` 区分。
 
-包和游戏各有 `i18n/<lang>.json`、`changes.jsonl`。游戏另有 `game.json`、`course.json`、`chapters/`，可有作者侧 `blueprint.json`、`pipeline.json`。`resolver.js` 读盘，`content.js` 组装；页面加载构建出的 `content.json` 和语言文件，`publish:content` 检查后只发布内容。文件按职责放，开发按对象做：Studio 聚合对象的定义、文案、标签、关系和覆盖，不要求作者来回找文件。
+包和游戏各有 `i18n/<lang>.json`、`changes.jsonl`。游戏另有 `game.json`、`chapters/`，可有作者侧 `blueprint.json`、`pipeline.json`。`resolver.js` 读盘，`content.js` 组装；页面加载构建出的 `content.json` 和语言文件，`publish:content` 检查后只发布内容。文件按职责放，开发按对象做：Studio 聚合对象的定义、文案、标签、关系和覆盖，不要求作者来回找文件。
 
 ### 6.1.1 版本、锁定、发布与解析器
 
@@ -304,6 +304,8 @@ npm run deps -- upgrade --game qed [package]
 归档是源目录加生成的 `manifest.json`，文件名 `<包>-<版本>.zip`。manifest 记录种类、版本、范围、公开面、文件哈希、代码与视图导出、兼容性和受影响的依赖方。`lock.json` 随包保存，作者日志归档并校验文件哈希，日志不参与内容身份。依赖目录、版本库、OS 元数据和临时锁排除。词汇表随平台版本发布。
 
 Studio 从工具元数据读取范围、锁定、manifest 与兼容性。包记录含 `compatibility` 的 `type`、`changes`、`added`、`previous`、`next`、`proposed`、`affected`、`behaviorStatus`；预览只比较结构，行为状态为 `pending-publication`。
+
+**游戏配置与首页。** 每款游戏的配置写在 `game.json`。包通过词汇表声明自己添加的配置字段，例如 `image` 的 `box` 和 `power`，以及 `state-graph` 的 `borrow`。首页构建按 `games/hub-order.json` 的游戏 id 顺序读取配置，按章计算关卡数，卡片显示 `title`、`topic`、`lede`、`author` 和 `art`。页面标题、搜索引擎描述和标签页图标分别取 `title`、`description` 和 `icon`。`dev` 给卡片加开发中标记，`hidden` 隐藏卡片，游戏仍会构建。入口文案用 `@game.*` 键，写在游戏的语言表里。
 
 ### 6.2 对象类型、标签与新建对象
 
@@ -798,7 +800,7 @@ npm run test:zero
 
 选包、覆盖也参与预览、失败恢复、日志、撤销和并发校验。加包前须选全直接依赖，去包时仍有编排关卡或别包依赖它就拒绝，不能移除最后一个包。改变选包立即重新组装内容并选择运行包，写入只动游戏层，写盘前还核对所读包是否被并发修改。
 
-**一个变更集怎么跑**（`ops/changeset.js`）：每个操作先按它参数的 schema 查（提到的关必须存在），再依次改内存里的内容，哪一个失败整个变更集作废；然后按打开的包或游戏跑对应的 `npm run check` 检查（词汇表、课程审计、文案和链接、包检查：参考解跑测试、naive 解失败）。全部清零才写盘，否则什么都不写，并列出每一处问题。写盘时只动改了的行（两格缩进，112 列内的简单对象或列表紧凑写入），游戏 `games.js` 里的关卡数跟着改，修改日志 `changes.jsonl` 加一行，记下撤销它的变更集。写盘、记日志在当前层的锁里做（`changes.lock`，写着持有它的进程；进程死了留下的锁会被接手）：盘上的文件和打开游戏时读到的不一样就拒绝（另一个写者先改了）；调用方给了 `base`（它看到的日志最后一条的序号，`preview`、`log` 给出 `head`；studio 总是给）而日志已经往前走了，也拒绝。撤销只从那一条留下的状态往回改：它改过的文件此后又变了（手改、后来的修改），就拒绝。文件在操作集之外被改过，`log`、`npm run check` 报出来（不算失败），`npm run op -- <游戏> adopt --why …` 把现状收进日志。
+**一个变更集怎么跑**（`ops/changeset.js`）：每个操作先按它参数的 schema 查（提到的关必须存在），再依次改内存里的内容，哪一个失败整个变更集作废；然后按打开的包或游戏跑对应的 `npm run check` 检查（词汇表、课程审计、文案和链接、包检查：参考解跑测试、naive 解失败）。全部清零才写盘，否则什么都不写，并列出每一处问题。写盘时只动改了的行（两格缩进，112 列内的简单对象或列表紧凑写入），修改日志 `changes.jsonl` 加一行，记下撤销它的变更集。写盘、记日志在当前层的锁里做（`changes.lock`，写着持有它的进程；进程死了留下的锁会被接手）：盘上的文件和打开游戏时读到的不一样就拒绝（另一个写者先改了）；调用方给了 `base`（它看到的日志最后一条的序号，`preview`、`log` 给出 `head`；studio 总是给）而日志已经往前走了，也拒绝。撤销只从那一条留下的状态往回改：它改过的文件此后又变了（手改、后来的修改），就拒绝。文件在操作集之外被改过，`log`、`npm run check` 报出来（不算失败），`npm run op -- <游戏> adopt --why …` 把现状收进日志。
 
 **命令行**（`trace-viewer` 目录下）：
 
@@ -856,7 +858,7 @@ npm run op -- --package <包> adopt --why "…"                将外部迁移�
 
 **一个 agent 只拿到它这一步的东西。** `npm run pipeline -- <游戏> run <步>` 起一个新的 `claude -p`，在一个空的临时目录里：brief 加上这一步的输入（文件的路径、上一次没过的闸门、评审留给这一步要改的发现、这一次的范围 `--scope`），能读任何文件，只能在自己的目录里写，只能运行这一步的几个命令（`./op` 跑变更集，`./check`，`./gate` 这一步的闸门，`./deps`，`./eras` 蓝图排出的内部 `eras` 投影（写课程时转换为 `chapters` 与关系），`./lint`；评审没有 `./op`）。跑完记下用量、每个命令跑了几次和失败了几次、写进去的变更集（修改日志的序号）和它的报告，再跑一遍闸门；全部记进 `pipeline.json`。没过就再跑一次：上一次的闸门失败和评审的发现成了下一次的输入。`domain` 这一步是代码，不由内容 agent 做；评审的发现修好以后，用 `npm run pipeline -- <游戏> resolve <k> --why "…"` 记下是哪个变更集修的，或者再评审一次。`status` 列出每一步的闸门和跑过几次，`brief <步>` 打出一个 agent 会拿到的全部文字。
 
-**课程蓝图**（`blueprint.json`，schema 是 `kit/pipeline/blueprint.js` 的 `BLUEPRINT`）：专题、学习者、终点和这一次做到哪（`scope`，往后的写进 `deferred`）；从机制目录里选的机制；机体阶梯（每台机体会什么、缺什么）；**知识点**（`knowledge`：本领域的术语、说的是什么、出处、撞上的墙、纠正的错误、是讲义的理论还是技术内容；第 4.1 节）；原始元件（每个写明为什么接不出来）和搭出的元件（由什么搭成），原始元件是工具，不是知识点；每一章是一串系列（地基、练习、专题、挑战；同一个 `parallel` 的几个系列是一个并行组），每个系列是一串 slot：一个 slot 就是将来的一关，写它的 id、做什么（`task`）、玩家要回答的问题（`question`）、从问题到答案的思维链（`chain`，至少两步）、带来的那一个知识点（`teaches`；主线上只能是讲义的理论）或练习露出的侧面（`facet`）、加的原始元件、搭出的元件、参考解站在哪些元件和知识点上（`uses`）、练习变化的是哪个维度（第 2.3 节），挑战写 naive 解；最后是向机制包和平台提的需求（决策三的需求通道）。`erasOf` 生成旧的内部章节、编号与连线投影；它仍是流水线蓝图比对的格式，不是 `course.json` 的写盘格式，不能直接把它写成课程。
+**课程蓝图**（`blueprint.json`，schema 是 `kit/pipeline/blueprint.js` 的 `BLUEPRINT`）：专题、学习者、终点和这一次做到哪（`scope`，往后的写进 `deferred`）；从机制目录里选的机制；机体阶梯（每台机体会什么、缺什么）；**知识点**（`knowledge`：本领域的术语、说的是什么、出处、撞上的墙、纠正的错误、是讲义的理论还是技术内容；第 4.1 节）；原始元件（每个写明为什么接不出来）和搭出的元件（由什么搭成），原始元件是工具，不是知识点；每一章是一串系列（地基、练习、专题、挑战；同一个 `parallel` 的几个系列是一个并行组），每个系列是一串 slot：一个 slot 就是将来的一关，写它的 id、做什么（`task`）、玩家要回答的问题（`question`）、从问题到答案的思维链（`chain`，至少两步）、带来的那一个知识点（`teaches`；主线上只能是讲义的理论）或练习露出的侧面（`facet`）、加的原始元件、搭出的元件、参考解站在哪些元件和知识点上（`uses`）、练习变化的是哪个维度（第 2.3 节），挑战写 naive 解；最后是向机制包和平台提的需求（决策三的需求通道）。`erasOf` 生成旧的内部章节、编号与连线投影；流水线使用此投影与游戏配置和章节对象比对。
 
 **蓝图审计**（`auditBlueprint`）在一关都还没有的时候就按第 1、2、4.1 节查编排：`bp-refs`、`bp-unique` 名字都有定义、不重复；`bp-source` 每个知识点注出处，出处是 `sources` 里的一份材料；`bp-part-point` 知识点不是原始元件（id 或术语不是原始元件的 id 或名字：工具不是知识；搭出的元件可以就是知识点）；`bp-knowledge` 每个 slot 都在做某个知识点（带来一个，或在 `uses` 里练一个），什么知识点也不做的 slot 是凑数；`bp-taught` 每个要练的知识点有一处带来；`bp-trivial` 一句话就懂的点（`intuitive`）不做成关、不当练习的内容，`bp-mentioned` 它们只由某一关提到（`mentions`）；`bp-depends` 一个点搭在其上的点，在每条通向它的路上都先出现；`bp-shallow` 难点（`hard`）之前至少有两关在教它依赖的点；`bp-core-none` 每章标出核心；只报告的 `bp-ladder`：主线上通往核心的关不到一半；`bp-main-tech` 主线（地基、练习）上的关不带来、不用技术内容的知识点，它们只在可选专题里；`bp-adds-teaches` 加原始元件的 slot 带来需要它的那个知识点；`bp-facet` 练习 slot 写出它露出的新侧面；`bp-question` 每个 slot 写出问题和至少两步的思维链；`bp-point` 每个知识点写出术语、出处和 `basis`（schema 只管能写什么，好让这些字段出现之前写成的蓝图仍然读得进来；必须写全由审计要求）；`bp-placed` 每个原始元件、搭出的元件恰好有一处带来；`bp-order` 一个 slot（和一个搭出的元件）站在的东西，在通向它的每条路上都已经有了（按先修关系，并行组的另一路不算）；`bp-first-use` 知识点在带来它的那一关用上；`bp-unused` 搭出的元件后面有人站在它上面；`bp-practice` 一组练习不重复维度、以组合或辨真伪收尾；`bp-branch` 主线上前后两个系列，后一个用不着前一个的任何东西时，该是并行组；`bp-parallel` 并行组两到三路、互不依赖；`bp-abstraction` 一章最后一个系列站在这一章搭出的元件上；`bp-machine` 用到的能力机体会；`bp-challenge` 挑战不带新东西、有 naive 解；`bp-tray` 有几套托盘时每一章都写它用哪一套。只报告、由人判断的：`bp-reuse`（一个知识点在再来两个知识点之前没有再用上，或主线后面再没用到：它是不是通过部件复用、或由后面的关链回来）、`bp-bare`（只放它带来的东西）、`bp-lonely`（一个知识点后面没有练习关：它的测试和任务够不够，看第 2.3 节）、`bp-heavy`（一个知识点占了四关以上：每关都是新侧面吗）、`bp-open`（还开着的需求）。
 
@@ -882,7 +884,7 @@ npm run op -- --package <包> adopt --why "…"                将外部迁移�
 
 以下实例记录各课程曾采用的设计选择，供比较，不是其他课程必须照搬的模板。
 
-按本手册从头设计的新关卡树见 [`state-graph/CURRICULUM.md`](state-graph/CURRICULUM.md)。下面是现有关卡按代际重排后的样子，在新关卡树做出来之前它是线上的版本。
+按本手册从头设计的新关卡树见 [`state-graph/DESIGN.md`](state-graph/DESIGN.md)。下面是现有关卡按代际重排后的样子，在新关卡树做出来之前它是线上的版本。
 
 **原始元件。** 动态规划讲的是表、状态和顺序，不是算术，所以算术和逻辑元件都是原始元件，各自在一关里第一次出现：
 - 汇合器及其型号（加起来、取较小、取较大、任一是）；

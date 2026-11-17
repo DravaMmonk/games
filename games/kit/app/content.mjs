@@ -6,13 +6,12 @@ import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { checkGame } from '../engine/checks.js'
 import { closeGames } from '../engine/games.mjs'
-import { gameCatalog, runtimeOf, readContent } from '../engine/resolver.js'
+import { runtimeOf, readContent } from '../engine/resolver.js'
 import { ALL_GAMES, knownGames } from '../engine/cli-args.js'
 import { contentAssets } from './content-assets.js'
 
 const DIST = resolve(import.meta.dirname, '../../../trace-viewer/dist-games')
 const asked = process.argv.slice(2)
-const catalog = await gameCatalog()
 let refused = 0
 for (const id of knownGames(asked.length ? asked : ALL_GAMES, 'npm run publish:content [-- <game>…]')) {
   const page = resolve(DIST, id)
@@ -22,7 +21,7 @@ for (const id of knownGames(asked.length ? asked : ALL_GAMES, 'npm run publish:c
     continue
   }
   const content = readContent(id)
-  const failed = (await checkGame(content, { domain: await runtimeOf(content), listed: catalog.find((g) => g.id === id)?.levels })).filter((l) => l.fail)
+  const failed = (await checkGame(content, { domain: await runtimeOf(content) })).filter((l) => l.fail)
   if (failed.length) {
     console.log(`${id}: not published, ${failed.length} problem(s) (npm run check -- ${id})`)
     refused += 1

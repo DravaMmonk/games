@@ -90,7 +90,6 @@ test('checked archives and workspace sources use the same reader, manifests and 
     for (const field of ['config', 'objects', 'overrides', 'catalogs', 'manifest']) assert.deepEqual(archive[field], source[field], field)
     assert.equal(archive.source, 'archive')
     put(root, 'games/demo/game.json', { kernel: '^0.0.0', packages: { library: '^1.0.0' } })
-    put(root, 'games/demo/course.json', {})
     lockTarget({ id: 'demo', kind: 'game' }, root)
     const workspace = openGame('demo', root)
     workspace.game = { ...workspace.game, chapters: [] }

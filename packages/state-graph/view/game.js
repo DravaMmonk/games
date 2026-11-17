@@ -87,7 +87,7 @@ export default function tableGame(content, table = tableWorks(content)) {
     Hero: ui['state-graph/hero'],
     chapters: CHAPTERS.map((chapter, id) => ({ id, kicker: chapter.kicker, title: chapter.name, question: chapter.desc, track: TRACKS.get(chapter.era), rows: ROWS.get(chapter.era) })),
     levels,
-    // Numbered as in CURRICULUM.md: 1-4 on an era's main path, S2 in a topic, C1 for a challenge.
+    // Numbered as in DESIGN.md: 1-4 on an era's main path, S2 in a topic, C1 for a challenge.
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),
     intro: (level) => level.intro,
     IntroFigure: ui['state-graph/introduction'],

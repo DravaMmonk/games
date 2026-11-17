@@ -1766,6 +1766,7 @@ export const gameSchema = {
     },
     "borrow": {
       "type": "map",
+      "key": { "type": "ref", "kind": "circuit/part" },
       "of": {
         "type": "level"
       },

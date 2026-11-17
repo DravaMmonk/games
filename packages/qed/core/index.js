@@ -6,7 +6,6 @@ const vocabularyProjection = Symbol.for('study-notes.qed-vocabulary')
 export function register(kernel) {
   kernel.kind('qed/readings', {
     type: 'qed/wordset', read: value => value,
-    configuration: { hero: 'game.json' },
     derived: ['wordSets'],
     assemble: ({ registries }) => ({ wordSets: registries['qed/wordset'] ?? {} }),
     packageConfiguration: ({ content }) => ({ words: Object.keys(content.registries['qed/wordset'] ?? {}) }),

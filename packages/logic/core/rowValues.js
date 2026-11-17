@@ -52,8 +52,8 @@ export function ruleLines(level, ways, read) {
   const text = (f) => read(say(f, level.notation))
   const { make, take } = declaredRules(level, ways, (f) => f)
   return [
-    ...make.map((rule, k) => ({ name: read(T('引入')), mark: k + 1, text: ruleText(rule, text) })),
-    { name: read(T('消去')), text: ruleText(take, text) },
+    ...make.map((rule, k) => ({ name: read(T('引入规则', 'Intro rule')), mark: k + 1, text: ruleText(rule, text) })),
+    { name: read(T('消去规则', 'Elim rule')), text: ruleText(take, text) },
   ]
 }
 

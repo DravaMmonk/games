@@ -19,6 +19,8 @@ export function caseCells(level) {
       // A case's situation: a set of premises, each one a premise.
       name: 'given', shape: 'tree-list', label: T('情形', 'Premises'), align: 'start', build,
       placeholder: T('无'), addLabel: T('添加前提'), scope: `${level.id}:case`,
+      // Its premises read as a derivable situation's (rowValues.js): 「；」 between them, then 为真。 or 均为真。.
+      end: (n) => (n > 1 ? T('均为真。') : T('为真。')), blank: T('未写完'),
       title: (k) => T(`第 ${k + 1} 条条例的前提`, `A premise of test case ${k + 1}`),
       fixed: fixed('given'), fixedLabel: T('情形（固定）', 'Premises (fixed)'), kept: (row) => row.keep,
       write: (row, given) => ({ ...row, given: [...(row.keep ?? []), ...given.filter((s) => !row.keep?.includes(s))] }),

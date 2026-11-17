@@ -56,4 +56,4 @@
 .ks-pick-item { display: inline-flex; align-items: center; gap: var(--sp-1); max-width: 100%; }
 .ks-pick-drop { display: inline-flex; padding: var(--sp-1); border: 0; color: var(--muted); background: transparent; cursor: pointer; }
 .ks-pick-drop:hover { color: var(--fail); }
-.ks-pick-add:hover { color: var(--accent-ink); border-color: var(--accent); }
+

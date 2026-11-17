@@ -555,10 +555,10 @@ level-ref, wiki-ref { display: inline; }
 .rr-sep { padding: 0 var(--sp-3) 0 var(--sp-1); color: var(--faint); }
 .rr-end { margin-left: var(--sp-4); color: var(--muted); font-size: 13.5px; white-space: nowrap; }
 .rr-slot, .ks-pick-sentence:not(:disabled) { cursor: pointer; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
-.rr-slot:not(:disabled):hover, .ks-pick-sentence:not(:disabled):hover { border-color: var(--rule); }
+.rr-slot:not(:disabled):not(.is-read):hover, .ks-pick-sentence:not(:disabled):hover { border-color: var(--rule); }
 .rr-slot[aria-expanded='true'], .ks-pick-sentence[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
 .rr-slot.is-bad { color: var(--fail); border-color: var(--fail); background: color-mix(in srgb, var(--fail) 7%, var(--paper)); }
-.rr-slot:disabled { cursor: default; }
+.rr-slot:disabled, .rr-slot.is-read { cursor: default; }
 .rr-add { margin-left: var(--sp-4); transition: color 140ms ease, border-color 140ms ease, background 140ms ease; }
 .rr-body > .rr-add:first-child, .rr-lead + .rr-add { margin-left: 0; }
 .rr-add:hover, .rr-more:hover { color: var(--accent-ink); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
@@ -583,21 +583,19 @@ level-ref, wiki-ref { display: inline; }
    on a desktop. */
 :root { --sent-h: 30px; --sent-px: var(--sp-4); --sent-fs: 14px; }
 @media (max-width: 760px) { :root { --sent-h: 40px; --sent-px: var(--sp-5); --sent-fs: 15.5px; } }
-.rr-slot, .rr-goal, .ks-pick-sentence, .ff-fixed, .ck-sentence {
+.rr-slot, .rr-goal, .ks-pick-sentence, .ff-fixed {
   box-sizing: border-box; min-height: var(--sent-h); max-width: 100%; padding: var(--sp-1) var(--sent-px);
   display: inline-flex; align-items: center; justify-content: flex-start;
   border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas);
   font: var(--sent-fs)/1.35 var(--serif); text-align: left; word-break: keep-all; overflow-wrap: break-word;
 }
-.rr-slot.is-blank, .ks-pick-sentence.is-empty, .rr-add, .ks-pick-add {
+.rr-slot.is-blank, .ks-pick-sentence.is-empty, .rr-add {
   border: 1px dashed var(--rule); color: var(--muted); background: transparent; font-family: var(--sans); font-size: calc(var(--sent-fs) - 1.5px);
 }
-.rr-add, .ks-pick-add { box-sizing: border-box; min-height: var(--sent-h); min-width: var(--sent-h); padding: 0 var(--sent-px); display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); border-radius: var(--r-md); cursor: pointer; }
+.rr-add { box-sizing: border-box; min-height: var(--sent-h); min-width: var(--sent-h); padding: 0 var(--sent-px); display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); border-radius: var(--r-md); cursor: pointer; }
 /* One sentence alone: on a phone the whole row, its text to the left; on a desktop as wide as it reads. */
 @media (max-width: 760px) { .ks-pick-one, .ff-fixed { display: flex; width: 100%; } }
 .ks-pick-one > .ks-pick-sentence { flex: 1; }
-/* Several in a row: short boxes that wrap. */
-.ks-pick-list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
 
 /* What a check or a run came to (Verdict.jsx). */
 .verdict { margin: 0; color: var(--muted); font-size: var(--fs-small); line-height: 1.6; }

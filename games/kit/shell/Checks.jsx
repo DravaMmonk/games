@@ -1,4 +1,4 @@
-import { TreeButton, TreeList } from '../strip/TreePick.jsx'
+import { SentenceRow, TreeButton, TreeList } from '../strip/TreePick.jsx'
 import { ChoiceField, Field, InlineChoice } from './FormFields.jsx'
 import RowTable from './RowTable.jsx'
 import Verdict from './Verdict.jsx'
@@ -7,8 +7,8 @@ import { L } from './i18n.js'
 const read = (cell, row) => cell.read ? cell.read(row) : row[cell.name]
 const placeholder = (cell) => <span className="ck-placeholder">{L(cell.placeholder)}</span>
 
-// In a form, a list of sentences shows in the kit's sentence boxes (shell.css), short ones in a row; a table keeps text.
-const sentences = (cell, value) => <span className="ks-pick-list">{value.map((item, k) => <span key={k} className="ck-sentence">{L(cell.build.text(item))}</span>)}</span>
+// In a form, a list of sentences reads as a rule row (strip/TreePick.jsx SentenceRow); a table keeps text.
+const sentences = (cell, value) => <SentenceRow texts={value.map((item) => L(cell.build.text(item)))} end={cell.end} />
 
 function display(cell, row) {
   const value = read(cell, row)
@@ -33,7 +33,7 @@ function edit(cell, row, set, at, phone) {
     case 'tree':
     case 'tree-list': {
       const tree = { ...props, build: cell.build, title: cell.title(at), scope: `${cell.scope}:${at}` }
-      return cell.shape === 'tree' ? <TreeButton placeholder={cell.placeholder} {...tree} /> : <TreeList addLabel={cell.addLabel} kept={cell.kept?.(row)} {...tree} />
+      return cell.shape === 'tree' ? <TreeButton placeholder={cell.placeholder} {...tree} /> : <TreeList addLabel={cell.addLabel} kept={cell.kept?.(row)} end={cell.end} blank={cell.blank} {...tree} />
     }
   }
 }

@@ -13,7 +13,7 @@
     "goal": "@level.parity.mission.goal",
     "how": "@level.parity.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.parity.debrief.title",
     "body": [
@@ -24,9 +24,9 @@
   "tasks": [
     {
       "id": "parity",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "m = table:many(view.up, view.left, facts.start)",
+        "m = table/many(view.up, view.left, facts.start)",
         "cell <- m"
       ],
       "checkAll": true,
@@ -34,7 +34,7 @@
         "@level.parity.tasks.parity.hints.0",
         "@level.parity.tasks.parity.hints.1"
       ],
-      "world": "state-graph:world-gridYes",
+      "world": "state-graph/gridYes",
       "facts": [
         "start"
       ],
@@ -58,13 +58,13 @@
         false
       ],
       "solution": [
-        "a = table:many(view.up)",
-        "b = table:many(view.left)",
-        "na = table:not(a)",
-        "nb = table:not(b)",
-        "p = table:pass(a, nb)",
-        "q = table:pass(b, na)",
-        "m = table:many(p, q, facts.start)",
+        "a = table/many(view.up)",
+        "b = table/many(view.left)",
+        "na = table/not(a)",
+        "nb = table/not(b)",
+        "p = table/pass(a, nb)",
+        "q = table/pass(b, na)",
+        "m = table/many(p, q, facts.start)",
         "cell <- m"
       ]
     }

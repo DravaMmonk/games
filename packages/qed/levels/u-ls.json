@@ -1,11 +1,11 @@
 {
   "title": "@level.u-ls.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "after": "@level.u-ls.after",
   "tasks": [
     {
       "id": "u-ls",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

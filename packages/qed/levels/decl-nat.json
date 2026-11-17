@@ -9,11 +9,10 @@
     }
   ],
   "after": "@level.decl-nat.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-nat",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "words": [
         "qed/everyday",
         "qed/terms"

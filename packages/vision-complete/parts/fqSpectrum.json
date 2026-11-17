@@ -2,12 +2,12 @@
   "name": "@part.fqSpectrum.name",
   "desc": "@part.fqSpectrum.desc",
   "icon": "Waves",
-  "family": "image:family-frequency",
+  "family": "image/frequency",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:fqSpectrum"
+  "op": "image/fqSpectrum"
 }

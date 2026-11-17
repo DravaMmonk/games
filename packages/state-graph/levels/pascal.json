@@ -13,7 +13,7 @@
     "goal": "@level.pascal.mission.goal",
     "how": "@level.pascal.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.pascal.debrief.title",
     "body": [
@@ -24,11 +24,11 @@
   "tasks": [
     {
       "id": "pascal",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-uses": "left"
+            "state-graph/uses": "left"
           },
           "say": "@level.pascal.tasks.pascal.diagnose.0.say"
         }
@@ -37,7 +37,7 @@
         "@level.pascal.tasks.pascal.hints.0",
         "@level.pascal.tasks.pascal.hints.1"
       ],
-      "world": "state-graph:world-tri",
+      "world": "state-graph/tri",
       "facts": [
         "start"
       ],

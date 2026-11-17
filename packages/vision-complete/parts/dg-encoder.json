@@ -1,0 +1,13 @@
+{
+  "name": "@part.dg-encoder.name",
+  "desc": "@part.dg-encoder.desc",
+  "icon": "Box",
+  "family": "image/other",
+  "inputs": [
+    {
+      "name": "in",
+      "label": ""
+    }
+  ],
+  "op": "image/dg-encoder"
+}

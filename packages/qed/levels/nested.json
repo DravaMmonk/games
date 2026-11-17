@@ -1,6 +1,6 @@
 {
   "title": "@level.nested.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.nested.intro.0.t"
@@ -11,9 +11,9 @@
   ],
   "tasks": [
     {
-      "id": "nested_1",
-      "kind": "logic:proof",
-      "step": "@level.nested.tasks.nested_1.step",
+      "id": "nested-1",
+      "kind": "logic/proof",
+      "step": "@level.nested.tasks.nested-1.step",
       "tests": [
         {
           "premises": {
@@ -37,7 +37,7 @@
         }
       ],
       "hint": [
-        "@level.nested.tasks.nested_1.hint.0"
+        "@level.nested.tasks.nested-1.hint.0"
       ],
       "solution": [
         "m1 = mp(q, p)",
@@ -46,9 +46,9 @@
       ]
     },
     {
-      "id": "nested_2",
-      "kind": "logic:proof",
-      "step": "@level.nested.tasks.nested_2.step",
+      "id": "nested-2",
+      "kind": "logic/proof",
+      "step": "@level.nested.tasks.nested-2.step",
       "tests": [
         {
           "premises": {
@@ -74,7 +74,7 @@
         }
       ],
       "hint": [
-        "@level.nested.tasks.nested_2.hint.0"
+        "@level.nested.tasks.nested-2.hint.0"
       ],
       "solution": [
         "m1 = mp(q, p)",

@@ -35,7 +35,7 @@ export function validate({ levels, intros, kit, course, publishedBy, packageTarg
     const out = []
     const fail = (text) => out.push({ text, fail: true, level: level.home })
     const say = (text) => out.push({ text, level: level.home })
-    if (level.kind !== "image:graph") {
+    if (level.kind !== "image/graph") {
       const problem = level.verify()
       const line = `${level.id} ${keyOf(level.title)}: (${level.kind}${level.board ? ` ${level.board}` : ''}) ${problem || 'verified'}`
       if (problem) fail(line)

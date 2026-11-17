@@ -14,7 +14,7 @@
   "tasks": [
     {
       "id": "8-2",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.8-2.tasks.8-2.brief",
       "hint": "@level.8-2.tasks.8-2.hint",
       "inputs": ["a", "b", "t"],
@@ -24,7 +24,7 @@
         "t": "@level.8-2.tasks.8-2.inputLabels.t"
       },
       "check": { "tolerance": 0.05, "mismatches": 2 },
-      "scene": "vision-complete:scene-walk",
+      "scene": "vision-complete/walk",
       "tests": [
         { "label": "@level.8-2.tasks.8-2.tests.0.label", "a": [4, 4], "b": [12, 10], "t": 0.5 },
         { "label": "@level.8-2.tasks.8-2.tests.1.label", "a": [11, 4], "b": [4, 11], "t": 0.25 },
@@ -33,13 +33,13 @@
       "hidden": [{ "label": "@level.8-2.tasks.8-2.hidden.0.label", "a": [12, 12], "b": [4, 6], "t": 0.5 }],
       "solution": [
         "one = const()",
-        "ea = dg_encoder(a)",
-        "eb = dg_encoder(b)",
+        "ea = dg-encoder(a)",
+        "eb = dg-encoder(b)",
         "om = arith[op=sub](one, t)",
         "wa = arith[op=mul](ea, om)",
         "wb = arith[op=mul](eb, t)",
         "z = arith[op=add](wa, wb)",
-        "d = dg_decoder(z)",
+        "d = dg-decoder(z)",
         "out <- d"
       ],
       "naive": [

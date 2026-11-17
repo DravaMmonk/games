@@ -11,7 +11,7 @@
     {
       "t": "@level.tagging.intro.2.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "w0",
@@ -173,7 +173,7 @@
     "goal": "@level.tagging.mission.goal",
     "how": "@level.tagging.mission.how"
   },
-  "robot": "state-graph:robot-reach",
+  "robot": "state-graph/reach",
   "debrief": {
     "title": "@level.tagging.debrief.title",
     "body": [
@@ -185,8 +185,8 @@
   "tasks": [
     {
       "id": "tagging",
-      "play": "state-graph:circuit",
-      "trace": "state-graph:trace-tags",
+      "play": "state-graph/circuit",
+      "trace": "state-graph/tags",
       "boardOpt": {
         "minScale": 0.62,
         "maxScale": 1.15
@@ -195,7 +195,7 @@
         "@level.tagging.tasks.tagging.hints.0",
         "@level.tagging.tasks.tagging.hints.1"
       ],
-      "world": "state-graph:world-tags",
+      "world": "state-graph/tags",
       "facts": [
         "tN",
         "tV",
@@ -340,11 +340,11 @@
         6
       ],
       "solution": [
-        "a = table:add(view.pN, facts.tN)",
-        "b = table:add(view.pV, facts.tV)",
-        "c = table:add(view.pA, facts.tA)",
-        "m = table:mmin(a, b, c)",
-        "e = table:add(m, facts.emit)",
+        "a = table/add(view.pN, facts.tN)",
+        "b = table/add(view.pV, facts.tV)",
+        "c = table/add(view.pA, facts.tA)",
+        "m = table/mmin(a, b, c)",
+        "e = table/add(m, facts.emit)",
         "cell <- e"
       ],
       "publishes": [
@@ -353,7 +353,7 @@
           "variant": "base"
         }
       ],
-      "panel": "state-graph:panel-tags"
+      "panel": "state-graph/tags"
     }
   ]
 }

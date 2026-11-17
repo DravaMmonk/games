@@ -5,7 +5,7 @@
     {
       "t": "@level.cheapest.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 3,
           "cells": {
@@ -46,7 +46,7 @@
     {
       "t": "@level.cheapest.intro.2.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "u",
@@ -103,10 +103,10 @@
     "goal": "@level.cheapest.mission.goal",
     "how": "@level.cheapest.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:mmin",
-    "table:mmax"
+    "table/mmin",
+    "table/mmax"
   ],
   "debrief": {
     "title": "@level.cheapest.debrief.title",
@@ -119,12 +119,12 @@
   "tasks": [
     {
       "id": "cheapest",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-has": "table:mmin"
+            "state-graph/not": {
+              "state-graph/has": "table/mmin"
             }
           },
           "say": "@level.cheapest.tasks.cheapest.diagnose.0.say"
@@ -134,7 +134,7 @@
         "@level.cheapest.tasks.cheapest.hints.0",
         "@level.cheapest.tasks.cheapest.hints.1"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start",
         "cost"
@@ -214,8 +214,8 @@
         16
       ],
       "solution": [
-        "m = table:mmin(view.up, view.left)",
-        "s = table:msum(m, facts.cost)",
+        "m = table/mmin(view.up, view.left)",
+        "s = table/msum(m, facts.cost)",
         "cell <- s"
       ]
     }

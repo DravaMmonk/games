@@ -31,18 +31,18 @@ test('text view pairs and mounts through the same shell projection as other pack
     const content = readPackage(packageId)
     for (const level of content.levels) {
       const game = await gameOf(packageLevel(content, level.id), { view: true })
-      assert.equal(typeof game.kinds['text:answer'].Screen, 'function')
+      assert.equal(typeof game.kinds['text/answer'].Screen, 'function')
       assert.equal(game.levels.length, 1)
-      assert.equal(typeof game.pluginKernel.tables.playView.get('text:answer').preview, 'function')
+      assert.equal(typeof game.pluginKernel.tables.playView.get('text/answer').preview, 'function')
     }
   } finally { await closeGames() }
 })
 
 test('answer work round-trips and judging is deterministic at tolerance boundaries', async () => {
   const kernel = await loadPlugins(readPackage(packageId), new URL('../../../', import.meta.url).pathname)
-  const play = kernel.tables.play.get('text:answer')
+  const play = kernel.tables.play.get('text/answer')
   assert.equal(play.write(play.read(' a ')), ' a ')
-  const task = { play: 'text:answer', answerRule: { type: 'number', answer: 5, tolerance: 0.5 } }
+  const task = { play: 'text/answer', answerRule: { type: 'number', answer: 5, tolerance: 0.5 } }
   for (const [answer, pass] of [['5.5', true], ['5.50001', false], ['', false], ['Infinity', false]]) {
     assert.equal(evaluatePlay(kernel, task, answer).verdict.pass, pass)
     assert.deepEqual(evaluatePlay(kernel, task, answer), evaluatePlay(kernel, task, answer))

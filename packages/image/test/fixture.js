@@ -21,12 +21,12 @@ export function imageFixture(owner = 'sample') {
     cpSync(new URL(`../../${owner}/package.json`, import.meta.url), join(root, 'packages', owner, 'package.json'))
     put(`packages/${owner}/${owner}-power/default.json`, { title: 'Ready', lines: ['Image contract.'] })
     put(`packages/${owner}/${owner}-box/default.json`, { sample: 'copy', inLevel: {} })
-  } else put('packages/sample/package.json', { version: '0.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0', image: '^0.0.0' } })
+  } else put('packages/sample/package.json', { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0', image: '^0.0.0' } })
   put(`packages/${owner}/levels/copy.json`, {
     title: 'Copy', intro: [], after: 'Every pixel is preserved.',
-    tasks: [{ id: 'copy', play: 'image:graph', brief: 'Connect the image to the output.', scene: 'image:scene-filter', setup: { target: 'image:target-same' },
-      tests: [{ label: 'Square', in: 'image:picture-square' }], hidden: [{ label: 'Disk', in: 'image:picture-disk' }],
-      solution: ['out <- in'], naive: ['a = image:shift[dir=right](in)', 'out <- a'],
+    tasks: [{ id: 'copy', play: 'image/graph', brief: 'Connect the image to the output.', scene: 'image/filter', setup: { target: 'image/same' },
+      tests: [{ label: 'Square', in: 'image/square' }], hidden: [{ label: 'Disk', in: 'image/disk' }],
+      solution: ['out <- in'], naive: ['a = image/shift[dir=right](in)', 'out <- a'],
     }],
   })
   lockFixture(root)

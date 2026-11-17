@@ -65,14 +65,14 @@ function showMachine(v, { task }) {
 }
 
 const WANT = {
-  'logic:want-elim': T('这份声明的消去规则'),
-  'logic:want-clauses': T('拆成的子句'),
-  'logic:want-refuted': T('推出空子句 ⊥'),
-  'logic:want-decide': T('能推出 ⊥ 时推出 ⊥；否则饱和至不再产生新子句'),
-  'logic:want-unify': T('解完的等式（能合一时），或者「失败」（不能时）'),
-  'logic:want-answers': T('找出所有答案'),
-  'logic:want-fails': T('证不出时停止，并报告证不出'),
-  'logic:want-proved': T('证明完毕'),
+  'logic/elim': T('这份声明的消去规则'),
+  'logic/clauses': T('拆成的子句'),
+  'logic/refuted': T('推出空子句 ⊥'),
+  'logic/decide': T('能推出 ⊥ 时推出 ⊥；否则饱和至不再产生新子句'),
+  'logic/unify': T('解完的等式（能合一时），或者「失败」（不能时）'),
+  'logic/answers': T('找出所有答案'),
+  'logic/fails': T('证不出时停止，并报告证不出'),
+  'logic/proved': T('证明完毕'),
 }
 /** What a test wants of the result, in words: the results a step makes, the elimination rule, or the level's want. */
 function wantOf(task, test) {

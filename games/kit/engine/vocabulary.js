@@ -63,7 +63,7 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
   // Registry names and domain-specific configuration names used by S.name.
   const names = { ...Object.fromEntries(Object.keys(kindSchemas(domainVocabulary)).map(kind => [kind, new Set(Object.keys(content.registries?.[kind] ?? {}))])), entry: new Set((glossary?.entries ?? []).map(entry => entry.id)), group: new Set((glossary?.groups ?? []).map(group => group.id)), tag: new Set(Object.keys(tags)), section: new Set(Object.keys(sections)), relation: new Set(Object.keys(relations)), ...domainNames(content), ...Object.assign({}, ...meaningsOf(domainVocabulary).map(meaning => meaning.validationNames?.({ content }))) }
   for (const [kind, schema] of Object.entries(kindSchemas(domainVocabulary)).filter(([kind]) => !meaningsOf(domainVocabulary).some(meaning => meaning.type === kind && meaning.validate))) for (const [name, object] of Object.entries(content.registries?.[kind] ?? {})) {
-    if (kind === 'kind' && !content.objectKinds?.[name] || name.includes(':')) continue
+    if (kind === 'kind' && !content.objectKinds?.[name]) continue
     add(validate(schema, object, { vocabulary, levels: ids, languages, names }), `${kind}/${name}.json`)
     if (hasCatalogSource(content)) out.push(...catalogTextProblems(object, schema, `${kind}/${name}.json`, vocabulary, kind === 'chapter' ? courseKeys : packageKeys))
   }

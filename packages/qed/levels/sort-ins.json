@@ -1,6 +1,6 @@
 {
   "title": "@level.sort-ins.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.sort-ins.intro.0.t"
@@ -9,13 +9,13 @@
   "after": "@level.sort-ins.after",
   "tasks": [
     {
-      "id": "sort-ins_1",
-      "kind": "logic:define",
+      "id": "sort-ins-1",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.sort-ins.tasks.sort-ins_1.step",
+      "step": "@level.sort-ins.tasks.sort-ins-1.step",
       "fn": "if",
       "on": 0,
       "rows": [
@@ -52,24 +52,24 @@
         "v",
         "v"
       ],
-      "brief": "@level.sort-ins.tasks.sort-ins_1.brief",
+      "brief": "@level.sort-ins.tasks.sort-ins-1.brief",
       "hint": [
-        "@level.sort-ins.tasks.sort-ins_1.hint.0"
+        "@level.sort-ins.tasks.sort-ins-1.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.sort-ins.tasks.sort-ins_1.intro.0.t"
+          "t": "@level.sort-ins.tasks.sort-ins-1.intro.0.t"
         }
       ]
     },
     {
-      "id": "sort-ins_2",
-      "kind": "logic:define",
+      "id": "sort-ins-2",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.sort-ins.tasks.sort-ins_2.step",
+      "step": "@level.sort-ins.tasks.sort-ins-2.step",
       "fn": "ins",
       "on": 1,
       "defs": [
@@ -115,24 +115,24 @@
         "cons(x, nil)",
         "cons(x, cons(y, ys))"
       ],
-      "brief": "@level.sort-ins.tasks.sort-ins_2.brief",
+      "brief": "@level.sort-ins.tasks.sort-ins-2.brief",
       "hint": [
-        "@level.sort-ins.tasks.sort-ins_2.hint.0"
+        "@level.sort-ins.tasks.sort-ins-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.sort-ins.tasks.sort-ins_2.intro.0.t"
+          "t": "@level.sort-ins.tasks.sort-ins-2.intro.0.t"
         }
       ]
     },
     {
-      "id": "sort-ins_3",
-      "kind": "logic:define",
+      "id": "sort-ins-3",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.sort-ins.tasks.sort-ins_3.step",
+      "step": "@level.sort-ins.tasks.sort-ins-3.step",
       "fn": "sort",
       "on": 0,
       "defs": [
@@ -174,19 +174,19 @@
         "nil",
         "ins(x, xs)"
       ],
-      "brief": "@level.sort-ins.tasks.sort-ins_3.brief",
+      "brief": "@level.sort-ins.tasks.sort-ins-3.brief",
       "hint": [
-        "@level.sort-ins.tasks.sort-ins_3.hint.0"
+        "@level.sort-ins.tasks.sort-ins-3.hint.0"
       ]
     },
     {
-      "id": "sort-ins_4",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "sort-ins-4",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sort-ins.tasks.sort-ins_4.inputs.0.label"
+          "label": "@level.sort-ins.tasks.sort-ins-4.inputs.0.label"
         }
       ],
       "backtrack": true,
@@ -194,7 +194,7 @@
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.sort-ins.tasks.sort-ins_4.step",
+      "step": "@level.sort-ins.tasks.sort-ins-4.step",
       "types": [
         "list"
       ],
@@ -216,9 +216,9 @@
           "goal": "ins(s(s(zero)), cons(zero, nil)) = cons(zero, cons(s(s(zero)), nil))"
         }
       ],
-      "brief": "@level.sort-ins.tasks.sort-ins_4.brief",
+      "brief": "@level.sort-ins.tasks.sort-ins-4.brief",
       "hint": [
-        "@level.sort-ins.tasks.sort-ins_4.hint.0"
+        "@level.sort-ins.tasks.sort-ins-4.hint.0"
       ],
       "solution": [
         "c0r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", \"def.6\", \"def.7\", \"def.8\"]]()",

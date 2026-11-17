@@ -3,7 +3,7 @@
   "adds": [
     "allI"
   ],
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.q-allI.intro.0.t"
@@ -16,7 +16,7 @@
   "tasks": [
     {
       "id": "q-allI",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "∀x. P(x) → P(x)"

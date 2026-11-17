@@ -2,7 +2,7 @@
   "name": "@part.reg.name",
   "desc": "@part.reg.desc",
   "icon": "ArrowUpFromLine",
-  "family": "tick-bus:family-memory",
+  "family": "tick-bus/memory",
   "settings": {
     "start": {
       "label": "@part.reg.settings.start.label"
@@ -26,5 +26,5 @@
       ]
     }
   },
-  "op": "circuit:held"
+  "op": "circuit/held"
 }

@@ -1,7 +1,7 @@
 {
   "name": "@part.axS.name",
   "desc": "@part.axS.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "settings": {
     "A": { "control": "tree", "label": "@part.axS.settings.A.label" },
     "B": { "control": "tree", "label": "@part.axS.settings.B.label" },
@@ -11,7 +11,7 @@
     {
       "id": "base",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "f = impI[A=\"A -> (B -> C)\"](body: g) {",
           "  body {",
@@ -35,5 +35,5 @@
     }
   ],
   "inputs": [],
-  "outputType": "logic:judgment"
+  "outputType": "logic/judgment"
 }

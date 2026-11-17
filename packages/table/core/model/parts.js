@@ -6,8 +6,8 @@ import { qualifyItems } from 'kernel';
 // Signals are numbers, null (「—」: no route), booleans (「是 / 否」), kinds ({ cat, label }) or whole segments: lists of
 // numbers or booleans that a sweeping arm reads. A part declares what each input port takes and what its output
 // carries:
-//   port types   'circuit:number' | 'circuit:boolean' | 'table:category' | 'circuit:any' (a number, a yes / no or a kind) — a trailing '*' also takes a segment
-//   signal types 'circuit:number' | 'circuit:boolean' | 'table:category' | 'table:numbers' | 'table:booleans' | 'circuit:any' (not known until something is wired in)
+//   port types   'circuit/number' | 'circuit/boolean' | 'table/category' | 'circuit/any' (a number, a yes / no or a kind) — a trailing '*' also takes a segment
+//   signal types 'circuit/number' | 'circuit/boolean' | 'table/category' | 'table/numbers' | 'table/booleans' | 'circuit/any' (not known until something is wired in)
 //   out          a signal type, { copy: k } (whatever reaches input k), 'lift' (a segment if any input is one) or
 //                'input' (a card's outputs carry what each of its sensors carries)
 // Its ports are '0', '1', …; an unconnected one reads null (a number port) or false (a condition port).
@@ -29,21 +29,21 @@ const MERGER = T('汇合器', 'Merger');
 const CONSTANT_VALUES = [0, 1, 2, 3, 4, 5];
 
 /** The primitives: what a course may start from (game.json primitives) and a level bring in (adds). */
-export const PRIMITIVES = qualifyItems('table', 'part', {
-  msum: { name: MERGER, tag: T('加起来', 'sum'), ins: ['table:number-input', 'table:number-input', 'table:number-input'], out: 'circuit:number', f: merge(OPS.sum), desc: T(`把接进来的数加起来。${SKIP[0]}`, `Adds up the numbers wired into it. ${SKIP[1]}`) },
-  mmin: { name: MERGER, tag: T('取较小', 'min'), ins: ['table:number-input', 'table:number-input', 'table:number-input'], out: 'circuit:number', f: merge(OPS.min), desc: T(`留下接进来的数里最小的那个。${SKIP[0]}`, `Keeps the smallest of the numbers wired into it. ${SKIP[1]}`) },
-  mmax: { name: MERGER, tag: T('取较大', 'max'), ins: ['table:number-input', 'table:number-input', 'table:number-input'], out: 'circuit:number', f: merge(OPS.max), desc: T(`留下接进来的数里最大的那个。${SKIP[0]}`, `Keeps the largest of the numbers wired into it. ${SKIP[1]}`) },
-  many: { name: MERGER, tag: T('任一是', 'any yes'), ins: ['table:boolean-input', 'table:boolean-input', 'table:boolean-input'], out: 'circuit:boolean', f: ins => ins.flat().some(v => v === true), desc: T('接进来的「是 / 否」里只要有一个「是」，就输出「是」；否则输出「否」。「—」不算「是」。', 'If any of the “yes / no” signals wired into it is “yes”, outputs “yes”; otherwise “no”. A “—” does not count as “yes”.') },
-  not: { name: T('取反', 'Not'), tag: T('是 ↔ 否', 'yes ↔ no'), ins: ['circuit:boolean'], out: 'circuit:boolean', f: ([v]) => (v === null ? null : !v), desc: T('「是」变「否」，「否」变「是」。收到「—」时，输出「—」。', '“Yes” becomes “no” and “no” becomes “yes”. A “—” comes out as “—”.') },
-  add: { name: T('加法器', 'Adder'), tag: 'a + b', ins: ['table:number-input', 'table:number-input'], labels: ['a', 'b'], out: 'lift', f: zip((a, b) => a + b), desc: T('输出 a + b。只要有一边是「—」，结果就是「—」。', 'Outputs a + b. If either side is “—”, so is the result.') },
-  mul: { name: T('乘法器', 'Multiplier'), tag: 'a × b', ins: ['table:number-input', 'table:number-input'], labels: ['a', 'b'], out: 'lift', f: zip((a, b) => a * b), desc: T('输出 a × b。只要有一边是「—」，结果就是「—」。', 'Outputs a × b. If either side is “—”, so is the result.') },
-  const: { name: T('常数', 'Constant'), ins: [], out: 'circuit:number', params: ['value'], f: (_, n) => n.params?.value ?? 1, desc: T('一直输出同一个数。放上电路板后，点它可以改数值。', 'Always outputs the same number. Once it is on the board, click it to change the number.') },
-  pass: { name: T('放行闸', 'Pass gate'), tag: T('是 → 放行', 'yes → pass'), ins: ['circuit:boolean', 'circuit:any'], labels: [T('条件', 'if'), T('数', 'num')], out: { copy: 1 }, f: ([c, v]) => (c ? v : null), desc: T('条件是「是」时，把另一个口收到的信号放过去；否则输出「—」。', 'When the condition is “yes”, lets through whatever signal reaches the other input; otherwise outputs “—”.') },
-  block: { name: T('拦截闸', 'Block gate'), tag: T('是 → 拦下', 'yes → block'), ins: ['circuit:boolean', 'circuit:any'], labels: [T('条件', 'if'), T('数', 'num')], out: { copy: 1 }, f: ([c, v]) => (c ? null : v), desc: T('条件是「是」时，输出「—」；否则把另一个口收到的信号原样放过去。', 'When the condition is “yes”, outputs “—”; otherwise lets whatever signal reaches the other input through unchanged.') },
+export const PRIMITIVES = qualifyItems('table', {
+  msum: { name: MERGER, tag: T('加起来', 'sum'), ins: ['table/number-input', 'table/number-input', 'table/number-input'], out: 'circuit/number', f: merge(OPS.sum), desc: T(`把接进来的数加起来。${SKIP[0]}`, `Adds up the numbers wired into it. ${SKIP[1]}`) },
+  mmin: { name: MERGER, tag: T('取较小', 'min'), ins: ['table/number-input', 'table/number-input', 'table/number-input'], out: 'circuit/number', f: merge(OPS.min), desc: T(`留下接进来的数里最小的那个。${SKIP[0]}`, `Keeps the smallest of the numbers wired into it. ${SKIP[1]}`) },
+  mmax: { name: MERGER, tag: T('取较大', 'max'), ins: ['table/number-input', 'table/number-input', 'table/number-input'], out: 'circuit/number', f: merge(OPS.max), desc: T(`留下接进来的数里最大的那个。${SKIP[0]}`, `Keeps the largest of the numbers wired into it. ${SKIP[1]}`) },
+  many: { name: MERGER, tag: T('任一是', 'any yes'), ins: ['table/boolean-input', 'table/boolean-input', 'table/boolean-input'], out: 'circuit/boolean', f: ins => ins.flat().some(v => v === true), desc: T('接进来的「是 / 否」里只要有一个「是」，就输出「是」；否则输出「否」。「—」不算「是」。', 'If any of the “yes / no” signals wired into it is “yes”, outputs “yes”; otherwise “no”. A “—” does not count as “yes”.') },
+  not: { name: T('取反', 'Not'), tag: T('是 ↔ 否', 'yes ↔ no'), ins: ['circuit/boolean'], out: 'circuit/boolean', f: ([v]) => (v === null ? null : !v), desc: T('「是」变「否」，「否」变「是」。收到「—」时，输出「—」。', '“Yes” becomes “no” and “no” becomes “yes”. A “—” comes out as “—”.') },
+  add: { name: T('加法器', 'Adder'), tag: 'a + b', ins: ['table/number-input', 'table/number-input'], labels: ['a', 'b'], out: 'lift', f: zip((a, b) => a + b), desc: T('输出 a + b。只要有一边是「—」，结果就是「—」。', 'Outputs a + b. If either side is “—”, so is the result.') },
+  mul: { name: T('乘法器', 'Multiplier'), tag: 'a × b', ins: ['table/number-input', 'table/number-input'], labels: ['a', 'b'], out: 'lift', f: zip((a, b) => a * b), desc: T('输出 a × b。只要有一边是「—」，结果就是「—」。', 'Outputs a × b. If either side is “—”, so is the result.') },
+  const: { name: T('常数', 'Constant'), ins: [], out: 'circuit/number', params: ['value'], f: (_, n) => n.params?.value ?? 1, desc: T('一直输出同一个数。放上电路板后，点它可以改数值。', 'Always outputs the same number. Once it is on the board, click it to change the number.') },
+  pass: { name: T('放行闸', 'Pass gate'), tag: T('是 → 放行', 'yes → pass'), ins: ['circuit/boolean', 'circuit/any'], labels: [T('条件', 'if'), T('数', 'num')], out: { copy: 1 }, f: ([c, v]) => (c ? v : null), desc: T('条件是「是」时，把另一个口收到的信号放过去；否则输出「—」。', 'When the condition is “yes”, lets through whatever signal reaches the other input; otherwise outputs “—”.') },
+  block: { name: T('拦截闸', 'Block gate'), tag: T('是 → 拦下', 'yes → block'), ins: ['circuit/boolean', 'circuit/any'], labels: [T('条件', 'if'), T('数', 'num')], out: { copy: 1 }, f: ([c, v]) => (c ? null : v), desc: T('条件是「是」时，输出「—」；否则把另一个口收到的信号原样放过去。', 'When the condition is “yes”, outputs “—”; otherwise lets whatever signal reaches the other input through unchanged.') },
 }, { bare: true });
 
 /** Models that swap for one another on the card, keeping their wires: the mergers that merge numbers. */
-export const MODELS = [['table:msum', 'table:mmin', 'table:mmax']];
+export const MODELS = [['table/msum', 'table/mmin', 'table/mmax']];
 export const modelsOf = type => MODELS.find(m => m.includes(type)) || null;
 
 /**
@@ -78,7 +78,7 @@ export function partsOf(built, definitions) {
   const { PARTS: compiled, defs } = defineParts(definitions, {});
   const declared = Object.fromEntries(Object.entries(compiled).map(([type, part]) => [type, {
     name: defs[type].name, desc: defs[type].desc, tag: T('零件', 'part'),
-    ins: part.inputs.map(name => part.inputTypes?.[name] ?? 'circuit:any'),
+    ins: part.inputs.map(name => part.inputTypes?.[name] ?? 'circuit/any'),
     labels: part.inputs, out: part.outputType, params: part.params,
     f: (values, node) => part.eval(Object.fromEntries(part.inputs.map((name, index) => [name, values[index]])), node, {}),
   }]));
@@ -88,8 +88,8 @@ export function partsOf(built, definitions) {
     const b = Object.hasOwn(built, type) ? built[type] : null;
     return b ? { name: b.name, tag: T('零件', 'part'), ins: b.ins, labels: b.labels, desc: b.desc, built: true, out: b.outType, params: b.setting !== undefined ? ['value'] : [] } : null;
   };
-  const hasValue = type => type === 'table:const' || built[type]?.setting !== undefined;
-  const valueDefault = type => (type === 'table:const' ? 1 : built[type]?.setting);
+  const hasValue = type => type === 'table/const' || built[type]?.setting !== undefined;
+  const valueDefault = type => (type === 'table/const' ? 1 : built[type]?.setting);
   const valueOptions = (type, task) => hasValue(type) ? (task.consts ?? CONSTANT_VALUES) : null;
   return { built, types: [...Object.keys(PRIMITIVES), ...Object.keys(declared)], def, hasValue, valueDefault, valueOptions };
 }

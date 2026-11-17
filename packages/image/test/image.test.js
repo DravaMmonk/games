@@ -1,12 +1,13 @@
+import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
 // The image board as content and saves hold it: blueprint text both ways (a course's references too), how a board
 // read from text is laid out, and a packed part running the player's own circuit, on a course written here; and a
 // course read, of that course and of every image game, writing nothing into its content.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { deepFreeze } from '../../../games/kit/engine/content.js'
-import { captureWorkshop, publishWorkshop, workshopIdentity } from 'circuit'
+import { captureWorkshop, publishWorkshop, workshopIdentity } from 'progress'
 import { packedBoards } from 'circuit'
-import { courseWorkshop } from 'circuit'
+import { courseWorkshop } from 'progress'
 import { progress as circuitProgress } from 'circuit'
 import { boxBlur3, gradientMagnitude, horizontalDifference, sobelGradient, squaredGradient } from '../core/engine/filters.js'
 import { at, fromFn } from '../core/engine/image.js'
@@ -21,20 +22,20 @@ import domain from '../core/runtime.js'
 
 // A course of three levels: one a built part runs, one holds that part, one is two tasks.
 const L = (s) => ({ zh: s, en: s })
-const square = { "image:picture-square": { x0: 4, y0: 4, s: 8 } }
-const filter = (id, rest) => ({ id, kind: 'image:graph', brief: L('b'), scene: "image:scene-filter", setup: { target: "image:target-same" }, tests: [{ label: L('t'), in: square }], ...rest })
+const square = { "image/square": { x0: 4, y0: 4, s: 8 } }
+const filter = (id, rest) => ({ id, kind: 'image/graph', brief: L('b'), scene: "image/filter", setup: { target: "image/same" }, tests: [{ label: L('t'), in: square }], ...rest })
 const level = (id, tasks, once = {}) => ({ id, title: L(id), after: L('a'), intro: [{ t: L('i') }], ...once, tasks })
-const wide = ['l = image:shift[dir=left](in)', 'r = image:shift[dir=right](in)', 'h = image:max(l, r)', 'out <- h']
-const content = deepFreeze({
-  primitives: ["image:const", "image:add", "image:sub", "image:mul", "image:arith", "image:merge"],
+const wide = ['l = image/shift[dir=left](in)', 'r = image/shift[dir=right](in)', 'h = image/max(l, r)', 'out <- h']
+const content = deepFreeze(withProgressFixture({
+  primitives: ["image/const", "image/add", "image/sub", "image/mul", "image/arith", "image/merge"],
   eras: [{ id: 0, levels: [{ id: 'wide' }, { id: 'use' }, { id: 'two' }], links: [{ from: 'wide', to: 'use' }, { from: 'use', to: 'two' }], chapter: { title: L('c'), label: L('l'), question: L('q') } }],
   levels: [
     level('wide', [filter('wide', { solution: wide, publishes: [{ part: 'widen', variant: 'base' }] })]),
-    level('use', [filter('use', { solution: ['k = image:const[c="pi/8"]()', 'm = image:arith[op=mul](in, k)', 'p = widen(m)', 'out <- p'], naive: ['out <- in'] })]),
-    level('two', [filter('two_1', { solution: ['s = image:shift[dir=up, n=2](in)', 'out <- s'] }), filter('two_2', { carries: true, solution: ['t = image:threshold[t=0.3](in)', 'out <- t'] })], { adds: ["image:shift"] }),
+    level('use', [filter('use', { solution: ['k = image/const[c="pi/8"]()', 'm = image/arith[op=mul](in, k)', 'p = widen(m)', 'out <- p'], naive: ['out <- in'] })]),
+    level('two', [filter('two_1', { solution: ['s = image/shift[dir=up, n=2](in)', 'out <- s'] }), filter('two_2', { carries: true, solution: ['t = image/threshold[t=0.3](in)', 'out <- t'] })], { adds: ["image/shift"] }),
   ],
   partDefs: { parts: { widen: { name: L('p'), desc: L('d'), inside: [{ id: 'base', reference: { solution: wide } }] } } },
-})
+}))
 const image = imageWorks(content)
 const { fromText, toText } = image.kit
 
@@ -61,7 +62,7 @@ test('line and homography estimation stop before sampling when there are too few
 })
 
 test('blueprint text reads into a board and writes back the same', () => {
-  const lines = ['k = image:const[c="pi/8"]()', 's = image:shift[dir=left, n=2](in)', 'm = image:arith[op=mul](s, k)', 'out <- m']
+  const lines = ['k = image/const[c="pi/8"]()', 's = image/shift[dir=left, n=2](in)', 'm = image/arith[op=mul](s, k)', 'out <- m']
   const b = fromText(lines)
   assert.deepEqual(b.nodes.find((n) => n.id === 's').params, { dir: 'left', n: 2, border: 'zero' })
   assert.equal(b.nodes.find((n) => n.id === 'k').params.c, Math.PI / 8)
@@ -71,12 +72,12 @@ test('blueprint text reads into a board and writes back the same', () => {
 
 test('blueprint text names the line it cannot read', () => {
   assert.throws(() => fromText(['s = nope(in)', 'out <- s']), (e) => e.line === 1 && /nope/.test(e.en))
-  assert.throws(() => fromText(['s = image:shift[speed=2](in)', 'out <- s']), (e) => e.line === 1 && /speed/.test(e.en))
+  assert.throws(() => fromText(['s = image/shift[speed=2](in)', 'out <- s']), (e) => e.line === 1 && /speed/.test(e.en))
   assert.throws(() => fromText(['out <- s']), (e) => e.line === 1)
 })
 
 test('a board read from text has each part a column after what it reads, and its outputs after them all', () => {
-  const b = fromText(['a = image:shift[dir=left](in)', 'k = image:const[c=2]()', 'm = image:arith[op=mul](a, k)', 'out <- m'])
+  const b = fromText(['a = image/shift[dir=left](in)', 'k = image/const[c=2]()', 'm = image/arith[op=mul](a, k)', 'out <- m'])
   const at = Object.fromEntries(b.nodes.map((n) => [n.id, n.x]))
   assert.ok(at.in < at.a && at.a === at.k && at.k < at.m && at.m < at.out)
   const cards = b.nodes.map((n) => `${n.x},${n.y}`)
@@ -92,7 +93,7 @@ test('a course’s reference boards, a packed part’s and every task’s, read 
 })
 
 test('a packed part runs the circuit the player passed its level with, in its own course only', () => {
-  const input = { in: picture("image:picture-square") }
+  const input = { in: picture("image/square") }
   const runOf = (course) => {
     const { solution } = course.levelById.use.tasks[0]
     return () => Array.from(course.kit.evaluate(solution, input).outputs.out.data)
@@ -146,9 +147,9 @@ test('a course reward runs and displays the exact workshop version used by its p
     const views = packedBoards(circuit, (opened, view) => ({ ...opened, view }))
     const reward = views.root('widen')
     const placed = reward.circuit.nodes.find(({ id }) => id === 'wrapped')
-    assert.equal(reward.view.workshopPart(placed.type).name, 'Original version')
-    assert.deepEqual(reward.view.workshopPart(placed.type).graph, original.graph)
-    assert.deepEqual(reward.view.workshopPart(inner.id).graph, inner.graph)
+    assert.equal(reward.view.extraPart(placed.type).name, 'Original version')
+    assert.deepEqual(reward.view.extraPart(placed.type).graph, original.graph)
+    assert.deepEqual(reward.view.extraPart(inner.id).graph, inner.graph)
   }
   delete library.parts[inner.id]
   made.syncOwn(bindings.restore(saved))
@@ -199,16 +200,16 @@ test('a course read writes nothing into its content', () => {
 test('network constraints follow wires from named outputs', () => {
   const nodes = [{ id: 'in', type: 'input' }, { id: 'out', type: 'output' }]
   const encoded = {
-    nodes: [...nodes, { id: 'e', type: 'image:dg_encode', params: { k: 2 } }],
+    nodes: [...nodes, { id: 'e', type: 'image/dg-encode', params: { k: 2 } }],
     wires: [{ from: 'in', to: 'e', port: 'input' }, { from: 'e', to: 'out', port: 'r' }],
   }
-  const bottleneck = constraintOf({ "image:constraint-bottleneck": { max: 2 } })
+  const bottleneck = constraintOf({ "image/bottleneck": { max: 2 } })
   assert.equal(bottleneck({}, encoded), '')
   const bypass = { ...encoded, wires: [...encoded.wires, { from: 'in#b', to: 'out', port: 'b' }] }
   assert.match(bottleneck({}, bypass).en, /does not pass through the encoder/)
 
   const layers = {
-    nodes: [...nodes, { id: 'a', type: 'image:learn3' }, { id: 'b', type: 'image:lrnConv' }],
+    nodes: [...nodes, { id: 'a', type: 'image/learn3' }, { id: 'b', type: 'image/lrnConv' }],
     wires: [{ from: 'in#r', to: 'a', port: 'input' }, { from: 'a#result', to: 'b', port: 'input' }, { from: 'b#result', to: 'out', port: 'in' }],
   }
   assert.equal(depthOf(layers), 2)

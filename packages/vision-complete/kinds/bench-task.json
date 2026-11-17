@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "image:board",
+  "play": "image/board",
   "fields": {
     "optional": {
       "type": "bool",
@@ -28,10 +28,10 @@
       "type": "by",
       "field": "model",
       "cases": {
-        "vision-complete:benchModel-racer": {
+        "vision-complete/racer": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-racer"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/racer"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -132,10 +132,10 @@
             }
           }
         },
-        "vision-complete:benchModel-sum": {
+        "vision-complete/sum": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-sum"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/sum"] },
             "setup": {
               "type": "obj",
               "fields": { "N": { "type": "int", "min": 2 }, "ks": { "type": "list", "of": { "type": "int" } } }
@@ -214,10 +214,10 @@
             }
           }
         },
-        "vision-complete:benchModel-probe": {
+        "vision-complete/probe": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-probe"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/probe"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -340,10 +340,10 @@
             }
           }
         },
-        "vision-complete:benchModel-alias": {
+        "vision-complete/alias": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-alias"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/alias"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -463,10 +463,10 @@
             }
           }
         },
-        "vision-complete:benchModel-stop": {
+        "vision-complete/stop": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-stop"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/stop"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -551,10 +551,10 @@
             }
           }
         },
-        "vision-complete:benchModel-contrast": {
+        "vision-complete/contrast": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-contrast"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/contrast"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -634,10 +634,10 @@
             }
           }
         },
-        "vision-complete:benchModel-hough": {
+        "vision-complete/hough": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-hough"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/hough"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -734,10 +734,10 @@
             }
           }
         },
-        "vision-complete:benchModel-ransac": {
+        "vision-complete/ransac": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-ransac"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/ransac"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -831,10 +831,10 @@
             }
           }
         },
-        "vision-complete:benchModel-cover": {
+        "vision-complete/cover": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-cover"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/cover"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -934,10 +934,10 @@
             }
           }
         },
-        "vision-complete:benchModel-gan": {
+        "vision-complete/gan": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-gan"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/gan"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -1026,10 +1026,10 @@
             }
           }
         },
-        "vision-complete:benchModel-appleLight": {
+        "vision-complete/appleLight": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-appleLight"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/appleLight"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -1111,10 +1111,10 @@
             }
           }
         },
-        "vision-complete:benchModel-separable": {
+        "vision-complete/separable": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-separable"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/separable"] },
             "cases": {
               "type": "list",
               "of": { "type": "obj", "fields": { "label": { "type": "text" } } },
@@ -1185,10 +1185,10 @@
             }
           }
         },
-        "vision-complete:benchModel-attentionRoles": {
+        "vision-complete/attentionRoles": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-attentionRoles"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/attentionRoles"] },
             "setup": {
               "type": "obj",
               "fields": { "role": { "type": "oneOf", "values": ["query", "key", "value"] } }
@@ -1262,10 +1262,10 @@
             }
           }
         },
-        "vision-complete:benchModel-attentionTraining": {
+        "vision-complete/attentionTraining": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["vision-complete:benchModel-attentionTraining"] },
+            "model": { "type": "oneOf", "values": ["vision-complete/attentionTraining"] },
             "cases": {
               "type": "list",
               "of": { "type": "obj", "fields": { "label": { "type": "text" } } },

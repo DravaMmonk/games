@@ -2,12 +2,12 @@
   "name": "@part.downsample.name",
   "desc": "@part.downsample.desc",
   "icon": "Minimize2",
-  "family": "image:family-size",
+  "family": "image/size",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:downsample"
+  "op": "image/downsample"
 }

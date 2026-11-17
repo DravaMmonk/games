@@ -8,7 +8,7 @@
     {
       "t": "@level.value.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "v0",
@@ -64,7 +64,7 @@
     {
       "t": "@level.value.intro.2.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "m",
@@ -115,7 +115,7 @@
     "goal": "@level.value.mission.goal",
     "how": "@level.value.mission.how"
   },
-  "robot": "state-graph:robot-loop",
+  "robot": "state-graph/loop",
   "debrief": {
     "title": "@level.value.debrief.title",
     "body": [
@@ -127,28 +127,28 @@
   "tasks": [
     {
       "id": "value",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "ports": [
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 1,
             "sensor": "up"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 2,
             "sensor": "down"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 3,
             "sensor": "left"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 4,
             "sensor": "right"
           }
@@ -157,8 +157,8 @@
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-has": "table:mul"
+            "state-graph/not": {
+              "state-graph/has": "table/mul"
             }
           },
           "say": "@level.value.tasks.value.diagnose.0.say"
@@ -179,7 +179,7 @@
         "@level.value.tasks.value.hints.0",
         "@level.value.tasks.value.hints.1"
       ],
-      "world": "state-graph:world-vgrid",
+      "world": "state-graph/vgrid",
       "tests": [
         {
           "R": 5,
@@ -255,10 +255,10 @@
         4.782969
       ],
       "solution": [
-        "a = table:mmax(view.up, view.down, view.left)",
-        "k = table:const[value=0.9]()",
-        "b = table:mmax(a, view.right)",
-        "x = table:mul(b, k)",
+        "a = table/mmax(view.up, view.down, view.left)",
+        "k = table/const[value=0.9]()",
+        "b = table/mmax(a, view.right)",
+        "x = table/mul(b, k)",
         "cell <- x"
       ],
       "rounds": true,

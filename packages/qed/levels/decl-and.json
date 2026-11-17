@@ -19,11 +19,10 @@
     }
   ],
   "after": "@level.decl-and.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-and",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "declare": "@level.decl-and.tasks.decl-and.declare",
       "target": "A ∧ B",
       "sentences": [

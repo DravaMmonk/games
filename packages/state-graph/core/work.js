@@ -9,7 +9,7 @@ import { splitSource } from 'circuit'
 import { packed } from 'circuit'
 import { previousCircuitTask } from 'circuit'
 import { keptBoards } from 'circuit'
-import { workshopOf } from 'circuit'
+import { workExtension } from 'circuit'
 import { inheritedBoard } from 'circuit';
 import { deepFreeze } from 'kernel';
 import { taskLevels } from 'kernel'
@@ -31,17 +31,17 @@ import { gridScene, visionFig } from './model/scene.js';
 import { figure } from './items/figures.js';
 
 /** Worlds that are one family: the same board, read or scanned another way. */
-const ROW_WORLDS = new Set(['state-graph:world-interval']);
+const ROW_WORLDS = new Set(['state-graph/interval']);
 
 /** A port of a built part, from its vocabulary item (vocabulary.js port): its label, short name and type, and the sensor
  *  (or input of the board) it stands for. */
-const SIGNAL_PORT = { 'circuit:number': 'circuit:number', 'circuit:boolean': 'circuit:boolean', 'table:numbers': 'table:number-input', 'table:booleans': 'table:boolean-input', 'table:category': 'table:category' };
+const SIGNAL_PORT = { 'circuit/number': 'circuit/number', 'circuit/boolean': 'circuit/boolean', 'table/numbers': 'table/number-input', 'table/booleans': 'table/boolean-input', 'table/category': 'table/category' };
 function portOf([name, p], W) {
   const sensor = s => W.sensors[s];
   switch (name) {
-    case 'state-graph:port-reads': return { label: sensor(p).label, short: sensor(p).short, type: SIGNAL_PORT[sensor(p).type], sensor: p, input: null };
-    case 'state-graph:port-way': return { label: T(`来路${'一二三四'[p.n - 1]}`, `way in ${p.n}`), short: 'abcd'[p.n - 1], type: 'circuit:number', sensor: p.sensor ?? null, input: p.input ?? null };
-    case 'state-graph:port-start': return { label: T('起点', 'start'), short: T('起', 'start'), type: 'circuit:boolean', sensor: p.sensor, input: null };
+    case 'state-graph/reads': return { label: sensor(p).label, short: sensor(p).short, type: SIGNAL_PORT[sensor(p).type], sensor: p, input: null };
+    case 'state-graph/way': return { label: T(`来路${'一二三四'[p.n - 1]}`, `way in ${p.n}`), short: 'abcd'[p.n - 1], type: 'circuit/number', sensor: p.sensor ?? null, input: p.input ?? null };
+    case 'state-graph/start': return { label: T('起点', 'start'), short: T('起', 'start'), type: 'circuit/boolean', sensor: p.sensor, input: null };
     default: return { label: p.label, short: p.short, type: SIGNAL_PORT[sensor(p.sensor).type], sensor: p.sensor, input: null };
   }
 }
@@ -71,10 +71,10 @@ export function usesOf(tasks) {
       if (!m) continue;
       if (m.family === 'view') out.add(Math.max(Math.abs(m.at[0]), Math.abs(m.at[1])) > 1 ? 'far' : 'view');
       else if (m.family === 'here') out.add(m.heads ? 'heads' : 'facts');
-      else out.add(m.type === 'table:numbers' || m.type === 'table:booleans' ? 'sweep' : s.world === 'state-graph:world-keys' || s.world === 'state-graph:world-stock' ? 'probe' : 'arm');
+      else out.add(m.type === 'table/numbers' || m.type === 'table/booleans' ? 'sweep' : s.world === 'state-graph/keys' || s.world === 'state-graph/stock' ? 'probe' : 'arm');
     }
     if (V.outs.length > 1) out.add('cells');
-    if (s.world === 'state-graph:world-keys' || s.world === 'state-graph:world-stock') out.add('layers');
+    if (s.world === 'state-graph/keys' || s.world === 'state-graph/stock') out.add('layers');
     if (s.rounds) out.add('rounds');
     if ((s.scan && s.scan !== 'rowTL') || ROW_WORLDS.has(s.world)) out.add('order');
   }
@@ -88,7 +88,7 @@ const asPacked = b => {
   return named.get(b);
 };
 
-const isCircuit = T => T.play === 'state-graph:circuit';
+const isCircuit = T => T.play === 'state-graph/circuit';
 
 /**
  * The course of a table game's content (content.js assemble). Returns { LEVELS, played, REQUIRES, PLACE, TRACKS,
@@ -142,7 +142,7 @@ export function* prepareTableWorks(content) {
     const b = own.board(task);
     if (!b) return artifact.solution();
     if (!fits.has(b)) {
-      const view = workshopOf(b)?.view;
+      const view = workExtension(b)?.view;
       const active = view && { parts: view.board.wiring(artifact, view), knows: view.partOf };
       const fitted = restoreRobotBoard(model, artifact, b, active);
       fits.set(b, fitted && !portsProblem(fitted, artifact.ports) ? fitted : null);
@@ -214,10 +214,10 @@ export function* prepareTableWorks(content) {
     const tasks = taskLevels(L, content.taskPositions);
     const circuit = tasks.some(isCircuit);
     if (circuit && !ROBOTS[L.robot]) say(L.id, 'it has circuit tasks but no robot');
-    const robot = ROBOTS[L.robot] ?? ROBOTS['state-graph:robot-scout'];
+    const robot = ROBOTS[L.robot] ?? ROBOTS['state-graph/scout'];
     read.set(L.id, tasks.map((s, k) => {
       const where = tasks.length > 1 ? `${L.id} task ${s.taskId}` : L.id;
-      return isCircuit(s) ? circuitTask(L, s, robot, k === tasks.length - 1, where) : s.play === 'state-graph:fill' && s.grid ? gridTask(s) : s;
+      return isCircuit(s) ? circuitTask(L, s, robot, k === tasks.length - 1, where) : s.play === 'state-graph/fill' && s.grid ? gridTask(s) : s;
     }));
     const pages = L.intro.map(page => (page.fig ? { ...page, fig: figure(page.fig) } : page));
     return {
@@ -254,7 +254,7 @@ export function* prepareTableWorks(content) {
     let board;
     const artifact = { ...reference, given, ports, solution: () => (board ??= robotBlueprint(model, given, W).read(reference.solution)) };
     const index = Object.fromEntries(ports.map((p, k) => [p.sensor ?? p.input, String(k)]));
-    const idle = type => (type.startsWith('circuit:boolean') ? false : null);
+    const idle = type => (type.startsWith('circuit/boolean') ? false : null);
     const setting = settingsOf(parts[type]).find(x => x.key === 'value')?.default;
     const running = () => ownBoard(task, artifact);
     built[type] = {

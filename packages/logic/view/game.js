@@ -1,9 +1,9 @@
+import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
 // A logic game on the shared shell (../../shell), from its content (games/DESIGN.md 6.3): the course (course.js)
 // becomes the shell's game description, with the logic domain's screens (a proof on the circuit editor, a truth table,
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
-import { symbolStamp } from '../core/symbols.js'
 import { CircuitBoard, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
 import { defineGame } from 'circuit/view'
 import { fresh, introductions, isCore } from 'circuit'
@@ -24,10 +24,10 @@ import { truth } from '../core/truthValues.js'
 
 
 // A level's declaration task, if it has one: a declaration on the rule board (iso.js).
-const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic:iso') ?? null
+const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic/iso') ?? null
 // A level that gives proof-board rules by passing it (a declaration, a generator), rather than by playing on the proof
 // board.
-const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic:proof')
+const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic/proof')
 
 /**
  * content (../../engine/content.js; vocabulary.js GAME): { id, title, kicker, lede, …the course (course.js), levels,
@@ -61,14 +61,13 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
   // The parts box lists circuit parts, each from the levels that bring it in.
   // The rules a proof-board part gives as a rule part on the machine board (the kernel's rules it is), and those a
   // lemma gives, one for each of its shapes: a shape after the first only once the player has earned it (`form`).
-  const kernelRules = (type) => KERNEL_RULES.filter((r) => `logic:${r.part}` === logic.partResources[type]).map((r) => ({ text: ruleText(r) }))
+  const kernelRules = (type) => KERNEL_RULES.filter((r) => `logic/${r.part}` === logic.partResources[type]).map((r) => ({ text: ruleText(r) }))
   const lemmaRows = (type) => lemmaRules(type, lemmas[type]).map((r, k) => ({ text: ruleText(r), ...(k ? { form: r.key.split('.')[1] } : {}) }))
-  const introduced = [...introductions(logic.course)].map(([type, at]) => {
-    const text = logic.defs[type] ?? logic.symbols[type] ?? parts[type]
+  const primitives = [...introductions(logic.course)].map(([type, at]) => {
+    const text = logic.defs[type] ?? parts[type]
     const rules = kernelRules(type)
     return { key: `part:${type}`, part: type, name: text?.name ?? type, desc: text?.desc, icon: cards[type]?.icon ?? partIcon(text?.icon) ?? Cpu, at, ...(rules.length ? { rules } : {}) }
   })
-  const primitives = introduced.filter(({ part }) => !logic.symbols[part])
   // A part is new in the level that first brings its idea in (`adds`); everything else carries (../../course.js reach).
   const levels = LEVELS.map((L, index) => ({
     id: L.id,
@@ -103,31 +102,30 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     intro: (level) => level.source.intro,
     kinds: playKinds(plays, {
       declaration, definition, audit, truth, translation, query, script, worldCheck,
-      proof: { ...ui['logic:proof-screen'], cards }, machine: { ...ui['logic:machine-screen'], cards }, gates: { ...ui['logic:gates-screen'], cards },
+      proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
     }, {
-      'logic:proof': { icon: Workflow, label: { zh: '证明', en: 'Proof' } },
-      'logic:machine': { icon: Cog, label: { zh: '证明助手', en: 'Proof assistant' } },
-      'logic:truth': { icon: Grid2x2Check, label: { zh: '真值表', en: 'Truth table' } },
-      'logic:gates': { icon: Cpu, label: { zh: '真值电路', en: 'Truth circuit' } },
-      'logic:iso': { icon: FileSignature, label: { zh: '规则板', en: 'Rule board' } },
-      'logic:define': { icon: SquareFunction, label: { zh: '定义', en: 'Definition' } },
-      'logic:translate': { icon: Languages, label: { zh: '翻译', en: 'Translate' } },
-      'logic:query': { icon: Search, label: { zh: '查询', en: 'Query' } },
-      'logic:model': { icon: FileSignature, label: { zh: '造世界', en: 'Build a world' } },
-      'logic:script': { icon: ScrollText, label: { zh: '写脚本', en: 'Write a script' } },
+      'logic/proof': { icon: Workflow, label: { zh: '证明', en: 'Proof' } },
+      'logic/machine': { icon: Cog, label: { zh: '证明助手', en: 'Proof assistant' } },
+      'logic/truth': { icon: Grid2x2Check, label: { zh: '真值表', en: 'Truth table' } },
+      'logic/gates': { icon: Cpu, label: { zh: '真值电路', en: 'Truth circuit' } },
+      'logic/iso': { icon: FileSignature, label: { zh: '规则板', en: 'Rule board' } },
+      'logic/define': { icon: SquareFunction, label: { zh: '定义', en: 'Definition' } },
+      'logic/translate': { icon: Languages, label: { zh: '翻译', en: 'Translate' } },
+      'logic/query': { icon: Search, label: { zh: '查询', en: 'Query' } },
+      'logic/model': { icon: FileSignature, label: { zh: '造世界', en: 'Build a world' } },
+      'logic/script': { icon: ScrollText, label: { zh: '写脚本', en: 'Write a script' } },
     }, { circuit: circuitScreen }),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its
     // rules, from here on).
     unlocked: (level) => [
       ...level.unlocks.map((flag) => flag.slice('lemma:'.length)).filter((type) => !logic.course.local(type)).map((type) => ({ part: type, label: parts[type].name })),
-      ...(givesRules(level) ? level.source.adds : []).filter((type) => RULES[type]).map((type) => primitives.find((p) => p.part === type)).filter(Boolean).map((p) => ({ part: p.part, label: p.name, icon: p.icon, family: 'logic:family-rule' })),
+      ...(givesRules(level) ? level.source.adds : []).filter((type) => RULES[type]).map((type) => primitives.find((p) => p.part === type)).filter(Boolean).map((p) => ({ part: p.part, label: p.name, icon: p.icon, family: 'logic/rule' })),
     ],
     passed: (level) => {
       const declared = isoOf(level.source)
-      return declared ? ui['logic:passed'](declared) : null
+      return declared ? ui['logic/passed'](declared) : null
     },
     core: (level) => isCore(logic.course, level),
-    extraParts: introduced.filter(({ part }) => logic.symbols[part]),
     parts: {
       all: [
         ...primitives,
@@ -147,9 +145,15 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     better: (score, best) => Boolean(score) && (!best || score.steps < best.steps),
     bestLabel: (best) => (best.unit === 'cases' ? tr(`${best.steps} 条`, `${best.steps} cases`) : tr(`${best.steps} 步`, `${best.steps} steps`)),
   })
+  game.symbolUnlocks = (level, before, after) => {
+    const open = (symbol, progress) => game.byId[symbol.at] && game.isOpen(game.byId[symbol.at], new Set(progress.solved))
+    const items = Object.values(logic.symbols).filter(symbol =>
+      symbol.at && open(symbol, after) && !open(symbol, before))
+      .map(symbol => ({ key: symbol.type, kind: 'symbol', label: symbol.name, chip: symbolFor[symbol.mark], caption: { zh: '符号', en: 'Symbol' } }))
+    return items
+  }
   game.logic = logic
   game.circuit = { forTask: (task) => logic.circuitFor(task)?.forTask(task) }
-  game.stampOptions = { courseField: symbolStamp(logic.symbols) }
   game.defined = { of: (type) => logic.defs[type] ?? logic.symbols[type] ?? null, defaults: logic.defaultsOf, ops: OPS }
   game.workReferences = ({ task, work }) => logic.workReferences(task, work)
   return game

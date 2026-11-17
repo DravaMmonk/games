@@ -1,7 +1,7 @@
 {
   "name": "@part.iff.name",
   "desc": "@part.iff.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "settings": {
     "form": {
       "control": "select",
@@ -20,7 +20,7 @@
       "form": "elim",
       "label": "A ↔ B ⟹ (¬A ∨ B) ∧ (¬B ∨ A)",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "e = andE(p)",
           "a1 = arrow(e.left)",
@@ -43,7 +43,7 @@
       "form": "intro",
       "label": "(¬A ∨ B) ∧ (¬B ∨ A) ⟹ A ↔ B",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "e = andE(p)",
           "a1 = arrow[form=intro](e.left)",
@@ -65,10 +65,10 @@
   "inputs": [
     {
       "name": "p0",
-      "type": "logic:judgment"
+      "type": "logic/judgment"
     }
   ],
-  "outputType": "logic:judgment",
+  "outputType": "logic/judgment",
   "stages": [
     {
       "id": "iff-intro",

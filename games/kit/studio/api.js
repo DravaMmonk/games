@@ -32,7 +32,7 @@ async function send(tool, args, retries = 0) {
 }
 
 /** The vocabulary the server checked against, rebuilt with its schemas: kernel modules plus declared object types. */
-export function browserVocabulary({ legacyModules, packageCode, objectKinds }) {
-  const layers = Object.entries(objectKinds).map(([name, value]) => ({ id: name.split('/')[0], resolved: true, objects: [{ kind: 'kind', name: name.split('/').slice(1).join('/'), value }] }))
+export function browserVocabulary({ legacyModules, packageCode, kindDeclarations }) {
+  const layers = Object.entries(kindDeclarations).map(([name, value]) => ({ id: name.split('/')[0], resolved: true, objects: [{ kind: 'kind', name: name.split('/').slice(1).join('/'), value }] }))
   return withKindDeclarations(projectVocabulary({ ...vocabularyFor(legacyModules), meanings: registeredMeanings() }), layers, packageCode)
 }

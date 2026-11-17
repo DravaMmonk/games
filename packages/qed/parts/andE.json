@@ -2,7 +2,7 @@
   "name": "@part.andE.name",
   "desc": "@part.andE.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "ab",
@@ -20,8 +20,8 @@
     }
   ],
   "op": {
-    "left": "logic:andE",
-    "right": "logic:andE"
+    "left": "logic/andE",
+    "right": "logic/andE"
   },
   "stages": [
     {

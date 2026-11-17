@@ -69,7 +69,7 @@ export default function usePolicy({ level, solve, fail }) {
   const edges = []
   for (let q = 0; q + 1 < path.length; q++) edges.push(E(path[q], path[q + 1], 'good'))
   if (done) policy(t, table).forEach(([a, b]) => edges.push(E(a, b, 'sel')))
-  const scene = { cells, edges, robot: done ? null : here, look: ROBOTS['state-graph:robot-scout'].look }
+  const scene = { cells, edges, robot: done ? null : here, look: ROBOTS['state-graph/scout'].look }
   const at = Math.min(k + 1, L.starts.length)
   return {
     drawing: boardDrawing(scene, { label: tr('棋盘', 'Board'), minScale: 0.7, maxScale: 1.15 }, onCell),

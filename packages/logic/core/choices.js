@@ -16,7 +16,7 @@ import { compoundTerms, subformulas } from './notation.js'
 export const NAMES = ['a', 'b', 'c']
 
 /** What each card's settings pick, when not any sentence (the default, 'formula'). */
-export const SETTING_KINDS = Object.fromEntries(Object.entries({ allI: { x: 'name' }, exE: { x: 'name' }, natInd: { x: 'name' }, allE: { t: 'instance' }, exI: { target: 'exists' }, refl: { t: 'term' } }).map(([name, value]) => [`logic:${name}`, value]))
+export const SETTING_KINDS = Object.fromEntries(Object.entries({ allI: { x: 'name' }, exE: { x: 'name' }, natInd: { x: 'name' }, allE: { t: 'instance' }, exI: { target: 'exists' }, refl: { t: 'term' } }).map(([name, value]) => [`logic/${name}`, value]))
 
 // A formula with each of its free variables replaced by a name, every way.
 function named(f, names) {

@@ -5,44 +5,44 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "m = table:mmin(view.left, view.ul, way3)",
-          "k = table:const[value=0]()",
-          "g = table:pass(facts.start, k)",
-          "s = table:mmin(m, g)",
-          "a = table:add(s, facts.cost)",
+          "m = table/mmin(view.left, view.ul, way3)",
+          "k = table/const[value=0]()",
+          "g = table/pass(facts.start, k)",
+          "s = table/mmin(m, g)",
+          "a = table/add(s, facts.cost)",
           "cell <- a"
         ],
-        "world": "state-graph:world-grid",
-        "robot": "state-graph:robot-scout",
+        "world": "state-graph/grid",
+        "robot": "state-graph/scout",
         "ports": [
           {
-            "state-graph:port-way": {
+            "state-graph/way": {
               "n": 1,
               "sensor": "left"
             }
           },
           {
-            "state-graph:port-way": {
+            "state-graph/way": {
               "n": 2,
               "sensor": "ul"
             }
           },
           {
-            "state-graph:port-start": {
+            "state-graph/start": {
               "sensor": "start"
             }
           },
           {
-            "state-graph:port-named": {
+            "state-graph/named": {
               "label": "cost",
               "short": "cost",
               "sensor": "cost"
             }
           },
           {
-            "state-graph:port-way": {
+            "state-graph/way": {
               "n": 3,
               "input": "way3"
             }
@@ -58,24 +58,24 @@
   "inputs": [
     {
       "name": "left",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "ul",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "start",
-      "type": "circuit:boolean"
+      "type": "circuit/boolean"
     },
     {
       "name": "cost",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "way3",
-      "type": "circuit:number"
+      "type": "circuit/number"
     }
   ],
-  "outputType": "circuit:number"
+  "outputType": "circuit/number"
 }

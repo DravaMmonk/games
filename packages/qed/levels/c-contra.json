@@ -1,6 +1,6 @@
 {
   "title": "@level.c-contra.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.c-contra.intro.0.t"
@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "c-contra",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

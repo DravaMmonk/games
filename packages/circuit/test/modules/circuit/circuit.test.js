@@ -21,8 +21,8 @@ const { fromText, toText } = board
 const { partOf } = plain
 
 test('the resources compute; a part made of them gives 「—」 when an input is 「—」', () => {
-  assert.equal(OPS['circuit:add'].run([2, 3]), 5)
-  assert.throws(() => OPS['circuit:sub'].run([2, 'x']), /not a number/)
+  assert.equal(OPS['circuit/add'].run([2, 3]), 5)
+  assert.throws(() => OPS['circuit/sub'].run([2, 'x']), /not a number/)
   assert.deepEqual(partProblems(content.partDefs, vocabulary), [])
   assert.equal(PARTS['starter/add'].eval({ a: 2, b: 3 }, { params: {} }), 5)
   assert.equal(PARTS['starter/add'].eval({ a: 2, b: null }, { params: {} }), null)

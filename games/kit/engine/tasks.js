@@ -9,7 +9,7 @@
 import { S } from './schema.js'
 import { T as t } from '../shell/i18n.js'
 
-export const TASK_ID = '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9_-]*$'
+export const TASK_ID = '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$'
 
 /** A task's id, which every task has (a domain writing its own task schema puts this in it). */
 export const TASK_ID_FIELD = S.str({ pattern: TASK_ID, about: t('任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）') })
@@ -62,12 +62,12 @@ export function findTask(levels, id) {
   return null
 }
 
-/** A new task id for level `level`: `<level>_<n>`, the smallest n from 2 that no task or level has. */
+/** A new task id for level `level`: `<level>-<n>`, the smallest n from 2 that no task or level has. */
 export function newTaskId(levels, level) {
   const taken = new Set([...levels.map((l) => l.id), ...levels.flatMap((l) => (l.tasks ?? []).map((task) => task.id))])
   let n = 2
-  while (taken.has(`${level}_${n}`)) n += 1
-  return `${level}_${n}`
+  while (taken.has(`${level}-${n}`)) n += 1
+  return `${level}-${n}`
 }
 
 /** What is wrong with the task ids of a game's levels ([{ id, …level }]): [{ at, says }], `at` a file and path. */
@@ -79,6 +79,7 @@ export function taskIdProblems(levels) {
     for (const [k, task] of (l.tasks ?? []).entries()) {
       if (typeof task?.id !== 'string') continue
       const at = `levels/${l.id}.json.tasks[${k}].id`
+      if (!new RegExp(TASK_ID).test(task.id)) out.push({ at, says: `invalid task id ${task.id}` })
       if (seen.has(task.id)) out.push({ at, says: `task id ${task.id} is also a task of ${seen.get(task.id)}` })
       else seen.set(task.id, l.id)
       if (task.id !== l.id && levelIds.has(task.id)) out.push({ at, says: `task id ${task.id} is another level’s id` })

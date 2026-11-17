@@ -3,11 +3,7 @@ import { circuitSettings } from './settings.js'
 import { composeCircuitModules } from './compose.js'
 import { useCircuitShell } from './shell.jsx'
 import { passedLevelIn, taskOpen } from 'kernel/view'
-import { holds } from '../core/course.js'
-import { stageDefinition } from '../core/part-stages.js'
 import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress.js'
-import { loadWorkshop } from '../core/workshop.js'
-import { courseWorkshop } from '../core/board/workshop-view.js'
 /**
  * Describe a game for GameShell. Required: id, title, kicker, lede ({ zh, en } pairs), chapters
  * ([{ id, title, track, label?, question?, number?, kicker? }], track: the chapter's level tree from kit/course.js
@@ -66,19 +62,6 @@ export function defineGame(def) {
   }
   const ancestors = ancestorsOf(requiresOf)
   const gates = ancestorsOf(required)
-  const awardedStages = new WeakMap()
-  const stageFlags = progress => {
-    if (!def.course) return []
-    if (!awardedStages.has(progress)) {
-      const passed = new Set(progress.passed)
-      const stages = levels.flatMap(level => [
-        ...(progress.solved.includes(level.id) ? def.course.awards(level) : []),
-        ...(level.tasks ?? []).flatMap((task, index) => passed.has(task.key) ? def.course.awards({ id: level.id, task: index + 1 }) : []),
-      ])
-      awardedStages.set(progress, [...new Set(stages)])
-    }
-    return awardedStages.get(progress)
-  }
   const game = {
     levelLabel: (level) => level.id,
     intro: () => null,
@@ -102,59 +85,13 @@ export function defineGame(def) {
     // it to whoever solved it already), and the flags the save holds.
     /** Is level `id` the level `at`, or one that comes after it? */
     after: (id, at) => id === at || (byId[id] ? ancestors(byId[id]).has(at) : false),
-    flagsOf: (progress) => [...new Set([...(progress.flags ?? []), ...stageFlags(progress), ...progress.solved.flatMap((id) => byId[id] ? earnedUnlocks(byId[id], progress) : [])])],
+    flagsOf: (progress) => [...new Set([...(progress.flags ?? []), ...progress.solved.flatMap((id) => byId[id] ? earnedUnlocks(byId[id], progress) : [])])],
   }
-  const stageTexts = new WeakMap()
-  const stagedText = (text, entry) => {
-    if (!entry) return text
-    if (stageTexts.get(text)?.has(entry.id)) return stageTexts.get(text).get(entry.id)
-    const definition = stageDefinition(entry)
-    const result = { ...text, stage: entry.id, name: definition.name ?? text.name, desc: definition.desc ?? text.desc,
-      forms: definition.setting.form?.options?.map(option => option.value) ?? text.forms }
-    if (!stageTexts.has(text)) stageTexts.set(text, new Map())
-    stageTexts.get(text).set(entry.id, result)
-    return result
-  }
-  game.textAt = (text, id, part = text?.part) => {
-    if (!def.course || !part) return text
-    const has = holds(def.course, { id, task: 0 }, new Set())
-    return stagedText(text, def.course.stages.get(has.stage(part)))
-  }
-  const progressStages = new WeakMap()
-  game.textFor = (text, progress) => {
-    const course = def.course, part = text?.part
-    if (!course || !part) return text
-    if (!progressStages.has(progress)) {
-      const selected = new Map()
-      const consider = entry => {
-        if (entry && entry.index > (selected.get(entry.part)?.index ?? -1)) selected.set(entry.part, entry)
-      }
-      for (const id of course.startStages) consider(course.stages.get(id))
-      if (progress.all) for (const entry of course.stages.values()) consider(entry)
-      else {
-        const solved = new Set(progress.solved)
-        const passed = new Set(progress.passed)
-        for (const level of levels) {
-          if (!isOpen(level, solved)) continue
-          for (let task = 0; task < (level.tasks?.length ?? 1); task++) {
-            const at = { id: level.id, task }
-            if (taskOpen(game, progress, level.id, task)) for (const id of course.opens(at)) {
-              if (!course.local(id, at)) consider(course.stages.get(id))
-            }
-            if (passed.has(level.tasks?.[task]?.key)) for (const id of course.awards({ id: level.id, task: task + 1 })) {
-              if (!course.local(id, at)) consider(course.stages.get(id))
-            }
-          }
-          if (solved.has(level.id)) for (const id of course.awards(level)) consider(course.stages.get(id))
-        }
-      }
-      progressStages.set(progress, selected)
-    }
-    return stagedText(text, progressStages.get(progress).get(part) ?? course.stages.get(part))
-  }
+  game.textAt = text => text
+  game.textFor = text => text
   // The primitives a level brings in, for the map.
   game.introduced = (level) => (def.parts?.all ?? []).filter((part) => part.at?.includes(level.id))
-  game.isCircuitPart = (type) => Boolean(type && (game.course?.grantIndex.get(type)?.type === 'circuit/part' || game.partDefs?.parts?.[type]))
+  game.isCircuitPart = (type) => Boolean(type && (game.course?.stages.has(type) || game.partDefs?.parts?.[type]))
   // A built part is earned by solving its level; a primitive when its introducing task becomes available.
   // With every level unlocked, the components box is full too (the encyclopedia opens every entry the same way).
   const earned = (progress, parts) => {
@@ -180,10 +117,7 @@ export function defineGame(def) {
   game.compose = defineGame
   game.openProgress = ({ content, tasks }) => {
     game.partDefs = content.partDefs
-    game.workshop = { replaces: content.replaces ?? {}, publications: Object.fromEntries(content.levels.flatMap(level => level.tasks.map(task => [task.id, task.publishes ?? []]))) }
-    const workshop = courseWorkshop(game, () => loadWorkshop(window.localStorage))
-    game.bindPassingBoard = workshop.bind
-    return createProgress({ id: content.id, tasks, restoreBuilt: workshop.restore })
+    return createProgress({ id: content.id, tasks, restoreBuilt: game.restoreBuilt })
   }
   game.describeObservation = describeObservation
   game.referenceName = (kind, id, lang) => {

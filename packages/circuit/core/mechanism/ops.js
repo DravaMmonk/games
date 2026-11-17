@@ -13,15 +13,15 @@ import { T as t } from 'kernel'
 
 
 
-const args = (...names) => names.map((name) => ({ name, type: 'circuit:number' }))
+const args = (...names) => names.map((name) => ({ name, type: 'circuit/number' }))
 const number = (v) => {
   if (typeof v !== 'number' || !Number.isFinite(v)) throw new PartError(t(`${v} 不是数`, `${v} is not a number`))
   return v
 }
 
-export const OPS = qualifyItems('circuit', 'op', {
-  add: { about: t('a + b'), args: args('a', 'b'), returns: 'circuit:number', params: S.obj({}), symmetric: true, run: ([a, b]) => number(a) + number(b) },
-  sub: { about: t('a − b'), args: args('a', 'b'), returns: 'circuit:number', params: S.obj({}), run: ([a, b]) => number(a) - number(b) },
+export const OPS = qualifyItems('circuit', {
+  add: { about: t('a + b'), args: args('a', 'b'), returns: 'circuit/number', params: S.obj({}), symmetric: true, run: ([a, b]) => number(a) + number(b) },
+  sub: { about: t('a − b'), args: args('a', 'b'), returns: 'circuit/number', params: S.obj({}), run: ([a, b]) => number(a) - number(b) },
 })
 
 /** The resources as the vocabulary lists them (data). */

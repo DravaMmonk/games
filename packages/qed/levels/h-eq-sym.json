@@ -1,6 +1,6 @@
 {
   "title": "@level.h-eq-sym.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.h-eq-sym.intro.0.t"
@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "h-eq-sym",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i",
         "j"

@@ -2,7 +2,7 @@
   "name": "@part.fqLowpass.name",
   "desc": "@part.fqLowpass.desc",
   "icon": "Waves",
-  "family": "image:family-frequency",
+  "family": "image/frequency",
   "inputs": [
     {
       "name": "in",
@@ -27,5 +27,5 @@
       "label": "@part.fqLowpass.settings.R.label"
     }
   },
-  "op": "image:fqLowpass"
+  "op": "image/fqLowpass"
 }

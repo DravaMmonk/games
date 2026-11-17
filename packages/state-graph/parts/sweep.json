@@ -5,13 +5,13 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "a = table:add(view.prev, facts.money)",
+          "a = table/add(view.prev, facts.money)",
           "cell <- a"
         ],
-        "world": "state-graph:world-prefix",
-        "robot": "state-graph:robot-broom",
+        "world": "state-graph/prefix",
+        "robot": "state-graph/broom",
         "facts": [
           "money"
         ]

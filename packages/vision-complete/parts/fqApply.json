@@ -2,12 +2,12 @@
   "name": "@part.fqApply.name",
   "desc": "@part.fqApply.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:fqApply"
+  "op": "image/fqApply"
 }

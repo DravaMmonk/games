@@ -13,7 +13,7 @@
     "goal": "@level.twokeys.mission.goal",
     "how": "@level.twokeys.mission.how"
   },
-  "robot": "state-graph:robot-stack",
+  "robot": "state-graph/stack",
   "debrief": {
     "title": "@level.twokeys.debrief.title",
     "body": [
@@ -23,12 +23,12 @@
   "tasks": [
     {
       "id": "twokeys",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "noTrace": true,
       "hints": [
         "@level.twokeys.tasks.twokeys.hints.0"
       ],
-      "world": "state-graph:world-keys",
+      "world": "state-graph/keys",
       "facts": [
         "start",
         "gain",
@@ -110,11 +110,11 @@
       ],
       "solution": [
         "c = counter(view.up, view.left, facts.start)",
-        "p = table:msum(view.upPrev, view.leftPrev)",
-        "b1 = table:block(facts.shut, c)",
-        "g = table:pass(facts.gain, p)",
-        "b2 = table:block(facts.lose, b1)",
-        "m = table:msum(b2, g)",
+        "p = table/msum(view.upPrev, view.leftPrev)",
+        "b1 = table/block(facts.shut, c)",
+        "g = table/pass(facts.gain, p)",
+        "b2 = table/block(facts.lose, b1)",
+        "m = table/msum(b2, g)",
         "cell <- m"
       ],
       "remember": [

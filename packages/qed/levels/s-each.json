@@ -3,7 +3,7 @@
   "adds": [
     "each"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.s-each.intro.0.t"
@@ -12,8 +12,8 @@
   "tasks": [
     {
       "id": "s-each",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

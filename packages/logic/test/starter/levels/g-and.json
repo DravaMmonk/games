@@ -1,7 +1,6 @@
 {
   "adds": [
-    "gAnd",
-    "formulaAnd"
+    "gAnd"
   ],
   "title": "@level.g-and.title",
   "intro": [
@@ -12,7 +11,7 @@
   "tasks": [
     {
       "id": "g-and",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "Rain ∧ ¬Wind",
       "brief": "@level.g-and.tasks.g-and.brief",
       "hint": [

@@ -15,7 +15,7 @@ const INPUT_NAMES = {
 
 const item = (label, image, view) => image.w * image.h === 1 && (image.c ?? 1) === 1
   ? { label, value: image.data[0] }
-  : { label, value: image, views: [view ? ({ 'image:view-pixels': 'pixels', 'image:view-terrain': 'surface', 'image:view-slope': 'slope', 'image:view-profile': 'profile', 'image:view-spectrum': 'spectrum' })[view] : (image.h === 1 ? 'plot' : 'pixels'), 'pixels'] }
+  : { label, value: image, views: [view ? ({ 'image/pixels': 'pixels', 'image/terrain': 'surface', 'image/slope': 'slope', 'image/profile': 'profile', 'image/spectrum': 'spectrum' })[view] : (image.h === 1 ? 'plot' : 'pixels'), 'pixels'] }
 
 export function imageHero({ theme }) {
   return createElement(FigureHost, { mount: createFigureHost, name: 'conv-press', theme, bare: true })

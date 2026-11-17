@@ -10,9 +10,9 @@
     "goal": "@level.merge.mission.goal",
     "how": "@level.merge.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:msum"
+    "table/msum"
   ],
   "debrief": {
     "title": "@level.merge.debrief.title",
@@ -23,11 +23,11 @@
   "tasks": [
     {
       "id": "merge",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "hints": [
         "@level.merge.tasks.merge.hints.0"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "tests": [
         {
           "R": 3,
@@ -49,7 +49,7 @@
         35
       ],
       "solution": [
-        "m = table:msum(view.up, view.left)",
+        "m = table/msum(view.up, view.left)",
         "cell <- m"
       ]
     }

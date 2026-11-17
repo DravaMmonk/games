@@ -2,6 +2,6 @@
   "name": "@part.add.name",
   "desc": "@part.add.desc",
   "icon": "Plus",
-  "family": "circuit:family-value",
-  "op": "circuit:add"
+  "family": "circuit/value",
+  "op": "circuit/add"
 }

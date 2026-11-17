@@ -25,8 +25,8 @@ export const answerPlay = {
 }
 
 export function register(kernel) {
-  kernel.play('text:answer', answerPlay)
-  kernel.check('text:answers', ({ levels }) => levels.flatMap(level => level.tasks.filter(task => task.source.play === 'text:answer').map(({ source: task }) => {
+  kernel.play('text/answer', answerPlay)
+  kernel.check('text/answers', ({ levels }) => levels.flatMap(level => level.tasks.filter(task => task.source.play === 'text/answer').map(({ source: task }) => {
     try {
       if (task.answerRule.type === 'number' && (!Number.isFinite(task.answerRule.tolerance) || task.answerRule.tolerance < 0)) throw new Error('tolerance must be nonnegative')
       if (task.answerRule.type === 'regex' && /[gy]/.test(task.answerRule.flags ?? '')) throw new Error('stateful regex flags are not allowed')
@@ -35,7 +35,7 @@ export function register(kernel) {
       return { level: level.id, fail: !pass, text: `${task.taskId}: text answers ${pass ? 'PASS' : 'FAIL'}` }
     } catch (error) { return { level: level.id, fail: true, text: `${task.taskId}: ${error.message}` } }
   })))
-  kernel.agent('text:answer', {
+  kernel.agent('text/answer', {
     observe: ({ task }) => ({ ...describeTask(task), choices: task.choices ?? null }),
     act: ({ task, kernel }, answer) => evaluatePlay(kernel, task, answer),
   })

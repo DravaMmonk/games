@@ -21,7 +21,7 @@ export class ExprError extends Error {
   }
 }
 
-const NAME = /(?:[a-z][a-z0-9-]*:[A-Za-z_][A-Za-z0-9_]*(?=\s*\())|[A-Za-z_][A-Za-z0-9_]*/y
+const NAME = /(?:[a-z][a-z0-9-]*\/[A-Za-z][A-Za-z0-9-]*(?=\s*\())|[A-Za-z_][A-Za-z0-9_]*/y
 const NUMBER = /-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?/y
 const SPACE = /\s*/y
 
@@ -166,8 +166,8 @@ export function problemsOf(t, { ops, inputs, inputTypes = {}, settings, fits }) 
       if (x.args.length !== op.args.length) out.push(`${x.call} takes ${op.args.length} argument${op.args.length === 1 ? '' : 's'} (${op.args.map((a) => a.name).join(', ')}), given ${x.args.length}`)
       // A plain number is a literal, a setting or a number a builtin works out: never an input or a domain value.
       x.args.forEach((a, k) => {
-        if (!['num', 'circuit:number'].includes(op.args[k]?.type)) return
-        const what = 'in' in a ? (inputTypes[a.in] === 'circuit:number' ? null : `the input ${a.in}`) : 'str' in a ? `the word ${a.str}` : 'call' in a && ops[a.call] && !['num', 'circuit:number'].includes(ops[a.call].returns) ? `what ${a.call} gives` : null
+        if (!['num', 'circuit/number'].includes(op.args[k]?.type)) return
+        const what = 'in' in a ? (inputTypes[a.in] === 'circuit/number' ? null : `the input ${a.in}`) : 'str' in a ? `the word ${a.str}` : 'call' in a && ops[a.call] && !['num', 'circuit/number'].includes(ops[a.call].returns) ? `what ${a.call} gives` : null
         if (what) out.push(`${x.call}(${op.args[k].name}): ${what} is no plain number`)
       })
       for (const [key, arg] of Object.entries(x.named)) {
@@ -203,7 +203,7 @@ export function evaluate(t, env) {
   if ('num' in t) return t.num
   if ('str' in t) return t.str
   // if works out only the branch it takes (if(eq($b, 0), $a, over($a, $b)) never divides by 0).
-  if (t.call === 'circuit:if' && t.args.length === 3) return evaluate(evaluate(t.args[0], env) ? t.args[1] : t.args[2], env)
+  if (t.call === 'circuit/if' && t.args.length === 3) return evaluate(evaluate(t.args[0], env) ? t.args[1] : t.args[2], env)
   if ('match' in t) {
     const v = evaluate(t.match, env)
     const then = t.cases[String(v)] ?? t.other
@@ -222,7 +222,7 @@ export function evaluate(t, env) {
 export function evaluateTaped(t, env) {
   if ('in' in t) return { v: env.ins[t.in], id: env.ids?.[t.in] ?? null }
   if ('set' in t || 'num' in t || 'str' in t) return { v: evaluate(t, env), id: null }
-  if (t.call === 'circuit:if' && t.args.length === 3) return evaluateTaped(evaluate(t.args[0], env) ? t.args[1] : t.args[2], env)
+  if (t.call === 'circuit/if' && t.args.length === 3) return evaluateTaped(evaluate(t.args[0], env) ? t.args[1] : t.args[2], env)
   if ('match' in t) {
     const v = evaluate(t.match, env)
     const then = t.cases[String(v)] ?? t.other

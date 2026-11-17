@@ -3,7 +3,7 @@
   "tasks": [
     {
       "id": "regex-answer",
-      "play": "text:answer",
+      "play": "text/answer",
       "brief": "@level.regex.tasks.regex-answer.brief",
       "answerRule": { "type": "regex", "pattern": "^A[0-9]{3}$" },
       "referenceAnswer": "A123",

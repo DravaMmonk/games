@@ -16,23 +16,23 @@
       "t": "@level.5-7.intro.3.t"
     }
   ],
-  "unlocks": ["image:unlock-embed"],
+  "unlocks": ["image/embed"],
   "tasks": [
     {
       "id": "5-7",
-      "play": "image:board",
+      "play": "image/board",
       "brief": "@level.5-7.tasks.5-7.brief",
       "hint": "@level.5-7.tasks.5-7.hint",
       "bench": {
-        "model": "vision-complete:benchModel-contrast",
+        "model": "vision-complete/contrast",
         "setup": {
           "names": ["T", "L", "X", "O", "F"],
           "base": [
-            { "image:picture-glyph": { "letter": "T", "lo": 0.1, "hi": 0.9 } },
-            { "image:picture-glyph": { "letter": "L", "lo": 0.1, "hi": 0.9 } },
-            { "image:picture-glyph": { "letter": "X", "lo": 0.1, "hi": 0.9 } },
-            { "image:picture-glyph": { "letter": "O", "lo": 0.1, "hi": 0.9 } },
-            { "image:picture-glyph": { "letter": "F", "lo": 0.1, "hi": 0.9 } }
+            { "image/glyph": { "letter": "T", "lo": 0.1, "hi": 0.9 } },
+            { "image/glyph": { "letter": "L", "lo": 0.1, "hi": 0.9 } },
+            { "image/glyph": { "letter": "X", "lo": 0.1, "hi": 0.9 } },
+            { "image/glyph": { "letter": "O", "lo": 0.1, "hi": 0.9 } },
+            { "image/glyph": { "letter": "F", "lo": 0.1, "hi": 0.9 } }
           ],
           "tau": 0.2,
           "rate": 0.5,
@@ -72,21 +72,21 @@
         "layout": {
           "main": [
             {
-              "vision-complete:display-embedding": {
+              "vision-complete/embedding": {
                 "with": [
                   {
-                    "image:display-text": {
+                    "image/text": {
                       "text": "@level.5-7.tasks.5-7.bench.layout.main.0.embedding.with.0.text.text",
                       "look": "label"
                     }
                   },
-                  { "image:display-chips": { "of": "steps" } }
+                  { "image/chips": { "of": "steps" } }
                 ]
               }
             },
-            { "image:display-verdict": { "center": true } },
+            { "image/verdict": { "center": true } },
             {
-              "image:display-text": {
+              "image/text": {
                 "text": "@level.5-7.tasks.5-7.bench.layout.main.2.text.text",
                 "look": "legend"
               }
@@ -97,23 +97,23 @@
             {
               "panel": [
                 {
-                  "image:display-text": {
+                  "image/text": {
                     "text": "@level.5-7.tasks.5-7.bench.layout.side.0.panel.0.text.text",
                     "look": "label"
                   }
                 },
-                "image:display-goals"
+                "image/goals"
               ]
             },
             {
               "panel": [
-                { "image:display-text": { "of": "formula", "look": "serif" } },
-                "image:display-knobs",
-                "image:display-actions",
-                { "image:display-curve": { "of": "losses", "caption": "lossNote" } }
+                { "image/text": { "of": "formula", "look": "serif" } },
+                "image/knobs",
+                "image/actions",
+                { "image/curve": { "of": "losses", "caption": "lossNote" } }
               ]
             },
-            "vision-complete:display-choiceMatrix"
+            "vision-complete/choiceMatrix"
           ]
         }
       }

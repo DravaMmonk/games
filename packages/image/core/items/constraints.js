@@ -9,7 +9,7 @@ import { T as t } from 'kernel'
 
 
 // The trainable layers a path through a network counts (the deep-network levels need a long one).
-const LAYERS = new Set(['image:lrnConv', 'image:lrnRes', 'image:learn3', 'image:kernel3'])
+const LAYERS = new Set(['image/lrnConv', 'image/lrnRes', 'image/learn3', 'image/kernel3'])
 /** The most trainable layers met on any one path from an input to the output. */
 export function depthOf(graph, types = {}) {
   const byId = new Map(graph.nodes.map((n) => [n.id, n]))
@@ -28,10 +28,10 @@ function bypassesBottleneck(graph, types) {
   const { after } = indexEdges(wireEdges(graph.wires))
   const kind = new Map(graph.nodes.map((node) => [node.id, types[node.type]?.resource ?? node.type]))
   const inputs = graph.nodes.filter((node) => node.type === 'input').map((node) => node.id)
-  return reaches(inputs, (id) => kind.get(id) === 'output', (id) => kind.get(id) === 'image:dg_encode' ? [] : after(id))
+  return reaches(inputs, (id) => kind.get(id) === 'output', (id) => kind.get(id) === 'image/dg-encode' ? [] : after(id))
 }
 
-export const CONSTRAINTS = qualifyItems('image', 'constraint', {
+export const CONSTRAINTS = qualifyItems('image', {
   cost: {
     about: t('计算量不超过 max'),
     params: S.obj({ max: S.num() }),
@@ -46,7 +46,7 @@ export const CONSTRAINTS = qualifyItems('image', 'constraint', {
     about: t('频域的元件（频域低通、频域相乘）一共不超过 max 个'),
     params: S.obj({ max: S.int({ min: 0 }) }),
     check: ({ max }, types) => (_, graph) => {
-      const used = graph.nodes.filter((node) => ['image:fqLowpass', 'image:fqApply'].includes(types[node.type]?.resource ?? node.type)).length
+      const used = graph.nodes.filter((node) => ['image/fqLowpass', 'image/fqApply'].includes(types[node.type]?.resource ?? node.type)).length
       return used > max ? { zh: `用了 ${used} 个频域元件，最多 ${max} 个`, en: `${used} frequency-domain parts used, at most ${max}` } : ''
     },
   },
@@ -63,7 +63,7 @@ export const CONSTRAINTS = qualifyItems('image', 'constraint', {
     params: S.obj({ max: S.int({ min: 1 }) }),
     check: ({ max }, types) => (_, graph) => {
       if (bypassesBottleneck(graph, types)) return { zh: '图像没有经过编码器', en: 'The image does not pass through the encoder' }
-      const widest = Math.max(0, ...graph.nodes.filter((n) => (types[n.type]?.resource ?? n.type) === 'image:dg_encode').map((n) => Number(n.params.k ?? 1)))
+      const widest = Math.max(0, ...graph.nodes.filter((n) => (types[n.type]?.resource ?? n.type) === 'image/dg-encode').map((n) => Number(n.params.k ?? 1)))
       return widest > max ? { zh: `瓶颈有 ${widest} 个数，最多 ${max} 个`, en: `The bottleneck has ${widest} numbers; at most ${max} allowed` } : ''
     },
   },

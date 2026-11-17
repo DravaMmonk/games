@@ -16,7 +16,7 @@ const look = body => `<g class="bot">${body}</g>`;
  */
 const BASE = ['view', 'facts'], FARSIGHT = [...BASE, 'order', 'heads'];
 
-export const ROBOTS = qualifyItems('state-graph', 'robot', {
+export const ROBOTS = qualifyItems('state-graph', {
   scout: {
     name: T('小方', 'Boxy'), vision: 1, can: BASE,
     desc: T('视野 3×3：看得见身边一圈的 8 个格子。', 'Vision 3×3: it sees the ring of 8 cells around it.'),

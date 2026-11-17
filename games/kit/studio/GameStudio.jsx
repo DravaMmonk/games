@@ -1,3 +1,4 @@
+import { PackageDependencies, packageGroups, packageKindLabel } from './PackageGroups.jsx'
 import { objectTypes } from './object-types.js'
 import { typeName } from './LeftTypes.jsx'
 // The game workspace of the studio (games/DESIGN.md 6.7): where a course designer makes a game on a package and
@@ -275,22 +276,28 @@ function retitled(value, key = null) {
   return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, retitled(v, k)]))
 }
 
-/** The packages, those this game plays first. */
-/** The packages, those the game plays first, with a search; one picked shows in the middle (PackageCard). */
+/** The packages, those the game plays first, grouped by their kind (PackageGroups.jsx), with a search and a filter by
+ *  kind in the list's tools; one picked shows in the middle (PackageCard). */
 function UsedPackages({ packages, used, current, onOpen }) {
   const [query, setQuery] = useState('')
+  const [filter, setFilter] = useState('')
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
   const listed = [...packages].sort((a, b) => Number(used.includes(b.id)) - Number(used.includes(a.id)) || a.id.localeCompare(b.id))
     .filter(({ id, uses }) => words.every((word) => `${id} ${Object.keys(uses ?? {}).join(' ')}`.toLowerCase().includes(word)))
   return (
     <nav className="parts-list" aria-label={tr('包', 'Packages')}>
-      <SidebarListTools query={query} onQuery={setQuery} />
-      {listed.map(({ id }) => (
-        <button key={id} type="button" className={`parts-row is-object ${id === current ? 'is-on' : ''} ${used.includes(id) ? '' : 'is-unused'}`} aria-current={id === current ? 'true' : undefined} onClick={() => onOpen(id)}>
-          <i className="family-chip"><Package size={12} aria-hidden="true" /></i>
-          <span>{id}</span>
-          {used.includes(id) ? <code>{tr('在用', 'In use')}</code> : <i />}
-        </button>
+      <SidebarListTools query={query} onQuery={setQuery} choices={[{ label: tr('包种类', 'Package kind'), value: filter, onPick: setFilter, options: [{ value: '', label: tr('全部种类', 'All kinds') }, ...packageGroups(packages).map(({ kind }) => ({ value: kind, label: packageKindLabel(kind) }))] }]} />
+      {packageGroups(listed, filter).map(({ kind, items }) => (
+        <section key={kind}>
+          <h3 className="package-group-title">{packageKindLabel(kind)}</h3>
+          {items.map(({ id }) => (
+            <button key={id} type="button" className={`parts-row is-object ${id === current ? 'is-on' : ''} ${used.includes(id) ? '' : 'is-unused'}`} aria-current={id === current ? 'true' : undefined} onClick={() => onOpen(id)}>
+              <i className="family-chip"><Package size={12} aria-hidden="true" /></i>
+              <span>{id}</span>
+              {used.includes(id) ? <code>{tr('在用', 'In use')}</code> : <i />}
+            </button>
+          ))}
+        </section>
       ))}
     </nav>
   )
@@ -303,7 +310,7 @@ function UsedPackages({ packages, used, current, onOpen }) {
 function PackageCard({ id, packages, used, content, pending, onBuild, onOps }) {
   const [refusal, setRefusal] = useState(null)
   if (!id) return <article className="arrange" />
-  const uses = Object.keys(packages.find((p) => p.id === id)?.uses ?? {})
+  const uses = Object.keys(packages.find(pkg => pkg.id === id)?.uses ?? {}).map(name => packages.find(pkg => pkg.id === name)).filter(Boolean)
   const missing = missingDependencies(packages, used, id)
   const run = async (ops) => setRefusal(await onOps(ops))
   const count = (kind) => Object.keys(content?.registries?.[kind] ?? {}).filter((name) => name.startsWith(`${id}/`)).length
@@ -322,7 +329,7 @@ function PackageCard({ id, packages, used, content, pending, onBuild, onOps }) {
       </header>
       {refusal && <p className="is-error package-refusal" role="alert">{refusal}</p>}
       <dl className="package-facts">
-        {uses.length > 0 && <><dt>{tr('依赖', 'Uses')}</dt><dd>{uses.map((u) => <code key={u}>{u}</code>)}</dd></>}
+        {uses.length > 0 && <><dt>{tr('依赖', 'Uses')}</dt><dd><PackageDependencies key={id} packages={uses} /></dd></>}
         {used.includes(id) && objectTypes(content).map(info => [info.type, ...typeName(info)]).map(([kind, zh, en]) => (
           <Fragment key={kind}><dt>{tr(zh, en)}</dt><dd>{count(kind)}</dd></Fragment>
         ))}

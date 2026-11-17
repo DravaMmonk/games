@@ -8,11 +8,10 @@
       "t": "@level.q-children.intro.1.t"
     }
   ],
-  "tray": "formula",
   "tasks": [
     {
       "id": "q-children",
-      "kind": "logic:query",
+      "kind": "logic/query",
       "consts": [
         "h",
         "i",

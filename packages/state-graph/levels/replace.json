@@ -13,7 +13,7 @@
     "goal": "@level.replace.mission.goal",
     "how": "@level.replace.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.replace.debrief.title",
     "body": [
@@ -23,16 +23,16 @@
   "tasks": [
     {
       "id": "replace",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-any": [
+            "state-graph/any": [
               {
-                "state-graph:condition-uses": "up"
+                "state-graph/uses": "up"
               },
               {
-                "state-graph:condition-uses": "left"
+                "state-graph/uses": "left"
               }
             ]
           },
@@ -43,7 +43,7 @@
         "@level.replace.tasks.replace.hints.0",
         "@level.replace.tasks.replace.hints.1"
       ],
-      "world": "state-graph:world-align",
+      "world": "state-graph/align",
       "facts": [
         "same",
         "start"
@@ -68,12 +68,12 @@
         2
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "g = table:pass(facts.same, view.ul)",
-        "z = table:const[value=0]()",
-        "a = table:add(view.ul, k)",
-        "h = table:pass(facts.start, z)",
-        "m = table:mmin(a, g, h)",
+        "k = table/const[value=1]()",
+        "g = table/pass(facts.same, view.ul)",
+        "z = table/const[value=0]()",
+        "a = table/add(view.ul, k)",
+        "h = table/pass(facts.start, z)",
+        "m = table/mmin(a, g, h)",
         "cell <- m"
       ],
       "border0": false

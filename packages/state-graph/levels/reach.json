@@ -5,7 +5,7 @@
     {
       "t": "@level.reach.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 3,
           "cells": {
@@ -51,7 +51,7 @@
     {
       "t": "@level.reach.intro.1.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "u",
@@ -105,9 +105,9 @@
     "goal": "@level.reach.mission.goal",
     "how": "@level.reach.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:many"
+    "table/many"
   ],
   "debrief": {
     "title": "@level.reach.debrief.title",
@@ -120,7 +120,7 @@
   "tasks": [
     {
       "id": "reach",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "testLabel": "@level.reach.tasks.reach.testLabel",
       "checkAll": true,
       "hints": [
@@ -128,7 +128,7 @@
         "@level.reach.tasks.reach.hints.1",
         "@level.reach.tasks.reach.hints.2"
       ],
-      "world": "state-graph:world-gridYes",
+      "world": "state-graph/gridYes",
       "facts": [
         "start",
         "rock"
@@ -199,8 +199,8 @@
         true
       ],
       "solution": [
-        "m = table:many(view.up, view.left, facts.start)",
-        "b = table:block(facts.rock, m)",
+        "m = table/many(view.up, view.left, facts.start)",
+        "b = table/block(facts.rock, m)",
         "cell <- b"
       ]
     }

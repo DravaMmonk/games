@@ -75,7 +75,7 @@ test('schema text traversal reaches nested collection patches', () => {
 })
 
 test('independent typed set contributions union through patches and audit every author', () => {
-  const layer = (id, uses, objects = [], overrides = []) => ({ id, config: { version: '0.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^0.0.0'])) }, objects, overrides })
+  const layer = (id, uses, objects = [], overrides = []) => ({ id, config: { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^0.0.0'])) }, objects, overrides })
   const base = layer('p', [], [{ kind: 'tag', name: 'all', value: { kind: 'entry', values: ['a'] } }])
   const patch = id => layer(id, ['p'], [], [{ kind: 'tag', name: 'p/all', value: { kind: 'entry', values: { add: ['p/a', 'p/b'] } } }])
   const result = composeLayers([base, patch('q'), patch('r')], { game: S.obj({}), kinds: {} })
@@ -119,7 +119,7 @@ test('game-layer declared objects persist through public authoring operations an
   const { runChangeset } = await import('./ops/changeset.js')
   const { root, id } = proofsRoot()
   mkdirSync(join(root, 'packages/provider/kinds'), { recursive: true })
-  writeFileSync(join(root, 'packages/provider/package.json'), JSON.stringify({ version: '0.0.0', kernel: '^0.0.0', uses: {} }))
+  writeFileSync(join(root, 'packages/provider/package.json'), JSON.stringify({ kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} }))
   writeFileSync(join(root, 'packages/provider/kinds/settings.json'), JSON.stringify({ folder: 'settings', declares: 'game', overrides: { game: ['*'] }, schema: S.obj({ title: S.text() }) }))
   lockFixture(root)
   const workspace = openGame(id, root)
@@ -139,8 +139,8 @@ test('game-layer declared objects persist through public authoring operations an
 
 test('independent list and edge patches compose by field type across arbitrary kinds', () => {
   const vocabulary = { kinds: {}, game: S.obj({}), objectKinds: { 'p/graph': { declares: 'package', overrides: { package: ['*'] }, schema } } }
-  const base = { id: 'p', config: { version: '0.0.0', kernel: '^0.0.0', uses: {} }, objects: [{ kind: 'p/graph', name: 'main', value: { values: [], ordered: ['p/a'], edges: [] } }] }
-  const layer = (id, target) => ({ id, config: { version: '0.0.0', kernel: '^0.0.0', uses: { p: '^0.0.0' } }, objects: [], overrides: [{ kind: 'p/graph', name: 'p/main', value: { ordered: { add: [target] }, edges: { add: [{ from: 'p/a', to: target }] } } }] })
+  const base = { id: 'p', config: { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} }, objects: [{ kind: 'p/graph', name: 'main', value: { values: [], ordered: ['p/a'], edges: [] } }] }
+  const layer = (id, target) => ({ id, config: { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: { p: '^0.0.0' } }, objects: [], overrides: [{ kind: 'p/graph', name: 'p/main', value: { ordered: { add: [target] }, edges: { add: [{ from: 'p/a', to: target }] } } }] })
   const left = layer('q', 'p/b'), right = layer('r', 'p/c')
   const content = composeLayers([base, left, right], vocabulary)
   assert.deepEqual(content.registries['p/graph']['p/main'].ordered, ['p/a', 'p/b', 'p/c'])

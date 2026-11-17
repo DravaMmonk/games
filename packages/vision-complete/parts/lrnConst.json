@@ -2,12 +2,12 @@
   "name": "@part.lrnConst.name",
   "desc": "@part.lrnConst.desc",
   "icon": "Activity",
-  "family": "image:family-learned",
+  "family": "image/learned",
   "settings": {
     "p": {
       "label": "@part.lrnConst.settings.p.label",
       "fixed": true
     }
   },
-  "op": "image:lrnConst"
+  "op": "image/lrnConst"
 }

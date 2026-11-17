@@ -5,11 +5,10 @@
       "t": "@level.au-onepair.intro.0.t"
     }
   ],
-  "tray": "formula",
   "tasks": [
     {
       "id": "au-onepair",
-      "kind": "logic:truth",
+      "kind": "logic/truth",
       "ask": "sat",
       "formulas": [
         "(Rain ∨ Wind) ∧ (¬Rain ∨ ¬Wind)"

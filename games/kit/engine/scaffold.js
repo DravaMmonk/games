@@ -1,3 +1,5 @@
+import { createInterface } from 'node:readline/promises'
+import { PACKAGE_KINDS, validatePackageKind } from './package-kinds.js'
 import { kernelIdentity } from './release-data.js'
 import { packageDirectory } from './resolver.js'
 /* global process */
@@ -50,17 +52,20 @@ function register(root, id, content) {
 }
 
 /** Copy an installed package or create an empty package. */
-export function newPackage({ root = contentRoot(), id, from, empty = false }) {
+export function newPackage({ root = contentRoot(), id, kind, from, empty = false }) {
   if (!/^[a-z][a-z0-9-]*$/.test(id ?? '')) fail(`a package id is lowercase letters, digits and dashes: ${id}`)
   const target = packageDirectory(id, root)
   if (!empty && !from) fail('choose --from <package> or --empty')
   if (existsSync(target)) fail(`packages/${id} is there already`)
-  if (empty) { mkdirSync(target, { recursive: true }); writeFileSync(resolve(target, 'package.json'), writeJson({ version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {} }, null)) }
-  else {
+  validatePackageKind(kind)
+  let config = { version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {} }
+  if (!empty) {
     if (!/^[a-z][a-z0-9-]*$/.test(from) || !existsSync(resolve(packageDirectory(from, root), 'package.json'))) fail(`no package ${from}`)
     mkdirSync(target, { recursive: true })
-    for (const name of readdirSync(packageDirectory(from, root)).filter(name => !['changes.jsonl', 'changes.lock', 'lock.json', 'manifest.json', 'node_modules', '.DS_Store'].includes(name))) fill(resolve(packageDirectory(from, root), name), resolve(target, name), { [`${from}/`]: `${id}/`, [`${from}:`]: `${id}:` })
-  }
+    for (const name of readdirSync(packageDirectory(from, root)).filter(name => !['changes.jsonl', 'changes.lock', 'lock.json', 'manifest.json', 'node_modules', '.DS_Store'].includes(name))) fill(resolve(packageDirectory(from, root), name), resolve(target, name), { [`${from}/`]: `${id}/` })
+    config = JSON.parse(readFileSync(resolve(target, 'package.json'), 'utf8'))
+  } else mkdirSync(target, { recursive: true })
+  writeFileSync(resolve(target, 'package.json'), writeJson({ ...config, kind }, null))
   lockTarget({ kind: 'package', id }, root)
   return target
 }
@@ -108,7 +113,7 @@ export function gameOnPackage({ root = contentRoot(), id, from, title }) {
 }
 
 /** Create content from an installed package or game. */
-function cli([what, name, ...rest]) {
+async function cli([what, name, ...rest]) {
   const opt = (key) => {
     const k = rest.indexOf(`--${key}`)
     return k >= 0 ? rest[k + 1] : undefined
@@ -116,13 +121,20 @@ function cli([what, name, ...rest]) {
   if (what === 'game') {
     console.log(`made ${gameOnPackage({ root: contentRoot(), id: name, from: opt('from'), title: opt('title') ?? name })}\nnext: npm run check -- ${name}`)
   } else if (what === 'package') {
-    console.log(`made ${newPackage({ root: contentRoot(), id: name, from: opt('from'), empty: rest.includes('--empty') })}\nnext: npm run check -- --package ${name}`)
-  } else fail('usage: scaffold.js <game|package> <id> --from <id> (package also accepts --empty)')
+    let kind = opt('kind')
+    if (!kind && process.stdin.isTTY) {
+      const reader = createInterface({ input: process.stdin, output: process.stdout })
+      try { kind = (await reader.question(`Package kind (${PACKAGE_KINDS.join(', ')}): `)).trim() }
+      finally { reader.close() }
+    }
+    if (!kind) fail(`choose --kind <${PACKAGE_KINDS.join('|')}>`)
+    console.log(`made ${newPackage({ root: contentRoot(), id: name, kind, from: opt('from'), empty: rest.includes('--empty') })}\nnext: npm run check -- --package ${name}`)
+  } else fail('usage: scaffold.js <game|package> <id> --from <id> (package requires --kind and also accepts --empty)')
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   try {
-    cli(process.argv.slice(2))
+    await cli(process.argv.slice(2))
   } catch (e) {
     console.error(e.message)
     process.exit(1)

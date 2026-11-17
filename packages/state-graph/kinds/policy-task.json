@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "state-graph:policy",
+  "play": "state-graph/policy",
   "fields": {},
   "schema": {
     "type": "obj",

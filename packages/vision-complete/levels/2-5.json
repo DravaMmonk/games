@@ -18,15 +18,15 @@
   ],
   "adds": ["sqrt"],
   "tray": "pipeline",
-  "unlocks": ["image:unlock-spectrum"],
+  "unlocks": ["image/spectrum"],
   "tasks": [
     {
       "id": "2-5",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.2-5.tasks.2-5.brief",
       "hint": "@level.2-5.tasks.2-5.hint",
       "check": { "tolerance": 0.01 },
-      "scene": "vision-complete:scene-waveform",
+      "scene": "vision-complete/waveform",
       "setup": { "k": 3 },
       "tests": [
         {

@@ -1,6 +1,7 @@
 {
   "title": "@tray.recognition.title",
   "desc": "@tray.recognition.desc",
+  "includeUnlisted": true,
   "values": [
     "shift-n",
     "const",

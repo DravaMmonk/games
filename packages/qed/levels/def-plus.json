@@ -6,11 +6,10 @@
     }
   ],
   "after": "@level.def-plus.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "def-plus",
-      "kind": "logic:define",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"

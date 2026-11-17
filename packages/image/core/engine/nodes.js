@@ -247,11 +247,11 @@ Object.assign(NATIVE_TYPES, FREQUENCY, LIGHT, LEARNING, GLOBAL, MATCHING, GENERA
 // The parts every course starts from; a course's own table adds the parts its levels pack (../course.js).
 Object.freeze(NATIVE_TYPES)
 
-const unlockName = (flag) => flag ? `image:unlock-${flag}` : flag
-export const NODE_TYPES = Object.fromEntries(Object.entries(NATIVE_TYPES).map(([name, spec]) => [spec.fixed ? name : `image:${name}`, {
+const unlockName = (flag) => flag ? `image/${flag}` : flag
+export const NODE_TYPES = Object.fromEntries(Object.entries(NATIVE_TYPES).map(([name, spec]) => [spec.fixed ? name : `image/${name}`, {
   ...spec,
-  inputTypes: Object.fromEntries(spec.inputs.map((name) => [name, 'image:image'])),
-  outputType: 'image:image',
+  inputTypes: Object.fromEntries(spec.inputs.map((name) => [name, 'image/image'])),
+  outputType: 'image/image',
   unlock: unlockName(spec.unlock),
 }]))
 

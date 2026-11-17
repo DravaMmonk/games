@@ -1,6 +1,6 @@
 {
   "title": "@level.sort-run.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.sort-run.intro.0.t"
@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "sort-run",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

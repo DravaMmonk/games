@@ -64,7 +64,7 @@ export const gridDef = {
 export const grid = world(gridDef);
 
 /** The same map, but every cell holds 是 or 否: can a route get here at all? */
-export const gridYes = world({ ...gridDef, cellType: 'circuit:boolean' });
+export const gridYes = world({ ...gridDef, cellType: 'circuit/boolean' });
 
 /**
  * Two piles of stones: cell (a, b) is the position with a stones left in pile A and b in pile B, and holds whether the
@@ -72,7 +72,7 @@ export const gridYes = world({ ...gridDef, cellType: 'circuit:boolean' });
  */
 export const piles = world({
   ...gridDef,
-  cellType: 'circuit:boolean',
+  cellType: 'circuit/boolean',
   sensors: { up: cell(T('A 堆少 1 颗', 'one fewer in A'), 'A−1', [0, -1, 0]), left: cell(T('B 堆少 1 颗', 'one fewer in B'), 'B−1', [0, 0, -1]), ul: cell(T('两堆各少 1 颗', 'one fewer in each'), T('各−1', 'AB−1'), [0, -1, -1]) },
   facts: [],
   mark: () => ({ corner: '' }),

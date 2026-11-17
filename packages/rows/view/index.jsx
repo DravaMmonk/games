@@ -10,5 +10,5 @@ export function Equation({ task, work, onChange }) {
 }
 
 export function register(kernel) {
-  kernel.play('rows:equation', { component: Equation, preview: Equation, define })
+  kernel.play('rows/equation', { component: Equation, preview: Equation, define })
 }

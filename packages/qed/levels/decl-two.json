@@ -9,11 +9,10 @@
     }
   ],
   "after": "@level.decl-two.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-two",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "declare": "@level.decl-two.tasks.decl-two.declare",
       "target": "Motion",
       "sentences": [
@@ -96,8 +95,8 @@
           "make": false
         }
       ],
-      "play": "logic:audit",
-      "want": "logic:want-expose",
+      "play": "logic/audit",
+      "want": "logic/expose",
       "boards": [
         {
           "rules": [

@@ -3,7 +3,7 @@
   "adds": [
     "rule"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-rule.intro.0.t"
@@ -15,8 +15,8 @@
   "tasks": [
     {
       "id": "r-rule",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",

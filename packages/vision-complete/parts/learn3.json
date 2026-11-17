@@ -2,7 +2,7 @@
   "name": "@part.learn3.name",
   "desc": "@part.learn3.desc",
   "icon": "Activity",
-  "family": "image:family-learned",
+  "family": "image/learned",
   "inputs": [
     {
       "name": "in",
@@ -15,5 +15,5 @@
       "fixed": true
     }
   },
-  "op": "image:learn3"
+  "op": "image/learn3"
 }

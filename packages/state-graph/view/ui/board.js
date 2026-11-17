@@ -85,7 +85,7 @@ export function experimentParts(model, b, task, view) {
       return t.endsWith('s') ? 'list' : t;
     }
     const t = model.sinkType(b, io, node.id, port);
-    return t.startsWith('circuit:boolean') || t === 'table:boolean-input' ? 'bool' : t.endsWith('any') ? 'any' : 'num';
+    return t.startsWith('circuit/boolean') || t === 'table/boolean-input' ? 'bool' : t.endsWith('any') ? 'any' : 'num';
   };
   const byId = (graph, id) => graph.nodes.find(n => n.id === id);
   return {

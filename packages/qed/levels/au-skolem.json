@@ -3,7 +3,7 @@
   "adds": [
     "skolem"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.au-skolem.intro.0.t"
@@ -13,8 +13,8 @@
   "tasks": [
     {
       "id": "au-skolem",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",

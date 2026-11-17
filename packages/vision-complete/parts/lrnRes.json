@@ -2,7 +2,7 @@
   "name": "@part.lrnRes.name",
   "desc": "@part.lrnRes.desc",
   "icon": "Activity",
-  "family": "image:family-learned",
+  "family": "image/learned",
   "inputs": [
     {
       "name": "in",
@@ -15,5 +15,5 @@
       "fixed": true
     }
   },
-  "op": "image:lrnRes"
+  "op": "image/lrnRes"
 }

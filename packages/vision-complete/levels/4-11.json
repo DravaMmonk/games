@@ -20,38 +20,38 @@
   "tasks": [
     {
       "id": "4-11",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.4-11.tasks.4-11.brief",
       "hint": "@level.4-11.tasks.4-11.hint",
       "trainRate": 8,
-      "scene": "image:scene-filter",
-      "setup": { "target": { "image:target-stride": { "kernel": [0, 0.25, 0, 0.25, -1, 0.25, 0, 0.25, 0] } } },
+      "scene": "image/filter",
+      "setup": { "target": { "image/stride": { "kernel": [0, 0.25, 0, 0.25, -1, 0.25, 0, 0.25, 0] } } },
       "tests": [
         {
           "label": "@level.4-11.tasks.4-11.tests.0.label",
-          "in": { "image:picture-glyph": { "letter": "F" } }
+          "in": { "image/glyph": { "letter": "F" } }
         },
         {
           "label": "@level.4-11.tasks.4-11.tests.1.label",
-          "in": "image:picture-disk"
+          "in": "image/disk"
         },
         {
           "label": "@level.4-11.tasks.4-11.tests.2.label",
-          "in": { "image:picture-noise": { "seed": 61 } }
+          "in": { "image/noise": { "seed": 61 } }
         },
         {
           "label": "@level.4-11.tasks.4-11.tests.3.label",
-          "in": { "image:picture-scaled": { "of": { "image:picture-noise": { "seed": 62 } }, "size": 12 } }
+          "in": { "image/scaled": { "of": { "image/noise": { "seed": 62 } }, "size": 12 } }
         }
       ],
       "hidden": [
         {
           "label": "@level.4-11.tasks.4-11.hidden.0.label",
-          "in": { "image:picture-scaled": { "of": { "image:picture-glyph": { "letter": "T" } }, "size": 12 } }
+          "in": { "image/scaled": { "of": { "image/glyph": { "letter": "T" } }, "size": 12 } }
         },
         {
           "label": "@level.4-11.tasks.4-11.hidden.1.label",
-          "in": { "image:picture-checker": { "cell": 3 } }
+          "in": { "image/checker": { "cell": 3 } }
         }
       ],
       "solution": [

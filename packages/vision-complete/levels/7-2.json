@@ -24,7 +24,7 @@
   "tasks": [
     {
       "id": "7-2",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.7-2.tasks.7-2.brief",
       "hint": "@level.7-2.tasks.7-2.hint",
       "inputs": ["left", "right"],
@@ -32,9 +32,9 @@
         "left": "@level.7-2.tasks.7-2.inputLabels.left",
         "right": "@level.7-2.tasks.7-2.inputLabels.right"
       },
-      "views": { "out": "image:view-terrain" },
+      "views": { "out": "image/terrain" },
       "check": { "tolerance": 1.01, "mismatches": 28 },
-      "scene": "vision-complete:scene-stereo",
+      "scene": "vision-complete/stereo",
       "tests": [
         {
           "label": "@level.7-2.tasks.7-2.tests.0.label",

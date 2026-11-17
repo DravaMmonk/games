@@ -7,7 +7,7 @@ import { callOf } from 'kernel';
 import { isGiven } from 'table';
 import { partsOfType, readsOf, usesSensor } from 'table';
 
-const CONDITIONS = qualifyItems('state-graph', 'condition', {
+const CONDITIONS = qualifyItems('state-graph', {
   reads: (id, b) => readsOf(b).includes(id),
   uses: (id, b) => usesSensor(b, id),
   has: (p, b) => (typeof p === 'string' ? partsOfType(b, p).length > 0 : partsOfType(b, p.part, p.value).length > 0),

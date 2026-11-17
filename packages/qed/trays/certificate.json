@@ -2,6 +2,7 @@
   "title": "@tray.certificate.title",
   "desc": "@tray.certificate.desc",
   "workshop": false,
+  "includeUnlisted": true,
   "values": [],
   "menus": [
     {

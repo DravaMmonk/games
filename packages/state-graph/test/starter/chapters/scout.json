@@ -1,5 +1,5 @@
 {
-  "machine": "state-graph:robot-scout",
+  "machine": "state-graph/scout",
   "chapter": {
     "title": "@course.eras.scout.chapter.title",
     "desc": "@course.eras.scout.chapter.desc"

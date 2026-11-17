@@ -1,11 +1,11 @@
 {
   "title": "@level.is-silent.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "tasks": [
     {
       "id": "is-silent",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -27,7 +27,7 @@
             "KA ↔ ¬KB",
             "KC ↔ (KA ↔ KB)"
           ],
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         },
         {
           "goal": "KB",
@@ -35,7 +35,7 @@
             "KA ↔ ¬KB",
             "KC ↔ (KA ↔ KB)"
           ],
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         }
       ],
       "brief": "@level.is-silent.tasks.is-silent.brief",

@@ -5,16 +5,15 @@
       "t": "@level.def-max.intro.0.t"
     }
   ],
-  "tray": "formula",
   "tasks": [
     {
-      "id": "def-max_1",
-      "kind": "logic:define",
+      "id": "def-max-1",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.def-max.tasks.def-max_1.step",
+      "step": "@level.def-max.tasks.def-max-1.step",
       "fn": "le",
       "on": 0,
       "rows": [
@@ -65,24 +64,24 @@
         "ff",
         "tt"
       ],
-      "brief": "@level.def-max.tasks.def-max_1.brief",
+      "brief": "@level.def-max.tasks.def-max-1.brief",
       "hint": [
-        "@level.def-max.tasks.def-max_1.hint.0"
+        "@level.def-max.tasks.def-max-1.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.def-max.tasks.def-max_1.intro.0.t"
+          "t": "@level.def-max.tasks.def-max-1.intro.0.t"
         }
       ]
     },
     {
-      "id": "def-max_2",
-      "kind": "logic:define",
+      "id": "def-max-2",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.def-max.tasks.def-max_2.step",
+      "step": "@level.def-max.tasks.def-max-2.step",
       "fn": "max",
       "on": null,
       "defs": [
@@ -124,13 +123,13 @@
         "x",
         "y"
       ],
-      "brief": "@level.def-max.tasks.def-max_2.brief",
+      "brief": "@level.def-max.tasks.def-max-2.brief",
       "hint": [
-        "@level.def-max.tasks.def-max_2.hint.0"
+        "@level.def-max.tasks.def-max-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.def-max.tasks.def-max_2.intro.0.t"
+          "t": "@level.def-max.tasks.def-max-2.intro.0.t"
         }
       ]
     }

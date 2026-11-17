@@ -9,7 +9,7 @@ export const BUILTIN_KIND_NAMES = ['level', 'task', 'entry', 'tag', 'relation', 
 
 export const KIND_DECLARATION = S.obj({
   folder: S.opt(S.str({ pattern: '^[a-z][a-z0-9-]*$' })),
-  schema: S.opt(S.any()), extends: S.opt(S.oneOf(['level', 'task'])),
+  schema: S.opt(S.any()), extends: S.opt(S.str({ pattern: '^(?:level|task|[a-z][a-z0-9-]*/[a-z][a-z0-9-]*)$' })),
   fields: S.opt(S.map(S.any())), play: S.opt(S.str({ reference: 'play' })), references: S.opt(S.list(S.str())),
   relations: S.opt(S.map(S.obj({ from: S.str(), to: S.str() }))),
   declares: S.oneOf(['package', 'game']),
@@ -42,7 +42,7 @@ function declarationSchema(source) {
   return schema
 }
 
-export function withKindDeclarations(vocabulary, layers, plugin = false) {
+export function withKindDeclarations(vocabulary, layers, plugin = false, { checked = false } = {}) {
   const definitions = {}, raw = {}
   for (const layer of layers) {
     const catalogs = Object.fromEntries(Object.entries(layer.catalogs ?? {}).map(([lang, entries]) => [lang, {
@@ -56,12 +56,13 @@ export function withKindDeclarations(vocabulary, layers, plugin = false) {
       raw[object.name] = mergeFields(raw[object.name], read(object), KIND_DECLARATION)
     }
   }
-  for (const [name, d] of Object.entries(raw)) {
+  for (const [name, rawDefinition] of Object.entries(raw)) {
+    const d = rawDefinition.extends ? rawDefinition : { folder: name.split('/').at(-1), ...rawDefinition }
     const errors = validate(KIND_DECLARATION, d)
     if (errors.length) throw new Error(`${name}: ${JSON.stringify(errors)}`)
     if (d.play && d.extends !== 'task') throw new Error(`${name}: play scopes a task extension`)
     if (d.extends ? !d.fields || d.folder || d.schema && !d.play : !d.schema || !d.folder || d.fields) throw new Error(`${name}: declare folder + schema, or extends + fields`)
-    if (!d.extends && Object.values(definitions).some(other => other.folder === d.folder)) throw new Error(`${name}: duplicate object folder ${d.folder}`)
+    if (!d.extends && Object.entries(definitions).some(([otherName, other]) => other.folder === d.folder && other.declares === d.declares && otherName.split('/')[0] === name.split('/')[0])) throw new Error(`${name}: duplicate object folder ${d.folder}`)
     if (!d.extends && ['levels', 'tasks', 'entries', 'tags', 'relations', 'sections', 'chapters', 'kinds', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
     const inspect = schema => {
       const types = ['any', 'bool', 'num', 'int', 'str', 'text', 'oneOf', 'list', 'set', 'edges', 'map', 'obj', 'either', 'by', 'ref', 'name', 'level', 'task', 'board', 'syntax', 'call']
@@ -84,6 +85,17 @@ export function withKindDeclarations(vocabulary, layers, plugin = false) {
     }
     definitions[name] = definition
   }
+  for (const [name, definition] of Object.entries(definitions)) {
+    const target = definition.extends
+    if (!target || target === 'level' || target === 'task') continue
+    if (!definitions[target]?.schema || definitions[target].extends) throw new Error(`${name}: unknown object type ${target}`)
+    const owner = name.split('/')[0]
+    const layer = layers.find(layer => layer.id === owner)
+    if (target.split('/')[0] !== owner && !layer?.config?.uses?.[target.split('/')[0]] && !layer?.resolved && !checked) {
+      throw new Error(`${name}: ${target} requires a declared package dependency`)
+    }
+    definitions[target] = { ...definitions[target], schema: extend(definitions[target].schema, definition.fields) }
+  }
   let level = vocabulary.level
   if (plugin) {
     const task = S.obj({ id: S.task(), step: S.opt(S.text()), brief: S.text(), play: S.str({ reference: 'play' }), after: S.opt(S.text()) })
@@ -91,7 +103,7 @@ export function withKindDeclarations(vocabulary, layers, plugin = false) {
     if (!level) level = generic
     else level = S.obj({ ...generic.fields, ...level.fields, tasks: S.list(S.either(level.fields.tasks.of, task), { min: 1 }) })
   }
-  const extensions = Object.values(definitions).filter(d => d.extends)
+  const extensions = Object.values(definitions).filter(d => d.extends === 'level' || d.extends === 'task')
   for (const d of extensions.filter(d => !d.play)) {
     if (d.extends === 'level') level = extend(level, d.fields)
     else {
@@ -128,4 +140,20 @@ export function withKindDeclarations(vocabulary, layers, plugin = false) {
   }
 
   return { ...vocabulary, level, kindPolicies: { ...BUILTIN_POLICIES, ...definitions }, objectKinds: definitions }
+}
+
+/** A namespaced kind owns its folder in its own layer. Shared kinds are available in other layers. */
+export function objectFoldersFor(namespace, definitions, scope = namespace.startsWith('@') ? 'game' : 'package') {
+  const groups = new Map()
+  for (const [kind, definition] of Object.entries(definitions)) {
+    if (definition.extends || definition.declares !== scope) continue
+    const candidates = groups.get(definition.folder) ?? []
+    candidates.push(kind)
+    groups.set(definition.folder, candidates)
+  }
+  return Object.fromEntries([...groups].flatMap(([folder, candidates]) => {
+    const owned = candidates.find(kind => kind.startsWith(`${namespace}/`))
+    const kind = owned ?? (candidates.length === 1 ? candidates[0] : null)
+    return kind ? [[kind, folder]] : []
+  }))
 }

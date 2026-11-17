@@ -4,7 +4,7 @@
     "repeat",
     "uDecompose"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-deep.intro.0.t"
@@ -16,8 +16,8 @@
   "tasks": [
     {
       "id": "r-deep",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

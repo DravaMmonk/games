@@ -1,5 +1,4 @@
 {
-  "tray": "formula",
   "consts": [
     "h",
     "i",
@@ -8,9 +7,6 @@
     "l",
     "m",
     "n"
-  ],
-  "adds": [
-    "formulaForall"
   ],
   "title": "@level.fo-all.title",
   "intro": [
@@ -24,15 +20,15 @@
   "after": "@level.fo-all.after",
   "tasks": [
     {
-      "id": "fo-all_1",
-      "kind": "logic:translate",
-      "step": "@level.fo-all.tasks.fo-all_1.step",
-      "brief": "@level.fo-all.tasks.fo-all_1.brief",
-      "say": "@level.fo-all.tasks.fo-all_1.say",
+      "id": "fo-all-1",
+      "kind": "logic/translate",
+      "step": "@level.fo-all.tasks.fo-all-1.step",
+      "brief": "@level.fo-all.tasks.fo-all-1.brief",
+      "say": "@level.fo-all.tasks.fo-all-1.say",
       "target": "∀x. Human(x) → Mortal(x)",
       "hint": [
-        "@level.fo-all.tasks.fo-all_1.hint.0",
-        "@level.fo-all.tasks.fo-all_1.hint.1"
+        "@level.fo-all.tasks.fo-all-1.hint.0",
+        "@level.fo-all.tasks.fo-all-1.hint.1"
       ],
       "decoys": [
         "∀x. Human(x) ∧ Mortal(x)",
@@ -40,37 +36,37 @@
       ]
     },
     {
-      "id": "fo-all_2",
-      "kind": "logic:model",
-      "step": "@level.fo-all.tasks.fo-all_2.step",
-      "say": "@level.fo-all.tasks.fo-all_2.say",
+      "id": "fo-all-2",
+      "kind": "logic/model",
+      "step": "@level.fo-all.tasks.fo-all-2.step",
+      "say": "@level.fo-all.tasks.fo-all-2.say",
       "meant": "∀x. Human(x) → Mortal(x)",
-      "brief": "@level.fo-all.tasks.fo-all_2.brief",
+      "brief": "@level.fo-all.tasks.fo-all-2.brief",
       "wrong": "∀x. Human(x) ∧ Mortal(x)",
       "answer": {
         "size": 1,
         "preds": {}
       },
       "hint": [
-        "@level.fo-all.tasks.fo-all_2.hint.0",
-        "@level.fo-all.tasks.fo-all_2.hint.1"
+        "@level.fo-all.tasks.fo-all-2.hint.0",
+        "@level.fo-all.tasks.fo-all-2.hint.1"
       ],
       "intro": [
         {
-          "t": "@level.fo-all.tasks.fo-all_2.intro.0.t"
+          "t": "@level.fo-all.tasks.fo-all-2.intro.0.t"
         },
         {
-          "t": "@level.fo-all.tasks.fo-all_2.intro.1.t"
+          "t": "@level.fo-all.tasks.fo-all-2.intro.1.t"
         }
       ]
     },
     {
-      "id": "fo-all_3",
-      "kind": "logic:model",
-      "step": "@level.fo-all.tasks.fo-all_3.step",
-      "say": "@level.fo-all.tasks.fo-all_3.say",
+      "id": "fo-all-3",
+      "kind": "logic/model",
+      "step": "@level.fo-all.tasks.fo-all-3.step",
+      "say": "@level.fo-all.tasks.fo-all-3.say",
       "meant": "∀x. Human(x) → Mortal(x)",
-      "brief": "@level.fo-all.tasks.fo-all_3.brief",
+      "brief": "@level.fo-all.tasks.fo-all-3.brief",
       "wrong": "∀x. Mortal(x) → Human(x)",
       "answer": {
         "size": 1,
@@ -81,7 +77,7 @@
         }
       },
       "hint": [
-        "@level.fo-all.tasks.fo-all_3.hint.0"
+        "@level.fo-all.tasks.fo-all-3.hint.0"
       ]
     }
   ]

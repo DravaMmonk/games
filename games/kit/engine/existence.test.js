@@ -11,7 +11,7 @@ const schemas = defineVocabulary({ module: 'toy', version: 1, kinds: {},
 })
 schemas.objectKinds = { ...circuitFixtureKinds, 'lib/scene': { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'scenes', schema: S.obj({ next: S.opt(S.ref('lib/scene')) }) } }
 const object = (kind, name, value = {}) => ({ kind, name, value })
-const layer = (id, objects = [], overrides = [], uses = []) => ({ id, config: { version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
+const layer = (id, objects = [], overrides = [], uses = []) => ({ id, config: { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
 const lib = () => ({ ...layer('lib', [object('kind', 'scene', schemas.objectKinds['lib/scene']), object('lib/scene', 'start')]), codeObjects: [object('lib/scene', 'lib/registered') ] })
 
 const assembleLayers = (id, layers, schemas, options) => {
@@ -52,9 +52,20 @@ test('code registrations satisfy every object type, while foreign overrides do n
 test('the collector follows reference schemas through branches, maps, keys and calls, never ordinary strings', () => {
   const refs = []
   const schema = S.obj({ data: S.map(S.either(S.str(), S.ref('lib/scene')), { key: S.ref('lib/scene') }), call: S.call('op'), literal: S.str() })
-  const vocabulary = { kinds: { op: { 'lib:run': { params: S.obj({ destination: S.ref('lib/scene') }) } } } }
-  collectReferences({ data: { 'lib/start': 'ordinary' }, call: { 'lib:run': { destination: 'lib/end' } }, literal: 'lib/ignored' }, schema, vocabulary, (kind, target) => refs.push([kind, target]), 'root')
-  assert.deepEqual(refs, [['lib/scene', 'lib/start'], ['op', 'lib:run'], ['lib/scene', 'lib/end']])
+  const vocabulary = { kinds: { op: { 'lib/run': { params: S.obj({ destination: S.ref('lib/scene') }) } } } }
+  collectReferences({ data: { 'lib/start': 'ordinary' }, call: { 'lib/run': { destination: 'lib/end' } }, literal: 'lib/ignored' }, schema, vocabulary, (kind, target) => refs.push([kind, target]), 'root')
+  assert.deepEqual(refs, [['lib/scene', 'lib/start'], ['op', 'lib/run'], ['lib/scene', 'lib/end']])
+})
+
+test('a field that accepts two capability kinds rejects a name shared by both', () => {
+  const name = 'lib/sample'
+  const own = layer('lib', [object('level', 'one', { input: name })])
+  const kinds = { picture: { [name]: {} }, scene: { [name]: {} } }
+  const input = S.either(S.ref('picture'), S.ref('scene'))
+  const vocabulary = { ...schemas, kinds, level: S.obj({ input }) }
+  const matches = existenceProblems([own], vocabulary).filter(problem => problem.target === name)
+  assert.deepEqual(matches.map(problem => [problem.reason, problem.kind]), [['ambiguous', 'picture|scene']])
+  assert.deepEqual(existenceProblems([own], { ...vocabulary, level: S.obj({ input: S.ref('picture') }) }), [])
 })
 
 test('typed tags, registered readers, unknown member types and ambiguous unconstrained targets share the format', () => {

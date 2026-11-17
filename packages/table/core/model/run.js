@@ -5,14 +5,14 @@
 import { splitSource } from 'circuit'
 import { Halt, evaluate as engineEvaluate } from 'circuit'
 import { sink } from 'circuit'
-import { WORKSHOP_INPUT, WORKSHOP_OUTPUT } from 'circuit'
+import { VIRTUAL_INPUT, VIRTUAL_OUTPUT } from 'circuit'
 import { MAX_ROUNDS, walk } from 'circuit';
 import { tr } from '../lang.js';
 import { isCard } from './parts.js';
 import { picksOf } from './board.js';
 
 /** What an unconnected input of this port type reads. */
-const idle = type => (type.startsWith('circuit:boolean') ? false : null);
+const idle = type => (type.startsWith('circuit/boolean') ? false : null);
 
 /**
  * A sensor read inside a board: on a level's board from the robot (ctx.sense); inside a built part (a packed board,
@@ -28,16 +28,16 @@ const OUT = sink();
 
 /* ---------- signal types ---------- */
 
-const ACCEPTS = { 'circuit:number': ['circuit:number'], 'circuit:boolean': ['circuit:boolean'], 'table:category': ['table:category'], 'circuit:any': ['circuit:number', 'circuit:boolean', 'table:category'], 'table:number-input': ['circuit:number', 'table:numbers'], 'table:boolean-input': ['circuit:boolean', 'table:booleans'] };
+const ACCEPTS = { 'circuit/number': ['circuit/number'], 'circuit/boolean': ['circuit/boolean'], 'table/category': ['table/category'], 'circuit/any': ['circuit/number', 'circuit/boolean', 'table/category'], 'table/number-input': ['circuit/number', 'table/numbers'], 'table/boolean-input': ['circuit/boolean', 'table/booleans'] };
 
-const fits = (sink, src) => src === 'circuit:any' || sink === 'workshop-any' || ACCEPTS[sink].includes(src);
+const fits = (sink, src) => src === 'circuit/any' || sink === 'workshop-any' || ACCEPTS[sink].includes(src);
 
 /** Why a wire from a source of type `src` cannot go into a sink of type `sink`. */
 function misfit(sink, src) {
   if (src.endsWith('s')) return tr('一整段只能接进汇合器、加法器或乘法器。', 'A whole segment can only go into a Merger, an Adder or a Multiplier.');
-  if (src === 'table:category' || sink === 'table:category') return tr('「颜色」这类信号只能接进闸门的数口。', 'A kind (a colour, say) can only go into a gate’s value input.');
-  if (src === 'circuit:boolean') return tr('「是 / 否」信号只能接到闸门的条件口、「任一是」或「取反」。', 'A “yes / no” signal can only go into a gate’s condition input, “any yes” or “Not”.');
-  return sink.startsWith('circuit:boolean') ? tr('这个口只接「是 / 否」信号，比如「是起点」。', 'This input only takes a “yes / no” signal, such as “is start”.') : tr('这两个口的信号对不上。', 'The signals at these two ends do not match.');
+  if (src === 'table/category' || sink === 'table/category') return tr('「颜色」这类信号只能接进闸门的数口。', 'A kind (a colour, say) can only go into a gate’s value input.');
+  if (src === 'circuit/boolean') return tr('「是 / 否」信号只能接到闸门的条件口、「任一是」或「取反」。', 'A “yes / no” signal can only go into a gate’s condition input, “any yes” or “Not”.');
+  return sink.startsWith('circuit/boolean') ? tr('这个口只接「是 / 否」信号，比如「是起点」。', 'This input only takes a “yes / no” signal, such as “is start”.') : tr('这两个口的信号对不上。', 'The signals at these two ends do not match.');
 }
 
 /**
@@ -121,27 +121,27 @@ export function modelOf(parts) {
 
   /** The signal a source carries. io = { sensors, outs } of the world the board runs in. */
   function srcType(board, io, src, seen = new Set()) {
-    if (seen.has(src)) return 'circuit:any';
+    if (seen.has(src)) return 'circuit/any';
     seen.add(src);
     const [id, pick] = splitSource(src), n = board.nodes.find(x => x.id === id);
-    if (!n) return 'circuit:any';
-    if (n.type === WORKSHOP_INPUT) return 'circuit:any';
-    if (isCard(n.type)) return io.sensors[pick]?.type ?? 'circuit:any';
-    if (n.type === 'tap') return io.sensors[n.params.sensor]?.type ?? 'circuit:any';
-    if (n.type === 'port') return 'circuit:number';
+    if (!n) return 'circuit/any';
+    if (n.type === VIRTUAL_INPUT) return 'circuit/any';
+    if (isCard(n.type)) return io.sensors[pick]?.type ?? 'circuit/any';
+    if (n.type === 'tap') return io.sensors[n.params.sensor]?.type ?? 'circuit/any';
+    if (n.type === 'port') return 'circuit/number';
     const custom = io.workshop?.[n.type];
-    if (custom) return custom.outputSignals[pick ?? custom.outputs[0]] ?? 'circuit:any';
+    if (custom) return custom.outputSignals[pick ?? custom.outputs[0]] ?? 'circuit/any';
     const d = parts.def(n.type), from = k => board.wires.find(w => w.to === id && w.port === String(k));
     if (typeof d.out === 'string' && d.out !== 'lift') return d.out;
-    if (d.out && d.out.copy !== undefined) { const w = from(d.out.copy); return w ? srcType(board, io, w.from, seen) : 'circuit:any'; }
-    return d.ins.some((_, k) => { const w = from(k); return w && srcType(board, io, w.from, seen).endsWith('s'); }) ? 'table:numbers' : 'circuit:number';
+    if (d.out && d.out.copy !== undefined) { const w = from(d.out.copy); return w ? srcType(board, io, w.from, seen) : 'circuit/any'; }
+    return d.ins.some((_, k) => { const w = from(k); return w && srcType(board, io, w.from, seen).endsWith('s'); }) ? 'table/numbers' : 'circuit/number';
   }
 
   /** What a port takes: a part's input type, or the world's type for an output. */
   function sinkType(board, io, to, port) {
     const n = board.nodes.find(x => x.id === to);
-    if (n.type === WORKSHOP_OUTPUT) return 'workshop-any';
-    if (n.type === 'out') return io.outs.find(o => o[0] === to)?.[3] || 'circuit:number';
+    if (n.type === VIRTUAL_OUTPUT) return 'workshop-any';
+    if (n.type === 'out') return io.outs.find(o => o[0] === to)?.[3] || 'circuit/number';
     const custom = io.workshop?.[n.type];
     return custom ? custom.inputSignals[port] ?? 'workshop-any' : parts.def(n.type).ins[+port];
   }

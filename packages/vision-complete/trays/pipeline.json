@@ -1,6 +1,7 @@
 {
   "title": "@tray.pipeline.title",
   "desc": "@tray.pipeline.desc",
+  "includeUnlisted": true,
   "values": [
     "shift-n",
     "mul",

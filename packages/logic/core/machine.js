@@ -1,4 +1,4 @@
-import { workshopNodes } from 'circuit'
+import { workNodes } from 'circuit'
 // The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
 // clause sets instead of proved judgments. Its sources (`in` cards, one per input the level names) give the test's
 // inputs, its sink `out` is checked against what the level wants. A part is a rule of unification, a tactic, a frame
@@ -10,7 +10,7 @@ import { workshopNodes } from 'circuit'
 //   value   { kind: 'eqs', eqs: [equation], fail } (schematic.js) | { kind: 'state', … } (tactics.js)
 //           | { kind: 'clauses', set, from?, endless? } (resolution.js) | { kind: 'rules', keys, entries }
 //           | { kind: 'sentence' | 'rule' | 'list', … } (elimgen.js: the elimination-rule generator, chapter 12)
-//   level   { kind: 'logic:machine', want, inputs?: [{ name, label }] (default one, `in`),
+//   level   { kind: 'logic/machine', want, inputs?: [{ name, label }] (default one, `in`),
 //             rules?: { key: { name, premises: [text], conclusion: text } }, backtrack?,
 //             tests: [{ eqs: [equation text] } | { goal, hyps?, answers?, becomes?, clauses?, budget? }
 //             | { clauses: [clause text], budget? }, want?] }
@@ -71,7 +71,7 @@ export function ruleBookOf(level) {
     const shaped = (type, l) => (r) => !l.forms || !level.forms?.[type] || level.forms[type].includes(r.key.split('.')[1] ?? l.forms[0].key)
     const lemmas = Object.entries(level.lemmas ?? {}).filter(([type]) => has(type)).flatMap(([type, l]) => lemmaRules(type, l).filter(shaped(type, l)))
     const facts = factsOf(level).map(([type, f]) => ({ ...ruleOf(type, f.name, f.rule?.premises ?? [], f.rule?.conclusion ?? f.statement), fact: true }))
-    books.set(level, Object.fromEntries([...Object.values(KERNEL).map((r) => ({ ...r, part: level.ruleParts?.[`logic:${r.part}`] ?? r.part })).filter((r) => has(r.part)), ...datatypesRules(level.datatypes), ...lemmas, ...facts, ...own].map((r) => [r.key, r])))
+    books.set(level, Object.fromEntries([...Object.values(KERNEL).map((r) => ({ ...r, part: level.ruleParts?.[`logic/${r.part}`] ?? r.part })).filter((r) => has(r.part)), ...datatypesRules(level.datatypes), ...lemmas, ...facts, ...own].map((r) => [r.key, r])))
   }
   return books.get(level)
 }
@@ -88,7 +88,7 @@ export const factsOf = (level) => Object.entries(level.facts ?? {}).filter(([typ
 export const MATH = 'math'
 // A rule part's type for a key: what part the rule belongs to.
 const partOfRule = (r) => (r.datatype || r.fact ? MATH : r.part ?? r.lemma ?? r.key)
-const partOfRewrite = (r) => (r.group === 'law' ? r.key.split('.')[0] : r.group === 'def' || r.group === 'fact' ? MATH : r.key === 'hyp' ? 'logic:hyp' : r.key)
+const partOfRewrite = (r) => (r.group === 'law' ? r.key.split('.')[0] : r.group === 'def' || r.group === 'fact' ? MATH : r.key === 'hyp' ? 'logic/hyp' : r.key)
 // The rule book of numbers lists the declarations' rules, then the definitions, then the equations proved.
 const mathRank = (e) => (e.rule.datatype ? 0 : e.rule.group === 'def' ? 1 : 2)
 /**
@@ -481,7 +481,7 @@ function clausify(s0, ctx) {
     return r.fail ? { ...firstOf(s), error: r.fail } : r.results[0]
   }
   let s = step(step(s0, (x) => rule(x, KERNEL.raa)), (x) => rule(x, KERNEL.impI))
-  const source = ctx.partForRule?.['logic:raa']
+  const source = ctx.partForRule?.['logic/raa']
   const namespace = source?.slice(0, source.lastIndexOf('/') + 1) ?? ''
   s = step(s, (x) => simplify(x, CNF_LAWS.map((key) => ctx.rewrites?.[`${namespace}${key}`]).filter(Boolean), 'hyps'))
   s = step(s, skolemStep)
@@ -541,12 +541,12 @@ export const RULE_DEFINITION = {
   name: T('规则元件', 'Rule part'),
   desc: joined(T('给出这个元件的规则。在元件上添加要给出的规则，按添加顺序排列。'), AFTER),
   icon: 'GitFork',
-  family: 'logic:family-rule',
-  outputType: 'logic:machine-value',
-  inputs: [{ name: 'before', type: 'logic:machine-value', label: T('前面'), optional: true }],
-  settings: [{ key: 'use', control: 'list', label: T('给出的规则', 'Its rules'), from: 'logic:ruleChoices()' }],
+  family: 'logic/rule',
+  outputType: 'logic/machine-value',
+  inputs: [{ name: 'before', type: 'logic/machine-value', label: T('前面'), optional: true }],
+  settings: [{ key: 'use', control: 'list', label: T('给出的规则', 'Its rules'), from: 'logic/ruleChoices()' }],
   bare: true,
-  op: 'logic:rules',
+  op: 'logic/rules',
 }
 /**
  * The rule parts a level holds, as the course registers them beside parts.json's: one for each part its rule books'
@@ -592,13 +592,13 @@ const canonical = (goals) => {
 export function judge(want, test, out, level = {}) {
   const input = inputsOf(test, level).in
   if (!out) return T('还没有东西接到「结果」')
-  if (want === 'logic:want-elim') return judgeElim(test, out)
-  if (want === 'logic:want-proved') {
+  if (want === 'logic/elim') return judgeElim(test, out)
+  if (want === 'logic/proved') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
     if (out.error) return out.error
     return out.goals.length ? T(`还剩 ${out.goals.length} 个目标没证完`, `${out.goals.length} goal${out.goals.length === 1 ? '' : 's'} still open`) : ''
   }
-  if (want === 'logic:want-becomes') {
+  if (want === 'logic/becomes') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
     if (!test.becomes.length) return out.error ? '' : T('这一步应该做不了，证明助手却做了')
     if (out.error) return out.error
@@ -608,13 +608,13 @@ export function judge(want, test, out, level = {}) {
     const k = got.findIndex((g, i) => g !== wanted[i])
     return k < 0 ? '' : T(wanted.length > 1 ? `第 ${k + 1} 种结果的目标和要的不一样` : '得到的目标和要的不一样', wanted.length > 1 ? `Result ${k + 1} has other goals than wanted` : 'The goals made are not the ones wanted')
   }
-  if (want === 'logic:want-fails') {
+  if (want === 'logic/fails') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
     if (out.endless) return out.error ?? T('搜索停不下来')
     if (!out.error) return out.goals.length ? T('这一句证不出来，证明助手却还没有说「证不出来」') : T('这一句不该证得出来')
     return ''
   }
-  if (want === 'logic:want-answers') {
+  if (want === 'logic/answers') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
     if (out.endless) return T('要找出所有答案，可搜索停不下来：有一条路走不到头')
     if (out.error) return out.error
@@ -625,7 +625,7 @@ export function judge(want, test, out, level = {}) {
     const listEn = (xs) => (xs.length ? xs.join(', ') : 'none')
     return T(`找到的答案是 ${list(got)}，应该是 ${list(wanted)}`, `The answers found are ${listEn(got)}; they should be ${listEn(wanted)}`)
   }
-  if (want === 'logic:want-unify') {
+  if (want === 'logic/unify') {
     if (out.kind !== 'eqs') return T('结果要一组等式')
     const ref = solveEqs(input.eqs, { rules: FULL })
     if (ref.fail) return out.fail ? '' : T('这组等式其实合一不了，结果却没有说「失败」')
@@ -635,13 +635,13 @@ export function judge(want, test, out, level = {}) {
     return input.eqs.every((e) => sameSide(instantiate(e.s, σ), instantiate(e.t, σ))) ? '' : T('结果代回去，原来的等式两边还不一样')
   }
   if (out.kind !== 'clauses') return T('结果要一组子句')
-  if (want === 'logic:want-clauses') {
+  if (want === 'logic/clauses') {
     const wanted = clauseSetOf(test.clauses).map((c) => c.key).sort()
     const got = out.set.map((c) => c.key).sort()
     return wanted.join(';') === got.join(';') ? '' : T('拆出的子句和要的不一样')
   }
   const has = refuted(out.set)
-  if (want === 'logic:want-refuted') {
+  if (want === 'logic/refuted') {
     if (!has) return T('结果里还没有空子句 ⊥')
     return test.budget && out.set.length > test.budget ? T(`推出 ⊥ 用了 ${out.set.length} 条子句，最多只能有 ${test.budget} 条`, `Reaching ⊥ took ${out.set.length} clauses; at most ${test.budget} are allowed`) : ''
   }
@@ -670,8 +670,8 @@ export function builtMachine(type, builder, reference, ownBoard, params = []) {
   })
   return {
     ...part,
-    inputTypes: Object.fromEntries(part.inputs.map((name) => [name, 'logic:machine-value'])),
-    outputType: 'logic:machine-value',
+    inputTypes: Object.fromEntries(part.inputs.map((name) => [name, 'logic/machine-value'])),
+    outputType: 'logic/machine-value',
     built: true,
     params,
     eval: failsAsState(part.eval),
@@ -717,7 +717,7 @@ export const MACHINE_TESTS = {
   // Rule parts are what the cards read, not steps of the machine.
   score: (level, circuit, _runs, options) => {
     const rules = rulePartsOf(level)
-    const nodes = options?.workshopParts ? workshopNodes(circuit, options.workshopParts).map(({ node }) => node) : circuit.nodes
+    const nodes = options?.workshopParts ? workNodes(circuit, options.workshopParts).map(({ node }) => node) : circuit.nodes
     return { steps: nodes.filter((n) => n.type !== 'in' && n.type !== 'out' && !rules.has(n.type)).length }
   },
 }

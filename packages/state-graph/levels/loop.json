@@ -19,7 +19,7 @@
     "goal": "@level.loop.mission.goal",
     "how": "@level.loop.mission.how"
   },
-  "robot": "state-graph:robot-loop",
+  "robot": "state-graph/loop",
   "debrief": {
     "title": "@level.loop.debrief.title",
     "body": [
@@ -31,12 +31,12 @@
   "tasks": [
     {
       "id": "loop",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "hints": [
         "@level.loop.tasks.loop.hints.0",
         "@level.loop.tasks.loop.hints.1"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start",
         "cost"
@@ -120,11 +120,11 @@
         11
       ],
       "solution": [
-        "a = table:mmin(view.up, view.down, view.left)",
-        "z = table:const[value=0]()",
-        "g = table:pass(facts.start, z)",
-        "b = table:mmin(a, view.right, g)",
-        "p = table:add(b, facts.cost)",
+        "a = table/mmin(view.up, view.down, view.left)",
+        "z = table/const[value=0]()",
+        "g = table/pass(facts.start, z)",
+        "b = table/mmin(a, view.right, g)",
+        "p = table/add(b, facts.cost)",
         "cell <- p"
       ],
       "rounds": true

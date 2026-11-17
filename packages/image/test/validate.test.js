@@ -6,7 +6,7 @@ import { validate } from '../core/validate.js'
 test('the image author check accepts a naive board caught only by a hidden case', () => {
   const expected = { out: { data: [0, 1] } }
   const task = {
-    id: 'puzzle', kind: 'image:graph', title: 'Puzzle',
+    id: 'puzzle', kind: 'image/graph', title: 'Puzzle',
     tests: [{ label: 'shown', expected }], hidden: [{ label: 'hidden', expected }],
     solution: 'reference', naive: 'naive',
   }

@@ -1,6 +1,6 @@
 {
   "title": "@level.in-itsum.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.in-itsum.intro.0.t"
@@ -8,13 +8,13 @@
   ],
   "tasks": [
     {
-      "id": "in-itsum_1",
-      "kind": "logic:define",
+      "id": "in-itsum-1",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.in-itsum.tasks.in-itsum_1.step",
+      "step": "@level.in-itsum.tasks.in-itsum-1.step",
       "fn": "sum",
       "on": 0,
       "defs": [
@@ -55,24 +55,24 @@
         "zero",
         "sum(xs)"
       ],
-      "brief": "@level.in-itsum.tasks.in-itsum_1.brief",
+      "brief": "@level.in-itsum.tasks.in-itsum-1.brief",
       "hint": [
-        "@level.in-itsum.tasks.in-itsum_1.hint.0"
+        "@level.in-itsum.tasks.in-itsum-1.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.in-itsum.tasks.in-itsum_1.intro.0.t"
+          "t": "@level.in-itsum.tasks.in-itsum-1.intro.0.t"
         }
       ]
     },
     {
-      "id": "in-itsum_2",
-      "kind": "logic:define",
+      "id": "in-itsum-2",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.in-itsum.tasks.in-itsum_2.step",
+      "step": "@level.in-itsum.tasks.in-itsum-2.step",
       "fn": "itsum",
       "on": 0,
       "defs": [
@@ -113,24 +113,24 @@
         "zero",
         "itsum(xs, plus(y, x))"
       ],
-      "brief": "@level.in-itsum.tasks.in-itsum_2.brief",
+      "brief": "@level.in-itsum.tasks.in-itsum-2.brief",
       "hint": [
-        "@level.in-itsum.tasks.in-itsum_2.hint.0"
+        "@level.in-itsum.tasks.in-itsum-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.in-itsum.tasks.in-itsum_2.intro.0.t"
+          "t": "@level.in-itsum.tasks.in-itsum-2.intro.0.t"
         }
       ]
     },
     {
-      "id": "in-itsum_3",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "in-itsum-3",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.in-itsum.tasks.in-itsum_3.inputs.0.label"
+          "label": "@level.in-itsum.tasks.in-itsum-3.inputs.0.label"
         }
       ],
       "backtrack": true,
@@ -138,7 +138,7 @@
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.in-itsum.tasks.in-itsum_3.step",
+      "step": "@level.in-itsum.tasks.in-itsum-3.step",
       "types": [
         "list"
       ],
@@ -152,10 +152,10 @@
           "goal": "∀xs. ∀y. itsum(xs, y) = plus(y, sum(xs))"
         }
       ],
-      "brief": "@level.in-itsum.tasks.in-itsum_3.brief",
+      "brief": "@level.in-itsum.tasks.in-itsum-3.brief",
       "hint": [
-        "@level.in-itsum.tasks.in-itsum_3.hint.0",
-        "@level.in-itsum.tasks.in-itsum_3.hint.1"
+        "@level.in-itsum.tasks.in-itsum-3.hint.0",
+        "@level.in-itsum.tasks.in-itsum-3.hint.1"
       ],
       "solution": [
         "c0r0 = math[use=[\"list.induct\"]]()",
@@ -165,7 +165,7 @@
         "    c2r0 = allI()",
         "    c3r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", addZero, addAssoc]]()",
         "    c4r0 = refl()",
-        "    c3r8 = logic:hyp(c3r0)",
+        "    c3r8 = logic/hyp(c3r0)",
         "    c2 = rule(c1.body, c2r0)",
         "    c3 = simp(c2, c3r8)",
         "    c4 = rule(c3, c4r0)",
@@ -181,7 +181,7 @@
         "    c2r0 = allI()",
         "    c3r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\"]]()",
         "    c4r0 = refl()",
-        "    c3r6 = logic:hyp(c3r0)",
+        "    c3r6 = logic/hyp(c3r0)",
         "    c2 = rule(c1.body, c2r0)",
         "    c3 = simp(c2, c3r6)",
         "    c4 = rule(c3, c4r0)",

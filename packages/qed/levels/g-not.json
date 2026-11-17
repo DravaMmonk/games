@@ -1,10 +1,9 @@
 {
   "adds": [
-    "gNot",
-    "formulaNot"
+    "gNot"
   ],
   "title": "@level.g-not.title",
-  "tray": "gates-formula",
+  "tray": "gates",
   "intro": [
     {
       "t": "@level.g-not.intro.0.t"
@@ -22,7 +21,7 @@
   "tasks": [
     {
       "id": "g-not",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "¬¬Rain",
       "brief": "@level.g-not.tasks.g-not.brief",
       "hint": [

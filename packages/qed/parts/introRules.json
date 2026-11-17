@@ -1,12 +1,12 @@
 {
   "name": "@part.introRules.name",
   "desc": "@part.introRules.desc",
-  "family": "logic:family-built",
+  "family": "logic/built",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0 = append[ways=\"6\"](in, first: c1, second: c2, third: c3, fourth: c4, fifth: c5, sixth: c6) {",
           "  first {",
@@ -36,12 +36,12 @@
           "}",
           "out <- c0"
         ],
-        "want": "logic:want-becomes",
+        "want": "logic/becomes",
         "inputs": [{ "name": "in", "label": "in" }],
         "tests": [{ "goal": "Rain ∧ Wind" }]
       }
     }
   ],
-  "inputs": [{ "name": "in", "type": "logic:machine-value" }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "in", "type": "logic/machine-value" }],
+  "outputType": "logic/machine-value"
 }

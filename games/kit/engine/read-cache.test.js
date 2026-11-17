@@ -35,7 +35,7 @@ test('cached resolution preserves assembly and observes edits, additions and del
   const root = mkdtempSync(resolve(tmpdir(), 'resolved-cache-'))
   const folder = resolve(root, 'packages/library')
   mkdirSync(resolve(folder, 'entries'), { recursive: true })
-  writeFileSync(resolve(folder, 'package.json'), JSON.stringify({ version: '1.0.0', kernel: '^0.0.0', uses: {} }))
+  writeFileSync(resolve(folder, 'package.json'), JSON.stringify({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} }))
   const file = resolve(folder, 'entries/one.json')
   const put = title => writeFileSync(file, JSON.stringify({ title: { en: title }, body: [] }))
   const cached = () => withReadCache(root, () => readPackage('library', root))

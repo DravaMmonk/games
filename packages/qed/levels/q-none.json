@@ -1,10 +1,9 @@
 {
   "title": "@level.q-none.title",
-  "tray": "formula",
   "tasks": [
     {
       "id": "q-none",
-      "kind": "logic:query",
+      "kind": "logic/query",
       "consts": [
         "h",
         "i",

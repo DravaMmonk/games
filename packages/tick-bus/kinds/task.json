@@ -711,5 +711,5 @@
       "$text"
     ]
   },
-  "play": "tick-bus:board"
+  "play": "tick-bus/board"
 }

@@ -1,6 +1,6 @@
 {
   "title": "@level.peirce.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.peirce.intro.0.t"
@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "peirce",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "((A → B) → A) → A"

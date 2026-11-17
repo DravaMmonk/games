@@ -1,5 +1,5 @@
 import { qualifyItems, T as t } from 'kernel'
-export const DISPLAYS = qualifyItems('vision-complete', 'display', {
+export const DISPLAYS = qualifyItems('vision-complete', {
   attentionRoles: { about: t('查询、键、值与注意力输出的图块') },
   separableKernels: { about: t('并排比较两组目标和结果的空间核') },
   appleDecision: { about: t('检查苹果选择并解释错误') },

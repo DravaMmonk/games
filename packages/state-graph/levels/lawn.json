@@ -13,7 +13,7 @@
     "goal": "@level.lawn.mission.goal",
     "how": "@level.lawn.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.lawn.debrief.title",
     "body": [
@@ -25,21 +25,21 @@
   "tasks": [
     {
       "id": "lawn",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "m = table:mmax(view.up, view.left)",
-        "k = table:const[value=1]()",
-        "z = table:const[value=0]()",
-        "a = table:add(m, k)",
-        "g = table:pass(facts.open, a)",
-        "s = table:msum(g, z)",
+        "m = table/mmax(view.up, view.left)",
+        "k = table/const[value=1]()",
+        "z = table/const[value=0]()",
+        "a = table/add(m, k)",
+        "g = table/pass(facts.open, a)",
+        "s = table/msum(g, z)",
         "cell <- s"
       ],
       "hints": [
         "@level.lawn.tasks.lawn.hints.0",
         "@level.lawn.tasks.lawn.hints.1"
       ],
-      "world": "state-graph:world-lawn",
+      "world": "state-graph/lawn",
       "facts": [
         "open"
       ],
@@ -101,12 +101,12 @@
         3
       ],
       "solution": [
-        "m = table:mmin(view.up, view.left, view.ul)",
-        "k = table:const[value=1]()",
-        "z = table:const[value=0]()",
-        "a = table:add(m, k)",
-        "g = table:pass(facts.open, a)",
-        "s = table:msum(g, z)",
+        "m = table/mmin(view.up, view.left, view.ul)",
+        "k = table/const[value=1]()",
+        "z = table/const[value=0]()",
+        "a = table/add(m, k)",
+        "g = table/pass(facts.open, a)",
+        "s = table/msum(g, z)",
         "cell <- s"
       ]
     }

@@ -2,7 +2,7 @@
   "name": "@part.orE.name",
   "desc": "@part.orE.desc",
   "icon": "Box",
-  "family": "logic:family-box",
+  "family": "logic/box",
   "inputs": [
     {
       "name": "ab",
@@ -23,5 +23,5 @@
       "closes": true
     }
   ],
-  "op": "logic:orE"
+  "op": "logic/orE"
 }

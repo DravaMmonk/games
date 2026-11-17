@@ -1,6 +1,6 @@
 {
   "title": "@level.h-eq-refl.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.h-eq-refl.intro.0.t"
@@ -13,7 +13,7 @@
   "tasks": [
     {
       "id": "h-eq-refl",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i",
         "j"

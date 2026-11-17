@@ -5,7 +5,7 @@
     {
       "t": "@level.stamp.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 4,
           "cells": {
@@ -24,7 +24,7 @@
     {
       "t": "@level.stamp.intro.2.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "s",
@@ -73,10 +73,10 @@
     "goal": "@level.stamp.mission.goal",
     "how": "@level.stamp.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:const",
-    "table:pass"
+    "table/const",
+    "table/pass"
   ],
   "carry": "confluence",
   "debrief": {
@@ -91,22 +91,22 @@
   "tasks": [
     {
       "id": "stamp",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "ports": [
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 1,
             "sensor": "up"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 2,
             "sensor": "left"
           }
         },
         {
-          "state-graph:port-start": {
+          "state-graph/start": {
             "sensor": "start"
           }
         }
@@ -114,13 +114,13 @@
       "guide": [
         {
           "until": {
-            "state-graph:condition-reads": "start"
+            "state-graph/reads": "start"
           },
           "say": "@level.stamp.tasks.stamp.guide.0.say"
         },
         {
           "until": {
-            "state-graph:condition-has": "table:pass"
+            "state-graph/has": "table/pass"
           },
           "say": "@level.stamp.tasks.stamp.guide.1.say"
         }
@@ -128,21 +128,21 @@
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-any": [
+            "state-graph/any": [
               {
-                "state-graph:condition-uses": "right"
+                "state-graph/uses": "right"
               },
               {
-                "state-graph:condition-uses": "down"
+                "state-graph/uses": "down"
               },
               {
-                "state-graph:condition-uses": "ur"
+                "state-graph/uses": "ur"
               },
               {
-                "state-graph:condition-uses": "dl"
+                "state-graph/uses": "dl"
               },
               {
-                "state-graph:condition-uses": "dr"
+                "state-graph/uses": "dr"
               }
             ]
           },
@@ -150,9 +150,9 @@
         },
         {
           "when": {
-            "state-graph:condition-feeds": {
-              "from": "table:const",
-              "to": "table:msum"
+            "state-graph/feeds": {
+              "from": "table/const",
+              "to": "table/msum"
             }
           },
           "say": "@level.stamp.tasks.stamp.diagnose.1.say"
@@ -162,7 +162,7 @@
         "@level.stamp.tasks.stamp.hints.0",
         "@level.stamp.tasks.stamp.hints.1"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start"
       ],
@@ -186,9 +186,9 @@
         126
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "g = table:pass(facts.start, k)",
-        "m = table:msum(view.up, view.left, g)",
+        "k = table/const[value=1]()",
+        "g = table/pass(facts.start, k)",
+        "m = table/msum(view.up, view.left, g)",
         "cell <- m"
       ],
       "publishes": [

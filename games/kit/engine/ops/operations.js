@@ -27,7 +27,7 @@ import { sourceValue } from '../catalogs.js'
 import { OBJECT_NAME, OBJECT_SCHEMAS } from '../objects.js'
 
 const PATH = S.either(S.str(), S.list(S.either(S.str(), S.int({ min: 0 }))), { about: t('字段的路径：tests[0].goal') })
-const NEW_ID = S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9_-]*$', about: t('新的关卡 id（也是文件名）') })
+const NEW_ID = S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9-]*$', about: t('新的关卡 id（也是文件名）') })
 const fail = (message) => { throw new Error(message) }
 const levelOf = (ws, id) => ws.levels.get(id) ?? fail(`no level ${id}`)
 const orderOf = (schema, value, vocabulary) => (path) => {
@@ -464,7 +464,7 @@ Object.assign(OPERATIONS, {
 // Declared kinds use one operation family instead of generating commands at import time.
 for (const action of ['put', 'set', 'remove']) OPERATIONS[`object.${action}`] = {
   about: t('编辑声明的对象', 'Edit a declared object'),
-  params: S.obj({ kind: S.str(), name: S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9_-]*$' }),
+  params: S.obj({ kind: S.str(), name: S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9-]*$' }),
     ...(action === 'put' ? { data: S.any() } : action === 'set' ? { path: PATH, value: S.any() } : {}) }),
   apply(ws, { kind, name, data, path, value }) {
     const objects = ws.contentObjects[kind]

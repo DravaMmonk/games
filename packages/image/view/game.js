@@ -1,7 +1,7 @@
 import { createElement, useMemo } from 'react'
 import WorkshopPlay from './WorkshopPlay.jsx'
 import { circuitScreen } from 'circuit/view'
-import { stageDefinition } from 'circuit'
+import { partDefinition } from 'circuit'
 import { displays as ui } from './ui/displays.js'
 // An image game on the shared shell (../../shell), from its content (games/DESIGN.md 6.3): the course (course.js)
 // becomes the shell's game description, with the image domain's play resources, its
@@ -18,7 +18,7 @@ import { imageBoards } from '../core/engine/board-view.js'
 import { imagePreview } from './engine/preview.js'
 import { descriptionOf } from '../core/words.js'
 
-const { familyOf, iconOf } = ui['image:catalog']
+const { familyOf, iconOf } = ui['image/catalog']
 // Unlock flags → the part (or option) they give in a course's part table, for the passed dialog and the parts box.
 const partOfFlag = (types) => {
   const map = Object.fromEntries(Object.entries(types).filter(([, spec]) => spec.unlock).map(([type, spec]) => [spec.unlock, type]))
@@ -58,16 +58,16 @@ export default function imageGame(content, image = imageWorks(content), { kernel
     title: content.title,
     kicker: content.kicker,
     lede: content.lede,
-    Hero: ui['image:hero'],
+    Hero: ui['image/hero'],
     power: content.registries[`${content.power?.split('/')[0]}/power`]?.[content.power],
     chapters: CHAPTERS,
     levels,
     intro: (level) => image.intros[level.id],
-    IntroFigure: (props) => ui['image:introduction']({ ...props, types }),
-    kinds: playKinds(plays, { imageCircuit: ui['image:circuit'](image, cards), parameters, probe: ui['image:probe'] }, {
-      'image:graph': { icon: Workflow, label: { zh: '搭电路', en: 'Build a circuit' } },
-      'image:board': { icon: FlaskConical, label: { zh: '机关台', en: 'Bench' } },
-      'image:probe': { icon: FlaskConical, label: { zh: '机关台', en: 'Bench' } },
+    IntroFigure: (props) => ui['image/introduction']({ ...props, types }),
+    kinds: playKinds(plays, { imageCircuit: ui['image/circuit'](image, cards), parameters, probe: ui['image/probe'] }, {
+      'image/graph': { icon: Workflow, label: { zh: '搭电路', en: 'Build a circuit' } },
+      'image/board': { icon: FlaskConical, label: { zh: '机关台', en: 'Bench' } },
+      'image/probe': { icon: FlaskConical, label: { zh: '机关台', en: 'Bench' } },
     }, { circuit: circuitScreen, workshop: (play, prepare) => function Exercise(screen) { const resource = useMemo(() => prepare(screen.level.source, screen), [screen.level.source]); return createElement(WorkshopPlay, { screen, resource, play }) } }),
     unlocked: (level) => [...shownUnlocks(level).map(unlockOf), ...course.awards({ id: level.id }).map(id => {
       const stage = course.stages.get(id)
@@ -80,7 +80,7 @@ export default function imageGame(content, image = imageWorks(content), { kernel
       settings: (part, progress) => {
         const staged = game.textFor(part, progress)
         const stage = course.stages.get(staged.stage ?? part.part)
-        const definition = stage && stageDefinition(stage)
+        const definition = stage && partDefinition(stage)
         return (definition?.settings ?? []).filter(setting => !setting.fixed).map(setting => ({
           key: setting.key, label: setting.label ?? setting.key,
           values: (setting.options ?? []).map(option => ({ value: option.value, label: option.label ?? option.value })),
@@ -101,6 +101,6 @@ export default function imageGame(content, image = imageWorks(content), { kernel
   })
   game.circuit = boards
   game.image = image
-  game.defined = { of: (type) => kit.defs[type] ?? null, defaults: kit.defaultParams, ops: kit.ops, widgets: { 'image:widget-imageKernel': ui['image:widget-imageKernel'] } }
+  game.defined = { of: (type) => kit.defs[type] ?? null, defaults: kit.defaultParams, ops: kit.ops, widgets: { 'image/imageKernel': ui['image/imageKernel'] } }
   return game
 }

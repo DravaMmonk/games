@@ -10,7 +10,7 @@
     "goal": "@level.maxsub.mission.goal",
     "how": "@level.maxsub.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.maxsub.debrief.title",
     "body": [
@@ -21,15 +21,15 @@
   "tasks": [
     {
       "id": "maxsub",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "m = table:msum(view.seg)",
+        "m = table/msum(view.seg)",
         "cell <- m"
       ],
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-uses": "seg"
+            "state-graph/uses": "seg"
           },
           "say": "@level.maxsub.tasks.maxsub.diagnose.0.say"
         }
@@ -38,7 +38,7 @@
         "@level.maxsub.tasks.maxsub.hints.0",
         "@level.maxsub.tasks.maxsub.hints.1"
       ],
-      "world": "state-graph:world-gains",
+      "world": "state-graph/gains",
       "facts": [
         "money"
       ],
@@ -86,8 +86,8 @@
         8
       ],
       "solution": [
-        "a = table:add(view.prev, facts.money)",
-        "m = table:mmax(facts.money, a)",
+        "a = table/add(view.prev, facts.money)",
+        "m = table/mmax(facts.money, a)",
         "cell <- m"
       ]
     }

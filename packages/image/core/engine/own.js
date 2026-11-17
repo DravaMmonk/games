@@ -1,6 +1,5 @@
 import { packed } from 'circuit'
-import { workshopNodes } from 'circuit'
-import { workshopOf } from 'circuit'
+import { workNodes } from 'circuit'
 
 // A circuit the player has solved, used again as a part of its own, as in Turing Complete: the task's inputs are
 // its ports and the task's output is what it gives (the shared engine's packed part). A built part of parts.json
@@ -22,7 +21,7 @@ export function ownPart(task, type, part, circuitOf, types) {
     // What the circuit inside costs per pixel, as if each of its parts ran at full size.
     cost: () => {
       const circuit = circuitOf()
-      return workshopNodes(circuit, workshopOf(circuit)?.resolve).reduce((sum, { node }) => {
+      return workNodes(circuit).reduce((sum, { node }) => {
         const cost = types[node.type]?.cost ?? 0
         return sum + (typeof cost === 'function' ? cost(node.params ?? {}) : cost)
       }, 0)

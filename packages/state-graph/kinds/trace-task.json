@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "state-graph:trace",
+  "play": "state-graph/trace",
   "fields": {},
   "schema": {
     "type": "obj",

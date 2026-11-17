@@ -2,12 +2,12 @@
   "name": "Sigmoid",
   "desc": "@part.lrnSigmoid.desc",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:lrnSigmoid"
+  "op": "image/lrnSigmoid"
 }

@@ -44,7 +44,7 @@ export function combineConfiguration(files) {
   for (const [file, value] of Object.entries(files)) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${file}: expected a JSON object`)
     for (const [field, data] of Object.entries(value)) {
-      if (['version', 'kernel', 'uses', 'packages'].includes(field)) continue
+      if (['version', 'kernel', 'uses', 'packages'].includes(field) || file === 'package.json' && field === 'kind') continue
       if (contentFileFor([field]) !== file) throw new Error(`${file}: ${field} belongs in ${contentFileFor([field])}`)
       configuration[field] = data
     }

@@ -1,7 +1,9 @@
 {
+  "kind": "play",
   "version": "0.0.0",
   "kernel": "^0.0.0",
   "uses": {
-    "circuit": "^0.0.0"
+    "circuit": "^0.0.0",
+    "progress": "^0.0.0"
   }
 }

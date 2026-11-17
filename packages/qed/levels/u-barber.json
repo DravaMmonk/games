@@ -1,6 +1,6 @@
 {
   "title": "@level.u-barber.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.u-barber.intro.0.t"
@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "u-barber",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

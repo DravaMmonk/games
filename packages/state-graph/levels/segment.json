@@ -13,7 +13,7 @@
     "goal": "@level.segment.mission.goal",
     "how": "@level.segment.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.segment.debrief.title",
     "body": [
@@ -24,12 +24,12 @@
   "tasks": [
     {
       "id": "segment",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "testLabel": "{s}",
       "hints": [
         "@level.segment.tasks.segment.hints.0"
       ],
-      "world": "state-graph:world-parts",
+      "world": "state-graph/parts",
       "facts": [
         "ground"
       ],
@@ -77,13 +77,13 @@
         15
       ],
       "solution": [
-        "a = table:add(view.seg, view.cost)",
-        "z = table:const[value=0]()",
-        "g = table:pass(facts.ground, z)",
-        "m = table:mmin(a, g)",
+        "a = table/add(view.seg, view.cost)",
+        "z = table/const[value=0]()",
+        "g = table/pass(facts.ground, z)",
+        "m = table/mmin(a, g)",
         "cell <- m"
       ],
-      "panel": "state-graph:panel-dictionary"
+      "panel": "state-graph/dictionary"
     }
   ]
 }

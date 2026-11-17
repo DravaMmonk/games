@@ -1,0 +1,62 @@
+{
+  "extends": "task",
+  "fields": {
+    "adds": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "optional": true
+    },
+    "local": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "optional": true
+    },
+    "gives": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "optional": true
+    },
+    "withholds": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "optional": true
+    },
+    "opens": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "optional": true
+    },
+    "awards": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "optional": true
+    }
+  },
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  }
+}

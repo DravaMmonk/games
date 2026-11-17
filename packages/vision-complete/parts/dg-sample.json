@@ -1,0 +1,17 @@
+{
+  "name": "@part.dg-sample.name",
+  "desc": "@part.dg-sample.desc",
+  "icon": "Activity",
+  "family": "image/learned",
+  "inputs": [
+    {
+      "name": "mu",
+      "label": "μ"
+    },
+    {
+      "name": "sigma",
+      "label": "σ"
+    }
+  ],
+  "op": "image/dg-sample"
+}

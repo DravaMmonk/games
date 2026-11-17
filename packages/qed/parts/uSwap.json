@@ -2,6 +2,6 @@
   "name": "@part.uSwap.name",
   "desc": "@part.uSwap.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uSwap"
+  "family": "logic/tactic",
+  "op": "logic/uSwap"
 }

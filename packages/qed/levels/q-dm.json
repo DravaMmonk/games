@@ -1,6 +1,6 @@
 {
   "title": "@level.q-dm.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.q-dm.intro.0.t"
@@ -11,9 +11,9 @@
   ],
   "tasks": [
     {
-      "id": "q-dm_1",
-      "kind": "logic:proof",
-      "step": "@level.q-dm.tasks.q-dm_1.step",
+      "id": "q-dm-1",
+      "kind": "logic/proof",
+      "step": "@level.q-dm.tasks.q-dm-1.step",
       "tests": [
         {
           "premises": {
@@ -31,8 +31,8 @@
         }
       ],
       "hint": [
-        "@level.q-dm.tasks.q-dm_1.hint.0",
-        "@level.q-dm.tasks.q-dm_1.hint.1"
+        "@level.q-dm.tasks.q-dm-1.hint.0",
+        "@level.q-dm.tasks.q-dm-1.hint.1"
       ],
       "solution": [
         "g = allI[x=a](body: f) {",
@@ -58,9 +58,9 @@
       ]
     },
     {
-      "id": "q-dm_2",
-      "kind": "logic:proof",
-      "step": "@level.q-dm.tasks.q-dm_2.step",
+      "id": "q-dm-2",
+      "kind": "logic/proof",
+      "step": "@level.q-dm.tasks.q-dm-2.step",
       "tests": [
         {
           "premises": {
@@ -78,8 +78,8 @@
         }
       ],
       "hint": [
-        "@level.q-dm.tasks.q-dm_2.hint.0",
-        "@level.q-dm.tasks.q-dm_2.hint.1"
+        "@level.q-dm.tasks.q-dm-2.hint.0",
+        "@level.q-dm.tasks.q-dm-2.hint.1"
       ],
       "solution": [
         "f = impI[A=\"exists x. P(x)\"](body: e) {",
@@ -105,9 +105,9 @@
       ]
     },
     {
-      "id": "q-dm_3",
-      "kind": "logic:proof",
-      "step": "@level.q-dm.tasks.q-dm_3.step",
+      "id": "q-dm-3",
+      "kind": "logic/proof",
+      "step": "@level.q-dm.tasks.q-dm-3.step",
       "tests": [
         {
           "premises": {
@@ -125,8 +125,8 @@
         }
       ],
       "hint": [
-        "@level.q-dm.tasks.q-dm_3.hint.0",
-        "@level.q-dm.tasks.q-dm_3.hint.1"
+        "@level.q-dm.tasks.q-dm-3.hint.0",
+        "@level.q-dm.tasks.q-dm-3.hint.1"
       ],
       "solution": [
         "f = impI[A=\"forall x. P(x)\"](body: e) {",
@@ -152,9 +152,9 @@
       ]
     },
     {
-      "id": "q-dm_4",
-      "kind": "logic:proof",
-      "step": "@level.q-dm.tasks.q-dm_4.step",
+      "id": "q-dm-4",
+      "kind": "logic/proof",
+      "step": "@level.q-dm.tasks.q-dm-4.step",
       "sentences": [
         "¬∃x. ¬P(x)"
       ],
@@ -175,8 +175,8 @@
         }
       ],
       "hint": [
-        "@level.q-dm.tasks.q-dm_4.hint.0",
-        "@level.q-dm.tasks.q-dm_4.hint.1"
+        "@level.q-dm.tasks.q-dm-4.hint.0",
+        "@level.q-dm.tasks.q-dm-4.hint.1"
       ],
       "solution": [
         "k = impI[A=\"~exists x. ~P(x)\"](body: m2) {",

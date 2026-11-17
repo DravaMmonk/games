@@ -2,6 +2,7 @@
   "title": "@tray.resolution.title",
   "desc": "@tray.resolution.desc",
   "workshop": false,
+  "includeUnlisted": true,
   "values": [
     "res"
   ]

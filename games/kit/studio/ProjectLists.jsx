@@ -8,6 +8,8 @@ import { Fragment, useState } from 'react'
 import { Gamepad2, Package } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
 import SidebarListTools from './SidebarListTools.jsx'
+import { packageGroups, packageKindLabel } from './PackageGroups.jsx'
+import { PACKAGE_KINDS } from '../engine/package-kinds.js'
 
 const ID = /^[a-z][a-z0-9-]*$/
 
@@ -31,9 +33,10 @@ function Row({ id, icon: Icon, open, picked, disabled, title, name, children, on
   )
 }
 
-/** The form a new package or game is named in, at the top of its list. `fields`: [key, placeholder]. */
+/** The form a new package or game is named in, at the top of its list. `fields`: [key, placeholder, options?] (with
+ *  options, a choice among them, the first to start with). */
 function NewForm({ heading, fields, problem, onMake, onCancel }) {
-  const [values, setValues] = useState(() => Object.fromEntries(fields.map(([key]) => [key, ''])))
+  const [values, setValues] = useState(() => Object.fromEntries(fields.map(([key, , options]) => [key, options ? options[0].value : ''])))
   const [busy, setBusy] = useState(false)
   const submit = async (event) => {
     event.preventDefault()
@@ -43,8 +46,11 @@ function NewForm({ heading, fields, problem, onMake, onCancel }) {
   return (
     <form className="project-new" onSubmit={submit}>
       <strong>{heading}</strong>
-      {fields.map(([key, placeholder], k) => (
-        <input key={key} className="field-input" value={values[key]} onChange={(event) => setValues({ ...values, [key]: event.target.value })} placeholder={placeholder} aria-label={placeholder}
+      {fields.map(([key, placeholder, options], k) => (options
+        ? <select key={key} className="studio-game" value={values[key]} onChange={(event) => setValues({ ...values, [key]: event.target.value })} aria-label={placeholder} disabled={busy}>
+          {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        : <input key={key} className="field-input" value={values[key]} onChange={(event) => setValues({ ...values, [key]: event.target.value })} placeholder={placeholder} aria-label={placeholder}
           autoFocus={k === 0} spellCheck={false} disabled={busy} />
       ))}
       {problem && <small className="is-error" role="status">{problem}</small>}
@@ -62,13 +68,15 @@ function NewForm({ heading, fields, problem, onMake, onCancel }) {
  */
 export function PackageList({ packages, current, picked, disabled, onPick, onOpen, onCreate = null }) {
   const [query, setQuery] = useState('')
+  const [kind, setKind] = useState('') // the kind of package shown (package.json kind), or every kind
   const [making, setMaking] = useState(null) // { from } or { empty: true }, and the last refusal
   const listed = [...packages].sort((a, b) => a.id.localeCompare(b.id)).filter(({ id, uses }) => found(query, words(id, Object.keys(uses ?? {}))))
-  const make = async ({ id }) => {
+  const make = async ({ id, kind: chosen }) => {
     const name = id.trim()
     if (!ID.test(name)) return setMaking({ ...making, problem: tr('包 id 用小写字母、数字和连字符，字母开头', 'A package id is lowercase letters, digits and dashes, a letter first') })
     try {
-      await onCreate({ id: name, ...(making.empty ? { empty: true } : { from: making.from }) })
+      // An empty package is of the kind chosen; a copy is of its source's kind.
+      await onCreate({ id: name, ...(making.empty ? { empty: true, kind: chosen } : { from: making.from }) })
       setMaking(null)
     } catch (error) {
       setMaking({ ...making, problem: error.message })
@@ -80,19 +88,27 @@ export function PackageList({ packages, current, picked, disabled, onPick, onOpe
   ] : []
   return (
     <nav className="project-list" aria-label={tr('包', 'Packages')}>
-      <SidebarListTools query={query} onQuery={setQuery} addOptions={disabled ? [] : addOptions} addLabel={tr('新建包', 'New package')}
-        onAdd={(value) => setMaking(value === 'empty' ? { empty: true } : { from: picked })} />
+      <SidebarListTools query={query} onQuery={setQuery} addOptions={disabled ? [] : addOptions} addLabel={tr('包', 'Packages')}
+        onAdd={(value) => setMaking(value === 'empty' ? { empty: true } : { from: picked })}
+        choices={[{ label: tr('包种类', 'Package kind'), value: kind, onPick: setKind, options: [{ value: '', label: tr('全部种类', 'All kinds') }, ...packageGroups(packages).map((g) => ({ value: g.kind, label: packageKindLabel(g.kind) }))] }]} />
       {making && <NewForm heading={making.empty ? tr('新建空白包', 'New empty package') : tr(`复制 ${making.from} 为新包`, `New package, a copy of ${making.from}`)}
-        fields={[['id', tr('包 id', 'Package id')]]} problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
-      {listed.map(({ id, uses }) => {
-        const deps = Object.keys(uses ?? {})
-        return (
-          <Row key={id} id={id} icon={Package} name={id} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen}
-            title={deps.length ? `${id} · ${tr('用到', 'Uses')} ${deps.join(', ')}` : id}>
-            {deps.length > 0 && <small>{deps.join(' · ')}</small>}
-          </Row>
-        )
-      })}
+        fields={[['id', tr('包 id', 'Package id')], ...(making.empty ? [['kind', tr('包种类', 'Package kind'), PACKAGE_KINDS.map((k) => ({ value: k, label: `${kindName(k)} (${k})` }))]] : [])]}
+        problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
+      {/* Grouped by their kind (play, extension, course, library: PackageGroups.jsx); one without a kind last. */}
+      {[...packageGroups(listed, kind), ...(kind ? [] : [{ kind: null, items: listed.filter((p) => !packageGroups(listed).some((g) => g.items.includes(p))) }].filter((g) => g.items.length))].map((group) => (
+        <section key={group.kind ?? 'none'}>
+          <h3 className="package-group-title">{group.kind ? packageKindLabel(group.kind) : tr('未分种类', 'No kind')}</h3>
+          {group.items.map(({ id, uses }) => {
+            const deps = Object.keys(uses ?? {})
+            return (
+              <Row key={id} id={id} icon={Package} name={id} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen}
+                title={deps.length ? `${id} · ${tr('用到', 'Uses')} ${deps.join(', ')}` : id}>
+                {deps.length > 0 && <small>{deps.join(' · ')}</small>}
+              </Row>
+            )
+          })}
+        </section>
+      ))}
       {!listed.length && <p className="project-none">{tr('没有符合的包', 'No package matches')}</p>}
     </nav>
   )
@@ -148,6 +164,8 @@ function MetaHead({ icon: Icon, id, children, open, disabled, onOpen, openLabel 
   )
 }
 
+/** A package kind's name (play, extension, course, library), or the kind itself when it is not one of those. */
+const kindName = (kind) => { try { return packageKindLabel(kind) } catch { return kind } }
 const short = (hash) => (hash ? String(hash).slice(0, 8) : '—')
 const none = <span className="package-meta-none">{tr('无', 'None')}</span>
 
@@ -192,6 +210,7 @@ export function PackageMeta({ packages, games = [], id, open, disabled, onOpen }
       <MetaHead icon={Package} id={id} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr('打开这个包', 'Open this package')} />
       <h3 className="package-meta-file">package.json</h3>
       <dl className="package-facts">
+        <dt>{tr('种类', 'Kind')}</dt><dd>{info.kind ? <>{kindName(info.kind)} <code>{info.kind}</code></> : none}</dd>
         <dt>{tr('版本', 'Version')}</dt><dd><code>{info.version ?? '—'}</code></dd>
         <dt>{tr('内核', 'Kernel')}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
         <dt>{tr('依赖', 'Uses')}</dt><dd>{uses.length ? uses.map(([dep, range]) => <code key={dep}>{dep} {range}</code>) : none}</dd>
@@ -249,7 +268,7 @@ export function JsonFile({ name, value, note = null }) {
 }
 
 /** A package's package.json, as the packages list knows it. */
-export const packageJson = (info) => info && Object.fromEntries(['version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]]))
+export const packageJson = (info) => info && Object.fromEntries(['kind', 'version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]]))
 
 /** What the games list knows of a game's game.json (its texts by their keys). */
 export const gameJson = (info) => info && {

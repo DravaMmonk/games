@@ -1,6 +1,6 @@
 {
   "title": "@level.curry.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.curry.intro.0.t"
@@ -8,9 +8,9 @@
   ],
   "tasks": [
     {
-      "id": "curry_1",
-      "kind": "logic:proof",
-      "step": "@level.curry.tasks.curry_1.step",
+      "id": "curry-1",
+      "kind": "logic/proof",
+      "step": "@level.curry.tasks.curry-1.step",
       "tests": [
         {
           "premises": {
@@ -32,8 +32,8 @@
         }
       ],
       "hint": [
-        "@level.curry.tasks.curry_1.hint.0",
-        "@level.curry.tasks.curry_1.hint.1"
+        "@level.curry.tasks.curry-1.hint.0",
+        "@level.curry.tasks.curry-1.hint.1"
       ],
       "solution": [
         "f = impI[A=A](body: g) {",
@@ -50,9 +50,9 @@
       ]
     },
     {
-      "id": "curry_2",
-      "kind": "logic:proof",
-      "step": "@level.curry.tasks.curry_2.step",
+      "id": "curry-2",
+      "kind": "logic/proof",
+      "step": "@level.curry.tasks.curry-2.step",
       "tests": [
         {
           "premises": {
@@ -74,7 +74,7 @@
         }
       ],
       "hint": [
-        "@level.curry.tasks.curry_2.hint.0"
+        "@level.curry.tasks.curry-2.hint.0"
       ],
       "solution": [
         "f = impI[A=\"A & B\"](body: m2) {",

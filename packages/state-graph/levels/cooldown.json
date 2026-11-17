@@ -13,7 +13,7 @@
     "goal": "@level.cooldown.mission.goal",
     "how": "@level.cooldown.mission.how"
   },
-  "robot": "state-graph:robot-stack",
+  "robot": "state-graph/stack",
   "debrief": {
     "title": "@level.cooldown.debrief.title",
     "body": [
@@ -24,11 +24,11 @@
   "tasks": [
     {
       "id": "cooldown",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "hints": [
         "@level.cooldown.tasks.cooldown.hints.0"
       ],
-      "world": "state-graph:world-stock",
+      "world": "state-graph/stock",
       "facts": [
         "gain"
       ],
@@ -74,8 +74,8 @@
         7
       ],
       "solution": [
-        "a = table:add(view.leftPrev, facts.gain)",
-        "m = table:mmax(view.left, a)",
+        "a = table/add(view.leftPrev, facts.gain)",
+        "m = table/mmax(view.left, a)",
         "cell <- m"
       ]
     }

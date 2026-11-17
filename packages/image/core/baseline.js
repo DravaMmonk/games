@@ -31,10 +31,10 @@ export function imageReports({ spec, value }) {
   if (!spec.kit) return null
   return spec.levels.flatMap(level => level.tasks.map(task => {
     const kind = task.kind
-    const report = kind === 'image:graph' ? {
+    const report = kind === 'image/graph' ? {
       ...examples(task, work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
       alsoFails: (task.alsoFails ?? []).map(work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
-    } : kind === 'image:board' ? benchReport(task, value) : {
+    } : kind === 'image/board' ? benchReport(task, value) : {
       verify: task.verify(), examples: task.probe.examples.map(example => ({ ...example, output: task.probe.run(example.input) })),
       choices: task.probe.answers.map(choice => ({ choice, pass: task.probe.judge(choice) })),
     }

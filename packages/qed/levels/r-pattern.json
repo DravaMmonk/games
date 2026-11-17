@@ -4,7 +4,7 @@
     "uPattern",
     "unifier"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-pattern.intro.0.t"
@@ -17,8 +17,8 @@
   "tasks": [
     {
       "id": "r-pattern",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

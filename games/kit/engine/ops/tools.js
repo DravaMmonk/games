@@ -15,7 +15,7 @@ import { checkGame } from '../checks.js'
 import { checkCache } from '../check-cache.js'
 import { catalogReader } from '../catalogs.js'
 import { visibleOverrides } from '../layers.js'
-import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, gameDirectory } from '../resolver.js'
+import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, gameDirectory, packageDirectory } from '../resolver.js'
 import { gameOnPackage, newPackage } from '../scaffold.js'
 import { gameOf } from '../games.mjs'
 import { contentSchemas } from '../content.js'
@@ -61,7 +61,7 @@ const about = (lines, level) => lines.filter((l) => new RegExp(`^${escape(level)
 /**
  * The levels a line of the check is about (`ids`: the levels in play order, as the check's paths count them): the
  * level a domain names, the level file a content problem is in, the level a copy problem's path counts to, the level
- * a blind-play report is on, the levels a course finding lists (`object@level`), or the level the line starts with.
+ * a blind-play report is on, the levels a course finding lists (`object (level)`), or the level the line starts with.
  */
 export function levelsOfLine(line, ids) {
   if (line.level) return [line.level]
@@ -72,7 +72,7 @@ export function levelsOfLine(line, ids) {
   if (copy) return ids[Number(copy[1])] ? [ids[Number(copy[1])]] : []
   const report = /^REPORT [\w-]+: (\S+) /.exec(text)
   if (report) return ids.includes(report[1]) ? [report[1]] : []
-  if (/^(OPEN )?course: /.test(text)) return [...new Set([...text.matchAll(/@([^\s,)]+)/g)].map((m) => m[1]).filter((id) => ids.includes(id)))]
+  if (/^(OPEN )?course: /.test(text)) return [...new Set([...text.matchAll(/\(([^\s,)]+)\)/g)].map((m) => m[1]).filter((id) => ids.includes(id)))]
   const head = [...ids].sort((a, b) => b.length - a.length).find((id) => new RegExp(`^${escape(id)}[ :/]`).test(text))
   return head ? [head] : []
 }
@@ -179,10 +179,11 @@ const tools = {
     },
   },
   create_package: {
-    about: 'Make a new package: packages/<id>/ copied from an installed package (`from`: its files, its own names turned into the new id) or empty (`empty`: a package.json alone), its dependency lock written. The same as npm run new-package.',
-    params: { id: 'string', from: 'string?', empty: 'boolean?' },
-    async run({ id, from, empty = false }) {
-      newPackage({ root: ROOT, id, from, empty })
+    about: 'Make a new package: packages/<id>/ copied from an installed package (`from`: its files, its own names turned into the new id) or empty (`empty`: a package.json alone), its dependency lock written; `kind` (play, ext, course, lib) goes in its package.json, a copy taking its source\'s when none is given. The same as npm run new -- package.',
+    params: { id: 'string', kind: 'string?', from: 'string?', empty: 'boolean?' },
+    async run({ id, kind, from, empty = false }) {
+      const sourceKind = !kind && from && existsSync(resolve(packageDirectory(from, ROOT), 'package.json')) ? JSON.parse(readFileSync(resolve(packageDirectory(from, ROOT), 'package.json'), 'utf8')).kind : undefined
+      newPackage({ root: ROOT, id, kind: kind ?? sourceKind, from, empty })
       return { id }
     },
   },
@@ -453,6 +454,7 @@ const tools = {
         // Package declarations and their projected public vocabulary drive authoring.
         packageCode: Boolean(vocabulary.packageCode),
         objectKinds: vocabulary.objectKinds ?? {},
+        kindDeclarations: Object.fromEntries(Object.keys(vocabulary.objectKinds ?? {}).map(name => [name, content.registries.kind[name]])),
         kindPolicies: Object.fromEntries(Object.entries({ ...BUILTIN_POLICIES, ...vocabulary.objectKinds }).map(([name, { declares, overrides, variants }]) => [name, { declares, overrides, ...(variants && { variants }) }])),
         vocabulary: describe({ ...vocabulary, objectKinds: undefined, kindPolicies: undefined }),
         operations: Object.fromEntries(Object.entries(operationsFor(vocabulary)).map(([name, op]) => [name, { about: op.about, params: op.params }])),

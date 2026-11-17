@@ -3,19 +3,23 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "95db36a132c4967cd95951787461aa894968edef93a466502e6596886916596c"
+      "hash": "2456a52500f268c250a393558e0ef66ecd1539f615ef30d8d986b0bf18e20149"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "f107ed2e6a595c2bd182f38b003f476fcb913e5919d60e354e8a954d7c1553e2"
+      "hash": "201030c0bb5a0294e98853ea942b9f8d2cd167feeee564a7328b96f797e18909"
     },
     "image": {
       "version": "0.0.0",
-      "hash": "7d1e30d0252f4ab7e8682a4a39e24c9aeb3a7dbf7512adb181cf018f50fb26fb"
+      "hash": "3fff3c3ce593053bff2917c689b731bc782b7d3d232c5b224bbbc72681255159"
+    },
+    "progress": {
+      "version": "0.0.0",
+      "hash": "0055fbd22250ff983cf6ecdf68be0798c38d235ce1f711ab78a46465c3272acd"
     },
     "vision-complete": {
       "version": "0.0.0",
-      "hash": "672bb62ed8930d2da12d8fc3277ad57f874212642b2ede2292e18842137d1524"
+      "hash": "4f999d1d06665d7f0eac2365820fc9606cbbc23d021b40a44eb959b6ccb52dc2"
     }
   }
 }

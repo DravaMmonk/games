@@ -5,7 +5,7 @@
     {
       "id": "base",
       "reference": {
-        "kind": "image:graph",
+        "kind": "image/graph",
         "solution": [
           "one = const()",
           "s1 = sqrt(ab)",
@@ -21,9 +21,9 @@
     }
   ],
   "inputs": [
-    { "name": "x0", "type": "image:image" },
-    { "name": "eps", "type": "image:image" },
-    { "name": "ab", "type": "image:image" }
+    { "name": "x0", "type": "image/image" },
+    { "name": "eps", "type": "image/image" },
+    { "name": "ab", "type": "image/image" }
   ],
-  "outputType": "image:image"
+  "outputType": "image/image"
 }

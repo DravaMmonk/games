@@ -1,6 +1,7 @@
 {
-  "mark": "logic:mark-formulaFalse",
+  "mark": "logic/formulaFalse",
   "icon": "Rows3",
   "name": "⊥",
-  "desc": "@symbol.formulaFalse.desc"
+  "desc": "@symbol.formulaFalse.desc",
+  "at": "decl-bot"
 }

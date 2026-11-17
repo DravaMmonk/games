@@ -2,17 +2,9 @@
 import { S } from 'kernel'
 
 
-import { partStages } from "./part-stages.js"
 
 export const trayMembers = (tray) => (tray?.items ?? []).flatMap((entry) => typeof entry === 'string' ? [entry] : entry.items)
 
-/** The named circuit trays that may be opened in the workshop, in course order. */
-export function workshopTrayNames(trays = {}, parts = {}) {
-  const stages = partStages(parts)
-  return Object.entries(trays)
-    .filter(([, tray]) => tray.workshop !== false && trayMembers(tray).some((type) => stages.has(type)))
-    .map(([name]) => name)
-}
 
 /** How many entries the shown tray may hold before its menus gather parts: a tray's `menuThreshold`, else this. */
 export const MENU_THRESHOLD = 7

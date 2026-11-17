@@ -1,12 +1,12 @@
 {
   "name": "@part.addComm.name",
   "desc": "@part.addComm.desc",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0r0 = math[use=[\"nat.induct\"]]()",
           "c0 = rule(in, c0r0)",
@@ -15,7 +15,7 @@
           "    c2r0 = allI()",
           "    c3r0 = math[use=[\"def.0\", \"def.1\", addZero, addSucc]]()",
           "    c4r0 = refl()",
-          "    c3r4 = logic:hyp(c3r0)",
+          "    c3r4 = logic/hyp(c3r0)",
           "    c2 = rule(c1.body, c2r0)",
           "    c3 = simp(c2, c3r4)",
           "    c4 = rule(c3, c4r0)",
@@ -23,7 +23,7 @@
           "}",
           "out <- c1"
         ],
-        "want": "logic:want-proved",
+        "want": "logic/proved",
         "defs": ["plus"],
         "types": ["nat"],
         "inputs": [{ "name": "in", "label": "in" }],
@@ -31,6 +31,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "before", "type": "logic:machine-value", "optional": true }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
 }

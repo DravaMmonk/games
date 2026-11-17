@@ -1,3 +1,4 @@
+import { withProgressFixture } from '../../../../games/kit/engine/ops/fixture.js'
 // node --test (npm test) — what a task on the circuit preset holds (board-works.js over ../course.js holds): a part,
 // one of its settings, one value of a setting, by the course's progress and by what the task gives or withholds.
 import { test } from 'node:test'
@@ -26,13 +27,13 @@ const sums = [{ inputs: { a: 5, b: 3 }, expect: { out: 8 } }, { inputs: { a: 1, 
 const differences = [{ inputs: { a: 5, b: 3 }, expect: { out: 2 } }, { inputs: { a: 1, b: 4 }, expect: { out: -3 } }]
 const task = (id, tests, how, more = {}) => ({ id, brief: text(id), ...ports, tests, solution: [`c = calc[how=${how}](a, b)`, 'out <- c'], ...more })
 const level = (id, tasks, more = {}) => [id, { title: text(id), tasks, ...more }]
-const course = (levels, definitions = partDefs) => definedWorks({
+const course = (levels, definitions = partDefs) => definedWorks(withProgressFixture({
   id: 't',
   ...{ vocabulary: 1, title: text('t'), kicker: text('t'), lede: text('t'), primitives: ['calc'], eras: [{ id: 1, title: text('一'), question: text('？'), levels: levels.map(([id]) => ({ id })), links: levels.slice(1).map(([to], i) => ({ from: levels[i][0], to })) }] },
   levels: levels.map(([id, value]) => ({ id, ...value })),
   glossary: { groups: [], entries: [] },
   partDefs: definitions,
-}, { board: flowBoard(), ops: OPS })
+}), { board: flowBoard(), ops: OPS })
 const failures = (read) => {
   const { runLevel, entries } = onceRun({})
   return checkCircuitTasks(read, { run: runLevel, entries }).filter((l) => l.fail).map((l) => l.text)
@@ -71,16 +72,6 @@ test('a task gives and withholds a value for itself alone, and its answer keeps 
   const kept = course([...levels(task('two', sums, 'plus'), task('three', differences, 'minus')).slice(0, 3), level('four', [task('four', sums, 'plus', { withholds: ['calc-minus'] })])])
   assert.deepEqual([kept.holdsIn(kept.played.get('four')[0], [])('calc', 'how', 'minus'), kept.holdsIn(kept.played.get('four')[0], [])('calc', 'how', 'plus')], [false, true])
   assert.deepEqual(failures(kept), [])
-})
-
-test('an item a task names is one of the game’s: a part, a setting of several values, a value of it', () => {
-  const read = course([level('one', [task('one', sums, 'plus', { withholds: ['gone'], gives: ['calc-missing'], opens: ['calc-times', 'calc'] })], { adds: ['calc'] })])
-  assert.deepEqual(read.wrong, [
-    'one: withholds names gone: gone is no grantable object or stage',
-    'one: gives names calc-missing: calc-missing is no grantable object or stage',
-    'one: opens names calc-times: calc-times is no grantable object or stage',
-
-  ])
 })
 
 test('a packaged circuit runs even when no task publishes it', () => {

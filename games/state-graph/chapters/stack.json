@@ -1,5 +1,5 @@
 {
-  "machine": "state-graph:robot-stack",
+  "machine": "state-graph/stack",
   "chapter": {
     "title": "@course.eras.stack.chapter.title",
     "desc": "@course.eras.stack.chapter.desc"

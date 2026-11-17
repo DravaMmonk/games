@@ -18,11 +18,11 @@
           },
           "reference": {
             "type": "syntax",
-            "lang": "rows:sum"
+            "lang": "rows/sum"
           },
           "naive": {
             "type": "syntax",
-            "lang": "rows:sum"
+            "lang": "rows/sum"
           }
         }
       },
@@ -38,5 +38,5 @@
       "$text"
     ]
   },
-  "play": "rows:equation"
+  "play": "rows/equation"
 }

@@ -1,7 +1,7 @@
 {
   "name": "@part.dneg.name",
   "desc": "@part.dneg.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "settings": {
     "form": {
       "control": "select",
@@ -20,7 +20,7 @@
       "form": "elim",
       "label": "¬¬A → A",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "r = raa(p)",
           "goal <- r"
@@ -40,7 +40,7 @@
       "form": "intro",
       "label": "A → ¬¬A",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "f = impI[A=\"~A\"](body: m) {",
           "  body {",
@@ -63,10 +63,10 @@
   "inputs": [
     {
       "name": "p0",
-      "type": "logic:judgment"
+      "type": "logic/judgment"
     }
   ],
-  "outputType": "logic:judgment",
+  "outputType": "logic/judgment",
   "stages": [
     {
       "id": "dneg-intro",

@@ -210,6 +210,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .unlocked .panel-label { margin-bottom: var(--sp-4); }
 .unlocked-list { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: 0; padding: 0; list-style: none; }
 .unlocked-item { min-height: 32px; padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-2); display: inline-flex; align-items: center; gap: var(--gap-local); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); font-size: 13px; animation: rise-in 300ms 500ms ease both; }
+.unlocked-caption { color: var(--muted); font-size: var(--fs-mini); }
 .dialog-actions { margin-top: var(--sp-6); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-4); }
 /* A long dialog scrolls; its buttons stay in reach at the bottom. */
 .dialog-actions { position: sticky; bottom: calc(var(--sp-7) * -1); margin-bottom: calc(var(--sp-7) * -1); padding: var(--sp-5) 0 var(--sp-7); background: linear-gradient(transparent, var(--paper) 12px); }

@@ -35,7 +35,7 @@ const pattern = (name, about, args, schema = {}) => ({
   make: (p) => patterns[name](...args.map((a) => p[a])),
 })
 
-export const PICTURES = qualifyItems('image', 'picture', {
+export const PICTURES = qualifyItems('image', {
   blank: pattern('blank', t('一张同色的图'), ['v']),
   impulse: {
     about: t('黑底上的一个亮点'),

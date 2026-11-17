@@ -1,38 +1,36 @@
+import { CODE_NAME } from './object-name.js'
 import { registerMeaning } from './kind-meanings.js'
 // Modules contribute closed, qualified capabilities. Packages only refer to these names.
-export const CAPABILITY_KINDS = ['valueType', 'operation', 'primitive', 'board', 'task', 'content', 'display', 'language', 'contentKind']
+const BUILTIN_CAPABILITY_KINDS = ['valueType', 'operation', 'primitive', 'board', 'display', 'language']
 
-export const capabilityName = (id, kind, name, { bare = false } = {}) => {
-  if (name.includes(':')) return name
-  const local = bare || ['op', 'kind', 'mode', 'language'].includes(kind) ? name : `${kind}-${name}`
-  return `${id}:${local}`
-}
-export const qualifyItems = (id, kind, items, options) => Object.fromEntries(Object.entries(items).map(([name, value]) => [capabilityName(id, kind, name, options), value]))
+const capabilityName = (id, name) => name.includes('/') ? name : `${id}/${name}`
+export const qualifyItems = (id, items) => Object.fromEntries(Object.entries(items).map(([name, value]) => [capabilityName(id, name), value]))
 
 /** Qualify the names declared by a module, including typed schema references and discriminators. */
-export function qualifyVocabulary(id, raw, { bareKinds = [], categories = {} } = {}) {
+export function qualifyVocabulary(id, raw) {
   const discriminators = { kind: 'kind', mode: 'mode', scene: 'scene', world: 'world', want: 'want' }
   const declared = (kind, name) => Boolean(raw.kinds[kind]?.[name])
   const schema = (value, field) => {
     if (!value || typeof value !== 'object') return value
     if (Array.isArray(value)) return value.map((v) => schema(v))
     const out = { ...value }
-    if (out.type === 'syntax') out.lang = capabilityName(id, 'language', out.lang)
+    if (out.type === 'syntax') out.lang = capabilityName(id, out.lang)
     if (out.fields) out.fields = Object.fromEntries(Object.entries(out.fields).map(([key, s]) => [key, schema(s, key)]))
     if (out.of) out.of = schema(out.of)
+    if (out.params) out.params = schema(out.params)
     if (out.key) out.key = schema(out.key)
-    if (out.cases) out.cases = Object.fromEntries(Object.entries(out.cases).map(([key, s]) => [discriminators[out.field] && declared(discriminators[out.field], key) ? capabilityName(id, discriminators[out.field], key) : key, schema(s)]))
-    if (out.type === 'oneOf' && discriminators[field]) out.values = out.values.map((v) => declared(discriminators[field], v) ? capabilityName(id, discriminators[field], v) : v)
+    if (out.cases) out.cases = Object.fromEntries(Object.entries(out.cases).map(([key, s]) => [discriminators[out.field] && declared(discriminators[out.field], key) ? capabilityName(id, key) : key, schema(s)]))
+    if (out.type === 'oneOf' && discriminators[field]) out.values = out.values.map((v) => declared(discriminators[field], v) ? capabilityName(id, v) : v)
     return out
   }
-  return { ...raw, categories, version: 1, kinds: Object.fromEntries(Object.entries(raw.kinds).map(([kind, items]) => [kind, qualifyItems(id, kind, Object.fromEntries(Object.entries(items).map(([name, item]) => [name, schema(item)])), { bare: bareKinds.includes(kind) })])), game: schema(raw.game), level: schema(raw.level), languages: qualifyItems(id, 'language', raw.languages ?? {}) }
+  return { ...raw, version: 1, kinds: Object.fromEntries(Object.entries(raw.kinds).map(([kind, items]) => [kind, qualifyItems(id, Object.fromEntries(Object.entries(items).map(([name, item]) => [name, schema(item)])))])), game: schema(raw.game), level: schema(raw.level), languages: qualifyItems(id, raw.languages ?? {}) }
 }
 
-const categoryOf = (kind) => ({ op: 'operation', kind: 'task', mode: 'task', want: 'task', widget: 'display', display: 'display', view: 'display', family: 'display', mark: 'display' })[kind] ?? 'content'
+const registryKind = kind => ({ op: 'operation', part: 'primitive' })[kind] ?? kind
 
 /** A registry is assembled once, and rejects ambiguous capability declarations. */
 export function createCapabilityRegistry() {
-  const tables = Object.fromEntries(CAPABILITY_KINDS.map((kind) => [kind, Object.create(null)]))
+  const tables = Object.assign(Object.create(null), Object.fromEntries(BUILTIN_CAPABILITY_KINDS.map(kind => [kind, Object.create(null)])))
   const kinds = Object.create(null)
   const schemas = Object.create(null)
   const languages = Object.create(null)
@@ -42,10 +40,10 @@ export function createCapabilityRegistry() {
     tables, kinds, schemas, languages, operations, displayLoaders, meanings: [],
     kind(_name, meaning) { registerMeaning(meaning); this.meanings.push(meaning) },
     add(kind, name, value) {
-      if (!tables[kind]) throw new Error(`unknown capability kind ${kind}`)
-      if (!/^[a-z][a-z0-9-]*:[A-Za-z_][A-Za-z0-9_.-]*$/.test(name)) throw new Error(`invalid capability name ${name}`)
-      if (Object.hasOwn(tables[kind], name)) throw new Error(`duplicate ${kind} ${name}`)
-      tables[kind][name] = value
+      if (!CODE_NAME.test(name)) throw new Error(`invalid capability name ${name}`)
+      const table = tables[kind] ??= Object.create(null)
+      if (Object.hasOwn(table, name)) throw new Error(`duplicate ${kind} ${name}`)
+      table[name] = value
       if (kind === 'valueType') {
         (kinds.valueType ??= Object.create(null))[name] = value
       }
@@ -74,7 +72,7 @@ export function createCapabilityRegistry() {
         for (const [name, item] of Object.entries(items)) {
           if (Object.hasOwn(target, name)) throw new Error(`duplicate ${kind} ${name}`)
           target[name] = item
-          this.add(vocabulary.categories?.[kind] ?? categoryOf(kind), name, { kind, ...item })
+          this.add(registryKind(kind), name, { kind, ...item })
         }
       }
       for (const [name, item] of Object.entries(vocabulary.languages ?? {})) {

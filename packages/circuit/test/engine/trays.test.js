@@ -1,19 +1,7 @@
 import { circuitFixtureSchema } from '../../../../games/kit/engine/ops/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { trayDisplay, trayMembers, workshopTrayNames } from '../../core/index.js'
-
-test('the workshop lists enabled circuit trays and leaves exercise trays usable by the course', () => {
-  const parts = { gate: {} }
-  const trays = {
-    main: { items: ['gate'] },
-    exercise: { workshop: false, items: ['gate'] },
-    words: { workshop: true, items: ['word'] },
-    mixed: { workshop: true, items: [{ id: 'menu', items: ['word', 'gate'] }] },
-  }
-  assert.deepEqual(workshopTrayNames(trays, parts), ['main', 'mixed'])
-  assert.deepEqual(trayMembers(trays.exercise), ['gate'])
-})
+import { trayDisplay, trayMembers } from '../../core/index.js'
 
 test('tray menus show only available parts; every folded part in a menu goes into it', () => {
   const menu = { id: 'or', title: '∨', items: ['orI', 'orE', 'locked'] }

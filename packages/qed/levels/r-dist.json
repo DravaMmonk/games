@@ -1,6 +1,6 @@
 {
   "title": "@level.r-dist.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-dist.intro.0.t"
@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "r-dist",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

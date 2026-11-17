@@ -11,20 +11,20 @@ const hand = {
 }
 
 export const plays = definePlays({
-  'state-graph:circuit': {
+  'state-graph/circuit': {
     editor: 'circuit',
     judge: 'simulation',
     resources: 'robot',
     label: { zh: '电路板', en: 'Circuit board' },
     layout: 'sg-level is-circuit sg-shared-circuit',
   },
-  'state-graph:fill': { ...hand, resources: 'fill' },
-  'state-graph:trace': { ...hand, resources: 'trace' },
-  'state-graph:link': { ...hand, resources: 'link' },
-  'state-graph:pack': { ...hand, resources: 'pack' },
-  'state-graph:breach': { ...hand, resources: 'breach' },
-  'state-graph:policy': { ...hand, resources: 'policy' },
-  'state-graph:seam': { ...hand, resources: 'seam' },
+  'state-graph/fill': { ...hand, resources: 'fill' },
+  'state-graph/trace': { ...hand, resources: 'trace' },
+  'state-graph/link': { ...hand, resources: 'link' },
+  'state-graph/pack': { ...hand, resources: 'pack' },
+  'state-graph/breach': { ...hand, resources: 'breach' },
+  'state-graph/policy': { ...hand, resources: 'policy' },
+  'state-graph/seam': { ...hand, resources: 'seam' },
 }, circuitPlaySchema)
 
 export const playOf = (task) => playFor(plays, { kind: task.play })

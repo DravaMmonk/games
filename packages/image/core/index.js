@@ -62,13 +62,13 @@ export const probePlay = {
 }
 export function register(kernel) {
   Object.assign(registeredOperations, IMAGE_OPS)
-  registeredValueTypes['image:image'] = { about: { en: 'An image or scalar image with named colour channels', zh: '带颜色通道的图像或标量图像' } }
-  kernel.kind('image:level', meaning)
-  kernel.play('image:graph', graphPlay)
-  kernel.play('image:board', benchPlay)
-  kernel.play('image:probe', probePlay)
-  kernel.check('image:levels', ({ content }) => content.levels.some(level => level.tasks.some(task => taskModule(task) === 'image')) ? runtime.validate(runtime.spec(content)) : [])
-  for (const name of ['image:graph', 'image:board', 'image:probe']) kernel.agent(name, {
+  registeredValueTypes['image/image'] = { about: { en: 'An image or scalar image with named colour channels', zh: '带颜色通道的图像或标量图像' } }
+  kernel.kind('image/level', meaning)
+  kernel.play('image/graph', graphPlay)
+  kernel.play('image/board', benchPlay)
+  kernel.play('image/probe', probePlay)
+  kernel.check('image/levels', ({ content }) => content.levels.some(level => level.tasks.some(task => taskModule(task) === 'image')) ? runtime.validate(runtime.spec(content)) : [])
+  for (const name of ['image/graph', 'image/board', 'image/probe']) kernel.agent(name, {
     observe: context => play.open(textContext(context)),
     act: (context, work) => play.attempt(textContext(context), work),
   })

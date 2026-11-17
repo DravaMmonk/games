@@ -13,7 +13,7 @@
     "goal": "@level.ring.mission.goal",
     "how": "@level.ring.mission.how"
   },
-  "robot": "state-graph:robot-stack",
+  "robot": "state-graph/stack",
   "debrief": {
     "title": "@level.ring.debrief.title",
     "body": [
@@ -24,10 +24,10 @@
   "tasks": [
     {
       "id": "ring",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "n = table:mmax(view.pn, view.pr)",
-        "a = table:add(view.pn, facts.money)",
+        "n = table/mmax(view.pn, view.pr)",
+        "a = table/add(view.pn, facts.money)",
         "no <- n",
         "yes <- a"
       ],
@@ -35,7 +35,7 @@
         "@level.ring.tasks.ring.hints.0",
         "@level.ring.tasks.ring.hints.1"
       ],
-      "world": "state-graph:world-ring",
+      "world": "state-graph/ring",
       "facts": [
         "money",
         "first",
@@ -86,12 +86,12 @@
         14
       ],
       "solution": [
-        "n = table:mmax(view.pn, view.pr)",
-        "a = table:add(view.pn, facts.money)",
-        "f = table:pass(facts.sideA, facts.first)",
-        "l = table:block(facts.sideA, facts.last)",
-        "x = table:many(f, l)",
-        "k = table:block(x, a)",
+        "n = table/mmax(view.pn, view.pr)",
+        "a = table/add(view.pn, facts.money)",
+        "f = table/pass(facts.sideA, facts.first)",
+        "l = table/block(facts.sideA, facts.last)",
+        "x = table/many(f, l)",
+        "k = table/block(x, a)",
         "no <- n",
         "yes <- k"
       ]

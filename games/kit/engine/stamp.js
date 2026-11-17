@@ -12,14 +12,13 @@ import { canonicalJson } from './json-value.js'
 const PUZZLE = ['puzzle', 'tests']
 
 /** The fields of a level or a task (its id and its tasks aside) that make its puzzle, read by the shape `schema` gives it. */
-function puzzleOf(schema, value, vocabulary, courseField) {
+function puzzleOf(schema, value, vocabulary) {
   const shape = shapeAt(schema, value, [], { vocabulary })
   if (shape?.type !== 'obj') return value
   return Object.fromEntries(Object.entries(value).flatMap(([key, field]) => {
     if (key === 'id' || key === 'tasks' || !shape.fields[key]) return []
     if (PUZZLE.includes(sectionOf(shape.fields[key]))) return [[key, field]]
-    const retained = courseField?.(key, field)
-    return retained ? [retained] : []
+    return []
   }))
 }
 
@@ -30,15 +29,17 @@ function hash(text) {
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
-/** Each task's stamp and its level, keyed by task ID. A domain may include a course field's puzzle semantics. */
-export function taskStamps(vocabulary, content, { courseField } = {}) {
+/** Each task's stamp and its level, keyed by task ID. Packages may contribute puzzle fields derived from their own objects. */
+export function taskStamps(vocabulary, content) {
   const localizedFields = (schema, value) => new Set(find(schema, value, 'text', { vocabulary }).map((field) => field.value).filter(isText))
   const plain = (value, texts) => JSON.stringify(value, (_k, v) => (texts.has(v) ? undefined : v))
   const semantics = contentSchemas.get(content) ?? vocabulary
   const dependencies = meaningsOf(semantics).map(meaning => meaning.stamp?.({ content, plain: (value, schema) => plain(value, localizedFields(schema, value)) }) ?? '').join('')
   return Object.fromEntries(content.levels.flatMap((level) => {
     const texts = localizedFields(vocabulary.level, level)
-    const own = plain(puzzleOf(vocabulary.level, level, vocabulary, courseField), texts)
+    const puzzle = puzzleOf(vocabulary.level, level, vocabulary)
+    const contributed = Object.assign({}, ...meaningsOf(semantics).map(meaning => meaning.levelPuzzle?.({ content, level })))
+    const own = plain({ ...puzzle, ...contributed }, texts)
     return level.tasks.map((task, k) => [task.id, { level: level.id, stamp: hash(`${own}${plain(puzzleOf(shapeAt(vocabulary.level, level, ['tasks', k], { vocabulary }), task, vocabulary), texts)}${dependencies}`) }])
   }))
 }

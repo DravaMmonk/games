@@ -2,11 +2,11 @@
   "name": "@part.const.name",
   "desc": "@part.const.desc",
   "icon": "Hash",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "settings": {
     "c": {
       "label": "="
     }
   },
-  "op": "image:const"
+  "op": "image/const"
 }

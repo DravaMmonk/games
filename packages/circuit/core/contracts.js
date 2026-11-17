@@ -1,6 +1,5 @@
 import { sameJson, validate as fits } from 'kernel'
 import { trayMembers } from './trays.js'
-import { RULE_TEXT, audit } from './course.js'
 const isFn = value => typeof value === 'function'
 const isText = value => typeof value === 'string' || value && (typeof value.en === 'string' || typeof value.zh === 'string')
 const strings = value => Array.isArray(value) && value.every(item => typeof item === 'string')
@@ -52,7 +51,6 @@ function hookProblems(course) {
     const flag = course.needs(p)
     if (flag !== null && typeof flag !== 'string') say(`needs(${p}) is neither a flag nor null`)
   }
-  for (const f of audit(course)) if (!RULE_TEXT[f.rule]) say(`the audit reports ${f.rule}, which is no rule`)
   return out
 }
 

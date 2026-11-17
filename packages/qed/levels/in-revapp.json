@@ -1,6 +1,6 @@
 {
   "title": "@level.in-revapp.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.in-revapp.intro.0.t"
@@ -8,13 +8,13 @@
   ],
   "tasks": [
     {
-      "id": "in-revapp_1",
-      "kind": "logic:define",
+      "id": "in-revapp-1",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.in-revapp.tasks.in-revapp_1.step",
+      "step": "@level.in-revapp.tasks.in-revapp-1.step",
       "fn": "rev",
       "on": 0,
       "defs": [
@@ -55,19 +55,19 @@
         "nil",
         "cons(x, rev(xs))"
       ],
-      "brief": "@level.in-revapp.tasks.in-revapp_1.brief",
+      "brief": "@level.in-revapp.tasks.in-revapp-1.brief",
       "hint": [
-        "@level.in-revapp.tasks.in-revapp_1.hint.0"
+        "@level.in-revapp.tasks.in-revapp-1.hint.0"
       ]
     },
     {
-      "id": "in-revapp_2",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "in-revapp-2",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.in-revapp.tasks.in-revapp_2.inputs.0.label"
+          "label": "@level.in-revapp.tasks.in-revapp-2.inputs.0.label"
         }
       ],
       "backtrack": true,
@@ -75,7 +75,7 @@
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.in-revapp.tasks.in-revapp_2.step",
+      "step": "@level.in-revapp.tasks.in-revapp-2.step",
       "types": [
         "list"
       ],
@@ -89,10 +89,10 @@
           "goal": "∀xs. ∀ys. rev(app(xs, ys)) = app(rev(ys), rev(xs))"
         }
       ],
-      "brief": "@level.in-revapp.tasks.in-revapp_2.brief",
+      "brief": "@level.in-revapp.tasks.in-revapp-2.brief",
       "hint": [
-        "@level.in-revapp.tasks.in-revapp_2.hint.0",
-        "@level.in-revapp.tasks.in-revapp_2.hint.1"
+        "@level.in-revapp.tasks.in-revapp-2.hint.0",
+        "@level.in-revapp.tasks.in-revapp-2.hint.1"
       ],
       "solution": [
         "c0r0 = math[use=[\"list.induct\"]]()",
@@ -102,7 +102,7 @@
         "    c2r0 = allI()",
         "    c3r0 = math[use=[\"def.0\", \"def.1\", \"def.4\", \"def.5\", appNil, appAssoc]]()",
         "    c4r0 = refl()",
-        "    c3r6 = logic:hyp(c3r0)",
+        "    c3r6 = logic/hyp(c3r0)",
         "    c2 = rule(c1.body, c2r0)",
         "    c3 = simp(c2, c3r6)",
         "    c4 = rule(c3, c4r0)",
@@ -118,7 +118,7 @@
         "    c2r0 = allI()",
         "    c3r0 = math[use=[\"def.0\", \"def.1\", \"def.4\", \"def.5\"]]()",
         "    c4r0 = refl()",
-        "    c3r4 = logic:hyp(c3r0)",
+        "    c3r4 = logic/hyp(c3r0)",
         "    c2 = rule(c1.body, c2r0)",
         "    c3 = simp(c2, c3r4)",
         "    c4 = rule(c3, c4r0)",

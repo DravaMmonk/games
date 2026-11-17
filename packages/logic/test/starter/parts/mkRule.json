@@ -2,7 +2,7 @@
   "name": "@part.mkRule.name",
   "desc": "@part.mkRule.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
+  "family": "logic/tactic",
   "inputs": [
     {
       "name": "premises",
@@ -13,5 +13,5 @@
       "label": "@part.mkRule.inputs.1.label"
     }
   ],
-  "op": "logic:mkRule"
+  "op": "logic/mkRule"
 }

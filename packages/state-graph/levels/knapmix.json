@@ -13,7 +13,7 @@
     "goal": "@level.knapmix.mission.goal",
     "how": "@level.knapmix.mission.how"
   },
-  "robot": "state-graph:robot-reach",
+  "robot": "state-graph/reach",
   "debrief": {
     "title": "@level.knapmix.debrief.title",
     "body": [
@@ -24,12 +24,12 @@
   "tasks": [
     {
       "id": "knapmix",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-uses": "many"
+            "state-graph/not": {
+              "state-graph/uses": "many"
             }
           },
           "say": "@level.knapmix.tasks.knapmix.diagnose.0.say"
@@ -43,7 +43,7 @@
         "@level.knapmix.tasks.knapmix.hints.0",
         "@level.knapmix.tasks.knapmix.hints.1"
       ],
-      "world": "state-graph:world-knap",
+      "world": "state-graph/knap",
       "facts": [
         "value",
         "many"
@@ -127,9 +127,9 @@
         21
       ],
       "solution": [
-        "p = table:pass(facts.many, view.rowk)",
-        "b = table:block(facts.many, view.upk)",
-        "s = table:msum(p, b)",
+        "p = table/pass(facts.many, view.rowk)",
+        "b = table/block(facts.many, view.upk)",
+        "s = table/msum(p, b)",
         "c = choose(view.up, s, facts.value)",
         "cell <- c"
       ]

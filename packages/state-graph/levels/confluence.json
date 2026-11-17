@@ -5,7 +5,7 @@
     {
       "t": "@level.confluence.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 4,
           "cells": {
@@ -25,7 +25,7 @@
     {
       "t": "@level.confluence.intro.1.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "u",
@@ -69,7 +69,7 @@
     {
       "t": "@level.confluence.intro.2.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "u",
@@ -119,9 +119,9 @@
     "goal": "@level.confluence.mission.goal",
     "how": "@level.confluence.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:msum"
+    "table/msum"
   ],
   "debrief": {
     "title": "@level.confluence.debrief.title",
@@ -134,34 +134,34 @@
   "tasks": [
     {
       "id": "confluence",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "guide": [
         {
           "until": {
-            "state-graph:condition-all": [
+            "state-graph/all": [
               {
-                "state-graph:condition-reads": "up"
+                "state-graph/reads": "up"
               },
               {
-                "state-graph:condition-reads": "left"
+                "state-graph/reads": "left"
               }
             ]
           },
           "say": "@level.confluence.tasks.confluence.guide.0.say"
         },
         {
-          "until": "state-graph:condition-placed",
+          "until": "state-graph/placed",
           "say": "@level.confluence.tasks.confluence.guide.1.say"
         },
         {
-          "until": "state-graph:condition-wiredOut",
+          "until": "state-graph/wiredOut",
           "say": "@level.confluence.tasks.confluence.guide.2.say"
         }
       ],
       "hints": [
         "@level.confluence.tasks.confluence.hints.0"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "tests": [
         {
           "R": 3,
@@ -183,7 +183,7 @@
         35
       ],
       "solution": [
-        "m = table:msum(view.up, view.left)",
+        "m = table/msum(view.up, view.left)",
         "cell <- m"
       ]
     }

@@ -13,7 +13,7 @@ import { T } from 'kernel'
 
 const pick = (v, lang) => (v && typeof v === 'object' ? v[lang] ?? v.en ?? v.zh : v)
 
-const revealed = ({ solved }) => solved && plays['image:graph'].checks === 'afterPass'
+const revealed = ({ solved }) => solved && plays['image/graph'].checks === 'afterPass'
 const testsOf = (ctx) => splitTests(ctx.level.source, revealed(ctx))
 
 const circuit = circuitPlay({
@@ -66,6 +66,6 @@ const circuit = circuitPlay({
 })
 
 export const play = {
-  open: (ctx) => (ctx.level.kind === 'image:graph' ? circuit.open(ctx) : { covered: false, why: ctx.level.kind === 'image:probe' ? T('探针关（用指针读像素），不接电路') : T('参数台（转旋钮），不接电路') }),
+  open: (ctx) => (ctx.level.kind === 'image/graph' ? circuit.open(ctx) : { covered: false, why: ctx.level.kind === 'image/probe' ? T('探针关（用指针读像素），不接电路') : T('参数台（转旋钮），不接电路') }),
   attempt: (ctx, text) => circuit.attempt(ctx, text),
 }

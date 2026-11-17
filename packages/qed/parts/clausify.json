@@ -1,12 +1,12 @@
 {
   "name": "@part.clausify.name",
   "desc": "@part.clausify.desc",
-  "family": "logic:family-built",
+  "family": "logic/built",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0r0 = raa()",
           "c1r0 = impI()",
@@ -22,12 +22,12 @@
           "c4 = toClauses(c3)",
           "out <- c4"
         ],
-        "want": "logic:want-clauses",
+        "want": "logic/clauses",
         "inputs": [{ "name": "in", "label": "in" }],
         "tests": [{ "goal": "Wet" }]
       }
     }
   ],
-  "inputs": [{ "name": "in", "type": "logic:machine-value" }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "in", "type": "logic/machine-value" }],
+  "outputType": "logic/machine-value"
 }

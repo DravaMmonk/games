@@ -2,7 +2,7 @@
   "name": "@part.swapConcl.name",
   "desc": "@part.swapConcl.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
+  "family": "logic/tactic",
   "inputs": [
     {
       "name": "rule",
@@ -13,5 +13,5 @@
       "label": "@part.swapConcl.inputs.1.label"
     }
   ],
-  "op": "logic:swapConcl"
+  "op": "logic/swapConcl"
 }

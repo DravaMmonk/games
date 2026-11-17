@@ -48,7 +48,7 @@ export function validate({ levels, table }) {
   /** The part a level builds against the board it stands for, its task's. */
   function checkBuilt(L, s) {
     const b = table.model.built[L.unlock];
-    const consts = s.solution.nodes.filter(n => n.type === 'table:const');
+    const consts = s.solution.nodes.filter(n => n.type === 'table/const');
     if (b.setting !== undefined && (consts.length !== 1 || consts[0].params?.value !== b.setting)) bad(L.id, `${L.id}: a part with a setting (${b.setting}) is built from a board with that one constant`);
     // The part alone, fed what its ports stand for.
     const card = id => (s.given.offers.view.includes(id) ? 'view' : 'facts');

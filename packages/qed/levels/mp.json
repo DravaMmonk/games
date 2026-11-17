@@ -1,6 +1,6 @@
 {
   "title": "@level.mp.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.mp.intro.0.t"
@@ -12,9 +12,9 @@
   "after": "@level.mp.after",
   "tasks": [
     {
-      "id": "mp_1",
-      "kind": "logic:proof",
-      "step": "@level.mp.tasks.mp_1.step",
+      "id": "mp-1",
+      "kind": "logic/proof",
+      "step": "@level.mp.tasks.mp-1.step",
       "tests": [
         {
           "premises": {
@@ -41,8 +41,8 @@
         "mp"
       ],
       "hint": [
-        "@level.mp.tasks.mp_1.hint.0",
-        "@level.mp.tasks.mp_1.hint.1"
+        "@level.mp.tasks.mp-1.hint.0",
+        "@level.mp.tasks.mp-1.hint.1"
       ],
       "solution": [
         "m1 = mp(p, r)",
@@ -51,9 +51,9 @@
       ]
     },
     {
-      "id": "mp_2",
-      "kind": "logic:proof",
-      "step": "@level.mp.tasks.mp_2.step",
+      "id": "mp-2",
+      "kind": "logic/proof",
+      "step": "@level.mp.tasks.mp-2.step",
       "tests": [
         {
           "premises": {
@@ -80,11 +80,11 @@
         }
       ],
       "hint": [
-        "@level.mp.tasks.mp_2.hint.0"
+        "@level.mp.tasks.mp-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.mp.tasks.mp_2.intro.0.t"
+          "t": "@level.mp.tasks.mp-2.intro.0.t"
         }
       ],
       "solution": [

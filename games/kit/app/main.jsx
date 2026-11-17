@@ -31,7 +31,7 @@ async function open() {
   const problems = checkContent({ vocabulary }, content).map((p) => `${p.at}: ${p.says}`)
   if (problems.length) return { page: <Unreadable problems={problems} />, content: contentText }
   const game = define(content)
-  const options = { content, tasks: taskStamps(vocabulary, content, game.stampOptions) }
+  const options = { content, tasks: taskStamps(vocabulary, content) }
   const store = game.openProgress?.(options) ?? createProgress({ id: content.id, tasks: options.tasks })
   // A level embedded in a note (`?embed&level=…&lang=…`, games/DESIGN.md 12.1): the note sets its language.
   const asked = new URL(window.location.href).searchParams

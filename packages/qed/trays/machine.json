@@ -1,6 +1,7 @@
 {
   "title": "@tray.machine.title",
   "desc": "@tray.machine.desc",
+  "includeUnlisted": true,
   "values": [],
   "menus": [
     {
@@ -66,7 +67,7 @@
       "values": [
         "rw-au-hyps-desc",
         "simp-au-hyps-desc",
-        "logic:hyp"
+        "logic/hyp"
       ]
     },
     {

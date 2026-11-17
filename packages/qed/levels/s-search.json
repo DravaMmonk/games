@@ -3,7 +3,7 @@
   "adds": [
     "search"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.s-search.intro.0.t"
@@ -15,8 +15,8 @@
   "tasks": [
     {
       "id": "s-search",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

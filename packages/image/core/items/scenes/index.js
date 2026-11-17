@@ -32,7 +32,7 @@ const FILTER = {
 }
 
 const GROUPS = [FILTER]
-export const SCENES = qualifyItems('image', 'scene', Object.fromEntries(GROUPS.flatMap((group) => Object.entries(group))))
+export const SCENES = qualifyItems('image', Object.fromEntries(GROUPS.flatMap((group) => Object.entries(group))))
 for (const name of GROUPS.flatMap((group) => Object.keys(group))) if (GROUPS.filter((group) => name in group).length > 1) throw new Error(`two scenes are called ${name}`)
 
 /** A level's (or a task's) tests, as the level runs take them: [{ label, inputs, expected, train? }]. */

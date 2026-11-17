@@ -2,7 +2,7 @@
   "name": "@part.kernel3.name",
   "desc": "@part.kernel3.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -28,7 +28,7 @@
       "fixed": true
     }
   },
-  "op": "image:kernel3",
+  "op": "image/kernel3",
   "stages": [
     {
       "id": "kernel3-border",

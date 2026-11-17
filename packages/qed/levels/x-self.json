@@ -1,6 +1,6 @@
 {
   "title": "@level.x-self.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "without": [
     "impI",
     "chain",
@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "x-self",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "A → A"

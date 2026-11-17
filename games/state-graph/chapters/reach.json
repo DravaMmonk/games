@@ -1,5 +1,5 @@
 {
-  "machine": "state-graph:robot-reach",
+  "machine": "state-graph/reach",
   "chapter": {
     "title": "@course.eras.reach.chapter.title",
     "desc": "@course.eras.reach.chapter.desc"

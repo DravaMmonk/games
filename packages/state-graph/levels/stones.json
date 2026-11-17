@@ -11,7 +11,7 @@
     {
       "t": "@level.stones.intro.2.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -105,7 +105,7 @@
     "goal": "@level.stones.mission.goal",
     "how": "@level.stones.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.stones.debrief.title",
     "body": [
@@ -117,16 +117,16 @@
   "tasks": [
     {
       "id": "stones",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "ports": [
         {
-          "state-graph:port-reads": "segL"
+          "state-graph/reads": "segL"
         },
         {
-          "state-graph:port-reads": "segR"
+          "state-graph/reads": "segR"
         },
         {
-          "state-graph:port-reads": "weight"
+          "state-graph/reads": "weight"
         }
       ],
       "boardOpt": {
@@ -137,7 +137,7 @@
         "@level.stones.tasks.stones.hints.0",
         "@level.stones.tasks.stones.hints.1"
       ],
-      "world": "state-graph:world-interval",
+      "world": "state-graph/interval",
       "facts": [
         "weight"
       ],
@@ -173,9 +173,9 @@
         30
       ],
       "solution": [
-        "a = table:add(view.segL, view.segR)",
-        "m = table:mmin(a)",
-        "b = table:add(m, facts.weight)",
+        "a = table/add(view.segL, view.segR)",
+        "m = table/mmin(a)",
+        "b = table/add(m, facts.weight)",
         "cell <- b"
       ],
       "scan": "len",

@@ -1,6 +1,6 @@
 {
   "title": "@level.notI.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.notI.intro.0.t"
@@ -9,9 +9,9 @@
   "after": "@level.notI.after",
   "tasks": [
     {
-      "id": "notI_1",
-      "kind": "logic:proof",
-      "step": "@level.notI.tasks.notI_1.step",
+      "id": "notI-1",
+      "kind": "logic/proof",
+      "step": "@level.notI.tasks.notI-1.step",
       "tests": [
         {
           "premises": {
@@ -32,7 +32,7 @@
         }
       ],
       "hint": [
-        "@level.notI.tasks.notI_1.hint.0"
+        "@level.notI.tasks.notI-1.hint.0"
       ],
       "solution": [
         "f = impI[A=A](body: m3) {",
@@ -46,9 +46,9 @@
       ]
     },
     {
-      "id": "notI_2",
-      "kind": "logic:proof",
-      "step": "@level.notI.tasks.notI_2.step",
+      "id": "notI-2",
+      "kind": "logic/proof",
+      "step": "@level.notI.tasks.notI-2.step",
       "tests": [
         {
           "premises": {
@@ -66,11 +66,11 @@
         }
       ],
       "hint": [
-        "@level.notI.tasks.notI_2.hint.0"
+        "@level.notI.tasks.notI-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.notI.tasks.notI_2.intro.0.t"
+          "t": "@level.notI.tasks.notI-2.intro.0.t"
         }
       ],
       "solution": [

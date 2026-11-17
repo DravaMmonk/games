@@ -2,7 +2,7 @@
   "name": "@part.andI.name",
   "desc": "@part.andI.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "a",
@@ -13,5 +13,5 @@
       "label": "@part.andI.inputs.1.label"
     }
   ],
-  "op": "logic:andI"
+  "op": "logic/andI"
 }

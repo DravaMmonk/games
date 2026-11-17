@@ -3,7 +3,7 @@
   "adds": [
     "allE"
   ],
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.q-allE.intro.0.t"
@@ -12,7 +12,7 @@
   "tasks": [
     {
       "id": "q-allE",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i"
       ],

@@ -2,7 +2,7 @@
   "name": "@part.disparity.name",
   "desc": "@part.disparity.desc",
   "icon": "Search",
-  "family": "image:family-search",
+  "family": "image/search",
   "inputs": [
     {
       "name": "left",
@@ -36,5 +36,5 @@
       ]
     }
   },
-  "op": "image:disparity"
+  "op": "image/disparity"
 }

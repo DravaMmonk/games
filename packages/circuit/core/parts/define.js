@@ -30,7 +30,6 @@ import { registeredOperations, registeredValueTypes } from 'kernel'
 
 
 import { typeProblems } from "./types.js"
-import { partStages } from "../part-stages.js"
 import { settingParameters } from "./settings.js"
 import { operationPart, operationTrees } from "./operation.js"
 
@@ -276,11 +275,7 @@ export function partProblems(file, vocabulary, { tasks = null } = {}) {
   // A domain with its circuit primitives in code keeps none here.
   if (!definesParts(vocabulary)) for (const [type, raw] of Object.entries(file?.parts ?? {})) if (circuitPrimitive(raw)) say(`.parts.${type}`, `the ${vocabulary.module} module defines its circuit primitives in code: parts.json holds none (a part computing)`)
   for (const p of validate(PARTS_FILE, file, { vocabulary: vocab, tasks })) say(p.at === '(root)' ? '' : p.at, p.says)
-  try { partStages(file?.parts) } catch (error) { say('', error.message) }
   if (out.length) return out
-  for (const [id, entry] of partStages(file?.parts)) if (entry.index > 0) {
-    out.push(...partProblems({ parts: { [entry.part]: entry.definition } }, vocabulary, { tasks }).map(problem => ({ ...problem, at: `${problem.at} (stage ${id})` })))
-  }
   if (vocabulary.capabilities || vocabulary.kinds.valueType) out.push(...typeProblems(file, vocabulary))
   const ops = { ...BUILTIN_ITEMS, ...vocabulary.kinds.op }
   const fits = (schema, v) => validate(schema, v, { vocabulary: vocab }).length === 0

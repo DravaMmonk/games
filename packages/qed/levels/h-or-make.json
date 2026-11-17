@@ -1,6 +1,6 @@
 {
   "title": "@level.h-or-make.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.h-or-make.intro.0.t"
@@ -9,9 +9,9 @@
   "after": "@level.h-or-make.after",
   "tasks": [
     {
-      "id": "h-or-make_1",
-      "kind": "logic:proof",
-      "step": "@level.h-or-make.tasks.h-or-make_1.step",
+      "id": "h-or-make-1",
+      "kind": "logic/proof",
+      "step": "@level.h-or-make.tasks.h-or-make-1.step",
       "tests": [
         {
           "premises": {
@@ -33,7 +33,7 @@
         }
       ],
       "hint": [
-        "@level.h-or-make.tasks.h-or-make_1.hint.0"
+        "@level.h-or-make.tasks.h-or-make-1.hint.0"
       ],
       "solution": [
         "s = allI[x=R](body: f) {",
@@ -53,9 +53,9 @@
       ]
     },
     {
-      "id": "h-or-make_2",
-      "kind": "logic:proof",
-      "step": "@level.h-or-make.tasks.h-or-make_2.step",
+      "id": "h-or-make-2",
+      "kind": "logic/proof",
+      "step": "@level.h-or-make.tasks.h-or-make-2.step",
       "tests": [
         {
           "premises": {
@@ -79,7 +79,7 @@
         }
       ],
       "hint": [
-        "@level.h-or-make.tasks.h-or-make_2.hint.0"
+        "@level.h-or-make.tasks.h-or-make-2.hint.0"
       ],
       "solution": [
         "e = allE[t=C](p)",

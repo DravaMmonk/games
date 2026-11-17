@@ -2,7 +2,7 @@
   "name": "@part.lrnDense.name",
   "desc": "@part.lrnDense.desc",
   "icon": "Activity",
-  "family": "image:family-learned",
+  "family": "image/learned",
   "inputs": [
     {
       "name": "in",
@@ -15,5 +15,5 @@
       "fixed": true
     }
   },
-  "op": "image:lrnDense"
+  "op": "image/lrnDense"
 }

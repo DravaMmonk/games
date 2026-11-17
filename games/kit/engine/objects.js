@@ -6,8 +6,8 @@ import { S, shapeAt } from './schema.js'
 import { fullName } from './names.js'
 import { dependencyCycle } from '../course.js'
 
-export const OBJECT_NAME = '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9_-]*$'
-export const REFERENCE = S.str({ pattern: '^#?(?:(?:@?[a-z][a-z0-9-]*/)|(?:[a-z][a-z0-9-]*:))?[A-Za-z0-9][A-Za-z0-9_-]*$' })
+export const OBJECT_NAME = '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$'
+export const REFERENCE = S.str({ pattern: '^#?(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$' })
 export const TAG = S.obj({ kind: S.str(), title: S.opt(S.text()), desc: S.opt(S.text()), values: S.set({ ...REFERENCE, reference: '$kind' }) })
 export const RELATION = S.obj({ kind: S.str(), edges: S.edges({ ...REFERENCE, reference: '$endpoint' }) })
 export const SECTION = S.obj({ title: S.text(), desc: S.opt(S.text()), values: S.list({ ...REFERENCE, reference: 'entry' }) })

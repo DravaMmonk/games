@@ -1,12 +1,12 @@
 {
   "title": "@level.is-ten.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "after": "@level.is-ten.after",
   "tasks": [
     {
       "id": "is-ten",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

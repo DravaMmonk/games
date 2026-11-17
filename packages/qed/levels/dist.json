@@ -1,10 +1,10 @@
 {
   "title": "@level.dist.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "tasks": [
     {
       "id": "dist",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

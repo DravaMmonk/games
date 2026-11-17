@@ -32,9 +32,9 @@ test('table and state-graph core/view compose with circuit and image', async () 
   const { content } = fixture
   const kernel = await loadPlugins(content, fixture.root, loadModule, true)
   kernel.pair(content.levels.flatMap(level => level.tasks), true)
-  assert.equal(typeof kernel.tables.display.get('table:scene'), 'function')
+  assert.equal(typeof kernel.tables.display.get('table/scene'), 'function')
   const game = await gameOf(content)
-  assert.equal(typeof game.kinds['state-graph:circuit'].Screen, 'function')
+  assert.equal(typeof game.kinds['state-graph/circuit'].Screen, 'function')
   const task = content.levels[0].tasks[0], context = { content, task, kernel }
   const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
   const { renderToString } = require('react-dom/server'), { createElement } = require('react')

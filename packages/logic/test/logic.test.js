@@ -27,7 +27,7 @@ const proofParts = (lemmas) => ({ ...PROOF_BOARD.FIXED_PARTS, ...partsOf(STARTER
 const run = (level, circuit) => runProof({ parts: proofParts(level.lemmas), ...level }, circuit)
 // A machine runs on the starter's machine parts, and a rule part for every rule part type.
 const STARTER_DEFINED = partsOf(STARTER)
-const MACHINE_ONLY = Object.fromEntries(Object.entries(STARTER_DEFINED.PARTS).filter(([type]) => ['logic:family-tactic', 'logic:family-loop'].includes(STARTER_DEFINED.defs[type].family)))
+const MACHINE_ONLY = Object.fromEntries(Object.entries(STARTER_DEFINED.PARTS).filter(([type]) => ['logic/tactic', 'logic/loop'].includes(STARTER_DEFINED.defs[type].family)))
 const RULE_ENGINE = compileParts({ rules: RULE_DEFINITION }, OPS).PARTS.rules
 const machineParts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? MACHINE_ONLY[type] ?? RULE_ENGINE
 const onMachine = (level) => ({ parts: machineParts, ...level })
@@ -225,7 +225,7 @@ test('countermodels: Peirce has none classically, (A → B) → A has one, the q
 
 test('the domain check runs reference and naive proofs', () => {
   const s = proof({ m: ['mp'] }, ['p>m.imp', 'q>m.a', 'm>goal'], { premises: ['p', 'q'] })
-  const level = { id: 'mp', kind: 'logic:proof', title: 'mp', tests: [{ premises: { p: 'A → B', q: 'A' }, goal: 'B' }], solution: s, parts: proofParts() }
+  const level = { id: 'mp', kind: 'logic/proof', title: 'mp', tests: [{ premises: { p: 'A → B', q: 'A' }, goal: 'B' }], solution: s, parts: proofParts() }
   const lines = (naive) => validate({ levels: [{ id: 'mp', tasks: [{ ...level, task: 0, naive }] }], logic: { wrong: [] } })
   assert.deepEqual(lines(proof({}, ['q>goal'], { premises: ['p', 'q'] })).filter((l) => l.fail), [])
   assert.equal(lines(s).filter((l) => l.fail).length, 1)
@@ -247,7 +247,7 @@ test('proof terms: parsed, printed and compared', async () => {
 
 test('formulas built from chips: holes in reading order, parts taken out whole', async () => {
   const { chipsOf, complete, holesOf, kindAt, missingChips, setAt } = await import('../core/formulaTree.js')
-  const level = { kind: 'logic:translate', consts: ['soc'], vocab: { preds: [['Mortal', 1], ['Human', 1]], consts: ['soc'] }, notation: { symbols: ['∀'] } }
+  const level = { kind: 'logic/translate', consts: ['soc'], vocab: { preds: [['Mortal', 1], ['Human', 1]], consts: ['soc'] }, notation: { symbols: ['∀'] } }
   const chips = new Map(chipsOf(level).map((c) => [c.key, c]))
   const put = (tree, key) => setAt(tree, holesOf(tree).find((h) => h.kind === chips.get(key).kind).path, chips.get(key).make())
   let tree = ['∀x', '→', 'P:Human', 'v:x', 'P:Mortal', 'v:x'].reduce(put, null)
@@ -261,7 +261,7 @@ test('formulas built from chips: holes in reading order, parts taken out whole',
 
 test('a connective put after a whole sentence takes it as its first side', async () => {
   const { chipsOf, holesOf, setAt, nodeAt, joinsOnto } = await import('../core/formulaTree.js')
-  const level = { kind: 'logic:translate', consts: [], vocab: { preds: [['Mortal', 1], ['Human', 1]], consts: [] }, notation: { symbols: ['∀'] } }
+  const level = { kind: 'logic/translate', consts: [], vocab: { preds: [['Mortal', 1], ['Human', 1]], consts: [] }, notation: { symbols: ['∀'] } }
   const chips = new Map(chipsOf(level).map((c) => [c.key, c]))
   const fill = (tree, key) => setAt(tree, holesOf(tree).find((h) => h.kind === chips.get(key).kind).path, chips.get(key).make())
   let tree = ['∀x', 'P:Human', 'v:x'].reduce(fill, null)
@@ -279,7 +279,7 @@ test('a connective put after a whole sentence takes it as its first side', async
 
 test('a thing put where a sentence goes waits for a predicate to take it', async () => {
   const { chipsOf, holesOf, setAt, nodeAt, joinsOnto, straysOf } = await import('../core/formulaTree.js')
-  const level = { kind: 'logic:translate', consts: ['ann', 'bo'], vocab: { preds: [['Parent', 2]], consts: ['ann', 'bo'] }, notation: { symbols: [] } }
+  const level = { kind: 'logic/translate', consts: ['ann', 'bo'], vocab: { preds: [['Parent', 2]], consts: ['ann', 'bo'] }, notation: { symbols: [] } }
   const chips = new Map(chipsOf(level).map((c) => [c.key, c]))
   let tree = chips.get('c:ann').make()
   assert.deepEqual(straysOf(tree), [[]])
@@ -416,11 +416,11 @@ test('a search does not follow a step that gives nothing new, so using givens ag
 test('a machine backtracks once its level says so, and a search finds every answer to a question', async () => {
   const script = machine({ a: ['rule', { rule: 'exI' }], b: ['rule', { rule: 'conjI' }], c: ['assumption'], d: ['assumption'] }, ['in>a.in', 'a>b.in', 'b>c.in', 'c>d.in', 'd>out'])
   const test1 = { goal: '∃x. Human(x) ∧ Likes(x, ann)', hyps: ['Human(cy)', 'Human(bo)', 'Likes(bo, ann)'] }
-  const level = { kind: 'logic:machine', want: 'logic:want-proved', tests: [test1] }
+  const level = { kind: 'logic/machine', want: 'logic/proved', tests: [test1] }
   assert.equal(runOutputTests(MACHINE_TESTS, onMachine(level), wireRules(script, level)).pass, false)
   assert.equal(runOutputTests(MACHINE_TESTS, onMachine({ ...level, backtrack: true }), wireRules(script, level)).pass, true)
   const ask = {
-    kind: 'logic:machine', want: 'logic:want-answers', backtrack: true,
+    kind: 'logic/machine', want: 'logic/answers', backtrack: true,
     rules: { grand: { name: { zh: '祖父母', en: 'Grandparent' }, premises: ['Parent(?x, ?y)', 'Parent(?y, ?z)'], conclusion: 'Grand(?x, ?z)' } },
     tests: [{ goal: 'Grand(ann, ?w)', hyps: ['Parent(ann, bo)', 'Parent(bo, cy)', 'Parent(bo, dee)'], answers: ['cy', 'dee'] }],
   }
@@ -434,7 +434,7 @@ test('a machine backtracks once its level says so, and a search finds every answ
 test('a machine uses the same evaluation for its playback and the final board', () => {
   const evaluated = []
   const task = onMachine({
-    kind: 'logic:machine', want: 'logic:want-proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }],
+    kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }],
     parts(type) {
       const part = machineParts(type)
       if (type !== 'assumption') return part
@@ -456,7 +456,7 @@ test('a machine uses the same evaluation for its playback and the final board', 
 })
 
 test('a proof machine must meet its card budget after its cases pass', () => {
-  const task = { kind: 'logic:machine', want: 'logic:want-proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }] }
+  const task = { kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }] }
   const board = machine({ a: ['assumption'] }, ['in>a.in', 'a>out'])
   assert.equal(runMachine(onMachine({ ...task, budget: 1 }), board).pass, true)
   const report = runMachine(onMachine({ ...task, budget: 0 }), board)
@@ -514,7 +514,7 @@ test('a declaration gives its rules, and induction read off a goal proves an equ
   const rules = Object.fromEntries(datatypeRules('nat', 'zero | s(nat)').map((r) => [r.key, ruleText(r)]))
   assert.deepEqual(Object.keys(rules), ['nat.distinct1', 'nat.distinct2', 'nat.exhaust', 'nat.induct'])
   assert.equal(rules['nat.induct'], '⟦?P(zero); (⋀x. ⟦?P(x)⟧ ⟹ ?P(s(x)))⟧ ⟹ ∀x. ?P(x)')
-  const level = { kind: 'logic:machine', want: 'logic:want-proved', datatypes: { nat: 'zero | s(nat)' }, defs: ['plus(zero, y) = y', 'plus(s(x), y) = s(plus(x, y))'], tests: [{ goal: '∀x. plus(x, zero) = x' }] }
+  const level = { kind: 'logic/machine', want: 'logic/proved', datatypes: { nat: 'zero | s(nat)' }, defs: ['plus(zero, y) = y', 'plus(s(x), y) = s(plus(x, y))'], tests: [{ goal: '∀x. plus(x, zero) = x' }] }
   const byInduction = machine({ i: ['rule', { rule: 'nat.induct' }], e: ['each'], p: ['repeat', {}, 'e'], s: ['rw', { rewrite: 'def.0,def.1,hyp' }, 'p'], r: ['rule', { rule: 'refl' }, 'e'] }, ['in>i.in', 'i>e.in', 'e#body>p.in', 'p#body>s.in', 's>p.body', 'p>r.in', 'r>e.body', 'e>out'])
   assert.equal(runOutputTests(MACHINE_TESTS, onMachine(level), wireRules(byInduction, level)).pass, true)
 })
@@ -610,7 +610,7 @@ test('an audit stops at an unfinished case before grading the supplied declarati
   const complete = { given: ['A', 'B'], make: true }
   const unfinished = { given: [], goal: '', make: null }
   const level = {
-    target: 'A ∧ B', sentences: ['A', 'B'], declare: T('并且', 'and'), want: 'logic:want-agree',
+    target: 'A ∧ B', sentences: ['A', 'B'], declare: T('并且', 'and'), want: 'logic/agree',
     solution: declaration(['A', 'B']), boards: [{ rules: declaration() }],
   }
   const words = (text) => T(text, text)
@@ -708,7 +708,7 @@ test('using a declaration: what follows is what every way in gives, a sentence n
 })
 
 test('the elimination rule generator: one case for each way in, its conclusion any ?R; none for ⊥; things taken kept', () => {
-  const level = { kind: 'logic:machine', want: 'logic:want-elim', inputs: [{ name: 'it' }, { name: 'ways' }] }
+  const level = { kind: 'logic/machine', want: 'logic/elim', inputs: [{ name: 'it' }, { name: 'ways' }] }
   const board = machine({ r: ['anyR'], e: ['eachOf'], s: ['swapConcl', {}, 'e'], c: ['consFront'], m: ['mkRule'] }, ['ways>e.in', 'e#body>s.rule', 'r>s.to', 's>e.body', 'it>c.first', 'e>c.rest', 'c>m.premises', 'r>m.conclusion', 'm>out'], { inputs: ['it', 'ways'] })
   const decl = (it, ways, elim) => ({ it, ways, elim })
   const tests = [

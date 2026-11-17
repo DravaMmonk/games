@@ -1,10 +1,10 @@
 {
   "title": "@level.e-one.title",
-  "tray": "gates-formula",
+  "tray": "gates",
   "tasks": [
     {
       "id": "e-one",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "KA ↔ (¬KA ∨ ¬KB)",
       "blind": true,
       "brief": "@level.e-one.tasks.e-one.brief",

@@ -1,5 +1,4 @@
 import { boardShape } from './board-shape.js'
-import { grantIndex } from "./grants.js"
 // A circuit game's course read from its content (games/DESIGN.md 6.3): its tasks with their tests and boards, the play
 // order and level tree from its eras, and its built parts (parts.json, ./parts.js builtParts), each running inside
 // their package reference board or the passed work supplied by a publishing task, and
@@ -38,7 +37,7 @@ import { taskLevels } from 'kernel'
 
 import { fitsCircuit, previousCircuitTask } from "./board-view.js"
 import { keptBoards } from "./kept-boards.js"
-import { workView } from "./board/workshop-view.js"
+import { workView } from "./board/work-extension.js"
 import { readWorks, publicationEvents } from "./course-model.js"
 import { eraLevels } from 'kernel'
 
@@ -128,16 +127,7 @@ export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (t
     out.solution = boardOf(task.solution, 'the answer')
     if (task.starter) out.starter = boardOf(task.starter, 'the starter')
     if (task.naive) out.naive = boardOf(task.naive, 'the naive answer', true)
-    for (const field of ['withholds', 'gives', 'opens']) for (const item of task[field] ?? []) {
-      const problem = itemProblem(item)
-      if (problem) say(where, `${field} names ${item}: ${problem}`)
-    }
-    for (const item of task.withholds ?? []) if (out.solution.nodes.some((n) => n.type === item)) say(where, `its answer uses ${item}, which it withholds`)
     return out
-  }
-  // Why an item (../course.js: a part, one of its settings, one value of a setting) is none of this game's, or ''.
-  const itemProblem = (item) => {
-    return grantIndex({ ...content.registries, 'circuit/part': { ...parts, ...builtDefinitions, ...content.partDefs?.parts } }).has(item) ? '' : `${item} is no grantable object or stage`
   }
   const isBoard = (task) => !kinds[task.kind]
 

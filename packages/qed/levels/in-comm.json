@@ -1,11 +1,11 @@
 {
   "title": "@level.in-comm.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "tasks": [
     {
       "id": "in-comm",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -41,7 +41,7 @@
         "    c2r0 = allI()",
         "    c3r0 = math[use=[\"def.0\", \"def.1\", addZero, addSucc]]()",
         "    c4r0 = refl()",
-        "    c3r4 = logic:hyp(c3r0)",
+        "    c3r4 = logic/hyp(c3r0)",
         "    c2 = rule(c1.body, c2r0)",
         "    c3 = simp(c2, c3r4)",
         "    c4 = rule(c3, c4r0)",
@@ -57,7 +57,7 @@
         "    c2r0 = allI()",
         "    c3r0 = math[use=[\"def.0\", \"def.1\"]]()",
         "    c4r0 = refl()",
-        "    c3r2 = logic:hyp(c3r0)",
+        "    c3r2 = logic/hyp(c3r0)",
         "    c2 = rule(c1.body, c2r0)",
         "    c3 = simp(c2, c3r2)",
         "    c4 = rule(c3, c4r0)",

@@ -2,6 +2,6 @@
   "name": "@part.oracle.name",
   "desc": "@part.oracle.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:oracle"
+  "family": "logic/tactic",
+  "op": "logic/oracle"
 }

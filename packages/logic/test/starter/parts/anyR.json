@@ -2,6 +2,6 @@
   "name": "@part.anyR.name",
   "desc": "@part.anyR.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:anyR"
+  "family": "logic/tactic",
+  "op": "logic/anyR"
 }

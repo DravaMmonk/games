@@ -1,12 +1,12 @@
 {
   "name": "@part.appNil.name",
   "desc": "@part.appNil.desc",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0r0 = math[use=[\"list.induct\"]]()",
           "c0 = rule(in, c0r0)",
@@ -14,14 +14,14 @@
           "  body {",
           "    c2r0 = math[use=[\"def.0\", \"def.1\"]]()",
           "    c3r0 = refl()",
-          "    c2r2 = logic:hyp(c2r0)",
+          "    c2r2 = logic/hyp(c2r0)",
           "    c2 = simp(c1.body, c2r2)",
           "    c3 = rule(c2, c3r0)",
           "  }",
           "}",
           "out <- c1"
         ],
-        "want": "logic:want-proved",
+        "want": "logic/proved",
         "defs": ["app", "len"],
         "types": ["list"],
         "inputs": [{ "name": "in", "label": "in" }],
@@ -29,6 +29,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "before", "type": "logic:machine-value", "optional": true }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
 }

@@ -1,12 +1,12 @@
 {
   "name": "@part.chain.name",
   "desc": "@part.chain.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "f = impI[A=A](body: m2) {",
           "  body {",
@@ -20,6 +20,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "p0", "type": "logic:judgment" }, { "name": "p1", "type": "logic:judgment" }],
-  "outputType": "logic:judgment"
+  "inputs": [{ "name": "p0", "type": "logic/judgment" }, { "name": "p1", "type": "logic/judgment" }],
+  "outputType": "logic/judgment"
 }

@@ -1,6 +1,6 @@
 {
   "title": "@level.chain.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.chain.intro.0.t"
@@ -13,7 +13,7 @@
   "tasks": [
     {
       "id": "chain",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

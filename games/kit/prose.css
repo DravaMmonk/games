@@ -29,7 +29,7 @@
 :is(.kit-prose, .md-typeset) :not(pre) > code { padding: .15em .34em; border-radius: var(--r-xs); color: var(--code-ink); background: var(--code-bg); font-family: var(--mono); font-size: .79em; word-break: break-word; }
 :is(.kit-prose, .md-typeset) pre { margin: var(--sp-7) 0; padding: var(--sp-6) var(--sp-7); overflow-x: auto; border-radius: var(--r-xs); color: var(--pre-ink); background: var(--pre-bg); box-shadow: 0 0 0 1px var(--pre-line); }
 :is(.kit-prose, .md-typeset) pre code { padding: 0; color: inherit; background: transparent; font-family: var(--mono); font-size: 13px; line-height: 1.7; }
-:is(.kit-prose, .md-typeset) table:not([class]) { width: 100%; margin: var(--sp-7) 0; border-collapse: collapse; font-family: var(--sans); font-size: var(--fs-ui); }
+:is(.kit-prose, .md-typeset) table/not([class]) { width: 100%; margin: var(--sp-7) 0; border-collapse: collapse; font-family: var(--sans); font-size: var(--fs-ui); }
 :is(.kit-prose, .md-typeset) :is(th, td) { padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 :is(.kit-prose, .md-typeset) th { color: var(--muted); border-bottom-color: var(--rule); font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
 :is(.kit-prose, .md-typeset) details { margin: var(--sp-7) 0; padding: var(--sp-5) var(--sp-6); border-radius: var(--r-xs); box-shadow: inset 0 0 0 1px var(--line); }

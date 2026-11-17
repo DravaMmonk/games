@@ -5,7 +5,7 @@
     {
       "t": "@level.seam.intro.0.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "0,0",
@@ -1998,7 +1998,7 @@
     {
       "t": "@level.seam.intro.2.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "0,0",
@@ -3993,7 +3993,7 @@
     "goal": "@level.seam.mission.goal",
     "how": "@level.seam.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.seam.debrief.title",
     "body": [
@@ -4005,22 +4005,22 @@
   "tasks": [
     {
       "id": "seam",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-all": [
+            "state-graph/all": [
               {
-                "state-graph:condition-uses": "up"
+                "state-graph/uses": "up"
               },
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-uses": "ul"
+                "state-graph/not": {
+                  "state-graph/uses": "ul"
                 }
               },
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-uses": "ur"
+                "state-graph/not": {
+                  "state-graph/uses": "ur"
                 }
               }
             ]
@@ -4028,7 +4028,7 @@
           "say": "@level.seam.tasks.seam.diagnose.0.say"
         }
       ],
-      "trace": "state-graph:trace-seam",
+      "trace": "state-graph/seam",
       "boardOpt": {
         "minScale": 0.5,
         "maxScale": 1.05
@@ -4038,7 +4038,7 @@
         "@level.seam.tasks.seam.hints.0",
         "@level.seam.tasks.seam.hints.1"
       ],
-      "world": "state-graph:world-pic",
+      "world": "state-graph/pic",
       "facts": [
         "energy",
         "top"

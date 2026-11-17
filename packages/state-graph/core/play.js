@@ -35,7 +35,7 @@ const circuit = circuitPlay({
   },
   part: (ctx, type) => {
     const d = ctx.game.table.model.def(type)
-    return { name: d.tag && type !== 'table:const' && !d.built ? `${str(d.name)} · ${str(d.tag)}` : str(d.name), desc: str(d.desc) }
+    return { name: d.tag && type !== 'table/const' && !d.built ? `${str(d.name)} · ${str(d.tag)}` : str(d.name), desc: str(d.desc) }
   },
   portLabel: (ctx, type, port) => str(ctx.game.table.model.def(type).labels?.[+port]) || null,
   settings: ({ game, level }, type) => {

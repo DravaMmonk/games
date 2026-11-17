@@ -1,6 +1,6 @@
 {
   "title": "@level.drinker.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.drinker.intro.0.t"
@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "drinker",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "∃x. D(x) → ∀y. D(y)"

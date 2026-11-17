@@ -1,6 +1,6 @@
 {
   "title": "@level.c-either.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.c-either.intro.0.t"
@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "c-either",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

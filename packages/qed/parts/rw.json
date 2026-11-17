@@ -2,7 +2,7 @@
   "name": "@part.rw.name",
   "desc": "@part.rw.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
+  "family": "logic/tactic",
   "inputs": [
     {
       "name": "rules",
@@ -24,7 +24,7 @@
       ]
     }
   },
-  "op": "logic:rw",
+  "op": "logic/rw",
   "stages": [
     {
       "id": "rw-au-hyps-desc",

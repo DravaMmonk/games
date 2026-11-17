@@ -1,6 +1,6 @@
 {
   "title": "@level.r-lemma.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-lemma.intro.0.t"
@@ -8,16 +8,16 @@
   ],
   "tasks": [
     {
-      "id": "r-lemma_1",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "r-lemma-1",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.r-lemma.tasks.r-lemma_1.inputs.0.label"
+          "label": "@level.r-lemma.tasks.r-lemma-1.inputs.0.label"
         }
       ],
-      "step": "@level.r-lemma.tasks.r-lemma_1.step",
+      "step": "@level.r-lemma.tasks.r-lemma-1.step",
       "tests": [
         {
           "goal": "Rain → Slip",
@@ -34,9 +34,9 @@
           ]
         }
       ],
-      "brief": "@level.r-lemma.tasks.r-lemma_1.brief",
+      "brief": "@level.r-lemma.tasks.r-lemma-1.brief",
       "hint": [
-        "@level.r-lemma.tasks.r-lemma_1.hint.0"
+        "@level.r-lemma.tasks.r-lemma-1.hint.0"
       ],
       "solution": [
         "c0r0 = chain()",
@@ -47,16 +47,16 @@
       ]
     },
     {
-      "id": "r-lemma_2",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "r-lemma-2",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.r-lemma.tasks.r-lemma_2.inputs.0.label"
+          "label": "@level.r-lemma.tasks.r-lemma-2.inputs.0.label"
         }
       ],
-      "step": "@level.r-lemma.tasks.r-lemma_2.step",
+      "step": "@level.r-lemma.tasks.r-lemma-2.step",
       "tests": [
         {
           "goal": "Wind → (Rain → Wet)",
@@ -71,9 +71,9 @@
           ]
         }
       ],
-      "brief": "@level.r-lemma.tasks.r-lemma_2.brief",
+      "brief": "@level.r-lemma.tasks.r-lemma-2.brief",
       "hint": [
-        "@level.r-lemma.tasks.r-lemma_2.hint.0"
+        "@level.r-lemma.tasks.r-lemma-2.hint.0"
       ],
       "solution": [
         "c0r0 = swap()",
@@ -83,16 +83,16 @@
       ]
     },
     {
-      "id": "r-lemma_3",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "r-lemma-3",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.r-lemma.tasks.r-lemma_3.inputs.0.label"
+          "label": "@level.r-lemma.tasks.r-lemma-3.inputs.0.label"
         }
       ],
-      "step": "@level.r-lemma.tasks.r-lemma_3.step",
+      "step": "@level.r-lemma.tasks.r-lemma-3.step",
       "tests": [
         {
           "goal": "Rain → Wet",
@@ -107,9 +107,9 @@
           ]
         }
       ],
-      "brief": "@level.r-lemma.tasks.r-lemma_3.brief",
+      "brief": "@level.r-lemma.tasks.r-lemma-3.brief",
       "hint": [
-        "@level.r-lemma.tasks.r-lemma_3.hint.0"
+        "@level.r-lemma.tasks.r-lemma-3.hint.0"
       ],
       "solution": [
         "c0r0 = merge()",

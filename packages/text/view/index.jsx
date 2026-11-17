@@ -19,5 +19,5 @@ export function Answer({ task, work, onChange, onSubmit }) {
 }
 
 export function register(kernel) {
-  kernel.play('text:answer', { component: Answer, preview: Answer, modes: ['preview', 'edit'] })
+  kernel.play('text/answer', { component: Answer, preview: Answer, modes: ['preview', 'edit'] })
 }

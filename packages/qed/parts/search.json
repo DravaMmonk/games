@@ -2,7 +2,7 @@
   "name": "@part.search.name",
   "desc": "@part.search.desc",
   "icon": "Search",
-  "family": "logic:family-loop",
+  "family": "logic/loop",
   "settings": {
     "depth": {
       "label": "@part.search.settings.depth.label",
@@ -53,5 +53,5 @@
       "opens": true
     }
   ],
-  "op": "logic:search"
+  "op": "logic/search"
 }

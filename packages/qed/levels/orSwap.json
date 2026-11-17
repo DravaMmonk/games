@@ -1,10 +1,10 @@
 {
   "title": "@level.orSwap.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "tasks": [
     {
       "id": "orSwap",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

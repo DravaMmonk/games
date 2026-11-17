@@ -11,7 +11,7 @@
       "fig": {
         "part": "vision-complete/diffx",
         "caption": "@level.4-7.intro.1.fig.caption",
-        "input": "image:picture-square"
+        "input": "image/square"
       }
     },
     {
@@ -22,36 +22,36 @@
       }
     }
   ],
-  "unlocks": ["image:unlock-relu"],
+  "unlocks": ["image/relu"],
   "tasks": [
     {
       "id": "4-7",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.4-7.tasks.4-7.brief",
       "hint": "@level.4-7.tasks.4-7.hint",
-      "scene": "image:scene-filter",
-      "setup": { "target": "image:target-absdiff" },
+      "scene": "image/filter",
+      "setup": { "target": "image/absdiff" },
       "tests": [
-        { "label": "@level.4-7.tasks.4-7.tests.0.label", "in": "image:picture-square" },
+        { "label": "@level.4-7.tasks.4-7.tests.0.label", "in": "image/square" },
         {
           "label": "@level.4-7.tasks.4-7.tests.1.label",
-          "in": { "image:picture-square": { "x0": 4, "y0": 4, "s": 8, "lo": 0.9, "hi": 0.1 } }
+          "in": { "image/square": { "x0": 4, "y0": 4, "s": 8, "lo": 0.9, "hi": 0.1 } }
         },
-        { "label": "@level.4-7.tasks.4-7.tests.2.label", "in": { "image:picture-glyph": { "letter": "O" } } },
-        { "label": "@level.4-7.tasks.4-7.tests.3.label", "in": "image:picture-checker" }
+        { "label": "@level.4-7.tasks.4-7.tests.2.label", "in": { "image/glyph": { "letter": "O" } } },
+        { "label": "@level.4-7.tasks.4-7.tests.3.label", "in": "image/checker" }
       ],
       "hidden": [
         {
           "label": "@level.4-7.tasks.4-7.hidden.0.label",
-          "in": { "image:picture-ramp": { "c": 0.85, "dx": -0.04 } }
+          "in": { "image/ramp": { "c": 0.85, "dx": -0.04 } }
         },
         {
           "label": "@level.4-7.tasks.4-7.hidden.1.label",
-          "in": { "image:picture-disk": { "cx": 10, "cy": 6, "r": 3.5, "lo": 0.35, "hi": 0.6 } }
+          "in": { "image/disk": { "cx": 10, "cy": 6, "r": 3.5, "lo": 0.35, "hi": 0.6 } }
         },
         {
           "label": "@level.4-7.tasks.4-7.hidden.2.label",
-          "in": { "image:picture-glyph": { "letter": "X", "lo": 0.8, "hi": 0.2, "ox": 4, "oy": 4 } }
+          "in": { "image/glyph": { "letter": "X", "lo": 0.8, "hi": 0.2, "ox": 4, "oy": 4 } }
         }
       ],
       "solution": [

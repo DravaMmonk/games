@@ -16,10 +16,10 @@ import { ROBOTS } from '../core/model/robots.js'
 import { T } from 'table'
 import { tableWorks } from '../core/work.js'
 
-const { partDemo, lookIcon } = ui['state-graph:catalog']
+const { partDemo, lookIcon } = ui['state-graph/catalog']
 
 const briefOf = ({ mission, hints }) => ({ text: [mission.goal, mission.how], hint: hints })
-const hand = Object.fromEntries(Object.entries(ui['state-graph:manual']).map(([name, useBoard]) => [name, { useBoard, briefOf }]))
+const hand = Object.fromEntries(Object.entries(ui['state-graph/manual']).map(([name, useBoard]) => [name, { useBoard, briefOf }]))
 const icons = Object.fromEntries(Object.entries(plays).map(([name, play]) => [name, { icon: play.editor === 'circuit' ? Cable : Grid3x3 }]))
 
 /** A task's `done` as the shell's pass text of a task: its head in bold, then its paragraphs. */
@@ -84,14 +84,14 @@ export default function tableGame(content, table = tableWorks(content)) {
     title: content.title,
     kicker: content.kicker,
     lede: content.lede,
-    Hero: ui['state-graph:hero'],
+    Hero: ui['state-graph/hero'],
     chapters: CHAPTERS.map((chapter, id) => ({ id, kicker: chapter.kicker, title: chapter.name, question: chapter.desc, track: TRACKS.get(chapter.era), rows: ROWS.get(chapter.era) })),
     levels,
     // Numbered as in CURRICULUM.md: 1-4 on an era's main path, S2 in a topic, C1 for a challenge.
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),
     intro: (level) => level.intro,
-    IntroFigure: ui['state-graph:introduction'],
-    kinds: playKinds(plays, { ...hand, robot: ui['state-graph:circuit'](table) }, icons, { circuit: circuitScreen }),
+    IntroFigure: ui['state-graph/introduction'],
+    kinds: playKinds(plays, { ...hand, robot: ui['state-graph/circuit'](table) }, icons, { circuit: circuitScreen }),
     unlocked: (level) => level.unlocks.map((k) => ({ part: k, label: PARTS[k].name })),
     core: (level) => isCore(course, level),
     parts: {

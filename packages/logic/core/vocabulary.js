@@ -42,7 +42,7 @@ const WORDS = S.list(S.either(S.str(), S.map(S.text())), { about: t('用哪几�
 /* ---------- the parts ---------- */
 
 const PART_ITEMS = {
-  hyp: { ...item(t('已知里的等式')), inputs: [{ name: 'before', type: 'logic:machine-value' }], outputType: 'logic:machine-value', params: S.obj({ use: S.opt(S.list(S.str(), { default: [] })) }) },
+  hyp: { ...item(t('已知里的等式')), inputs: [{ name: 'before', type: 'logic/machine-value' }], outputType: 'logic/machine-value', params: S.obj({ use: S.opt(S.list(S.str(), { default: [] })) }) },
 }
 
 // How a game's parts.json colours its parts.
@@ -130,7 +130,7 @@ const WORLD = S.obj({ size: S.int({ min: 1 }), preds: S.map(ids), consts: S.opt(
 const ISO = {
   declare: S.opt(S.text({ about: t('声明的是什么词') })), target: S.opt(SENTENCE), sentences: S.opt(SENTENCES), tests: S.opt(S.list(CASE)),
   solution: S.opt(RULE_ROWS), naive: S.opt(S.either(RULE_ROWS, S.list(CASE))), things: S.opt(ids), thing: S.opt(S.bool()),
-  play: S.opt(S.oneOf(['logic:audit'], { about: t('用条例检验别人的声明') })), want: S.opt(S.oneOf(['agree', 'expose'])),
+  play: S.opt(S.oneOf(['logic/audit'], { about: t('用条例检验别人的声明') })), want: S.opt(S.oneOf(['agree', 'expose'])),
   boards: S.opt(S.list(S.obj({ label: S.opt(S.text()), rules: RULE_ROWS }))), answer: S.opt(S.list(CASE)), slots: S.opt(S.either(S.int({ min: 1 }), S.list(SLOT))),
   caseGoal: S.opt(SENTENCE), binder: S.opt(S.str()), take: S.opt(S.obj({ premises: S.list(S.str()), conclusion: S.str() })),
   datatype: S.opt(S.obj({ type: S.str(), ctors: ids, args: S.map(S.str()) })), ways: S.opt(S.list(S.list(S.str()))), carry: S.opt(S.level()),
@@ -201,4 +201,4 @@ export const vocabulary = qualifyVocabulary('logic', defineVocabulary({
   game: GAME,
   level: LEVEL,
   languages: LANGUAGES,
-}), { bareKinds: ['part'], categories: { part: 'primitive' } })
+}))

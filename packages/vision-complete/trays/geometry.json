@@ -1,6 +1,7 @@
 {
   "title": "@tray.geometry.title",
   "desc": "@tray.geometry.desc",
+  "includeUnlisted": true,
   "values": [
     "shift-n",
     "const",

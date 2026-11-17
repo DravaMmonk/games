@@ -28,3 +28,5 @@ export { textWith } from './tag-edit.js'
 export { gatherWriter, withoutId, Members, GatherHead } from './GatherEditor.jsx'
 export { getAt, showPath } from '../engine/ops/edit.js'
 export { shapeAt } from '../engine/schema.js'
+
+export { editorSlot } from './editors.js'

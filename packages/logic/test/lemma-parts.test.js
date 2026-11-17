@@ -4,10 +4,10 @@ import assert from 'node:assert/strict'
 import { lemmaPortProblems } from '../core/validate.js'
 import { lemmaLetters } from '../core/work.js'
 
-const proof = (premises, goal) => [{ id: 'base', reference: { kind: 'logic:proof', tests: [{ premises, goal }] } }]
+const proof = (premises, goal) => [{ id: 'base', reference: { kind: 'logic/proof', tests: [{ premises, goal }] } }]
 const chain = (extra = {}) => ({
-  family: 'logic:family-lemma',
-  inputs: [{ name: 'p0', type: 'logic:judgment' }, { name: 'p1', type: 'logic:judgment' }],
+  family: 'logic/lemma',
+  inputs: [{ name: 'p0', type: 'logic/judgment' }, { name: 'p1', type: 'logic/judgment' }],
   inside: proof({ p: 'A → B', q: 'B → C' }, 'A → C'),
   ...extra,
 })
@@ -27,7 +27,7 @@ test('a lemma asking for a letter its premises fix is reported, shape by shape',
   const [problem] = lemmaPortProblems({ chain: chain({ settings: { A: { control: 'tree' }, C: { control: 'tree' } } }) })
   assert.match(problem.text, /chain: its premises fix A, C/)
   // A letter some shape leaves open may be asked for; `form` is not a letter.
-  const shapes = [...proof({ p: 'A' }, 'A ∨ B'), { id: 'other', reference: { kind: 'logic:proof', tests: [{ premises: { p: 'A ∧ B' }, goal: 'A' }] } }]
+  const shapes = [...proof({ p: 'A' }, 'A ∨ B'), { id: 'other', reference: { kind: 'logic/proof', tests: [{ premises: { p: 'A ∧ B' }, goal: 'A' }] } }]
   assert.deepEqual(lemmaPortProblems({ orI: { inputs: [{ name: 'p0' }], settings: { B: {}, form: {} }, inside: shapes } }), [])
 })
 

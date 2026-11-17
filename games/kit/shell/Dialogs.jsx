@@ -60,7 +60,7 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
   // encyclopedia's entries.
   const opened = [
     ...unlocked.levels.map((next) => ({ key: `level:${next.id}`, kind: 'level', chip: game.levelLabel(next), label: next.title })),
-    ...(unlocked.rewards ?? []).flatMap((group) => group.items.map((item) => ({ ...item, key: `reward:${item.key}`, kind: 'reward' }))),
+    ...unlocked.rewards.map(item => ({ ...item, key: `${item.kind}:${item.key}` })),
     ...(unlocked.entries ?? []).map((entry) => ({ key: `entry:${entry.id}`, kind: 'entry', icon: BookMarked, label: entry.title })),
   ]
   return (
@@ -82,11 +82,11 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
           <div className="unlocked">
             <span className="panel-label">{tr('解锁', 'Unlocked')}</span>
             <ul className="unlocked-list">
-              {opened.map(({ key, kind, label, chip, family, icon }) => (
+              {opened.map(({ key, kind, label, chip, family, icon, caption }) => (
                 <li key={key} className="unlocked-item" data-kind={kind} data-family={family}>
                   {chip && <span className="map-node-id">{chip}</span>}
                   {icon && <i className="family-chip">{createElement(icon, { size: 14, strokeWidth: 1.7 })}</i>}
-                  {L(label)}
+                  {L(label)}{caption && <small className="unlocked-caption">{L(caption)}</small>}
                 </li>
               ))}
             </ul>

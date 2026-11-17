@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "image:graph",
+  "play": "image/graph",
   "fields": {
     "optional": {
       "type": "bool",
@@ -97,9 +97,9 @@
   "schema": {
     "type": "by",
     "field": "scene",
-    "cases": { "image:scene-filter": { "type": "obj", "fields": {} } },
+    "cases": { "image/filter": { "type": "obj", "fields": {} } },
     "fields": {
-      "scene": { "type": "oneOf", "values": ["image:scene-filter"] },
+      "scene": { "type": "oneOf", "values": ["image/filter"] },
       "setup": {
         "type": "obj",
         "fields": {

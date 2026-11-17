@@ -1,8 +1,7 @@
 {
   "title": "@level.decl-bot.title",
   "adds": [
-    "botE",
-    "formulaFalse"
+    "botE"
   ],
   "intro": [
     {
@@ -13,11 +12,10 @@
     }
   ],
   "after": "@level.decl-bot.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-bot",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "declare": "@level.decl-bot.tasks.decl-bot.declare",
       "target": "⊥",
       "sentences": [
@@ -87,8 +85,8 @@
         }
       ],
       "solution": [],
-      "play": "logic:audit",
-      "want": "logic:want-agree",
+      "play": "logic/audit",
+      "want": "logic/agree",
       "boards": [
         {
           "rules": []

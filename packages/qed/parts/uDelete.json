@@ -2,6 +2,6 @@
   "name": "@part.uDelete.name",
   "desc": "@part.uDelete.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uDelete"
+  "family": "logic/tactic",
+  "op": "logic/uDelete"
 }

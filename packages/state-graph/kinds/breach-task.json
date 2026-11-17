@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "state-graph:breach",
+  "play": "state-graph/breach",
   "fields": {},
   "schema": {
     "type": "obj",

@@ -1,6 +1,7 @@
 {
   "title": "@tray.proof.title",
   "desc": "@tray.proof.desc",
+  "includeUnlisted": true,
   "values": [
     "natInd"
   ],

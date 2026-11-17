@@ -1,6 +1,6 @@
 {
   "title": "@level.gen-nat.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.gen-nat.intro.0.t"
@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "gen-nat",
-      "kind": "logic:machine",
-      "want": "logic:want-elim",
+      "kind": "logic/machine",
+      "want": "logic/elim",
       "inputs": [
         {
           "name": "it",

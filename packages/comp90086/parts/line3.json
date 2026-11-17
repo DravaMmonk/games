@@ -2,7 +2,7 @@
   "name": "@part.line3.name",
   "desc": "@part.line3.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -46,5 +46,5 @@
       ]
     }
   },
-  "op": "image:line3"
+  "op": "image/line3"
 }

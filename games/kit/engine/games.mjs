@@ -41,10 +41,9 @@ export async function gameOf(content, { view = false } = {}) {
   const { pluginGame } = await server.ssrLoadModule(resolve(KIT_DIR, 'app/plugin-game.jsx'))
   const vocabulary = contentSchemas.get(content)
   const modules = runtimeIds(content).map(id => pluginGame(id, kernel, vocabulary, { view }))
-  const { composeGame } = await server.ssrLoadModule(resolve(KIT_DIR, 'app/compose-game.js'))
+  const { composeGame, configureGame } = await server.ssrLoadModule(resolve(KIT_DIR, 'app/compose-game.js'))
   const game = composeGame(content, modules)
-  game.pluginKernel = kernel
-  return game
+  return configureGame(game, content, kernel)
 }
 
 async function serve() {

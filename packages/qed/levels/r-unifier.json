@@ -7,7 +7,7 @@
     "uSwap",
     "uCheck"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "title": "@level.r-unifier.title",
   "intro": [
     {
@@ -18,8 +18,8 @@
   "tasks": [
     {
       "id": "r-unifier",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

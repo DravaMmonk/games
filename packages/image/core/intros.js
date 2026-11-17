@@ -37,7 +37,7 @@ export function partFigure(fig, level, types = NODE_TYPES) {
   const spec = types[fig.part]
   if (!spec || spec.fixed) throw new Error(`没有元件 ${fig.part}`)
   const ports = inputsOf(fig.part)
-  const specs = fig.inputs ?? [fig.input ?? 'image:picture-square']
+  const specs = fig.inputs ?? [fig.input ?? 'image/square']
   if (specs.length !== ports.length) throw new Error(`${fig.part} 要 ${ports.length} 个输入，给了 ${specs.length} 个`)
   const ins = Object.fromEntries(ports.map((port, i) => {
     const img = source(specs[i], figureTask(fig, level))

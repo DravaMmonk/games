@@ -6,7 +6,7 @@
     "uConflict",
     "uEliminate"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-both.intro.0.t"
@@ -15,8 +15,8 @@
   "tasks": [
     {
       "id": "r-both",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

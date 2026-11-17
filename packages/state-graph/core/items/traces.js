@@ -7,7 +7,7 @@ import { editTable, editTrace, knapTrace, lcsTable, lcsTrace, localTrace } from 
 import { seamPath } from '../model/worlds/picture.js';
 import { TAGS, bestTags } from '../model/worlds/tags.js';
 
-const TRACES = qualifyItems('state-graph', 'trace', {
+const TRACES = qualifyItems('state-graph', {
   lcs(t) {
     const back = lcsTrace(t.top, t.left, lcsTable(t.top, t.left));
     return { path: back.cells.map(p => p.join(',')), okTop: new Set(back.pairs.map(p => p[0])), okLeft: new Set(back.pairs.map(p => p[1])) };

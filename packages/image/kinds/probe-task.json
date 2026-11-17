@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "image:probe",
+  "play": "image/probe",
   "fields": {
     "optional": {
       "type": "bool",

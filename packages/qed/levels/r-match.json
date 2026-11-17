@@ -3,7 +3,7 @@
   "adds": [
     "uDecompose"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-match.intro.0.t"
@@ -18,8 +18,8 @@
   "tasks": [
     {
       "id": "r-match",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

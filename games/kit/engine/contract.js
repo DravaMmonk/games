@@ -144,7 +144,7 @@ export function gameProblems(content, spec, game) {
 /** A module's registered capabilities are qualified, printable and type-complete. */
 export function moduleProblems(module, registry, runtime = null) {
   const out = []
-  const prefix = `${module.id}:`
+  const prefix = `${module.id}/`
   if (typeof module.register !== 'function') return [`${module.id}: no register function`]
   let count = 0
   const types = registry.tables.valueType

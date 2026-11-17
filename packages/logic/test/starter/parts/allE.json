@@ -2,7 +2,7 @@
   "name": "@part.allE.name",
   "desc": "@part.allE.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "all",
@@ -13,8 +13,8 @@
     "t": {
       "control": "select",
       "label": "@part.allE.settings.t.label",
-      "from": "logic:instances()"
+      "from": "logic/instances()"
     }
   },
-  "op": "logic:allE"
+  "op": "logic/allE"
 }

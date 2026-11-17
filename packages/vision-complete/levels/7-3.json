@@ -11,19 +11,19 @@
     },
     {
       "t": "@level.7-3.intro.2.t",
-      "fig": { "test": 0, "view": "image:view-terrain", "caption": "@level.7-3.intro.2.fig.caption" }
+      "fig": { "test": 0, "view": "image/terrain", "caption": "@level.7-3.intro.2.fig.caption" }
     }
   ],
   "tasks": [
     {
       "id": "7-3",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.7-3.tasks.7-3.brief",
       "hint": "@level.7-3.tasks.7-3.hint",
       "inputs": ["d"],
       "inputLabels": { "d": "@level.7-3.tasks.7-3.inputLabels.d" },
-      "views": { "in": "image:view-terrain", "out": "image:view-terrain" },
-      "scene": "vision-complete:scene-depth",
+      "views": { "in": "image/terrain", "out": "image/terrain" },
+      "scene": "vision-complete/depth",
       "tests": [
         {
           "label": "@level.7-3.tasks.7-3.tests.0.label",

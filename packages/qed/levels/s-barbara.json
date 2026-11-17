@@ -1,6 +1,6 @@
 {
   "title": "@level.s-barbara.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.s-barbara.intro.0.t"
@@ -13,7 +13,7 @@
   "tasks": [
     {
       "id": "s-barbara",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

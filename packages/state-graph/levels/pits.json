@@ -10,7 +10,7 @@
     "goal": "@level.pits.mission.goal",
     "how": "@level.pits.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.pits.debrief.title",
     "body": [
@@ -21,12 +21,12 @@
   "tasks": [
     {
       "id": "pits",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-uses": "rock"
+            "state-graph/not": {
+              "state-graph/uses": "rock"
             }
           },
           "say": "@level.pits.tasks.pits.diagnose.0.say"
@@ -36,7 +36,7 @@
         "@level.pits.tasks.pits.hints.0",
         "@level.pits.tasks.pits.hints.1"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start",
         "cost",
@@ -152,7 +152,7 @@
       ],
       "solution": [
         "c = min(view.up, view.left, facts.start, facts.cost)",
-        "b = table:block(facts.rock, c)",
+        "b = table/block(facts.rock, c)",
         "cell <- b"
       ]
     }

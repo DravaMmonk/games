@@ -2,8 +2,8 @@
   "name": "@part.assumption.name",
   "desc": "@part.assumption.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:assumption",
+  "family": "logic/tactic",
+  "op": "logic/assumption",
   "stages": [
     {
       "id": "assumption-s-results-desc",

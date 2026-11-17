@@ -12,11 +12,10 @@
     }
   ],
   "after": "@level.table.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "table",
-      "kind": "logic:truth",
+      "kind": "logic/truth",
       "ask": "fill",
       "formulas": [
         "Rain → Wet"

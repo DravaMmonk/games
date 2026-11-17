@@ -4,7 +4,6 @@
     "orE"
   ],
   "title": "@level.decl-or.title",
-  "tray": "formula",
   "declare": "@level.decl-or.declare",
   "target": "A ∨ B",
   "sentences": [
@@ -90,10 +89,10 @@
   "after": "@level.decl-or.after",
   "tasks": [
     {
-      "id": "decl-or_1",
-      "kind": "logic:iso",
-      "step": "@level.decl-or.tasks.decl-or_1.step",
-      "play": "logic:audit",
+      "id": "decl-or-1",
+      "kind": "logic/iso",
+      "step": "@level.decl-or.tasks.decl-or-1.step",
+      "play": "logic/audit",
       "boards": [
         {
           "rules": [
@@ -126,16 +125,16 @@
           "make": true
         }
       ],
-      "brief": "@level.decl-or.tasks.decl-or_1.brief",
+      "brief": "@level.decl-or.tasks.decl-or-1.brief",
       "hint": [
-        "@level.decl-or.tasks.decl-or_1.hint.0"
+        "@level.decl-or.tasks.decl-or-1.hint.0"
       ]
     },
     {
-      "id": "decl-or_2",
-      "kind": "logic:iso",
-      "step": "@level.decl-or.tasks.decl-or_2.step",
-      "play": "logic:audit",
+      "id": "decl-or-2",
+      "kind": "logic/iso",
+      "step": "@level.decl-or.tasks.decl-or-2.step",
+      "play": "logic/audit",
       "boards": [
         {
           "rules": [
@@ -171,19 +170,19 @@
           "make": true
         }
       ],
-      "brief": "@level.decl-or.tasks.decl-or_2.brief",
+      "brief": "@level.decl-or.tasks.decl-or-2.brief",
       "hint": [
-        "@level.decl-or.tasks.decl-or_2.hint.0"
+        "@level.decl-or.tasks.decl-or-2.hint.0"
       ],
-      "after": "@level.decl-or.tasks.decl-or_2.after"
+      "after": "@level.decl-or.tasks.decl-or-2.after"
     },
     {
-      "id": "decl-or_3",
-      "kind": "logic:iso",
-      "step": "@level.decl-or.tasks.decl-or_3.step",
-      "brief": "@level.decl-or.tasks.decl-or_3.brief",
+      "id": "decl-or-3",
+      "kind": "logic/iso",
+      "step": "@level.decl-or.tasks.decl-or-3.step",
+      "brief": "@level.decl-or.tasks.decl-or-3.brief",
       "hint": [
-        "@level.decl-or.tasks.decl-or_3.hint.0"
+        "@level.decl-or.tasks.decl-or-3.hint.0"
       ]
     }
   ],

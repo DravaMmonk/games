@@ -2,7 +2,7 @@
   "name": "@part.mp.name",
   "desc": "@part.mp.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "imp",
@@ -13,5 +13,5 @@
       "label": "@part.mp.inputs.1.label"
     }
   ],
-  "op": "logic:mp"
+  "op": "logic/mp"
 }

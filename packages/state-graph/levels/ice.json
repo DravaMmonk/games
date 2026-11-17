@@ -13,7 +13,7 @@
     "goal": "@level.ice.mission.goal",
     "how": "@level.ice.mission.how"
   },
-  "robot": "state-graph:robot-loop",
+  "robot": "state-graph/loop",
   "debrief": {
     "title": "@level.ice.debrief.title",
     "body": [
@@ -24,19 +24,19 @@
   "tasks": [
     {
       "id": "ice",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-any": [
+            "state-graph/any": [
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-uses": "slip"
+                "state-graph/not": {
+                  "state-graph/uses": "slip"
                 }
               },
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-uses": "grip"
+                "state-graph/not": {
+                  "state-graph/uses": "grip"
                 }
               }
             ]
@@ -45,8 +45,8 @@
         },
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-has": "table:mul"
+            "state-graph/not": {
+              "state-graph/has": "table/mul"
             }
           },
           "say": "@level.ice.tasks.ice.diagnose.1.say"
@@ -62,7 +62,7 @@
       "hints": [
         "@level.ice.tasks.ice.hints.0"
       ],
-      "world": "state-graph:world-vgrid",
+      "world": "state-graph/vgrid",
       "facts": [
         "slip",
         "grip"
@@ -228,12 +228,12 @@
         2.6985393
       ],
       "solution": [
-        "a = table:mul(facts.grip, view.right)",
-        "b = table:mul(facts.slip, view.down)",
-        "c = table:mul(facts.grip, view.down)",
-        "d = table:mul(facts.slip, view.right)",
-        "p = table:add(a, b)",
-        "q = table:add(c, d)",
+        "a = table/mul(facts.grip, view.right)",
+        "b = table/mul(facts.slip, view.down)",
+        "c = table/mul(facts.grip, view.down)",
+        "d = table/mul(facts.slip, view.right)",
+        "p = table/add(a, b)",
+        "q = table/add(c, d)",
         "x = value[value=0.9](p, q)",
         "cell <- x"
       ],

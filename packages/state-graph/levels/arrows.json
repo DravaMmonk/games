@@ -27,7 +27,7 @@
   "tasks": [
     {
       "id": "arrows",
-      "play": "state-graph:policy",
+      "play": "state-graph/policy",
       "map": {
         "R": 5,
         "C": 6,

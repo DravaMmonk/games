@@ -1,6 +1,6 @@
 {
   "title": "@level.s-try.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.s-try.intro.0.t"
@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "s-try",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

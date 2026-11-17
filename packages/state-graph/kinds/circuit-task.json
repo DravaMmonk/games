@@ -1,18 +1,18 @@
 {
   "extends": "task",
-  "play": "state-graph:circuit",
+  "play": "state-graph/circuit",
   "fields": {},
   "schema": {
     "type": "by",
     "field": "world",
     "cases": {
-      "state-graph:world-grid": {
+      "state-graph/grid": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-grid"
+              "state-graph/grid"
             ]
           },
           "tests": {
@@ -99,13 +99,13 @@
           }
         }
       },
-      "state-graph:world-gridYes": {
+      "state-graph/gridYes": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-gridYes"
+              "state-graph/gridYes"
             ]
           },
           "tests": {
@@ -139,13 +139,13 @@
           }
         }
       },
-      "state-graph:world-piles": {
+      "state-graph/piles": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-piles"
+              "state-graph/piles"
             ]
           },
           "tests": {
@@ -168,13 +168,13 @@
           }
         }
       },
-      "state-graph:world-tri": {
+      "state-graph/tri": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-tri"
+              "state-graph/tri"
             ]
           },
           "tests": {
@@ -197,13 +197,13 @@
           }
         }
       },
-      "state-graph:world-lawn": {
+      "state-graph/lawn": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-lawn"
+              "state-graph/lawn"
             ]
           },
           "tests": {
@@ -236,13 +236,13 @@
           }
         }
       },
-      "state-graph:world-strip": {
+      "state-graph/strip": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-strip"
+              "state-graph/strip"
             ]
           },
           "tests": {
@@ -269,13 +269,13 @@
           }
         }
       },
-      "state-graph:world-pile": {
+      "state-graph/pile": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-pile"
+              "state-graph/pile"
             ]
           },
           "tests": {
@@ -294,13 +294,13 @@
           }
         }
       },
-      "state-graph:world-coins": {
+      "state-graph/coins": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-coins"
+              "state-graph/coins"
             ]
           },
           "tests": {
@@ -326,13 +326,13 @@
           }
         }
       },
-      "state-graph:world-parts": {
+      "state-graph/parts": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-parts"
+              "state-graph/parts"
             ]
           },
           "tests": {
@@ -371,13 +371,13 @@
           }
         }
       },
-      "state-graph:world-rob1": {
+      "state-graph/rob1": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-rob1"
+              "state-graph/rob1"
             ]
           },
           "tests": {
@@ -398,13 +398,13 @@
           }
         }
       },
-      "state-graph:world-rob2": {
+      "state-graph/rob2": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-rob2"
+              "state-graph/rob2"
             ]
           },
           "tests": {
@@ -425,13 +425,13 @@
           }
         }
       },
-      "state-graph:world-ring": {
+      "state-graph/ring": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-ring"
+              "state-graph/ring"
             ]
           },
           "tests": {
@@ -452,13 +452,13 @@
           }
         }
       },
-      "state-graph:world-prefix": {
+      "state-graph/prefix": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-prefix"
+              "state-graph/prefix"
             ]
           },
           "tests": {
@@ -479,13 +479,13 @@
           }
         }
       },
-      "state-graph:world-heights": {
+      "state-graph/heights": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-heights"
+              "state-graph/heights"
             ]
           },
           "tests": {
@@ -514,13 +514,13 @@
           }
         }
       },
-      "state-graph:world-gains": {
+      "state-graph/gains": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-gains"
+              "state-graph/gains"
             ]
           },
           "tests": {
@@ -541,13 +541,13 @@
           }
         }
       },
-      "state-graph:world-keys": {
+      "state-graph/keys": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-keys"
+              "state-graph/keys"
             ]
           },
           "tests": {
@@ -636,13 +636,13 @@
           }
         }
       },
-      "state-graph:world-river": {
+      "state-graph/river": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-river"
+              "state-graph/river"
             ]
           },
           "tests": {
@@ -682,13 +682,13 @@
           }
         }
       },
-      "state-graph:world-stock": {
+      "state-graph/stock": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-stock"
+              "state-graph/stock"
             ]
           },
           "tests": {
@@ -713,13 +713,13 @@
           }
         }
       },
-      "state-graph:world-align": {
+      "state-graph/align": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-align"
+              "state-graph/align"
             ]
           },
           "tests": {
@@ -744,13 +744,13 @@
           }
         }
       },
-      "state-graph:world-local": {
+      "state-graph/local": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-local"
+              "state-graph/local"
             ]
           },
           "tests": {
@@ -775,13 +775,13 @@
           }
         }
       },
-      "state-graph:world-knap": {
+      "state-graph/knap": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-knap"
+              "state-graph/knap"
             ]
           },
           "tests": {
@@ -828,13 +828,13 @@
           }
         }
       },
-      "state-graph:world-roll": {
+      "state-graph/roll": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-roll"
+              "state-graph/roll"
             ]
           },
           "tests": {
@@ -904,13 +904,13 @@
           }
         }
       },
-      "state-graph:world-interval": {
+      "state-graph/interval": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-interval"
+              "state-graph/interval"
             ]
           },
           "tests": {
@@ -962,13 +962,13 @@
           }
         }
       },
-      "state-graph:world-vgrid": {
+      "state-graph/vgrid": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-vgrid"
+              "state-graph/vgrid"
             ]
           },
           "tests": {
@@ -1058,13 +1058,13 @@
           }
         }
       },
-      "state-graph:world-tags": {
+      "state-graph/tags": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-tags"
+              "state-graph/tags"
             ]
           },
           "tests": {
@@ -1117,13 +1117,13 @@
           }
         }
       },
-      "state-graph:world-pic": {
+      "state-graph/pic": {
         "type": "obj",
         "fields": {
           "world": {
             "type": "oneOf",
             "values": [
-              "state-graph:world-pic"
+              "state-graph/pic"
             ]
           },
           "tests": {

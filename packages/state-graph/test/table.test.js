@@ -1,3 +1,4 @@
+import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
 import { resolve } from 'node:path'
 // The table board as content and saves hold it: blueprint text both ways, fitting a board to its task, the checks on
 // a board that becomes a part; a course read of every table game leaves its content as it was; a save of a level's
@@ -7,7 +8,7 @@ import assert from 'node:assert/strict';
 import { plainBoard } from 'circuit';
 import { readStarter } from '../../../games/kit/engine/ops/fixture.js';
 import { textPrint as print, read, readLines } from 'circuit'
-import { workshopView } from 'circuit'
+import { workshopView } from 'progress'
 import { tableWorks } from '../core/work.js';
 import { fitted, portsProblem } from 'table';
 import { modelOf } from 'table';
@@ -26,15 +27,15 @@ const given = { offers: { view: ['up', 'left'], facts: ['start', 'rock'] }, inpu
 
 const model = modelOf(partsOf({}));
 const world = {
-  sensors: { up: { type: 'circuit:number' }, left: { type: 'circuit:number' }, start: { type: 'circuit:boolean' }, rock: { type: 'circuit:boolean' } },
-  outs: [['cell', 'Cell', '', 'circuit:number']],
+  sensors: { up: { type: 'circuit/number' }, left: { type: 'circuit/number' }, start: { type: 'circuit/boolean' }, rock: { type: 'circuit/boolean' } },
+  outs: [['cell', 'Cell', '', 'circuit/number']],
 };
 const blueprint = robotBlueprint(model, given, world);
 
 test('author checks use intermediate cells when the task grades the entire table', () => {
   const solution = { cell: 4 };
   const naive = { cell: 3 };
-  const task = { play: 'state-graph:circuit', world: 'state-graph:world-grid', ports: [], tests: [{}], expected: [8], solution, naive, checkAll: true };
+  const task = { play: 'state-graph/circuit', world: 'state-graph/grid', ports: [], tests: [{}], expected: [8], solution, naive, checkAll: true };
   const run = (_world, _test, board) => ({ value: 8, steps: [{ writes: [['cell', board.cell]] }] });
   assert.equal(inspectRobotCase(run, task, naive, 0).ok, false);
   assert.equal(inspectRobotCase(run, task, naive, 0, { traced: true }).ok, false);
@@ -46,9 +47,9 @@ test('author checks use intermediate cells when the task grades the entire table
 
 test('the robot window shows intrinsic sweep values and recorded table values', async () => {
   const { robotWindow } = await loadModule(resolve(import.meta.dirname, '../view/ui/robotDrawing.js'))
-  const world = WORLDS['state-graph:world-parts'];
+  const world = WORLDS['state-graph/parts'];
   const picture = robotWindow({
-    world, test: { s: 'cats', dict: { cats: 0, ats: 2 } }, robot: ROBOTS['state-graph:robot-broom'],
+    world, test: { s: 'cats', dict: { cats: 0, ats: 2 } }, robot: ROBOTS['state-graph/broom'],
     task: { facts: [], given: { offers: { view: ['seg', 'cost'], facts: [] } } },
     cell: { i: 4, id: '4' }, shown: new Map([['0', 5], ['1', null]]), reads: new Set(['0', '2']),
     empty: new Set(['2']), lit: ['cost'],
@@ -59,7 +60,7 @@ test('the robot window shows intrinsic sweep values and recorded table values', 
 });
 
 test('blueprint text reads into a board and writes back the same', () => {
-  const lines = ['m = table:msum(view.up, view.left)', 'k = table:const[value=1]()', 'g = table:pass(facts.start, k)', 's = table:msum(m, g)', 'cell <- s'];
+  const lines = ['m = table/msum(view.up, view.left)', 'k = table/const[value=1]()', 'g = table/pass(facts.start, k)', 's = table/msum(m, g)', 'cell <- s'];
   const b = blueprint.read(lines);
   assert.deepEqual(b.nodes.find(n => n.id === 'view').params.picks, ['up', 'left']);
   assert.deepEqual(b.nodes.find(n => n.id === 'facts').params.picks, ['start']);
@@ -72,13 +73,13 @@ test('blueprint text reads into a board and writes back the same', () => {
 });
 
 test('blueprint text names the line it cannot read', () => {
-  assert.throws(() => blueprint.read(['m = table:msum(view.down)', 'cell <- m']), e => e.line === 1 && /down/.test(e.en));
+  assert.throws(() => blueprint.read(['m = table/msum(view.down)', 'cell <- m']), e => e.line === 1 && /down/.test(e.en));
   assert.throws(() => blueprint.read(['cell <- nope']), e => e.line === 1);
 });
 
 test('robot blueprints refuse a second wire, sink sources and unavailable sensor settings', () => {
   assert.throws(() => blueprint.read(['cell <- view.up', 'cell <- view.left']), e => e.line === 2 && /takes two wires/.test(e.en));
-  assert.throws(() => blueprint.read(['m = table:mmin(cell)']), e => e.line === 1 && /has no output/.test(e.en));
+  assert.throws(() => blueprint.read(['m = table/mmin(cell)']), e => e.line === 1 && /has no output/.test(e.en));
   assert.throws(() => blueprint.read(['view[picks=up]()']), e => e.line === 1 && /must be a list/.test(e.en));
   assert.throws(() => blueprint.read(['view[picks=[down]]()']), e => e.line === 1 && /down/.test(e.en));
   assert.throws(() => blueprint.read(['cell <- facts.start']), e => e.line === 1 && /bool|yes/i.test(e.en));
@@ -89,24 +90,24 @@ test('robot blueprints refuse a second wire, sink sources and unavailable sensor
 
 test('a grouped merger stays available to blueprints under each unlocked model', () => {
   const content = readStarter(resolve(import.meta.dirname));
-  content.primitives = [...content.primitives, 'table:mmin'];
+  content.primitives = [...content.primitives, 'table/mmin'];
   const merge = content.levels.find((level) => level.id === 'starter/merge');
-  merge.adds = [...merge.adds, 'table:mmin'];
+  merge.adds = [...merge.adds, 'table/mmin'];
   const course = tableWorks(content);
   const task = course.played.get('starter/merge')[0];
   const { shown, folded, types } = course.offerIn(task, new Set());
-  assert.deepEqual([...shown, ...folded].filter((type) => type === 'table:msum' || type === 'table:mmin'), ['table:msum']);
-  assert.deepEqual(types.filter((type) => type === 'table:msum' || type === 'table:mmin'), ['table:msum', 'table:mmin']);
+  assert.deepEqual([...shown, ...folded].filter((type) => type === 'table/msum' || type === 'table/mmin'), ['table/msum']);
+  assert.deepEqual(types.filter((type) => type === 'table/msum' || type === 'table/mmin'), ['table/msum', 'table/mmin']);
   const start = fitted({ nodes: [], wires: [] }, task.given);
   const parts = wiring(course.model, { ...WORLDS[task.world], offers: task.given.offers });
-  const board = readLines(['m = table:mmin(view.up, view.left)', 'cell <- m'], start, parts, types);
-  assert.equal(board.nodes.find((node) => node.id === 'm')?.type, 'table:mmin');
-  assert.throws(() => readLines(['m = table:mmax(view.up)'], start, parts, types), (error) => error.line === 1 && /not available/.test(error.en));
+  const board = readLines(['m = table/mmin(view.up, view.left)', 'cell <- m'], start, parts, types);
+  assert.equal(board.nodes.find((node) => node.id === 'm')?.type, 'table/mmin');
+  assert.throws(() => readLines(['m = table/mmax(view.up)'], start, parts, types), (error) => error.line === 1 && /not available/.test(error.en));
 });
 
 test('a fitted board reads each sensor on the card that offers it, and drops what its task lacks', () => {
   const b = {
-    nodes: [{ id: 'view', type: 'view', params: { picks: ['left', 'start', 'gone'] }, x: 5, y: 6 }, { id: 'm', type: 'table:msum' }, { id: 'old', type: 'out' }],
+    nodes: [{ id: 'view', type: 'view', params: { picks: ['left', 'start', 'gone'] }, x: 5, y: 6 }, { id: 'm', type: 'table/msum' }, { id: 'old', type: 'out' }],
     wires: [{ from: 'view#start', to: 'm', port: '0' }, { from: 'view#gone', to: 'm', port: '1' }, { from: 'm', to: 'old', port: 'in' }],
   };
   const f = fitted(b, given);
@@ -119,38 +120,38 @@ test('a fitted board reads each sensor on the card that offers it, and drops wha
 test('a board that becomes a part reads exactly its ports', () => {
   const ports = [{ sensor: 'up', label: 'up' }, { sensor: 'left', label: 'left' }, { input: 'way3', label: 'way in 3' }];
   const read = robotBlueprint(model, { ...given, inputs: ['way3'] }, world).read;
-  assert.equal(portsProblem(read(['m = table:mmin(view.up, view.left, way3)', 'cell <- m']), ports), null);
+  assert.equal(portsProblem(read(['m = table/mmin(view.up, view.left, way3)', 'cell <- m']), ports), null);
   const readsSensor = blueprint.read(['cell <- view.up']);
   assert.equal(robotConstraint({ ports: [], taskId: 'example' }, readsSensor), null);
   assert.ok(robotConstraint({ ports: [], taskId: 'example', builds: { task: 'example' } }, readsSensor));
-  assert.match(String(portsProblem(read(['m = table:mmin(view.up, view.left)', 'cell <- m']), ports)), /way in 3|来路|way3/);
-  assert.match(String(portsProblem(read(['m = table:mmin(view.up, view.left, way3)', 'gate = table:pass(facts.rock, m)', 'cell <- gate']), ports)), /rock/);
+  assert.match(String(portsProblem(read(['m = table/mmin(view.up, view.left)', 'cell <- m']), ports)), /way in 3|来路|way3/);
+  assert.match(String(portsProblem(read(['m = table/mmin(view.up, view.left, way3)', 'gate = table/pass(facts.rock, m)', 'cell <- gate']), ports)), /rock/);
 });
 
 // A course of two levels written here: the first builds a route counter, the second runs it behind a block gate.
 const t = s => ({ zh: s, en: s });
-const counterSolution = ['k = table:const[value=1]()', 'g = table:pass(facts.start, k)', 'm = table:msum(view.up, view.left, g)', 'cell <- m'];
-const counterPorts = [{ 'state-graph:port-way': { n: 1, sensor: 'up' } }, { 'state-graph:port-way': { n: 2, sensor: 'left' } }, { 'state-graph:port-start': { sensor: 'start' } }];
+const counterSolution = ['k = table/const[value=1]()', 'g = table/pass(facts.start, k)', 'm = table/msum(view.up, view.left, g)', 'cell <- m'];
+const counterPorts = [{ 'state-graph/way': { n: 1, sensor: 'up' } }, { 'state-graph/way': { n: 2, sensor: 'left' } }, { 'state-graph/start': { sensor: 'start' } }];
 const twoLevels = () => ({
-  id: 't', title: t('t'), primitives: ['table:msum', 'table:const', 'table:pass', 'table:block'],
-  partDefs: { parts: { counter: { name: t('counter'), desc: t('d'), inputs: [{ name: 'up', type: 'circuit:number' }, { name: 'left', type: 'circuit:number' }, { name: 'start', type: 'circuit:boolean' }], outputType: 'circuit:number', inside: [{ id: 'base', reference: { play: 'state-graph:circuit', world: 'state-graph:world-grid', robot: 'state-graph:robot-scout', facts: ['start'], solution: counterSolution, ports: counterPorts } }] } } },
-  eras: [{ id: 'e', machine: 'state-graph:robot-scout', levels: [{ id: 'build' }, { id: 'reuse' }], links: [{ from: 'build', to: 'reuse' }], chapter: { title: t('e'), desc: t('e') } }],
+  id: 't', title: t('t'), primitives: ['table/msum', 'table/const', 'table/pass', 'table/block'],
+  partDefs: { parts: { counter: { name: t('counter'), desc: t('d'), inputs: [{ name: 'up', type: 'circuit/number' }, { name: 'left', type: 'circuit/number' }, { name: 'start', type: 'circuit/boolean' }], outputType: 'circuit/number', inside: [{ id: 'base', reference: { play: 'state-graph/circuit', world: 'state-graph/grid', robot: 'state-graph/scout', facts: ['start'], solution: counterSolution, ports: counterPorts } }] } } },
+  eras: [{ id: 'e', machine: 'state-graph/scout', levels: [{ id: 'build' }, { id: 'reuse' }], links: [{ from: 'build', to: 'reuse' }], chapter: { title: t('e'), desc: t('e') } }],
   levels: [
-    { id: 'build', intro: [], robot: 'state-graph:robot-scout', adds: ['table:msum', 'table:const', 'table:pass'],
-      tasks: [{ id: 'build', publishes: [{ part: 'counter', variant: 'base' }], play: 'state-graph:circuit', world: 'state-graph:world-grid', facts: ['start'], ports: counterPorts, tests: [{ R: 3, C: 4 }], expected: [10], solution: counterSolution }] },
-    { id: 'reuse', intro: [], robot: 'state-graph:robot-scout', adds: ['table:block'],
-      tasks: [{ id: 'reuse', play: 'state-graph:circuit', world: 'state-graph:world-grid', facts: ['start', 'rock'],
+    { id: 'build', intro: [], robot: 'state-graph/scout', adds: ['table/msum', 'table/const', 'table/pass'],
+      tasks: [{ id: 'build', publishes: [{ part: 'counter', variant: 'base' }], play: 'state-graph/circuit', world: 'state-graph/grid', facts: ['start'], ports: counterPorts, tests: [{ R: 3, C: 4 }], expected: [10], solution: counterSolution }] },
+    { id: 'reuse', intro: [], robot: 'state-graph/scout', adds: ['table/block'],
+      tasks: [{ id: 'reuse', play: 'state-graph/circuit', world: 'state-graph/grid', facts: ['start', 'rock'],
         tests: [{ R: 4, C: 4, rocks: [[1, 1]] }, { R: 4, C: 5, rocks: [[1, 2], [2, 0]] }, { R: 5, C: 5, rocks: [[1, 3], [2, 1], [3, 3]] }], expected: [8, 12, 10],
-        solution: ['c = counter(view.up, view.left, facts.start)', 'b = table:block(facts.rock, c)', 'cell <- b'] }] },
+        solution: ['c = counter(view.up, view.left, facts.start)', 'b = table/block(facts.rock, c)', 'cell <- b'] }] },
   ],
 });
 
 test('a robot circuit checks its declared interface against its referenced world', () => {
   const wrongInput = twoLevels();
-  wrongInput.partDefs.parts.counter.inputs[0].type = 'circuit:boolean';
+  wrongInput.partDefs.parts.counter.inputs[0].type = 'circuit/boolean';
   assert.ok(tableWorks(wrongInput).wrong.some(message => message.includes('input types do not match')));
   const wrongOutput = twoLevels();
-  wrongOutput.partDefs.parts.counter.outputType = 'circuit:boolean';
+  wrongOutput.partDefs.parts.counter.outputType = 'circuit/boolean';
   assert.ok(tableWorks(wrongOutput).wrong.some(message => message.includes('output type does not match')));
 });
 
@@ -192,7 +193,7 @@ test('robot workshop blueprints round-trip and restore with the same ports and s
   } };
   const part = {
     id: 'user_value', graph: { nodes: [], wires: [] }, inputs: [], outputs: ['cell'],
-    outputSignals: { cell: 'circuit:number' }, name: 'Saved value',
+    outputSignals: { cell: 'circuit/number' }, name: 'Saved value',
   };
   const viewFor = (definition) => workshopView(base, { parts: { [part.id]: definition } }, () => true, table.model.partOf).view;
   const view = viewFor(part);
@@ -204,23 +205,23 @@ test('robot workshop blueprints round-trip and restore with the same ports and s
   assert.deepEqual(plainBoard(read(print(graph, parts), opening, parts, [part.id]).graph), plainBoard(graph));
   assert.deepEqual(plainBoard(restoreRobotBoard(table.model, task, graph, { knows: view.partOf, parts })), plainBoard(graph));
   assert.match(read(`p = ${part.id}[value=2]()`, opening, parts, [part.id]).errors[0].en, /has no setting/);
-  const other = viewFor({ ...part, outputSignals: { cell: 'circuit:boolean' } });
+  const other = viewFor({ ...part, outputSignals: { cell: 'circuit/boolean' } });
   assert.equal(restoreRobotBoard(table.model, task, graph, { knows: other.partOf, parts: other.board.wiring(task) }), null);
 });
 
 test('the parts box lists only choices open on its selected robot', () => {
   const content = twoLevels();
   content.levels[0].tasks[0].consts = [1, 2];
-  content.levels[1].robot = 'state-graph:robot-ranger';
-  content.levels[1].adds.push('table:mmin');
+  content.levels[1].robot = 'state-graph/ranger';
+  content.levels[1].adds.push('table/mmin');
   content.levels[1].tasks[0].consts = [3];
-  const table = tableWorks(content);
+  const table = tableWorks(withProgressFixture(content));
   const values = (type, options) => table.settingsIn(type, { flags: new Set(), open: () => true, ...options })[0]?.values.map(({ value }) => value);
-  assert.deepEqual(values('table:msum', { scope: 'state-graph:robot-scout' }), ['table:msum']);
-  assert.deepEqual(values('table:msum', { scope: 'state-graph:robot-ranger' }), ['table:msum', 'table:mmin']);
-  assert.deepEqual(values('table:const', { scope: 'state-graph:robot-scout' }), [1, 2]);
-  assert.deepEqual(values('table:const', { scope: 'state-graph:robot-ranger' }), [3]);
-  assert.equal(values('table:msum', { scope: 'state-graph:robot-ranger', open: () => false }), undefined);
+  assert.deepEqual(values('table/msum', { scope: 'state-graph/scout' }), ['table/msum']);
+  assert.deepEqual(values('table/msum', { scope: 'state-graph/ranger' }), ['table/msum', 'table/mmin']);
+  assert.deepEqual(values('table/const', { scope: 'state-graph/scout' }), [1, 2]);
+  assert.deepEqual(values('table/const', { scope: 'state-graph/ranger' }), [3]);
+  assert.equal(values('table/msum', { scope: 'state-graph/ranger', open: () => false }), undefined);
 });
 
 test('carried boards use the reference until the prerequisite has passed', async () => {
@@ -255,7 +256,7 @@ test('a built part runs the board its level’s last task was passed with, when 
   assert.deepEqual(wrong, []);
   const builder = played.get('build').at(-1), user = played.get('reuse').at(-1);
   const V = WORLDS[user.world], answers = () => user.tests.map(t => run(V, t, user.solution, user).value);
-  const offByOne = { ...builder.solution, nodes: builder.solution.nodes.map(n => (n.type === 'table:const' ? { ...n, params: { value: 2 } } : n)) };
+  const offByOne = { ...builder.solution, nodes: builder.solution.nodes.map(n => (n.type === 'table/const' ? { ...n, params: { value: 2 } } : n)) };
   const noStart = { ...builder.solution, wires: builder.solution.wires.filter(w => w.from !== 'facts#start') };
   assert.deepEqual(answers(), user.expected, 'the written answers are the routes around the rocks');
   syncOwn({ build: offByOne });
@@ -266,7 +267,7 @@ test('a built part runs the board its level’s last task was passed with, when 
   assert.notDeepEqual(answers(), user.expected);
   // As an older save keeps it: no output node, every sensor on the view card.
   const unfitted = { nodes: builder.solution.nodes.filter(n => n.type !== 'out').map(n => (n.type === 'facts' ? null : n.type === 'view' ? { ...n, params: { picks: ['up', 'left', 'start'] } } : n)).filter(Boolean), wires: builder.solution.wires.map(w => (w.from === 'facts#start' ? { ...w, from: 'view#start' } : w)) };
-  syncOwn({ build: { ...unfitted, nodes: unfitted.nodes.map(n => (n.type === 'table:const' ? { ...n, params: { value: 2 } } : n)) } });
+  syncOwn({ build: { ...unfitted, nodes: unfitted.nodes.map(n => (n.type === 'table/const' ? { ...n, params: { value: 2 } } : n)) } });
   assert.notDeepEqual(answers(), user.expected);
   syncOwn({ build: unfitted });
   assert.deepEqual(answers(), user.expected);

@@ -9,14 +9,14 @@ import { checkAction } from '../shell/useCheckOnce.js'
 import { evaluatePlay, pluginRuntime } from '../engine/plugin-runtime.js'
 
 export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
-  const provided = [...kernel.tables.play].find(([name, play]) => name.startsWith(`${id}:`) && play.runtime)
+  const provided = [...kernel.tables.play].find(([name, play]) => name.startsWith(`${id}/`) && play.runtime)
   if (provided) {
     const presentation = kernel.tables.playView.get(provided[0])
     // The game's own facts (its author) come from its configuration, whatever the package draws.
     return { id, runtime: provided[1].runtime, define: (content, works) => Object.assign(presentation.define(content, works, { kernel, vocabulary }), content.author && { author: content.author }) }
   }
   const runtime = pluginRuntime(id, kernel, vocabulary)
-  const kinds = Object.fromEntries([...kernel.tables.play].filter(([name]) => name.startsWith(`${id}:`)).map(([name, core]) => {
+  const kinds = Object.fromEntries([...kernel.tables.play].filter(([name]) => name.startsWith(`${id}/`)).map(([name, core]) => {
     const view = kernel.tables.playView.get(name)
     function Screen({ level, saved, save, solve, fail, progress, game, phone }) {
       const task = level.source

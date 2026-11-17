@@ -1,6 +1,6 @@
 {
   "title": "@level.raa.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.raa.intro.0.t"
@@ -9,9 +9,9 @@
   "after": "@level.raa.after",
   "tasks": [
     {
-      "id": "raa_1",
-      "kind": "logic:proof",
-      "step": "@level.raa.tasks.raa_1.step",
+      "id": "raa-1",
+      "kind": "logic/proof",
+      "step": "@level.raa.tasks.raa-1.step",
       "tests": [
         {
           "goal": "¬¬(A ∨ ¬A)"
@@ -26,8 +26,8 @@
         }
       ],
       "hint": [
-        "@level.raa.tasks.raa_1.hint.0",
-        "@level.raa.tasks.raa_1.hint.1"
+        "@level.raa.tasks.raa-1.hint.0",
+        "@level.raa.tasks.raa-1.hint.1"
       ],
       "solution": [
         "f = impI[A=\"~(A | ~A)\"](body: m2) {",
@@ -54,9 +54,9 @@
       ]
     },
     {
-      "id": "raa_2",
-      "kind": "logic:proof",
-      "step": "@level.raa.tasks.raa_2.step",
+      "id": "raa-2",
+      "kind": "logic/proof",
+      "step": "@level.raa.tasks.raa-2.step",
       "carries": true,
       "adds": [
         "raa"
@@ -79,12 +79,12 @@
       ],
       "intro": [
         {
-          "t": "@level.raa.tasks.raa_2.intro.0.t"
+          "t": "@level.raa.tasks.raa-2.intro.0.t"
         }
       ],
       "hint": [
-        "@level.raa.tasks.raa_2.hint.0",
-        "@level.raa.tasks.raa_2.hint.1"
+        "@level.raa.tasks.raa-2.hint.0",
+        "@level.raa.tasks.raa-2.hint.1"
       ],
       "solution": [
         "f = impI[A=\"~(A | ~A)\"](body: m2) {",

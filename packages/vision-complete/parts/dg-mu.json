@@ -1,0 +1,13 @@
+{
+  "name": "μ",
+  "desc": "@part.dg-mu.desc",
+  "icon": "Activity",
+  "family": "image/learned",
+  "settings": {
+    "w": {
+      "label": "μ",
+      "fixed": true
+    }
+  },
+  "op": "image/dg-mu"
+}

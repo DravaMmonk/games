@@ -3,13 +3,13 @@ export const vocabulary = {
   "kinds": {
     "op": {},
     "family": {
-      "tick-bus:family-value": {
+      "tick-bus/value": {
         "about": {
           "zh": "算数的元件",
           "en": "parts that work on numbers"
         }
       },
-      "tick-bus:family-memory": {
+      "tick-bus/memory": {
         "about": {
           "zh": "读写寄存器的元件",
           "en": "parts that read and keep registers"
@@ -17,13 +17,13 @@ export const vocabulary = {
       }
     },
     "want": {
-      "tick-bus:want-line": {
+      "tick-bus/line": {
         "about": {
           "zh": "这一拍线上的位",
           "en": "the bit on the line this tick"
         }
       },
-      "tick-bus:want-delayed": {
+      "tick-bus/delayed": {
         "about": {
           "zh": "输入 input 上一拍的值；第一拍给 first",
           "en": "what the input `input` was the tick before; first on the first tick"

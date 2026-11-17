@@ -2,7 +2,7 @@
   "name": "@part.repeat.name",
   "desc": "@part.repeat.desc",
   "icon": "Repeat",
-  "family": "logic:family-loop",
+  "family": "logic/loop",
   "regions": [
     {
       "name": "body",
@@ -11,7 +11,7 @@
       "closes": true
     }
   ],
-  "op": "logic:repeat",
+  "op": "logic/repeat",
   "stages": [
     {
       "id": "repeat-s-results-desc",

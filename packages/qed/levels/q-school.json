@@ -1,10 +1,9 @@
 {
   "title": "@level.q-school.title",
-  "tray": "formula",
   "tasks": [
     {
       "id": "q-school",
-      "kind": "logic:query",
+      "kind": "logic/query",
       "consts": [
         "h",
         "i",

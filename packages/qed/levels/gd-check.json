@@ -1,6 +1,6 @@
 {
   "title": "@level.gd-check.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.gd-check.intro.0.t"
@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "gd-check",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

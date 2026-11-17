@@ -1,6 +1,6 @@
 {
   "title": "@level.in-inject.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.in-inject.intro.0.t"
@@ -9,13 +9,13 @@
   "after": "@level.in-inject.after",
   "tasks": [
     {
-      "id": "in-inject_1",
-      "kind": "logic:define",
+      "id": "in-inject-1",
+      "kind": "logic/define",
       "words": [
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.in-inject.tasks.in-inject_1.step",
+      "step": "@level.in-inject.tasks.in-inject-1.step",
       "fn": "pred",
       "on": 0,
       "rows": [
@@ -57,15 +57,15 @@
         "zero",
         "pred(x)"
       ],
-      "brief": "@level.in-inject.tasks.in-inject_1.brief",
+      "brief": "@level.in-inject.tasks.in-inject-1.brief",
       "hint": [
-        "@level.in-inject.tasks.in-inject_1.hint.0"
+        "@level.in-inject.tasks.in-inject-1.hint.0"
       ]
     },
     {
-      "id": "in-inject_2",
-      "kind": "logic:proof",
-      "step": "@level.in-inject.tasks.in-inject_2.step",
+      "id": "in-inject-2",
+      "kind": "logic/proof",
+      "step": "@level.in-inject.tasks.in-inject-2.step",
       "consts": [
         "zero"
       ],
@@ -89,10 +89,10 @@
           "goal": "∀x. ∀y. s(x) = s(y) → x = y"
         }
       ],
-      "brief": "@level.in-inject.tasks.in-inject_2.brief",
+      "brief": "@level.in-inject.tasks.in-inject-2.brief",
       "hint": [
-        "@level.in-inject.tasks.in-inject_2.hint.0",
-        "@level.in-inject.tasks.in-inject_2.hint.1"
+        "@level.in-inject.tasks.in-inject-2.hint.0",
+        "@level.in-inject.tasks.in-inject-2.hint.1"
       ],
       "solution": [
         "gx = allI[x=a](body: gy) {",

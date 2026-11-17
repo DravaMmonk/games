@@ -1,6 +1,6 @@
 {
   "title": "@level.box.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.box.intro.0.t"
@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "box",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

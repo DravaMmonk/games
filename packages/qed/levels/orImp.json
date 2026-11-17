@@ -1,6 +1,6 @@
 {
   "title": "@level.orImp.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.orImp.intro.0.t"
@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "orImp",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

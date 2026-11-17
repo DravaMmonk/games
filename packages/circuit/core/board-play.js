@@ -33,7 +33,7 @@ export const boardPlay = {
 
 /** Check authored reference and naive works using the public play contract. */
 export function boardChecks({ content }) {
-  return content.levels.flatMap(level => level.tasks.filter(task => task.play === 'circuit:board').map(task => {
+  return content.levels.flatMap(level => level.tasks.filter(task => task.play === 'circuit/board').map(task => {
     const context = { content, task }
     try {
       const passed = work => boardPlay.judge(boardPlay.run(boardPlay.read(work, context), context)).pass

@@ -10,7 +10,7 @@ const namedOwner = (value) => {
   return Object.entries(value).map(([key, value]) => ownerOf(key) ?? namedOwner(value)).find(Boolean) ?? null
 }
 
-const ownerOf = (name) => typeof name === 'string' && name.includes(':') ? name.split(':')[0] : null
+const ownerOf = (name) => typeof name === 'string' && name.includes('/') ? name.split('/')[0] : null
 export const taskModule = (task) => ownerOf(task.play) ?? ownerOf(task.kind) ?? ownerOf(task.mode)
   ?? namedOwner(task.want)
 

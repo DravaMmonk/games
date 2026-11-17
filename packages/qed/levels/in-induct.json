@@ -1,6 +1,6 @@
 {
   "title": "@level.in-induct.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "consts": [
     "zero"
   ],
@@ -19,9 +19,9 @@
   "after": "@level.in-induct.after",
   "tasks": [
     {
-      "id": "in-induct_1",
-      "kind": "logic:proof",
-      "step": "@level.in-induct.tasks.in-induct_1.step",
+      "id": "in-induct-1",
+      "kind": "logic/proof",
+      "step": "@level.in-induct.tasks.in-induct-1.step",
       "cases": [],
       "tests": [
         {
@@ -33,10 +33,10 @@
           "goal": "∀n. plus(n, zero) = n"
         }
       ],
-      "brief": "@level.in-induct.tasks.in-induct_1.brief",
+      "brief": "@level.in-induct.tasks.in-induct-1.brief",
       "hint": [
-        "@level.in-induct.tasks.in-induct_1.hint.0",
-        "@level.in-induct.tasks.in-induct_1.hint.1"
+        "@level.in-induct.tasks.in-induct-1.hint.0",
+        "@level.in-induct.tasks.in-induct-1.hint.1"
       ],
       "solution": [
         "i = allE[t=\"plus(x, zero) = x\"](ind)",
@@ -46,9 +46,9 @@
       ]
     },
     {
-      "id": "in-induct_2",
-      "kind": "logic:proof",
-      "step": "@level.in-induct.tasks.in-induct_2.step",
+      "id": "in-induct-2",
+      "kind": "logic/proof",
+      "step": "@level.in-induct.tasks.in-induct-2.step",
       "cases": [],
       "tests": [
         {
@@ -62,10 +62,10 @@
         "∃m. zero = s(m)",
         "s(n) = zero ∨ (∃m. s(n) = s(m))"
       ],
-      "brief": "@level.in-induct.tasks.in-induct_2.brief",
+      "brief": "@level.in-induct.tasks.in-induct-2.brief",
       "hint": [
-        "@level.in-induct.tasks.in-induct_2.hint.0",
-        "@level.in-induct.tasks.in-induct_2.hint.1"
+        "@level.in-induct.tasks.in-induct-2.hint.0",
+        "@level.in-induct.tasks.in-induct-2.hint.1"
       ],
       "solution": [
         "r = refl[t=zero]()",

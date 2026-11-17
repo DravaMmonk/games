@@ -2,7 +2,7 @@
   "name": "@part.impI.name",
   "desc": "@part.impI.desc",
   "icon": "Box",
-  "family": "logic:family-box",
+  "family": "logic/box",
   "settings": {
     "A": {
       "label": "@part.impI.settings.A.label"
@@ -16,5 +16,5 @@
       "closes": true
     }
   ],
-  "op": "logic:impI"
+  "op": "logic/impI"
 }

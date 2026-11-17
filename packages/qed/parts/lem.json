@@ -1,13 +1,13 @@
 {
   "name": "@part.lem.name",
   "desc": "@part.lem.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "settings": { "A": { "control": "tree" } },
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "f = impI[A=\"~(A | ~A)\"](body: m2) {",
           "  body {",
@@ -29,5 +29,5 @@
     }
   ],
   "inputs": [],
-  "outputType": "logic:judgment"
+  "outputType": "logic/judgment"
 }

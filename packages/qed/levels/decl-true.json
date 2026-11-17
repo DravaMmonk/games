@@ -6,11 +6,10 @@
     }
   ],
   "after": "@level.decl-true.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-true",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "declare": "@level.decl-true.tasks.decl-true.declare",
       "target": "Truth",
       "sentences": [
@@ -57,8 +56,8 @@
           "needs": []
         }
       ],
-      "play": "logic:audit",
-      "want": "logic:want-agree",
+      "play": "logic/audit",
+      "want": "logic/agree",
       "boards": [
         {
           "rules": [

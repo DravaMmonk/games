@@ -5,7 +5,7 @@
     {
       "id": "base",
       "reference": {
-        "kind": "image:graph",
+        "kind": "image/graph",
         "solution": [
           "kN = const[c=16]()",
           "h1 = shift[dir=right](f)",
@@ -28,9 +28,9 @@
     }
   ],
   "inputs": [
-    { "name": "f", "type": "image:image" },
-    { "name": "k", "type": "image:image" },
-    { "name": "g", "type": "image:image" }
+    { "name": "f", "type": "image/image" },
+    { "name": "k", "type": "image/image" },
+    { "name": "g", "type": "image/image" }
   ],
-  "outputType": "image:image"
+  "outputType": "image/image"
 }

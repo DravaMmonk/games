@@ -1,6 +1,7 @@
 {
-  "mark": "logic:mark-formulaOr",
+  "mark": "logic/formulaOr",
   "icon": "Rows3",
   "name": "∨",
-  "desc": "@symbol.formulaOr.desc"
+  "desc": "@symbol.formulaOr.desc",
+  "at": "g-or"
 }

@@ -7,7 +7,7 @@ import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 import { register as circuit } from '../../circuit/core/index.js'
 import { register, busPlay, runtime } from '../core/index.js'
 
-const task = { id: 'sample/task', play: 'tick-bus:board', brief: 'Hear the line.', listens: true, outputs: [{ name: 'bit', label: 'Bit' }], want: { bit: 'tick-bus:want-line' }, tests: [{ line: '0101' }], solution: ['bit <- line'], naive: [] }
+const task = { id: 'sample/task', play: 'tick-bus/board', brief: 'Hear the line.', listens: true, outputs: [{ name: 'bit', label: 'Bit' }], want: { bit: 'tick-bus/line' }, tests: [{ line: '0101' }], solution: ['bit <- line'], naive: [] }
 const content = {
   id: 'sample', title: 'Sample', eras: [], primitives: [], trays: {},
   standalone: { level: 'sample/one' }, glossary: { groups: [], entries: [] },
@@ -30,7 +30,7 @@ test('tick-bus core registers, checks, round-trips and blind-plays in Node', asy
   assert.equal(evaluatePlay(kernel, task, naive, context).verdict.pass, false)
   const spec = runtime.spec(content)
   assert.deepEqual((await runtime.validate(spec)).filter(line => line.fail), [])
-  const agent = kernel.tables.agent.get('tick-bus:board')
+  const agent = kernel.tables.agent.get('tick-bus/board')
   assert.ok(agent.observe(context))
   assert.equal(agent.act(context, "bit <- line").pass, true)
   assert.equal(agent.act(context, "").pass, false)
@@ -48,7 +48,7 @@ test('tick-bus core and view compose with circuit through public entries', async
     core.register(kernel.forPackage('tick-bus', 'core'))
     view.register(kernel.forPackage('tick-bus', 'view'))
     kernel.pair([task], true)
-    assert.equal(kernel.tables.playView.get('tick-bus:board').component, view.BusBoard)
+    assert.equal(kernel.tables.playView.get('tick-bus/board').component, view.BusBoard)
     const game = view.default(content)
     const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
     const { renderToString } = require('react-dom/server')

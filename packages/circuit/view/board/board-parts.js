@@ -3,11 +3,9 @@ import { holesOf, outletsOf, regionsOf } from "../../core/parts.js"
 import { T } from 'kernel/view'
 
 import { iconOf } from "../parts/icons.js"
-import { WORKSHOP_INPUT, WORKSHOP_OUTPUT } from "../../core/workshop-terminals.js"
 import { openRef } from 'kernel/view'
 
 import { packedBoards } from "../../core/board/packed-boards.js"
-import { openWorkshopPart, workshopWiring } from "../../core/board/workshop-view.js"
 
 const GIVES = T('得出', 'Result')
 /** Add labels and icons to a circuit view without changing its ports or active regions. */
@@ -57,15 +55,14 @@ export function partsFor(level, circuit, { cards, portLabels, defined }) {
   const { board, BUILT, builtBy, parts: builtDefinitions } = circuit
   const wiring = board.wiring(level, circuit)
   // A fixed card the domain does not draw its own way: a source on the left, a sink on the right.
-  const draft = (node) => node.type === WORKSHOP_INPUT || node.type === WORKSHOP_OUTPUT
-  const given = (node) => draft(node) || (board.isFixed(node.type) && !cards[node.type])
-  const workshop = (node) => circuit.workshopPart?.(node.type)
+  const given = (node) => board.isFixed(node.type) && !cards[node.type]
+  const extraPart = (node) => circuit.extraPart?.(node.type)
   const parts = {
     ...wiring,
-    label: (node) => (board.isFixed(node.type) ? board.labelOf(level, node.id) : BUILT[node.type] ? builtDefinitions[node.type].name : workshop(node)?.name ?? cards[node.type]?.name ?? node.type),
+    label: (node) => (board.isFixed(node.type) ? board.labelOf(level, node.id) : BUILT[node.type] ? builtDefinitions[node.type].name : extraPart(node)?.name ?? cards[node.type]?.name ?? node.type),
     portLabel: (node, port) => (BUILT[node.type] ? labelOf(board.portsIn(builtBy(node.type, node.params)), port) : portLabels[node.type]?.[port] ?? wiring.portLabel?.(node, port) ?? ''),
-    family: (node) => (BUILT[node.type] || workshop(node) ? 'built' : given(node) ? (node.type === WORKSHOP_OUTPUT || (!draft(node) && wiring.role(node) === 'sink') ? 'end' : 'given') : cards[node.type]?.family),
-    icon: (node) => (BUILT[node.type] || workshop(node) ? CircuitBoard : given(node) ? ArrowRightFromLine : cards[node.type]?.icon),
+    family: (node) => (BUILT[node.type] || extraPart(node) ? 'built' : given(node) ? (wiring.role(node) === 'sink' ? 'end' : 'given') : cards[node.type]?.family),
+    icon: (node) => (BUILT[node.type] || extraPart(node) ? CircuitBoard : given(node) ? ArrowRightFromLine : cards[node.type]?.icon),
     valueView: wiring.valueView ?? (() => level.views?.grid?.[0] ?? 'value'),
   }
   const definition = circuit.defined ?? defined
@@ -73,16 +70,16 @@ export function partsFor(level, circuit, { cards, portLabels, defined }) {
 }
 
 /** Shared descriptions and edit destinations for the step log and the two packed board entry points. */
-export function packedView(course, options, activeWorkshop) {
+export function packedView(course, options, openExtra) {
   const views = packedBoards(course, (board, view) => ({ ...board, parts: partsFor(board.level, view, options) }))
   return {
     root: views.root,
     open: (node, at) => {
-      const opened = openWorkshopPart(node, at, activeWorkshop)
-      return opened ? { ...opened, parts: workshopWiring(at.parts) } : views.open(node, at)
+      const opened = openExtra?.(node, at)
+      return opened ?? views.open(node, at)
     },
     edit: (node, at) => {
-      if (openWorkshopPart(node, at, activeWorkshop)) return null
+      if (openExtra?.(node, at)) return null
       const task = views.builder(node, at)
       return task ? () => openRef('level', task.id, task.task) : null
     },

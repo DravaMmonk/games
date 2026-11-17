@@ -1,5 +1,4 @@
 {
-  "folder": "vision-complete-power",
   "schema": {
     "type": "obj",
     "fields": { "title": { "type": "text" }, "lines": { "type": "list", "of": { "type": "text" } } }

@@ -10,7 +10,7 @@
     "goal": "@level.brokenstairs.mission.goal",
     "how": "@level.brokenstairs.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.brokenstairs.debrief.title",
     "body": [
@@ -21,12 +21,12 @@
   "tasks": [
     {
       "id": "brokenstairs",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-uses": "broken"
+            "state-graph/not": {
+              "state-graph/uses": "broken"
             }
           },
           "say": "@level.brokenstairs.tasks.brokenstairs.diagnose.0.say"
@@ -36,7 +36,7 @@
         "@level.brokenstairs.tasks.brokenstairs.hints.0",
         "@level.brokenstairs.tasks.brokenstairs.hints.1"
       ],
-      "world": "state-graph:world-strip",
+      "world": "state-graph/strip",
       "facts": [
         "ground",
         "broken"
@@ -70,7 +70,7 @@
       ],
       "solution": [
         "c = counter(view.m1, view.m2, facts.ground)",
-        "b = table:block(facts.broken, c)",
+        "b = table/block(facts.broken, c)",
         "cell <- b"
       ]
     }

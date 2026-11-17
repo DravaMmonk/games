@@ -27,5 +27,5 @@ export function BusBoard({ context, work, onChange, phone }) {
 }
 
 export function register(kernel) {
-  kernel.play('tick-bus:board', { component: BusBoard, preview: BusBoard, define })
+  kernel.play('tick-bus/board', { component: BusBoard, preview: BusBoard, define })
 }

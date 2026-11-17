@@ -34,9 +34,9 @@ description: Design, extend or review the learning games in study-notes (games/ 
 ## 内容与对象
 
 - `engine/resolver.js:resolveLayers` 是已安装内容的唯一加载入口。内容根、`GAMES_ROOT`、源目录、代码入口、归档位置归解析器。游戏、构建和编排只读解析后的公开数据。
-- `package.json` 声明版本、`kernel` 范围和直接 `uses` 范围表。引用只授权本包与直接依赖。游戏 `game.json.packages` 选全依赖闭包，第一项是主包；加载按拓扑，游戏最后。
-- 一个对象一个文件。关卡在 `levels/`，词条在 `entries/`，关系在 `relations/`，百科分组在 `sections/`；其余目录由类型声明。文件名给 id，任务、阶段和菜单保留内部 id。
-- 对象全名为 `<包>/<名>`，游戏命名空间为 `@<游戏>`，标签引用为 `#<全名>`。本包短引用在组装时限定全名。
+- `package.json` 声明种类 `kind`（`play`、`ext`、`course`、`lib`）、版本、`kernel` 范围和直接 `uses` 范围表。引用只授权本包与直接依赖。游戏 `game.json.packages` 选全依赖闭包，第一项是主包；加载按拓扑，游戏最后。
+- 一个对象一个文件。关卡在 `levels/`，词条在 `entries/`，关系在 `relations/`，百科分组在 `sections/`；包声明的对象目录默认取类型短名，可在声明中指定 `folder`。文件名给 id，任务、阶段和菜单保留内部 id。
+- 对象和代码登记项都用 `<包>/<名>`，每种能力单独登记。游戏层对象用 `@<游戏>/<名>`，标签引用用 `#<全名>`。本包对象短引用在组装时限定全名。
 - `kinds/<名>.json` 用数据声明对象结构、目录、关系端点、文案和 Studio 元数据。含义由代码 `kind` 登记。字段扩展使用 `extends: level|task`，任务可用 `play` 限定 schema 分支；共用字段与判别树展开后仍保持必填和防重定义约束。
 - 所有类型声明 `declares: package|game` 与 `overrides: { package?: [字段路径], game?: [字段路径] }`。`*` 允许全部字段，`$text` 允许文案。包可声明游戏层类型，同一注册表与 `layerProblems` 处理两层。
 - 关卡、任务、标签、关系、词条、百科分组和包类型在包层声明。章和游戏配置在游戏层声明。游戏覆盖按声明权限执行，通常为文案与 `requires.edges`。
@@ -57,8 +57,8 @@ description: Design, extend or review the learning games in study-notes (games/ 
 ## 新建与修改
 
 - 新对象复制本包或依赖的任意对象，或从 schema 起步；最小任务内容由玩法核心提供。精选起点用普通标签组织。
-- 新包用 `npm run new-package -- <id> --from <包>` 或 `--empty`。新游戏用 `npm run new-game -- <id> --from <游戏>` 或 `create_game`，再通过选包与章操作编排。
-- id 创建后保持不变，包含任务、阶段与章。显示名称通过文案修改；新身份通过明确新增与删除表达。移动任务保持 id。
+- 新包用 `npm run new -- package <id> --kind <play|ext|course|lib> --from <包>` 或 `--empty`。新游戏用 `npm run new-game -- <id> --from <游戏>` 或 `create_game`，再通过选包与章操作编排。
+- id 创建后保持不变，包含任务、阶段与章。显示名称通过文案修改；新身份通过明确新增与删除表达。移动任务保持 id。自动生成的数字后缀从 `-2` 起。
 - 可翻译字段用稳定 `@键`，本层语言表为 `i18n/<lang>.json`。用 `text.set` 与对象字段路径修改，标签键用 `@tag.<名>.title/desc`。
 - 内容修改用 CLI、MCP `modify` 或 Studio 的变更集 `{ "why": "...", "ops": [...] }`，先预览、校验再写入。批量迁移可用临时脚本，随后对每个受影响目标执行 `adopt --why`，脚本不保留。
 

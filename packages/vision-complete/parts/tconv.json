@@ -2,7 +2,7 @@
   "name": "@part.tconv.name",
   "desc": "@part.tconv.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
@@ -14,5 +14,5 @@
       "label": "@part.tconv.settings.w.label"
     }
   },
-  "op": "image:tconv"
+  "op": "image/tconv"
 }

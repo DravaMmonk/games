@@ -2,12 +2,12 @@
   "name": "@part.invert.name",
   "desc": "@part.invert.desc",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:invert"
+  "op": "image/invert"
 }

@@ -33,3 +33,10 @@ export function composeGame(content, modules) {
   game.moduleGames = byModule
   return game
 }
+
+/** Install optional game services after the gameplay adapters have been composed. */
+export function configureGame(game, content, kernel) {
+  game.pluginKernel = kernel
+  for (const configure of kernel.tables.game.values()) configure(game, content)
+  return game
+}

@@ -1,6 +1,6 @@
 {
   "title": "@level.e-says.title",
-  "tray": "gates-formula",
+  "tray": "gates",
   "intro": [
     {
       "t": "@level.e-says.intro.0.t"
@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "e-says",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "KA ↔ KB",
       "blind": true,
       "brief": "@level.e-says.tasks.e-says.brief",

@@ -6,9 +6,9 @@ import { tidyImageBoard } from '../core/engine/board.js'
 
 const text = (s) => ({ zh: s, en: s })
 const course = imageWorks({
-  primitives: ["image:arith"],
+  primitives: ["image/arith"],
   eras: [{ id: 0, levels: [{ id: 'sample' }], chapter: { title: text('c'), label: text('l'), question: text('q') } }],
-  levels: [{ id: 'sample', title: text('sample'), after: text('a'), intro: [{ t: text('i') }], tasks: [{ id: 'sample', kind: 'image:graph', brief: text('b'), scene: "image:scene-filter", setup: { target: "image:target-same" }, tests: [{ label: text('t'), in: "image:picture-disk" }] }] }],
+  levels: [{ id: 'sample', title: text('sample'), after: text('a'), intro: [{ t: text('i') }], tasks: [{ id: 'sample', kind: 'image/graph', brief: text('b'), scene: "image/filter", setup: { target: "image/same" }, tests: [{ label: text('t'), in: "image/disk" }] }] }],
 })
 const kit = course.kit
 const input = image(2, 1)
@@ -22,20 +22,20 @@ const run = (lines) => {
 test('arithmetic uses a constant on the selected side and exposes only the other input', () => {
   for (const [op, left, right] of [['add', [5, 7], [5, 7]], ['sub', [1, -1], [-1, 1]], ['mul', [6, 12], [6, 12]], ['div', [1.5, 0.75], [2 / 3, 4 / 3]]]) {
     for (const [side, port, expected] of [['a', 'b', left], ['b', 'a', right]]) {
-      const { values, graph } = run([`n = image:arith[op=${op},constantSide=${side},constant=3]()`, `n.${port} <- in`, 'out <- n'])
+      const { values, graph } = run([`n = image/arith[op=${op},constantSide=${side},constant=3]()`, `n.${port} <- in`, 'out <- n'])
       assert.ok(values)
       expected.forEach((value, i) => assert.ok(Math.abs(values[i] - value) < 1e-6))
       assert.deepEqual(kit.toText(kit.fromText(kit.toText(graph))), kit.toText(graph))
     }
   }
-  assert.throws(() => kit.fromText(['n = image:arith[op=sub,constantSide=a,constant=3](in, in)', 'out <- n']))
+  assert.throws(() => kit.fromText(['n = image/arith[op=sub,constantSide=a,constant=3](in, in)', 'out <- n']))
 })
 
 test('arithmetic reports missing input when a needed operand has no wire or constant', () => {
   for (const lines of [
-    ['n = image:arith[op=sub](in)', 'out <- n'],
-    ['n = image:arith[op=sub,constantSide=a]()', 'out <- n'],
-    ['n = image:arith[op=sub,constantSide=b]()', 'out <- n'],
+    ['n = image/arith[op=sub](in)', 'out <- n'],
+    ['n = image/arith[op=sub,constantSide=a]()', 'out <- n'],
+    ['n = image/arith[op=sub,constantSide=b]()', 'out <- n'],
   ]) {
     const { values, errors } = run(lines)
     assert.equal(values, undefined)
@@ -45,7 +45,7 @@ test('arithmetic reports missing input when a needed operand has no wire or cons
 
 
 test('switching constant sides removes only the occupied wire and restores ports when disabled', () => {
-  const original = kit.fromText(['n = image:arith[op=sub](in, in)', 'out <- n'])
+  const original = kit.fromText(['n = image/arith[op=sub](in, in)', 'out <- n'])
   const constantSide = (board, side) => tidyImageBoard({
     ...board, nodes: board.nodes.map((node) => node.id === 'n'
       ? { ...node, params: { ...node.params, constantSide: side } }

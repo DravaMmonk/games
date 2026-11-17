@@ -56,7 +56,7 @@ export function blueprintOf({ types, inputsOf, defaultParams }) {
       inputs: (node) => {
         if (node.type === 'output' && !colour(node, 'expected')) return ['in']
         if (!node.type) return []
-        return inputsOf(node.type).filter((port) => node.type !== 'image:arith' || node.params?.constantSide !== port)
+        return inputsOf(node.type).filter((port) => node.type !== 'image/arith' || node.params?.constantSide !== port)
       },
       outputs: (node) => {
         if (node.type === 'input') return colour(node, 'inputs') ? channelOutputs : null

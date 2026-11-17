@@ -2,7 +2,7 @@
   "name": "@part.botE.name",
   "desc": "@part.botE.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "bot",
@@ -14,5 +14,5 @@
       "label": "@part.botE.settings.C.label"
     }
   },
-  "op": "logic:botE"
+  "op": "logic/botE"
 }

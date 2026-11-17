@@ -1,6 +1,6 @@
 {
   "title": "@level.cases.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.cases.intro.0.t"
@@ -15,7 +15,7 @@
   "tasks": [
     {
       "id": "cases",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

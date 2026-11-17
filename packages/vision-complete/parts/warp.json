@@ -2,12 +2,12 @@
   "name": "@part.warp.name",
   "desc": "@part.warp.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:warp"
+  "op": "image/warp"
 }

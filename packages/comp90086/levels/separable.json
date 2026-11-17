@@ -2,26 +2,26 @@
   "title": "@level.separable.title",
   "intro": [],
   "after": "@level.separable.after",
-  "adds": ["line3", "add"],
+  "tray": "separable",
   "tasks": [
     {
       "id": "separable",
-      "play": "image:graph",
-      "scene": "image:scene-filter",
+      "play": "image/graph",
+      "scene": "image/filter",
       "brief": "@level.separable.tasks.separable.brief",
-      "setup": { "target": { "image:target-correlate": { "kernel": [0, 1, 0, 1, -4, 1, 0, 1, 0] } } },
+      "setup": { "target": { "image/correlate": { "kernel": [0, 1, 0, 1, -4, 1, 0, 1, 0] } } },
       "tests": [
         {
           "label": "@level.separable.tasks.separable.tests.0.label",
-          "in": { "image:picture-impulse": { "x": 7, "y": 7 } }
+          "in": { "image/impulse": { "x": 7, "y": 7 } }
         },
-        { "label": "@level.separable.tasks.separable.tests.1.label", "in": "image:picture-disk" },
-        { "label": "@level.separable.tasks.separable.tests.2.label", "in": "image:picture-checker" }
+        { "label": "@level.separable.tasks.separable.tests.1.label", "in": "image/disk" },
+        { "label": "@level.separable.tasks.separable.tests.2.label", "in": "image/checker" }
       ],
       "hidden": [
         {
           "label": "@level.separable.tasks.separable.hidden.0.label",
-          "in": { "image:picture-glyph": { "letter": "T" } }
+          "in": { "image/glyph": { "letter": "T" } }
         }
       ],
       "solution": [

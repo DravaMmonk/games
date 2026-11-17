@@ -2,7 +2,7 @@
   "name": "@part.argmin4.name",
   "desc": "@part.argmin4.desc",
   "icon": "Search",
-  "family": "image:family-search",
+  "family": "image/search",
   "inputs": [
     {
       "name": "c0",
@@ -22,5 +22,5 @@
     }
   ],
   "nulls": "pass",
-  "op": "image:argmin4"
+  "op": "image/argmin4"
 }

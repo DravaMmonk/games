@@ -1,6 +1,6 @@
 {
   "title": "@level.copy.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.copy.intro.0.t"
@@ -15,7 +15,7 @@
   "tasks": [
     {
       "id": "copy",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

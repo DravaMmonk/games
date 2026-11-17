@@ -33,11 +33,11 @@ export function runAudit(level, cases, words) {
   const atRow = (row, why) => ({ at: { row }, why })
   const failure = (board) => {
     if (wrong) return bad < 0 ? { why: wrong } : atRow(bad, wrong)
-    if (level.want === 'logic:want-agree') {
+    if (level.want === 'logic/agree') {
       const k = mismatch(board, false)
       return k < 0 ? null : atRow(k, T(`第 ${k + 1} 条条例上，这份声明的结果与预期不符。`, `On case ${k + 1}, this declaration’s result disagrees with the expectation.`))
     }
-    if (level.want === 'logic:want-expose') {
+    if (level.want === 'logic/expose') {
       const k = mismatch(board, true)
       return k < 0 ? null : atRow(k, T(`第 ${k + 1} 条条例上，这份声明的结果与预期相符，没有暴露它的错误。`, `On case ${k + 1}, this declaration’s result agrees with the expectation and does not reveal its fault.`))
     }

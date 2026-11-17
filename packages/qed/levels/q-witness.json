@@ -1,10 +1,9 @@
 {
   "title": "@level.q-witness.title",
-  "tray": "formula",
   "tasks": [
     {
       "id": "q-witness",
-      "kind": "logic:model",
+      "kind": "logic/model",
       "consts": [
         "h"
       ],

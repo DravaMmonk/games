@@ -50,7 +50,7 @@
       ],
       "want": {
         "say": {
-          "tick-bus:want-delayed": {
+          "tick-bus/delayed": {
             "input": "b",
             "first": 0
           }
@@ -61,7 +61,7 @@
         "k = keep[reg=A](b)",
         "say <- r"
       ],
-      "play": "tick-bus:board"
+      "play": "tick-bus/board"
     }
   ]
 }

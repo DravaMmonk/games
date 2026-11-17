@@ -11,7 +11,7 @@ export function extendVocabulary(base, contribution, first = false) {
   return {
     ...base,
     kinds: Object.fromEntries([...new Set([...Object.keys(base.kinds), ...Object.keys(registry.kinds)])].map(kind => [kind, first ? { ...registry.kinds[kind], ...base.kinds[kind] } : { ...base.kinds[kind], ...registry.kinds[kind] }])),
-    capabilities: Object.fromEntries(Object.entries(registry.tables).map(([kind, items]) => [kind, { ...base.capabilities[kind], ...items }])),
+    capabilities: { ...base.capabilities, ...Object.fromEntries(Object.entries(registry.tables).map(([kind, items]) => [kind, { ...base.capabilities[kind], ...items }])) },
     languages: { ...base.languages, ...registry.languages },
   }
 }

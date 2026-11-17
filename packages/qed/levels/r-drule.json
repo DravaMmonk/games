@@ -1,6 +1,6 @@
 {
   "title": "@level.r-drule.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-drule.intro.0.t"
@@ -13,8 +13,8 @@
   "tasks": [
     {
       "id": "r-drule",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",

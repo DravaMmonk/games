@@ -2,7 +2,7 @@
   "name": "@part.gauss.name",
   "desc": "@part.gauss.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -28,7 +28,7 @@
       "fixed": true
     }
   },
-  "op": "image:gauss",
+  "op": "image/gauss",
   "stages": [
     {
       "id": "gauss-border",

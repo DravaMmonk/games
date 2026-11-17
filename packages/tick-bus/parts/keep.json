@@ -2,8 +2,8 @@
   "name": "@part.keep.name",
   "desc": "@part.keep.desc",
   "icon": "ArrowDownToLine",
-  "family": "tick-bus:family-memory",
-  "inputs": [{ "name": "in", "type": "circuit:number" }],
+  "family": "tick-bus/memory",
+  "inputs": [{ "name": "in", "type": "circuit/number" }],
   "settings": {
     "reg": {
       "control": "select",
@@ -13,5 +13,5 @@
     }
   },
   "keeps": { "input": "in", "register": "reg" },
-  "outputType": "circuit:number"
+  "outputType": "circuit/number"
 }

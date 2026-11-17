@@ -1,8 +1,9 @@
+import { againstOpen, audit, defineCourse, reach } from '../../../packages/progress/core/index.js'
 // Technical course checks and dependency graphs on small made-up courses.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { eraLevels, layout, levelLabels, mapRows } from '../course.js'
-import { againstOpen, audit, defineCourse, holds, fresh, offer, reach, usable } from '../../../packages/circuit/core/index.js'
+import { holds, fresh, offer, usable } from '../../../packages/circuit/core/index.js'
 import { dependencies, dot, mermaid } from '../../../packages/circuit/core/index.js'
 
 const wires = (...pairs) => pairs.map(([from, to, required]) => ({ from, to, ...(required && { required: true }) }))
@@ -63,17 +64,17 @@ test('the part dependency graph: where each part comes in, what a built part is 
 
 test('findings a game leaves open are listed, new ones and ones met since are not', () => {
   const found = [{ rule: 'not-built', level: '1', part: 'a' }, { rule: 'not-built', level: '1', part: 'a' }, { rule: 'not-built', level: '5', part: 'b' }, { rule: 'built-later', level: '3', part: 'P' }]
-  assert.deepEqual(againstOpen(found, { 'not-built': ['a@1', 'c@7'] }), [
-    { rule: 'not-built', fresh: ['b@5'], left: ['a@1'], gone: ['c@7'] },
-    { rule: 'built-later', fresh: ['P@3'], left: [], gone: [] },
+  assert.deepEqual(againstOpen(found, { 'not-built': [{ part: 'a', level: '1' }, { part: 'c', level: '7' }] }), [
+    { rule: 'not-built', fresh: ['b (5)'], left: ['a (1)'], gone: ['c (7)'] },
+    { rule: 'built-later', fresh: ['P (3)'], left: [], gone: [] },
   ])
-  assert.deepEqual(againstOpen([], { nothing: ['x@1'] }), [{ rule: 'nothing', fresh: [], left: [], gone: ['x@1'] }])
+  assert.deepEqual(againstOpen([], { nothing: [{ part: 'x', level: '1' }] }), [{ rule: 'nothing', fresh: [], left: [], gone: ['x (1)'] }])
 })
 
 
 
 test('a tray orders available parts, while the reference and featured parts set what first appears', () => {
-  const trays = { gates: { items: ['b', 'a'] }, proof: { items: ['c', 'x', 'd'] } }
+  const trays = { gates: { includeUnlisted: true, items: ['b', 'a'] }, proof: { items: ['c', 'x', 'd'] } }
   const spec = { 1: { adds: ['a'], tray: 'gates' }, 2: { adds: ['b'], tray: 'gates' }, 3: { adds: ['c'], tray: 'proof' }, 4: { builds: 'x', uses: ['c'], tray: 'proof' }, 5: { adds: ['d'], tray: 'proof', uses: ['d'] }, 6: { tray: 'gates', uses: ['a'], featured: ['d'] } }
   const course = sketch([serial('1', '2', '3', '4'), { levels: [{ id: '5' }, { id: '6' }], links: wires(['4', '5'], ['5', '6']) }], spec, { trays, tray: (l) => spec[l.id]?.tray ?? null, featured: (l) => spec[l.id]?.featured ?? [] })
   assert.deepEqual(reach(course, { id: '5' }), ['c', 'x', 'd', 'a', 'b'])

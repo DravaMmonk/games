@@ -1,6 +1,6 @@
 {
   "title": "@level.x-chain.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "without": [
     "impI",
     "chain",
@@ -11,7 +11,7 @@
   "tasks": [
     {
       "id": "x-chain",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

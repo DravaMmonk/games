@@ -2,7 +2,7 @@
   "name": "Sobel y",
   "desc": "@part.sobely.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -25,7 +25,7 @@
       "fixed": true
     }
   },
-  "op": "image:sobely",
+  "op": "image/sobely",
   "stages": [
     {
       "id": "sobely-border",

@@ -1,6 +1,6 @@
 {
   "title": "@level.in-appnil.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.in-appnil.intro.0.t"
@@ -9,8 +9,8 @@
   "tasks": [
     {
       "id": "in-appnil",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -45,7 +45,7 @@
         "  body {",
         "    c2r0 = math[use=[\"def.0\", \"def.1\"]]()",
         "    c3r0 = refl()",
-        "    c2r2 = logic:hyp(c2r0)",
+        "    c2r2 = logic/hyp(c2r0)",
         "    c2 = simp(c1.body, c2r2)",
         "    c3 = rule(c2, c3r0)",
         "  }",

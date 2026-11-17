@@ -13,9 +13,9 @@
     "goal": "@level.safefrog.mission.goal",
     "how": "@level.safefrog.mission.how"
   },
-  "robot": "state-graph:robot-reach",
+  "robot": "state-graph/reach",
   "adds": [
-    "table:mul"
+    "table/mul"
   ],
   "debrief": {
     "title": "@level.safefrog.debrief.title",
@@ -26,12 +26,12 @@
   "tasks": [
     {
       "id": "safefrog",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-has": "table:mul"
+            "state-graph/not": {
+              "state-graph/has": "table/mul"
             }
           },
           "say": "@level.safefrog.tasks.safefrog.diagnose.0.say"
@@ -41,7 +41,7 @@
         "@level.safefrog.tasks.safefrog.hints.0",
         "@level.safefrog.tasks.safefrog.hints.1"
       ],
-      "world": "state-graph:world-river",
+      "world": "state-graph/river",
       "facts": [
         "bank",
         "hold"
@@ -120,10 +120,10 @@
         0.5832
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "g = table:pass(facts.bank, k)",
-        "m = table:mmax(view.m1, view.back, g)",
-        "x = table:mul(m, facts.hold)",
+        "k = table/const[value=1]()",
+        "g = table/pass(facts.bank, k)",
+        "m = table/mmax(view.m1, view.back, g)",
+        "x = table/mul(m, facts.hold)",
         "cell <- x"
       ]
     }

@@ -5,12 +5,11 @@
       "t": "@level.decl-three.intro.0.t"
     }
   ],
-  "tray": "formula",
   "tasks": [
     {
-      "id": "decl-three_1",
-      "kind": "logic:iso",
-      "declare": "@level.decl-three.tasks.decl-three_1.declare",
+      "id": "decl-three-1",
+      "kind": "logic/iso",
+      "declare": "@level.decl-three.tasks.decl-three-1.declare",
       "target": "A ∧ (B ∧ C)",
       "sentences": [
         "A",
@@ -97,9 +96,9 @@
           "make": true
         }
       ],
-      "step": "@level.decl-three.tasks.decl-three_1.step",
-      "play": "logic:audit",
-      "want": "logic:want-expose",
+      "step": "@level.decl-three.tasks.decl-three-1.step",
+      "play": "logic/audit",
+      "want": "logic/expose",
       "boards": [
         {
           "rules": [
@@ -157,13 +156,13 @@
       ],
       "intro": [
         {
-          "t": "@level.decl-three.tasks.decl-three_1.intro.0.t"
+          "t": "@level.decl-three.tasks.decl-three-1.intro.0.t"
         }
       ],
-      "brief": "@level.decl-three.tasks.decl-three_1.brief",
+      "brief": "@level.decl-three.tasks.decl-three-1.brief",
       "hint": [
-        "@level.decl-three.tasks.decl-three_1.hint.0",
-        "@level.decl-three.tasks.decl-three_1.hint.1"
+        "@level.decl-three.tasks.decl-three-1.hint.0",
+        "@level.decl-three.tasks.decl-three-1.hint.1"
       ],
       "cases": [
         {
@@ -181,9 +180,9 @@
       ]
     },
     {
-      "id": "decl-three_2",
-      "kind": "logic:iso",
-      "declare": "@level.decl-three.tasks.decl-three_2.declare",
+      "id": "decl-three-2",
+      "kind": "logic/iso",
+      "declare": "@level.decl-three.tasks.decl-three-2.declare",
       "target": "A ∨ (B ∨ C)",
       "sentences": [
         "A",
@@ -248,9 +247,9 @@
           ]
         }
       ],
-      "step": "@level.decl-three.tasks.decl-three_2.step",
-      "play": "logic:audit",
-      "want": "logic:want-agree",
+      "step": "@level.decl-three.tasks.decl-three-2.step",
+      "play": "logic/audit",
+      "want": "logic/agree",
       "boards": [
         {
           "rules": [
@@ -406,14 +405,14 @@
       ],
       "intro": [
         {
-          "t": "@level.decl-three.tasks.decl-three_2.intro.0.t"
+          "t": "@level.decl-three.tasks.decl-three-2.intro.0.t"
         }
       ],
-      "brief": "@level.decl-three.tasks.decl-three_2.brief",
+      "brief": "@level.decl-three.tasks.decl-three-2.brief",
       "hint": [
-        "@level.decl-three.tasks.decl-three_2.hint.0"
+        "@level.decl-three.tasks.decl-three-2.hint.0"
       ],
-      "after": "@level.decl-three.tasks.decl-three_2.after",
+      "after": "@level.decl-three.tasks.decl-three-2.after",
       "cases": [
         {
           "A": "Sat",

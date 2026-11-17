@@ -12,9 +12,9 @@ function IntroFigure({ fig }) {
 }
 
 export const displays = {
-  'state-graph:hero': Hero,
-  'state-graph:introduction': IntroFigure,
-  'state-graph:circuit': robotScreenFor,
-  'state-graph:manual': handResources,
-  'state-graph:catalog': { partDemo, lookIcon },
+  'state-graph/hero': Hero,
+  'state-graph/introduction': IntroFigure,
+  'state-graph/circuit': robotScreenFor,
+  'state-graph/manual': handResources,
+  'state-graph/catalog': { partDemo, lookIcon },
 }

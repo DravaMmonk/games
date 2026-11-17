@@ -1,7 +1,8 @@
+import { partUnlocks } from '../../../progress/core/unlocks.js'
 // node --test games/kit/shell — a game's progress in the browser: kept task by task for the puzzle each was made on.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { completionUnlocks, createProgress, earnedUnlocks, flagsIn, fresh, inheritedBoard, recordSolution, circuitProgress } from '../../core/progress.js'
+import { createProgress, earnedUnlocks, flagsIn, fresh, inheritedBoard, recordSolution, circuitProgress } from '../../core/progress.js'
 import { firstTask, nextRequiredTask, passed as passedTask, saved, skipOptionalTask, taskOpen, taskPassed, passedLevelIn } from '../../../../games/kit/shell/progress.js'
 import { playedTask, taskContext as contextForTask } from '../../../../games/kit/shell/played-task.js'
 import { addSlot, dropSlot } from '../../../../games/kit/shell/slots.js'
@@ -158,28 +159,19 @@ test('passing records the circuit that ran even when the task has never saved it
 })
 
 
-test('completion reports newly opened branches and their parts, and waits for every gate at a join', () => {
-  const level = { id: 'start', tasks: [{ key: 'start' }], unlocks: ['built', 'mode'] }
-  const left = { id: 'left', requires: ['start'] }
-  const right = { id: 'right', requires: ['start'] }
-  const join = { id: 'join', requires: ['start', 'other'] }
+test('parts become visible when their level is passed, including when it is replayed', () => {
+  const level = { id: 'start', tasks: [{ key: 'start' }], unlocks: ['built'] }
   const game = {
-    levels: [level, left, right, join],
-    isOpen: (entry, solved) => (entry.requires ?? []).every((id) => solved.has(id)),
-    unlocked: (entry) => entry.unlocks.map((flag) => flag === 'built' ? { part: 'gate', label: 'Gate' } : { label: 'Mode' }),
-    earnedParts: ({ solved }) => solved.includes('start') ? [{ part: 'gate', name: 'Gate' }, { part: 'symbol', name: 'Symbol' }] : [],
+    unlocked: () => [{ part: 'gate', label: 'Gate' }],
+    earnedParts: ({ solved }) => solved.includes('start') ? [{ part: 'wire', name: 'Wire' }] : [],
   }
   const before = { ...fresh(), all: true }
   const after = { ...before, solved: ['start'] }
-  const rewards = completionUnlocks(game, level, before, after)
-  assert.deepEqual(rewards.parts.map(({ part }) => part), ['gate', 'symbol'])
-  assert.deepEqual(rewards.levels, [left, right])
-  assert.deepEqual(completionUnlocks(game, level, after, after), { parts: [], levels: [] })
-  assert.deepEqual(completionUnlocks(game, level, { ...before, solved: ['other'] }, { ...after, solved: ['other', 'start'] }).levels, [left, right, join])
-  // Passed again, measured from the progress without it (GameShell), it shows what it opens, levels passed since too.
+  const keys = rewards => rewards.map(({ part }) => part)
+  assert.deepEqual(keys(partUnlocks(game, level, before, after)), ['gate', 'wire'])
+  assert.deepEqual(partUnlocks(game, level, after, after), [])
   const later = { ...after, solved: ['start', 'left'] }
-  const again = completionUnlocks(game, level, { ...later, solved: ['left'] }, later)
-  assert.deepEqual([again.parts.map(({ part }) => part), again.levels], [['gate', 'symbol'], [left, right]])
+  assert.deepEqual(keys(partUnlocks(game, level, { ...later, solved: ['left'] }, later)), ['gate', 'wire'])
 })
 
 test('optional tasks can be skipped without granting their rewards or appearing passed', () => {

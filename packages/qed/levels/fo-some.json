@@ -1,5 +1,4 @@
 {
-  "tray": "formula",
   "consts": [
     "h",
     "i",
@@ -8,9 +7,6 @@
     "l",
     "m",
     "n"
-  ],
-  "adds": [
-    "formulaExists"
   ],
   "title": "@level.fo-some.title",
   "intro": [
@@ -23,41 +19,41 @@
   ],
   "tasks": [
     {
-      "id": "fo-some_1",
-      "kind": "logic:translate",
-      "step": "@level.fo-some.tasks.fo-some_1.step",
-      "brief": "@level.fo-some.tasks.fo-some_1.brief",
-      "say": "@level.fo-some.tasks.fo-some_1.say",
+      "id": "fo-some-1",
+      "kind": "logic/translate",
+      "step": "@level.fo-some.tasks.fo-some-1.step",
+      "brief": "@level.fo-some.tasks.fo-some-1.brief",
+      "say": "@level.fo-some.tasks.fo-some-1.say",
       "target": "∃x. Bird(x) ∧ Flies(x)",
       "hint": [
-        "@level.fo-some.tasks.fo-some_1.hint.0",
-        "@level.fo-some.tasks.fo-some_1.hint.1"
+        "@level.fo-some.tasks.fo-some-1.hint.0",
+        "@level.fo-some.tasks.fo-some-1.hint.1"
       ],
       "decoys": [
         "∃x. Bird(x) → Flies(x)"
       ]
     },
     {
-      "id": "fo-some_2",
-      "kind": "logic:model",
-      "step": "@level.fo-some.tasks.fo-some_2.step",
-      "say": "@level.fo-some.tasks.fo-some_2.say",
+      "id": "fo-some-2",
+      "kind": "logic/model",
+      "step": "@level.fo-some.tasks.fo-some-2.step",
+      "say": "@level.fo-some.tasks.fo-some-2.say",
       "meant": "∃x. Bird(x) ∧ Flies(x)",
-      "brief": "@level.fo-some.tasks.fo-some_2.brief",
+      "brief": "@level.fo-some.tasks.fo-some-2.brief",
       "wrong": "∃x. Bird(x) → Flies(x)",
       "answer": {
         "size": 1,
         "preds": {}
       },
       "hint": [
-        "@level.fo-some.tasks.fo-some_2.hint.0"
+        "@level.fo-some.tasks.fo-some-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.fo-some.tasks.fo-some_2.intro.0.t"
+          "t": "@level.fo-some.tasks.fo-some-2.intro.0.t"
         },
         {
-          "t": "@level.fo-some.tasks.fo-some_2.intro.1.t"
+          "t": "@level.fo-some.tasks.fo-some-2.intro.1.t"
         }
       ]
     }

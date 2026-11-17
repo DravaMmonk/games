@@ -2,12 +2,12 @@
   "name": "@part.embed.name",
   "desc": "@part.embed.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:embed"
+  "op": "image/embed"
 }

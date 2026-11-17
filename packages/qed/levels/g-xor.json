@@ -1,11 +1,11 @@
 {
   "title": "@level.g-xor.title",
-  "tray": "gates-formula",
+  "tray": "gates",
   "after": "@level.g-xor.after",
   "tasks": [
     {
       "id": "g-xor",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "(Rain ∨ Wind) ∧ ¬(Rain ∧ Wind)",
       "blind": true,
       "budget": 4,

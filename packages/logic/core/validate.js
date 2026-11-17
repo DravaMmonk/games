@@ -46,12 +46,12 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
   }
   // A level in everyday words has a sentence for every letter it uses.
   for (const level of levels.filter((l) => l.notation?.words && !l.vocab)) {
-    const texts = level.kind === 'logic:define' ? [] : level.kind === 'logic:truth' ? level.formulas : level.kind === 'logic:gates' ? [level.target] : level.kind === 'logic:iso' ? [...level.sentences, ...level.tests.flatMap((t) => [...t.given, ...(t.goal ? [t.goal] : [])])] : level.kind === 'logic:script' ? [...Object.values(level.premises ?? {}), level.goal, ...(level.sentences ?? [])] : level.kind === 'logic:machine' ? level.tests.flatMap((t) => (t.eqs || t.term || t.ways ? [] : t.goal ? [t.goal, ...(t.hyps ?? [])] : t.clauses)) : level.tests.flatMap((t) => [...Object.values(t.premises ?? {}), t.goal])
+    const texts = level.kind === 'logic/define' ? [] : level.kind === 'logic/truth' ? level.formulas : level.kind === 'logic/gates' ? [level.target] : level.kind === 'logic/iso' ? [...level.sentences, ...level.tests.flatMap((t) => [...t.given, ...(t.goal ? [t.goal] : [])])] : level.kind === 'logic/script' ? [...Object.values(level.premises ?? {}), level.goal, ...(level.sentences ?? [])] : level.kind === 'logic/machine' ? level.tests.flatMap((t) => (t.eqs || t.term || t.ways ? [] : t.goal ? [t.goal, ...(t.hyps ?? [])] : t.clauses)) : level.tests.flatMap((t) => [...Object.values(t.premises ?? {}), t.goal])
     // The pattern's own letters stand bare in its last test; a machine's tests may end on bare letters too.
-    const bare = new Set(level.kind === 'logic:machine' ? 'ABCDEFGHPQRS'.split('') : Object.keys(level.cases?.[0] ?? {}))
+    const bare = new Set(level.kind === 'logic/machine' ? 'ABCDEFGHPQRS'.split('') : Object.keys(level.cases?.[0] ?? {}))
     const missing = lettersOf(texts.map((t) => parse(t))).filter((l) => !level.notation.words[l] && !bare.has(l))
     if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: no words for ${missing.join(', ')}` })
-    if (level.kind === 'logic:proof' && !level.cases) out.push({ level: level.id, fail: true, text: `${level.id}: a proof level needs test cases` })
+    if (level.kind === 'logic/proof' && !level.cases) out.push({ level: level.id, fail: true, text: `${level.id}: a proof level needs test cases` })
   }
   // First-order levels: every predicate and name has words; a query picks something out in some world; a model level's
   // reference world (`answer`) gives each sentence the value asked, and its naive one (`wrong`) does not.
@@ -60,21 +60,21 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     const missing = [...level.vocab.preds.map(([p]) => p), ...level.vocab.consts].filter((w) => !words[w])
     if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: no words for ${missing.join(', ')}` })
     const consts = level.vocab.names
-    if (level.kind === 'logic:translate' || level.kind === 'logic:query') {
+    if (level.kind === 'logic/translate' || level.kind === 'logic/query') {
       // The sentence can be built from the chips the task offers (formulaTree.js).
       const f = parse(level.target, { consts })
       const missingChip = missingChips(f, chipsOf(level))
       if (missingChip.length) out.push({ level: level.id, fail: true, text: `${level.id}: ${level.target} needs chips not on offer: ${missingChip.join(', ')}` })
-      if (level.kind === 'logic:translate' && freeVars(f).size) out.push({ level: level.id, fail: true, text: `${level.id}: ${level.target} has a free variable` })
+      if (level.kind === 'logic/translate' && freeVars(f).size) out.push({ level: level.id, fail: true, text: `${level.id}: ${level.target} has a free variable` })
     }
-    if (level.kind === 'logic:query') {
+    if (level.kind === 'logic/query') {
       for (const world of level.worlds) for (const t of world.things) if (!words[t]) out.push({ level: level.id, fail: true, text: `${level.id}: no words for the thing ${t}` })
       const f = parse(level.target, { consts })
       const free = [...freeVars(f)]
       if (free.length !== 1 || free[0] !== 'x') out.push({ level: level.id, fail: true, text: `${level.id}: a query needs the free variable x alone: ${level.target}` })
       else if (!level.worlds.some((w) => extent(f, structureOf(w, [f])).length)) out.push({ level: level.id, fail: true, text: `${level.id}: ${level.target} picks out nothing in any world` })
     }
-    if (level.kind === 'logic:model') {
+    if (level.kind === 'logic/model') {
       out.push(...memo(level.id, `model ${level.task ?? 0}`, () => {
         const judge = judgeFor(playFor(plays, level), worldCheck(level).judge)
         const fail = Boolean(judge(level.answer))
@@ -82,13 +82,13 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       }))
     }
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:truth')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/truth')) {
     const formulas = level.formulas.map((t) => parse(t))
     const bad = level.ask === 'counter' ? formulas.filter((f) => tautology(f)) : level.ask === 'sat' ? formulas.filter((f) => tautology({ op: '¬', a: f })) : []
     const mixed = level.ask !== 'valid' || (formulas.some(tautology) && formulas.some((f) => !tautology(f)))
     out.push({ level: level.id, fail: bad.length > 0 || !mixed, text: `${level.id} ${keyOf(level.title)}: (truth ${level.ask}) ${bad.length ? `a formula has no ${level.ask === 'sat' ? 'true' : 'false'} row` : mixed ? 'ok' : 'every formula gives the same answer'}` })
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:gates')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/gates')) {
     out.push(...memo(level.id, `gates ${level.task ?? 0}`, () => {
       const out = []
       const { reference: good, naive } = compare((work) => checkGates(level, work), level)
@@ -103,7 +103,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       return out
     }))
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:define')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/define')) {
     out.push(...memo(level.id, `define ${level.task ?? 0}`, () => {
       const out = []
       const { reference: { fail }, naive } = judgeWorks(judgeFor(playFor(plays, level), checkDefine(level)), { reference: level.solution, naive: level.naive })
@@ -113,11 +113,11 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       return out
     }))
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:iso')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/iso')) {
     out.push(...memo(level.id, `iso ${level.task ?? 0}`, () => {
       const out = []
       const words = (sentence) => say(sentenceOf(level, sentence), level.notation)
-      const audit = level.play === 'logic:audit'
+      const audit = level.play === 'logic/audit'
       const check = audit ? checkIso(level, words) : checkDeclaration(level)
       const inspect = audit ? check : (rules) => check(readRuleRows(level, rules))
       const example = !audit && level.naive?.every((rule) => rule.needs) ? level.naive : null
@@ -132,14 +132,14 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
         // The reference cases fill the cases set out, and keep the goal and expectation the level fixes.
         for (const text of auditCaseProblems(level, level.answer)) out.push({ level: level.id, fail: true, text: `  ${text}` })
         // A board to check is right (want 'agree'); one to catch is wrong.
-        level.boards.forEach(({ rules }, k) => { if (!check(rules) !== (level.want === 'logic:want-agree')) out.push({ level: level.id, fail: true, text: `  board ${k + 1} ${level.want === 'logic:want-agree' ? 'fails' : 'passes'} every situation (bad)` }) })
+        level.boards.forEach(({ rules }, k) => { if (!check(rules) !== (level.want === 'logic/agree')) out.push({ level: level.id, fail: true, text: `  board ${k + 1} ${level.want === 'logic/agree' ? 'fails' : 'passes'} every situation (bad)` }) })
         return out
       }
       reportNaive(out, level, naive)
       return out
     }))
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:machine')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/machine')) {
     out.push(...memo(level.id, `machine ${level.task ?? 0}`, () => {
       const out = []
       // Every part of the answer is one its tray holds, a rule part one its books have.
@@ -155,7 +155,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       return out
     }))
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:script')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/script')) {
     out.push(...memo(level.id, `script ${level.task ?? 0}`, () => {
       const out = []
       const judge = judgeFor(playFor(plays, level), scriptJudge(level))
@@ -175,7 +175,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       return out
     }))
   }
-  for (const level of levels.filter((l) => l.builds && MACHINE_PARTS[l.builds] && l.kind === 'logic:machine')) {
+  for (const level of levels.filter((l) => l.builds && MACHINE_PARTS[l.builds] && l.kind === 'logic/machine')) {
     out.push(...memo(level.id, `built ${level.task ?? 0}`, () => {
       const out = []
       const names = inputsOfLevel(level).map((i) => i.name)
@@ -204,17 +204,17 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     }
   }
   // An equation a machine level proves is what its every test proves.
-  for (const level of levels.filter((l) => l.kind === 'logic:machine' && l.fact)) {
+  for (const level of levels.filter((l) => l.kind === 'logic/machine' && l.fact)) {
     const statement = parseS(level.facts[level.fact].statement)
     if (!level.tests.every((t) => t.goal && same(parseS(t.goal), statement))) out.push({ level: level.id, fail: true, text: `${level.id}: its tests are not all the equation ${level.fact} it proves` })
   }
-  for (const level of levels.filter((l) => l.kind === 'logic:proof')) {
+  for (const level of levels.filter((l) => l.kind === 'logic/proof')) {
     out.push(...memo(level.id, `proof ${level.task ?? 0}`, () => {
       const out = []
       const consts = level.consts ?? []
       // Induction is no first-order consequence (worlds with numbers past every S…S 0 satisfy the definitions and not
       // the conclusion), so a proof that uses it is not held to the countermodel search.
-      const induction = (level.solution?.nodes ?? []).some((n) => (level.partResources?.[n.type] ?? n.type) === 'logic:natInd')
+      const induction = (level.solution?.nodes ?? []).some((n) => (level.partResources?.[n.type] ?? n.type) === 'logic/natInd')
       for (const test of induction ? [] : level.tests) {
         const premises = Object.values(test.premises ?? {}).map((t) => parse(t, { consts }))
         const m = countermodel(premises, parse(test.goal, { consts }))
@@ -270,7 +270,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
  */
 export function lemmaPortProblems(parts = {}) {
   return Object.entries(parts).flatMap(([type, part]) => (part.inside ?? [])
-    .filter(({ reference }) => reference?.kind === 'logic:proof' && Array.isArray(part.inputs))
+    .filter(({ reference }) => reference?.kind === 'logic/proof' && Array.isArray(part.inputs))
     .flatMap(({ id, reference }) => (reference.tests ?? []).map((test) => Object.keys(test.premises ?? {}))
       .filter((premises) => premises.length !== part.inputs.length)
       .map((premises) => ({ fail: true, text: `part ${type}: ${part.inputs.length} port(s) (${part.inputs.map(({ name }) => name).join(', ')}), but the proof inside it (${id}) has ${premises.length} premise(s) (${premises.join(', ')}): port k is premise k` }))))
@@ -285,7 +285,7 @@ export function lemmaPortProblems(parts = {}) {
 function fixedLetterProblems(parts) {
   const letters = (text) => String(text ?? '').match(/\b[A-Z]\b/g) ?? []
   return Object.entries(parts).flatMap(([type, part]) => {
-    const proofs = (part.inside ?? []).map(({ reference }) => reference).filter((reference) => reference?.kind === 'logic:proof')
+    const proofs = (part.inside ?? []).map(({ reference }) => reference).filter((reference) => reference?.kind === 'logic/proof')
     if (!proofs.length || !part.settings || Array.isArray(part.settings)) return []
     const open = new Set(proofs.flatMap((reference) => (reference.tests ?? []).flatMap((test) => {
       const fixed = new Set(Object.values(test.premises ?? {}).flatMap(letters))

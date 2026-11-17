@@ -10,7 +10,7 @@
     "goal": "@level.threekeys.mission.goal",
     "how": "@level.threekeys.mission.how"
   },
-  "robot": "state-graph:robot-stack",
+  "robot": "state-graph/stack",
   "debrief": {
     "title": "@level.threekeys.debrief.title",
     "body": [
@@ -20,9 +20,9 @@
   "tasks": [
     {
       "id": "threekeys",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "noTrace": true,
-      "world": "state-graph:world-keys",
+      "world": "state-graph/keys",
       "facts": [
         "start",
         "gain",
@@ -126,11 +126,11 @@
       ],
       "solution": [
         "c = counter(view.up, view.left, facts.start)",
-        "p = table:msum(view.upPrev, view.leftPrev)",
-        "b1 = table:block(facts.shut, c)",
-        "g = table:pass(facts.gain, p)",
-        "b2 = table:block(facts.lose, b1)",
-        "m = table:msum(b2, g)",
+        "p = table/msum(view.upPrev, view.leftPrev)",
+        "b1 = table/block(facts.shut, c)",
+        "g = table/pass(facts.gain, p)",
+        "b2 = table/block(facts.lose, b1)",
+        "m = table/msum(b2, g)",
         "cell <- m"
       ],
       "remember": [

@@ -1,6 +1,6 @@
 {
   "title": "@level.gd-true.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.gd-true.intro.0.t"
@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "gd-true",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "g",
         "d"

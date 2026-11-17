@@ -5,7 +5,7 @@
     {
       "t": "@level.change.intro.0.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "r0",
@@ -91,7 +91,7 @@
     "goal": "@level.change.mission.goal",
     "how": "@level.change.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.change.debrief.title",
     "body": [
@@ -103,7 +103,7 @@
   "tasks": [
     {
       "id": "change",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "testLabel": "@level.change.tasks.change.testLabel",
       "tests": [
         {
@@ -130,7 +130,7 @@
           ]
         }
       ],
-      "world": "state-graph:world-coins",
+      "world": "state-graph/coins",
       "facts": [
         "ground"
       ],
@@ -140,11 +140,11 @@
         null
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "z = table:const[value=0]()",
-        "a = table:add(view.seg, k)",
-        "g = table:pass(facts.ground, z)",
-        "m = table:mmin(a, g)",
+        "k = table/const[value=1]()",
+        "z = table/const[value=0]()",
+        "a = table/add(view.seg, k)",
+        "g = table/pass(facts.ground, z)",
+        "m = table/mmin(a, g)",
         "cell <- m"
       ],
       "hints": [
@@ -161,9 +161,9 @@
       }
     },
     {
-      "id": "change_2",
-      "play": "state-graph:circuit",
-      "testLabel": "@level.change.tasks.change_2.testLabel",
+      "id": "change-2",
+      "play": "state-graph/circuit",
+      "testLabel": "@level.change.tasks.change-2.testLabel",
       "tests": [
         {
           "n": 7,
@@ -189,7 +189,7 @@
           ]
         }
       ],
-      "world": "state-graph:world-coins",
+      "world": "state-graph/coins",
       "facts": [
         "ground"
       ],
@@ -199,16 +199,16 @@
         null
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "g = table:pass(facts.ground, k)",
-        "m = table:msum(view.seg, g)",
+        "k = table/const[value=1]()",
+        "g = table/pass(facts.ground, k)",
+        "m = table/msum(view.seg, g)",
         "cell <- m"
       ],
       "hints": [
-        "@level.change.tasks.change_2.hints.0",
-        "@level.change.tasks.change_2.hints.1"
+        "@level.change.tasks.change-2.hints.0",
+        "@level.change.tasks.change-2.hints.1"
       ],
-      "ask": "@level.change.tasks.change_2.ask",
+      "ask": "@level.change.tasks.change-2.ask",
       "carries": true
     }
   ]

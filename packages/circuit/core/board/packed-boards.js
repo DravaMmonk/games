@@ -1,5 +1,5 @@
 import { solutionStamp, workSignature } from '../stamp.js'
-import { workView } from "./workshop-view.js"
+import { workView } from "./work-extension.js"
 
 
 

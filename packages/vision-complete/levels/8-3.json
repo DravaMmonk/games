@@ -14,11 +14,11 @@
   "tasks": [
     {
       "id": "8-3",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.8-3.tasks.8-3.brief",
       "hint": "@level.8-3.tasks.8-3.hint",
       "check": { "tolerance": 0.15, "mismatches": 3 },
-      "scene": "vision-complete:scene-noisyBlob",
+      "scene": "vision-complete/noisyBlob",
       "tests": [
         { "label": "@level.8-3.tasks.8-3.tests.0.label", "at": [3.5, 3.5], "seed": 300 },
         { "label": "@level.8-3.tasks.8-3.tests.1.label", "at": [3.5, 9.17], "seed": 301 },
@@ -33,7 +33,7 @@
         { "label": "@level.8-3.tasks.8-3.hidden.0.label", "at": [5.2, 8.1], "seed": 400 },
         { "label": "@level.8-3.tasks.8-3.hidden.1.label", "at": [10.4, 5.6], "seed": 401 }
       ],
-      "solution": ["e = dg_encoder(in)", "d = dg_decoder(e)", "out <- d"],
+      "solution": ["e = dg-encoder(in)", "d = dg-decoder(e)", "out <- d"],
       "naive": ["out <- in"],
       "alsoFails": [["g = gauss(in)", "out <- g"]]
     }

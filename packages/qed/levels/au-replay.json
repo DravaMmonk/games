@@ -5,7 +5,7 @@
     "saturate",
     "clausify"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.au-replay.intro.0.t"
@@ -15,8 +15,8 @@
   "tasks": [
     {
       "id": "au-replay",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

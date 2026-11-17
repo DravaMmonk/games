@@ -4,7 +4,7 @@
     "uConflict",
     "uDecompose"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-clash.intro.0.t"
@@ -13,8 +13,8 @@
   "tasks": [
     {
       "id": "r-clash",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

@@ -6,6 +6,7 @@
     "logic": "^0.0.0"
   },
   "title": "@course.title",
+  "author": "DravaMmonk",
   "kicker": "@course.kicker",
   "lede": "@course.lede",
   "chapters": [

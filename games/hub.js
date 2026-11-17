@@ -24,7 +24,7 @@ function render() {
     return `<a class="game" href="${g.href}">
       <div class="game-art"${g.art ? ` data-art="${g.art}"` : ''}></div>
       <div class="game-body">
-        <p class="game-meta"><span class="game-no">${String(i + 1).padStart(2, '0')}</span>${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr('开发中', 'In development')}</em>` : ''}</p>
+        <p class="game-meta"><span class="game-no">${String(i + 1).padStart(2, '0')}</span>${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr('开发中', 'In development')}</em>` : ''}${g.author ? `<span class="game-author">${tr('作者', 'By')} ${g.author}</span>` : ''}</p>
         <h2 class="game-title">${en ? g.en : g.title}<small lang="${en ? 'zh-CN' : 'en'}">${en ? g.title : g.en}</small></h2>
         <p class="game-desc">${pick(g.desc)}</p>
         <div class="game-foot">
@@ -39,8 +39,8 @@ function render() {
 }
 
 function paintPage() {
-  document.title = tr('课程解谜 · Course Puzzles', 'Course Puzzles · 课程解谜');
-  document.querySelector('meta[name="description"]').content = tr('把课程做成解谜关卡的学习游戏：视觉完备（计算机视觉）、状态之图（动态规划）、证明完毕（形式化证明）、句法之图（英语语法）。', 'Courses turned into puzzle games: Vision Complete (computer vision), State Graph (dynamic programming), Q.E.D. (formal proof) and Syntax Graph (English grammar).');
+  document.title = tr('图灵模拟器 · Turing Simulator', 'Turing Simulator · 图灵模拟器');
+  document.querySelector('meta[name="description"]').content = tr('图灵模拟器：把所有知识地图变成图灵完备风格的游戏。视觉完备（计算机视觉）、状态之图（动态规划）、证明完毕（形式化证明）。', 'Turing Simulator: turn every knowledge map into a Turing Complete–style game. Vision Complete (computer vision), State Graph (dynamic programming) and Q.E.D. (formal proof).');
 }
 
 mountHubBar(document.querySelector('#hub-bar'));

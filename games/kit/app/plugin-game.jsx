@@ -12,7 +12,8 @@ export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
   const provided = [...kernel.tables.play].find(([name, play]) => name.startsWith(`${id}:`) && play.runtime)
   if (provided) {
     const presentation = kernel.tables.playView.get(provided[0])
-    return { id, runtime: provided[1].runtime, define: (content, works) => presentation.define(content, works, { kernel, vocabulary }) }
+    // The game's own facts (its author) come from its configuration, whatever the package draws.
+    return { id, runtime: provided[1].runtime, define: (content, works) => Object.assign(presentation.define(content, works, { kernel, vocabulary }), content.author && { author: content.author }) }
   }
   const runtime = pluginRuntime(id, kernel, vocabulary)
   const kinds = Object.fromEntries([...kernel.tables.play].filter(([name]) => name.startsWith(`${id}:`)).map(([name, core]) => {
@@ -40,7 +41,7 @@ export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
   const define = (content, works = runtime.spec(content)) => {
     kernel.pair(content.levels.flatMap(level => level.tasks), view)
     return defineGame({
-    id: content.id, title: content.title, kicker: content.kicker, lede: content.lede,
+    id: content.id, title: content.title, author: content.author, kicker: content.kicker, lede: content.lede,
     glossary: content.glossary, course: works.course, chapters: works.chapters, levels: works.levels,
     kinds, pluginKernel: kernel, pluginContent: content,
     })

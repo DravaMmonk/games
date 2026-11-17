@@ -273,6 +273,7 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
         <div className="map-hero-text">
           <p className="map-kicker" {...fileMark(edit, 'game', ['kicker'])}>{L(game.kicker)}</p>
           <h1 {...fileMark(edit, 'game', ['title'])}>{L(game.title)}</h1>
+          {game.author && <p className="map-author" {...fileMark(edit, 'game', ['author'])}>{tr('作者', 'By')} <span>{game.author}</span></p>}
           <Text className="map-lede" text={game.lede} mark={fileMark(edit, 'game', ['lede'])} />
           <div className="map-progress" aria-label={tr(`已通过 ${done} / ${levels.length} 关`, `${done} of ${levels.length} levels passed`)}>
             <span className="map-progress-bar"><i style={{ width: `${(done / levels.length) * 100}%` }} /></span>

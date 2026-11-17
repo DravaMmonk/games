@@ -1,0 +1,17 @@
+Game content © 2026 DravaMmonk
+
+The game content of this repository is licensed under the Creative Commons
+Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0):
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Game content is everything that makes up the games rather than the code that runs them: the levels, tasks,
+chapters, courses and their tests and reference answers, the encyclopedia entries, every text and its
+translations (`i18n/`), and the illustrations and other media — the JSON, Markdown and media files under
+`games/<game>/` and `packages/<package>/` outside `core/`, `view/`, `test/` and `kinds/`.
+
+You may share and adapt it for non-commercial purposes, as long as you credit DravaMmonk, link to the license,
+say what you changed, and release what you make from it under the same license.
+
+The code is licensed separately, under the MIT License (see LICENSE).
+
+"Turing Complete" belongs to its owners. This platform borrows its style of play and is not affiliated with it.

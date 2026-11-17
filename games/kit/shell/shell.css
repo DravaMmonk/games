@@ -37,6 +37,8 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .map-hero { max-width: 1240px; margin: 0 auto; padding: var(--sp-9) var(--sp-8) var(--sp-8); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; gap: var(--sp-8); }
 .map-kicker { margin: 0 0 var(--sp-5); color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; }
 .map-hero h1 { margin: 0; font-family: var(--serif); font-size: clamp(44px, 6vw, 72px); font-weight: 500; letter-spacing: -.02em; line-height: 1; }
+.map-author { margin: var(--sp-5) 0 0; color: var(--muted); font: 12px/1.4 var(--mono); letter-spacing: .08em; }
+.map-author span { color: var(--ink); }
 .map-hero h1::after { content: ''; display: block; width: 132px; height: 7px; margin-top: var(--sp-7); border-top: 1px solid var(--rule); background: linear-gradient(var(--accent), var(--accent)) 0 0 / 42px 2px no-repeat, repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 12px) 0 0 / 100% 4px no-repeat; }
 .map-lede { max-width: 30em; margin: var(--sp-7) 0 0; color: var(--body); font-family: var(--serif); font-size: 18px; line-height: 1.75; }
 .map-progress { margin-top: var(--sp-7); display: flex; align-items: center; gap: var(--sp-5); color: var(--muted); font-family: var(--mono); font-size: 11px; }

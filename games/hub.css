@@ -24,6 +24,7 @@ main{max-width:1240px;margin:0 auto;padding:0 max(var(--sp-6),env(safe-area-inse
 .game-no{color:var(--faint);letter-spacing:.08em}
 .game-no::after{content:"";display:inline-block;width:22px;height:1px;margin:0 var(--sp-5);vertical-align:middle;background:var(--rule)}
 .dev-tag{margin-left:var(--sp-5);padding:var(--sp-1) var(--sp-4);border-radius:var(--r-full);color:var(--accent-ink);background:color-mix(in srgb,var(--accent) 14%,transparent);font-style:normal;letter-spacing:.08em}
+.game-author{margin-left:auto;color:var(--muted);letter-spacing:.08em;text-transform:none}
 .game-title{margin:var(--sp-4) 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sp-1) var(--sp-5);color:var(--heading);font:500 clamp(24px,2.6vw,30px)/1.15 var(--serif);letter-spacing:-.01em}
 .game-title small{color:var(--faint);font:var(--fs-label)/1.4 var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .game-desc{margin:var(--sp-4) 0 0;max-width:34em;color:var(--body);font:14px/1.7 var(--sans);text-wrap:pretty}
@@ -48,3 +49,11 @@ main{max-width:1240px;margin:0 auto;padding:0 max(var(--sp-6),env(safe-area-inse
 /* English pages hide the Chinese markup until hub.js has swapped it. */
 html[lang="en"]:not(.i18n) [data-en]{visibility:hidden}
 #hub-bar { display: contents; }
+
+/* The page's foot: copyright, the licences, the source, and that the style is borrowed. */
+.hub-foot{max-width:1240px;margin:0 auto;padding:var(--sp-7) max(var(--sp-6),env(safe-area-inset-left)) max(var(--sp-8),env(safe-area-inset-bottom));border-top:1px solid var(--hairline);color:var(--muted);font:12px/1.7 var(--sans)}
+.hub-foot p{margin:0}
+.hub-legal{display:flex;flex-wrap:wrap;gap:var(--sp-2) var(--sp-6)}
+.hub-foot a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+.hub-foot a:hover{text-decoration-color:currentColor}
+.hub-note{margin-top:var(--sp-3);color:var(--faint)}

@@ -17,5 +17,5 @@ export const vocabulary = {
 
 /** A fresh assembly starts with only the platform's configuration schema. */
 export function vocabularyFor() {
-  return { ...vocabulary, game: S.obj({ title: S.opt(S.text()), kicker: S.opt(S.text()), lede: S.opt(S.text()), chapters: S.opt(CHAPTERS), ...COURSE_OPTIONS }), level: null }
+  return { ...vocabulary, game: S.obj({ title: S.opt(S.text()), author: S.opt(S.str()), kicker: S.opt(S.text()), lede: S.opt(S.text()), chapters: S.opt(CHAPTERS), ...COURSE_OPTIONS }), level: null }
 }

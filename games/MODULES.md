@@ -268,38 +268,38 @@ packages/<包>/
 
 ### 5.6 包的种类和名字里的符号（第 16 步）
 
-**包 id 带种类前缀。** `package.json` 写 `kind`，包 id 以 `<种类>-` 开头，检查两者一致：
+**包的种类是元数据，不进 id。** `package.json` 写 `kind`，检查它存在且是下面四种之一；包 id 不变（`logic`、`qed`…）。做法同《异星工厂》模组门户的分类：库和资源包归「Internal」，名字本身不带种类。
 
 | 种类 | 是什么 | 包 |
 |---|---|---|
-| `play` | 玩法：对象类型、玩法、显示、编辑器等机制，带代码 | `play-circuit`、`play-logic`、`play-image`、`play-table`、`play-text`、`play-rows`、`play-tick-bus` |
-| `ext` | 挂在某种玩法上的可选层 | `ext-progress` |
-| `course` | 一款游戏自己的内容 | `course-qed`、`course-vision-complete`、`course-state-graph`、`course-comp90086` |
-| `lib` | 给多款游戏共用的内容 | `lib-arithmetic` |
+| `play` | 玩法：对象类型、玩法、显示、编辑器等机制，带代码 | `circuit`、`logic`、`image`、`table`、`text`、`rows`、`tick-bus` |
+| `ext` | 挂在某种玩法上的可选层 | `progress` |
+| `course` | 一款游戏自己的内容 | `qed`、`vision-complete`、`state-graph`、`comp90086` |
+| `lib` | 给多款游戏共用的内容 | `arithmetic` |
 
-游戏 id 不带前缀（`qed`、`vision-complete`…），也不许以这几个前缀开头、不许叫 `kernel`：于是不带前缀的命名空间就是游戏，带前缀的是包，`kernel` 是内核。
+- **Studio 按种类分类**：列出包的地方（包工作室的包列表、游戏选包、依赖显示）按 `kind` 分组，可以按种类筛选；`npm run new`（scaffold）新建包时要选种类。
+- 发布的 `manifest.json` 带 `kind`。
 
 **每个符号只有一种意思。**
 
 | 符号 | 只用于 | 例子 |
 |---|---|---|
-| `-` | 一个名字里连词；包 id 的第一个词是种类 | `play-logic`、`decl-order` |
-| `/` | 「谁的什么」：一切全名，文件里声明的对象和代码登记的能力一样写；也是文件路径 | `play-logic/proof`、`course-qed/always`、`play-circuit/part`、`qed/boxes` |
+| `-` | 一个名字里连词 | `vision-complete`、`decl-order` |
+| `/` | 「谁的什么」：一切全名，文件里声明的对象和代码登记的能力一样写；也是文件路径 | `logic/proof`、`qed/always`、`circuit/part` |
 | `.` | 一个对象或文件内部的路径：文案键、字段路径、存档键 | `level.always.title`、`qed.v3` |
-| `@` | 只表示「这里是一条文案键」 | `@level.separable.after` |
-| `#` | 只表示「这里是一个标签」 | `#course-qed/basics` |
+| `@` | 开头表示「不是包的全名」：带 `/` 的是游戏层的对象，不带 `/` 的是文案键 | `@qed/boxes`、`@level.separable.after` |
+| `#` | 只表示「这里是一个标签」 | `#qed/basics` |
 | `_` | 只用于程序变量（端口、线、蓝图变量），不用于 id | `dg_sigma` |
 | `:` | 不用于名字（蓝图语法、JSON 本身照旧） | — |
 | `\` | 不用 | — |
 
-- **`:` 并进 `/`**：玩法、对象类型、显示、检查、编辑器扩展、游戏钩子等代码登记的名字，从 `<包>:<名>` 改成 `<包>/<名>`（`"play": "play-logic/proof"`）。名字只需在同种里唯一（4.1），注册表按种类分开，不会和对象全名混。
-- **种类不再拼进名字**：内核现在把代码登记的能力拼成 `<种类>-<名>`（`image:picture-glyph`、`image:display-step`、`image:benchModel-obscura`），`-` 被当成分隔符用。改为各种能力各一张注册表、名字里不带种类：字段知道自己要的是哪种（`"in": "play-image/glyph"`）。一个字段接受几种能力时，同名由检查报歧义。
-- **游戏的命名空间去掉 `@`**：章 `@qed/boxes` 写成 `qed/boxes`；游戏自己声明的对象同理。`@` 只剩文案键一种意思。
+- **`:` 并进 `/`**：玩法、对象类型、显示、检查、编辑器扩展、游戏钩子等代码登记的名字，从 `<包>:<名>` 改成 `<包>/<名>`（`"play": "logic/proof"`）。名字只需在同种里唯一（4.1），注册表按种类分开，不会和对象全名混。
+- **种类不再拼进名字**：内核现在把代码登记的能力拼成 `<种类>-<名>`（`image:picture-glyph`、`image:display-step`、`image:benchModel-obscura`），`-` 被当成分隔符用。改为各种能力各一张注册表、名字里不带种类：字段知道自己要的是哪种（`"in": "image/glyph"`）。一个字段接受几种能力时，同名由检查报歧义。
 - **对象目录不再拼包名**：对象类型的 `folder` 默认就是类型的短名，`comp90086-box/`、`vision-complete-power/` 这类改成 `box/`、`power/`（包自己的目录已经说明是谁的）。
 - **自动生成的 id 用 `-2`**，不用 `_2`（`task.add` 等）；现有的 `sp-laws_2` 之类一并改名。
-- **全名一层一个符号**：`course-qed/level.always.title` 是 `-` 连成包名、`/` 分开归属、`.` 走进对象内部。
+- **全名一层一个符号**：`qed/level.always.title` 是 `/` 分开归属、`.` 走进对象内部。
 - **不在本次范围**：名字的大小写（`formulaAnd`、`benchModel` 这样的驼峰写法）照旧。
-- **存档**：任务 id 带包名，改名后四款游戏的存档清零一次（已定，不做迁移）。存档键按游戏 id，不变。
+- **存档**：任务的 `play` 等进存档戳的字段里有这些名字，改写后四款游戏的存档清零一次（已定，不做迁移）。存档键按游戏 id，不变。
 
 ## 6. 包的代码要守的边界
 
@@ -393,7 +393,7 @@ packages/<包>/
 13. **平台独立成仓库**（8.4）：平台仓库发布第一个版本，内容仓库按 `kernel` 范围装它；删掉这份文档。
 14. **进度层出 `circuit`**（5.1.2，已完成）。阶段、发放字段、工坊进可选的进度包（`progress`，依赖 `circuit`）；托盘留在 `circuit`、只放元件；符号用自己的 `at`，删掉通用发放登记、`formula` 托盘和合并托盘；解锁窗口收集各包报的解锁；不用进度包的游戏（`comp90086`）只装 `circuit`。
 15. **内核功能按需启用**（待定）。只放一两个展示关卡的页面（比如嵌在笔记里的电路题）用不上关卡地图、百科、通关窗口、存档：内核只负责跑关卡，这些功能由游戏声明才打开。从 `plugin-game.jsx` 现有的展示路径起步。
-16. **包的种类和名字里的符号**（5.6）。包 id 加种类前缀（`play-`、`ext-`、`course-`、`lib-`），`package.json` 写 `kind`；全名一律 `<命名空间>/<名>`，代码登记的名字去掉 `:` 和拼进去的种类；游戏命名空间去掉 `@`；对象目录不再拼包名；生成的 id 用 `-2`。四款游戏存档清零一次。
+16. **包的种类和名字里的符号**（5.6）。`package.json` 写 `kind`（`play`、`ext`、`course`、`lib`），包 id 不变，Studio 按种类分组和筛选；全名一律 `<命名空间>/<名>`，代码登记的名字去掉 `:` 和拼进去的种类；对象目录不再拼包名；生成的 id 用 `-2`。四款游戏存档清零一次。
 
 ## 11. 已定
 

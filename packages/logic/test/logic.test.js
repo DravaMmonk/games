@@ -805,5 +805,5 @@ test('written and authored rule rows use the same premises and binder', () => {
   assert.deepEqual(judge(readRuleRows(level, [{ binds: ['x', 'x'], needs: [] }])).at, { row: 0 })
   const unavailable = judge(readRuleRows(level, declaration(['Snow'])))
   assert.deepEqual(unavailable.at, { row: 0, slot: 0 })
-  assert.match(unavailable.why.en, /unavailable chips: P:Snow/)
+  assert.match(unavailable.why.en, /not on offer: P:Snow/)
 })

@@ -235,5 +235,5 @@ export function declaredLines(level) {
     }
   }
   const rules = declaredRules(level, level.solution)
-  return { label: T('声明给出的规则'), lines: [...rules.make.map((r, k) => `${tr(`引入规则 ${k + 1}：`, `Intro rule ${k + 1}: `)}${ruleText(r, text)}`), `${tr('消去规则：')}${ruleText(rules.take, text)}`] }
+  return { label: T('声明给出的规则'), lines: [...rules.make.map((r, k) => `${tr(`引入规则 ${k + 1}：`, `Intro ${k + 1}: `)}${ruleText(r, text)}`), `${tr('消去规则：')}${ruleText(rules.take, text)}`] }
 }

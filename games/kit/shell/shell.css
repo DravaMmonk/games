@@ -593,8 +593,8 @@ level-ref, wiki-ref { display: inline; }
   border: 1px dashed var(--rule); color: var(--muted); background: transparent; font-family: var(--sans); font-size: calc(var(--sent-fs) - 1.5px);
 }
 .rr-add, .ks-pick-add { box-sizing: border-box; min-height: var(--sent-h); min-width: var(--sent-h); padding: 0 var(--sent-px); display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); border-radius: var(--r-md); cursor: pointer; }
-/* One sentence alone: the whole row, its text to the left. */
-.ks-pick-one, .ff-fixed { display: flex; width: 100%; }
+/* One sentence alone: on a phone the whole row, its text to the left; on a desktop as wide as it reads. */
+@media (max-width: 760px) { .ks-pick-one, .ff-fixed { display: flex; width: 100%; } }
 .ks-pick-one > .ks-pick-sentence { flex: 1; }
 /* Several in a row: short boxes that wrap. */
 .ks-pick-list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }

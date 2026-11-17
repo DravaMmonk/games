@@ -31,10 +31,10 @@ export const linesOf = (rules) => rules.map((rule) => ({ binds: rule.binds, need
 
 function problemText({ row, slot, why, missing }) {
   switch (why) {
-    case 'binder': return T(`可推导情形 ${row + 1} 使用了这一关未提供的任取设置。`, `Derivable situation ${row + 1} uses a binder setting that this task does not offer.`)
-    case 'empty': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提还没写完。`, `Premise ${slot + 1} of derivable situation ${row + 1} is not finished.`)
-    case 'stray': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提提到了没有任取的东西。`, `Premise ${slot + 1} of derivable situation ${row + 1} mentions a thing it does not take.`)
-    case 'chips': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提用了这一关未提供的词：${missing.join('、')}。`, `Premise ${slot + 1} of derivable situation ${row + 1} uses unavailable chips: ${missing.join(', ')}.`)
+    case 'binder': return T(`可推导情形 ${row + 1} 使用了这一关未提供的任取设置。`, `Row ${row + 1} uses a “for any” this task does not offer.`)
+    case 'empty': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提还没写完。`, `Row ${row + 1}, premise ${slot + 1}: unfinished.`)
+    case 'stray': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提提到了没有任取的东西。`, `Row ${row + 1}, premise ${slot + 1}: names a thing the row does not take.`)
+    case 'chips': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提用了这一关未提供的词：${missing.join('、')}。`, `Row ${row + 1}, premise ${slot + 1}: uses words not on offer: ${missing.join(', ')}.`)
   }
 }
 

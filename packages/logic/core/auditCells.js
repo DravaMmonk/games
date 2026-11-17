@@ -16,10 +16,11 @@ export function caseCells(level) {
   const target = show(read(level.target))
   return [
     {
-      name: 'given', shape: 'tree-list', label: T('前提'), align: 'start', build,
+      // A case's situation: a set of premises, each one a premise.
+      name: 'given', shape: 'tree-list', label: T('情形', 'Situation'), align: 'start', build,
       placeholder: T('无'), addLabel: T('添加前提'), scope: `${level.id}:case`,
       title: (k) => T(`第 ${k + 1} 条条例的前提`, `A premise of test case ${k + 1}`),
-      fixed: fixed('given'), fixedLabel: T('前提（固定）'), kept: (row) => row.keep,
+      fixed: fixed('given'), fixedLabel: T('情形（固定）', 'Situation (fixed)'), kept: (row) => row.keep,
       write: (row, given) => ({ ...row, given: [...(row.keep ?? []), ...given.filter((s) => !row.keep?.includes(s))] }),
     },
     {
@@ -33,8 +34,8 @@ export function caseCells(level) {
     },
     {
       // What the case expects: whether the conclusion is derivable.
-      name: 'make', shape: 'choice', label: T('预期', 'Expected'), options: DERIVABLE, placeholder: T('选择预期…', 'Pick what to expect…'),
-      fixed: fixed('make'), fixedLabel: T('预期（固定）', 'Expected (fixed)'),
+      name: 'make', shape: 'choice', label: T('预期结果', 'Expected result'), options: DERIVABLE, placeholder: T('选择预期结果…', 'Pick the expected result…'),
+      fixed: fixed('make'), fixedLabel: T('预期结果（固定）', 'Expected result (fixed)'),
     },
   ]
 }

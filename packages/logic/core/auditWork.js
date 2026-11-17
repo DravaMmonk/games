@@ -50,7 +50,7 @@ export function audit(source, { game, progress, saved }) {
     go: T('运行检验条例'),
     done: level.want === 'logic:want-agree' ? T('结果全部相符') : T('已找出错误'),
     checks: {
-      cells: caseCells(level), resultLabel: T('结果', 'Result'), blank: () => blankCase(level), max: AUDIT_CASE_LIMIT, addLabel: T('添加条例'),
+      cells: caseCells(level), resultLabel: T('实际结果', 'Actual result'), blank: () => blankCase(level), max: AUDIT_CASE_LIMIT, addLabel: T('添加条例'),
       formTitle: (k) => T(`第 ${k + 1} 条检验条例`, `Test case ${k + 1}`),
       empty: T('还没有条例。'), fixed: Boolean(level.slots), tip: T('点按一条条例即可修改。'),
     },

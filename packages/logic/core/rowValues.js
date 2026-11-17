@@ -23,17 +23,17 @@ export function declarationValues(level, rules, change, scope) {
     className: 'lg-rule-table',
     head: { name: T('结论'), goal: words(sentenceOf(level, level.target)), end: T('为真。') },
     rows: rules.map((rule, k) => ({
-      name: T('成立条件'), mark: k + 1,
+      name: T('可推导情形'), mark: k + 1,
       toggle: level.thing && { on: rule.binds.length > 0, label: T(`任取 ${binder}`, `For any ${binder}`), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },
       slots: rule.needs.map((need, j) => ({ text: whole(need) ? words(need) : null, bad: problems.some((p) => p.row === k && p.slot === j) })),
       end: rule.needs.length > 1 ? T('均为真。') : T('为真。'),
       empty: T('无前提'),
-      add: { label: T(`给成立条件 ${k + 1} 添加前提`, `Add a premise to condition ${k + 1}`), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
-      drop: rules.length > 1 ? { label: T(`删除成立条件 ${k + 1}`, `Delete condition ${k + 1}`), run: () => change(without(rules, k)) } : null,
+      add: { label: T(`给可推导情形 ${k + 1} 添加前提`, `Add a premise to derivable situation ${k + 1}`), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
+      drop: rules.length > 1 ? { label: T(`删除可推导情形 ${k + 1}`, `Delete derivable situation ${k + 1}`), run: () => change(without(rules, k)) } : null,
     })),
     editor: change && {
       slot: (k, j) => ({
-        title: T(`成立条件 ${k + 1} 的前提`, `A premise of condition ${k + 1}`),
+        title: T(`可推导情形 ${k + 1} 的前提`, `A premise of derivable situation ${k + 1}`),
         tree: rules[k].needs[j], chips, language: sentenceLanguage(level.notation, 'formula', rules[k].binds), scope: `${scope}:${k}.${j}`,
         onChange: (tree) => withRule(k, (r) => ({ ...r, needs: changeAt(r.needs, j, () => tree) })),
       }),
@@ -41,7 +41,7 @@ export function declarationValues(level, rules, change, scope) {
         if (rules[k]?.needs[j] === null) withRule(k, (r) => ({ ...r, needs: without(r.needs, j) }))
       },
     },
-    more: { text: T('添加成立条件'), run: () => change([...rules, blankRule()]) },
+    more: { text: T('添加可推导情形'), run: () => change([...rules, blankRule()]) },
     blank,
   }
 }

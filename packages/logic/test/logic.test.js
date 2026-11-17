@@ -598,6 +598,14 @@ test('declarations check incomplete premises before hidden derivability cases', 
   assert.equal(judge([{ binds: [], needs: [parse('A'), parse('B')] }]), null)
 })
 
+test('a declaration may have no derivable situation: nothing introduces it, and its elim rule gives anything (⊥)', () => {
+  const bot = { target: '⊥', sentences: ['A'], declare: T('矛盾', 'contradiction'), tests: [{ given: [], make: false }, { given: ['A'], make: false }] }
+  assert.deepEqual(problemsOf(bot, []), [])
+  assert.equal(checkDeclaration(bot)([]), null)
+  const { make, take } = declaredRules(bot, [])
+  assert.deepEqual([make.length, ruleText(take)], [0, '⟦⊥⟧ ⟹ ?R'])
+})
+
 test('an audit stops at an unfinished case before grading the supplied declarations', () => {
   const complete = { given: ['A', 'B'], make: true }
   const unfinished = { given: [], goal: '', make: null }

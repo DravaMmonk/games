@@ -29,7 +29,7 @@ export function declarationValues(level, rules, change, scope) {
       end: rule.needs.length > 1 ? T('均为真。') : T('为真。'),
       empty: T('无前提'),
       add: { label: T(`给可推导情形 ${k + 1} 添加前提`, `Add a premise to derivable situation ${k + 1}`), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
-      drop: rules.length > 1 ? { label: T(`删除可推导情形 ${k + 1}`, `Delete derivable situation ${k + 1}`), run: () => change(without(rules, k)) } : null,
+      drop: { label: T(`删除可推导情形 ${k + 1}`, `Delete derivable situation ${k + 1}`), run: () => change(without(rules, k)) },
     })),
     editor: change && {
       slot: (k, j) => ({
@@ -48,7 +48,7 @@ export function declarationValues(level, rules, change, scope) {
 
 /** The introduction rules as entered, and the generated elimination rule. */
 export function ruleLines(level, ways, read) {
-  if (!ways.length) return []
+  // With no derivable situation there is no intro rule, and the elim rule takes the sentence to anything (⊥).
   const text = (f) => read(say(f, level.notation))
   const { make, take } = declaredRules(level, ways, (f) => f)
   return [
@@ -60,6 +60,7 @@ export function ruleLines(level, ways, read) {
 export function declaration(level) {
   const judge = checkDeclaration(level)
   return {
+    // A declaration starts with one empty derivable situation; the player may take it away, leaving none.
     initial: (saved) => saved?.rules ?? [blankRule()],
     keep: (rules) => ({ rules }),
     judge,

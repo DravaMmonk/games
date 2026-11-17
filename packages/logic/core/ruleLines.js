@@ -12,7 +12,7 @@ export const premiseChips = (level) => chipsFrom(level.sentences.map((s) => sent
 
 /** Rules go through the same checks whether read from content or written on the rule table. */
 export function problemsOf(level, rules, chips = premiseChips(level)) {
-  if (!rules.length) return [{ why: 'noRules' }]
+  // No derivable situation is a declaration too: nothing introduces the sentence (⊥).
   const binder = level.binder ?? 'x'
   return rules.flatMap((rule, row) => {
     if (rule.binds.length && (!level.thing || rule.binds.length !== 1 || rule.binds[0] !== binder)) return [{ row, why: 'binder' }]
@@ -31,7 +31,6 @@ export const linesOf = (rules) => rules.map((rule) => ({ binds: rule.binds, need
 
 function problemText({ row, slot, why, missing }) {
   switch (why) {
-    case 'noRules': return T('请写出至少一条可推导情形。', 'Write at least one derivable situation.')
     case 'binder': return T(`可推导情形 ${row + 1} 使用了这一关未提供的任取设置。`, `Derivable situation ${row + 1} uses a binder setting that this task does not offer.`)
     case 'empty': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提还没写完。`, `Premise ${slot + 1} of derivable situation ${row + 1} is not finished.`)
     case 'stray': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提提到了没有任取的东西。`, `Premise ${slot + 1} of derivable situation ${row + 1} mentions a thing it does not take.`)

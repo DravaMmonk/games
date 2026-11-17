@@ -7,6 +7,9 @@ import { L } from './i18n.js'
 const read = (cell, row) => cell.read ? cell.read(row) : row[cell.name]
 const placeholder = (cell) => <span className="ck-placeholder">{L(cell.placeholder)}</span>
 
+// In a form, a list of sentences shows in the kit's sentence boxes (shell.css), short ones in a row; a table keeps text.
+const sentences = (cell, value) => <span className="ks-pick-list">{value.map((item, k) => <span key={k} className="ck-sentence">{L(cell.build.text(item))}</span>)}</span>
+
 function display(cell, row) {
   const value = read(cell, row)
   switch (cell.shape) {
@@ -37,8 +40,12 @@ function edit(cell, row, set, at, phone) {
 
 function CellForm({ cell, row, set, at }) {
   if (cell.fixed?.(row)) {
-    const value = display(cell, row)
-    return <Field label={cell.fixedLabel}>{cell.shape === 'tree' ? <span className="ff-fixed">{value}</span> : value}</Field>
+    const value = read(cell, row)
+    // Fixed, a field reads as it would be written, only locked: the sentence in its box, the situation's premises in
+    // short boxes, the choice's buttons with the one it holds lit.
+    if (cell.shape === 'choice') return <ChoiceField label={cell.fixedLabel} options={cell.options} value={value} disabled />
+    if (cell.shape === 'tree') return <Field label={cell.fixedLabel}><span className="ff-fixed">{value ? L(cell.build.text(value)) : L(cell.placeholder)}</span></Field>
+    return <Field label={cell.fixedLabel}>{value.length ? sentences(cell, value) : placeholder(cell)}</Field>
   }
   const field = edit(cell, row, set, at, true)
   if (cell.shape === 'choice') return field

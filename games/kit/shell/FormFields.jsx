@@ -15,12 +15,12 @@ export function Field({ label, children }) {
 
 
 /** One of a few values, as buttons side by side. */
-export function ChoiceField({ label, value, options, onChange }) {
+export function ChoiceField({ label, value, options, onChange, disabled = false }) {
   return (
     <Field label={label}>
       <div className="ff-choice" role="radiogroup">
         {options.map((o) => (
-          <button key={String(o.value)} type="button" role="radio" aria-checked={o.value === value} className={o.value === value ? 'is-on' : ''} onClick={() => onChange(o.value)}>{L(o.label)}</button>
+          <button key={String(o.value)} type="button" role="radio" aria-checked={o.value === value} className={o.value === value ? 'is-on' : ''} disabled={disabled} onClick={() => onChange?.(o.value)}>{L(o.label)}</button>
         ))}
       </div>
     </Field>

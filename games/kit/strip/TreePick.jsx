@@ -25,7 +25,7 @@ export function TreeButton({ value, onChange, build, title, placeholder, scope, 
   const [anchor, setAnchor] = useState(null)
   return (
     <>
-      <span className="ks-pick-item">
+      <span className="ks-pick-item ks-pick-one">
         <button type="button" className={`ks-pick-sentence ${value ? '' : 'is-empty'}`} aria-expanded={Boolean(anchor)} disabled={disabled} onClick={(event) => setAnchor(event.currentTarget)}>
           {value ? L(build.text(value)) : L(placeholder)}
         </button>

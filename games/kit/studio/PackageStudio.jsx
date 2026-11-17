@@ -15,7 +15,7 @@
 // prefs.js); the command palette (Ctrl/⌘+K) reaches every place and action, ? lists the keys.
 import './studio.css'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { BookOpen, Cpu, FileBox, Layers, ListTree, Search as SearchIcon } from 'lucide-react'
+import { BookOpen, Cpu, FileBox, Flag, Layers, ListTree, Package, Search as SearchIcon } from 'lucide-react'
 import { L, T, getLang, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { find, shapeAt } from '../engine/schema.js'
@@ -39,6 +39,10 @@ import Compare from './Compare.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Review from './Review.jsx'
+import { JsonFile, PackageList, PackageMeta, packageJson } from './ProjectLists.jsx'
+import ListRow from './ListRow.jsx'
+import { copyWithoutTextKeys } from '../engine/catalogs.js'
+import { groupCategory, singular } from './SidebarListTools.jsx'
 import GameFrame from './GameFrame.jsx'
 import { packageLevel } from '../engine/package-play.js'
 import StudioBar from './StudioBar.jsx'
@@ -57,10 +61,10 @@ import { listOfType, BUILT_IN_LISTS, TOOL_LISTS, isTypeList, leftLists, objectTy
 import LeftTypes, { typeName } from './LeftTypes.jsx'
 import ObjectSummary from './ObjectSummary.jsx'
 import { icons } from 'lucide-react'
-import { freeObjectName, namespaceOf, ownNames, shownName } from './objects-edit.js'
+import { freeObjectName, namespaceOf, ownNames, shownName, tagKey, tagName } from './objects-edit.js'
 import { newTag } from './tag-edit.js'
 import { objectFileName, objectSchema, objectValue, ownObjectData } from './object-file.js'
-import { groupOf, levelTags, treeMoves } from './groups.js'
+import { levelTags, treeMoves } from './groups.js'
 import Inspector from './Inspector.jsx'
 import { inspectorTabKey } from './InspectorTabs.jsx'
 import { textField } from './copy.js'
@@ -72,7 +76,7 @@ const SAVED_VIEW = window.history.state?.studio
 const OPENED = readOpen(QUERY)
 // The left column's switcher (left-lists.js PACKAGE_LISTS): each list's icon and name.
 const LISTS = {
-  tree: [ListTree, '关卡', 'Levels'], entries: [BookOpen, '词条', 'Entries'],
+  packages: [Package, '包', 'Packages'], tree: [ListTree, '关卡', 'Levels'], entries: [BookOpen, '词条', 'Entries'],
   kernel: [Cpu, '能力', 'Capabilities'], overrides: [Layers, '覆盖', 'Overrides'], search: [SearchIcon, '搜索', 'Search'],
 }
 // The kind of object each build list holds, and the relations a new group of it can be.
@@ -109,7 +113,7 @@ const paletteKey = (event) => (event.ctrlKey || event.metaKey) && event.key.toLo
  * { id, uses }; `onPackage` opens another; `space` the workspace switch. The levels play in the course the kernel
  * makes for the package.
  */
-export default function PackageStudio({ pkg, packages, onPackage, space }) {
+export default function PackageStudio({ pkg, packages, games = [], onPackage, onMadePackage, space }) {
   const game = pkg // the key the workspace's preferences and history are kept under
   const target = useMemo(() => ({ package: pkg }), [pkg])
   const [domainVocab, setVocab] = useState(null) // the domain's vocabulary; `vocab` below adds the game's parts
@@ -217,7 +221,7 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   const leftKeys = useMemo(() => (content ? leftLists(content, chosenTypes) : []), [content, chosenTypes])
   const types = useMemo(() => objectTypes(content), [content])
   // A list no longer shown (another package's types, or the author's choice) falls back to the first one listed.
-  useEffect(() => { if (leftKeys.length && !leftKeys.includes(side)) setSide(leftKeys[0]) }, [leftKeys, side]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (leftKeys.length && side !== 'packages' && !leftKeys.includes(side)) setSide(leftKeys[0]) }, [leftKeys, side]) // eslint-disable-line react-hooks/exhaustive-deps
   const items = useMemo(() => lines.map(itemOf), [lines])
   const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? []), [lines, checked, shown])
   const names = useMemo(() => rawNames && {
@@ -234,11 +238,16 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   const levelOptions = useMemo(() => {
     if (!content) return null
     const label = new Map((rawNames?.levels ?? []).map((l) => [l.id, l]))
+    const tags = levelTags(content)
+    // Each level's group (the first tag that holds it), looked up once rather than per level.
+    const groupOfLevel = new Map()
+    for (const [name, tag] of Object.entries(tags)) for (const { id } of tag.levels) if (!groupOfLevel.has(id)) groupOfLevel.set(id, name)
+    const rank = new Map(playOrder.map((id, k) => [id, k]))
     return content.levels.map((l) => {
-      const group = groupOf(content, l.id)
+      const group = groupOfLevel.get(l.id) ?? null
       const shown = label.get(l.id)?.label ?? l.id
-      return { value: l.id, label: shown, title: l.title, group: group ? `${group} ${L(levelTags(content)[group].title) ?? ''}` : null, ...(shown !== l.id && { about: l.id }), ...(Array.isArray(l.tasks) && { tasks: l.tasks.map((task) => ({ id: task.id, ...(task.step && { step: task.step }) })) }) }
-    }).sort((a, b) => playOrder.indexOf(a.value) - playOrder.indexOf(b.value))
+      return { value: l.id, label: shown, title: l.title, group: group ? `${group} ${L(tags[group].title) ?? ''}` : null, ...(shown !== l.id && { about: l.id }), ...(Array.isArray(l.tasks) && { tasks: l.tasks.map((task) => ({ id: task.id, ...(task.step && { step: task.step }) })) }) }
+    }).sort((a, b) => (rank.get(a.value) ?? -1) - (rank.get(b.value) ?? -1))
   }, [content, rawNames, playOrder])
 
   // The object open in the object list shown (the first when none is named): the middle shows it, the right its file.
@@ -315,10 +324,28 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
     edit(content.objectKinds?.[by] ? { op: 'object.put', kind: by, name, data } : { op: `${by}.put`, [by]: name, data })
     return openHeading({ kind: by, full: `${namespace}/${name}` })
   }
+  /**
+   * A build list's grouping, for its tools (SidebarListTools.jsx): how it can be grouped, and its + menu's groups — for
+   * each way it can be grouped, under that category's name (标签, 托盘, 关系, 分组), a new one (a relation of each kind)
+   * and a copy of the one open. Making or copying one shows the list grouped that way.
+   */
   const grouping = (kind, by, onBy) => ({
     groupings: groupingsFor(kind), by, onBy,
-    newOptions: by === 'relation' ? (editorForType(kind)?.relations ?? RELATION_KINDS[kind] ?? []).map(([value, zh, en]) => ({ value, label: tr(zh, en) })) : null,
-    onNew: (option) => newGroup(kind, by, option),
+    newOptions: groupingsFor(kind).flatMap((g) => {
+      const [zh, en] = groupCategory(g)
+      const one = singular(en)
+      const fresh = g === 'relation'
+        ? (editorForType(kind)?.relations ?? RELATION_KINDS[kind] ?? []).map(([option, kz, ke]) => ({ value: `new:${g}:${option}`, label: tr(`新建${kz}关系`, `New ${ke.toLowerCase()} relation`) }))
+        : [{ value: `new:${g}:`, label: tr(`新建${zh}`, `New ${one}`) }]
+      const open = heading?.kind === g && (g !== 'tag' || content?.registries?.tag?.[heading.full]?.kind === kind)
+      return [...fresh, { value: `copy:${g}`, label: tr(`复制所选${zh}`, `Duplicate the ${one} open`), disabled: !open }].map((o) => ({ ...o, group: tr(zh, en) }))
+    }),
+    onNew: (value) => {
+      const [act, g, option] = value.split(':')
+      if (act === 'copy') copyObject(g, heading?.full)
+      else newGroup(kind, g, option || null)
+      onBy(g)
+    },
   })
   const openTreeItem = (next, keep) => {
     select(next, keep)
@@ -526,18 +553,32 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   const levelChoices = vocab ? creationChoices(firstTaskSchema ?? vocab.vocabulary.level, newLevelContext) : []
   const declaredType = (type) => (content?.objectKinds?.[type] && !content.objectKinds[type].extends ? content.objectKinds[type] : null)
   // A new object starts blank or as a copy of any object open, this package's or one it uses (games/MODULES.md 5.5).
-  /** The add menu of a list of another type: a blank object, a copy of the one open. */
-  const addObjectOptions = (type) => [
-    { value: 'blank', label: tr('空白对象', 'Blank object') },
-    ...(heading?.kind === type ? [{ value: 'copy', label: tr('复制所选对象', 'Duplicate selected object') }] : []),
-  ]
-  const addObject = (type, action) => {
+  /** The add menu of a list of another type: a new one (blank), a copy of the one open (greyed when none is). */
+  const addObjectOptions = (type) => {
+    const [zh, en] = typeName(types.find((info) => info.type === type)) ?? [type, type]
+    return [
+      { value: 'blank', label: tr(`新建${zh}`, `New ${singular(en)}`) },
+      { value: 'copy', label: tr(`复制所选${zh}`, `Duplicate the ${singular(en)} open`), disabled: heading?.kind !== type },
+    ]
+  }
+  /** A copy of any object of the package's own types, or of its tags, relations and sections, opened. */
+  const copyObject = (kind, full) => {
+    if (saving || !full) return
+    if (kind !== 'tag') return addObject(kind, 'copy', full)
+    const value = objectValue(content, 'tag', full)
+    if (!value) return
+    const { kind: member, ...data } = copyWithoutTextKeys(ownObjectData(namespace, value))
+    const name = freeObjectName(ownNames(content, 'tag', namespace), tagName(full).slice(tagName(full).indexOf('/') + 1))
+    edit({ op: 'tag.put', tag: name, member: member ?? value.kind, data })
+    openHeading({ kind: 'tag', full: tagKey(member ?? value.kind, `${namespace}/${name}`) })
+  }
+  const addObject = (type, action, from = heading?.full) => {
     if (saving) return
-    const source = action === 'copy' ? heading?.full : null
+    const source = action === 'copy' ? from : null
     const base = source ? source.slice(source.indexOf('/') + 1) : type.split('/').pop()
     const name = freeObjectName(ownNames(content, type, namespace), base)
     const declared = declaredType(type)
-    const data = source ? ownObjectData(namespace, objectValue(content, type, source)) : blank(objectSchema(type, { declared }), { vocabulary: vocab.vocabulary }) ?? {}
+    const data = source ? copyWithoutTextKeys(ownObjectData(namespace, objectValue(content, type, source))) : blank(objectSchema(type, { declared }), { vocabulary: vocab.vocabulary }) ?? {}
     edit(declared ? { op: 'object.put', kind: type, name, data } : { op: `${type}.put`, [type]: name, data })
     openHeading({ kind: type, full: `${namespace}/${name}` })
   }
@@ -652,11 +693,8 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
       else openOverlay('palette')
     }
     else if (mod && e.shiftKey && k === 'f') { e.preventDefault(); openSearch() }
-    else if (mod && k === 'z' && !editable(document.activeElement)) { e.preventDefault(); if (e.shiftKey) again(); else back(ops.length - 1) }
     else if (mod && e.key === 'Enter' && level) { e.preventDefault(); playFrom(level, true) }
-    else if (e.altKey && e.code === 'BracketLeft') { e.preventDefault(); togglePanel('tree') }
     else if (e.altKey && e.code === 'BracketRight') { e.preventDefault(); togglePanel('audit') }
-    else if (e.altKey && e.code === 'Backslash') { e.preventDefault(); togglePanel('side') }
     else if (e.key === '?' && !mod && !editable(document.activeElement)) { e.preventDefault(); openOverlay('keys') }
     else if (e.key === 'Escape') {
       if (moving) setMoving(null)
@@ -669,13 +707,49 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
   const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
   const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
-  const lists = leftKeys
+  // A new level: blank (of a kind, when the package has several), or a copy of the one picked (greyed when none is).
+  const levelAdds = !content ? [] : [
+    ...(levelChoices.length ? [{ value: levelChoices.length === 1 ? levelChoices[0].value : 'blank', label: tr('新建关卡', 'New level'), ...(levelChoices.length > 1 && { children: levelChoices }) }] : []),
+    { value: 'copy', label: tr('复制所选关卡', 'Duplicate the level picked'), disabled: !(at?.level && content.levels.some((level) => level.id === at.level)) },
+  ]
+  // A new entry of the encyclopedia, or a copy of the one open (greyed when none is).
+  const entryAt = at?.glossary && field?.path?.[0] === 'entries' ? content?.glossary?.entries?.[field.path[1]]?.id ?? null : null
+  const entryAdds = [
+    { value: 'blank', label: tr('新建词条', 'New entry') },
+    { value: 'copy', label: tr('复制所选词条', 'Duplicate the entry open'), disabled: !entryAt },
+  ]
+  const addEntry = (action) => {
+    if (saving) return
+    const source = action === 'copy' ? entryAt : null
+    const name = freeObjectName(ownNames(content, 'entry', namespace), source ? source.slice(source.indexOf('/') + 1) : 'entry')
+    const data = source ? copyWithoutTextKeys(ownObjectData(namespace, objectValue(content, 'entry', source))) : { title: T('新词条', 'New entry'), body: [] }
+    const { id: _, ...rest } = data
+    edit({ op: 'entry.put', entry: name, data: rest })
+    const k = (content.glossary?.entries ?? []).length
+    jump(null, `entries[${k}]`, 'glossary')
+  }
+  // The packages first: the one open, and the others to open (the bar's name opens this list too).
+  const lists = ['packages', ...leftKeys]
+  // The package picked in that list: its meta goes in the right column; opening it is a double click or Open there.
+  const [pickedPackage, setPickedPackage] = useState(pkg)
+  const openPackage = (id) => {
+    if (id === pkg || saving) return
+    if (ops.length && !window.confirm(tr('换一个包会放弃待定操作，确定吗？', 'Opening another package discards the pending operations. Continue?'))) return
+    select(null); setPlay(null); setOpened({}); setHeading(null)
+    onPackage(id)
+  }
+  // A new package (packages/<id>/, empty or a copy of the one picked), then opened, the pending operations given up
+  // after asking; a refusal is said in the list's form.
+  const makePackage = async (args) => {
+    await call('create_package', args)
+    await onMadePackage(args.id, ops.length > 0 && !window.confirm(tr('新包已建好。打开它会放弃待定操作，现在打开吗？', 'The package is made. Opening it discards the pending operations. Open it now?')))
+  }
   // The type a list shows that is not one of the kernel's own (those have their own lists below).
   const otherType = typeOfList(side) && !BUILT_IN_LISTS[typeOfList(side)] ? typeOfList(side) : null
   const objectPending = saving || shown?.ops !== ops
   // A group's own object in the middle: its editor (a tag, a relation, a tray, a section).
   const groupProps = heading && {
-    kind: heading.kind, content, namespace, vocabulary: vocab?.vocabulary, full: heading.full, pending: objectPending, onEdit: edit, onOps: addOps, onPick: pickObjectField,
+    kind: heading.kind, content, namespace, vocabulary: vocab?.vocabulary, full: heading.full, pending: objectPending, ops, previewOps: shown?.ops, applying: saving, onEdit: edit, onOps: addOps, onPick: pickObjectField,
     onOpen: (next) => openNamed(...Object.entries(next)[0]),
     onSelect: (full) => (full ? openHeading({ kind: heading.kind, full }) : select(null)),
   }
@@ -683,7 +757,7 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   const PageEditor = selectionName(at) !== undefined ? editorForType(editorRoute(at)?.type)?.page ?? ObjectSummary : GameFrame
   const OtherList = editorForType(otherType)?.list ?? GroupedList
   // The middle: an object list's object (above), several levels picked at once, a group's own object, or the page.
-  const middle = objectList ? 'objects' : pickedIds.length > 1 ? 'bulk' : heading ? 'group' : 'page'
+  const middle = side === 'packages' ? 'package' : objectList ? 'objects' : pickedIds.length > 1 ? 'bulk' : heading ? 'group' : 'page'
   // The right column: a group's own object's file, the capability's description, the override's file.
   const objectFile = heading ? { object: { kind: heading.kind, full: heading.full, namespace, own: namespaceOf(heading.full) === namespace, declared: declaredType(heading.kind) } }
     : openCapability ? { capability: openCapability } : openEvent ? { override: { event: openEvent, layer: namespace } } : { game: true }
@@ -697,11 +771,10 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   }
   return (
     <div className={`studio ${moving ? 'is-moving' : ''} ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onPalette={() => openOverlay('palette')}>
-        <select className="studio-game" value={pkg} disabled={saving} aria-label={tr('内容包', 'Package')}
-          onChange={(e) => { onPackage(e.target.value); select(null); setPlay(null); setOpened({}); setHeading(null) }}>
-          {packages.map(({ id }) => <option key={id} value={id}>{id}</option>)}
-        </select>
+      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }} onPalette={() => openOverlay('palette')}>
+        <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => showList('packages')} title={tr('在左栏选包', 'Pick a package in the left column')}>
+          <Package size={13} aria-hidden="true" /><span>{pkg}</span>
+        </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-${objectList ? 'objects' : middle} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
@@ -717,35 +790,28 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
                   </button>
                 )
               })}
-              <LeftTypes types={types} shown={lists.filter((list) => !TOOL_LISTS.includes(list)).map(typeOfList)} chosen={chosenTypes !== null} onChoose={setChosenTypes} />
+              <LeftTypes types={types} shown={lists.filter((list) => list !== 'packages' && !TOOL_LISTS.includes(list)).map(typeOfList)} chosen={chosenTypes !== null} onChoose={setChosenTypes} />
             </div>
-            {side === 'kernel' ? <CapabilityList capabilities={capabilities} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
+            {side === 'packages' ? <PackageList packages={packages} current={pkg} picked={pickedPackage} disabled={saving} onPick={setPickedPackage} onOpen={openPackage} onCreate={makePackage} />
+              : side === 'kernel' ? <CapabilityList capabilities={capabilities} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
               : side === 'overrides' ? <OverrideList events={events} layer={namespace} current={openKey} onOpen={(key) => openIn('overrides', key)} />
               : side === 'entries' ? <EntryList content={content} namespace={namespace} game={game} current={at?.glossary && field?.path?.[0] === 'entries' ? field.path[1] : null}
-                heading={heading} onHeading={(next) => openHeading(next)} {...grouping('entry', entriesBy, setEntriesBy)} onOpen={(k) => jump(null, `entries[${k}]`, 'glossary')} />
+                heading={heading} onHeading={(next) => openHeading(next)} {...grouping('entry', entriesBy, setEntriesBy)} onOpen={(k) => jump(null, `entries[${k}]`, 'glossary')}
+                addOptions={entryAdds} onAdd={addEntry} />
               : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={earnedAt} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}
                 items={objectsOfType(content, otherType)} label={(id) => L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name) || ''}
                 heading={heading} onHeading={openHeading} {...grouping(otherType, partsBy, setPartsBy)}
-                addOptions={addObjectOptions(otherType)} onAdd={(action) => addObject(otherType, action)}
-                row={(id) => <button key={id} type="button" className={`tree-level ${heading?.kind === otherType && heading.full === id ? 'is-on' : ''}`} onClick={() => openHeading({ kind: otherType, full: id })}><code className="tree-level-id">{shownName(namespace, id)}</code><span>{L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name)}</span></button>} />
+                addOptions={addObjectOptions(otherType)} addLabel={tr(...(typeName(types.find(({ type }) => type === otherType)) ?? [otherType, otherType]))} onAdd={(action) => addObject(otherType, action)}
+                row={(id) => <ListRow key={id} icon={icons[types.find(({ type }) => type === otherType)?.icon] ?? FileBox} on={heading?.kind === otherType && heading.full === id} onClick={() => openHeading({ kind: otherType, full: id })}
+                  title={L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name)} id={shownName(namespace, id)} />} />
               : side === 'search'
               ? <Search content={content} vocabulary={vocab.vocabulary} onAdd={addOps} onJump={(level, path, file) => jump(level, path, file)} />
               : levelsBy !== 'tag' ? <GroupedList kind="level" content={content} namespace={namespace} game={game} items={playOrder} label={(id) => L(content.registries?.level?.[id]?.title)}
                 heading={heading} onHeading={(next) => openHeading(next)} {...grouping('level', levelsBy, setLevelsBy)}
-                row={(id) => (
-                  <button key={id} type="button" className={`tree-level ${at?.level === id ? 'is-on' : ''}`} onClick={() => openTreeItem({ level: id })}>
-                    <code className="tree-level-id" title={id}>{shownName(namespace, id)}</code><span>{L(content.registries?.level?.[id]?.title)}</span>
-                  </button>
-                )} />
+                addOptions={levelAdds} addLabel={tr('关卡', 'Levels')} onAdd={addLevel}
+                row={(id) => <ListRow key={id} icon={Flag} on={at?.level === id} onClick={() => openTreeItem({ level: id })} title={L(content.registries?.level?.[id]?.title)} id={shownName(namespace, id)} />} />
               : <Tree game={game} grouping={grouping('level', levelsBy, setLevelsBy)} namespace={namespace} content={content} order={playOrder} at={at} selectedTask={field?.path?.[0] === 'tasks' ? field.path[1] ?? null : null} picked={picked} setPicked={setPicked} onSelect={openTreeItem} moving={moving} setMoving={setMoving} onMove={move} labels={rawNames?.levels} onTask={(task) => onTaskGo({ task })} onTaskMove={moveTask}
-                  addOptions={[
-                    ...(levelChoices.length ? [{
-                      value: levelChoices.length === 1 ? levelChoices[0].value : 'blank',
-                      label: tr('空白关卡', 'Blank level'),
-                      ...(levelChoices.length > 1 && { children: levelChoices }),
-                    }] : []),
-                    ...(at?.level && content.levels.some((level) => level.id === at.level) ? [{ value: 'copy', label: tr('复制所选关卡', 'Duplicate selected level') }] : []),
-                  ]} onAdd={addLevel} /> }
+                  addOptions={levelAdds} onAdd={addLevel} /> }
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
           <main className="studio-main">
@@ -757,6 +823,11 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
                     if (HEADING_KINDS.includes(event.kind)) openNamed(event.kind, event.name)
                     else if (event.kind === 'level') select({ level: event.name })
                   }} />}
+              </div>
+            )}
+            {middle === 'package' && (
+              <div className="studio-scroll">
+                <PackageMeta packages={packages} games={games} id={pickedPackage} open={pkg} disabled={saving} onOpen={openPackage} />
               </div>
             )}
             {middle === 'bulk' && (
@@ -781,7 +852,8 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {sideCtx && (objectList || heading
+            {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packageJson(packages.find((p) => p.id === pickedPackage))} note={tr('只读：没有改它的操作，手改文件', 'Read only: no operation edits it; the file is edited by hand')} />
+              : sideCtx && (objectList || heading
               ? <Inspector content={content} vocab={vocab} at={objectFile} field={objectFile.object || objectFile.capability || objectFile.override ? { path: objectPath } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickObjectField} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => {}}
                 tabs={inspectorTabs} selection={objectFile} onToggleTab={() => {}} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}
                 onNavigate={(path) => pickObjectField(path)} />
@@ -794,7 +866,7 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => togglePanel('audit')} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               audit={<Audit items={items} fresh={fresh} last={last} at={at} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
               panel={drawerTab === 'compare' ? <Compare target={target} content={content} base={base} at={at} levelOptions={levelOptions} onJump={(lvl, path) => jump(lvl, path)} file={compareFile} onFilePath={pickObjectField} />
-                : drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} why={why} setWhy={setWhy} said={said}
+                : drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                   onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}
                   onDiscard={discard} onOpen={pending.open} onApply={apply} onUndo={undo} onSelect={(lvl) => select({ level: lvl })} />
                 : <Debug ops={ops} last={last} />} />

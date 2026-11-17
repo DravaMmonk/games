@@ -6,11 +6,21 @@ import { sameJson } from '../engine/json-value.js'
 import { localName, tagKey, tagName, tagTarget } from './objects-edit.js'
 import { orderedTags } from './list-order.js'
 
+// A content is never changed once read (each preview brings a new one), so its projection is worked out once: the
+// studio asks for it per level and per section on every render.
+const projected = new WeakMap()
+
 /** Read-only sidebar projection of level tags in effective relation order. */
-export const levelTags = (content) => Object.fromEntries(Object.entries(content.tags ?? {}).filter(([, tag]) => tag.kind === 'level').map(([name, tag]) => {
+export function levelTags(content) {
+  if (projected.has(content)) return projected.get(content)
   const expand = referenceResolver(content.registries)
-  return [name, { ...tag, levels: orderedMembers(content, expand(`#${tagName(name)}`, 'level'), 'level').map((id) => ({ id })) }]
-}))
+  const tags = Object.entries(content.tags ?? {}).filter(([, tag]) => tag.kind === 'level').map(([name, tag]) => [name, tag, expand(`#${tagName(name)}`, 'level')])
+  // One order of every member at once: a tag's own order is this one with the other tags' levels left out.
+  const rank = new Map(orderedMembers(content, [...new Set(tags.flatMap(([, , ids]) => ids))], 'level').map((id, k) => [id, k]))
+  const result = Object.fromEntries(tags.map(([name, tag, ids]) => [name, { ...tag, levels: [...ids].sort((a, b) => rank.get(a) - rank.get(b)).map((id) => ({ id })) }]))
+  projected.set(content, result)
+  return result
+}
 export const groupOf = (content, level) => Object.entries(levelTags(content)).find(([, tag]) => tag.levels.some(({ id }) => id === level))?.[0] ?? null
 
 /**

@@ -1,13 +1,12 @@
 // A build list grouped (games/DESIGN.md 6.7): its objects under every group that names them (list-groups.js), each
 // group folding, its heading row opening the group's own object (a tag, a tray, a relation, a section) in the middle;
-// what no group names under the last heading. The tools above: a new object of the list, a search, then the grouping
-// row (GroupingBar.jsx).
+// what no group names under the last heading. The tools above, in one row (SidebarListTools.jsx): a new object of the
+// list or a new group, a search, the grouping, and every group folded or unfolded.
 import { editorForType } from './editors.js'
 import { useState } from 'react'
 import { L, tr } from '../shell/i18n.js'
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarSection, { useSidebarFolds } from './SidebarSection.jsx'
-import GroupingBar from './GroupingBar.jsx'
 import { groupsOf, ungrouped } from './list-groups.js'
 import { shownName } from './objects-edit.js'
 import { sidebarSearch } from './sidebar-list.js'
@@ -17,7 +16,7 @@ const LEFT = '\0rest'
 /**
  * `kind` the list's objects (level, part, entry); `items` their full names, in order; `label(id)` what a row is called
  * (searched); `row(id)` draws one; `by`/`onBy` the grouping; `heading` the group open ({ kind, full }), `onHeading`;
- * `newGroup` as GroupingBar takes it; `addOptions`/`onAdd` a new object of the list.
+ * `newOptions`/`onNew` a new group (SidebarListTools.jsx); `addOptions`/`onAdd` a new object of the list.
  */
 export default function GroupedList({ kind, name = null, content, namespace, game, items, label, row, groupings, by, onBy, heading, onHeading, newOptions, onNew, addOptions = [], addLabel, onAdd = () => {} }) {
   const [query, setQuery] = useState('')
@@ -32,8 +31,8 @@ export default function GroupedList({ kind, name = null, content, namespace, gam
   const titleOf = (group) => L(content.registries?.[group.kind]?.[group.full]?.title) || shownName(namespace, group.full)
   return (
     <nav className="parts-list" aria-label={tr(...(name ?? editorForType(kind)?.name ?? { level: ['关卡', 'Levels'], entry: ['词条', 'Entries'] }[kind] ?? [kind, kind]))}>
-      <SidebarListTools addOptions={addOptions} addLabel={addLabel} onAdd={onAdd} query={query} onQuery={setQuery} />
-      <GroupingBar groupings={groupings} by={by} onBy={onBy} newOptions={newOptions} onNew={onNew}
+      <SidebarListTools addOptions={addOptions} addLabel={addLabel} onAdd={onAdd} query={query} onQuery={setQuery}
+        groupings={groupings} by={by} onBy={onBy} newOptions={newOptions} onNew={onNew}
         folded={keys.every((key) => folded.has(key))} onFoldAll={(fold) => setAll(keys, fold)} />
       {groups.map((group) => {
         const members = shown(group.members)

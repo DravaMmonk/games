@@ -4,9 +4,10 @@ import { GAME_LISTS, PACKAGE_LISTS, capabilityKey, capabilityOf, currentOf, isOb
 import { objectFileName, objectOp, objectValue, overrideFileOf, overrideFileName, overrideOp, ownObjectData } from './object-file.js'
 import { fileForm, opFor } from './form.js'
 
-test('search is the last list of the package workspace; the object lists are told apart', () => {
-  assert.deepEqual(PACKAGE_LISTS, ['tree', 'entries', 'kernel', 'overrides', 'search'])
-  assert.deepEqual(GAME_LISTS, ['packages', 'chapters', 'overrides'])
+test('the packages are the first list of the package workspace, search the last; the object lists are told apart', () => {
+  assert.deepEqual(PACKAGE_LISTS, ['packages', 'tree', 'entries', 'kernel', 'overrides', 'search'])
+  assert.ok(!isObjectList('packages'))
+  assert.deepEqual(GAME_LISTS, ['games', 'packages', 'chapters', 'overrides'])
   assert.ok(isObjectList('overrides') && isObjectList('kernel'))
   assert.ok(!isObjectList('tree') && !isObjectList('search') && !isObjectList('toString'))
 })

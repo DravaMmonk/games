@@ -41,8 +41,9 @@ export { LOG, readLog } from './log.js'
  * game's domain module (its own by default). Returns { ok, says, problems, failed (the index of the operation that
  * failed, or null), lines (every line of the check), diff, files, changes ([{ file, before, after }] texts), content
  * (the game as the changeset leaves it, null when an operation failed), inverse (the changeset undoing it) }.
+ * texts false: a dry run that leaves out the files' texts (changes, diff, files empty), for a caller that shows none.
  */
-export async function runChangeset(ws, changeset, { write = false, check = true, undoes = null, base = null, domain: given = null, cache = null } = {}) {
+export async function runChangeset(ws, changeset, { write = false, check = true, undoes = null, base = null, domain: given = null, cache = null, texts = true } = {}) {
   const initialContent = given ? null : ws.content()
   let domain = given ? { ...given, vocabulary: ws.schemas } : (await runtimeOf(initialContent, ws.root))
   ws.schemas = domain.vocabulary
@@ -102,7 +103,7 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
   try {
     const content = given || changeset.ops?.length ? ws.content() : initialContent
     if (!given && content !== initialContent) domain = await runtimeOf(content, ws.root)
-    return await settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache })
+    return await settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache, texts: texts || write })
   } catch (error) {
     return fail([`the changeset could not be settled: ${error.message}`])
   }
@@ -153,7 +154,7 @@ function sourceArguments(ws, operation, supplied, vocabulary) {
 }
 
 // The whole game's check, and the write or the restore, after every operation of a changeset has run.
-async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache }) {
+async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache, texts }) {
   // The hub's count goes with the change (workspace.js), so it is checked against the levels there are now.
   const listed = ws.packaged || hubCount(ws.hub, ws.id) === null ? null : courseLevelCount(content, ws.levels.size)
   let lines
@@ -164,8 +165,8 @@ async function settle({ ws, content, changeset, domain, start, says, inverse, wr
     lines = wrong.map(problem => ({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(problem.rule === 'exists' && { problem }) }))
   }
   const problems = lines.filter((l) => l.fail).map((l) => l.text)
-  const changes = ws.changes()
-  const diff = ws.diff(changes)
+  const changes = texts ? ws.changes() : []
+  const diff = texts ? ws.diff(changes) : ''
   const files = changes.map((c) => c.file)
   const ok = problems.length === 0
   let refused = null

@@ -575,7 +575,9 @@ export function taskListOps(level, before, after, levels) {
 
 // Two operations edit the same thing when they are the same operation on the same file and path; the later then
 // stands for both.
-const target = (op) => JSON.stringify([op.op, op.level ?? op.tag ?? op.relation ?? op.layout ?? op.in ?? null, op.path ? parsePath(op.path) : null, op.op === 'text.set' || op.op === 'text.override' ? op.lang : null])
+// What an operation edits: its kind of operation, the object (by whichever argument names it: a level, a tag, a
+// relation, an entry, a part, a section, a chapter, a declared object's kind and name), the field, the language.
+const target = (op) => JSON.stringify([op.op, op.kind ?? null, op.member ?? null, op.level ?? op.tag ?? op.relation ?? op.layout ?? op.in ?? op.name ?? op.entry ?? op.part ?? op.section ?? op.chapter ?? op.tray ?? null, op.path ? parsePath(op.path) : null, op.op === 'text.set' || op.op === 'text.override' ? op.lang : null])
 
 /**
  * A pending changeset's operations with `op` added: standing for the last one when that edits the same thing (a text

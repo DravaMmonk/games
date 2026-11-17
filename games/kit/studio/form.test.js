@@ -1,7 +1,7 @@
 // node --test games/kit/studio — a task list edited as a whole becomes task operations, each task known by its id.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { copyLevelData, creationChoices, gameFields, taskListOps } from './form.js'
+import { copyLevelData, creationChoices, gameFields, taskListOps, pushOp } from './form.js'
 import { sourceOps } from './source.js'
 import { removesContent } from './delete.js'
 import { sourceValue } from '../engine/catalogs.js'
@@ -112,4 +112,17 @@ test('encyclopedia form and copy edits target entry and tag objects', async () =
   const rows = copyRows({ glossary }, {}, 'glossary', [])
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/term'), 'en', 'New'), { op: 'text.set', entry: 'toy/term', path: ['title'], lang: 'en', value: 'New' })
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/terms'), 'en', 'New', 'game'), { op: 'text.override', tag: 'toy/terms', member: 'entry', path: ['title'], lang: 'en', value: 'New' })
+})
+
+test('an edit stands for the last only when both edit the same object: two new objects of one kind both stay', () => {
+  const one = { op: 'object.put', kind: 'circuit/tray', name: 'new-tray', data: { values: [] } }
+  const two = { op: 'object.put', kind: 'circuit/tray', name: 'new-tray-2', data: { values: [] } }
+  assert.deepEqual(pushOp([one], two), [one, two])
+  const again = { ...one, data: { values: ['qed/and'] } }
+  assert.deepEqual(pushOp([one], again), [again])
+  const a = { op: 'chapter.set', chapter: 'one', path: ['rows'], value: [] }
+  const b = { op: 'chapter.set', chapter: 'two', path: ['rows'], value: [] }
+  assert.deepEqual(pushOp([a], b), [a, b])
+  const e1 = { op: 'entry.put', entry: 'x', data: {} }, e2 = { op: 'entry.put', entry: 'y', data: {} }
+  assert.deepEqual(pushOp([e1], e2), [e1, e2])
 })

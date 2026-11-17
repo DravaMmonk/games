@@ -52,3 +52,4 @@ test('names: short for the layer’s own, full for others; free names count up',
   const content = { registries: { relation: { 'q/b': {}, 'p/z': {}, 'p/a': {} } } }
   assert.deepEqual(objectsOf(content, 'relation', 'p').map(([full, , own]) => [full, own]), [['p/a', true], ['p/z', true], ['q/b', false]])
 })
+

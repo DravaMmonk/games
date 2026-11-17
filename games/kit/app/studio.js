@@ -41,7 +41,7 @@ const courseCatalog = {
 
 /** Whether a call is a slow read (it goes to the second lane), and whether it writes (it waits for both). */
 export const slow = (name, args) => (name === 'preview' && args.check !== false) || name === 'run_tests'
-const writes = (name, args) => (['modify', 'undo', 'adopt'].includes(name) && !args.dryRun) || (name === 'blueprint' && args.text !== undefined && !args.dryRun)
+const writes = (name, args) => (['modify', 'undo', 'adopt'].includes(name) && !args.dryRun) || ['create_game', 'create_package'].includes(name) || (name === 'blueprint' && args.text !== undefined && !args.dryRun)
 
 /** The second lane: the tools in a worker thread. run(name, args) → the result, or throws the tool's error. */
 export function worker() {

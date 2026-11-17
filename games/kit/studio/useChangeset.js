@@ -11,6 +11,11 @@ import { pushOp } from './form.js'
 
 const QUICK = 120 // ms after an edit before its content is previewed
 const SETTLE = 700 // ms after the last edit before the whole check starts
+// What each call leaves out of the preview's answer. The file texts and the change log (megabytes on a big package)
+// are asked for only while the review shows them, once edits settle; the whole check is read for its lines alone.
+const QUICK_OMIT = ['changes', 'log', 'drift']
+const CHECK_OMIT = ['content', 'changes', 'log', 'drift']
+const REVIEW_OMIT = ['content', 'drift']
 
 /** `target`: a game id, or { package } for a package opened on its own. */
 export function useChangeset(target, scope) {
@@ -41,7 +46,7 @@ export function useChangeset(target, scope) {
   useEffect(() => {
     if (!game) return
     // Asked exactly as the quick preview of an empty changeset is, so the two are one request when nothing is pending.
-    call('preview', { ...on, scope, changeset: { ops: [] }, check: false }).then((r) => { setBase(r.content); setHead(r.head) }).catch(() => setBase(null))
+    call('preview', { ...on, scope, changeset: { ops: [] }, check: false, omit: QUICK_OMIT }).then((r) => { setBase(r.content); setHead(r.head) }).catch(() => setBase(null))
   }, [game, scope, rev])
 
   const changeset = useMemo(() => ({ ...(why && { why }), ops }), [why, ops])
@@ -54,7 +59,7 @@ export function useChangeset(target, scope) {
     const no = ++seq.current
     setBusy(true)
     const timer = window.setTimeout(async () => {
-      const r = await call('preview', { ...on, scope, changeset, check: false }).catch((error) => ({ ok: false, problems: [error.message], content: null, failed: null }))
+      const r = await call('preview', { ...on, scope, changeset, check: false, omit: QUICK_OMIT }).catch((error) => ({ ok: false, problems: [error.message], content: null, failed: null }))
       if (no !== seq.current) return
       setLast(r)
       if (r.content) setShown({ ...r, ops: changeset.ops })
@@ -71,7 +76,7 @@ export function useChangeset(target, scope) {
     checking.current = true
     for (;;) {
       const job = wanted.current
-      const r = await call('preview', { ...job.on, scope: job.scope, changeset: job.changeset }).catch((error) => ({ ok: false, lines: [], problems: [error.message], failed: null }))
+      const r = await call('preview', { ...job.on, scope: job.scope, changeset: job.changeset, omit: CHECK_OMIT }).catch((error) => ({ ok: false, lines: [], problems: [error.message], failed: null }))
       if (wanted.current === job) {
         setChecked({ key: job.key, ok: r.ok, lines: r.lines ?? [], problems: r.problems ?? [], failed: r.failed, order: r.order ?? [] })
         break
@@ -88,6 +93,24 @@ export function useChangeset(target, scope) {
     return () => window.clearTimeout(timer)
   }, [game, scope, changeset, key, runCheck, loaded])
 
+  // The review's files and change log: asked for while a review is open (watchReview), once edits settle.
+  const [watching, setWatching] = useState(0)
+  const [reviewed, setReviewed] = useState(null) // { key, changes, log, undoable }
+  const watchReview = useCallback(() => {
+    setWatching((n) => n + 1)
+    return () => setWatching((n) => n - 1)
+  }, [])
+  useEffect(() => {
+    if (!game || !watching || !loaded) return undefined
+    let live = true
+    const timer = window.setTimeout(() => {
+      call('preview', { ...on, scope, changeset, check: false, omit: REVIEW_OMIT })
+        .then((r) => { if (live) setReviewed({ key, changes: r.changes ?? [], log: r.log ?? [], undoable: r.undoable }) })
+        .catch(() => {})
+    }, changeset.ops.length ? SETTLE : 0)
+    return () => { live = false; window.clearTimeout(timer) }
+  }, [game, scope, changeset, key, watching > 0, loaded]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const savingRef = useRef(false)
   const opsNow = useRef(ops)
   opsNow.current = ops
@@ -102,12 +125,14 @@ export function useChangeset(target, scope) {
     if (reason) setWhy((w) => w || reason)
   }, [])
   const back = useCallback((k) => {
+    if (savingRef.current) return
     const now = opsNow.current
     if (k >= now.length) return
     setRedo((r) => [...r, ...now.slice(k).reverse()])
     setOps(now.slice(0, k))
   }, [])
   const again = useCallback(() => {
+    if (savingRef.current) return
     const r = redoNow.current
     if (!r.length) return
     setOps((now) => [...now, r.at(-1)])
@@ -158,7 +183,7 @@ export function useChangeset(target, scope) {
   }, [checked, fresh, shown])
   const result = { ok: fresh && checked.ok, problems: last && !last.content ? last.problems : fresh ? checked.problems : [], failed: last?.failed ?? null, says: last?.says ?? shown?.says, fresh }
   return {
-    ops, setOps, redo, why, setWhy, shown, last, checked, base, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result,
+    ops, setOps, redo, why, setWhy, shown, last, checked, base, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, reviewed, watchReview,
     content: shown?.content ?? null, edit, addOps, back, again, remove, discard, open, apply, undo,
   }
 }

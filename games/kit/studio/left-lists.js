@@ -5,12 +5,12 @@
 // capabilities, the overrides) put the object picked there. What is open is kept in the address, so a reload comes back
 // to it.
 
-/** The package workspace's lists, by the kind of what they list; search always last. */
+/** The package workspace's lists, by the kind of what they list: first the packages (the one open, and the others to open), search always last. */
 import { listOfType } from './object-types.js'
 import { editorForType } from './editors.js'
-export const PACKAGE_LISTS = ['tree', 'entries', 'kernel', 'overrides', 'search']
-/** The game workspace's lists. */
-export const GAME_LISTS = ['packages', 'chapters', 'overrides']
+export const PACKAGE_LISTS = ['packages', 'tree', 'entries', 'kernel', 'overrides', 'search']
+/** The game workspace's lists: the games (the one open, and the others to open) first. */
+export const GAME_LISTS = ['games', 'packages', 'chapters', 'overrides']
 
 /** The object lists, each with the address parameter that keeps what it has open. */
 export const OBJECT_LISTS = { kernel: 'capability', overrides: 'override' }

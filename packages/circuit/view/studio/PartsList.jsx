@@ -1,5 +1,5 @@
 import { L, tr, GroupedList, groupingsFor, shownName, taskOptionsOf, findTask } from 'kernel/view'
-import { freeName } from 'kernel/view'
+import { copyWithoutTextKeys, freeName } from 'kernel/view'
 // The package's parts in the build workspace's left column. The kernel supplies creation options.
 
 import { iconOf } from '../parts/icons.js'
@@ -21,7 +21,15 @@ export default function PartsList({ content, vocabulary, namespace, game, levelO
     ...option, label: L(option.label),
     ...(option.value === 'task' && { children: tasks.map((task) => ({ ...task, value: `task:${task.value}` })) }),
   }))
+  const picked = at?.part && file.parts[at.part] ? at.part : null
   const create = (value) => {
+    if (value === 'copy') {
+      // A copy of the part open, under a free name of its own, its texts with keys of their own.
+      const type = freeName(parts.map(([id]) => id), picked)
+      onOps([{ op: 'part.add', part: type, data: copyWithoutTextKeys(file.parts[picked]) }])
+      onSelect({ part: type })
+      return
+    }
     const type = freeName(parts.map(([id]) => id), 'circuit/part')
     if (value.startsWith('task:')) {
       const option = tasks.find((task) => task.value === value.slice('task:'.length))
@@ -58,6 +66,6 @@ export default function PartsList({ content, vocabulary, namespace, game, levelO
   return (
     <GroupedList kind="circuit/part" content={content} namespace={namespace} game={game} items={items} label={(id) => L(file.parts[id]?.name)} row={row}
       groupings={groupingsFor('circuit/part')} by={by} onBy={onBy} heading={heading} onHeading={onHeading} newOptions={newOptions} onNew={onNew}
-      addOptions={choices} addLabel={tr('新的元件', 'New part')} onAdd={create} />
+      addOptions={[...choices, { value: 'copy', label: tr('复制所选元件', 'Duplicate the part open'), disabled: !picked }]} addLabel={tr('元件', 'Parts')} onAdd={create} />
   )
 }

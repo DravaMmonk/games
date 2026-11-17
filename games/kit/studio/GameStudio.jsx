@@ -9,7 +9,7 @@ import { typeName } from './LeftTypes.jsx'
 // middle. Only
 // the game's side of the operation set runs here (useChangeset.js): the course, the game's texts and its overrides.
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ArrowDown, ArrowUp, Hammer, Layers, ListTree, Minus, Package, Plus, Settings2, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, BookMarked, Gamepad2, Hammer, Layers, ListTree, Minus, Package, Plus, Trash2 } from 'lucide-react'
 import { L, T, getLang, tr } from '../shell/i18n.js'
 import { contentVocabulary } from './editors.js'
 import { parsePath } from '../engine/ops/edit.js'
@@ -32,13 +32,15 @@ import Review from './Review.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
+import { GameList, GameMeta, JsonFile, gameJson } from './ProjectLists.jsx'
+import SidebarListTools from './SidebarListTools.jsx'
+import ListRow from './ListRow.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
 const SCOPE = 'game'
 const OPENED = readOpen(QUERY, GAME_LISTS)
-const LISTS = { packages: [Package, '包', 'Packages'], chapters: [ListTree, '章节', 'Chapters'], overrides: [Layers, '覆盖', 'Overrides'] }
+const LISTS = { games: [Gamepad2, '游戏', 'Games'], packages: [Package, '用到的包', 'Packages it plays'], chapters: [ListTree, '章节', 'Chapters'], overrides: [Layers, '覆盖', 'Overrides'] }
 const SETTLE = 700
-const NEW = '\0new'
 
 const remember = (game, at, opened) => {
   const url = new URL(window.location.href)
@@ -74,7 +76,10 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     setLayout((l) => (l.auditOpen ? l : { ...l, auditOpen: true }))
   }
   const [field, setField] = useState(null)
-  const [making, setMaking] = useState(null) // the new game being named: { id, zh, en, problem? }
+  const [pickedGame, setPickedGame] = useState(game) // the game picked in the games list: its meta on the right
+  const [chapterQuery, setChapterQuery] = useState('')
+  const chapterMatches = (chapter) => { const q = chapterQuery.trim().toLowerCase(); return !q || `${chapter.id} ${L(chapter.title ?? chapter.chapter?.title) ?? ''}`.toLowerCase().includes(q) }
+  const gamesShown = side === 'games'
   const [layout, setLayout] = usePref('game-layout', { tree: 220, audit: 200, side: 360, treeOpen: true, auditOpen: true, sideOpen: true })
   const [resize, setResize] = useState(null)
   useEffect(() => {
@@ -118,7 +123,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const packageShown = packages.some((p) => p.id === packageAt) ? packageAt : used[0] ?? packages[0]?.id ?? null
   // Package operations are tried on the pending changeset first: the kernel's refusal is said where they were asked.
   const tryOps = async (next) => {
-    const r = await call('preview', { game, scope: SCOPE, changeset: { ops: [...ops, ...next] }, check: false }).catch((error) => ({ failed: 0, problems: [error.message] }))
+    const r = await call('preview', { game, scope: SCOPE, changeset: { ops: [...ops, ...next] }, check: false, omit: ['content', 'changes', 'log', 'drift'] }).catch((error) => ({ failed: 0, problems: [error.message] }))
     if (r.failed !== null && r.failed !== undefined) return r.problems?.join('; ') || tr('操作失败')
     addOps(next)
     return null
@@ -152,16 +157,19 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     edit(chaptersOrder(moveChapter(eras, k, by)))
     select({ era: k + by })
   }
-  const make = async () => {
-    const id = making.id.trim()
-    if (!/^[a-z][a-z0-9-]*$/.test(id)) return setMaking({ ...making, problem: tr('游戏 id 用小写字母、数字和连字符', 'A game id is lowercase letters, digits and dashes') })
-    try {
-      await call('create_game', { id, from: game, title: { zh: making.zh.trim() || id, en: making.en.trim() || id } })
-      setMaking(null)
-      onMade(id)
-    } catch (error) {
-      setMaking({ ...making, problem: error.message })
-    }
+  // Another game opened from the games list (the pending operations given up, after asking).
+  const openGame = (id) => {
+    if (id === game || saving) return
+    if (ops.length && !window.confirm(tr('换一款游戏会放弃待定操作，确定吗？', 'Opening another game discards the pending operations. Continue?'))) return
+    onGame(id)
+    select({ era: 0 })
+  }
+  // A new game on the picked game's package (create_game keeps its course settings), then opened.
+  const makeGame = async (args) => {
+    await call('create_game', args)
+    if (ops.length && !window.confirm(tr('新游戏已建好。打开它会放弃待定操作，现在打开吗？', 'The game is made. Opening it discards the pending operations. Open it now?'))) return onMade(null)
+    setPickedGame(args.id)
+    return onMade(args.id)
   }
   const jumpTo = (item) => {
     const found = /^content: game\.json((?:\.[^\s:[]+|\[\d+\])*): /.exec(item.text)
@@ -179,25 +187,10 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const busyEditing = saving || shown?.ops !== ops
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh}>
-        {making ? (
-          <form className="studio-new-game" onSubmit={(event) => { event.preventDefault(); make() }}>
-            <input className="field-input" value={making.id} onChange={(event) => setMaking({ ...making, id: event.target.value, problem: null })} placeholder={tr('游戏 id', 'Game id')} aria-label={tr('游戏 id', 'Game id')} autoFocus spellCheck={false} />
-            <input className="field-input" value={making.zh} onChange={(event) => setMaking({ ...making, zh: event.target.value })} placeholder="中文名" aria-label="中文名" />
-            <input className="field-input" value={making.en} onChange={(event) => setMaking({ ...making, en: event.target.value })} placeholder="English name" aria-label="English name" />
-            <button type="submit" className="kit-btn is-label">{tr('建立', 'Make')}</button>
-            <button type="button" className="kit-btn is-label" onClick={() => setMaking(null)}>{tr('取消', 'Cancel')}</button>
-            {making.problem && <small className="is-error" role="status">{making.problem}</small>}
-          </form>
-        ) : (
-          <select className="studio-game" value={game} disabled={saving} aria-label={tr('游戏', 'Game')} onChange={(event) => {
-            if (event.target.value === NEW) setMaking({ id: '', zh: '', en: '', problem: null })
-            else { onGame(event.target.value); select({ era: 0 }) }
-          }}>
-            {games.map((g) => <option key={g.id} value={g.id}>{L(g.title) ?? g.id}</option>)}
-            <option value={NEW}>{tr(`在 ${games.find((g) => g.id === game)?.package} 上新建游戏…`, `New game on ${games.find((g) => g.id === game)?.package}…`)}</option>
-          </select>
-        )}
+      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+        <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => setSide('games')} title={tr('在左栏选游戏', 'Pick a game in the left column')}>
+          <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
+        </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-${overridesShown || packagesShown ? 'objects' : 'arrange'} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
@@ -212,17 +205,15 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 )
               })}
             </div>
-            {packagesShown ? <PackageList packages={packages} used={used} current={packageShown} onOpen={setPackageAt} />
+            {gamesShown ? <GameList games={games} current={game} picked={pickedGame} disabled={saving} onPick={setPickedGame} onOpen={openGame} onCreate={makeGame} />
+              : packagesShown ? <UsedPackages packages={packages} used={used} current={packageShown} onOpen={setPackageAt} />
               : overridesShown ? <OverrideList events={events} layer={layer} current={openEvent && overrideKey(openEvent)} onOpen={setOpenOverride} /> : (
             <nav className="tree chapters" aria-label={tr('章节', 'Chapters')}>
-              <button type="button" className={`tree-level ${at?.game ? 'is-on' : ''}`} onClick={() => select({ game: true })}>
-                <Settings2 size={13} aria-hidden="true" /><span>{L(content.title)}</span>
-              </button>
-              {eras.map((chapter, k) => (
+              <SidebarListTools addOptions={busyEditing ? [] : [{ value: 'chapter', label: tr('新的一章', 'New chapter') }]} addLabel={tr('新的一章', 'New chapter')} onAdd={newChapter}
+                query={chapterQuery} onQuery={setChapterQuery} />
+              {eras.map((chapter, k) => !chapterMatches(chapter) ? null : (
                 <div key={k} className={`chapter-item ${e === k && !at?.game ? 'is-on' : ''}`}>
-                  <button type="button" className="tree-level" onClick={() => select({ era: k })}>
-                    <code className="tree-level-id">{chapterName(chapter.id)}</code><span>{L(chapter.title ?? chapter.chapter?.title)}</span>
-                  </button>
+                  <ListRow icon={BookMarked} on={e === k && !at?.game} onClick={() => select({ era: k })} title={L(chapter.title ?? chapter.chapter?.title)} id={chapterName(chapter.id)} />
                   <span className="chapter-tools">
                     <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === 0} onClick={() => shift(k, -1)} title={tr('上移', 'Move up')}><ArrowUp size={12} /></button>
                     <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === eras.length - 1} onClick={() => shift(k, 1)} title={tr('下移', 'Move down')}><ArrowDown size={12} /></button>
@@ -230,7 +221,6 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                   </span>
                 </div>
               ))}
-              <button type="button" className="kit-btn is-label chapter-add" disabled={busyEditing} onClick={newChapter}><Plus size={13} aria-hidden="true" />{tr('新的一章', 'New chapter')}</button>
             </nav>)}
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
@@ -238,19 +228,26 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             <div className="studio-scroll">
               {packagesShown && <PackageCard key={packageShown} id={packageShown} packages={packages} used={used} content={content} pending={busyEditing} onBuild={onBuild} onOps={tryOps} />}
               {overridesShown && <OverrideDetail event={openEvent} layer={layer} pending={busyEditing} onOps={addOps} onOpen={() => setSide('chapters')} />}
-              {!overridesShown && !packagesShown && (at?.game || e === null
+              {gamesShown && <GameMeta games={games} id={pickedGame} open={game} disabled={saving} onOpen={openGame} />}
+              {!gamesShown && !overridesShown && !packagesShown && (at?.game || e === null
                 ? <article className="editor"><header className="editor-head"><h1>{L(content.title)}</h1></header></article>
                 : <>
                   <header className="editor-head chapter-head" onClick={() => pickField([])}>
                     <code className="editor-id is-static">{chapterName(eras[e].id)}</code><h1>{L(eras[e].title ?? eras[e].chapter?.title) ?? ''}</h1>
                   </header>
-                  <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} onSelect={select} onEdit={edit} onOps={addOps} />
+                  <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} />
                 </>)}
             </div>
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {sideCtx && <Inspector content={course} vocab={vocab} at={openEvent ? { override: { event: openEvent, layer } } : chapterFile ?? { game: true }} field={openEvent ? { path: [] } : packagesShown ? null : field ?? (at?.game || e !== null ? { path: [] } : null)} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickField}
+            {/* The right column is the file: the open game's game.json edited here, another game's read as JSON. */}
+            {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={gameJson(games.find((g) => g.id === pickedGame))} note={tr('打开这款游戏后在这里编辑', 'Open the game to edit it here')} />
+              : gamesShown ? sideCtx && <Inspector content={course} vocab={vocab} at={{ game: true }} field={at?.game && field ? field : { path: [] }} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
+                onPick={(path) => { if (!at?.game) setAt({ game: true }); pickField(path) }} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setField(null)}
+                tabs={[]} selection={{ game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}
+                onNavigate={(path) => { if (!at?.game) setAt({ game: true }); pickField(path) }} />
+              : sideCtx && <Inspector content={course} vocab={vocab} at={openEvent ? { override: { event: openEvent, layer } } : chapterFile ?? { game: true }} field={openEvent ? { path: [] } : packagesShown ? null : field ?? (at?.game || e !== null ? { path: [] } : null)} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickField}
               onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setField(null)}
               tabs={[]} selection={at?.game ? { game: true } : { era: e }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}
               onNavigate={(path) => pickField(path)} />}
@@ -260,7 +257,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
               audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
-              panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} why={why} setWhy={setWhy} said={said}
+              panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                 onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}
                 onDiscard={discard} onOpen={pending.open} onApply={apply} onUndo={undo} onSelect={() => {}} />
                 : <Debug ops={ops} last={last} />} />
@@ -279,10 +276,15 @@ function retitled(value, key = null) {
 }
 
 /** The packages, those this game plays first. */
-function PackageList({ packages, used, current, onOpen }) {
+/** The packages, those the game plays first, with a search; one picked shows in the middle (PackageCard). */
+function UsedPackages({ packages, used, current, onOpen }) {
+  const [query, setQuery] = useState('')
+  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
   const listed = [...packages].sort((a, b) => Number(used.includes(b.id)) - Number(used.includes(a.id)) || a.id.localeCompare(b.id))
+    .filter(({ id, uses }) => words.every((word) => `${id} ${Object.keys(uses ?? {}).join(' ')}`.toLowerCase().includes(word)))
   return (
     <nav className="parts-list" aria-label={tr('包', 'Packages')}>
+      <SidebarListTools query={query} onQuery={setQuery} />
       {listed.map(({ id }) => (
         <button key={id} type="button" className={`parts-row is-object ${id === current ? 'is-on' : ''} ${used.includes(id) ? '' : 'is-unused'}`} aria-current={id === current ? 'true' : undefined} onClick={() => onOpen(id)}>
           <i className="family-chip"><Package size={12} aria-hidden="true" /></i>

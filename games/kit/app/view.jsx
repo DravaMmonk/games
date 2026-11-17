@@ -121,6 +121,8 @@ export { reduced } from '../shell/useMedia.js'
 
 export * as studio from '../studio/public.jsx'
 export { freeName } from '../studio/names.js'
+// A copy of an object whose texts no longer carry their catalog keys, so the copy gets keys of its own.
+export { copyWithoutTextKeys } from '../engine/catalogs.js'
 export {
   Rows, formOf, Area, groupingsFor, GameFrame, GroupedList, GatherHead, Members, Picker, TextField, blank, call, confirmDelete, creationChoices, findTask, getAt, getLang, isText, localName, namespaceOf, overridesIt, reordered, shapeAt, showPath, shownName, stageOwners, summaryOf, tagKeyOfRef, tagName, taskOptionsOf, textWith, useDraft, usePickerPopup, validate, withoutId, gatherWriter
 } from '../studio/public.jsx'

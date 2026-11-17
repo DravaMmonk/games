@@ -23,12 +23,13 @@ function Row({ icon: Icon, on, title, name, onClick }) {
 }
 
 /** The encyclopedia's entries, grouped by their tags, the sections or the relations that gather them. `onOpen(k)` opens the k-th. */
-export function EntryList({ content, namespace, game, current, by, onBy, heading, onHeading, newOptions, onNew, onOpen }) {
+export function EntryList({ content, namespace, game, current, by, onBy, heading, onHeading, newOptions, onNew, onOpen, addOptions = [], onAdd }) {
   const entries = content.glossary?.entries ?? []
   const at = new Map(entries.map((entry, k) => [entry.id, k]))
   return (
     <GroupedList kind="entry" content={content} namespace={namespace} game={game} items={entries.map((entry) => entry.id)} label={(id) => L(entries[at.get(id)]?.title)}
       groupings={GROUPINGS.entry} by={by} onBy={onBy} heading={heading} onHeading={onHeading} newOptions={newOptions} onNew={onNew}
+      addOptions={addOptions} addLabel={tr('词条', 'Entries')} onAdd={onAdd}
       row={(id) => <Row key={id} icon={BookOpen} on={at.get(id) === current} title={L(entries[at.get(id)]?.title)} name={shownName(namespace, id)} onClick={() => onOpen(at.get(id))} />} />
   )
 }

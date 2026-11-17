@@ -99,6 +99,19 @@ test('on every starter: a bulk edit of its package levels runs as a changeset, a
   }
 })
 
+test('a dry run without texts leaves the content as it is and gives no file texts', async () => {
+  const d = STARTERS[0]
+  const ws = openStarter(d)
+  const id = ws.content().levels[0].id
+  const ops = [{ op: 'level.set', level: id, path: 'title', value: { en: '另一个标题' } }]
+  const full = await runChangeset(ws, { ops }, { write: false, check: false })
+  const slim = await runChangeset(ws, { ops }, { write: false, check: false, texts: false })
+  assert.equal(slim.failed, null, slim.problems.join('\n'))
+  assert.ok(full.changes.length > 0)
+  assert.deepEqual([slim.changes, slim.diff, slim.files], [[], '', []])
+  assert.deepEqual(slim.content, full.content)
+})
+
 const CONTENT = {
   id: 'toy', title: { en: '玩具' }, eras: [{ id: 1, title: { en: '第一章' }, levels: [{ id: 'a' }, { id: 'b' }] }],
   levels: LEVELS, glossary: { groups: [], entries: [{ id: 'adder', title: { en: '加法器' }, body: [] }] },

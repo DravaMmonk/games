@@ -5,15 +5,15 @@ import { Fragment, useMemo, useState } from 'react'
 import { L, tr } from '../shell/i18n.js'
 import { groupTree, levelTags, stays } from './groups.js'
 import SidebarListTools from './SidebarListTools.jsx'
+import { Flag } from 'lucide-react'
 import SidebarSection, { useSidebarFolds } from './SidebarSection.jsx'
 import { sidebarSearch, sidebarSortOptions, sortSidebarIds } from './sidebar-list.js'
 import { usePref } from './prefs.js'
 import { shownName } from './objects-edit.js'
 import { shifted } from './list-order.js'
 import { useDragOrder } from './useDragOrder.js'
-import GroupingBar from './GroupingBar.jsx'
 
-/** `grouping`: GroupingBar's props (the levels grouped by tags here; by relations the workspace shows GroupedList). */
+/** `grouping`: the grouping's part of the list's tools (SidebarListTools.jsx: the levels grouped by tags here; by relations the workspace shows GroupedList). */
 export default function Tree({ game, namespace, content, order: playOrder = [], at, selectedTask, picked, setPicked, onSelect, moving, setMoving, onMove, onGroupMove, onReorder, labels = null, onTask, onTaskMove, addOptions, onAdd, grouping = null }) {
   const [taskDrag, setTaskDrag] = useState(null) // the id of the task being dragged
   const [taskOver, setTaskOver] = useState(null)
@@ -84,7 +84,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
           if (section) onReorder?.(section.group, shifted(ids(section), id, event.key === 'ArrowUp' ? -1 : 1))
           return
         }
-        const all = [...event.currentTarget.closest('.tree').querySelectorAll('.tree-level')]
+        const all = [...event.currentTarget.closest('.tree').querySelectorAll('.tree-level[data-level]')]
         const next = all[all.indexOf(event.currentTarget) + (event.key === 'ArrowDown' ? 1 : -1)]
         if (!next) return
         next.focus()
@@ -101,10 +101,11 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
       onDragEnd={() => setMoving(null)}
       {...(taskDrag && taskTarget(id, { level: id }))}
     >
-      <code className="tree-level-id" title={id}>{shownName(namespace, id)}</code>
-      <span>{L(byId.get(id)?.title)}</span>
+      <i className="family-chip"><Flag size={12} aria-hidden="true" /></i>
+      <span>{L(byId.get(id)?.title) || shownName(namespace, id)}</span>
       {placements.get(id)?.optional && <small className="tree-optional">{tr('可选')}</small>}
       {placements.get(id)?.skippable && <small className="tree-optional">{tr('可跳过', 'Skippable')}</small>}
+      <code>{shownName(namespace, id)}</code>
     </button>
   )
   /** What makes a row a place a dragged task goes. */
@@ -177,9 +178,9 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
 
   return (
     <nav className="tree" aria-label={tr('关卡分组', 'Level groups')}>
-      <SidebarListTools addOptions={addOptions} onAdd={onAdd} query={query} onQuery={setQuery}
-        sortOptions={sortOptions} sort={view} onSort={setSort} />
-      {grouping && !flat && <GroupingBar {...grouping} folded={tree.sections.every((section) => folded.has(section.key))} onFoldAll={(shut) => setAll(tree.sections.map((section) => section.key), shut)} />}
+      <SidebarListTools addOptions={addOptions} addLabel={tr('新的关卡', 'New level')} onAdd={onAdd} query={query} onQuery={setQuery}
+        sortOptions={sortOptions} sort={view} onSort={setSort} {...(grouping ?? {})}
+        folded={!flat && tree.sections.every((section) => folded.has(section.key))} onFoldAll={flat ? null : (shut) => setAll(tree.sections.map((section) => section.key), shut)} />
       {flat ? <div className="tree-levels">{rows.map(row)}</div>
         : tree.sections.map((section) => {
         const levels = ids(section).filter((id) => visible.has(id))

@@ -7,6 +7,8 @@ import { L, tr } from '../shell/i18n.js'
 import { sidebarSearch } from './sidebar-list.js'
 import { capabilityOf } from './left-lists.js'
 import SidebarListTools from './SidebarListTools.jsx'
+import ListRow from './ListRow.jsx'
+import { Cpu } from 'lucide-react'
 
 const KINDS = [
   ['operation', '运算', 'Operations'], ['primitive', '原始元件', 'Primitive parts'], ['valueType', '值类型', 'Value types'],
@@ -41,24 +43,16 @@ export function CapabilityList({ capabilities, current, onOpen }) {
   const shown = entries.filter(([name, it]) => (module === ALL || moduleOf(name) === module) && matches(name, L(it.about)))
   return (
     <nav className="parts-list capabilities" aria-label={tr('能力', 'Capabilities')}>
-      <div className="capabilities-filters">
-        <select className="studio-game" value={kind} aria-label={tr('能力的种类', 'Kind of capability')} onChange={(e) => setKind(e.target.value)}>
-          {kinds.map(([id, zh, en]) => <option key={id} value={id}>{tr(zh, en)} · {Object.keys(capabilities[id]).length}</option>)}
-        </select>
-        <select className="studio-game" value={module} aria-label={tr('模块', 'Module')} onChange={(e) => setModule(e.target.value)}>
-          <option value={ALL}>{tr('全部模块', 'All modules')}</option>
-          {modules.map((m) => <option key={m} value={m}>{m}</option>)}
-        </select>
-      </div>
-      <SidebarListTools query={query} onQuery={setQuery} />
+      <SidebarListTools query={query} onQuery={setQuery} choices={[
+        { label: tr('能力的种类', 'Kind of capability'), value: kind, onPick: setKind, options: kinds.map(([id, zh, en]) => ({ value: id, label: `${tr(zh, en)} · ${Object.keys(capabilities[id]).length}` })) },
+        { label: tr('模块', 'Module'), value: module, onPick: setModule, options: [{ value: ALL, label: tr('全部模块', 'All modules') }, ...modules.map((m) => ({ value: m, label: m }))] },
+      ]} />
       <ul className="capabilities-list">
         {shown.map(([name, it]) => {
           const on = current?.kind === kind && current?.name === name
           return (
             <li key={name}>
-              <button type="button" className={on ? 'is-on' : ''} aria-current={on ? 'true' : undefined} onClick={() => onOpen(kind, name)} title={L(it.about)}>
-                <code>{name}</code><span>{L(it.about)}</span>
-              </button>
+              <ListRow icon={Cpu} on={on} onClick={() => onOpen(kind, name)} title={L(it.about)} id={name} />
             </li>
           )
         })}

@@ -25,8 +25,10 @@ export function qualifyObject(kind, value, namespace, text = (v) => v, resolve =
 /** One resolver for every typed reference field and relation endpoint. Tags are unordered sets. */
 export function referenceResolver(registries, problems = [], vocabulary = registryVocabularies.get(registries)) {
   const report = (at, says) => problems.push({ at, says })
-  const entries = [...Object.entries(registries).flatMap(([kind, values]) => Object.keys(values).map(name => ({ kind, name }))), ...meaningsOf(vocabulary).flatMap(meaning => meaning.indexes?.({ registries }) ?? []), ...Object.entries(registries).flatMap(([kind, values]) => Object.values(values).flatMap(value => meaningsOf(vocabulary).flatMap(meaning => meaning.identities?.({ kind, value }) ?? [])))]
-  const has = (kind, id) => entries.some(entry => entry.name === id && entry.kind !== 'tag' && kindMatches(vocabulary, kind, entry.kind))
+  // Every object a bare id may name, listed only when an `any` reference first asks (most expansions never do).
+  let listed = null
+  const allEntries = () => (listed ??= [...Object.entries(registries).flatMap(([kind, values]) => Object.keys(values).map(name => ({ kind, name }))), ...meaningsOf(vocabulary).flatMap(meaning => meaning.indexes?.({ registries }) ?? []), ...Object.entries(registries).flatMap(([kind, values]) => Object.values(values).flatMap(value => meaningsOf(vocabulary).flatMap(meaning => meaning.identities?.({ kind, value }) ?? [])))])
+  const has = (kind, id) => allEntries().some(entry => entry.name === id && entry.kind !== 'tag' && kindMatches(vocabulary, kind, entry.kind))
   const findTag = (name, kind, at) => {
     const matches = Object.entries(registries.tag ?? {}).filter(([key, tag]) => tagName(key) === name && (kindMatches(vocabulary, kind, tag.kind)))
     if (matches.length !== 1) {
@@ -59,7 +61,7 @@ export function referenceResolver(registries, problems = [], vocabulary = regist
     return [...new Set(out)].sort()
   }
   expand.vocabulary = vocabulary
-  expand.entries = entries
+  Object.defineProperty(expand, 'entries', { get: allEntries })
   expand.registries = registries
   expand.kindOf = (id) => {
     if (id.startsWith('#')) return findTag(id.slice(1), 'any', 'reference')?.[1].kind

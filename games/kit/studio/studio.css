@@ -30,6 +30,37 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .studio-palette { height: 26px; padding: 0 8px; display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 6px; color: var(--muted); background: var(--hover); cursor: pointer; }
 .studio-palette:hover { color: var(--ink); }
 .studio-busy { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0; transition: opacity 160ms ease; }
+.studio-history { display: inline-flex; gap: 2px; }
+.studio-panel-toggle { flex: none; width: 28px; height: 28px; display: grid; place-items: center; padding: 0; }
+.studio-panel-toggle[aria-pressed='false'] { color: var(--muted); }
+/* The package open in the build workspace, named in the bar: a click lists the packages in the left column. */
+.studio-open-name { min-width: 0; max-width: 18em; height: 28px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink); font: 600 var(--fs)/1 var(--mono); cursor: pointer; }
+.studio-open-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.studio-open-name:hover, .studio-open-name.is-on { background: var(--hover); }
+/* The left column's lists of packages and games (ProjectLists.jsx): a search, a form for a new one, a row each, the
+   one open marked, what it uses (or its id) beside it. */
+.project-list { display: flex; flex-direction: column; gap: 1px; padding: 4px 4px 6px; }
+.project-pick { display: flex; align-items: center; gap: 7px; }
+.project-pick small { flex: 0 1 auto; min-width: 0; overflow: hidden; color: var(--faint); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.project-pick-open { flex: none; margin-left: auto; padding: 1px 5px; border-radius: 4px; color: var(--muted); background: var(--hover); font: 600 10px/1.4 var(--sans); }
+.project-pick.is-on .project-pick-open { color: inherit; background: color-mix(in srgb, currentColor 16%, transparent); }
+.project-none { margin: 8px 6px; color: var(--faint); font-size: var(--fs-mini); }
+.project-new { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 8px; padding: 8px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--paper); }
+.project-new strong { font-size: var(--fs-mini); }
+.project-new-actions { display: flex; gap: 6px; }
+/* A package's meta in the right column (PackageMeta): read only, section by section. */
+.package-meta { padding: 10px 14px 24px; }
+.package-meta-head { display: flex; align-items: center; gap: 8px; min-height: 34px; padding-bottom: 6px; border-bottom: 1px solid var(--hairline); }
+.package-meta-head > code { font: 600 var(--fs)/1 var(--mono); }
+.package-meta-file { margin: 14px 0 0; color: var(--muted); font: 600 var(--fs-mini)/1.2 var(--sans); }
+.package-meta .package-facts dd { align-items: center; font-size: var(--fs-mini); }
+.package-meta .package-facts dd.is-ok { color: var(--status, var(--ink)); }
+.package-meta .package-facts dd.is-error { color: var(--fail); }
+.package-meta-hash { color: var(--faint); }
+.package-meta-none { color: var(--faint); }
+.package-meta-more summary { cursor: pointer; color: var(--muted); }
+.package-meta-more[open] { display: flex; flex-wrap: wrap; gap: 6px; }
+.package-meta-more[open] summary { flex-basis: 100%; }
 .studio-busy.is-on { opacity: 1; animation: studio-pulse 900ms ease-in-out infinite; }
 @keyframes studio-pulse { 50% { opacity: .25; } }
 
@@ -100,7 +131,6 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .sidebar-section-name { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; padding: 3px 4px 3px 0; border: 0; color: var(--ink); background: none; font: 600 12px/1.3 var(--sans); text-align: left; cursor: pointer; }
 .sidebar-section-name span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tree-level { min-width: 0; height: 22px; padding: 0 4px 0 6px; display: flex; align-items: center; gap: 6px; border: 0; border-radius: 4px; color: var(--ink); background: none; font: 12px/1 var(--sans); text-align: left; cursor: pointer; }
-.tree-level-id { flex: 0 1 auto; max-width: 44%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .8; font: var(--fs-mini)/1 var(--mono); }
 .tree-level > span, .tree-task > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tree-level:hover, .tree-task:hover { background: var(--hover); }
 .tree-level.is-picked { background: color-mix(in srgb, var(--select) 16%, transparent); box-shadow: inset 2px 0 0 var(--select); }
@@ -119,7 +149,7 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .mk-fail { min-width: 14px; height: 14px; padding: 0 3px; display: inline-grid; place-items: center; border-radius: 7px; color: #fff; background: var(--fail); font: 700 9.5px/1 var(--mono); font-style: normal; }
 
 /* Search and replace. */
-.search { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 6px 6px 32px; }
+.search { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 4px 4px 32px; }
 .search-box { display: flex; gap: 2px; align-items: flex-start; }
 .search-mode { width: 16px; height: var(--row); padding: 0; border: 0; color: var(--faint); background: none; font: 600 13px/1 var(--mono); cursor: pointer; transition: transform 120ms ease; }
 .search-mode.is-on { transform: rotate(90deg); color: var(--ink); }
@@ -257,6 +287,7 @@ button.field-key { padding: 0; border: 0; background: none; text-align: left; cu
 .pick-button { max-width: min(640px, 100%); min-height: var(--row); padding: 2px 6px 2px 8px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 5px; color: var(--ink); background: var(--paper); box-shadow: 0 0 0 1px var(--hairline); font: var(--fs)/1.3 var(--sans); text-align: left; cursor: pointer; }
 .pick-button:focus-visible, .pick-button[aria-expanded='true'] { outline: none; box-shadow: 0 0 0 2px var(--accent); }
 .pick-button.is-unknown b { color: var(--fail); }
+.pick-item.is-off { opacity: .4; cursor: default; }
 .pick-button > svg { flex: none; color: var(--faint); }
 .pick-name { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
 .pick-name b { font: 600 12px/1.3 var(--mono); color: var(--accent-ink); white-space: nowrap; }
@@ -601,10 +632,15 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .insp-move .pick-button { flex: 1; min-width: 0; }
 
 /* Shared sidebar creation, filtering and sorting. */
-.sidebar-list-tools { display: grid; grid-template-columns: 28px minmax(0, 1fr) 28px; align-items: center; gap: 6px; min-width: 0; padding: 2px 0 4px; }
+.sidebar-list-tools { display: grid; grid-template-columns: 28px minmax(0, 1fr) 28px 28px; align-items: center; gap: 4px; min-width: 0; padding: 2px 0 4px; }
+.sidebar-list-tools > .pick { width: 28px; min-width: 0; }
+/* The four tools look alike (the fold too is a pick button); one the list has no use for is the same, greyed. */
+.sidebar-list-tools .pick-button:disabled { opacity: .35; cursor: default; }
+.sidebar-list-search.is-off { opacity: .45; }
+.sidebar-list-search.is-bad { border-color: var(--fail); }
 .sidebar-list-tools .pick-button.is-icon { width: 28px; min-height: 26px; justify-content: center; padding: 0; }
 .sidebar-list-tools .pick-button.is-icon svg { color: var(--accent-ink); }
-.sidebar-list-search { grid-column: 2; display: flex; align-items: center; gap: 5px; min-width: 0; height: 26px; padding: 0 6px; color: var(--muted); border: 1px solid var(--hairline); border-radius: 5px; background: var(--paper); }
+.sidebar-list-search { grid-column: auto; display: flex; align-items: center; gap: 5px; min-width: 0; height: 26px; padding: 0 6px; color: var(--muted); border: 1px solid var(--hairline); border-radius: 5px; background: var(--paper); }
 .sidebar-list-search:focus-within { border-color: var(--accent); }
 .sidebar-list-search > svg { flex: none; }
 .sidebar-list-search input { min-width: 0; width: 100%; padding: 0; border: 0; outline: none; background: none; color: var(--ink); font: var(--fs)/1.3 var(--sans); }
@@ -616,21 +652,51 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .arrange-bar .studio-game { max-width: min(100%, 22em); }
 .arrange-save:not(:disabled) { color: var(--select-ink); background: var(--select); }
 .arrange-actions { min-height: 34px; padding: 5px 0; color: var(--muted); }
+/* Above a wiring board, what is picked takes one row of a fixed height, so the board never moves when a wire or a
+   card is picked or let go; a long name is cut short. */
+.relation-board > .arrange-actions, .arrange-links > .arrange-actions { height: 34px; min-height: 0; box-sizing: content-box; flex-wrap: nowrap; overflow: hidden; white-space: nowrap; }
+.relation-board > .arrange-actions > strong, .arrange-links > .arrange-actions > strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.relation-board > .arrange-actions > :not(strong), .arrange-links > .arrange-actions > :not(strong) { flex: none; }
 .arrange-actions strong, .arrange-bar strong { color: var(--ink); }
 .arrange-actions label { display: inline-flex; align-items: center; gap: 2px; }
 .arrange-actions p, .arrange-saved { margin: 0; color: var(--muted); }
 .arrange-saved { margin-bottom: 6px; }
 .arrange .is-error { color: var(--fail); }
 
+.course-board-frame { position: relative; flex: 1; min-height: 130px; display: flex; flex-direction: column; }
 .course-board { flex: 1; min-height: 130px; max-width: 100%; overflow: auto; border: 1px solid var(--hairline); border-radius: var(--r-md); background: radial-gradient(circle, var(--hairline) 1px, transparent 1px) 0 0 / 16px 16px, var(--canvas); }
 .course-board-canvas { position: relative; isolation: isolate; }
 .course-board-wires { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.course-wire-line { fill: none; stroke: var(--muted); stroke-width: 2; }
-.course-board-wires marker path { fill: var(--muted); }
-.course-board-wires .is-near .course-wire-line { stroke: var(--ink); }
-.course-board-wires .is-picked .course-wire-line, .course-wire-line.is-draft { stroke: var(--accent); }
-.course-wire-hit { fill: none; stroke: transparent; stroke-width: 16; pointer-events: stroke; cursor: pointer; }
-.course-wire-hit:focus-visible, .course-wire-hit:hover { stroke: color-mix(in srgb, var(--accent) 28%, transparent); outline: none; }
+/* Wires as the circuit board draws them (packages/circuit/view/board/wires.css): a halo of the board's ground under
+   the line, so crossing wires stay apart; thicker when hovered or picked, a soft accent halo when picked; the wire in
+   hand is a dashed accent line. */
+.course-wire-halo { fill: none; stroke: var(--canvas); stroke-width: 7px; stroke-linecap: round; }
+.course-wire-line { fill: none; stroke: var(--muted); stroke-width: 2.6px; stroke-linecap: round; transition: stroke-width 150ms ease; }
+.course-wire.is-near .course-wire-line { stroke: var(--ink); }
+.course-wire.is-selected .course-wire-line { stroke: var(--ink); stroke-width: 3.8px; }
+.course-wire.is-selected .course-wire-halo { stroke: color-mix(in srgb, var(--accent) 24%, transparent); stroke-width: 12px; }
+.course-wire.is-derived .course-wire-line { stroke-dasharray: 3 5; opacity: .6; }
+.course-wire-draft { fill: none; stroke: var(--accent); stroke-width: 2.4px; stroke-linecap: round; stroke-dasharray: 5 5; }
+.course-wire-hit { fill: none; stroke: transparent; stroke-width: 16px; pointer-events: stroke; cursor: pointer; }
+.course-wire-hit:focus-visible { outline: none; }
+.course-wire:has(.course-wire-hit:focus-visible) .course-wire-halo { stroke: color-mix(in srgb, var(--accent) 24%, transparent); stroke-width: 12px; }
+@media (hover: hover) and (pointer: fine) { .course-wire:hover .course-wire-line { stroke-width: 3.8px; } }
+/* Why a wire was refused, at the top of the board for a moment (the circuit board's .board-refusal). */
+/* A wire's delete button at its middle, while the wire is picked or under the pointer; a card's at its top right
+   corner, while the card is picked or under the pointer. */
+.course-wire-x { display: none; pointer-events: all; cursor: pointer; }
+.course-wire.is-selected .course-wire-x { display: inline; }
+@media (hover: hover) and (pointer: fine) { .course-wire:hover .course-wire-x { display: inline; } }
+.course-wire-x-hit { fill: transparent; }
+.course-wire-x-dot { fill: var(--paper); stroke: var(--line); stroke-width: 1px; }
+.course-wire-x path { fill: none; stroke: var(--muted); stroke-width: 1.6px; stroke-linecap: round; }
+.course-wire-x:hover .course-wire-x-dot { fill: var(--fail); stroke: var(--fail); }
+.course-wire-x:hover path { stroke: var(--paper); }
+.course-card-x { position: absolute; z-index: 2; top: 0; right: 0; width: 20px; height: 20px; display: none; place-items: center; padding: 0; border: 1px solid var(--line); border-radius: var(--r-full); background: var(--paper); color: var(--muted); transform: translate(40%, -40%); cursor: pointer; }
+.course-card.is-active .course-card-x { display: grid; }
+@media (hover: hover) and (pointer: fine) { .course-card:hover .course-card-x { display: grid; } }
+.course-card-x:hover { border-color: var(--fail); background: var(--fail); color: var(--paper); }
+.course-board-refusal { position: absolute; z-index: 6; left: 50%; top: 12px; max-width: min(520px, calc(100% - 32px)); margin: 0; padding: var(--sp-4) var(--sp-5); border-radius: var(--r-lg); color: var(--paper); background: color-mix(in srgb, var(--fail) 88%, var(--ink)); box-shadow: 0 10px 22px -12px rgba(0, 0, 0, .5); font-size: 13px; line-height: 1.45; transform: translateX(-50%); pointer-events: none; }
 .course-card { position: absolute; border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
 .course-card.is-moving { z-index: 2; }
 .course-card.is-portal { box-shadow: none; outline: 1px dashed var(--line); }
@@ -638,24 +704,36 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .course-card-label { width: 100%; height: 44px; display: flex; align-items: center; gap: 5px; min-width: 0; padding: 0 12px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink); font: var(--fs-mini)/1.25 var(--sans); text-align: left; cursor: grab; touch-action: none; user-select: none; }
 .course-card.is-moving .course-card-label { cursor: grabbing; }
 .course-card-label.is-current { background: color-mix(in srgb, var(--select) 17%, transparent); }
-.course-card-label span { min-width: 0; display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.course-card-label code { flex: none; color: var(--accent-ink); }
-.course-card-label small { color: var(--muted); }
-.course-port { position: absolute; left: 50%; z-index: 1; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); cursor: crosshair; }
+/* A card says its id and name on one line, whole: the card is as wide as its words (ArrangementBoard.jsx). */
+.course-card-label span { flex: none; white-space: nowrap; }
+.course-card-label code { flex: none; color: var(--accent-ink); font: var(--fs-mini)/1.25 var(--mono); white-space: nowrap; }
+.course-card-label small { flex: none; color: var(--muted); white-space: nowrap; }
+/* What the cards say (id and name, id, name), at the board's top right. */
+.course-board-labels { position: absolute; z-index: 5; top: 8px; right: 8px; }
+.course-port { position: absolute; left: 50%; z-index: 1; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); cursor: pointer; }
 .course-port.is-input { top: 0; }
-.course-port.is-output { top: 100%; }
-.course-port::before { content: ''; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--line); background: var(--paper); }
-.course-port:hover::before, .course-port.is-ready::before, .course-port.is-picked::before { border-color: var(--accent); }
-.course-port.is-picked::before { background: var(--accent); }
+.course-port.is-output { top: 100%; cursor: crosshair; }
+/* The dots as the circuit board's: a ring, filled once wired; an input not wired yet has a small ring inside
+   (--port-mark); the dot picked is filled with the accent, the dots its wire may go to pulse. */
+.course-port::before { content: ''; position: relative; width: 12px; height: 12px; box-sizing: border-box; border-radius: var(--r-full); background: var(--paper); box-shadow: 0 0 0 1.5px var(--ink); transition: background 160ms ease, transform 160ms ease; }
+.course-port.is-wired::before { background: var(--ink); }
+.course-port.is-input:not(.is-wired)::after { content: ''; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: var(--r-full); box-shadow: inset 0 0 0 1.5px var(--port-mark); transform: translate(-50%, -50%); pointer-events: none; }
+.course-port:not(:disabled):hover::before { transform: scale(1.25); background: var(--accent); }
+.course-port.is-picked::before { transform: scale(1.35); background: var(--accent); box-shadow: 0 0 0 1.5px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
+.course-port.is-target::before { transform: scale(1.2); box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 28%, transparent); animation: course-port-pulse 1.2s ease-in-out infinite; }
+.course-port.is-picked::after, .course-port.is-target::after, .course-port:not(:disabled):hover::after { display: none; }
 .course-port:disabled { cursor: default; opacity: .6; }
+.course-board-frame.is-picking .course-card-label { cursor: pointer; }
+@keyframes course-port-pulse { 50% { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 9px color-mix(in srgb, var(--accent) 12%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .course-port.is-target::before { animation: none; } }
 
 @media (max-width: 760px) {
   .arrange { height: auto; padding-inline: var(--gutter); }
-  .course-board { max-height: 66vh; }
+  .course-board-frame, .course-board { max-height: 66vh; }
   .course-port { width: 44px; height: 44px; }
+  .course-card-x { width: 28px; height: 28px; }
 }
 
-.course-board-wires .is-derived > .course-wire-line { stroke-dasharray: 5 4; }
 
 /* The two workspaces (Studio.jsx): the switch in the bar, and the game workspace's chapter list, chapter board and map. */
 .studio-spaces { display: flex; gap: 1px; padding: 2px; border-radius: 8px; background: var(--hover); }
@@ -665,20 +743,30 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .studio-new-game .field-input { width: 9em; height: 26px; }
 .studio-new-game .is-error { color: var(--fail); }
 .studio-modes { display: flex; gap: 1px; padding: 2px; border-radius: 8px; background: var(--hover); }
-.chapters { display: flex; flex-direction: column; gap: 1px; padding: 6px; }
+.chapters { display: flex; flex-direction: column; gap: 1px; padding: 4px 4px 32px; }
 .chapter-item { display: flex; align-items: center; gap: 2px; border-radius: 4px; }
-.chapter-item > .tree-level { flex: 1; }
-.chapter-item.is-on > .tree-level { color: var(--select-ink); background: var(--select); }
+.chapter-item > .parts-row { flex: 1; }
 .chapter-tools { display: none; }
 .chapter-item:hover .chapter-tools, .chapter-item.is-on .chapter-tools { display: inline-flex; }
 .chapter-tools .editor-tool { width: 22px; height: 22px; }
-.chapter-add { margin-top: 6px; align-self: flex-start; }
 .arrange-group { display: flex; align-items: center; gap: 6px; padding: 8px 0 4px; }
 .arrange-group .editor-id { width: 10em; }
 .arrange-group code.editor-id { width: auto; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .arrange-group-title { flex: 1; min-width: 0; }
+.relation-board > .arrange-group { flex-wrap: wrap; row-gap: 4px; }
 .arrange-links { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .map-layout { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+/* A chapter's route map beside the map as the player sees it (MapPreview.jsx): side by side when the middle is wide,
+   the preview under the editor when it is not. A phone's preview is a phone's width, centred. */
+.map-with-preview { gap: 12px; }
+.map-edit { flex: 1 1 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.map-preview { flex: 1 1 0; min-width: 0; min-height: 360px; display: flex; flex-direction: column; }
+.map-preview-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; padding: 5px 0; }
+.map-preview-head h3 { margin: 0; color: var(--muted); font: 600 var(--fs-mini)/1.2 var(--sans); }
+.map-preview-stage { flex: 1; min-height: 0; display: flex; justify-content: center; overflow: hidden; border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--paper); }
+.map-preview-stage iframe { flex: 1; width: 100%; height: 100%; min-height: 360px; border: 0; }
+.map-preview.is-phone .map-preview-stage iframe { flex: none; width: 375px; max-width: 100%; border-inline: 1px solid var(--hairline); }
+@container (min-width: 820px) { .map-with-preview { flex-direction: row; } }
 .map-rows { flex: 1; overflow: auto; padding: 16px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: radial-gradient(circle, var(--hairline) 1px, transparent 1px) 0 0 / 16px 16px, var(--canvas); }
 .map-row { display: flex; justify-content: center; gap: 12px; }
 .map-gap { height: 12px; margin: 2px auto; max-width: calc(3 * 180px + 2 * 12px); border-radius: 3px; }
@@ -736,6 +824,19 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .chapter-members li { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 1px 2px 1px 7px; border: 1px solid var(--hairline); border-radius: 6px; font-size: 12px; }
 .chapter-members li.is-tag { border-style: dashed; }
 .chapter-members li span { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+/* The Order tab: one numbered column, a level a row, in play order. */
+.chapter-members.is-column { flex-direction: column; flex-wrap: nowrap; gap: 3px; max-width: 46em; }
+.chapter-members.is-column li { display: flex; padding: 4px 2px 4px 4px; font-size: var(--fs-mini); cursor: pointer; }
+.chapter-members.is-column li span { flex: 0 1 auto; min-width: 0; color: var(--ink); }
+.chapter-members.is-column li code { flex: 0 100000 auto; min-width: 0; margin-left: auto; overflow: hidden; color: var(--faint); font-size: 11px; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.chapter-members.is-column li:hover { background: var(--hover); }
+.chapter-members.is-column li.is-on { color: var(--select-ink); background: var(--select); border-color: var(--select); }
+.chapter-members.is-column li.is-on span, .chapter-members.is-column li.is-on code, .chapter-members.is-column li.is-on .member-no { color: inherit; }
+/* The Order tab: levels put in from its own picker; the level picked's texts as this game writes them below. */
+.chapter-order-tools { display: flex; gap: 6px; margin: 8px 0 0; }
+.chapter-level-texts { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+.chapter-level-texts h3 { margin: 0 0 4px; font: 600 var(--fs)/1.3 var(--sans); }
+.member-no { flex: none; min-width: 2em; color: var(--faint); font: 600 11px/1 var(--mono); text-align: right; }
 
 /* The override picked (OverrideAudit.jsx): what it overrides, by which layer, the fields before and after. */
 .override-audit > .arrange-group { flex-wrap: wrap; }
@@ -753,14 +854,7 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .object-link code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* The kernel's capabilities, read only (CapabilityBrowser.jsx): the list on the left, the one picked in the middle. */
-.capabilities-filters { display: grid; gap: 4px; padding: 2px 0; }
-.capabilities-filters .studio-game { width: 100%; max-width: none; }
 .capabilities-list { margin: 0; padding: 0; list-style: none; }
-.capabilities-list button { width: 100%; display: flex; align-items: baseline; gap: 8px; padding: 4px 6px; border: 0; border-radius: 5px; color: var(--ink); background: none; text-align: left; cursor: pointer; }
-.capabilities-list button:hover { background: var(--hover); }
-.capabilities-list button.is-on { background: var(--select); color: var(--select-ink); }
-.capabilities-list code { flex: 0 0 auto; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.capabilities-list span { flex: 1 1 0; min-width: 0; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
 .capability-detail { min-width: 0; overflow: auto; }
 .capability-detail h2 { margin: 0 0 6px; font-size: 15px; }
 .capability-detail h3 { margin: 14px 0 4px; color: var(--muted); font-size: 12px; font-weight: 600; }
@@ -809,12 +903,6 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .studio-scroll > .chapter-head { margin: 0; }
 .package-refusal { margin: 4px 0 8px; color: var(--fail); }
 
-/* A build list's grouping row (GroupingBar.jsx): grouped by what, a new group, every group folded or unfolded. */
-.list-grouping { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 0 0 4px; }
-.list-grouping .studio-modes { min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.list-grouping .studio-tab { flex: none; height: 22px; padding: 0 7px; font-size: 11.5px; }
-.list-grouping .editor-tool, .list-grouping .pick-button.is-icon { flex: none; width: 24px; height: 24px; }
-.tree > .list-grouping { padding: 0 2px 2px; }
 
 /* The tray and section editors (GatherEditor.jsx): members, menus, and the order shown. */
 .gather-editor { gap: 10px; overflow: auto; }
@@ -844,3 +932,26 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .parts-row.is-object { grid-template-columns: 18px minmax(0, 1fr) fit-content(9em) auto; }
 .parts-row.is-object code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .parts-rule { margin: 6px 4px; border: 0; border-top: 1px solid var(--hairline); }
+
+/* Every item of a list in the left column, whatever its type (ListRow.jsx; the levels tree draws the same parts): its
+   icon, its name, badges, and its id at the right end, muted. One height, one hover, one look when picked. */
+.tree-level, .parts-row { width: 100%; box-sizing: border-box; min-width: 0; min-height: 24px; height: auto; display: flex; align-items: center; gap: 6px; padding: 1px 6px; border: 0; border-radius: 4px; color: var(--ink); background: none; box-shadow: none; font: var(--fs)/1.25 var(--sans); text-align: left; cursor: pointer; }
+.tree-level > .family-chip, .parts-row > .family-chip { flex: none; }
+.tree-level > span, .parts-row > span { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The id at the right end, right-aligned; it gives way first: shrinking far faster than the name, it is used up
+   before the name loses a letter. */
+.tree-level > code, .parts-row > code { flex: 0 100000 auto; min-width: 0; margin-left: auto; overflow: hidden; color: var(--faint); font: 11px/1.25 var(--mono); text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.tree-level:hover, .parts-row:hover { background: var(--hover); }
+.tree-level.is-picked { background: color-mix(in srgb, var(--select) 16%, transparent); box-shadow: inset 2px 0 0 var(--select); }
+.tree-level.is-on, .parts-row.is-on { color: var(--select-ink); background: var(--select); box-shadow: none; }
+.tree-level.is-on > code, .parts-row.is-on > code { color: inherit; opacity: .75; }
+.tree-level .tree-optional { margin-left: 0; }
+
+/* A file as JSON in the right column, read only (ProjectLists.jsx JsonFile). */
+.json-file { padding: 10px 14px 24px; }
+.json-file-head { display: flex; align-items: baseline; gap: 8px; min-height: 28px; padding-bottom: 6px; border-bottom: 1px solid var(--hairline); }
+.json-file-head code { font: 600 var(--fs)/1.2 var(--mono); }
+.json-file-head small { color: var(--faint); font-size: var(--fs-mini); }
+.json-file pre { margin: 10px 0 0; color: var(--ink); font: 12px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+/* A package's or a game's meta in the middle (PackageMeta, GameMeta). */
+.studio-main .package-meta { max-width: 760px; padding: 16px clamp(12px, 3cqi, 32px) 32px; }

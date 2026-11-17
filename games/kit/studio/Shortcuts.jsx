@@ -6,8 +6,8 @@ export const MOD = typeof navigator !== 'undefined' && /Mac|iP(hone|ad)/.test(na
 export const KEYS = [
   [`${MOD}+K`, '命令面板：去任何地方、做任何事', 'Command palette: go anywhere, do anything'],
   [`${MOD}+Shift+F`, '在整款游戏里搜索、替换', 'Search and replace across the game'],
-  [`${MOD}+Z`, '去掉最后一个待定操作（不在文字框里时）', 'Drop the last pending operation (outside a field)'],
-  [`${MOD}+Shift+Z`, '把去掉的操作放回来', 'Put a dropped operation back'],
+  [`${MOD}+Z`, '撤销上一个待定操作（不在文字框里时；顶栏也有按钮）', 'Undo the last pending operation (outside a field; also in the top bar)'],
+  [`${MOD}+Shift+Z · Ctrl+Y`, '重做撤销的操作', 'Redo an undone operation'],
   [`${MOD}+Enter`, '载入参考解，从这一关试玩', 'Play this level with its reference loaded'],
   ['F8 / Shift+F8', '下一处 / 上一处检查结果，在侧栏打开它说的字段', 'Next / previous finding, its field opened in the side panel'],
   [`${MOD}+L · [[`, '在文字里插入链接（选中的字拿去搜，换成链接）', 'Insert a link in a text (a selection is searched for and replaced)'],

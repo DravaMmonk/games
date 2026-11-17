@@ -5,7 +5,7 @@
 // findings; on the right the field a row goes to (Inspector.jsx); the check and the change log fold under the middle.
 import './studio.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BookOpen, FileText, ListTree, Search as SearchIcon } from 'lucide-react'
+import { BookOpen, FileText, Gamepad2, ListTree, Package, Search as SearchIcon } from 'lucide-react'
 import { L, getLang, tr } from '../shell/i18n.js'
 import { objectTypes, listOfType } from './object-types.js'
 import { typeName } from './LeftTypes.jsx'
@@ -29,10 +29,11 @@ import Review from './Review.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
+import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, gameJson, packageJson } from './ProjectLists.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
 const SETTLE = 700
-const LISTS = { objects: [ListTree, '按对象', 'By object'], files: [FileText, '按文件', 'By file'], search: [SearchIcon, '搜索', 'Search'] }
+const LISTS = { games: [Gamepad2, '游戏', 'Games'], packages: [Package, '包', 'Packages'], objects: [ListTree, '按对象', 'By object'], files: [FileText, '按文件', 'By file'], search: [SearchIcon, '搜索', 'Search'] }
 
 /** Keep what the workspace opens and the scope or file shown in the address. */
 const remember = (opened, scope, file) => {
@@ -116,6 +117,14 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     else if (item.levels[0]) pick({ at: { level: item.levels[0] }, path: [] })
   }
   const lists = Object.keys(LISTS).filter((id) => id !== 'search' || side === 'package')
+  // What the games and packages lists have picked (its meta in the right column); opening it is a double click or Open.
+  const [pickedOpen, setPickedOpen] = useState(() => ({ games: opened.game ?? null, packages: opened.package ?? null }))
+  const openOther = (kind, id) => {
+    if ((opened[kind] === id) || saving) return
+    if (ops.length && !window.confirm(tr('换一个打开的对象会放弃待定操作，确定吗？', 'Opening something else discards the pending operations. Continue?'))) return
+    showScope('all')
+    onOpen({ [kind]: id })
+  }
   const shownList = lists.includes(list) ? list : 'objects'
   const scopes = !content ? [] : [
     ['all', side === 'game' ? tr('整款游戏') : tr('整个内容包', 'The whole package')],
@@ -133,15 +142,14 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
   const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
   const ready = content && vocab
-  const value = opened.game ? `game:${opened.game}` : `package:${opened.package}`
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh}>
-        <select className="studio-game" value={value} disabled={saving} aria-label={tr('打开', 'Open')}
-          onChange={(e) => { const [kind, id] = [e.target.value.slice(0, e.target.value.indexOf(':')), e.target.value.slice(e.target.value.indexOf(':') + 1)]; showScope('all'); onOpen({ [kind]: id }) }}>
-          <optgroup label={tr('内容包', 'Packages')}>{packages.map(({ id }) => <option key={id} value={`package:${id}`}>{id}</option>)}</optgroup>
-          <optgroup label={tr('游戏', 'Games')}>{games.map((g) => <option key={g.id} value={`game:${g.id}`}>{L(g.title) ?? g.id}</option>)}</optgroup>
-        </select>
+      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+        <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => setList(opened.game ? 'games' : 'packages')}
+          title={opened.game ? tr('在左栏选游戏', 'Pick a game in the left column') : tr('在左栏选包', 'Pick a package in the left column')}>
+          {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
+          <span>{opened.game ? L(games.find((g) => g.id === opened.game)?.title) ?? opened.game : opened.package}</span>
+        </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-copy ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
@@ -156,7 +164,9 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
                 )
               })}
             </div>
-            {shownList === 'search'
+            {shownList === 'games' ? <GameList games={games} current={opened.game ?? null} picked={pickedOpen.games} disabled={saving} onPick={(id) => setPickedOpen((p) => ({ ...p, games: id }))} onOpen={(id) => openOther('game', id)} />
+              : shownList === 'packages' ? <PackageList packages={packages} current={opened.package ?? null} picked={pickedOpen.packages} disabled={saving} onPick={(id) => setPickedOpen((p) => ({ ...p, packages: id }))} onOpen={(id) => openOther('package', id)} />
+              : shownList === 'search'
               ? <Search content={content} vocabulary={vocab.vocabulary} onAdd={addOps} onJump={(level, path, kind) => {
                 const keys = path ? parsePath(path) : []
                 pick(level ? { at: { level }, path: keys } : kind === 'glossary' ? { at: { glossary: true }, path: keys } : kind === 'parts' ? { at: { parts: true, root: keys.slice(0, 2) }, path: keys } : { at: { game: true }, path: keys })
@@ -184,15 +194,19 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
           <main className="studio-main">
             <div className="studio-scroll">
-              <article className="editor is-wide">
-                <CopyTable side={side} content={content} vocabulary={vocab.vocabulary} scope={scope} setScope={showScope} file={file} order={order} names={names} places={places} onEdit={edit}
-                  onJump={(row) => pick(copyFieldOf(row))} />
-              </article>
+              {shownList === 'games' ? <GameMeta games={games} id={pickedOpen.games} open={opened.game} disabled={saving} onOpen={(id) => openOther('game', id)} />
+                : shownList === 'packages' ? <PackageMeta packages={packages} games={games} id={pickedOpen.packages} open={opened.package} disabled={saving} onOpen={(id) => openOther('package', id)} />
+                : <article className="editor is-wide">
+                  <CopyTable side={side} content={content} vocabulary={vocab.vocabulary} scope={scope} setScope={showScope} file={file} order={order} names={names} places={places} onEdit={edit}
+                    onJump={(row) => pick(copyFieldOf(row))} />
+                </article>}
             </div>
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {sideCtx && <Inspector content={content} vocab={vocab} at={sideField?.at ?? { game: true }} field={sideField ? { path: sideField.path } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
+            {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={gameJson(games.find((g) => g.id === pickedOpen.games))} note={tr('在编排里编辑', 'Edited in Arrange')} />
+              : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packageJson(packages.find((p) => p.id === pickedOpen.packages))} note={tr('只读：手改文件', 'Read only: edited by hand')} />
+              : sideCtx && <Inspector content={content} vocab={vocab} at={sideField?.at ?? { game: true }} field={sideField ? { path: sideField.path } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
               onPick={(path) => pick({ at: sideField.at, path })} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setPicked(null)}
               tabs={[]} selection={sideField?.at ?? { game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}
               onNavigate={(path) => pick({ at: sideField.at, path })} />}
@@ -202,7 +216,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
               audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
-              panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} why={why} setWhy={setWhy} said={said}
+              panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                 onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}
                 onDiscard={discard} onOpen={pending.open} onApply={apply} onUndo={undo} onSelect={() => {}} />
                 : <Debug ops={ops} last={last} />} />

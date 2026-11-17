@@ -4,7 +4,7 @@
 // back; its file is on the right (Inspector.jsx).
 import { editorForType } from './editors.js'
 import { useMemo, useState } from 'react'
-import { ArrowUpRight, Filter, Layers, RotateCcw } from 'lucide-react'
+import { ArrowUpRight, Layers, RotateCcw } from 'lucide-react'
 import { tr } from '../shell/i18n.js'
 import { fieldDiff } from './diff.js'
 import { DiffFields } from './DiffView.jsx'
@@ -34,7 +34,7 @@ export function OverrideList({ events, layer, current, onOpen }) {
   const shown = events.filter((event) => (filter === 'all' || (filter === 'own' ? event.layer === layer : event.layer !== layer)) && matches(event.name, event.layer, kindWord(event.kind)))
   return (
     <nav className="parts-list" aria-label={tr('覆盖', 'Overrides')}>
-      <SidebarListTools query={query} onQuery={setQuery} sortOptions={FILTERS.map(([value, zh, en]) => ({ value, label: tr(zh, en) }))} sort={filter} onSort={setFilter} menuIcon={Filter} menuLabel={tr('覆盖', 'Overrides')} />
+      <SidebarListTools query={query} onQuery={setQuery} sortOptions={FILTERS.map(([value, zh, en]) => ({ value, label: tr(zh, en) }))} sort={filter} onSort={setFilter} sortLabel={tr('显示哪些覆盖', 'Which overrides')} />
       {shown.map((event) => {
         const key = overrideKey(event)
         return (

@@ -16,7 +16,7 @@ import { checkCache } from '../check-cache.js'
 import { catalogReader } from '../catalogs.js'
 import { visibleOverrides } from '../layers.js'
 import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, gameDirectory } from '../resolver.js'
-import { gameOnPackage } from '../scaffold.js'
+import { gameOnPackage, newPackage } from '../scaffold.js'
 import { gameOf } from '../games.mjs'
 import { contentSchemas } from '../content.js'
 import { meaningsOf } from '../kind-meanings.js'
@@ -78,8 +78,8 @@ export function levelsOfLine(line, ids) {
 }
 
 /** A game opened under ROOT: its log, the seq of its last entry (what modify's base names), the change undo would undo next, and the files changed outside the log. */
-const logOf = (game, scope, layer, ws = open(game, scope, layer)) => {
-  return { log: readLog(ws), head: headOf(ws), undoable: lastUndoable(ws)?.seq ?? null, drift: driftOf(ws, ws.onDisk()) }
+const logOf = (game, scope, layer, ws = open(game, scope, layer), omit = []) => {
+  return { log: omit.includes('log') ? undefined : readLog(ws), head: headOf(ws), undoable: lastUndoable(ws)?.seq ?? null, drift: omit.includes('drift') ? undefined : driftOf(ws, ws.onDisk()) }
 }
 
 // A game target edits its game layer. A package target reads objects and edits only its package layer.
@@ -178,6 +178,14 @@ const tools = {
       return { id, ...logOf(id) }
     },
   },
+  create_package: {
+    about: 'Make a new package: packages/<id>/ copied from an installed package (`from`: its files, its own names turned into the new id) or empty (`empty`: a package.json alone), its dependency lock written. The same as npm run new-package.',
+    params: { id: 'string', from: 'string?', empty: 'boolean?' },
+    async run({ id, from, empty = false }) {
+      newPackage({ root: ROOT, id, from, empty })
+      return { id }
+    },
+  },
   audit: {
     about: 'Check a game as npm run check does: content against its vocabulary, the course audit, copy, and its domain’s checks (reference answers pass, naive ones fail). mutants: ask supported checks to report reference-work mutation coverage.',
     params: { game: 'string', mutants: 'boolean?' },
@@ -273,20 +281,23 @@ const tools = {
     },
   },
   preview: {
-    about: 'A game as a changeset would leave it, nothing written: its content, every line of the check with the levels it is about, each file changed (its text before and after), the operation that failed if one did, and the change log (check false: the content checked against its vocabulary only, which is quick; the whole check runs the domain’s). The studio shows a game through it.',
-    params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?' },
-    async run({ game, changeset = { ops: [] }, check = true, scope, layer }) {
+    about: 'A game as a changeset would leave it, nothing written: its content, every line of the check with the levels it is about, each file changed (its text before and after), the operation that failed if one did, and the change log (check false: the content checked against its vocabulary only, which is quick; the whole check runs the domain’s; omit: answer keys left out, e.g. ["changes", "log", "drift"], or "content" too). The studio shows a game through it.',
+    params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?' },
+    async run({ game, changeset = { ops: [] }, check = true, scope, layer, omit = [] }) {
       const ws = open(game, scope, layer)
-      const r = await runChangeset(ws, changeset, { write: false, check, cache: kept(game) })
+      const r = await runChangeset(ws, changeset, { write: false, check, cache: kept(game), texts: !omit.includes('changes') })
       const { content } = r
       // Copy problems count levels in play order, which only a content that fits its vocabulary has (and only the whole
       // check reports them: a quick preview does without the order).
       const ids = !content ? [] : content.packageTarget ? packageLevelOrder(content) : !check || r.lines.some((l) => l.text.startsWith('content: ')) ? content.levels.map((l) => l.id) : (await runtimeOf(content)).spec(content).levels.map((l) => l.id)
-      return {
+      const answer = {
         ok: r.ok, says: r.says, problems: r.problems, failed: r.failed, content, order: ids,
         lines: r.lines.map((l) => ({ ...l, levels: levelsOfLine(l, ids) })),
-        changes: r.changes, ...logOf(game, scope, layer, ws),
+        changes: r.changes, ...logOf(game, scope, layer, ws, omit),
       }
+      // A caller that has no use for some of the answer (the studio's quick preview: the file texts and the log) leaves it out.
+      for (const key of omit) delete answer[key]
+      return answer
     },
   },
   names: {

@@ -4,7 +4,8 @@
 // is the operations that make it (text.set, level.blueprint), added to the pending changeset — previewed, checked and
 // reviewed there like any edit, never written by itself. Ids are found, not replaced.
 import { useMemo, useState } from 'react'
-import { CaseSensitive, Regex, ReplaceAll, WholeWord } from 'lucide-react'
+import { ReplaceAll } from 'lucide-react'
+import SidebarListTools from './SidebarListTools.jsx'
 import { tr } from '../shell/i18n.js'
 import { showPath } from '../engine/ops/edit.js'
 import { hitKey, patternOf, replaceOps, replaced, searchContent } from '../engine/ops/search.js'
@@ -71,33 +72,23 @@ export default function Search({ content, vocabulary, onAdd, onJump }) {
   }
   const among = (v) => setOpts((o) => ({ ...o, in: o.in.includes(v) ? (o.in.length > 1 ? o.in.filter((x) => x !== v) : o.in) : [...o.in, v] }))
   const flip = (key) => setLeft((s) => { const n = new Set(s); if (n.has(key)) n.delete(key); else n.add(key); return n })
-  const opt = (k, Icon, title) => <button type="button" className={opts[k] ? 'is-on' : ''} aria-pressed={opts[k]} onClick={() => setOpts((o) => ({ ...o, [k]: !o[k] }))} title={title}><Icon size={14} aria-hidden="true" /></button>
   return (
     <div className="search">
-      <div className="search-box">
-        <button type="button" className={`search-mode ${replacing ? 'is-on' : ''}`} onClick={() => setReplacing(!replacing)} aria-expanded={replacing} aria-label={tr('替换')}>›</button>
-        <div className="search-fields">
-          <div className="search-row">
-            <input className={`field-input ${bad ? 'is-bad' : ''}`} value={find} onChange={(e) => { setFind(e.target.value); setLeft(new Set()) }} placeholder={tr('搜索')} aria-label={tr('搜索')} autoFocus spellCheck={false} />
-            <span className="search-opts">
-              {opt('caseSensitive', CaseSensitive, tr('区分大小写'))}
-              {opt('word', WholeWord, tr('整词'))}
-              {opt('regex', Regex, tr('正则表达式'))}
-            </span>
-          </div>
-          <div className="seg is-small search-kinds">
-            {[['text', tr('文字')], ['board', tr('板')], ['id', 'id']].map(([v, name]) => (
-              <button key={v} type="button" className={opts.in.includes(v) ? 'is-on' : ''} aria-pressed={opts.in.includes(v)} onClick={() => among(v)}>{name}</button>
-            ))}
-          </div>
-          {replacing && (
-            <div className="search-row">
-              <input className="field-input" value={replacement} onChange={(e) => setReplacement(e.target.value)} placeholder={tr('替换为')} aria-label={tr('替换为')} spellCheck={false} />
-              <button type="button" className="search-go" onClick={add} disabled={!toReplace.length} title={tr('替换：加入待定的变更集')}><ReplaceAll size={14} aria-hidden="true" />{toReplace.length}</button>
-            </div>
-          )}
+      {/* The list tools every left list has (SidebarListTools.jsx): the search is what is found; how it matches, where
+          it looks and the replace are in the view menu. */}
+      <SidebarListTools query={find} onQuery={(v) => { setFind(v); setLeft(new Set()) }} invalid={bad} autoFocus
+        toggles={[
+          ...[['caseSensitive', tr('区分大小写')], ['word', tr('整词')], ['regex', tr('正则表达式')]].map(([value, label]) => ({ value, label, on: opts[value], group: tr('怎么匹配', 'Match') })),
+          ...[['text', tr('文字')], ['board', tr('板')], ['id', 'id']].map(([v, label]) => ({ value: `in:${v}`, label, on: opts.in.includes(v), group: tr('在哪里搜', 'Search in') })),
+          { value: 'replace', label: tr('替换为…', 'Replace with…'), on: replacing, group: tr('替换', 'Replace') },
+        ]}
+        onToggle={(v) => (v === 'replace' ? setReplacing(!replacing) : v.startsWith('in:') ? among(v.slice(3)) : setOpts((o) => ({ ...o, [v]: !o[v] })))} />
+      {replacing && (
+        <div className="search-row">
+          <input className="field-input" value={replacement} onChange={(e) => setReplacement(e.target.value)} placeholder={tr('替换为')} aria-label={tr('替换为')} spellCheck={false} />
+          <button type="button" className="search-go" onClick={add} disabled={!toReplace.length} title={tr('替换：加入待定的变更集')}><ReplaceAll size={14} aria-hidden="true" />{toReplace.length}</button>
         </div>
-      </div>
+      )}
       {find && !bad && <p className="search-sum">{tr(`${hits.length} 处 · ${new Set(hits.map((h) => h.file)).size} 个文件`, `${hits.length} hits · ${new Set(hits.map((h) => h.file)).size} files`)}</p>}
       <div className="search-hits">
         {groups.map((g) => (

@@ -28,13 +28,17 @@ export default function Studio() {
     setGame((id) => (list.some((g) => g.id === id) ? id : list[0]?.id ?? null))
     return list
   })
+  const reloadPackages = () => call('packages', {}).then((list) => {
+    setPackages(list)
+    setPkg((id) => (list.some((p) => p.id === id) ? id : list[0]?.id ?? null))
+    return list
+  })
   useEffect(() => {
     reload()
-    call('packages', {}).then((list) => {
-      setPackages(list)
-      setPkg((id) => (list.some((p) => p.id === id) ? id : list[0]?.id ?? null))
-    })
+    reloadPackages()
   }, [])
+  // A package just made: listed, and opened unless the author keeps the one open (`stay`).
+  const madePackage = (id, stay = false) => reloadPackages().then(() => { if (!stay) setPkg(id) })
   if (!games || !packages) return <div className="studio-loading">{tr('读取中……')}</div>
   if (!packages.length || (space === 'arrange' && !games.length)) return <div className="studio-loading">{tr('没有内容', 'No content')}</div>
   const switcher = { value: space, onChange: setSpace }
@@ -44,6 +48,6 @@ export default function Studio() {
       onOpen={(next) => { if (next.game) { setGame(next.game); setCopyOpen('game') } else { setPkg(next.package); setCopyOpen('package') } }} />
   }
   return space === 'arrange'
-    ? <GameStudio game={game} games={games} onGame={setGame} onMade={(id) => reload().then(() => setGame(id))} packages={packages} onBuild={(id) => { setPkg(id); setSpace('build') }} space={switcher} />
-    : <PackageStudio key={pkg} pkg={pkg} packages={packages} onPackage={setPkg} space={switcher} />
+    ? <GameStudio game={game} games={games} onGame={setGame} onMade={(id) => reload().then(() => { if (id) setGame(id) })} packages={packages} onBuild={(id) => { setPkg(id); setSpace('build') }} space={switcher} />
+    : <PackageStudio key={pkg} pkg={pkg} packages={packages} games={games} onPackage={setPkg} onMadePackage={madePackage} space={switcher} />
 }

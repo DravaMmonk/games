@@ -183,6 +183,26 @@ function Tree({ game, track, rows, byId, solved, all, best = () => null, current
   )
 }
 
+/** One chapter of the map (the k-th): its head and its level tree; nothing when it has no level. The studio's route
+ *  map preview (studio/MapPreview.jsx) draws a chapter with it as the player sees it. */
+export function MapChapter({ game, chapter, k, solved, all, best, next, compact, onOpen, needed = null, edit = null }) {
+  const inChapter = game.levels.filter((level) => level.chapter === chapter.id)
+  if (!inChapter.length) return null
+  const byId = new Map(inChapter.map((level) => [level.id, level]))
+  const finished = inChapter.filter((level) => solved.has(level.id)).length
+  return (
+    <section className={`map-chapter ${finished === inChapter.length ? 'is-complete' : ''}`}>
+      <header {...fileMark(edit, 'game', ['eras', k])}>
+        <span className="chapter-index">{chapter.kicker ? L(chapter.kicker) : tr(`第 ${chapter.number ?? chapter.id} 章`, `Chapter ${chapter.number ?? chapter.id}`)}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
+        <h2>{L(chapter.title)}</h2>
+        {chapter.question && <p>{L(chapter.question)}</p>}
+        <span className="chapter-meter"><i style={{ width: `${(finished / inChapter.length) * 100}%` }} /></span>
+      </header>
+      <LevelTree game={game} track={chapter.track} rows={chapter.rows} byId={byId} solved={solved} all={all} best={best} next={next} compact={compact} onOpen={onOpen} needed={needed} />
+    </section>
+  )
+}
+
 /** Rewards shown by the game, with names hidden until their reveal condition holds. */
 function UnlockChip({ items, style }) {
   if (!items.length) return null
@@ -298,23 +318,9 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
       </header>
 
       <div className="map-chapters">
-        {game.chapters.map((chapter, k) => {
-          const inChapter = levels.filter((level) => level.chapter === chapter.id)
-          if (!inChapter.length) return null
-          const byId = new Map(inChapter.map((level) => [level.id, level]))
-          const finished = inChapter.filter((level) => solved.has(level.id)).length
-          return (
-            <section key={chapter.id} className={`map-chapter ${finished === inChapter.length ? 'is-complete' : ''}`}>
-              <header {...fileMark(edit, 'game', ['eras', k])}>
-                <span className="chapter-index">{chapter.kicker ? L(chapter.kicker) : tr(`第 ${chapter.number ?? chapter.id} 章`, `Chapter ${chapter.number ?? chapter.id}`)}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
-                <h2>{L(chapter.title)}</h2>
-                {chapter.question && <p>{L(chapter.question)}</p>}
-                <span className="chapter-meter"><i style={{ width: `${(finished / inChapter.length) * 100}%` }} /></span>
-              </header>
-              <LevelTree game={game} track={chapter.track} rows={chapter.rows} byId={byId} solved={solved} all={progress.all} best={(id) => progress.best[id]} next={next} compact={phone} onOpen={onOpen} needed={needed} />
-            </section>
-          )
-        })}
+        {game.chapters.map((chapter, k) => (
+          <MapChapter key={chapter.id} game={game} chapter={chapter} k={k} solved={solved} all={progress.all} best={(id) => progress.best[id]} next={next} compact={phone} onOpen={onOpen} needed={needed} edit={edit} />
+        ))}
       </div>
       <NeededNote game={game} needed={needed} onOpen={onOpen} />
       {progressOpen && <ProgressDialog progressText={progressText} progress={progress} onAll={onAll} onReset={onReset} onClose={() => setProgressOpen(false)} />}

@@ -1,6 +1,6 @@
 // Choosing among what the vocabulary or the game offers: a searchable list in a popover (each option with what it is,
 // its parameters, its group), a row of buttons when there are only a few short options, and chips for a list of
-// choices. Options: [{ value, label?, title?, about?, group?, params? }] (label: what the value shows as, a level's
+// choices. Options: [{ value, label?, title?, about?, group?, params?, disabled? }] (disabled: shown greyed, not picked) (label: what the value shows as, a level's
 // number; title: its name; about: the vocabulary's words for it).
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ChevronDown, Plus, X } from 'lucide-react'
@@ -49,7 +49,9 @@ export function usePickerPopup(anchor, onClose, { onOutside = onClose, floating 
 }
 
 /** The popover's list: a search box (starting at `query`) over every word of each option, arrows and Enter to pick, Escape to leave. */
-export function OptionList({ options, value, onPick, onClose, anchor, onOutside = onClose, floating = false, searchable = true, autoFocus = true, query: first = '' }) {
+export function OptionList({ options, value, checked = null, onPick, onClose, anchor, onOutside = onClose, floating = false, searchable = true, autoFocus = true, query: first = '' }) {
+  // `checked`: the values marked on, for a menu of several independent choices (a list's view: grouping, order, filters).
+  const isOn = (v) => (checked ? checked.includes(v) : v === value)
   const [query, setQuery] = useState(first)
   const overlay = usePickerPopup(anchor, onClose, { onOutside, floating, fullWidth: searchable })
   const shown = useMemo(() => {
@@ -58,7 +60,7 @@ export function OptionList({ options, value, onPick, onClose, anchor, onOutside 
   }, [options, query, searchable])
   const { at, setAt, list, onKeyDown } = useListCursor(shown, {
     initial: Math.max(0, shown.findIndex((o) => o.value === value)),
-    onConfirm: (option) => { if (option) onPick(option.value) },
+    onConfirm: (option) => { if (option && !option.disabled) onPick(option.value) },
   })
   useLayoutEffect(() => {
     if (!searchable && autoFocus) list.current?.focus({ preventScroll: true })
@@ -75,9 +77,9 @@ export function OptionList({ options, value, onPick, onClose, anchor, onOutside 
           group = g
           return [heading, (
             <li
-              key={String(o.value)} role="option" aria-selected={o.value === value}
-              className={`pick-item ${k === at ? 'is-at' : ''} ${o.value === value ? 'is-on' : ''}`}
-              onPointerDown={(e) => { e.preventDefault(); onPick(o.value) }} onPointerEnter={() => setAt(k)}
+              key={String(o.value)} role="option" aria-selected={isOn(o.value)} aria-disabled={o.disabled || undefined}
+              className={`pick-item ${k === at ? 'is-at' : ''} ${isOn(o.value) ? 'is-on' : ''} ${o.disabled ? 'is-off' : ''}`}
+              onPointerDown={(e) => { e.preventDefault(); if (!o.disabled) onPick(o.value) }} onPointerEnter={() => setAt(k)}
             >
               <span className="pick-name"><b>{o.label ?? String(o.value)}</b>{o.title && <span>{L(o.title)}</span>}{paramsOf(o).length > 0 && <code>{paramsOf(o).join(', ')}</code>}</span>
               {o.about && <span className="pick-about">{L(o.about)}</span>}
@@ -91,7 +93,7 @@ export function OptionList({ options, value, onPick, onClose, anchor, onOutside 
 }
 
 /** One value among many: a button showing the choice, a popover to search and pick. */
-export function Picker({ options, value, onPick, label = '', placeholder = '—', add = false, icon: Icon, searchable = true }) {
+export function Picker({ options, value, checked = null, onPick, label = '', placeholder = '—', add = false, icon: Icon, searchable = true, disabled = false }) {
   const [open, setOpen] = useState(false)
   const [submenu, setSubmenu] = useState(null)
   const box = useRef(null)
@@ -109,7 +111,7 @@ export function Picker({ options, value, onPick, label = '', placeholder = '—'
   return (
     <div className="pick" ref={box}>
       <button
-        type="button" className={`pick-button ${Icon ? 'is-icon' : ''} ${value !== undefined && !picked ? 'is-unknown' : ''}`} aria-haspopup="listbox" aria-expanded={open} aria-label={label} title={Icon ? picked?.label ?? label : undefined}
+        type="button" className={`pick-button ${Icon ? 'is-icon' : ''} ${value !== undefined && !picked ? 'is-unknown' : ''}`} aria-haspopup="listbox" aria-expanded={open} aria-label={label} title={Icon ? picked?.label ?? label : undefined} disabled={disabled}
         onClick={() => open ? close() : setOpen(true)} onKeyDown={(e) => { if (e.key === 'ArrowDown' || (e.key.length === 1 && /\w/.test(e.key))) setOpen(true) }}
       >
         {Icon ? <Icon size={15} aria-hidden="true" /> : <>
@@ -119,7 +121,7 @@ export function Picker({ options, value, onPick, label = '', placeholder = '—'
           <ChevronDown size={14} aria-hidden="true" />
         </>}
       </button>
-      {open && <OptionList key={submenu ? 'submenu' : 'menu'} floating searchable={searchable} anchor={box} options={submenu ?? options} value={submenu ? undefined : value}
+      {open && !disabled && <OptionList key={submenu ? 'submenu' : 'menu'} floating searchable={searchable} anchor={box} options={submenu ?? options} value={submenu ? undefined : value} checked={submenu ? null : checked}
         onPick={choose} onClose={close} onOutside={dismiss} />}
     </div>
   )

@@ -3,16 +3,18 @@
 // pair side by side, a board line by line, any other value before and after) or as a line diff; then apply it, or
 // discard it. A changeset from a file (what an agent hands in) opens as the pending one. Below, the game's change log
 // (changes.jsonl), whose last change can be undone.
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check, FileUp, Redo2, Undo2, X } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
 import { fieldDiff, parsed } from './diff.js'
 import { DiffFields, Lines } from './DiffView.jsx'
 
-export default function Review({ ops, redo, result, shown, why, setWhy, said, onRemove, onBack, onRedo, onDiscard, onApply, onUndo, onSelect, onOpen }) {
+export default function Review({ ops, redo, result, shown, reviewed, watch, why, setWhy, said, onRemove, onBack, onRedo, onDiscard, onApply, onUndo, onSelect, onOpen }) {
   const failed = result.failed
   const ok = result.ok && ops.length > 0
   const [wrong, setWrong] = useState(null)
+  // The files and the change log come only while a review is open (useChangeset.js).
+  useEffect(() => watch?.(), [watch])
   // A changeset from a file ({ why?, ops }, what an agent hands in): it becomes the pending one.
   const open = (event) => {
     const file = event.target.files?.[0]
@@ -64,7 +66,7 @@ export default function Review({ ops, redo, result, shown, why, setWhy, said, on
               <ul className="review-migration">{shown.migration.ops.map((m, k) => <li key={k}><code>{Object.keys(m)[0]}</code> {JSON.stringify(Object.values(m)[0])}</li>)}</ul>
             </section>
           )}
-          {shown.changes.map((c) => <FileDiff key={c.file} change={c} onSelect={onSelect} />)}
+          {(reviewed?.changes ?? []).map((c) => <FileDiff key={c.file} change={c} onSelect={onSelect} />)}
         </>
       ) : (
         <p className="review-empty">
@@ -73,7 +75,7 @@ export default function Review({ ops, redo, result, shown, why, setWhy, said, on
         </p>
       )}
       {said && <p className={`review-said ${said.ok ? '' : 'is-fail'}`}>{said.text}</p>}
-      <Log log={shown.log} undoable={shown.undoable} onUndo={onUndo} />
+      <Log log={reviewed?.log ?? []} undoable={reviewed?.undoable ?? shown.undoable} onUndo={onUndo} />
     </article>
   )
 }

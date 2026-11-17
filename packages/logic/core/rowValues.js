@@ -21,7 +21,7 @@ export function declarationValues(level, rules, change, scope) {
   const withRule = (k, fn) => change(changeAt(rules, k, fn))
   return {
     className: 'lg-rule-table',
-    head: { name: T('结论'), goal: words(sentenceOf(level, level.target)), end: T('为真。') },
+    head: { name: T('待验证结论', 'Conclusion to verify'), goal: words(sentenceOf(level, level.target)), end: T('为真。') },
     rows: rules.map((rule, k) => ({
       name: T('可推导情形'), mark: k + 1,
       toggle: level.thing && { on: rule.binds.length > 0, label: T(`任取 ${binder}`, `For any ${binder}`), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },

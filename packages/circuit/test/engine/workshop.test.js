@@ -236,3 +236,23 @@ test('a board that cannot be kept says why', () => {
   assert.equal(take({ ...unwired, wires: unwired.wires.filter(({ to }) => to !== 'out') }, { why }), null)
   assert.deepEqual(reasons, [{ reason: 'unknown', node: 'p', type: 'nowhere' }, { reason: 'unwired', node: null, type: null }])
 })
+
+test('a lemma whose board names its inputs differently from its ports is kept, its inputs paired in order', () => {
+  // The lemma's ports are p0 and p1; the proof inside it names its premises p and q, in that order.
+  const lemmaBoard = {
+    nodes: [inNode('p'), inNode('q'), { id: 'mul', type: 'multiply', params: { factor: 1 } }, outNode('goal')],
+    wires: [wire('p', 'mul'), wire('mul', 'goal')],
+  }
+  const parts = { ...drawing, inputs: (node) => (node.type === 'lemma' ? ['p0', 'p1'] : ['in']) }
+  const board = {
+    nodes: [inNode('a'), inNode('b'), { id: 'l', type: 'lemma' }, outNode('out')],
+    wires: [wire('a', 'l', 'p0'), wire('b', 'l', 'p1'), wire('l', 'out')],
+  }
+  const kept = take(board, {
+    parts, needsSnapshot: (type) => type === 'lemma',
+    open: () => ({ circuit: { ...lemmaBoard, wires: [...lemmaBoard.wires, wire('q', 'mul', 'in2')] }, parts, level: {} }),
+  })
+  assert.ok(kept)
+  assert.deepEqual(Object.values(kept.children).map(({ inputs }) => inputs), [['p0', 'p1']])
+  assert.deepEqual(Object.values(kept.children)[0].graph.nodes.filter(({ id }) => id.startsWith('pin_')).map(({ params }) => params.name), ['p0', 'p1'])
+})

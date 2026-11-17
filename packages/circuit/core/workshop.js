@@ -145,10 +145,16 @@ export function captureWorkshop(graph, options) {
         const inputs = parts.inputs(node)
         const outputs = parts.outputs(node)?.map(({ key }) => key).filter((key) => key != null)
         const index = opened.level?.ports?.map(({ sensor, input }) => sensor ?? input)
+        // The board's inputs in their order (a proof's premises, p and q, feed the part's p0 and p1 in turn), for a
+        // part whose ports neither share the board's names nor list them (opened.level.ports).
+        const sources = opened.circuit.nodes.filter((n) => opened.parts.role(n) === 'source').map((n) => n.params?.name ?? n.id)
         const named = (name) => {
           if (inputs.includes(name)) return name
           const at = index?.indexOf(name) ?? -1
-          return at >= 0 ? inputs[at] : inputs.length === 1 ? inputs[0] : name
+          if (at >= 0) return inputs[at]
+          if (inputs.length === 1) return inputs[0]
+          const place = sources.length === inputs.length ? sources.indexOf(name) : -1
+          return place >= 0 ? inputs[place] : name
         }
         const child = gather(opened.circuit, opened.parts, opened.open, { input: named }, new Set([...ancestry, node.type]))
         if (!child || child.inputs.some((name) => !inputs.includes(name))

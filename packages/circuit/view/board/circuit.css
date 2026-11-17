@@ -525,6 +525,12 @@
 
 /* ---- the board inside a packed part (circuit/Inside.jsx), opened read only ---- */
 /* A schematic (Schematic.jsx), the same on a desktop and a phone, in a window that scrolls once it outgrows it. */
+/* On a phone the board inside a packed part waits folded behind one row (Inside.jsx InsideBoard folded). */
+.cl-inside-fold > summary { min-height: 40px; display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-4); border-radius: var(--r-md); color: var(--muted); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline); font: 600 var(--fs-ui)/1 var(--sans); cursor: pointer; list-style: none; }
+.cl-inside-fold > summary::-webkit-details-marker { display: none; }
+.cl-inside-fold > summary svg { transition: transform 160ms ease; }
+.cl-inside-fold[open] > summary svg { transform: rotate(90deg); }
+.cl-inside-fold[open] > summary { margin-bottom: var(--sp-4); color: var(--ink); }
 .cl-inside { max-height: 360px; overflow: auto; overscroll-behavior: contain; border-radius: var(--r-md); box-shadow: inset 0 0 0 1px var(--hairline); }
 .cl-readonly :is(select, input) { pointer-events: none; }
 .sk-board { position: relative; box-sizing: border-box; width: max-content; min-width: 100%; padding: var(--sp-5); }

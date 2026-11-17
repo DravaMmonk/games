@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Pencil } from 'lucide-react'
+import { ChevronRight, Pencil } from 'lucide-react'
 import { L, tr } from 'kernel/view'
 
 import { Sheet } from 'kernel/view'
@@ -82,8 +82,22 @@ export function PackedDetail({ inside, node, at, path, onClose, children }) {
  * In the part's detail window or sheet: the board inside the part at `path` as a schematic, in a window that scrolls
  * once the board outgrows it, the chip the current step is in lit and scrolled to.
  * A packed part on it opens its own sheet over this one (its description and value, its board in turn, edit beside close).
+ * `folded` (the phone's sheets): the board waits behind a 「电路结构」 row, closed until it is opened; the sheets it
+ * opens fold theirs too.
  */
-export function InsideBoard({ inside, path }) {
+export function InsideBoard({ inside, path, folded = false }) {
+  if (folded) {
+    return (
+      <details className="cl-inside-fold">
+        <summary><ChevronRight size={14} aria-hidden="true" />{tr('电路结构', 'Circuit inside')}</summary>
+        <InsideSchematic inside={inside} path={path} nested />
+      </details>
+    )
+  }
+  return <InsideSchematic inside={inside} path={path} />
+}
+
+function InsideSchematic({ inside, path, nested = false }) {
   const [detail, setDetail] = useState(null)
   const box = useRef(null)
   const at = inside.at(path)
@@ -124,7 +138,7 @@ export function InsideBoard({ inside, path }) {
           <div className="cl-sheet cl-readonly">
             {inside.describe(node, ctx)}
             {inside.sheet(node, ctx)}
-            {packedPart ? <InsideBoard inside={inside} path={[...path, node.id]} /> : <TerminalInfo node={node} parts={parts} />}
+            {packedPart ? <InsideBoard inside={inside} path={[...path, node.id]} folded={nested} /> : <TerminalInfo node={node} parts={parts} />}
           </div>
         </Sheet>,
         // Beside the sheet it opens from, so it is drawn in the game's own styles.

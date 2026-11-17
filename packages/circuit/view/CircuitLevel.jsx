@@ -467,7 +467,7 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
             {desc}
             {body}
             {terminal}
-            {packedHere && <InsideBoard inside={inside} path={[node.id]} />}
+            {packedHere && <InsideBoard inside={inside} path={[node.id]} folded />}
           </div>
         </Sheet>
       )}

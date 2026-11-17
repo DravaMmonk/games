@@ -21,14 +21,14 @@
       "declare": "@level.decl-bot.tasks.decl-bot.declare",
       "target": "⊥",
       "sentences": [
-        "Rain",
-        "Wet",
-        "Rain → ⊥"
+        "A",
+        "B",
+        "A → ⊥"
       ],
       "tests": [
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": false
         },
@@ -40,21 +40,21 @@
           "given": [
             "⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": true
         },
         {
           "given": [
             "⊥"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         },
         {
           "given": [
             "⊥"
           ],
-          "goal": "Moon ∧ Pigs",
+          "goal": "C ∧ D",
           "make": true
         },
         {
@@ -65,24 +65,24 @@
         },
         {
           "given": [
-            "Wet"
+            "B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": false
         },
         {
           "given": [
-            "Rain → ⊥"
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": false
         },
         {
           "given": [
-            "Rain",
-            "Rain → ⊥"
+            "A",
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": true
         }
       ],
@@ -97,7 +97,7 @@
       "slots": [
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "fixed": [
             "given",
@@ -115,7 +115,7 @@
           "given": [
             "⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "fixed": [
             "given",
             "goal"
@@ -125,7 +125,7 @@
           "given": [
             "⊥"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "fixed": [
             "given",
             "goal"
@@ -135,7 +135,7 @@
           "given": [
             "⊥"
           ],
-          "goal": "Moon ∧ Pigs",
+          "goal": "C ∧ D",
           "fixed": [
             "given",
             "goal"
@@ -152,9 +152,9 @@
         },
         {
           "given": [
-            "Wet"
+            "B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "fixed": [
             "given",
             "goal"
@@ -162,9 +162,9 @@
         },
         {
           "given": [
-            "Rain → ⊥"
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "fixed": [
             "given",
             "goal"
@@ -172,10 +172,10 @@
         },
         {
           "given": [
-            "Rain",
-            "Rain → ⊥"
+            "A",
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "fixed": [
             "given",
             "goal"
@@ -185,7 +185,7 @@
       "answer": [
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": false
         },
@@ -197,21 +197,21 @@
           "given": [
             "⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": true
         },
         {
           "given": [
             "⊥"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         },
         {
           "given": [
             "⊥"
           ],
-          "goal": "Moon ∧ Pigs",
+          "goal": "C ∧ D",
           "make": true
         },
         {
@@ -222,31 +222,31 @@
         },
         {
           "given": [
-            "Wet"
+            "B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": false
         },
         {
           "given": [
-            "Rain → ⊥"
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": false
         },
         {
           "given": [
-            "Rain",
-            "Rain → ⊥"
+            "A",
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": true
         }
       ],
       "naive": [
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": false
         },
@@ -258,21 +258,21 @@
           "given": [
             "⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": true
         },
         {
           "given": [
             "⊥"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         },
         {
           "given": [
             "⊥"
           ],
-          "goal": "Moon ∧ Pigs",
+          "goal": "C ∧ D",
           "make": true
         },
         {
@@ -283,24 +283,24 @@
         },
         {
           "given": [
-            "Wet"
+            "B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": false
         },
         {
           "given": [
-            "Rain → ⊥"
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": false
         },
         {
           "given": [
-            "Rain",
-            "Rain → ⊥"
+            "A",
+            "A → ⊥"
           ],
-          "goal": "Wet",
+          "goal": "B",
           "make": false
         }
       ],
@@ -308,6 +308,20 @@
       "hint": [
         "@level.decl-bot.tasks.decl-bot.hint.0",
         "@level.decl-bot.tasks.decl-bot.hint.1"
+      ],
+      "cases": [
+        {
+          "A": "Rain",
+          "B": "Wet",
+          "C": "Moon",
+          "D": "Pigs"
+        },
+        {
+          "A": "Alarm",
+          "B": "Up",
+          "C": "Coffee",
+          "D": "Tea"
+        }
       ]
     }
   ]

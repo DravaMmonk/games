@@ -179,6 +179,24 @@ function expand(level, notation) {
   return { schema, tests: [...concrete, symbolic] }
 }
 
+/**
+ * A declaration's cases (chapter 3), as a proof's: the same letters read in other words. A declaration is written in
+ * letters; each case names the sentence a letter stands for, and its tab reads every letter in that sentence's words
+ * (its notation; nothing in the declaration changes), the last tab the letters bare. Cases name sentences by their
+ * letters only (an atom, or a predicate).
+ */
+function caseViews(level, notation) {
+  const words = (c) => ({ ...notation.words, ...Object.fromEntries(Object.entries(c).map(([letter, atom]) => [letter, notation.words?.[atom] ?? { zh: atom, en: atom }])) })
+  const label = (c) => {
+    const parts = Object.values(c).map((atom) => say(parse(atom), notation))
+    return { zh: parts.map((p) => p.zh).join(' · '), en: parts.map((p) => p.en).join(' · ') }
+  }
+  return [
+    ...level.cases.map((c) => ({ label: label(c), notation: { ...notation, words: words(c) } })),
+    { label: { zh: '字母', en: 'Letters' }, notation: { ...notation, words: level.symbolicWords ?? null }, symbolic: true },
+  ]
+}
+
 // A first-order level's vocabulary (fol.js): the predicates and names its sentences use, and any it adds as decoys.
 const WORLD_KINDS = ['logic:translate', 'logic:query', 'logic:model']
 // `names` are every name the level reads (level.consts), so a name typed that the level does not use still parses.
@@ -446,10 +464,11 @@ export function* prepareLogicWorks(content) {
       formulaSymbols,
       propertyWords: one.propertyWords ?? one.kind === 'logic:proof',
     }
-    const expanded = one.cases ? expand(one, notation) : {}
+    const expanded = one.cases && one.kind !== 'logic:iso' ? expand(one, notation) : {}
+    const views = one.cases && one.kind === 'logic:iso' ? { views: caseViews(one, notation) } : {}
     Object.assign(one, answers({
       ...one, ...declarations(one, one.id), ...(!one.brief && expanded.schema ? { brief: expanded.tests.at(-1).caseBrief } : {}),
-      ...(WORLD_KINDS.includes(one.kind) ? { vocab: vocabOf(one) } : {}), ...expanded,
+      ...(WORLD_KINDS.includes(one.kind) ? { vocab: vocabOf(one) } : {}), ...expanded, ...views,
       ...(one.kind === 'logic:machine' ? { tests: one.tests.map((t) => ({ label: machineLabel(t, notation), ...t })) } : {}),
       lemmas, proofs: lemmaParts, facts, gates: boardGates, partDefs: defs, notation,
     }))

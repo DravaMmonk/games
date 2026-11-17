@@ -616,7 +616,7 @@ test('an audit stops at an unfinished case before grading the supplied declarati
   const words = (text) => T(text, text)
   const blocked = runAudit(level, [complete, unfinished], words)
   assert.deepEqual(blocked.fail.at, { row: 1 })
-  assert.match(blocked.fail.why.en, /Case 2 has no goal/)
+  assert.match(blocked.fail.why.en, /Case 2 has no conclusion/)
   assert.deepEqual(blocked.runs[0].steps, [{}, { failed: blocked.fail.why }])
   const graded = runAudit(level, [complete], words)
   assert.deepEqual(graded.fail.at, { row: 0 })

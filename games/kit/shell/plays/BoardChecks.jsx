@@ -15,7 +15,9 @@ export default function BoardChecks({ screen, resource, play }) {
   const { phone } = screen
   const [row, setRow] = useState(0)
   const [at, select] = useState(0)
-  const { tabs, initial, judge, stepsOf, checks: { resultLabel, ...fields } } = resource
+  const { tabs, initial, judge, stepsOf } = resource
+  // The case table's fields, in the words of the tab on view when a work reads its tabs in other words.
+  const { resultLabel, ...fields } = typeof resource.checks === 'function' ? resource.checks(at) : resource.checks
   const { work, change, history, finish } = useSavedWork(screen, {
     read: () => initial,
     write: (work) => ({ work }),

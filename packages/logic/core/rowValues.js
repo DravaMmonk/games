@@ -57,15 +57,24 @@ export function ruleLines(level, ways, read) {
   ]
 }
 
+/** The level read in the words of tab `at` of its cases (work.js caseViews), or as it is without cases. */
+export const inView = (level, at = 0) => (level.views?.[at] ? { ...level, notation: level.views[at].notation } : level)
+
 export function declaration(level) {
-  const judge = checkDeclaration(level)
+  // One judge for each tab: the same checks, said in that tab's words.
+  const judges = new Map()
+  const judgeAt = (at) => {
+    if (!judges.has(at)) judges.set(at, checkDeclaration(inView(level, at)))
+    return judges.get(at)
+  }
   return {
     // A declaration starts with one empty derivable situation; the player may take it away, leaving none.
     initial: (saved) => saved?.rules ?? [blankRule()],
     keep: (rules) => ({ rules }),
-    judge,
-    rows: (rules, change, scope) => declarationValues(level, rules, change, scope),
-    lines: (rules, read) => problemsOf(level, rules).length ? [] : ruleLines(level, linesOf(rules), read),
+    judge: Object.assign((rules, at = 0) => judgeAt(at)(rules), { checks: judgeAt(0).checks }),
+    tabs: level.views?.map(({ label }) => ({ label })),
+    rows: (rules, change, scope, at = 0) => declarationValues(inView(level, at), rules, change, scope),
+    lines: (rules, read, at = 0) => problemsOf(level, rules).length ? [] : ruleLines(inView(level, at), linesOf(rules), read),
     passed: T('这份声明符合需求。'),
     score: (rules) => ({ steps: rules.length }),
   }

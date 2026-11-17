@@ -20,13 +20,13 @@ export function runAudit(level, cases, words) {
   // A case whose expectation is fixed: the cells the player fills in are what has to change.
   const reconsider = (k) => {
     const c = cases[k]
-    if (c.goal === '') return T(`第 ${k + 1} 条条例还没有填目标。`, `Case ${k + 1} has no goal yet.`)
-    if (c.make === null) return T(`第 ${k + 1} 条条例还没有填预期。`, `Case ${k + 1} has no expectation yet.`)
+    if (c.goal === '') return T(`第 ${k + 1} 条条例还没有选结论。`, `Case ${k + 1} has no conclusion yet.`)
+    if (c.make === null) return T(`第 ${k + 1} 条条例还没有选预期结果。`, `Case ${k + 1} has no expected result yet.`)
     const at = givenText(c, words)
     if (c.fixed?.includes('make')) return T(`第 ${k + 1} 条条例：按需求，${at.zh}时「${goal(c).zh}」${may(rows[k].wants).zh}，和这一条的预期不同。请改写这一条空着的部分。`, `Case ${k + 1}: according to the requirement, ${at.en}, “${goal(c).en}” is ${may(rows[k].wants).en}, unlike this case’s expectation. Rewrite the part of it left for you.`)
     return T(`第 ${k + 1} 条条例的预期与需求不符。请重新考虑：${at.zh}时，按需求「${goal(c).zh}」是否可推导？`, `The expectation of case ${k + 1} does not agree with the requirement. Reconsider: ${at.en}, is “${goal(c).en}” derivable according to the requirement?`)
   }
-  const wrong = !cases.length ? T('还没有条例。请添加一条，写明前提、目标，以及目标是否应当可推导。')
+  const wrong = !cases.length ? T('还没有条例。请添加一条，写明情形、结论，以及结论是否应当可推导。', 'No cases yet. Add one: its premises, a conclusion, and whether it should be derivable.')
     : bad >= 0 ? reconsider(bad)
     : null
   const mismatch = (board, agrees) => rows.findIndex((r) => (r.derived[board] === r.wants) === agrees)

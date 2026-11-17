@@ -25,28 +25,28 @@
       "id": "decl-and",
       "kind": "logic:iso",
       "declare": "@level.decl-and.tasks.decl-and.declare",
-      "target": "Rain ∧ Wind",
+      "target": "A ∧ B",
       "sentences": [
-        "Rain",
-        "Wind"
+        "A",
+        "B"
       ],
       "tests": [
         {
           "given": [
-            "Rain",
-            "Wind"
+            "A",
+            "B"
           ],
           "make": true
         },
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": false
         },
         {
           "given": [
-            "Wind"
+            "B"
           ],
           "make": false
         },
@@ -56,31 +56,31 @@
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Wind",
+          "goal": "B",
           "make": true
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": false
         },
         {
           "given": [
-            "Rain ∧ Wind",
-            "Rain → (Wind → Wet)"
+            "A ∧ B",
+            "A → (B → C)"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": true
         }
       ],
@@ -93,8 +93,8 @@
         {
           "binds": [],
           "needs": [
-            "Rain",
-            "Wind"
+            "A",
+            "B"
           ]
         }
       ],
@@ -102,14 +102,26 @@
         {
           "binds": [],
           "needs": [
-            "Rain"
+            "A"
           ]
         },
         {
           "binds": [],
           "needs": [
-            "Wind"
+            "B"
           ]
+        }
+      ],
+      "cases": [
+        {
+          "A": "Rain",
+          "B": "Wind",
+          "C": "Wet"
+        },
+        {
+          "A": "Exam",
+          "B": "Study",
+          "C": "Pass"
         }
       ]
     }

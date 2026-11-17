@@ -14,7 +14,7 @@
       "declare": "@level.decl-true.tasks.decl-true.declare",
       "target": "Truth",
       "sentences": [
-        "Rain"
+        "A"
       ],
       "tests": [
         {
@@ -23,7 +23,7 @@
         },
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": true
         },
@@ -31,23 +31,23 @@
           "given": [
             "Truth"
           ],
-          "goal": "Moon",
+          "goal": "B",
           "make": false
         },
         {
           "given": [
             "Truth"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": false
         },
         {
           "given": [
             "Truth",
-            "Rain",
-            "Rain → Wet"
+            "A",
+            "A → C"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": true
         }
       ],
@@ -79,7 +79,7 @@
         },
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "fixed": [
             "given",
@@ -90,7 +90,7 @@
           "given": [
             "Truth"
           ],
-          "goal": "Moon",
+          "goal": "B",
           "fixed": [
             "given",
             "goal"
@@ -100,7 +100,7 @@
           "given": [
             "Truth"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "fixed": [
             "given",
             "goal"
@@ -109,10 +109,10 @@
         {
           "given": [
             "Truth",
-            "Rain",
-            "Rain → Wet"
+            "A",
+            "A → C"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "fixed": [
             "given",
             "goal"
@@ -126,7 +126,7 @@
         },
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": true
         },
@@ -134,23 +134,23 @@
           "given": [
             "Truth"
           ],
-          "goal": "Moon",
+          "goal": "B",
           "make": false
         },
         {
           "given": [
             "Truth"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": false
         },
         {
           "given": [
             "Truth",
-            "Rain",
-            "Rain → Wet"
+            "A",
+            "A → C"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": true
         }
       ],
@@ -161,7 +161,7 @@
         },
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": true
         },
@@ -169,29 +169,41 @@
           "given": [
             "Truth"
           ],
-          "goal": "Moon",
+          "goal": "B",
           "make": false
         },
         {
           "given": [
             "Truth"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         },
         {
           "given": [
             "Truth",
-            "Rain",
-            "Rain → Wet"
+            "A",
+            "A → C"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": true
         }
       ],
       "brief": "@level.decl-true.tasks.decl-true.brief",
       "hint": [
         "@level.decl-true.tasks.decl-true.hint.0"
+      ],
+      "cases": [
+        {
+          "A": "Rain",
+          "B": "Moon",
+          "C": "Wet"
+        },
+        {
+          "A": "Exam",
+          "B": "Pigs",
+          "C": "Pass"
+        }
       ]
     }
   ]

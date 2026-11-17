@@ -2,28 +2,28 @@
   "title": "@level.decl-iff.title",
   "tray": "formula",
   "declare": "@level.decl-iff.declare",
-  "target": "Rain ↔ Wet",
+  "target": "A ↔ B",
   "sentences": [
-    "Rain → Wet",
-    "Wet → Rain"
+    "A → B",
+    "B → A"
   ],
   "tests": [
     {
       "given": [
-        "Rain → Wet",
-        "Wet → Rain"
+        "A → B",
+        "B → A"
       ],
       "make": true
     },
     {
       "given": [
-        "Rain → Wet"
+        "A → B"
       ],
       "make": false
     },
     {
       "given": [
-        "Wet → Rain"
+        "B → A"
       ],
       "make": false
     },
@@ -33,24 +33,24 @@
     },
     {
       "given": [
-        "Rain ↔ Wet"
+        "A ↔ B"
       ],
-      "goal": "Rain → Wet",
+      "goal": "A → B",
       "make": true
     },
     {
       "given": [
-        "Rain ↔ Wet",
-        "Wet"
+        "A ↔ B",
+        "B"
       ],
-      "goal": "Rain",
+      "goal": "A",
       "make": true
     },
     {
       "given": [
-        "Rain ↔ Wet"
+        "A ↔ B"
       ],
-      "goal": "Rain",
+      "goal": "A",
       "make": false
     }
   ],
@@ -63,8 +63,8 @@
     {
       "binds": [],
       "needs": [
-        "Rain → Wet",
-        "Wet → Rain"
+        "A → B",
+        "B → A"
       ]
     }
   ],
@@ -72,13 +72,13 @@
     {
       "binds": [],
       "needs": [
-        "Rain → Wet"
+        "A → B"
       ]
     },
     {
       "binds": [],
       "needs": [
-        "Wet → Rain"
+        "B → A"
       ]
     }
   ],
@@ -95,13 +95,13 @@
             {
               "binds": [],
               "needs": [
-                "Rain → Wet"
+                "A → B"
               ]
             },
             {
               "binds": [],
               "needs": [
-                "Wet → Rain"
+                "B → A"
               ]
             }
           ]
@@ -117,10 +117,10 @@
         },
         {
           "given": [
-            "Rain ↔ Wet"
+            "A ↔ B"
           ],
           "keep": [
-            "Rain ↔ Wet"
+            "A ↔ B"
           ],
           "make": true,
           "fixed": [
@@ -131,32 +131,32 @@
       "answer": [
         {
           "given": [
-            "Rain → Wet"
+            "A → B"
           ],
           "make": false
         },
         {
           "given": [
-            "Rain ↔ Wet",
-            "Wet"
+            "A ↔ B",
+            "B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         }
       ],
       "naive": [
         {
           "given": [
-            "Rain → Wet",
-            "Wet → Rain"
+            "A → B",
+            "B → A"
           ],
           "make": false
         },
         {
           "given": [
-            "Rain ↔ Wet"
+            "A ↔ B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         }
       ],
@@ -184,6 +184,16 @@
       "hint": [
         "@level.decl-iff.tasks.decl-iff_2.hint.0"
       ]
+    }
+  ],
+  "cases": [
+    {
+      "A": "Rain",
+      "B": "Wet"
+    },
+    {
+      "A": "Hungry",
+      "B": "Eat"
     }
   ]
 }

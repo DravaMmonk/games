@@ -2,28 +2,28 @@
   "title": "@level.decl-strength.title",
   "tray": "formula",
   "declare": "@level.decl-strength.declare",
-  "target": "Rain ∧ Wind",
+  "target": "A ∧ B",
   "sentences": [
-    "Rain",
-    "Wind"
+    "A",
+    "B"
   ],
   "tests": [
     {
       "given": [
-        "Rain",
-        "Wind"
+        "A",
+        "B"
       ],
       "make": true
     },
     {
       "given": [
-        "Rain"
+        "A"
       ],
       "make": false
     },
     {
       "given": [
-        "Wind"
+        "B"
       ],
       "make": false
     },
@@ -33,31 +33,31 @@
     },
     {
       "given": [
-        "Rain ∧ Wind"
+        "A ∧ B"
       ],
-      "goal": "Rain",
+      "goal": "A",
       "make": true
     },
     {
       "given": [
-        "Rain ∧ Wind"
+        "A ∧ B"
       ],
-      "goal": "Wind",
+      "goal": "B",
       "make": true
     },
     {
       "given": [
-        "Rain ∧ Wind"
+        "A ∧ B"
       ],
-      "goal": "Wet",
+      "goal": "C",
       "make": false
     },
     {
       "given": [
-        "Rain ∧ Wind",
-        "Rain → (Wind → Wet)"
+        "A ∧ B",
+        "A → (B → C)"
       ],
-      "goal": "Wet",
+      "goal": "C",
       "make": true
     }
   ],
@@ -65,8 +65,8 @@
     {
       "binds": [],
       "needs": [
-        "Rain",
-        "Wind"
+        "A",
+        "B"
       ]
     }
   ],
@@ -88,9 +88,9 @@
             {
               "binds": [],
               "needs": [
-                "Rain",
-                "Wind",
-                "Wet"
+                "A",
+                "B",
+                "C"
               ]
             }
           ]
@@ -106,10 +106,10 @@
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
           "keep": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
           "make": false,
           "fixed": [
@@ -120,33 +120,33 @@
       "answer": [
         {
           "given": [
-            "Rain",
-            "Wind"
+            "A",
+            "B"
           ],
           "make": true
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": false
         }
       ],
       "naive": [
         {
           "given": [
-            "Rain",
-            "Wind",
-            "Wet"
+            "A",
+            "B",
+            "C"
           ],
           "make": true
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Wet",
+          "goal": "C",
           "make": false
         }
       ],
@@ -172,13 +172,13 @@
             {
               "binds": [],
               "needs": [
-                "Rain"
+                "A"
               ]
             },
             {
               "binds": [],
               "needs": [
-                "Wind"
+                "B"
               ]
             }
           ]
@@ -194,10 +194,10 @@
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
           "keep": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
           "make": true,
           "fixed": [
@@ -208,31 +208,31 @@
       "answer": [
         {
           "given": [
-            "Rain"
+            "A"
           ],
           "make": false
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         }
       ],
       "naive": [
         {
           "given": [
-            "Rain",
-            "Wind"
+            "A",
+            "B"
           ],
           "make": false
         },
         {
           "given": [
-            "Rain ∧ Wind"
+            "A ∧ B"
           ],
-          "goal": "Rain",
+          "goal": "A",
           "make": true
         }
       ],
@@ -248,6 +248,18 @@
       "hint": [
         "@level.decl-strength.tasks.decl-strength_2.hint.0"
       ]
+    }
+  ],
+  "cases": [
+    {
+      "A": "Rain",
+      "B": "Wind",
+      "C": "Wet"
+    },
+    {
+      "A": "Exam",
+      "B": "Study",
+      "C": "Pass"
     }
   ]
 }

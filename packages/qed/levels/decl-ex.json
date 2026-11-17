@@ -6,10 +6,10 @@
   "title": "@level.decl-ex.title",
   "tray": "formula",
   "declare": "@level.decl-ex.declare",
-  "target": "∃y. Human(y)",
+  "target": "∃y. P(y)",
   "sentences": [
-    "Human(x)",
-    "Mortal(x)"
+    "P(x)",
+    "Q(x)"
   ],
   "things": [
     "h",
@@ -19,19 +19,19 @@
   "tests": [
     {
       "given": [
-        "Human(h)"
+        "P(h)"
       ],
       "make": true
     },
     {
       "given": [
-        "Human(i)"
+        "P(i)"
       ],
       "make": true
     },
     {
       "given": [
-        "Mortal(h)"
+        "Q(h)"
       ],
       "make": false
     },
@@ -41,25 +41,25 @@
     },
     {
       "given": [
-        "∃y. Human(y)"
+        "∃y. P(y)"
       ],
-      "goal": "Human(h)",
+      "goal": "P(h)",
       "make": false
     },
     {
       "given": [
-        "∃y. Human(y)",
-        "∀x. Human(x) → Mortal(x)"
+        "∃y. P(y)",
+        "∀x. P(x) → Q(x)"
       ],
-      "goal": "∃y. Mortal(y)",
+      "goal": "∃y. Q(y)",
       "make": true
     },
     {
       "given": [
-        "∃y. Human(y)",
-        "∀x. Human(x) → Mortal(x)"
+        "∃y. P(y)",
+        "∀x. P(x) → Q(x)"
       ],
-      "goal": "Mortal(h)",
+      "goal": "Q(h)",
       "make": false
     }
   ],
@@ -74,7 +74,7 @@
         "x"
       ],
       "needs": [
-        "Human(x)"
+        "P(x)"
       ]
     }
   ],
@@ -82,7 +82,7 @@
     {
       "binds": [],
       "needs": [
-        "Human(x)"
+        "P(x)"
       ]
     }
   ],
@@ -101,7 +101,7 @@
                 "x"
               ],
               "needs": [
-                "Mortal(x)"
+                "Q(x)"
               ]
             }
           ]
@@ -117,10 +117,10 @@
         },
         {
           "given": [
-            "∃y. Human(y)"
+            "∃y. P(y)"
           ],
           "keep": [
-            "∃y. Human(y)"
+            "∃y. P(y)"
           ],
           "make": false,
           "fixed": [
@@ -131,30 +131,30 @@
       "answer": [
         {
           "given": [
-            "Mortal(h)"
+            "Q(h)"
           ],
           "make": false
         },
         {
           "given": [
-            "∃y. Human(y)"
+            "∃y. P(y)"
           ],
-          "goal": "∃y. Mortal(y)",
+          "goal": "∃y. Q(y)",
           "make": false
         }
       ],
       "naive": [
         {
           "given": [
-            "Human(h)"
+            "P(h)"
           ],
           "make": false
         },
         {
           "given": [
-            "∃y. Human(y)"
+            "∃y. P(y)"
           ],
-          "goal": "Human(h)",
+          "goal": "P(h)",
           "make": false
         }
       ],
@@ -183,6 +183,16 @@
         "@level.decl-ex.tasks.decl-ex_2.hint.0",
         "@level.decl-ex.tasks.decl-ex_2.hint.1"
       ]
+    }
+  ],
+  "cases": [
+    {
+      "P": "Human",
+      "Q": "Mortal"
+    },
+    {
+      "P": "Bird",
+      "Q": "Flies"
     }
   ]
 }

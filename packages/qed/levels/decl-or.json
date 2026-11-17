@@ -6,28 +6,28 @@
   "title": "@level.decl-or.title",
   "tray": "formula",
   "declare": "@level.decl-or.declare",
-  "target": "Sat ∨ Sun",
+  "target": "A ∨ B",
   "sentences": [
-    "Sat",
-    "Sun"
+    "A",
+    "B"
   ],
   "tests": [
     {
       "given": [
-        "Sat"
+        "A"
       ],
       "make": true
     },
     {
       "given": [
-        "Sun"
+        "B"
       ],
       "make": true
     },
     {
       "given": [
-        "Sat",
-        "Sun"
+        "A",
+        "B"
       ],
       "make": true
     },
@@ -37,26 +37,26 @@
     },
     {
       "given": [
-        "Sat ∨ Sun"
+        "A ∨ B"
       ],
-      "goal": "Sat",
+      "goal": "A",
       "make": false
     },
     {
       "given": [
-        "Sat ∨ Sun",
-        "Sat → Rest",
-        "Sun → Rest"
+        "A ∨ B",
+        "A → C",
+        "B → C"
       ],
-      "goal": "Rest",
+      "goal": "C",
       "make": true
     },
     {
       "given": [
-        "Sat ∨ Sun",
-        "Sat → Rest"
+        "A ∨ B",
+        "A → C"
       ],
-      "goal": "Rest",
+      "goal": "C",
       "make": false
     }
   ],
@@ -69,13 +69,13 @@
     {
       "binds": [],
       "needs": [
-        "Sat"
+        "A"
       ]
     },
     {
       "binds": [],
       "needs": [
-        "Sun"
+        "B"
       ]
     }
   ],
@@ -83,7 +83,7 @@
     {
       "binds": [],
       "needs": [
-        "Sat"
+        "A"
       ]
     }
   ],
@@ -100,29 +100,29 @@
             {
               "binds": [],
               "needs": [
-                "Sat"
+                "A"
               ]
             }
           ]
         }
       ],
       "slots": 1,
-      "caseGoal": "Sat",
+      "caseGoal": "A",
       "answer": [
         {
           "given": [
-            "Sat ∨ Sun"
+            "A ∨ B"
           ],
-          "goal": "Sat",
+          "goal": "A",
           "make": false
         }
       ],
       "naive": [
         {
           "given": [
-            "Sat"
+            "A"
           ],
-          "goal": "Sat",
+          "goal": "A",
           "make": true
         }
       ],
@@ -142,32 +142,32 @@
             {
               "binds": [],
               "needs": [
-                "Sat"
+                "A"
               ]
             }
           ]
         }
       ],
       "slots": 1,
-      "caseGoal": "Rest",
+      "caseGoal": "C",
       "answer": [
         {
           "given": [
-            "Sat ∨ Sun",
-            "Sat → Rest"
+            "A ∨ B",
+            "A → C"
           ],
-          "goal": "Rest",
+          "goal": "C",
           "make": false
         }
       ],
       "naive": [
         {
           "given": [
-            "Sat ∨ Sun",
-            "Sat → Rest",
-            "Sun → Rest"
+            "A ∨ B",
+            "A → C",
+            "B → C"
           ],
-          "goal": "Rest",
+          "goal": "C",
           "make": true
         }
       ],
@@ -185,6 +185,18 @@
       "hint": [
         "@level.decl-or.tasks.decl-or_3.hint.0"
       ]
+    }
+  ],
+  "cases": [
+    {
+      "A": "Sat",
+      "B": "Sun",
+      "C": "Rest"
+    },
+    {
+      "A": "Bus",
+      "B": "Bike",
+      "C": "OnTime"
     }
   ]
 }

@@ -1453,7 +1453,6 @@ export default {
   "还没有 show 要证的那一句": "What is to be proved is not shown yet",
   "还没有东西接到「结果」": "Nothing reaches the result yet",
   "还没有条例。": "No test case yet.",
-  "还没有条例。请添加一条，写明前提、目标，以及目标是否应当可推导。": "No test case yet. Add one, stating the premises, the goal, and whether the goal should be derivable.",
   "还没有标出主干。": "The skeleton is not marked yet.",
   "还没有点对。": "No pairs yet.",
   "还没解完：要每个等式左边都是一个 ?，右边里没有这些 ?": "Not solved yet: each equation must have a ?-letter on the left, and none of those letters on any right side",

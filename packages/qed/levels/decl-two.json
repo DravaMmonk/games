@@ -17,49 +17,49 @@
       "declare": "@level.decl-two.tasks.decl-two.declare",
       "target": "Motion",
       "sentences": [
-        "AnnYes",
-        "BoYes",
-        "CyYes"
+        "A",
+        "B",
+        "C"
       ],
       "tests": [
         {
           "given": [
-            "AnnYes",
-            "BoYes"
+            "A",
+            "B"
           ],
           "make": true
         },
         {
           "given": [
-            "BoYes",
-            "CyYes"
+            "B",
+            "C"
           ],
           "make": true
         },
         {
           "given": [
-            "AnnYes",
-            "CyYes"
+            "A",
+            "C"
           ],
           "make": true
         },
         {
           "given": [
-            "AnnYes",
-            "BoYes",
-            "CyYes"
+            "A",
+            "B",
+            "C"
           ],
           "make": true
         },
         {
           "given": [
-            "AnnYes"
+            "A"
           ],
           "make": false
         },
         {
           "given": [
-            "CyYes"
+            "C"
           ],
           "make": false
         },
@@ -67,32 +67,32 @@
           "given": [
             "Motion"
           ],
-          "goal": "AnnYes",
+          "goal": "A",
           "make": false
         },
         {
           "given": [
             "Motion",
-            "AnnYes → Happy",
-            "BoYes → Happy"
+            "A → D",
+            "B → D"
           ],
-          "goal": "Happy",
+          "goal": "D",
           "make": true
         },
         {
           "given": [
             "Motion",
-            "AnnYes → Happy"
+            "A → D"
           ],
-          "goal": "Happy",
+          "goal": "D",
           "make": false
         },
         {
           "given": [
             "Motion",
-            "BoYes → Happy"
+            "B → D"
           ],
-          "goal": "Happy",
+          "goal": "D",
           "make": false
         }
       ],
@@ -104,15 +104,15 @@
             {
               "binds": [],
               "needs": [
-                "AnnYes",
-                "BoYes"
+                "A",
+                "B"
               ]
             },
             {
               "binds": [],
               "needs": [
-                "BoYes",
-                "CyYes"
+                "B",
+                "C"
               ]
             }
           ]
@@ -142,34 +142,34 @@
       "answer": [
         {
           "given": [
-            "AnnYes",
-            "CyYes"
+            "A",
+            "C"
           ],
           "make": true
         },
         {
           "given": [
             "Motion",
-            "BoYes → Happy"
+            "B → D"
           ],
-          "goal": "Happy",
+          "goal": "D",
           "make": false
         }
       ],
       "naive": [
         {
           "given": [
-            "AnnYes",
-            "BoYes"
+            "A",
+            "B"
           ],
           "make": true
         },
         {
           "given": [
             "Motion",
-            "AnnYes → Happy"
+            "A → D"
           ],
-          "goal": "Happy",
+          "goal": "D",
           "make": false
         }
       ],
@@ -182,23 +182,31 @@
         {
           "binds": [],
           "needs": [
-            "AnnYes",
-            "BoYes"
+            "A",
+            "B"
           ]
         },
         {
           "binds": [],
           "needs": [
-            "BoYes",
-            "CyYes"
+            "B",
+            "C"
           ]
         },
         {
           "binds": [],
           "needs": [
-            "AnnYes",
-            "CyYes"
+            "A",
+            "C"
           ]
+        }
+      ],
+      "cases": [
+        {
+          "A": "AnnYes",
+          "B": "BoYes",
+          "C": "CyYes",
+          "D": "Happy"
         }
       ]
     }

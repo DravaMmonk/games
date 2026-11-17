@@ -134,6 +134,8 @@ const ISO = {
   boards: S.opt(S.list(S.obj({ label: S.opt(S.text()), rules: RULE_ROWS }))), answer: S.opt(S.list(CASE)), slots: S.opt(S.either(S.int({ min: 1 }), S.list(SLOT))),
   caseGoal: S.opt(SENTENCE), binder: S.opt(S.str()), take: S.opt(S.obj({ premises: S.list(S.str()), conclusion: S.str() })),
   datatype: S.opt(S.obj({ type: S.str(), ctors: ids, args: S.map(S.str()) })), ways: S.opt(S.list(S.list(S.str()))), carry: S.opt(S.level()),
+  // As a proof's: the declaration is written in letters, and each case is a tab reading them in other words.
+  cases: S.opt(S.list(S.map(SENTENCE), { section: 'tests', about: t('每组测试把字母换成哪些句子') })),
 }
 const BY_KIND = {
   proof: {

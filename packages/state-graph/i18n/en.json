@@ -98,7 +98,7 @@
   "glossary.entries.manyWays.body.2": "As long as the ways in are all earlier and already computed, the table can be filled however many there are and however they vary.",
   "glossary.entries.manyWays.title": "Ways in of any number",
   "glossary.entries.map.body.0": "The levels sit on the map in chapters, and each chapter answers one question. Pass a level and the levels after it open; where the path splits, take the branches in any order, and pass them all to go on.",
-  "glossary.entries.map.body.1": "If you would rather not go in order, turn on “Unlock all”: any level can be played straight away, and your progress is still recorded. The map also has your Parts and this Encyclopedia.",
+  "glossary.entries.map.body.1": "The map also has your Parts and this Encyclopedia.",
   "glossary.entries.map.title": "Level map",
   "glossary.entries.memo.body.0": "Ask top-down, but <b>write down</b> every answer you get and look it up the next time it is asked: this is called <b>memoisation</b>, or memoised recursion. That way each cell is really worked out only once.",
   "glossary.entries.memo.body.1": "Bottom-up filling and memoised recursion walk the same dependency graph, just in different ways: one settles the order and then fills in, the other works things out as it asks.",

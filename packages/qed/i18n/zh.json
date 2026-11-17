@@ -306,7 +306,6 @@
   "glossary.entries.liar.body.0": "「这句话是假的」：它真，它就假；它假，它就真。岛上的版本是「我是无赖」，没有人说得出。它不是逻辑的毛病，而是一把工具：让一样东西说到它自己，再说反话，就能证明某样东西不存在。罗素悖论、康托尔定理、停机问题都是它。",
   "glossary.entries.liar.title": "说谎者悖论",
   "glossary.entries.map.body.0": "关卡按章排列。纸笔练习之后，每章向同一台证明器加入一个模块，已获得的能力会按课程安排保留。完成一关后，满足前置条件的关卡解锁；地图中的专题与挑战是可选支线。",
-  "glossary.entries.map.body.1": "如需自由选择关卡，可以开启「全部解锁」。",
   "glossary.entries.map.title": "关卡地图",
   "glossary.entries.metavariable.body.0": "一条规则写成 ⟦前提⟧ ⟹ 结论，里面待定的部分叫<b>元变量</b>：?A、?B 是任何一句话，?t 是任何一样东西，?P(x) 是任何一句关于 x 的话。用规则时，元变量由合一填上。Isabelle 的规则都这样写（它的元逻辑 Pure 里，⟹ 是「推出」，⋀ 是「对任何」）；Lean 的 apply 留下的空位 ?m 也是元变量。",
   "glossary.entries.metavariable.title": "元变量",

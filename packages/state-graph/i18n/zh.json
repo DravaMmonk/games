@@ -98,7 +98,7 @@
   "glossary.entries.manyWays.body.2": "只要来路都在前面、都已经算好，来路再多、再不固定，表也照样能填。",
   "glossary.entries.manyWays.title": "不定长的来路",
   "glossary.entries.map.body.0": "关卡按章节排在地图上，每一章回答一个问题。通过一关，接在它后面的关卡就会打开；分成几路时，先走哪一路都行，几路都通过才继续。",
-  "glossary.entries.map.body.1": "不想按顺序玩，可以打开「全部解锁」：任意一关都能直接玩，进度照常记录。地图上还有「元件箱」和这本「百科」。",
+  "glossary.entries.map.body.1": "地图上还有「元件箱」和这本「百科」。",
   "glossary.entries.map.title": "关卡地图",
   "glossary.entries.memo.body.0": "自顶向下地问，再把每个问出的答案<b>记下来</b>，下次被问到时直接拿：这叫<b>记忆化</b>，也叫备忘递归。这样，每一格只真正算一次。",
   "glossary.entries.memo.body.1": "自底向上和备忘递归，走的是同一张依赖图，只是走法不同：一个先排好顺序再填，一个边问边算。",

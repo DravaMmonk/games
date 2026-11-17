@@ -306,7 +306,6 @@
   "glossary.entries.liar.body.0": "“This sentence is false”: if it is true it is false, and if false, true. The island’s version is “I am a knave”, which nobody can say. It is no flaw of logic but a tool: let something speak of itself and say the opposite, and it proves that a thing cannot exist. Russell’s paradox, Cantor’s theorem and the halting problem are all of it.",
   "glossary.entries.liar.title": "The liar",
   "glossary.entries.map.body.0": "Levels are arranged in chapters. After the pen-and-paper exercises, each chapter adds a module to the same prover, retaining earlier capabilities as the course specifies. Passing a level unlocks those whose prerequisites are met; topics and challenges are optional branches.",
-  "glossary.entries.map.body.1": "To choose levels freely, enable “Unlock all”.",
   "glossary.entries.map.title": "level map",
   "glossary.entries.metavariable.body.0": "A rule is written ⟦premises⟧ ⟹ conclusion, and the parts left open in it are <b>metavariables</b>: ?A and ?B any sentence, ?t any thing, ?P(x) any sentence about x. When a rule is used, unification fills them in. Isabelle writes every rule this way (in its metalogic Pure, ⟹ is “yields” and ⋀ “for any”); the holes ?m Lean’s apply leaves are metavariables too.",
   "glossary.entries.metavariable.title": "metavariable",

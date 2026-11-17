@@ -157,7 +157,7 @@
   "glossary.entries.lowpass.body.1": "It can be done in space with a blur kernel, or in the frequency domain: transform to the spectrum, multiply by a mask centred on the middle, and transform back. The mask’s radius decides how many frequencies are kept: the smaller the radius, the blurrier the image.",
   "glossary.entries.lowpass.title": "Low-pass filtering",
   "glossary.entries.map.body.0": "On the map, each chapter follows a theme and its levels sit along a circuit trace. The chapter title is followed by the question you will explore. Level icons distinguish circuits from benches.",
-  "glossary.entries.map.body.1": "A level opens once the levels before it are passed; passed levels are ticked and closed ones show a padlock. “Continue” takes you straight to the first level you have not passed yet. Turn on “Unlock all” to play any level in any order; progress is still recorded.",
+  "glossary.entries.map.body.1": "A level opens once the levels before it are passed; passed levels are ticked and closed ones show a padlock. “Continue” takes you straight to the first level you have not passed yet.",
   "glossary.entries.map.body.2": "Inside a level, the “Levels” button in the top bar opens a list of levels, so you can switch levels without going back to the map.",
   "glossary.entries.map.title": "The level map and chapters",
   "glossary.entries.neuron.body.0": "A <b>neuron</b> first computes a weighted sum w1·x1 + w2·x2 + b, then uses a sigmoid to squash the result between 0 and 1, read as “how sure”. w1·x1 + w2·x2 + b = 0 is a straight line in the plane, so one neuron is one dividing line; the larger the weights, the more decisive the judgement.",

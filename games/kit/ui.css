@@ -68,7 +68,7 @@
 /* ---- page head ---- */
 .kit-hero { padding: var(--sp-9) 0 var(--sp-8); max-width: 40em; }
 .kit-kicker { margin: 0 0 var(--sp-5); color: var(--muted); font: var(--fs-label)/1.4 var(--mono); letter-spacing: var(--track-label); }
-.kit-title { margin: 0; color: var(--heading); font: 500 var(--fs-title)/1.02 var(--serif); letter-spacing: -.02em; }
+.kit-title { margin: 0; color: var(--heading); font: 500 var(--fs-title)/1.02 var(--sans); letter-spacing: -.02em; }
 /* Under a title, a short rule with ticks, like the strips on the figures' base plates. */
 .kit-title::after, .kit-rule {
   content: ''; display: block; width: 132px; height: 7px; margin-top: var(--sp-7);
@@ -78,8 +78,8 @@
     repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 12px) 0 0 / 100% 4px no-repeat,
     repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 60px) 0 0 / 100% 7px no-repeat;
 }
-.kit-lede { margin: var(--sp-7) 0 0; color: var(--body); font: var(--fs-lede)/1.75 var(--serif); }
-.kit-section { margin: var(--sp-9) 0 var(--sp-6); display: flex; align-items: baseline; gap: var(--sp-5); color: var(--heading); font: 500 24px/1.2 var(--serif); }
+.kit-lede { margin: var(--sp-7) 0 0; color: var(--body); font: var(--fs-lede)/1.75 var(--sans); }
+.kit-section { margin: var(--sp-9) 0 var(--sp-6); display: flex; align-items: baseline; gap: var(--sp-5); color: var(--heading); font: 500 24px/1.2 var(--sans); }
 .kit-section small { color: var(--faint); font: var(--fs-label)/1 var(--mono); letter-spacing: .1em; }
 
 /* ---- cards ---- */
@@ -92,7 +92,7 @@
 .kit-card:hover { transform: translateY(-2px); box-shadow: var(--card-lift); }
 .kit-card-body { padding: var(--sp-6) var(--sp-6) var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-3); }
 .kit-card-topic { color: var(--accent-ink); font: var(--fs-label)/1.4 var(--mono); letter-spacing: .1em; }
-.kit-card-title { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2) var(--sp-4); color: var(--heading); font: 500 22px/1.25 var(--serif); }
+.kit-card-title { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2) var(--sp-4); color: var(--heading); font: 500 22px/1.25 var(--sans); }
 .kit-card-title small { color: var(--faint); font: var(--fs-label)/1.4 var(--mono); letter-spacing: .08em; }
 .kit-card-desc { margin: 0; flex: 1; color: var(--body); font: var(--fs-small)/var(--lh-ui) var(--sans); }
 .kit-card-foot { margin-top: var(--sp-3); display: flex; justify-content: space-between; align-items: center; gap: var(--sp-5); color: var(--muted); font: var(--fs-label)/1.4 var(--mono); }

@@ -36,11 +36,12 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
   var(--canvas); }
 .map-hero { max-width: 1240px; margin: 0 auto; padding: var(--sp-9) var(--sp-8) var(--sp-8); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; gap: var(--sp-8); }
 .map-kicker { margin: 0 0 var(--sp-5); color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; }
-.map-hero h1 { margin: 0; font-family: var(--serif); font-size: clamp(44px, 6vw, 72px); font-weight: 500; letter-spacing: -.02em; line-height: 1; }
-.map-author { margin: var(--sp-5) 0 0; color: var(--muted); font: 12px/1.4 var(--mono); letter-spacing: .08em; }
-.map-author span { color: var(--ink); }
+.map-hero h1 { margin: 0; font-family: var(--sans); font-size: clamp(44px, 6vw, 72px); font-weight: 500; letter-spacing: -.02em; line-height: 1; }
+.map-author { margin: var(--sp-5) 0 0; color: var(--muted); font: 12.5px/1.4 var(--sans); }
+/* Only sentences and the author's name are set in the serif. */
+.map-author span { color: var(--ink); font: 500 15px/1.4 var(--serif); }
 .map-hero h1::after { content: ''; display: block; width: 132px; height: 7px; margin-top: var(--sp-7); border-top: 1px solid var(--rule); background: linear-gradient(var(--accent), var(--accent)) 0 0 / 42px 2px no-repeat, repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 12px) 0 0 / 100% 4px no-repeat; }
-.map-lede { max-width: 30em; margin: var(--sp-7) 0 0; color: var(--body); font-family: var(--serif); font-size: 18px; line-height: 1.75; }
+.map-lede { max-width: 30em; margin: var(--sp-7) 0 0; color: var(--body); font-family: var(--sans); font-size: 18px; line-height: 1.75; }
 .map-progress { margin-top: var(--sp-7); display: flex; align-items: center; gap: var(--sp-5); color: var(--muted); font-family: var(--mono); font-size: 11px; }
 .map-progress-bar { width: 180px; height: 4px; overflow: hidden; border-radius: var(--r-full); background: var(--hairline); }
 .map-progress-bar i { display: block; height: 100%; border-radius: inherit; background: var(--status); transition: width 600ms cubic-bezier(.2, .8, .2, 1); }
@@ -60,7 +61,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .map-chapter > header::before { content: ''; width: 12px; height: 12px; margin: var(--sp-1) 0 var(--sp-5); border-radius: var(--r-xs); background: var(--canvas); box-shadow: 0 0 0 2px var(--rule); transform: rotate(45deg); }
 .map-chapter.is-complete > header::before { background: var(--status); box-shadow: 0 0 0 2px var(--status); }
 .chapter-index { color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; }
-.map-chapter h2 { margin: var(--sp-3) 0 var(--sp-1); font-family: var(--serif); font-size: 24px; font-weight: 500; }
+.map-chapter h2 { margin: var(--sp-3) 0 var(--sp-1); font-family: var(--sans); font-size: 24px; font-weight: 500; }
 .map-chapter header p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
 .chapter-meter { width: 100%; max-width: 240px; margin-top: var(--sp-4); display: block; height: 3px; overflow: hidden; border-radius: var(--r-full); background: var(--hairline); }
 .chapter-meter i { display: block; height: 100%; background: var(--status); transition: width 600ms cubic-bezier(.2, .8, .2, 1); }
@@ -159,7 +160,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .drawer-chapter-head:hover { background: var(--hover); }
 .drawer-chapter-index { color: var(--faint); font-family: var(--mono); font-size: 11px; }
 .drawer-chapter.is-current .drawer-chapter-index { color: var(--accent-ink); }
-.drawer-chapter-title { font-family: var(--serif); font-size: 14px; }
+.drawer-chapter-title { font-family: var(--sans); font-size: 14px; }
 .drawer-chapter-count { color: var(--muted); font-family: var(--mono); font-size: 10px; font-variant-numeric: tabular-nums; }
 .drawer-chevron { color: var(--faint); transition: transform 180ms ease; }
 .drawer-chapter-head[aria-expanded='false'] .drawer-chevron { transform: rotate(-90deg); }
@@ -173,7 +174,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .brief { min-height: 0; padding: var(--sp-7) var(--sp-6) var(--sp-7); display: flex; flex-direction: column; gap: var(--gap-section); overflow-y: auto; border-right: 1px solid var(--hairline); background: var(--paper); scrollbar-width: thin; }
 .brief-head { display: grid; gap: var(--sp-2); }
 .brief-id { color: var(--accent-ink); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; }
-.brief-head h1 { margin: 0; font-family: var(--serif); font-size: 26px; font-weight: 500; letter-spacing: -.01em; }
+.brief-head h1 { margin: 0; font-family: var(--sans); font-size: 26px; font-weight: 500; letter-spacing: -.01em; }
 /* A level's tasks in order: done ones ticked, the one played filled in, the ones still locked dimmed. */
 .task-navigation { display: grid; gap: var(--sp-4); }
 .task-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: var(--sp-3); }
@@ -184,7 +185,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .task-steps button.is-on i { color: var(--paper); background: var(--accent); }
 .task-steps button:disabled { opacity: .5; cursor: not-allowed; }
 .task-steps button:not(:disabled):not(.is-on):hover { color: var(--ink); background: var(--hover); }
-.brief-text { margin: calc(var(--sp-4) * -1) 0 0; color: var(--heading); font-family: var(--serif); font-size: 17px; line-height: 1.7; }
+.brief-text { margin: calc(var(--sp-4) * -1) 0 0; color: var(--heading); font-family: var(--sans); font-size: 17px; line-height: 1.7; }
 .hint-block { margin-top: calc(var(--sp-4) * -1); }
 .hint-toggle { padding: var(--sp-2) 0; display: inline-flex; align-items: center; gap: var(--sp-2); border: 0; color: var(--accent-ink); background: none; font-size: 12.5px; cursor: pointer; }
 .hint { margin: var(--sp-4) 0 0; padding: var(--sp-4) var(--sp-5); color: var(--body); border-radius: var(--r-md); background: color-mix(in srgb, var(--accent) 8%, var(--paper)); font-size: 13px; line-height: 1.65; animation: rise-in 220ms ease; }
@@ -198,7 +199,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .dialog-scrim.is-top { z-index: 90; }
 .dialog { width: min(500px, 100%); max-height: calc(100dvh - 40px); overflow-y: auto; overscroll-behavior: contain; padding: var(--sp-7) var(--sp-7) var(--sp-7); border-radius: var(--r-lg); background: var(--paper); box-shadow: var(--lift), 0 0 0 1px var(--rule); animation: dialog-in 280ms cubic-bezier(.2, .8, .2, 1); }
 .dialog h2 { margin: 0 0 var(--sp-5); color: var(--muted); font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: .16em; }
-.dialog p { margin: 0 0 var(--sp-4); color: var(--body); font-family: var(--serif); font-size: 17px; line-height: 1.75; }
+.dialog p { margin: 0 0 var(--sp-4); color: var(--body); font-family: var(--sans); font-size: 17px; line-height: 1.75; }
 .dialog.is-intro p { animation: rise-in 420ms ease both; animation-delay: calc(var(--line) * 260ms + 120ms); }
 .dialog.is-solved h2 { color: var(--status); }
 .solved-mark { width: 44px; height: 44px; margin-bottom: var(--sp-5); }
@@ -219,7 +220,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 @keyframes dialog-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 .dialog-actions button { min-height: 36px; padding: 0 var(--sp-5); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--rule); font-size: 13px; cursor: pointer; transition: box-shadow 160ms ease, transform 160ms ease; }
-.dialog .dialog-title { margin: 0 0 var(--sp-4); color: var(--heading); font-family: var(--serif); font-size: 22px; font-weight: 500; }
+.dialog .dialog-title { margin: 0 0 var(--sp-4); color: var(--heading); font-family: var(--sans); font-size: 22px; font-weight: 500; }
 .dialog.is-failed h2 { color: var(--fail); }
 .dialog-note { margin-top: var(--sp-5) !important; padding: var(--sp-5) var(--sp-5); border-radius: var(--r-md); background: var(--canvas); font-size: 15px !important; }
 .dialog-note .panel-label { margin-bottom: var(--sp-2); }
@@ -309,7 +310,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .intro-kicker { color: var(--accent-ink); font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; }
 .intro-close { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: var(--r-md); color: var(--muted); background: transparent; cursor: pointer; }
 .intro-close:hover { background: var(--hover); }
-.intro-card h2 { margin: var(--sp-1) var(--sp-7) var(--sp-4); font-family: var(--serif); font-size: 24px; font-weight: 500; }
+.intro-card h2 { margin: var(--sp-1) var(--sp-7) var(--sp-4); font-family: var(--sans); font-size: 24px; font-weight: 500; }
 .intro-step { display: block; margin-top: var(--sp-1); color: var(--muted); font: 500 13px var(--sans); }
 .intro-body { min-height: 0; overflow-y: auto; padding: 0 var(--sp-7) var(--sp-4); display: grid; gap: var(--sp-5); animation: fade-in 180ms ease; }
 .intro-text { margin: 0; color: var(--body, var(--ink)); font-size: 16px; line-height: 1.8; }
@@ -348,7 +349,7 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .ph-scrim.wiki-scrim { z-index: 75; padding: var(--sp-7); }
 .wiki { width: min(1120px, 100%); height: min(800px, 90dvh); display: flex; flex-direction: column; overflow: hidden; border-radius: var(--r-lg); background: var(--paper); box-shadow: 0 0 0 1px var(--rule), 0 24px 60px -24px rgba(0, 0, 0, .45); animation: dialog-in 240ms cubic-bezier(.2, .8, .2, 1); }
 .wiki-head { flex: none; padding: var(--sp-4) var(--sp-4) var(--sp-4) var(--sp-7); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--hairline); }
-.wiki-head h2 { margin: 0; display: flex; align-items: baseline; gap: var(--sp-4); font-family: var(--serif); font-size: 20px; font-weight: 500; }
+.wiki-head h2 { margin: 0; display: flex; align-items: baseline; gap: var(--sp-4); font-family: var(--sans); font-size: 20px; font-weight: 500; }
 .wiki-head h2 small { color: var(--muted); font: var(--fs-label)/1 var(--mono); letter-spacing: .06em; }
 .wiki-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 270px minmax(0, 1fr); }
 .wiki-nav { min-height: 0; padding: var(--sp-5) var(--sp-5) var(--sp-7); overflow-y: auto; border-right: 1px solid var(--hairline); background: var(--canvas); scrollbar-width: thin; }
@@ -367,8 +368,8 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .wiki-item.is-locked small { color: var(--faint); font: 10.5px var(--mono); }
 .wiki-dot { flex: none; width: 7px; height: 7px; border-radius: var(--r-full); background: var(--accent); }
 .wiki-article { min-height: 0; overflow-wrap: anywhere; padding: var(--sp-8) var(--sp-8) var(--sp-8); overflow-y: auto; scrollbar-width: thin; animation: fade-in 160ms ease; }
-.wiki-article h2 { margin: var(--sp-1) 0 var(--sp-6); font-family: var(--serif); font-size: 30px; font-weight: 500; letter-spacing: -.01em; }
-.wiki-article p { max-width: 62ch; margin: 0 0 var(--sp-5); color: var(--heading); font-family: var(--serif); font-size: 17px; line-height: 1.75; text-wrap: pretty; }
+.wiki-article h2 { margin: var(--sp-1) 0 var(--sp-6); font-family: var(--sans); font-size: 30px; font-weight: 500; letter-spacing: -.01em; }
+.wiki-article p { max-width: 62ch; margin: 0 0 var(--sp-5); color: var(--heading); font-family: var(--sans); font-size: 17px; line-height: 1.75; text-wrap: pretty; }
 .wiki-article p b { color: var(--ink); }
 .wiki-see { max-width: 62ch; margin-top: var(--sp-7); padding-top: var(--sp-6); border-top: 1px solid var(--hairline); }
 .wiki-see > div { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
@@ -550,6 +551,7 @@ level-ref, wiki-ref { display: inline; }
 .rr-name { display: inline-flex; align-items: baseline; gap: var(--sp-2); color: var(--muted); font: 500 12.5px var(--sans); letter-spacing: .02em; white-space: nowrap; }
 .rr-name i { min-width: 18px; height: 18px; padding: 0 var(--sp-2); display: inline-grid; place-items: center; border-radius: var(--r-sm); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 14%, transparent); font: 600 11px var(--mono); font-style: normal; }
 .rr-goal { color: var(--heading, var(--ink)); font-weight: 600; }
+.markup-sentence { font-family: var(--serif); }
 .rr-body { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4) 0; }
 .rr-item { display: inline-flex; align-items: center; }
 .rr-sep { padding: 0 var(--sp-3) 0 var(--sp-1); color: var(--faint); }

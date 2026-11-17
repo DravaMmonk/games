@@ -12,7 +12,7 @@
 .probe-machine .gv-image { border-radius: var(--r-sm); box-shadow: 0 0 0 1px var(--line); }
 .probe-machine figcaption { margin-top: var(--sp-3); color: var(--muted); font-family: var(--mono); font-size: var(--fs-label); }
 .probe-box { width: 120px; height: 92px; display: grid; place-items: center; border-radius: var(--r-md); color: var(--paper); background: linear-gradient(160deg, var(--ink), color-mix(in srgb, var(--ink) 80%, var(--accent))); box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--ink) 55%, transparent); font-family: var(--mono); font-size: var(--fs-body); letter-spacing: .2em; }
-.probe-question p { margin: 0 0 var(--sp-5); font-family: var(--serif); font-size: var(--fs-h4); }
+.probe-question p { margin: 0 0 var(--sp-5); font-family: var(--sans); font-size: var(--fs-h4); }
 .probe-answers { display: flex; gap: var(--sp-4); }
 .probe-answers button { width: 56px; height: 48px; font-size: var(--fs-h4); }
 .probe-question .probe-feedback { min-height: 22px; color: var(--fail); font-family: var(--sans); font-size: var(--fs-ui); }

@@ -14,8 +14,8 @@ import { TASK_BOARD_SECTIONS } from '../engine/plays.js'
 
 /** A level's text with its markup (Markup.jsx). `mark`: the props marking it as a field of the content while the
  *  studio edits (edit.js). */
-export function Text({ as: Tag = 'p', className, text, onClick, mark = {} }) {
-  return <Tag className={className} onClick={onClick} {...mark}><Markup text={text ?? ''} /></Tag>
+export function Text({ as: Tag = 'p', className, text, onClick, mark = {}, sentences = false }) {
+  return <Tag className={className} onClick={onClick} {...mark}><Markup text={text ?? ''} sentences={sentences} /></Tag>
 }
 
 /** A level whose stage is the same on both: the phone page or the desktop workbench (a stage that scrolls), each given
@@ -91,7 +91,7 @@ export function Brief({ game, level, sections = TASK_BOARD_SECTIONS, text, tip, 
           <h1 {...mark('title', 'level')}>{L(level.title)}</h1>
         </header>
       )}
-      {sections.includes('brief') && paragraphs.map((p, k) => <Text key={k} className="brief-text" text={p} mark={mark(many ? `brief[${k}]` : 'brief')} />)}
+      {sections.includes('brief') && paragraphs.map((p, k) => <Text key={k} className="brief-text" text={p} sentences mark={mark(many ? `brief[${k}]` : 'brief')} />)}
       {sections.includes('tip') && tip && <Text className="brief-tip" text={tip} mark={mark('tip')} />}
       {sections.includes('hints') && (hints.length > 0 || edit) && (
         <div className="hint-block">

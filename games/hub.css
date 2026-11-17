@@ -25,7 +25,8 @@ main{max-width:1240px;margin:0 auto;padding:0 max(var(--sp-6),env(safe-area-inse
 .game-no::after{content:"";display:inline-block;width:22px;height:1px;margin:0 var(--sp-5);vertical-align:middle;background:var(--rule)}
 .dev-tag{margin-left:var(--sp-5);padding:var(--sp-1) var(--sp-4);border-radius:var(--r-full);color:var(--accent-ink);background:color-mix(in srgb,var(--accent) 14%,transparent);font-style:normal;letter-spacing:.08em}
 .game-author{margin-left:auto;color:var(--muted);letter-spacing:.08em;text-transform:none}
-.game-title{margin:var(--sp-4) 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sp-1) var(--sp-5);color:var(--heading);font:500 clamp(24px,2.6vw,30px)/1.15 var(--serif);letter-spacing:-.01em}
+.game-author b{color:var(--ink);font:500 13px var(--serif);letter-spacing:0}
+.game-title{margin:var(--sp-4) 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sp-1) var(--sp-5);color:var(--heading);font:500 clamp(24px,2.6vw,30px)/1.15 var(--sans);letter-spacing:-.01em}
 .game-title small{color:var(--faint);font:var(--fs-label)/1.4 var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .game-desc{margin:var(--sp-4) 0 0;max-width:34em;color:var(--body);font:14px/1.7 var(--sans);text-wrap:pretty}
 

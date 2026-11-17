@@ -11,7 +11,7 @@
   --cyan:var(--select); --cyan-ink:var(--select-ink); --cyan-soft:color-mix(in srgb,var(--select) 13%,transparent);
   --good:var(--status); --good-soft:color-mix(in srgb,var(--status) 16%,transparent); --bad:var(--fail); --bad-soft:color-mix(in srgb,var(--fail) 13%,transparent);
   /* The kit's type (tokens.css): serif titles, sans interface, mono labels. */
-  --f-display:var(--serif);
+  --f-display:var(--sans);
   --f-mono:var(--mono);
   --f-body:var(--sans);
 }

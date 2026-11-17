@@ -5,5 +5,6 @@
     "@glossary.entries.curry-howard.body.1",
     "@glossary.entries.curry-howard.body.2"
   ],
-  "see": ["proof-term", "intuitionistic"]
+  "see": ["proof-term", "intuitionistic"],
+  "at": "and"
 }

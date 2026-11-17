@@ -733,10 +733,15 @@
   "level.decl-or.tasks.decl-or_3.step": "Write the declaration",
   "level.decl-or.title": "Declaring “or”",
   "level.decl-order.after": "Test cases see only what can be derived, not how a rule is written; the kernel keeps to the rule written down.",
+  "level.decl-order.declare": "And",
   "level.decl-order.intro.0.t": "The “and” of <level-ref to=\"decl-and\"></level-ref> takes “it rains” first, then “it is windy”. Would the other order do? Can test cases tell?",
   "level.decl-order.intro.1.t": "Declaration 1 takes “it rains” first, declaration 2 “it is windy” first. Write a case for each direction, introduction and use, expected derivable, and check both declarations.",
   "level.decl-order.tasks.decl-order.brief": "Requirement: “A ∧ B” may be introduced only when “A” and “B” are both proved. Write two test cases whose expectations meet the requirement and with which this declaration’s results both agree.",
   "level.decl-order.tasks.decl-order.hint.0": "What does introducing “and” need? What can be taken out of an “and”?",
+  "level.decl-order.tasks.decl-order.step": "“A” before “B”",
+  "level.decl-order.tasks.decl-order_2.brief": "Requirement: “A ∧ B” may be introduced only when “A” and “B” are both proved. Write two test cases whose expectations meet the requirement and with which this declaration’s results both agree.",
+  "level.decl-order.tasks.decl-order_2.hint.0": "Does the order of the premises change what introducing “and” needs?",
+  "level.decl-order.tasks.decl-order_2.step": "“B” before “A”",
   "level.decl-order.title": "The other order",
   "level.decl-strength.declare": "And",
   "level.decl-strength.intro.0.t": "A declaration can be wrong on either side: <b>too strong</b>, failing to introduce when it should; <b>too weak</b>, introducing when it should not. Both faults show from the introduction and the use direction alike.",
@@ -2367,10 +2372,5 @@
   "tray.proof.menu.proof-or.title": "Or ∨",
   "tray.proof.title": "Proof rules",
   "tray.resolution.desc": "Eliminate complementary literals from a pair of clauses.",
-  "tray.resolution.title": "Resolution",
-  "level.decl-order.tasks.decl-order.step": "“A” before “B”",
-  "level.decl-order.tasks.decl-order_2.brief": "Requirement: “A ∧ B” may be introduced only when “A” and “B” are both proved. Write two test cases whose expectations meet the requirement and with which this declaration’s results both agree.",
-  "level.decl-order.tasks.decl-order_2.step": "“B” before “A”",
-  "level.decl-order.tasks.decl-order_2.hint.0": "Does the order of the premises change what introducing “and” needs?",
-  "level.decl-order.declare": "And"
+  "tray.resolution.title": "Resolution"
 }

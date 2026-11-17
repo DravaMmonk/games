@@ -263,3 +263,15 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
   }
   return out
 }
+
+/**
+ * A lemma's ports are its proof's premises in order (proof.js: port p<k> is the k-th premise), when it runs and when
+ * a board using it is kept in the workshop. So a lemma has one port for each premise of every proof inside it.
+ */
+export function lemmaPortProblems(parts = {}) {
+  return Object.entries(parts).flatMap(([type, part]) => (part.inside ?? [])
+    .filter(({ reference }) => reference?.kind === 'logic:proof' && Array.isArray(part.inputs))
+    .flatMap(({ id, reference }) => (reference.tests ?? []).map((test) => Object.keys(test.premises ?? {}))
+      .filter((premises) => premises.length !== part.inputs.length)
+      .map((premises) => ({ fail: true, text: `part ${type}: ${part.inputs.length} port(s) (${part.inputs.map(({ name }) => name).join(', ')}), but the proof inside it (${id}) has ${premises.length} premise(s) (${premises.join(', ')}): port k is premise k` }))))
+}

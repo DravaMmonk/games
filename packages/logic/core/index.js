@@ -14,6 +14,7 @@ import { translation, query } from './formulaWork.js'
 import { worldCheck } from './worldValues.js'
 import { scriptJudge } from './script.js'
 import { checkDefine } from './define.js'
+import { lemmaPortProblems } from './validate.js'
 import { checkDeclaration, readRuleRows, blankRule } from './ruleLines.js'
 import { sentenceOf } from './iso.js'
 import { say } from './notation.js'
@@ -104,6 +105,7 @@ export function register(kernel) {
       act: (context, work) => play.attempt(textContext(context), work),
     })
   }
+  kernel.check('logic:lemma-ports', ({ content }) => lemmaPortProblems(content.partDefs?.parts))
   kernel.check('logic:levels', ({ content }) => content.levels.some(level => level.tasks.some(task => taskModule(task) === 'logic')) ? runtime.validate(runtime.spec(content)) : [])
 }
 function textContext(context) {

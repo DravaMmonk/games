@@ -1,5 +1,4 @@
 import { T } from 'kernel'
-import { WORDS } from 'kernel'
 import { show } from './formula.js'
 import { propositionsOf, sentenceOf } from './iso.js'
 import { say } from './notation.js'
@@ -24,16 +23,18 @@ export function caseCells(level) {
       write: (row, given) => ({ ...row, given: [...(row.keep ?? []), ...given.filter((s) => !row.keep?.includes(s))] }),
     },
     {
-      name: 'goal', shape: 'tree', label: T('目标', 'Goal'), build,
-      placeholder: T('选择目标…'), scope: `${level.id}:goal`,
-      title: (k) => T(`第 ${k + 1} 条条例的目标`, `The goal of test case ${k + 1}`),
-      fixed: fixed('goal'), fixedLabel: T('目标（固定）'),
+      // What the case asks of the premises: the conclusion to derive from them.
+      name: 'goal', shape: 'tree', label: T('结论', 'Conclusion'), build,
+      placeholder: T('选择结论…', 'Pick a conclusion…'), scope: `${level.id}:goal`,
+      title: (k) => T(`第 ${k + 1} 条条例的结论`, `The conclusion of test case ${k + 1}`),
+      fixed: fixed('goal'), fixedLabel: T('结论（固定）', 'Conclusion (fixed)'),
       read: (row) => row.goal ?? level.target,
       write: (row, goal) => ({ ...row, goal: goal === target ? undefined : goal }),
     },
     {
-      name: 'make', shape: 'choice', label: WORDS.wanted, options: DERIVABLE, placeholder: T('选择预期…'),
-      fixed: fixed('make'), fixedLabel: T('应得（固定）'),
+      // What the case expects: whether the conclusion is derivable.
+      name: 'make', shape: 'choice', label: T('预期', 'Expected'), options: DERIVABLE, placeholder: T('选择预期…', 'Pick what to expect…'),
+      fixed: fixed('make'), fixedLabel: T('预期（固定）', 'Expected (fixed)'),
     },
   ]
 }

@@ -45,6 +45,23 @@ export function useWiki(game, progress, solved, level) {
   return { groups, entries, isOpen, unread, seen, markSeen }
 }
 
+/**
+ * The entries passing `level` opens: closed with the progress `before` (where the level being played already counts as
+ * reached, its own entries open with it) and open with the progress `after`, in the encyclopedia's order.
+ */
+export function openedEntries(game, entries, level, before, after) {
+  const reachedIn = (progress, also) => {
+    const solved = new Set(progress.solved)
+    return (id) => {
+      const at = game.byId[id]
+      return !at || progress.all || solved.has(id) || id === also || game.isOpen(at, solved, progress.all)
+    }
+  }
+  const was = reachedIn(before, level.id)
+  const now = reachedIn(after)
+  return entries.filter((entry) => entry.at && !was(entry.at) && now(entry.at))
+}
+
 export default function Encyclopedia({ game, wiki, level, phone, start, edit = null, onClose }) {
   const { englishNamesInChinese = false } = game.glossary ?? {}
   const titleOf = ({ title }) => englishNamesInChinese && isPair(title) && title.en && title.zh !== title.en

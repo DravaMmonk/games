@@ -1,4 +1,5 @@
 import { createElement, isValidElement } from 'react'
+import { BookMarked } from 'lucide-react'
 import { L, tr } from './i18n.js'
 import { Markup } from './Markup.jsx'
 import { readShow } from '../engine/views.js'
@@ -55,6 +56,13 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
   const note = game.note(level)
   // What else passing it gives, as the game says it: a label and its lines (rules declared, a sentence's skeleton…).
   const passed = game.passed(level)
+  // Everything the pass opens, in one list: the levels, then what the game's rewards give (parts…), then the
+  // encyclopedia's entries.
+  const opened = [
+    ...unlocked.levels.map((next) => ({ key: `level:${next.id}`, kind: 'level', chip: game.levelLabel(next), label: next.title })),
+    ...(unlocked.rewards ?? []).flatMap((group) => group.items.map((item) => ({ ...item, key: `reward:${item.key}`, kind: 'reward' }))),
+    ...(unlocked.entries ?? []).map((entry) => ({ key: `entry:${entry.id}`, kind: 'entry', icon: BookMarked, label: entry.title })),
+  ]
   return (
     <div ref={overlay} className="dialog-scrim">
       <div className="dialog is-solved" role="dialog" aria-modal="true" aria-label={tr('通过', 'Passed')}>
@@ -70,24 +78,17 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
             <div className="dialog-lines">{passed.lines.map((line, k) => <code key={k}>{L(line)}</code>)}</div>
           </div>
         )}
-        {(unlocked.rewards ?? []).filter(group => group.items.length).map(group => (
-          <div className="unlocked" key={L(group.label)}>
-            <span className="panel-label">{L(group.label)}</span>
+        {opened.length > 0 && (
+          <div className="unlocked">
+            <span className="panel-label">{tr('解锁', 'Unlocked')}</span>
             <ul className="unlocked-list">
-              {group.items.map((item) => (
-                <li key={item.key} className="unlocked-item" data-family={item.family}>
-                  {item.icon && <i className="family-chip">{createElement(item.icon, { size: 14, strokeWidth: 1.7 })}</i>}
-                  {L(item.label)}
+              {opened.map(({ key, kind, label, chip, family, icon }) => (
+                <li key={key} className="unlocked-item" data-kind={kind} data-family={family}>
+                  {chip && <span className="map-node-id">{chip}</span>}
+                  {icon && <i className="family-chip">{createElement(icon, { size: 14, strokeWidth: 1.7 })}</i>}
+                  {L(label)}
                 </li>
               ))}
-            </ul>
-          </div>
-        ))}
-        {unlocked.levels.length > 0 && (
-          <div className="unlocked">
-            <span className="panel-label">{tr('解锁的关卡', 'Levels unlocked')}</span>
-            <ul className="unlocked-list">
-              {unlocked.levels.map((next) => <li key={next.id} className="unlocked-item"><span className="map-node-id">{game.levelLabel(next)}</span>{L(next.title)}</li>)}
             </ul>
           </div>
         )}

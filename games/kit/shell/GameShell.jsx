@@ -6,7 +6,7 @@ import { currentLang } from '../lang.js'
 import { L, tr } from './i18n.js'
 import { PHONE, useMedia } from './useMedia.js'
 import { Dialog, FailDialog, SolvedDialog, TaskDoneDialog } from './Dialogs.jsx'
-import Encyclopedia, { useWiki } from './Encyclopedia.jsx'
+import Encyclopedia, { openedEntries, useWiki } from './Encyclopedia.jsx'
 import IntroSheet from './IntroSheet.jsx'
 import LevelMap from './LevelMap.jsx'
 import LevelDrawer from './LevelDrawer.jsx'
@@ -178,7 +178,7 @@ export default function GameShell({ game, store, author = null }) {
     const done = task.screen.solve(score, work)
     if (!done) return
     setFailure(null)
-    if (done.solved.includes(level.id)) setWon({ id: level.id, ...(game.progress?.rewards?.(level, before, done) ?? { rewards: [], levels: [] }) })
+    if (done.solved.includes(level.id)) setWon({ id: level.id, ...(game.progress?.rewards?.(level, before, done) ?? { rewards: [], levels: [] }), entries: openedEntries(game, wiki.entries, level, before, done) })
     else setTaskWon({ index: taskAt, next: nextRequiredTask(game, done, level.id, taskAt) })
   }
   const fail = (info) => {

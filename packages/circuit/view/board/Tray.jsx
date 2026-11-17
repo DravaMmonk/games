@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import Glyph from "./Glyph.jsx"
 import { L, tr } from 'kernel/view'
@@ -11,6 +11,30 @@ import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
 export default function Tray({ items, folded = [], onPick, start }) {
   const [more, setMore] = useState(false)
   const host = useRef(null)
+  // How far the tray's top stands above the bottom of the screen, an open menu's row included (it rises above the
+  // tray): the toast (Notice.jsx) sits above it rather than under the row.
+  useLayoutEffect(() => {
+    const el = host.current
+    if (!el) return undefined
+    const root = document.documentElement
+    const sizes = new ResizeObserver(() => update())
+    const update = () => {
+      const row = el.querySelector('.tray-menu-row')
+      if (row) sizes.observe(row)
+      root.style.setProperty('--pb-tray-top', `${Math.max(0, window.innerHeight - (row ?? el).getBoundingClientRect().top)}px`)
+    }
+    const rows = new MutationObserver(update)
+    sizes.observe(el)
+    rows.observe(el, { childList: true, subtree: true })
+    window.addEventListener('resize', update)
+    update()
+    return () => {
+      sizes.disconnect()
+      rows.disconnect()
+      window.removeEventListener('resize', update)
+      root.style.removeProperty('--pb-tray-top')
+    }
+  }, [])
   const part = (item) => (
     <button key={item.type} type="button" className={`pb-part ${item.folded ? 'is-folded' : ''} ${item.packed ? 'is-packed' : ''}`} data-tray={item.onPick ? undefined : item.type} data-family={item.family} onClick={item.onPick ?? (() => onPick(item.type))} title={L(item.desc)}>
       {item.icon && <i className="family-chip"><Glyph icon={item.icon} size={13} /></i>}

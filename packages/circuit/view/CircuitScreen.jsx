@@ -319,7 +319,8 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
     const fresh = entry.fresh?.includes(type)
     if (BUILT[type]) {
       const b = builtDefinitions[type]
-      return { type, label: b.name, desc: b.desc, icon: CircuitBoard, family: 'built', packed: true }
+      // A part the player builds (a lemma with its own inside) keeps its name and description on its card.
+      return { type, label: b.name ?? cards[type]?.name, desc: b.desc ?? cards[type]?.desc, icon: CircuitBoard, family: 'built', packed: true }
     }
     if (defined?.of(type)) return definedItem(type, defined.of(type), { fresh }, allowed)
     return { type, label: cards[type].name, desc: cards[type].desc, icon: cards[type].icon, family: cards[type].family, fresh }
@@ -451,7 +452,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
           brief={brief}
           taskNav={<TaskNavigation level={entry} />}
           below={onPhone && practice.panel}
-          describe={(n) => (known(n.type) ? resolve.definition(n.type).description : BUILT[n.type] ? builtDefinitions[n.type].desc : kind.isFixed(n.type) || !cards[n.type] ? null : game.textAt(cards[n.type], level.id, n.type)?.desc)}
+          describe={(n) => (known(n.type) ? resolve.definition(n.type).description : BUILT[n.type] ? builtDefinitions[n.type].desc ?? cards[n.type]?.desc : kind.isFixed(n.type) || !cards[n.type] ? null : game.textAt(cards[n.type], level.id, n.type)?.desc)}
           results={showResults ? strip : undefined}
           pad={surface?.pad ? <Dock pad={surface.pad} /> : undefined}
           tabs={!table || !showResults}

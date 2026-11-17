@@ -317,7 +317,8 @@
 .pb-part b { font-weight: 500; }
 .pb-part .family-chip { width: 22px; height: 22px; border-radius: var(--r-md); }
 .pb-part:active { transform: scale(.97); }
-.pb-toast { bottom: calc(132px + env(safe-area-inset-bottom)); }
+/* Above the tray, and above a tray menu's row while one is open (Tray.jsx sets --pb-tray-top). */
+.pb-toast { bottom: calc(132px + env(safe-area-inset-bottom)); bottom: calc(var(--pb-tray-top, calc(124px + env(safe-area-inset-bottom))) + var(--sp-4)); }
 
 /* The circuit's ends, set apart from its parts in every theme: an opaque card tinted with its own colour and ringed
    in it, a bar down the side the signal enters or leaves by (left for an input, right for an output), and a tag.

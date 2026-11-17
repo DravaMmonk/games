@@ -18,9 +18,9 @@ const localPaths = (studio) => ({
     server.middlewares.use(async (req, res, next) => {
       const url = new URL(req.url, 'http://localhost')
       const path = url.pathname
-      if (studio && path === '/') {
+      if (path === '/') {
         res.statusCode = 302
-        res.setHeader('Location', `/studio.html${url.search}`)
+        res.setHeader('Location', `${studio ? '/studio.html' : '/game/index.html'}${url.search}`)
         return res.end()
       }
       const moved = path === '/game.html' ? (await gameCatalog()).find(game => IDS.has(game.id))?.id ?? [...IDS][0] : null
@@ -63,7 +63,6 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(import.meta.dirname, 'index.html'),
         figures: resolve(import.meta.dirname, 'figures.html'),
       },
     },

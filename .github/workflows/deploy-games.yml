@@ -1,4 +1,4 @@
-# Publish the standalone games site to /games/; keep source in study-notes. Game content is checked where it is
+# Publish the games site to /games/ (this repository's gh-pages branch). Game content is checked where it is
 # changed (the studio and the operation set), and kit code by test-kit.yml: this workflow only builds and publishes.
 name: Deploy games
 
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: deploy-games
@@ -39,8 +39,7 @@ jobs:
       - run: npm run build:games
       - uses: peaceiris/actions-gh-pages@v4
         with:
-          deploy_key: ${{ secrets.GAMES_DEPLOY_KEY }}
-          external_repository: DravaMmonk/games
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: trace-viewer/dist-games
           commit_message: 'deploy: games'

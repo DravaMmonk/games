@@ -227,3 +227,12 @@ test('workshop identity follows the operation while stage progress keeps the par
   assert.notEqual(workshopIdentity({ parts: { scale: { ...part, op: 'toy:divide' } } }, 'scale'), signature)
   assert.equal(workshopIdentity({ parts: { scale: { ...part, stages: [{ id: 'adjustable', settings: { gain: {} } }] } } }, 'scale'), signature)
 })
+
+test('a board that cannot be kept says why', () => {
+  const reasons = []
+  const why = (problem) => reasons.push(problem)
+  assert.equal(take(from('nowhere'), { why }), null)
+  const unwired = base()
+  assert.equal(take({ ...unwired, wires: unwired.wires.filter(({ to }) => to !== 'out') }, { why }), null)
+  assert.deepEqual(reasons, [{ reason: 'unknown', node: 'p', type: 'nowhere' }, { reason: 'unwired', node: null, type: null }])
+})

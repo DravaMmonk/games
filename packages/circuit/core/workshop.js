@@ -96,6 +96,13 @@ export function workshopIdentity(definitions, type) {
  *  `names` ({ inputs, outputs } by ref) and `order` (input refs) are the interface the workshop page shows. */
 export function captureWorkshop(graph, options) {
   let nextChild = 0
+  // Why a board cannot be kept (options.why receives it): `loop` a part inside itself, `closed` a part whose board
+  // cannot be opened, `ports` a part whose board's ends differ from its own, `unknown` a part this game does not have,
+  // `unwired` an output nothing reaches.
+  const fail = (reason, node) => {
+    options.why?.({ reason, node: node?.id ?? null, type: node?.type ?? null })
+    return null
+  }
   const gather = (board, parts, open, face, ancestry) => {
     const sourcePins = new Map()
     const nodes = [], requirements = [], children = {}, nestedTerminals = new Set()
@@ -132,9 +139,9 @@ export function captureWorkshop(graph, options) {
         for (const type of own.terminals) nestedTerminals.add(type)
         nodes.push(node)
       } else if (parts.packed?.(node) || options.needsSnapshot?.(node.type)) {
-        if (ancestry.has(node.type)) return null
+        if (ancestry.has(node.type)) return fail('loop', node)
         const opened = open?.(node)
-        if (!opened) return null
+        if (!opened) return fail('closed', node)
         const inputs = parts.inputs(node)
         const outputs = parts.outputs(node)?.map(({ key }) => key).filter((key) => key != null)
         const index = opened.level?.ports?.map(({ sensor, input }) => sensor ?? input)
@@ -145,13 +152,13 @@ export function captureWorkshop(graph, options) {
         }
         const child = gather(opened.circuit, opened.parts, opened.open, { input: named }, new Set([...ancestry, node.type]))
         if (!child || child.inputs.some((name) => !inputs.includes(name))
-          || (outputs?.length ? outputs.join() !== child.outputs.join() : child.outputs.length !== 1)) return null
+          || (outputs?.length ? outputs.join() !== child.outputs.join() : child.outputs.length !== 1)) return child ? fail('ports', node) : null
         const id = `${options.scope}_${++nextChild}`
         children[id] = { ...child, inputs, name: parts.label(node), description: '' }
         requirements.push(...child.requirements)
         nodes.push({ ...node, type: id, params: {} })
       } else {
-        if (isWorkshopType(node.type) || !options.resolve(node.type)) return null
+        if (isWorkshopType(node.type) || !options.resolve(node.type)) return fail('unknown', node)
         requirements.push({
           type: node.type,
           identity: options.identity(node.type),
@@ -161,7 +168,7 @@ export function captureWorkshop(graph, options) {
       }
     }
     const sinks = nodes.filter((node) => board.nodes.some((original) => original.id === node.id && parts.role(original) === 'sink'))
-    if (!sinks.length || !sinks.every(({ id }) => wires.some(({ to }) => to === id))) return null
+    if (!sinks.length || !sinks.every(({ id }) => wires.some(({ to }) => to === id))) return fail('unwired', null)
     const outputSignals = parts.signalOf ? Object.fromEntries(sinks.map((node) => [
       node.params.name, parts.signalOf(board, board.wires.find(({ to }) => to === node.id).from),
     ])) : {}

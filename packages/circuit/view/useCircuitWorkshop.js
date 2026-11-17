@@ -63,14 +63,27 @@ export function useCircuitWorkshop({ screen, course, base, cards, portLabels, de
       const part = game.partDefs.parts[type]
       const listed = Object.entries(game.course?.trays ?? {}).find(([, entries]) => trayMembers(entries).includes(type))?.[0]
       const tray = trayKey(game.id, listed ?? pickedTrays[0] ?? '')
-      const reward = capture(graph, { name: L(part.name), description: L(part.desc), tray, rewardType: type })
+      let why = null
+      const reward = capture(graph, { name: L(part.name), description: L(part.desc), tray, rewardType: type, why: (problem) => { why = problem } })
       const rank = part.inside.findIndex(({ id }) => id === variant)
       const replaced = (profile.replaces[type] ?? []).map(lineage)
-      if (!reward || !put(reward, lineage(type), rank, replaced)) {
-        showNotice(tr('这次通关未能写入工坊。', 'This pass could not be published to the workshop.'))
-      }
+      // Say why, so a pass that cannot be kept can be traced: what on the board stopped it, or the browser's storage.
+      if (!reward) showNotice(`${tr('这次通关未能写入工坊', 'This pass could not be published to the workshop')}：${captureProblem(why)}`)
+      else if (!put(reward, lineage(type), rank, replaced)) showNotice(tr('这次通关未能写入工坊：浏览器存储已满或不可用。', 'This pass could not be published to the workshop: the browser’s storage is full or unavailable.'))
     }
   }
   return { offers, has, known, circuit, resolve, parts, packed, palette, folded, types, held, hasPersonal,
     hold, capture, publish, library, update, available, notice }
+}
+
+/** What stopped a board being kept as a part (captureWorkshop's `why`), in a sentence. */
+function captureProblem(why) {
+  const at = why?.node ? `「${why.node}」` : ''
+  return {
+    loop: tr(`元件${at}在自己里面。`, `the part ${at} sits inside itself.`),
+    closed: tr(`打不开元件${at}的电路。`, `the board inside ${at} could not be opened.`),
+    ports: tr(`元件${at}里的电路和它的接口对不上。`, `the board inside ${at} does not match its ports.`),
+    unknown: tr(`这款游戏没有元件${at}。`, `this game has no part ${at}.`),
+    unwired: tr('有输出没有接上。', 'an output is not wired.'),
+  }[why?.reason] ?? tr('原因不明。', 'unknown reason.')
 }

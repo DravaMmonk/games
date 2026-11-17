@@ -111,9 +111,9 @@ function LevelButton({ game, level, style, solved, all, best, current, next, nee
       </span>
       <span className="map-node-title">{L(level.title)}</span>
       {score ? <span className="map-node-best">{score}</span> : kind?.icon && !compact && <span className="map-node-kind" aria-label={L(kind.label)}>{createElement(kind.icon, { size: game.core(level) ? 13 : 12 })}</span>}
-      {(level.optional || level.skippable) && <span className="map-node-tags">
-        {level.optional && <span className="map-node-tag">{tr('可选', 'Optional')}</span>}
-        {level.skippable && <span className="map-node-tag">{tr('可跳过', 'Skippable')}</span>}
+      {/* An optional level shows as one by its look (is-optional), without a word for it. */}
+      {level.skippable && <span className="map-node-tags">
+        <span className="map-node-tag">{tr('可跳过', 'Skippable')}</span>
       </span>}
     </button>
   )

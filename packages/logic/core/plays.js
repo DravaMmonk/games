@@ -15,7 +15,7 @@ const corePlays = {
   audit: { editor: 'checks', judge: 'boards', checks: 'shown', resources: 'audit', stage: 'fo-stage', layout: 'fo-level lg-level' },
 }
 
-const taskBoard = ['brief', 'hints']
+const taskBoard = ['title', 'brief', 'hints']
 export const plays = definePlays(Object.fromEntries(Object.entries(corePlays).map(([id, play]) => [`logic:${id}`, { ...play, taskBoard }])), circuitPlaySchema)
 
 /** Apply the task's reveal policy to the circuit template, for the screen and text play alike. */

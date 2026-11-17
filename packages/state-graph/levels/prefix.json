@@ -8,7 +8,7 @@
     {
       "t": "@level.prefix.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "h0",
@@ -73,7 +73,7 @@
     "goal": "@level.prefix.mission.goal",
     "how": "@level.prefix.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.prefix.debrief.title",
     "body": [
@@ -85,7 +85,7 @@
   "tasks": [
     {
       "id": "prefix",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "testLabel": "@level.prefix.tasks.prefix.testLabel",
       "tests": [
         {
@@ -108,7 +108,7 @@
           ]
         }
       ],
-      "world": "state-graph:world-prefix",
+      "world": "state-graph/prefix",
       "facts": [
         "money"
       ],
@@ -117,7 +117,7 @@
         28
       ],
       "solution": [
-        "m = table:msum(view.seg)",
+        "m = table/msum(view.seg)",
         "cell <- m"
       ],
       "hints": [
@@ -135,9 +135,9 @@
       "checkAll": true
     },
     {
-      "id": "prefix_2",
-      "play": "state-graph:circuit",
-      "testLabel": "@level.prefix.tasks.prefix_2.testLabel",
+      "id": "prefix-2",
+      "play": "state-graph/circuit",
+      "testLabel": "@level.prefix.tasks.prefix-2.testLabel",
       "tests": [
         {
           "a": [
@@ -159,7 +159,7 @@
           ]
         }
       ],
-      "world": "state-graph:world-prefix",
+      "world": "state-graph/prefix",
       "facts": [
         "money"
       ],
@@ -168,14 +168,14 @@
         28
       ],
       "solution": [
-        "a = table:add(view.prev, facts.money)",
+        "a = table/add(view.prev, facts.money)",
         "cell <- a"
       ],
       "hints": [
-        "@level.prefix.tasks.prefix_2.hints.0",
-        "@level.prefix.tasks.prefix_2.hints.1"
+        "@level.prefix.tasks.prefix-2.hints.0",
+        "@level.prefix.tasks.prefix-2.hints.1"
       ],
-      "ask": "@level.prefix.tasks.prefix_2.ask",
+      "ask": "@level.prefix.tasks.prefix-2.ask",
       "noArm": true,
       "checkAll": true,
       "publishes": [

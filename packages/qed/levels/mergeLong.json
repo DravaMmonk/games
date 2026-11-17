@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "mergeLong",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

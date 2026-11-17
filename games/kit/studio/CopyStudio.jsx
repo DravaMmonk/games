@@ -1,3 +1,4 @@
+import { PackagePicker } from './PackageGroups.jsx'
 // The copy workspace (games/DESIGN.md 6.7): the writer's. It opens a package or a game and audits and edits every
 // text of that layer in every language — terms, references, and a game's own wording over its packages' texts. On the
 // left the texts by object (the whole layer, a level group or a chapter, the encyclopedia, the parts) or by file, and
@@ -137,11 +138,10 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh}>
-        <select className="studio-game" value={value} disabled={saving} aria-label={tr('打开', 'Open')}
-          onChange={(e) => { const [kind, id] = [e.target.value.slice(0, e.target.value.indexOf(':')), e.target.value.slice(e.target.value.indexOf(':') + 1)]; showScope('all'); onOpen({ [kind]: id }) }}>
-          <optgroup label={tr('内容包', 'Packages')}>{packages.map(({ id }) => <option key={id} value={`package:${id}`}>{id}</option>)}</optgroup>
-          <optgroup label={tr('游戏', 'Games')}>{games.map((g) => <option key={g.id} value={`game:${g.id}`}>{L(g.title) ?? g.id}</option>)}</optgroup>
-        </select>
+        <PackagePicker packages={packages} current={value} disabled={saving} label={tr('打开', 'Open')} packageValue={id => `package:${id}`}
+          onChange={value => { const [kind, id] = value.split(':'); showScope('all'); onOpen({ [kind]: id }) }}>
+          <optgroup label={tr('游戏', 'Games')}>{games.map(g => <option key={g.id} value={`game:${g.id}`}>{L(g.title) ?? g.id}</option>)}</optgroup>
+        </PackagePicker>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-copy ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>

@@ -5,13 +5,13 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
           "c = counter(view.right, view.down, facts.end)",
           "cell <- c"
         ],
-        "world": "state-graph:world-grid",
-        "robot": "state-graph:robot-ranger",
+        "world": "state-graph/grid",
+        "robot": "state-graph/ranger",
         "facts": [
           "start",
           "end"

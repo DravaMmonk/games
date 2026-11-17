@@ -3,7 +3,7 @@
   "tasks": [
     {
       "id": "q-witness",
-      "kind": "logic:model",
+      "kind": "logic/model",
       "consts": [
         "h"
       ],

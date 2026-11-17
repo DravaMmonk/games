@@ -25,7 +25,7 @@ export function onPartPage(m, { content, ops, shown, edit, pickField, vocabulary
   if (schema?.type !== 'list') return undefined
   if (creationChoices(schema.of, { vocabulary: vocabulary }).length > 1) return pickField(path)
   const list = getAt(content.partDefs, path) ?? []
-  const blankOf = { rules: { set: {} }, checks: { holds: 'circuit:eq(1, 1)', say: { en: '' } } }
+  const blankOf = { rules: { set: {} }, checks: { holds: 'circuit/eq(1, 1)', say: { en: '' } } }
   edit({ op: 'parts.set', path, value: [...list, (m.path.length === 1 && blankOf[key]) || blank(schema.of, { vocabulary: vocabulary, levels: playOrder })] })
   return pickField([...path, list.length], true)
 }

@@ -2,7 +2,7 @@
   "name": "@part.attention.name",
   "desc": "@part.attention.desc",
   "icon": "Network",
-  "family": "image:family-global",
+  "family": "image/global",
   "settings": {
     "s": {
       "label": "@part.attention.settings.s.label"
@@ -26,5 +26,5 @@
     }
   },
   "nulls": "pass",
-  "op": "image:attention"
+  "op": "image/attention"
 }

@@ -33,10 +33,10 @@ function asTaps(b) {
 function benchFor(model, tasks, borrow, key) {
   const own = tasks.find((T) => T.unlock === key)
   const L = borrow[key] ? tasks.find((T) => T.id === borrow[key]) : own
-  if (!L || L.play !== 'state-graph:circuit' || !L.solution) return null
+  if (!L || L.play !== 'state-graph/circuit' || !L.solution) return null
   const s = L
   const V = WORLDS[s.world]
-  const robot = ROBOTS[L.robot] || ROBOTS['state-graph:robot-scout']
+  const robot = ROBOTS[L.robot] || ROBOTS['state-graph/scout']
   const runs = []
   for (const t of s.tests.slice(0, 3)) {
     try {

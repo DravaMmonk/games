@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "image:graph",
+  "play": "image/graph",
   "fields": {
     "optional": {
       "type": "bool",
@@ -98,10 +98,10 @@
     "type": "by",
     "field": "scene",
     "cases": {
-      "vision-complete:scene-binaryScores": {
+      "vision-complete/binaryScores": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-binaryScores"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/binaryScores"] },
           "tests": {
             "type": "list",
             "of": {
@@ -144,10 +144,10 @@
           }
         }
       },
-      "vision-complete:scene-blocks": {
+      "vision-complete/blocks": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-blocks"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/blocks"] },
           "tests": {
             "type": "list",
             "of": {
@@ -220,10 +220,10 @@
           }
         }
       },
-      "vision-complete:scene-boxPair": {
+      "vision-complete/boxPair": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-boxPair"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/boxPair"] },
           "setup": { "type": "obj", "fields": { "expect": { "type": "oneOf", "values": ["iou", "good"] } } },
           "tests": {
             "type": "list",
@@ -301,10 +301,10 @@
           }
         }
       },
-      "vision-complete:scene-brighter": {
+      "vision-complete/brighter": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-brighter"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/brighter"] },
           "tests": {
             "type": "list",
             "of": {
@@ -349,10 +349,10 @@
           }
         }
       },
-      "vision-complete:scene-brightest": {
+      "vision-complete/brightest": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-brightest"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/brightest"] },
           "tests": {
             "type": "list",
             "of": {
@@ -425,10 +425,10 @@
           }
         }
       },
-      "vision-complete:scene-bumps": {
+      "vision-complete/bumps": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-bumps"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/bumps"] },
           "setup": { "type": "obj", "fields": { "above": { "type": "num" } } },
           "tests": {
             "type": "list",
@@ -480,10 +480,10 @@
           }
         }
       },
-      "vision-complete:scene-cells": {
+      "vision-complete/cells": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-cells"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/cells"] },
           "tests": {
             "type": "list",
             "of": {
@@ -580,10 +580,10 @@
           }
         }
       },
-      "vision-complete:scene-classToken": {
+      "vision-complete/classToken": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-classToken"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/classToken"] },
           "tests": {
             "type": "list",
             "of": {
@@ -664,10 +664,10 @@
           }
         }
       },
-      "vision-complete:scene-classifier": {
+      "vision-complete/classifier": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-classifier"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/classifier"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -765,10 +765,10 @@
           }
         }
       },
-      "vision-complete:scene-clutter": {
+      "vision-complete/clutter": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-clutter"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/clutter"] },
           "tests": {
             "type": "list",
             "of": {
@@ -825,10 +825,10 @@
           }
         }
       },
-      "vision-complete:scene-colour": {
+      "vision-complete/colour": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-colour"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/colour"] },
           "setup": {
             "type": "obj",
             "fields": { "mix": { "type": "oneOf", "values": ["redGreen", "blueYellow"] } }
@@ -915,10 +915,10 @@
           }
         }
       },
-      "vision-complete:scene-colourMix": {
+      "vision-complete/colourMix": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-colourMix"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/colourMix"] },
           "tests": {
             "type": "list",
             "of": {
@@ -961,10 +961,10 @@
           }
         }
       },
-      "vision-complete:scene-coverPairs": {
+      "vision-complete/coverPairs": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-coverPairs"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/coverPairs"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1021,10 +1021,10 @@
           }
         }
       },
-      "vision-complete:scene-depth": {
+      "vision-complete/depth": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-depth"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/depth"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1109,10 +1109,10 @@
           }
         }
       },
-      "vision-complete:scene-distances": {
+      "vision-complete/distances": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-distances"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/distances"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1165,10 +1165,10 @@
           }
         }
       },
-      "vision-complete:scene-dogs": {
+      "vision-complete/dogs": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-dogs"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/dogs"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1211,10 +1211,10 @@
           }
         }
       },
-      "vision-complete:scene-duplicate": {
+      "vision-complete/duplicate": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-duplicate"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/duplicate"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1261,10 +1261,10 @@
           }
         }
       },
-      "vision-complete:scene-epiline": {
+      "vision-complete/epiline": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-epiline"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/epiline"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1309,10 +1309,10 @@
           }
         }
       },
-      "vision-complete:scene-epipole": {
+      "vision-complete/epipole": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-epipole"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/epipole"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1355,10 +1355,10 @@
           }
         }
       },
-      "vision-complete:scene-grainy": {
+      "vision-complete/grainy": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-grainy"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/grainy"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1403,10 +1403,10 @@
           }
         }
       },
-      "vision-complete:scene-intruder": {
+      "vision-complete/intruder": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-intruder"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/intruder"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1453,10 +1453,10 @@
           }
         }
       },
-      "vision-complete:scene-kmeans": {
+      "vision-complete/kmeans": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-kmeans"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/kmeans"] },
           "setup": {
             "type": "obj",
             "fields": { "expect": { "type": "oneOf", "values": ["step", "segment"] } }
@@ -1505,10 +1505,10 @@
           }
         }
       },
-      "vision-complete:scene-latent": {
+      "vision-complete/latent": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-latent"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/latent"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -1579,10 +1579,10 @@
           }
         }
       },
-      "vision-complete:scene-marks": {
+      "vision-complete/marks": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-marks"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/marks"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1655,10 +1655,10 @@
           }
         }
       },
-      "vision-complete:scene-mend": {
+      "vision-complete/mend": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-mend"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/mend"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -1756,10 +1756,10 @@
           }
         }
       },
-      "vision-complete:scene-mendTwo": {
+      "vision-complete/mendTwo": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-mendTwo"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/mendTwo"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1884,10 +1884,10 @@
           }
         }
       },
-      "vision-complete:scene-metamer": {
+      "vision-complete/metamer": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-metamer"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/metamer"] },
           "tests": {
             "type": "list",
             "of": {
@@ -1964,10 +1964,10 @@
           }
         }
       },
-      "vision-complete:scene-movedDots": {
+      "vision-complete/movedDots": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-movedDots"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/movedDots"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2012,10 +2012,10 @@
           }
         }
       },
-      "vision-complete:scene-nearest": {
+      "vision-complete/nearest": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-nearest"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/nearest"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2062,10 +2062,10 @@
           }
         }
       },
-      "vision-complete:scene-noising": {
+      "vision-complete/noising": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-noising"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/noising"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2112,10 +2112,10 @@
           }
         }
       },
-      "vision-complete:scene-noisyBlob": {
+      "vision-complete/noisyBlob": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-noisyBlob"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/noisyBlob"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2170,10 +2170,10 @@
           }
         }
       },
-      "vision-complete:scene-noisyStep": {
+      "vision-complete/noisyStep": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-noisyStep"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/noisyStep"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2218,10 +2218,10 @@
           }
         }
       },
-      "vision-complete:scene-nudge": {
+      "vision-complete/nudge": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-nudge"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/nudge"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2306,10 +2306,10 @@
           }
         }
       },
-      "vision-complete:scene-oldPhoto": {
+      "vision-complete/oldPhoto": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-oldPhoto"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/oldPhoto"] },
           "setup": { "type": "obj", "fields": { "ab": { "type": "num" } } },
           "tests": {
             "type": "list",
@@ -2359,10 +2359,10 @@
           }
         }
       },
-      "vision-complete:scene-onEpiline": {
+      "vision-complete/onEpiline": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-onEpiline"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/onEpiline"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2419,10 +2419,10 @@
           }
         }
       },
-      "vision-complete:scene-order": {
+      "vision-complete/order": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-order"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/order"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2467,10 +2467,10 @@
           }
         }
       },
-      "vision-complete:scene-orientations": {
+      "vision-complete/orientations": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-orientations"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/orientations"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2513,10 +2513,10 @@
           }
         }
       },
-      "vision-complete:scene-outline": {
+      "vision-complete/outline": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-outline"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/outline"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2581,10 +2581,10 @@
           }
         }
       },
-      "vision-complete:scene-paste": {
+      "vision-complete/paste": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-paste"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/paste"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2637,10 +2637,10 @@
           }
         }
       },
-      "vision-complete:scene-photometric": {
+      "vision-complete/photometric": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-photometric"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/photometric"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -2813,10 +2813,10 @@
           }
         }
       },
-      "vision-complete:scene-pooled": {
+      "vision-complete/pooled": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-pooled"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/pooled"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2859,10 +2859,10 @@
           }
         }
       },
-      "vision-complete:scene-ranking": {
+      "vision-complete/ranking": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-ranking"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/ranking"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2923,10 +2923,10 @@
           }
         }
       },
-      "vision-complete:scene-redObjects": {
+      "vision-complete/redObjects": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-redObjects"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/redObjects"] },
           "tests": {
             "type": "list",
             "of": {
@@ -2999,10 +2999,10 @@
           }
         }
       },
-      "vision-complete:scene-relit": {
+      "vision-complete/relit": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-relit"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/relit"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3049,10 +3049,10 @@
           }
         }
       },
-      "vision-complete:scene-restoring": {
+      "vision-complete/restoring": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-restoring"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/restoring"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3099,10 +3099,10 @@
           }
         }
       },
-      "vision-complete:scene-rgbContrast": {
+      "vision-complete/rgbContrast": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-rgbContrast"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/rgbContrast"] },
           "setup": {
             "type": "obj",
             "fields": { "mix": { "type": "oneOf", "values": ["redGreen", "blueYellow"] } }
@@ -3189,10 +3189,10 @@
           }
         }
       },
-      "vision-complete:scene-rgbMix": {
+      "vision-complete/rgbMix": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-rgbMix"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/rgbMix"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3235,10 +3235,10 @@
           }
         }
       },
-      "vision-complete:scene-rgbStreet": {
+      "vision-complete/rgbStreet": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-rgbStreet"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/rgbStreet"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3287,10 +3287,10 @@
           }
         }
       },
-      "vision-complete:scene-road": {
+      "vision-complete/road": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-road"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/road"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3351,10 +3351,10 @@
           }
         }
       },
-      "vision-complete:scene-room": {
+      "vision-complete/room": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-room"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/room"] },
           "setup": {
             "type": "obj",
             "fields": { "expect": { "type": "oneOf", "values": ["distance", "stop"] } }
@@ -3439,10 +3439,10 @@
           }
         }
       },
-      "vision-complete:scene-roomDepth": {
+      "vision-complete/roomDepth": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-roomDepth"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/roomDepth"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3531,10 +3531,10 @@
           }
         }
       },
-      "vision-complete:scene-samples": {
+      "vision-complete/samples": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-samples"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/samples"] },
           "setup": {
             "type": "obj",
             "fields": { "scale": { "type": "num" }, "offset": { "type": "num", "optional": true } }
@@ -3581,10 +3581,10 @@
           }
         }
       },
-      "vision-complete:scene-scan": {
+      "vision-complete/scan": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-scan"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/scan"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -3662,10 +3662,10 @@
           }
         }
       },
-      "vision-complete:scene-scores": {
+      "vision-complete/scores": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-scores"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/scores"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3708,10 +3708,10 @@
           }
         }
       },
-      "vision-complete:scene-shadow": {
+      "vision-complete/shadow": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-shadow"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/shadow"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3762,10 +3762,10 @@
           }
         }
       },
-      "vision-complete:scene-shadowColour": {
+      "vision-complete/shadowColour": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-shadowColour"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/shadowColour"] },
           "tests": {
             "type": "list",
             "of": {
@@ -3844,10 +3844,10 @@
           }
         }
       },
-      "vision-complete:scene-shelf": {
+      "vision-complete/shelf": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-shelf"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/shelf"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -3949,10 +3949,10 @@
           }
         }
       },
-      "vision-complete:scene-sides": {
+      "vision-complete/sides": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-sides"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/sides"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -4030,10 +4030,10 @@
           }
         }
       },
-      "vision-complete:scene-sorter": {
+      "vision-complete/sorter": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-sorter"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/sorter"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4090,10 +4090,10 @@
           }
         }
       },
-      "vision-complete:scene-spectrum": {
+      "vision-complete/spectrum": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-spectrum"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/spectrum"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4152,10 +4152,10 @@
           }
         }
       },
-      "vision-complete:scene-spectrumColour": {
+      "vision-complete/spectrumColour": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-spectrumColour"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/spectrumColour"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4214,10 +4214,10 @@
           }
         }
       },
-      "vision-complete:scene-station": {
+      "vision-complete/station": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-station"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/station"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4310,10 +4310,10 @@
           }
         }
       },
-      "vision-complete:scene-stereo": {
+      "vision-complete/stereo": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-stereo"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/stereo"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4396,10 +4396,10 @@
           }
         }
       },
-      "vision-complete:scene-street": {
+      "vision-complete/street": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-street"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/street"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4448,10 +4448,10 @@
           }
         }
       },
-      "vision-complete:scene-strokes": {
+      "vision-complete/strokes": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-strokes"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/strokes"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4498,10 +4498,10 @@
           }
         }
       },
-      "vision-complete:scene-surface": {
+      "vision-complete/surface": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-surface"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/surface"] },
           "setup": {
             "type": "obj",
             "fields": {
@@ -4667,10 +4667,10 @@
           }
         }
       },
-      "vision-complete:scene-twoNoisings": {
+      "vision-complete/twoNoisings": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-twoNoisings"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/twoNoisings"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4717,10 +4717,10 @@
           }
         }
       },
-      "vision-complete:scene-twoRankings": {
+      "vision-complete/twoRankings": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-twoRankings"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/twoRankings"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4821,10 +4821,10 @@
           }
         }
       },
-      "vision-complete:scene-walk": {
+      "vision-complete/walk": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-walk"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/walk"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4891,10 +4891,10 @@
           }
         }
       },
-      "vision-complete:scene-washedOut": {
+      "vision-complete/washedOut": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-washedOut"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/washedOut"] },
           "tests": {
             "type": "list",
             "of": {
@@ -4937,10 +4937,10 @@
           }
         }
       },
-      "vision-complete:scene-waveform": {
+      "vision-complete/waveform": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-waveform"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/waveform"] },
           "setup": { "type": "obj", "fields": { "k": { "type": "int", "min": 0 } } },
           "tests": {
             "type": "list",
@@ -5014,10 +5014,10 @@
           }
         }
       },
-      "vision-complete:scene-whiteBalance": {
+      "vision-complete/whiteBalance": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-whiteBalance"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/whiteBalance"] },
           "tests": {
             "type": "list",
             "of": {
@@ -5090,10 +5090,10 @@
           }
         }
       },
-      "vision-complete:scene-whiteBalanceColour": {
+      "vision-complete/whiteBalanceColour": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-whiteBalanceColour"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/whiteBalanceColour"] },
           "tests": {
             "type": "list",
             "of": {
@@ -5166,10 +5166,10 @@
           }
         }
       },
-      "vision-complete:scene-xo": {
+      "vision-complete/xo": {
         "type": "obj",
         "fields": {
-          "scene": { "type": "oneOf", "values": ["vision-complete:scene-xo"] },
+          "scene": { "type": "oneOf", "values": ["vision-complete/xo"] },
           "tests": {
             "type": "list",
             "of": {

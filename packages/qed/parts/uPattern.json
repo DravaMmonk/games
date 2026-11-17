@@ -2,6 +2,6 @@
   "name": "@part.uPattern.name",
   "desc": "@part.uPattern.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uPattern"
+  "family": "logic/tactic",
+  "op": "logic/uPattern"
 }

@@ -7,10 +7,10 @@ import { familyOf, iconOf } from './catalog.js'
 import { WeightGrid } from 'circuit/view'
 
 export const displays = {
-  'image:hero': imageHero,
-  'image:introduction': imageIntroduction,
-  'image:circuit': imageCircuit,
-  'image:widget-imageKernel': WeightGrid,
-  'image:catalog': { familyOf, iconOf },
-  'image:probe': ({ probe }) => ({ ...probe, rangeFor: rangeOf }),
+  'image/hero': imageHero,
+  'image/introduction': imageIntroduction,
+  'image/circuit': imageCircuit,
+  'image/imageKernel': WeightGrid,
+  'image/catalog': { familyOf, iconOf },
+  'image/probe': ({ probe }) => ({ ...probe, rangeFor: rangeOf }),
 }

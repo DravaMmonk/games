@@ -2,12 +2,12 @@
   "name": "@part.diffx.name",
   "desc": "@part.diffx.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:diffx"
+  "op": "image/diffx"
 }

@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "state-graph:fill",
+  "play": "state-graph/fill",
   "fields": {},
   "schema": {
     "type": "either",

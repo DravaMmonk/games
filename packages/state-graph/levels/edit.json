@@ -8,7 +8,7 @@
     {
       "t": "@level.edit.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "a0",
@@ -94,7 +94,7 @@
     {
       "t": "@level.edit.intro.2.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "ul",
@@ -170,7 +170,7 @@
     "goal": "@level.edit.mission.goal",
     "how": "@level.edit.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.edit.debrief.title",
     "body": [
@@ -182,26 +182,26 @@
   "tasks": [
     {
       "id": "edit",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "ports": [
         {
-          "state-graph:port-reads": "ul"
+          "state-graph/reads": "ul"
         },
         {
-          "state-graph:port-reads": "up"
+          "state-graph/reads": "up"
         },
         {
-          "state-graph:port-reads": "left"
+          "state-graph/reads": "left"
         },
         {
-          "state-graph:port-reads": "same"
+          "state-graph/reads": "same"
         },
         {
-          "state-graph:port-reads": "start"
+          "state-graph/reads": "start"
         }
       ],
       "testLabel": "{left} → {top}",
-      "trace": "state-graph:trace-edit",
+      "trace": "state-graph/edit",
       "boardOpt": {
         "minScale": 0.66,
         "maxScale": 1.2
@@ -211,7 +211,7 @@
         "@level.edit.tasks.edit.hints.1",
         "@level.edit.tasks.edit.hints.2"
       ],
-      "world": "state-graph:world-align",
+      "world": "state-graph/align",
       "facts": [
         "same",
         "start"
@@ -236,13 +236,13 @@
         3
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "n = table:mmin(view.up, view.left, view.ul)",
-        "z = table:const[value=0]()",
-        "g1 = table:pass(facts.same, view.ul)",
-        "a = table:add(n, k)",
-        "g0 = table:pass(facts.start, z)",
-        "m = table:mmin(a, g1, g0)",
+        "k = table/const[value=1]()",
+        "n = table/mmin(view.up, view.left, view.ul)",
+        "z = table/const[value=0]()",
+        "g1 = table/pass(facts.same, view.ul)",
+        "a = table/add(n, k)",
+        "g0 = table/pass(facts.start, z)",
+        "m = table/mmin(a, g1, g0)",
         "cell <- m"
       ],
       "border0": false,
@@ -252,7 +252,7 @@
           "variant": "base"
         }
       ],
-      "panel": "state-graph:panel-edit"
+      "panel": "state-graph/edit"
     }
   ]
 }

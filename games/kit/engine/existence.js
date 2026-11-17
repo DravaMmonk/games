@@ -7,7 +7,7 @@ import { tagKey, tagName, kernelTags } from './tag-identity.js'
 import { BUILTIN_KIND_NAMES } from './plugin-kinds.js'
 import { schemaForKind } from './layers.js'
 
-const ownerOf = name => name.replace(/^#/, '').split(/[/:]/)[0]
+const ownerOf = name => name.replace(/^#/, '').split('/')[0]
 const uniqueProblems = problems => [...new Map(problems.map(problem => [JSON.stringify([problem.layer, problem.object, problem.path, problem.kind, problem.target, problem.member]), problem])).values()]
 const fieldAt = (at, key) => at ? `${at}.${key}` : key
 const identity = (kind, name, member) => `${kind}:${kind === 'tag' ? tagKey(member, name) : name}`
@@ -41,10 +41,21 @@ export function publicSurfaces(layers, schemas) {
   return surfaces
 }
 
+const referenceKind = schema => schema.reference ?? (
+  ['level', 'task'].includes(schema.type) ? schema.type : ['ref', 'name', 'call'].includes(schema.type) ? schema.kind : null
+)
+
 /** Walk reference types, including map keys and branch schemas; field spelling does not imply a reference. */
 export function collectReferences(value, schema, schemas, emit, at) {
   if (!schema || value == null) return
-  if (schema.type === 'either') return collectReferences(value, shapeAt(schema, value, [], { vocabulary: schemas }), schemas, emit, at)
+  if (schema.type === 'either') {
+    const kinds = schema.of.map(referenceKind)
+    if (typeof value === 'string' && !value.startsWith('#') && kinds.every(kind => kind && kind !== 'tag') && new Set(kinds).size > 1) {
+      emit([...new Set(kinds)], value, at)
+      return
+    }
+    return collectReferences(value, shapeAt(schema, value, [], { vocabulary: schemas }), schemas, emit, at)
+  }
   if (schema.type === 'by') return collectReferences(value, schema.cases[value[schema.field]], schemas, emit, at)
   const itemSchema = schema.type === 'edges' ? { ...schema.of, externalFrom: 'game' } : schema.of
   if (['set', 'list', 'edges'].includes(schema.type) && !Array.isArray(value) && typeof value === 'object') {
@@ -58,7 +69,7 @@ export function collectReferences(value, schema, schemas, emit, at) {
     return
   }
 
-  const kind = schema.reference ?? (schema.type === 'level' ? 'level' : schema.type === 'task' ? 'task' : ['ref', 'name', 'call'].includes(schema.type) ? schema.kind : null)
+  const kind = referenceKind(schema)
   if (kind && typeof value === 'string') emit(kind, value, at, schema.members)
   if (schema.type === 'text') {
     const key = textKey(value) ?? (typeof value === 'string' && value.startsWith('@') ? value.slice(1) : null)
@@ -113,8 +124,10 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
   }
   const problems = []
   for (const ref of targets) {
-    const { kind, target, member, layer, at, object, path } = ref
-    const matches = (byName.get(target) ?? []).filter(entry => (kind === 'tag' ? entry.kind === 'tag' && (!member || kindMatches(schemas, member, entry.member)) : entry.kind !== 'tag' && kindMatches(schemas, kind, entry.kind)))
+    const { target, member, layer, at, object, path } = ref
+    const kinds = Array.isArray(ref.kind) ? ref.kind : [ref.kind]
+    const kind = kinds.join('|')
+    const matches = (byName.get(target) ?? []).filter(entry => (kind === 'tag' ? entry.kind === 'tag' && (!member || kindMatches(schemas, member, entry.member)) : entry.kind !== 'tag' && kinds.some(expected => kindMatches(schemas, expected, entry.kind))))
     // Menu identities are valid untyped order endpoints.
     const owner = ownerOf(target)
     const author = layers.find(item => item.id === layer)
@@ -155,6 +168,6 @@ export function contentExistenceProblems(content, schemas) {
 
 /** Core/view registration references use the same identity check as authored content. */
 export function registrationProblems(content, kernel) {
-  const layers = (content.layerOrder ?? []).filter(id => !id.startsWith('@')).map(id => ({ id, config: { uses: Object.fromEntries((content.layerUses?.[id] ?? []).map(name => [name, '^1.0.0'])) }, objects: Object.keys(content.registries.kind ?? {}).filter(name => name.startsWith(`${id}/`)).map(name => ({ kind: 'kind', name, value: {} })), codeObjects: ['kind', 'editor'].flatMap(kind => [...kernel.tables[kind]].filter(([name]) => name.startsWith(`${id}:`)).map(([name, value]) => ({ kind, name, value: { type: value.type } }))) }))
+  const layers = (content.layerOrder ?? []).filter(id => !id.startsWith('@')).map(id => ({ id, config: { uses: Object.fromEntries((content.layerUses?.[id] ?? []).map(name => [name, '^1.0.0'])) }, objects: Object.keys(content.registries.kind ?? {}).filter(name => name.startsWith(`${id}/`)).map(name => ({ kind: 'kind', name, value: {} })), codeObjects: ['kind', 'editor'].flatMap(kind => [...kernel.tables[kind]].filter(([name]) => name.startsWith(`${id}/`)).map(([name, value]) => ({ kind: kind === 'kind' ? 'kindMeaning' : kind, name, value: { type: value.type } }))) }))
   return existenceProblems(layers, { kinds: {} })
 }

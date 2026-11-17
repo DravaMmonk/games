@@ -5,7 +5,7 @@
     {
       "t": "@level.wordbreak.intro.0.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "c0",
@@ -113,7 +113,7 @@
     "goal": "@level.wordbreak.mission.goal",
     "how": "@level.wordbreak.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.wordbreak.debrief.title",
     "body": [
@@ -124,12 +124,12 @@
   "tasks": [
     {
       "id": "wordbreak",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-uses": "cost"
+            "state-graph/not": {
+              "state-graph/uses": "cost"
             }
           },
           "say": "@level.wordbreak.tasks.wordbreak.diagnose.0.say"
@@ -140,7 +140,7 @@
         "@level.wordbreak.tasks.wordbreak.hints.0",
         "@level.wordbreak.tasks.wordbreak.hints.1"
       ],
-      "world": "state-graph:world-parts",
+      "world": "state-graph/parts",
       "facts": [
         "ground"
       ],
@@ -183,10 +183,10 @@
         2
       ],
       "solution": [
-        "a = table:add(view.seg, view.cost)",
-        "z = table:const[value=0]()",
-        "g = table:pass(facts.ground, z)",
-        "m = table:mmin(a, g)",
+        "a = table/add(view.seg, view.cost)",
+        "z = table/const[value=0]()",
+        "g = table/pass(facts.ground, z)",
+        "m = table/mmin(a, g)",
         "cell <- m"
       ],
       "publishes": [
@@ -195,7 +195,7 @@
           "variant": "base"
         }
       ],
-      "panel": "state-graph:panel-dictionary"
+      "panel": "state-graph/dictionary"
     }
   ]
 }

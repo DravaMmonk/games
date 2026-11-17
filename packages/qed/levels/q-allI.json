@@ -16,7 +16,7 @@
   "tasks": [
     {
       "id": "q-allI",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "∀x. P(x) → P(x)"

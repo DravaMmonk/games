@@ -15,9 +15,9 @@
   "after": "@level.bot.after",
   "tasks": [
     {
-      "id": "bot_1",
-      "kind": "logic:proof",
-      "step": "@level.bot.tasks.bot_1.step",
+      "id": "bot-1",
+      "kind": "logic/proof",
+      "step": "@level.bot.tasks.bot-1.step",
       "tests": [
         {
           "premises": {
@@ -38,8 +38,8 @@
         }
       ],
       "hint": [
-        "@level.bot.tasks.bot_1.hint.0",
-        "@level.bot.tasks.bot_1.hint.1"
+        "@level.bot.tasks.bot-1.hint.0",
+        "@level.bot.tasks.bot-1.hint.1"
       ],
       "solution": [
         "m = mp(q, p)",
@@ -48,9 +48,9 @@
       ]
     },
     {
-      "id": "bot_2",
-      "kind": "logic:proof",
-      "step": "@level.bot.tasks.bot_2.step",
+      "id": "bot-2",
+      "kind": "logic/proof",
+      "step": "@level.bot.tasks.bot-2.step",
       "tests": [
         {
           "premises": {
@@ -70,11 +70,11 @@
         }
       ],
       "hint": [
-        "@level.bot.tasks.bot_2.hint.0"
+        "@level.bot.tasks.bot-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.bot.tasks.bot_2.intro.0.t"
+          "t": "@level.bot.tasks.bot-2.intro.0.t"
         }
       ],
       "solution": [

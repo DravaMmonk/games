@@ -19,9 +19,9 @@
     "goal": "@level.forward.mission.goal",
     "how": "@level.forward.mission.how"
   },
-  "robot": "state-graph:robot-reach",
+  "robot": "state-graph/reach",
   "adds": [
-    "table:mul"
+    "table/mul"
   ],
   "debrief": {
     "title": "@level.forward.debrief.title",
@@ -34,16 +34,16 @@
   "tasks": [
     {
       "id": "forward",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-any": [
+            "state-graph/any": [
               {
-                "state-graph:condition-has": "table:mmin"
+                "state-graph/has": "table/mmin"
               },
               {
-                "state-graph:condition-has": "table:mmax"
+                "state-graph/has": "table/mmax"
               }
             ]
           },
@@ -58,7 +58,7 @@
         "@level.forward.tasks.forward.hints.0",
         "@level.forward.tasks.forward.hints.1"
       ],
-      "world": "state-graph:world-tags",
+      "world": "state-graph/tags",
       "facts": [
         "tN",
         "tV",
@@ -159,11 +159,11 @@
         0.00033408
       ],
       "solution": [
-        "a = table:mul(view.pN, facts.tN)",
-        "b = table:mul(view.pV, facts.tV)",
-        "c = table:mul(view.pA, facts.tA)",
-        "s = table:msum(a, b, c)",
-        "e = table:mul(s, facts.emit)",
+        "a = table/mul(view.pN, facts.tN)",
+        "b = table/mul(view.pV, facts.tV)",
+        "c = table/mul(view.pA, facts.tA)",
+        "s = table/msum(a, b, c)",
+        "e = table/mul(s, facts.emit)",
         "cell <- e"
       ],
       "prob": true

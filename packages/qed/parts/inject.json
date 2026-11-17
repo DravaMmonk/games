@@ -1,12 +1,12 @@
 {
   "name": "@part.inject.name",
   "desc": "@part.inject.desc",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "gx = allI[x=a](body: gy) {",
           "  body {",
@@ -31,6 +31,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "before", "type": "logic:machine-value", "optional": true }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
 }

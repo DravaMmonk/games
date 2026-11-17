@@ -13,25 +13,25 @@
       "t": "@level.0-6.intro.2.t"
     }
   ],
-  "unlocks": ["image:unlock-threshold"],
+  "unlocks": ["image/threshold"],
   "tasks": [
     {
       "id": "0-6",
-      "play": "image:probe",
+      "play": "image/probe",
       "brief": "@level.0-6.tasks.0-6.brief",
-      "part": "image:mysteryGate",
+      "part": "image/mysteryGate",
       "question": "@level.0-6.tasks.0-6.question",
       "answers": ["0.2", "0.4", "0.6", "0.8"],
       "answer": "0.6",
       "wrong": "@level.0-6.tasks.0-6.wrong",
       "probes": [
-        { "label": "@level.0-6.tasks.0-6.probes.0.label", "picture": "image:picture-rampX" },
-        { "label": "@level.0-6.tasks.0-6.probes.1.label", "picture": "image:picture-rampY" },
+        { "label": "@level.0-6.tasks.0-6.probes.0.label", "picture": "image/rampX" },
+        { "label": "@level.0-6.tasks.0-6.probes.1.label", "picture": "image/rampY" },
         {
           "label": "@level.0-6.tasks.0-6.probes.2.label",
-          "picture": { "image:picture-disk": { "cx": 7.5, "cy": 7.5, "r": 5, "lo": 0.3, "hi": 0.7 } }
+          "picture": { "image/disk": { "cx": 7.5, "cy": 7.5, "r": 5, "lo": 0.3, "hi": 0.7 } }
         },
-        { "label": "@level.0-6.tasks.0-6.probes.3.label", "picture": { "image:picture-noise": { "seed": 4 } } }
+        { "label": "@level.0-6.tasks.0-6.probes.3.label", "picture": { "image/noise": { "seed": 4 } } }
       ]
     }
   ]

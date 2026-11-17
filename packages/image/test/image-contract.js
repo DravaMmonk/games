@@ -28,7 +28,7 @@ export function imageContract(owner) {
       const agent = kernel.tables.agent.get(task.play)
       assert.ok(agent.observe(context))
       assert.equal(agent.act(context, 'out <- in').pass, true)
-      assert.equal(agent.act(context, 'a = image:shift[dir=right](in)\nout <- a').pass, false)
+      assert.equal(agent.act(context, 'a = image/shift[dir=right](in)\nout <- a').pass, false)
     } finally { fixture.cleanup() }
   })
 
@@ -39,14 +39,14 @@ export function imageContract(owner) {
       kernel.pair(fixture.shell.levels.flatMap(level => level.tasks), true)
       const game = await gameOf(fixture.shell)
       assert.equal(game.levels.length, 1)
-      assert.equal(typeof game.kinds['image:graph'].Screen, 'function')
+      assert.equal(typeof game.kinds['image/graph'].Screen, 'function')
       const task = fixture.shell.levels[0].tasks[0]
       const context = { content: fixture.shell, task, kernel }
       const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
       const { renderToString } = require('react-dom/server')
       const { createElement } = require('react')
-      const view = kernel.tables.playView.get('image:graph')
-      const html = renderToString(createElement(view.preview, { context, work: kernel.tables.play.get('image:graph').initial(context), onChange: () => {} }))
+      const view = kernel.tables.playView.get('image/graph')
+      const html = renderToString(createElement(view.preview, { context, work: kernel.tables.play.get('image/graph').initial(context), onChange: () => {} }))
       assert.ok(html.length > 100)
     } finally { await closeGames(); fixture.cleanup() }
   })

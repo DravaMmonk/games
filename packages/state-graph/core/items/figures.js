@@ -5,7 +5,7 @@ import { qualifyItems } from 'kernel';
 import { callOf } from 'kernel';
 import { E, circuitFig, gridScene, windowFig } from 'table';
 
-const FIGURES = qualifyItems('state-graph', 'figure', {
+const FIGURES = qualifyItems('state-graph', {
   scene: p => p,
   /** A grid: arrows right and down (or by `moves`, [dr, dc] each; none with arrows: false), cells and arrows written
    *  apart over the plain ones. */

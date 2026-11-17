@@ -2,7 +2,7 @@
   "name": "@part.natInd.name",
   "desc": "@part.natInd.desc",
   "icon": "Box",
-  "family": "logic:family-box",
+  "family": "logic/box",
   "settings": {
     "P": {
       "label": "@part.natInd.settings.P.label"
@@ -10,7 +10,7 @@
     "x": {
       "control": "select",
       "label": "@part.natInd.settings.x.label",
-      "from": "logic:names()"
+      "from": "logic/names()"
     }
   },
   "regions": [
@@ -26,5 +26,5 @@
       "closes": true
     }
   ],
-  "op": "logic:natInd"
+  "op": "logic/natInd"
 }

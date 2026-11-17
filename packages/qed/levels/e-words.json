@@ -12,7 +12,7 @@
   "tasks": [
     {
       "id": "e-words",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "¬(KA ∧ KB)",
       "blind": true,
       "brief": "@level.e-words.tasks.e-words.brief",

@@ -9,8 +9,8 @@
   "tasks": [
     {
       "id": "pl-anc",
-      "kind": "logic:machine",
-      "want": "logic:want-answers",
+      "kind": "logic/machine",
+      "want": "logic/answers",
       "inputs": [
         {
           "name": "in",

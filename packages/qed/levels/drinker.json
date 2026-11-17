@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "drinker",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "∃x. D(x) → ∀y. D(y)"

@@ -58,14 +58,14 @@ function circuit({ scene, setup, tests, hidden, solution, naive, alsoFails, cons
  *  keep as for circuit. */
 function playable({ intro: _, play, ...source }, kit, keep, items) {
   const task = { ...source, kind: play ?? source.kind }
-  if (task.kind === "image:probe") {
+  if (task.kind === "image/probe") {
     const { probes, part, question, answers, answer, wrong, ...rest } = task
     const examples = probes.map(({ label, picture: source }) => ({ label, input: picture(source) }))
     const run = (input) => (part.includes('/') ? kit.types[part] : NODE_TYPES[part]).eval({ in: input })
     const { verify, ...probe } = gridProbe({ examples, run, question, answers, answer, wrong })
     return { ...rest, probe, verify }
   }
-  if (task.kind === "image:board") return { ...task, board: task.bench.model, ...benchOf(task.bench, items.benches) }
+  if (task.kind === "image/board") return { ...task, board: task.bench.model, ...benchOf(task.bench, items.benches) }
   return circuit(task, kit, keep, items)
 }
 
@@ -141,7 +141,7 @@ export function* prepareImageWorks(config) {
     played.set(id, tasks)
     // A publishing task can supply the player's board over the reference implementation.
     for (const task of tasks) for (const type of published.get(task.taskId) ?? []) {
-      if (task.kind !== "image:graph") throw new Error(`parts.json's ${type} runs task ${task.taskId}, a ${task.kind}, no circuit`)
+      if (task.kind !== "image/graph") throw new Error(`parts.json's ${type} runs task ${task.taskId}, a ${task.kind}, no circuit`)
       builders.set(type, task)
       publishingTasks.set(task.taskId, task)
     }
@@ -154,7 +154,7 @@ export function* prepareImageWorks(config) {
 
   // Pictures start out drawn as pixels; every other way of drawing them comes in with a level, as parts do.
   const viewsAt = (id) => ({
-    shows: ['image:view-pixels', ...Object.keys(views).filter((view) => views[view] === id || course.before(views[view], id))],
+    shows: ['image/pixels', ...Object.keys(views).filter((view) => views[view] === id || course.before(views[view], id))],
     freshViews: Object.keys(views).filter((view) => views[view] === id),
   })
 
@@ -182,7 +182,7 @@ export function* prepareImageWorks(config) {
   // A circuit level's palette is everything it can hold (../../course.js reach), in its tray's order; a board or probe
   // level has only what it brings in. Its tasks hold the same.
   const LEVELS = placed.map((level) => {
-    const tray = { fresh: level.adds.length ? level.adds : [...fresh(course, level)], palette: level.kind === 'image:graph' ? reach(course, level) : level.adds }
+    const tray = { fresh: level.adds.length ? level.adds : [...fresh(course, level)], palette: level.kind === 'image/graph' ? reach(course, level) : level.adds }
     return { ...level, ...viewsAt(level.id), ...tray, tasks: level.tasks.map((task) => ({ ...task, ...viewsAt(level.id), ...tray })) }
   })
   const levelById = Object.fromEntries(LEVELS.map((level) => [level.id, level]))

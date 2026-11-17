@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "box",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

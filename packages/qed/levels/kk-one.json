@@ -11,15 +11,15 @@
   "after": "@level.kk-one.after",
   "tasks": [
     {
-      "id": "kk-one_1",
-      "kind": "logic:gates",
+      "id": "kk-one-1",
+      "kind": "logic/gates",
       "tray": "gates",
-      "step": "@level.kk-one.tasks.kk-one_1.step",
+      "step": "@level.kk-one.tasks.kk-one-1.step",
       "blind": true,
       "target": "KA ↔ ¬KA",
-      "brief": "@level.kk-one.tasks.kk-one_1.brief",
+      "brief": "@level.kk-one.tasks.kk-one-1.brief",
       "hint": [
-        "@level.kk-one.tasks.kk-one_1.hint.0"
+        "@level.kk-one.tasks.kk-one-1.hint.0"
       ],
       "solution": [
         "n = gNot(KA)",
@@ -28,10 +28,10 @@
       ]
     },
     {
-      "id": "kk-one_2",
-      "kind": "logic:proof",
+      "id": "kk-one-2",
+      "kind": "logic/proof",
       "tray": "proof",
-      "step": "@level.kk-one.tasks.kk-one_2.step",
+      "step": "@level.kk-one.tasks.kk-one-2.step",
       "tests": [
         {
           "premises": {
@@ -50,12 +50,12 @@
       ],
       "intro": [
         {
-          "t": "@level.kk-one.tasks.kk-one_2.intro.0.t"
+          "t": "@level.kk-one.tasks.kk-one-2.intro.0.t"
         }
       ],
       "hint": [
-        "@level.kk-one.tasks.kk-one_2.hint.0",
-        "@level.kk-one.tasks.kk-one_2.hint.1"
+        "@level.kk-one.tasks.kk-one-2.hint.0",
+        "@level.kk-one.tasks.kk-one-2.hint.1"
       ],
       "solution": [
         "e = andE(p)",

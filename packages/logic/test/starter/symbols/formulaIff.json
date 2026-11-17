@@ -1,5 +1,5 @@
 {
-  "mark": "logic:mark-formulaIff",
+  "mark": "logic/formulaIff",
   "icon": "Rows3",
   "name": "↔",
   "desc": "@symbol.formulaIff.desc"

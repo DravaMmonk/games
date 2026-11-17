@@ -1,5 +1,5 @@
 {
-  "mark": "logic:mark-formulaNot",
+  "mark": "logic/formulaNot",
   "icon": "Rows3",
   "name": "¬",
   "desc": "@symbol.formulaNot.desc",

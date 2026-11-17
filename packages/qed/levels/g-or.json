@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "g-or",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "Rain ∨ Wind",
       "brief": "@level.g-or.tasks.g-or.brief",
       "hint": [

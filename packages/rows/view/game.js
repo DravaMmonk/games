@@ -5,4 +5,4 @@ import { displays as ui } from './displays.js'
 
 
 
-export default (content, works = spec(content)) => playGame(content, works, plays, { sums: ui['rows:sums'] })
+export default (content, works = spec(content)) => playGame(content, works, plays, { sums: ui['rows/sums'] })

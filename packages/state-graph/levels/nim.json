@@ -8,7 +8,7 @@
     {
       "t": "@level.nim.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "p0",
@@ -71,7 +71,7 @@
     {
       "t": "@level.nim.intro.3.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "a",
@@ -112,9 +112,9 @@
     "goal": "@level.nim.mission.goal",
     "how": "@level.nim.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "adds": [
-    "table:not"
+    "table/not"
   ],
   "debrief": {
     "title": "@level.nim.debrief.title",
@@ -127,12 +127,12 @@
   "tasks": [
     {
       "id": "nim",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-has": "table:not"
+            "state-graph/not": {
+              "state-graph/has": "table/not"
             }
           },
           "say": "@level.nim.tasks.nim.diagnose.0.say"
@@ -143,7 +143,7 @@
         "@level.nim.tasks.nim.hints.0",
         "@level.nim.tasks.nim.hints.1"
       ],
-      "world": "state-graph:world-pile",
+      "world": "state-graph/pile",
       "facts": [
         "ground"
       ],
@@ -164,9 +164,9 @@
         true
       ],
       "solution": [
-        "a = table:not(view.m1)",
-        "b = table:not(view.m2)",
-        "m = table:many(a, b)",
+        "a = table/not(view.m1)",
+        "b = table/not(view.m2)",
+        "m = table/many(a, b)",
         "cell <- m"
       ]
     }

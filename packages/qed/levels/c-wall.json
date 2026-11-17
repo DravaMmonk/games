@@ -12,8 +12,8 @@
   "tasks": [
     {
       "id": "c-wall",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -30,15 +30,15 @@
         },
         {
           "goal": "¬¬Rain → Rain",
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         },
         {
           "goal": "Rain ∨ ¬Rain",
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         },
         {
           "goal": "((Rain → Wet) → Rain) → Rain",
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         }
       ],
       "brief": "@level.c-wall.tasks.c-wall.brief",

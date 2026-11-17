@@ -33,10 +33,10 @@ export const busPlay = {
 }
 
 export function register(kernel) {
-  kernel.kind('tick-bus:board', meaning)
-  kernel.play('tick-bus:board', busPlay)
-  kernel.check('tick-bus:boards', ({ content }) => runtime.validate(runtime.spec(content)))
-  kernel.agent('tick-bus:board', {
+  kernel.kind('tick-bus/board', meaning)
+  kernel.play('tick-bus/board', busPlay)
+  kernel.check('tick-bus/boards', ({ content }) => runtime.validate(runtime.spec(content)))
+  kernel.agent('tick-bus/board', {
     observe(context) { const { task, works } = boardContext(context); return play.open(textContext(task, works)) },
     act(context, text) { const { task, works } = boardContext(context); return play.attempt(textContext(task, works), text) },
   })

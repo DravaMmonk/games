@@ -73,9 +73,9 @@ function readBuilt(content) {
       out.builds.set(level.id, type)
     }
     // An equation is proved, not built; a shape after the first is one more form of the part, opened where it is proved.
-    if (part.family !== 'logic:family-rule') for (const [k, ref] of refs.entries()) if (ref.level && (!ref.form || k === 0)) build(ref.level)
+    if (part.family !== 'logic/rule') for (const [k, ref] of refs.entries()) if (ref.level && (!ref.form || k === 0)) build(ref.level)
     const { name, desc } = part
-    if (part.family === 'logic:family-lemma') {
+    if (part.family === 'logic/lemma') {
       // Its letters are those its proof tasks write: a proof task's tests are patterns in letters (vocabulary.js), so
       // every letter of a lemma's statement stands for any sentence. Its tree settings are only the letters a shape
       // leaves open, which the player sets on the card; their labels name them.
@@ -93,16 +93,16 @@ function readBuilt(content) {
         ...(cardOf(part) ? { card: cardOf(part) } : {}),
       }
       out.lemmaRefs.push(...refs.map((ref) => ({ type, form: ref.form ?? '', task: ref.task?.id, reference: ref.reference })))
-    } else if (part.family === 'logic:family-gate') {
+    } else if (part.family === 'logic/gate') {
       // A gate's ports stand for its truth circuit's letters in order, named a, b, c…: the level's sentences are its
       // own, not the gate's.
       out.gates[type] = { name, desc, ports: lettersOf([parse(refs[0].reference.target)]).map((_, k) => String.fromCharCode(97 + k)) }
     }
-    else if (part.family === 'logic:family-built') {
+    else if (part.family === 'logic/built') {
       out.machines.push(type)
       out.machineRefs.push(...refs.map((ref) => ({ type, variant: ref.variant, task: ref.task?.id, reference: ref.reference })))
     }
-    else if (part.family === 'logic:family-rule') {
+    else if (part.family === 'logic/rule') {
       const { task, reference } = refs[0]
       out.facts[type] = { name, desc, statement: reference.tests[0].goal, ...(reference.rule ? { rule: reference.rule } : {}) }
       if (task) out.proves.set(task.id, type)
@@ -198,11 +198,11 @@ function caseViews(level, notation) {
 }
 
 // A first-order level's vocabulary (fol.js): the predicates and names its sentences use, and any it adds as decoys.
-const WORLD_KINDS = ['logic:translate', 'logic:query', 'logic:model']
+const WORLD_KINDS = ['logic/translate', 'logic/query', 'logic/model']
 // `names` are every name the level reads (level.consts), so a name typed that the level does not use still parses.
 function vocabOf(level) {
   const names = level.consts ?? []
-  const texts = level.kind === 'logic:model' ? claimSentences(level) : [level.target, ...(level.decoys ?? [])]
+  const texts = level.kind === 'logic/model' ? claimSentences(level) : [level.target, ...(level.decoys ?? [])]
   const v = vocabulary(texts.map((t) => parse(t, { consts: names })))
   return { preds: v.preds, consts: v.consts, names: [...new Set([...names, ...v.consts])] }
 }
@@ -264,7 +264,7 @@ function readTasks(level, wordSets, positions) {
 export const logicWorks = (content) => readWorks(content, prepareLogicWorks)
 
 export function* prepareLogicWorks(content) {
-  const circuitFor = (task) => ({ 'logic:proof': proofBoards, 'logic:machine': machineBoards, 'logic:gates': truthCircuits })[task?.kind]
+  const circuitFor = (task) => ({ 'logic/proof': proofBoards, 'logic/machine': machineBoards, 'logic/gates': truthCircuits })[task?.kind]
   // The boards the player passed the building levels with, in this course.
   const kept = keptBoards((key, board) => {
     const task = taskById.get(key)
@@ -326,16 +326,16 @@ export function* prepareLogicWorks(content) {
   const partResources = Object.fromEntries(Object.entries(defs).map(([type, def]) => [type, resourcesOf(def)[0]]))
   const partsForResource = Object.fromEntries(Object.entries(defs).flatMap(([type, def]) => resourcesOf(def).map((resource) => [resource, type])))
   const onBoard = (...families) => Object.fromEntries(Object.entries(PARTS).filter(([type]) => families.includes(defs[type].family)))
-  const primitiveGates = onBoard('logic:family-gate')
+  const primitiveGates = onBoard('logic/gate')
   const boardGates = Object.fromEntries(Object.entries(primitiveGates).map(([type, part]) => [type, { ...part, name: defs[type].name, desc: defs[type].desc }]))
   // A proof's parts: the proof rules and the lemmas, and the board's premises and goal.
-  const proofParts = { ...PROOF_BOARD.FIXED_PARTS, ...onBoard('logic:family-rule', 'logic:family-box', 'logic:family-lemma') }
+  const proofParts = { ...PROOF_BOARD.FIXED_PARTS, ...onBoard('logic/rule', 'logic/box', 'logic/lemma') }
   // A machine's parts: the machine board's parts.json parts, the parts the player builds and the rule parts of its
   // rule books (every rule part the same engine part, RULE_DEFINITION).
-  const machineParts = onBoard('logic:family-tactic', 'logic:family-loop')
+  const machineParts = onBoard('logic/tactic', 'logic/loop')
   const RULE_ENGINE = compileParts({ rules: RULE_DEFINITION }, OPS).PARTS.rules
   // The rule parts a task holds (none on the generator's board, which carries rules as values).
-  const ruleTypes = (task) => (task.want === 'logic:want-elim' ? new Map() : rulePartsOf(task))
+  const ruleTypes = (task) => (task.want === 'logic/elim' ? new Map() : rulePartsOf(task))
   // The proofs the lemmas run, filled in the same way (lemmaWorks).
   const lemmaParts = {}
   const gatePorts = Object.fromEntries(Object.entries(gates).map(([type, g]) => [type, { inputs: g.ports }]))
@@ -373,8 +373,8 @@ export function* prepareLogicWorks(content) {
   })
   // Read a proof or gate now, and a machine once its rule book is known.
   const answers = (one) => {
-    if (one.kind === 'logic:proof') return { ...one, parts: proofParts, ...readAnswers(one, proofBlueprint) }
-    if (one.kind === 'logic:gates') return { ...one, tests: gateTests(one), ...readAnswers(one, gateBlueprint) }
+    if (one.kind === 'logic/proof') return { ...one, parts: proofParts, ...readAnswers(one, proofBlueprint) }
+    if (one.kind === 'logic/gates') return { ...one, tests: gateTests(one), ...readAnswers(one, gateBlueprint) }
     return one
   }
   // Register task metadata before resolving notation or reading any answers.
@@ -387,7 +387,7 @@ export function* prepareLogicWorks(content) {
     const all = tasksOf.get(id).map((task) => ({
       ...task,
       adds: [...new Set([...(task.adds ?? []),
-        ...(task.kind === 'logic:machine' ? axiomPartsOf(task) : [])])],
+        ...(task.kind === 'logic/machine' ? axiomPartsOf(task) : [])])],
       chapter, requires, unlocks,
     }))
     const last = all.at(-1)
@@ -405,14 +405,14 @@ export function* prepareLogicWorks(content) {
   const LABELS = levelLabels(eras)
   const CHAPTERS = eras.map((era) => ({ ...era.chapter, track: plan.tracks.get(era.id), rows: plan.rows.get(era.id) }))
   // Every axiom part stays in the levels that state it, and is no new idea: it is the level's own given.
-  const axioms = [...new Set(TASKS.filter((t) => t.kind === 'logic:machine').flatMap(axiomPartsOf))]
+  const axioms = [...new Set(TASKS.filter((t) => t.kind === 'logic/machine').flatMap(axiomPartsOf))]
   // A level's reference boards, every task's (or a task's own, `task` its index), without what each board starts with.
   const answersOf = (l) => byId.get(l.id).tasks.filter((t) => (l.task === undefined || t.task === l.task) && t.solution?.nodes).map((t) => ({ ...t.solution, nodes: t.solution.nodes.filter((n) => !presetIds(t).includes(n.id)) }))
   // A course level is a level, or one of its tasks (`task`, its index): a level plays with its last task's tray.
   // The proofs each lemma's shapes run: the proof tasks its references name.
   const taskById = new Map(TASKS.map((task) => [task.taskId, task]))
   const standalone = (id, reference, circuit) => {
-    const task = { ...reference, id, task: 0, taskId: id, ...(reference.kind === 'logic:proof' && { schema: reference.tests[0] }) }
+    const task = { ...reference, id, task: 0, taskId: id, ...(reference.kind === 'logic/proof' && { schema: reference.tests[0] }) }
     try {
       return { ...task, partSolution: circuit.board.fromText(reference.solution, task, circuit) }
     } catch (error) {
@@ -426,8 +426,8 @@ export function* prepareLogicWorks(content) {
   }))
   references.register([
     ...rules, ...lemmaWorks,
-    ...TASKS.filter((task) => task.kind === 'logic:machine' && machines.includes(task.builds)).map((task) => ({ kind: 'logic:machine', type: task.builds, form: null, task })),
-    ...TASKS.filter((task) => task.kind === 'logic:gates' && gates[task.builds]).map((task) => ({ kind: 'gate', type: task.builds, form: null, task })),
+    ...TASKS.filter((task) => task.kind === 'logic/machine' && machines.includes(task.builds)).map((task) => ({ kind: 'logic/machine', type: task.builds, form: null, task })),
+    ...TASKS.filter((task) => task.kind === 'logic/gates' && gates[task.builds]).map((task) => ({ kind: 'gate', type: task.builds, form: null, task })),
   ])
   const course = yield {
     levels: LEVELS, plan,
@@ -438,7 +438,7 @@ export function* prepareLogicWorks(content) {
     builds: (l) => (byId.get(l.id).builds ? [byId.get(l.id).builds] : []),
     grants: (l) => {
       const task = byId.get(l.id).tasks.find(task => task.task === l.task)
-      return task?.kind === 'logic:machine'
+      return task?.kind === 'logic/machine'
         ? [...ruleTypes(task).keys()].filter((p) => !machineParts[p]) : []
     },
     machine: (l) => eras[eraOf.get(l.id)]?.machine ?? null,
@@ -455,14 +455,14 @@ export function* prepareLogicWorks(content) {
       words: one.words ?? words,
       symbols: Object.keys(formulaSymbols),
       formulaSymbols,
-      propertyWords: one.propertyWords ?? one.kind === 'logic:proof',
+      propertyWords: one.propertyWords ?? one.kind === 'logic/proof',
     }
-    const expanded = one.cases && one.kind !== 'logic:iso' ? expand(one, notation) : {}
-    const views = one.cases && one.kind === 'logic:iso' ? { views: caseViews(one, notation) } : {}
+    const expanded = one.cases && one.kind !== 'logic/iso' ? expand(one, notation) : {}
+    const views = one.cases && one.kind === 'logic/iso' ? { views: caseViews(one, notation) } : {}
     Object.assign(one, answers({
       ...one, ...declarations(one, one.id), ...(!one.brief && expanded.schema ? { brief: expanded.tests.at(-1).caseBrief } : {}),
       ...(WORLD_KINDS.includes(one.kind) ? { vocab: vocabOf(one) } : {}), ...expanded, ...views,
-      ...(one.kind === 'logic:machine' ? { tests: one.tests.map((t) => ({ label: machineLabel(t, notation), ...t })) } : {}),
+      ...(one.kind === 'logic/machine' ? { tests: one.tests.map((t) => ({ label: machineLabel(t, notation), ...t })) } : {}),
       lemmas, proofs: lemmaParts, facts, gates: boardGates, partDefs: defs, notation,
     }))
   }
@@ -485,7 +485,7 @@ export function* prepareLogicWorks(content) {
   // ruleBookOf): the kernel's rules opened by chapter, the lemmas built before it, each in the shapes it has gained by
   // then. A task after the first may use what its level proves already (a law proved on the proof board, then put to
   // work), in every shape it proves.
-  for (const level of LEVELS.filter((l) => l.tasks.some((t) => t.kind === 'logic:machine' || t.kind === 'logic:script'))) {
+  for (const level of LEVELS.filter((l) => l.tasks.some((t) => t.kind === 'logic/machine' || t.kind === 'logic/script'))) {
     // The equations proved before it (by the levels it comes after), and in a later task its own.
     const proven = content.standalone ? Object.keys(facts) : Object.keys(facts).filter((type) => references.prior('fact', { id: level.id, task: 0 }).some((entry) => entry.type === type))
     for (const one of level.tasks) {
@@ -508,10 +508,10 @@ export function* prepareLogicWorks(content) {
     ...machineParts,
   })
   // A machine's answers are read now that its rule book, and so its rule parts, are known.
-  for (const one of TASKS.filter((t) => t.kind === 'logic:machine')) Object.assign(one, readAnswers(one, machineBlueprint(one)))
+  for (const one of TASKS.filter((t) => t.kind === 'logic/machine')) Object.assign(one, readAnswers(one, machineBlueprint(one)))
   for (const { type, variant, task, reference } of built.machineRefs) if (!taskById.has(task)) {
     const one = { ...reference, ...declarations(reference, type), lemmas, facts, ruleParts: partsForResource, partDefs: defs }
-    references.register([{ kind: 'logic:machine', type, form: null, task: standalone(`${type}:${variant}`, one, machineBlueprint(one)) }])
+    references.register([{ kind: 'logic/machine', type, form: null, task: standalone(`${type}:${variant}`, one, machineBlueprint(one)) }])
   }
   // The gates the levels build run their boards (gates.js builtGates).
   const gateBuilders = Object.fromEntries(references.entriesOf('gate').map(({ type, task }) => [type, task]))
@@ -524,25 +524,25 @@ export function* prepareLogicWorks(content) {
   Object.assign(boardGates, gateParts)
   // Machine cards share a packed instance when their visible sequence of references is the same.
   const running = new Map()
-  const machineTypes = [...new Set(references.entriesOf('logic:machine').map(({ type }) => type))]
+  const machineTypes = [...new Set(references.entriesOf('logic/machine').map(({ type }) => type))]
   for (const one of TASKS) {
     one.partResources = partResources
     const has = holds(course, one, new Set())
     const part = (type, strict) => {
-      const options = { strict, reference: true, kind: 'logic:machine' }
+      const options = { strict, reference: true, kind: 'logic/machine' }
       const reference = has.inside(type, null, options)?.task
       if (!reference) return null
       const key = JSON.stringify([type, strict, reference.taskId])
       if (!running.has(key)) {
-        const builder = () => has.inside(type, null, { strict, kind: 'logic:machine' }).task
+        const builder = () => has.inside(type, null, { strict, kind: 'logic/machine' }).task
         running.set(key, builtMachine(type, builder, reference, kept.board, settingsOf(built.parts[type]).map((x) => x.key)))
       }
       return running.get(key)
     }
     one.built = Object.fromEntries(machineTypes.map((type) => [type, part(type, false)]))
-    if (one.kind === 'logic:machine' && machineTypes.includes(one.builds)) one.upgrades = part(one.builds, true) ?? undefined
+    if (one.kind === 'logic/machine' && machineTypes.includes(one.builds)) one.upgrades = part(one.builds, true) ?? undefined
     // What a machine (and a script's `by`) runs: the board's own cards, the parts built, the machine's and rule parts.
-    if (one.kind === 'logic:machine' || one.kind === 'logic:script') one.parts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? (builtPorts[type] ? one.built[type] ?? undefined : machineParts[type] ?? RULE_ENGINE)
+    if (one.kind === 'logic/machine' || one.kind === 'logic/script') one.parts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? (builtPorts[type] ? one.built[type] ?? undefined : machineParts[type] ?? RULE_ENGINE)
   }
   const at = (task) => ({ id: task.id, task: task.task })
   // The parts a machine task has built, named.
@@ -555,13 +555,13 @@ export function* prepareLogicWorks(content) {
   }
   const builtFaces = (task) => Object.fromEntries(Object.entries(task.built ?? {}).filter(([type, p]) => p && settingsOf(built.parts[type]).length).map(([type, p]) => {
     const { name, desc, settings } = built.parts[type]
-    return [type, { name, desc, icon: 'CircuitBoard', family: 'logic:family-built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic:machine-value', ...(port === 'rules' ? { label: T('规则', 'Rules') } : {}) })), settings, outputType: p.outputType ?? 'logic:machine-value', op: 'circuit:zero' }]
+    return [type, { name, desc, icon: 'CircuitBoard', family: 'logic/built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic/machine-value', ...(port === 'rules' ? { label: T('规则', 'Rules') } : {}) })), settings, outputType: p.outputType ?? 'logic/machine-value', op: 'circuit/zero' }]
   }))
   /** What a task's tray holds for a player with `flags`, as what it shows and what it folds away. */
-  course.registerParts(Object.fromEntries(TASKS.filter(task => task.kind === 'logic:machine').flatMap(task => [...ruleTypes(task).keys()].map(type => [type, RULE_DEFINITION]))))
+  course.registerParts(Object.fromEntries(TASKS.filter(task => task.kind === 'logic/machine').flatMap(task => [...ruleTypes(task).keys()].map(type => [type, RULE_DEFINITION]))))
   const offerIn = (task, flags) => {
     const { shown, folded, types } = offer(course, at(task), flags)
-    const circuit = (type) => course.stages.has(type) && (task.kind !== 'logic:gates' || Object.hasOwn(task.gates, type))
+    const circuit = (type) => course.stages.has(type) && (task.kind !== 'logic/gates' || Object.hasOwn(task.gates, type))
     return { shown: shown.filter(circuit), folded: folded.filter(circuit), types: types.filter(circuit) }
   }
   /** Whether a task holds a part, or a shape of one: has(part), has(part, 'form', shape) (../../course.js holds). */
@@ -601,7 +601,7 @@ export function* prepareLogicWorks(content) {
     },
   })
   function proofWorkReferences(task, work) {
-    if (task.kind !== 'logic:proof') return []
+    if (task.kind !== 'logic/proof') return []
     return (work?.nodes ?? []).flatMap((node) => {
       const proof = lemmaReference(node, lemmas, lemmaParts)
       return proof ? [{ key: proof.level.taskId, task: proof.level, work: proof.board() }] : []

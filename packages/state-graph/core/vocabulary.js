@@ -1,9 +1,9 @@
 export const vocabulary = {
   "module": "state-graph",
   "kinds": {
-"play": {"state-graph:circuit": {"about": {"zh": "拼电路板：机器人在每一格上跑它", "en": "wiring a board the robot runs on every cell"}}, "state-graph:fill": {"about": {"zh": "亲手填表：每个地点的路线数", "en": "filling the table by hand: the routes to every place"}}, "state-graph:trace": {"about": {"zh": "一条条找出所有路线", "en": "tracing every route one by one"}}, "state-graph:link": {"about": {"zh": "连线不交叉：两串字相同的字母连起来", "en": "lines that never cross between equal letters of two strings"}}, "state-graph:pack": {"about": {"zh": "亲手装背包", "en": "packing a backpack by hand"}}, "state-graph:breach": {"about": {"zh": "找反例：画两条路线，落进同一个格子", "en": "finding the counterexample: two routes into one cell"}}, "state-graph:policy": {"about": {"zh": "顺着价值画出箭头", "en": "drawing the arrows along the values"}}, "state-graph:seam": {"about": {"zh": "一条条剪掉图里的缝", "en": "cutting seams out of a picture one by one"}}},
+"play": {"state-graph/circuit": {"about": {"zh": "拼电路板：机器人在每一格上跑它", "en": "wiring a board the robot runs on every cell"}}, "state-graph/fill": {"about": {"zh": "亲手填表：每个地点的路线数", "en": "filling the table by hand: the routes to every place"}}, "state-graph/trace": {"about": {"zh": "一条条找出所有路线", "en": "tracing every route one by one"}}, "state-graph/link": {"about": {"zh": "连线不交叉：两串字相同的字母连起来", "en": "lines that never cross between equal letters of two strings"}}, "state-graph/pack": {"about": {"zh": "亲手装背包", "en": "packing a backpack by hand"}}, "state-graph/breach": {"about": {"zh": "找反例：画两条路线，落进同一个格子", "en": "finding the counterexample: two routes into one cell"}}, "state-graph/policy": {"about": {"zh": "顺着价值画出箭头", "en": "drawing the arrows along the values"}}, "state-graph/seam": {"about": {"zh": "一条条剪掉图里的缝", "en": "cutting seams out of a picture one by one"}}},
     "world": {
-      "state-graph:world-grid": {
+      "state-graph/grid": {
         "about": {
           "zh": "棋盘城市：只往右或往下走，每格可以有石头、体力或金币",
           "en": "the grid city: right or down only, a cell may hold a rock, energy or coins"
@@ -91,7 +91,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-gridYes": {
+      "state-graph/gridYes": {
         "about": {
           "zh": "棋盘城市，每格存「是 / 否」：能不能走到这里",
           "en": "the grid city holding yes / no: can a route get here"
@@ -125,7 +125,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-piles": {
+      "state-graph/piles": {
         "about": {
           "zh": "两堆石子：(a, b) 是两堆各剩几颗，存轮到的人能不能赢",
           "en": "two piles of stones: (a, b) the stones left, holding whether the player to move wins"
@@ -148,7 +148,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-tri": {
+      "state-graph/tri": {
         "about": {
           "zh": "砖块叠成的三角：从顶上一块往下走",
           "en": "bricks stacked in a triangle, walked down from the top one"
@@ -171,7 +171,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-lawn": {
+      "state-graph/lawn": {
         "about": {
           "zh": "铺草坪：一块地上有树，找最大的空正方形",
           "en": "a lawn to lay: a field with trees, the biggest open square"
@@ -204,7 +204,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-strip": {
+      "state-graph/strip": {
         "about": {
           "zh": "一段楼梯：一次上一级或两级，坏台阶踩不得",
           "en": "a flight of stairs: one or two steps at a time, broken steps not to be stood on"
@@ -231,7 +231,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-pile": {
+      "state-graph/pile": {
         "about": {
           "zh": "一堆石子：一次拿一颗或两颗，拿走最后一颗的赢",
           "en": "a pile of stones: take one or two, whoever takes the last wins"
@@ -250,7 +250,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-coins": {
+      "state-graph/coins": {
         "about": {
           "zh": "凑零钱：每格是一个钱数，扫描臂退回每种硬币",
           "en": "making change: a cell is an amount, the sweep arm steps back by every coin"
@@ -276,7 +276,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-parts": {
+      "state-graph/parts": {
         "about": {
           "zh": "切词：一串字母切成词典里的词，每块有代价",
           "en": "cutting a string into dictionary words, each part at a cost"
@@ -315,7 +315,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-rob1": {
+      "state-graph/rob1": {
         "about": {
           "zh": "一排房子，每家一个格子",
           "en": "a row of houses, one cell a house"
@@ -336,7 +336,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-rob2": {
+      "state-graph/rob2": {
         "about": {
           "zh": "一排房子，每家三个格子：没偷、偷了、最多",
           "en": "a row of houses, three cells a house: skipped, robbed, most so far"
@@ -357,7 +357,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-ring": {
+      "state-graph/ring": {
         "about": {
           "zh": "环形的街：第一家和最后一家相邻",
           "en": "a street in a ring: the first house and the last are neighbours"
@@ -378,7 +378,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-prefix": {
+      "state-graph/prefix": {
         "about": {
           "zh": "一排房子，每格是到这一家为止的总数",
           "en": "a row of houses, each cell the total so far"
@@ -399,7 +399,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-heights": {
+      "state-graph/heights": {
         "about": {
           "zh": "一排柱子：以这一根结尾，最长连几根越来越高",
           "en": "a row of posts: the longest rising run ending on this one"
@@ -429,7 +429,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-gains": {
+      "state-graph/gains": {
         "about": {
           "zh": "每天的收支：以这一天结尾的一段最多赚多少",
           "en": "daily gains: the best run of days ending today"
@@ -450,7 +450,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-keys": {
+      "state-graph/keys": {
         "about": {
           "zh": "有钥匙和门的迷宫，状态记住的每组钥匙是一层",
           "en": "a maze of keys and doors, one layer for every set of keys the state remembers"
@@ -540,7 +540,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-river": {
+      "state-graph/river": {
         "about": {
           "zh": "过河的青蛙：每块石头写着往回能跳多远",
           "en": "a frog crossing a river: each stone says how far back a jump reaches"
@@ -580,7 +580,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-stock": {
+      "state-graph/stock": {
         "about": {
           "zh": "股价：每天三种状态，空手、持有、刚卖掉",
           "en": "share prices: three states a day, flat, holding, just sold"
@@ -605,7 +605,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-align": {
+      "state-graph/align": {
         "about": {
           "zh": "对齐表：一个词在上面，一个词在左边",
           "en": "an alignment table: one word along the top, one down the left"
@@ -631,7 +631,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-local": {
+      "state-graph/local": {
         "about": {
           "zh": "局部对齐：两串字最像的一段",
           "en": "local alignment: the most alike stretch of two strings"
@@ -657,7 +657,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-knap": {
+      "state-graph/knap": {
         "about": {
           "zh": "背包表：行是物品，列是容量",
           "en": "the knapsack table: rows are items, columns capacities"
@@ -704,7 +704,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-roll": {
+      "state-graph/roll": {
         "about": {
           "zh": "压成一行的背包：只留一行，原地改写",
           "en": "the knapsack in one row, rewritten in place"
@@ -775,7 +775,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-interval": {
+      "state-graph/interval": {
         "about": {
           "zh": "区间表：一段 i..j 的答案，切点扫一遍",
           "en": "the interval table: the answer for a run i..j, every split point swept"
@@ -828,7 +828,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-vgrid": {
+      "state-graph/vgrid": {
         "about": {
           "zh": "格子世界：宝藏、陷阱和墙，扫到不再变",
           "en": "the grid world: treasure, traps and walls, scanned until it settles"
@@ -919,7 +919,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-tags": {
+      "state-graph/tags": {
         "about": {
           "zh": "给句子标词性：每一列一个词，每一行一种词性",
           "en": "tagging a sentence: a word a column, a part of speech a row"
@@ -973,7 +973,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:world-pic": {
+      "state-graph/pic": {
         "about": {
           "zh": "一张图：每格的能量，找一条最不起眼的缝",
           "en": "a picture: each cell’s energy, the least noticeable seam"
@@ -1020,37 +1020,37 @@ export const vocabulary = {
       }
     },
     "robot": {
-      "state-graph:robot-scout": {
+      "state-graph/scout": {
         "about": {
           "zh": "小方：视野 3×3",
           "en": "Boxy: a 3×3 view"
         }
       },
-      "state-graph:robot-ranger": {
+      "state-graph/ranger": {
         "about": {
           "zh": "远望：视野 5×5，看得见表头，会换方向扫",
           "en": "Farsight: a 5×5 view, the table’s headings, other scan orders"
         }
       },
-      "state-graph:robot-reach": {
+      "state-graph/reach": {
         "about": {
           "zh": "长臂：视野 5×5，伸缩臂够到任意远",
           "en": "Longarm: a 5×5 view, a telescopic arm"
         }
       },
-      "state-graph:robot-broom": {
+      "state-graph/broom": {
         "about": {
           "zh": "扫帚：扫描臂一次扫过一整段",
           "en": "Broom: a sweep arm over a whole run"
         }
       },
-      "state-graph:robot-stack": {
+      "state-graph/stack": {
         "about": {
           "zh": "千层：同时站在很多层上，探针探到另一层",
           "en": "Layercake: many layers at once, a probe to another"
         }
       },
-      "state-graph:robot-loop": {
+      "state-graph/loop": {
         "about": {
           "zh": "回环：一轮一轮扫到不再变",
           "en": "Loop: scans in rounds until nothing changes"
@@ -1058,7 +1058,7 @@ export const vocabulary = {
       }
     },
     "figure": {
-      "state-graph:figure-scene": {
+      "state-graph/scene": {
         "about": {
           "zh": "一张画好的图：格子、箭头和字，坐标照写",
           "en": "a picture as drawn: cells, arrows and words, at their coordinates"
@@ -1190,7 +1190,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:figure-grid": {
+      "state-graph/grid": {
         "about": {
           "zh": "棋盘：R 行 C 列，箭头往右往下（或按 moves），个别格子另写",
           "en": "a grid of R × C with arrows right and down (or by moves), some cells written apart"
@@ -1278,7 +1278,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:figure-circuit": {
+      "state-graph/circuit": {
         "about": {
           "zh": "一小块示意电路：上面是输入，中间是元件，下面是输出",
           "en": "a little circuit: inputs on top, parts in rows, outputs at the bottom"
@@ -1369,7 +1369,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:figure-window": {
+      "state-graph/window": {
         "about": {
           "zh": "机器人 3×3 的视野：每格的值，亮起的是读的格子",
           "en": "the robot’s 3×3 view: what each cell holds, the ones read lit"
@@ -1402,7 +1402,7 @@ export const vocabulary = {
       }
     },
     "condition": {
-      "state-graph:condition-reads": {
+      "state-graph/reads": {
         "about": {
           "zh": "输入元件上点了这个传感器",
           "en": "an input card reads this sensor"
@@ -1411,7 +1411,7 @@ export const vocabulary = {
           "type": "str"
         }
       },
-      "state-graph:condition-uses": {
+      "state-graph/uses": {
         "about": {
           "zh": "这个传感器读了，还接出了线",
           "en": "this sensor is read and wired on"
@@ -1420,7 +1420,7 @@ export const vocabulary = {
           "type": "str"
         }
       },
-      "state-graph:condition-has": {
+      "state-graph/has": {
         "about": {
           "zh": "板上有这种元件（可以再说它的数值）",
           "en": "the board has a part of this type (and this value)"
@@ -1450,7 +1450,7 @@ export const vocabulary = {
           ]
         }
       },
-      "state-graph:condition-feeds": {
+      "state-graph/feeds": {
         "about": {
           "zh": "一种元件直接接进另一种元件",
           "en": "a part of one type wired straight into a part of another"
@@ -1471,25 +1471,25 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:condition-placed": {
+      "state-graph/placed": {
         "about": {
           "zh": "板上放了元件",
           "en": "a part is on the board"
         }
       },
-      "state-graph:condition-wired": {
+      "state-graph/wired": {
         "about": {
           "zh": "板上接了线",
           "en": "a wire is on the board"
         }
       },
-      "state-graph:condition-wiredOut": {
+      "state-graph/wiredOut": {
         "about": {
           "zh": "输出接上了线",
           "en": "an output is wired"
         }
       },
-      "state-graph:condition-all": {
+      "state-graph/all": {
         "about": {
           "zh": "每一条都成立",
           "en": "every one holds"
@@ -1502,7 +1502,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:condition-any": {
+      "state-graph/any": {
         "about": {
           "zh": "至少一条成立",
           "en": "one of them holds"
@@ -1515,7 +1515,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:condition-not": {
+      "state-graph/not": {
         "about": {
           "zh": "这一条不成立",
           "en": "this one does not hold"
@@ -1527,37 +1527,37 @@ export const vocabulary = {
       }
     },
     "trace": {
-      "state-graph:trace-lcs": {
+      "state-graph/lcs": {
         "about": {
           "zh": "公共子序列表倒推出的路线和连线",
           "en": "the walk back through a common-subsequence table, and its matched letters"
         }
       },
-      "state-graph:trace-edit": {
+      "state-graph/edit": {
         "about": {
           "zh": "编辑距离表倒推出的路线",
           "en": "the walk back through an edit-distance table"
         }
       },
-      "state-graph:trace-local": {
+      "state-graph/local": {
         "about": {
           "zh": "局部对齐从最大的一格倒推到 0",
           "en": "local alignment walked back from its best cell to a 0"
         }
       },
-      "state-graph:trace-knap": {
+      "state-graph/knap": {
         "about": {
           "zh": "背包表倒推出的装法",
           "en": "the packing walked back through a knapsack table"
         }
       },
-      "state-graph:trace-seam": {
+      "state-graph/seam": {
         "about": {
           "zh": "从最底一行最小的格子倒推的缝",
           "en": "the seam walked back from the smallest cell of the bottom row"
         }
       },
-      "state-graph:trace-tags": {
+      "state-graph/tags": {
         "about": {
           "zh": "维特比表倒推出的词性",
           "en": "the tags walked back through a Viterbi table"
@@ -1565,19 +1565,19 @@ export const vocabulary = {
       }
     },
     "panel": {
-      "state-graph:panel-lcs": {
+      "state-graph/lcs": {
         "about": {
           "zh": "通过后：表格里藏着的连线",
           "en": "once passed: the lines hidden in the table"
         }
       },
-      "state-graph:panel-edit": {
+      "state-graph/edit": {
         "about": {
           "zh": "通过后：倒推出的改法",
           "en": "once passed: the edits traced back"
         }
       },
-      "state-graph:panel-spell": {
+      "state-graph/spell": {
         "about": {
           "zh": "全部通过后：候选词按步数排",
           "en": "once every test passes: the candidates by number of steps"
@@ -1594,37 +1594,37 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:panel-local": {
+      "state-graph/local": {
         "about": {
           "zh": "通过后：最像的一段",
           "en": "once passed: the most alike stretch"
         }
       },
-      "state-graph:panel-tags": {
+      "state-graph/tags": {
         "about": {
           "zh": "通过后：倒推出的标法（测试有 note 时加一句）",
           "en": "once passed: the tagging traced back (and the test’s note)"
         }
       },
-      "state-graph:panel-knap": {
+      "state-graph/knap": {
         "about": {
           "zh": "通过后：倒推出的装法",
           "en": "once passed: the packing traced back"
         }
       },
-      "state-graph:panel-roll": {
+      "state-graph/roll": {
         "about": {
           "zh": "物品一览，正在改写的那件亮起",
           "en": "the items, the one being rewritten lit"
         }
       },
-      "state-graph:panel-dictionary": {
+      "state-graph/dictionary": {
         "about": {
           "zh": "词典（和每个词的代价）",
           "en": "the dictionary (and what each word costs)"
         }
       },
-      "state-graph:panel-robConflict": {
+      "state-graph/robConflict": {
         "about": {
           "zh": "反例：一家一格时，两段历史落进同一个格子",
           "en": "the counterexample: with one cell a house, two histories land in one cell"
@@ -1632,7 +1632,7 @@ export const vocabulary = {
       }
     },
     "explain": {
-      "state-graph:explain-roll": {
+      "state-graph/roll": {
         "about": {
           "zh": "压成一行时，改写方向错了会把一件物品放两次",
           "en": "in one row, rewriting the wrong way packs an item twice"
@@ -1640,7 +1640,7 @@ export const vocabulary = {
       }
     },
     "port": {
-      "state-graph:port-reads": {
+      "state-graph/reads": {
         "about": {
           "zh": "读这一关的一个传感器，名字随它",
           "en": "a sensor of the level, named as it is"
@@ -1649,7 +1649,7 @@ export const vocabulary = {
           "type": "str"
         }
       },
-      "state-graph:port-way": {
+      "state-graph/way": {
         "about": {
           "zh": "第 n 条来路（a、b、c、d）：一个传感器，或板上一个只属于这一关的输入",
           "en": "way in n (a, b, c, d): a sensor, or an input of the board of its own"
@@ -1673,7 +1673,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:port-start": {
+      "state-graph/start": {
         "about": {
           "zh": "「起点」：一个是 / 否传感器",
           "en": "“start”: a yes / no sensor"
@@ -1687,7 +1687,7 @@ export const vocabulary = {
           }
         }
       },
-      "state-graph:port-named": {
+      "state-graph/named": {
         "about": {
           "zh": "自己起名字的口",
           "en": "a port with a name of its own"
@@ -1710,9 +1710,6 @@ export const vocabulary = {
     }
   },
   "languages": {},
-  "categories": { "play": "task",
-    "part": "primitive"
-  },
   "version": 1
 }
 export const gameSchema = {

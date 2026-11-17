@@ -23,11 +23,11 @@ const text = en => ({ en })
 const arithmetic = Object.fromEntries([
   ['add', 'plus'], ['subtract', 'minus'], ['multiply', 'times'], ['divide', 'over'],
 ].map(([name, operation]) => [name, {
-  icon: 'Plus', name: text(name), desc: text(name), family: 'circuit:family-value',
-  inputs: ['a', 'b'].map(name => ({ name, type: 'circuit:number' })),
-  outputType: 'circuit:number', op: `circuit:${operation}`,
+  icon: 'Plus', name: text(name), desc: text(name), family: 'circuit/value',
+  inputs: ['a', 'b'].map(name => ({ name, type: 'circuit/number' })),
+  outputType: 'circuit/number', op: `circuit/${operation}`,
 }]))
-const layer = (id, objects = [], uses = [], overrides = []) => ({ id, config: { version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
+const layer = (id, objects = [], uses = [], overrides = []) => ({ id, config: { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
 
 test('content prototypes qualify, merge, replace, reject undeclared dependencies and retain provenance', () => {
   const base = layer('base', [{ kind: 'qed/wordset', name: 'words', value: { A: 'alpha', B: 'beta' } }])
@@ -45,6 +45,11 @@ test('content prototypes qualify, merge, replace, reject undeclared dependencies
 
 test('packages reject the retired vocabulary field and invalid ranges', () => {
   const base = layer('base')
+  delete base.config.kind
+  assert.throws(() => composeLayers([base], vocabulary), /missing kind/)
+  base.config.kind = 'unknown'
+  assert.throws(() => composeLayers([base], vocabulary), /unknown kind/)
+  base.config.kind = 'lib'
   base.config.vocabulary = 1
   assert.throws(() => composeLayers([base], vocabulary), /unknown field vocabulary/)
   delete base.config.vocabulary
@@ -62,21 +67,21 @@ test('a numeric library works in packages using image and table boards, with no 
     const common = { title: text('Sample'), vocabulary: 1, primitives: ['arithmetic/add'] }
     writeContentFixture(root, 'picture', {
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {
-        title: text('Copy'), after: text('Same image.'), intro: [], tasks: [{ id: 'copy', play: 'image:graph',
-          brief: text('Copy the image.'), hint: text('Connect the image.'), scene: 'image:scene-filter',
-          setup: { target: 'image:target-same' }, tests: [{ label: text('Square'), in: 'image:picture-square' }], hidden: [{ label: text('Disk'), in: 'image:picture-disk' }], solution: ['out <- in'],
+        title: text('Copy'), after: text('Same image.'), intro: [], tasks: [{ id: 'copy', play: 'image/graph',
+          brief: text('Copy the image.'), hint: text('Connect the image.'), scene: 'image/filter',
+          setup: { target: 'image/same' }, tests: [{ label: text('Square'), in: 'image/square' }], hidden: [{ label: text('Disk'), in: 'image/disk' }], solution: ['out <- in'],
         }],
       } },
     }, imageVocabulary)
     writeContentFixture(root, 'cells', {
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {
         title: text('Copy'), short: text('Copy'), intro: [], mission: { goal: text('Copy cells.'), how: text('Read the previous cell.') },
-        robot: 'state-graph:robot-scout', debrief: { title: text('Copied'), body: [] }, tasks: [{ id: 'copy', play: 'state-graph:circuit',
-          hints: [text('Read the previous cell.')], world: 'state-graph:world-grid', tests: [{ R: 1, C: 2, given: { '0,0': 7 } }], expected: [14], solution: ['sum = arithmetic/add(view.left, view.left)', 'cell <- sum'],
+        robot: 'state-graph/scout', debrief: { title: text('Copied'), body: [] }, tasks: [{ id: 'copy', play: 'state-graph/circuit',
+          hints: [text('Read the previous cell.')], world: 'state-graph/grid', tests: [{ R: 1, C: 2, given: { '0,0': 7 } }], expected: [14], solution: ['sum = arithmetic/add(view.left, view.left)', 'cell <- sum'],
         }],
       } },
     }, layerVocabulary(resolveLayers({ package: 'state-graph', closure: true, root, unlocked: true }).layers))
-    for (const id of ['picture', 'cells']) put(`packages/${id}/package.json`, { uses: { 'arithmetic': '^0.0.0', ...(id === 'picture' ? { image: '^0.0.0' } : { 'state-graph': '^0.0.0', table: '^0.0.0' }) }, version: '1.0.0', kernel: '^0.0.0' })
+    for (const id of ['picture', 'cells']) put(`packages/${id}/package.json`, { kind: 'lib', uses: { 'arithmetic': '^0.0.0', ...(id === 'picture' ? { image: '^0.0.0' } : { 'state-graph': '^0.0.0', table: '^0.0.0' }) }, version: '1.0.0', kernel: '^0.0.0' })
     for (const id of ['arithmetic', 'picture', 'cells']) rmSync(resolve(root, 'games', id), { recursive: true })
     lockFixture(root)
     for (const id of ['arithmetic', 'picture', 'cells']) {

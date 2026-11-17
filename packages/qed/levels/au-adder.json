@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "au-adder",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -40,7 +40,7 @@
             "Sum ↔ (InA ∨ InB) ∧ ¬(InA ∧ InB)",
             "Carry ↔ InA ∧ InB"
           ],
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         },
         {
           "goal": "InA ∧ InB → Carry ∧ ¬Sum",

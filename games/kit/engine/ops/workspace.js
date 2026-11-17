@@ -3,7 +3,7 @@ import { projectVocabulary, meaningsOf } from '../kind-meanings.js'
 import { satisfies } from '../semver.js'
 import { lockTarget } from '../releases.js'
 import { tagKey, tagName } from '../tag-identity.js'
-import { kindSchemas, withKindDeclarations } from '../plugin-kinds.js'
+import { objectFoldersFor, kindSchemas, withKindDeclarations } from '../plugin-kinds.js'
 // A data game's files opened for operations (./operations.js): the game selector, its course (course.json), its
 // package's configuration, entries/<id>.json, levels/<id>.json, tags/<kind>/<id>.json, relations/sections/<id>.json, parts/<name>.json (when present), the game's
 // own texts over its package's (overrides/<namespace>/i18n/<lang>.json) and the course blueprint (blueprint.json, when the game has one
@@ -78,7 +78,11 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
   const archived = packageLayers.find(layer => layer.id === packageId).source === 'archive'
   const packageFiles = publicLayerFiles(packageLayers.find(layer => layer.id === packageId), schemas)
   let layerSchemas = schemas
-  const gameFolder = folder => Object.entries(kindFolders).some(([kind, path]) => path === folder && kindPolicy(kind, layerSchemas).declares === 'game')
+  const visibleFolders = schemas => ({
+    ...folders, kind: 'kinds', ...objectFoldersFor(packageId, schemas.objectKinds ?? {}),
+    ...(!packaged && objectFoldersFor(layer, schemas.objectKinds ?? {})),
+  })
+  const gameFolder = folder => Object.entries(visibleFolders(layerSchemas)).some(([kind, path]) => path === folder && kindPolicy(kind, layerSchemas).declares === 'game')
   const packageObjects = (dir, folder) => gameFolder(folder) ? (packaged ? [] : objectFiles(dir === packageDir ? gameDirectory(id, root) : dir, folder)) : (!packaged || archived) && dir === packageDir ? [...packageFiles.keys()].filter(file => file.startsWith(`${folder}/`) && file.endsWith('.json')).map(file => [file.slice(folder.length + 1, -5)]) : objectFiles(dir, folder)
   const paths = packaged ? { 'package.json': resolve(packageDir, 'package.json') } : configPaths(dir, packageDir)
   const pathFor = (file) => {
@@ -100,7 +104,7 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
     return parse(text, pathFor(file))
   }
   const levels = () => packageObjects(packageDir, 'levels').map(([levelId]) => levelId).sort()
-  const objectPaths = () => ['entries', 'tags', 'relations', 'sections', ...Object.keys(kindSchemas(schemas))].flatMap((kind) => [
+  const objectPaths = () => ['entries', 'tags', 'relations', 'sections', ...Object.keys(kindSchemas(schemas)).filter(kind => Object.hasOwn(visibleFolders(schemas), kind))].flatMap((kind) => [
     ...packageObjects(packageDir, kindFolders[kind] ?? kind).map(([name]) => `${kindFolders[kind] ?? kind}/${name}.json`),
   ])
   const localeFiles = () => [
@@ -151,7 +155,7 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
       return [levelId, readers.package(load(file), pathFor(file), schemas.level, schemas)]
     })),
     ...Object.fromEntries(Object.keys(OBJECT_SCHEMAS).map((kind) => [kind, new Map(objectPaths().filter((p) => p.startsWith(`${kind}/`)).map((file) => [kind === 'tags' ? tagKey(file.split('/').slice(1, -1).join('/'), file.split('/').at(-1).slice(0, -5)) : file.split('/').at(-1).slice(0, -5), { ...readers.package(load(file), pathFor(file), OBJECT_SCHEMAS[kind], schemas), ...(kind === 'tags' && { kind: file.split('/').slice(1, -1).join('/') }) }]))])),
-    contentObjects: Object.fromEntries(Object.entries(kindSchemas(schemas)).map(([kind, schema]) => [kind, new Map(packageObjects(packageDir, kindFolders[kind] ?? kind).map(([name]) => [name, readers[kindPolicy(kind, schemas).declares === 'game' ? 'course' : 'package'](load(`${kindFolders[kind] ?? kind}/${name}.json`), pathFor(`${kindFolders[kind] ?? kind}/${name}.json`), schema, schemas)]))])),
+    contentObjects: Object.fromEntries(Object.entries(kindSchemas(schemas)).map(([kind, schema]) => [kind, new Map((Object.hasOwn(visibleFolders(schemas), kind) ? packageObjects(packageDir, kindFolders[kind] ?? kind) : []).map(([name]) => [name, readers[kindPolicy(kind, schemas).declares === 'game' ? 'course' : 'package'](load(`${kindFolders[kind] ?? kind}/${name}.json`), pathFor(`${kindFolders[kind] ?? kind}/${name}.json`), schema, schemas)]))])),
     declarationProblems: [...resolved.lockStatus.problems, ...(packaged ? [] : gameDeclarationProblems(dir, schemas))],
     overrideFiles: new Map(extraOverridePaths().map((file) => [file, load(file)])),
     reservations: { course: keyed(courseCatalog), package: keyed(packageCatalog) },
@@ -191,7 +195,7 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
       for (const [kind, schema] of Object.entries(kindSchemas(selectedSchemas))) {
         const folder = selectedSchemas.objectKinds?.[kind]?.folder ?? folders[kind] ?? kind
         kindFolders[kind] = folder
-        if (!ws.contentObjects[kind]) ws.contentObjects[kind] = new Map(gameFolder(folder) ? objectFiles(dir, folder).map(([name]) => [name, readers.course(load(`${folder}/${name}.json`), `${folder}/${name}.json`, schema, selectedSchemas)]) : [])
+        if (!ws.contentObjects[kind]) ws.contentObjects[kind] = new Map(Object.hasOwn(visibleFolders(selectedSchemas), kind) && gameFolder(folder) ? objectFiles(dir, folder).map(([name]) => [name, readers.course(load(`${folder}/${name}.json`), `${folder}/${name}.json`, schema, selectedSchemas)]) : [])
       }
       Object.assign(ws, { packageIds: [...ids], packageRanges: { ...ranges }, packageLayers: layers, packageDirs: dirs, dependencyFiles: dependencies, schemas: selectedSchemas })
     },

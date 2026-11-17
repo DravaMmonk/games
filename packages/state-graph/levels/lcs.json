@@ -5,7 +5,7 @@
     {
       "t": "@level.lcs.intro.0.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -162,7 +162,7 @@
     {
       "t": "@level.lcs.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -343,7 +343,7 @@
     {
       "t": "@level.lcs.intro.2.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -512,7 +512,7 @@
     {
       "t": "@level.lcs.intro.3.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -671,7 +671,7 @@
     {
       "t": "@level.lcs.intro.4.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -841,7 +841,7 @@
     "goal": "@level.lcs.mission.goal",
     "how": "@level.lcs.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.lcs.debrief.title",
     "body": [
@@ -853,8 +853,8 @@
   "tasks": [
     {
       "id": "lcs",
-      "play": "state-graph:circuit",
-      "trace": "state-graph:trace-lcs",
+      "play": "state-graph/circuit",
+      "trace": "state-graph/lcs",
       "boardOpt": {
         "minScale": 0.66,
         "maxScale": 1.2
@@ -864,7 +864,7 @@
         "@level.lcs.tasks.lcs.hints.1",
         "@level.lcs.tasks.lcs.hints.2"
       ],
-      "world": "state-graph:world-align",
+      "world": "state-graph/align",
       "facts": [
         "same"
       ],
@@ -888,10 +888,10 @@
         4
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "a = table:add(view.ul, k)",
-        "g = table:pass(facts.same, a)",
-        "m = table:mmax(view.up, view.left, g)",
+        "k = table/const[value=1]()",
+        "a = table/add(view.ul, k)",
+        "g = table/pass(facts.same, a)",
+        "m = table/mmax(view.up, view.left, g)",
         "cell <- m"
       ],
       "border0": true,
@@ -901,7 +901,7 @@
           "variant": "base"
         }
       ],
-      "panel": "state-graph:panel-lcs"
+      "panel": "state-graph/lcs"
     }
   ]
 }

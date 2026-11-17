@@ -1,7 +1,7 @@
 {
   "name": "@part.dist.name",
   "desc": "@part.dist.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "settings": {
     "form": {
       "control": "select",
@@ -20,7 +20,7 @@
       "form": "orAndR",
       "label": "A ∨ (B ∧ C) ⟹ (A ∨ B) ∧ (A ∨ C)",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "e = orE(p, left: c1, right: c2) {",
           "  left {",
@@ -52,7 +52,7 @@
       "form": "andOrR",
       "label": "(A ∨ B) ∧ (A ∨ C) ⟹ A ∨ (B ∧ C)",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "s = andE(p)",
           "o1 = orE(s.left, left: i1, right: o2) {",
@@ -88,7 +88,7 @@
       "form": "orAndL",
       "label": "(A ∧ B) ∨ C ⟹ (A ∨ C) ∧ (B ∨ C)",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "e = orE(p, left: c1, right: c2) {",
           "  left {",
@@ -120,7 +120,7 @@
       "form": "andOrL",
       "label": "(A ∨ C) ∧ (B ∨ C) ⟹ (A ∧ B) ∨ C",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "s = andE(p)",
           "o1 = orE(s.left, left: o2, right: i3) {",
@@ -155,10 +155,10 @@
   "inputs": [
     {
       "name": "p0",
-      "type": "logic:judgment"
+      "type": "logic/judgment"
     }
   ],
-  "outputType": "logic:judgment",
+  "outputType": "logic/judgment",
   "stages": [
     {
       "id": "dist-andOrR",

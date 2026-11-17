@@ -67,7 +67,7 @@
       "values": [
         "rw-au-hyps-desc",
         "simp-au-hyps-desc",
-        "logic:hyp"
+        "logic/hyp"
       ]
     },
     {

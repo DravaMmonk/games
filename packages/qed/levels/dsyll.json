@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "dsyll",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

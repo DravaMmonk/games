@@ -15,6 +15,7 @@
     "check": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/check.js",
     "deps": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/deps.js",
     "styles": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/styles.js",
+    "new": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/scaffold.js",
     "new-game": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/scaffold.js game",
     "op": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/ops/cli.js",
     "mcp": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/ops/mcp.js",

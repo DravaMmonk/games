@@ -25,7 +25,7 @@ import { attentionTraining } from './benches/attention-training.js'
 import { sum, probe, alias } from './benches/waves.js'
 import { DISPLAYS } from './items/displays.js'
 export const imageItems = {
-  scenes: qualifyItems('vision-complete', 'scene', Object.assign({}, PIXELS, FILTERS, FREQUENCY, LIGHT, LEARNING, ATTENTION, MATCHING, STEREO, GENERATIVE, SEGMENT, DETECT, EXPLAIN)),
-  benches: qualifyItems('vision-complete', 'benchModel', { racer, stop, contrast, hough, ransac, cover, gan, appleLight, separable, attentionRoles, attentionTraining, sum, probe, alias }),
+  scenes: qualifyItems('vision-complete', Object.assign({}, PIXELS, FILTERS, FREQUENCY, LIGHT, LEARNING, ATTENTION, MATCHING, STEREO, GENERATIVE, SEGMENT, DETECT, EXPLAIN)),
+  benches: qualifyItems('vision-complete', { racer, stop, contrast, hough, ransac, cover, gan, appleLight, separable, attentionRoles, attentionTraining, sum, probe, alias }),
   displays: DISPLAYS,
 }

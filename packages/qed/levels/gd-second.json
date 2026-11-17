@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "gd-second",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "g",
         "gn",

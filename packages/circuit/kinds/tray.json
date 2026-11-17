@@ -24,7 +24,7 @@
         "type": "list",
         "of": {
           "type": "str",
-          "pattern": "^#?(?:(?:@?[a-z][a-z0-9-]*/)|(?:[a-z][a-z0-9-]*:))?[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "pattern": "^#?(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
           "reference": "circuit/part"
         }
       },
@@ -35,7 +35,7 @@
           "fields": {
             "id": {
               "type": "str",
-              "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9_-]*$",
+              "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
               "reference": "menu"
             },
             "title": {
@@ -45,7 +45,7 @@
               "type": "list",
               "of": {
                 "type": "str",
-                "pattern": "^#?(?:(?:@?[a-z][a-z0-9-]*/)|(?:[a-z][a-z0-9-]*:))?[A-Za-z0-9][A-Za-z0-9_-]*$",
+                "pattern": "^#?(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
                 "reference": "circuit/part"
               }
             }

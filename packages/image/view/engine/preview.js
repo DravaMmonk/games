@@ -29,7 +29,7 @@ export function imagePreview(image, box, entry) {
     const view = (_node, value) => value?.h === 1 && value.w > 1 && (value.c ?? 1) === 1 ? ['plot', 'pixels'] : ['pixels', 'numbers']
     return { task: sample, board, tests, run, prepare: tidyImageBoard, view }
   }
-  return (preferred?.kind === 'image:graph' && make(preferred)) || make(defaultTask)
+  return (preferred?.kind === 'image/graph' && make(preferred)) || make(defaultTask)
 }
 
 function around(type, spec, names, params) {

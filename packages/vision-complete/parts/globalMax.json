@@ -2,12 +2,12 @@
   "name": "@part.globalMax.name",
   "desc": "@part.globalMax.desc",
   "icon": "Network",
-  "family": "image:family-global",
+  "family": "image/global",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:globalMax"
+  "op": "image/globalMax"
 }

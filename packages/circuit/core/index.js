@@ -191,12 +191,12 @@ export { boardPlay, boardContext } from './board-play.js'
 export function register(kernel) {
   // Install operations before any consumer compiles its part definitions.
   circuitVocabulary({ kinds: {}, capabilities: {}, game: { fields: {} } })
-  kernel.kind('circuit:part', partMeaning)
-  kernel.kind('circuit:tray', trayMeaning)
-  kernel.kind('circuit:quote', { type: 'circuit/quote', read: value => value, selector: 'quote' })
-  kernel.play('circuit:board', { ...boardPlay, runtime: circuitRuntime })
-  kernel.check('circuit:boards', boardChecks)
-  kernel.agent('circuit:board', {
+  kernel.kind('circuit/part', partMeaning)
+  kernel.kind('circuit/tray', trayMeaning)
+  kernel.kind('circuit/quote', { type: 'circuit/quote', read: value => value, selector: 'quote' })
+  kernel.play('circuit/board', { ...boardPlay, runtime: circuitRuntime })
+  kernel.check('circuit/boards', boardChecks)
+  kernel.agent('circuit/board', {
     observe: ({ task }) => ({ brief: task.brief, inputs: task.inputs, outputs: task.outputs }),
     act: (context, work) => { const graph = boardPlay.read(work, context); const report = boardPlay.run(graph, context); return { work: graph, verdict: boardPlay.judge(report) } },
   })

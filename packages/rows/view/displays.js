@@ -1,3 +1,3 @@
 import { sums } from './sums.js'
 
-export const displays = { 'rows:sums': sums }
+export const displays = { 'rows/sums': sums }

@@ -2,12 +2,12 @@
   "name": "@part.hough.name",
   "desc": "@part.hough.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:hough"
+  "op": "image/hough"
 }

@@ -8,15 +8,15 @@ import { MACHINE_PARTS, RULE_CHOICES } from './machine.js'
 import { compileParts, defineParts } from 'circuit'
 
 /** The resources by name: { about, args, run(args, named, ctx) }. */
-const choiceResources = Object.fromEntries(Object.entries(signatures({ ...OPTIONS, ruleChoices: RULE_CHOICES }, 'logic:options')).map(([name, item]) => [name, {
+const choiceResources = Object.fromEntries(Object.entries(signatures({ ...OPTIONS, ruleChoices: RULE_CHOICES }, 'logic/options')).map(([name, item]) => [name, {
   ...item,
-  args: item.args.map((arg) => ({ ...arg, type: 'logic:judgment' })),
+  args: item.args.map((arg) => ({ ...arg, type: 'logic/judgment' })),
 }]))
 
-export const OPS = qualifyItems('logic', 'op', {
-  ...signatures(RULES, 'logic:judgment'),
-  ...signatures({ lemma: LEMMA }, 'logic:judgment'),
-  ...signatures(MACHINE_PARTS, 'logic:machine-value'),
+export const OPS = qualifyItems('logic', {
+  ...signatures(RULES, 'logic/judgment'),
+  ...signatures({ lemma: LEMMA }, 'logic/judgment'),
+  ...signatures(MACHINE_PARTS, 'logic/machine-value'),
   ...choiceResources,
 })
 /** The same, as the vocabulary's items (what each is, without running it). */

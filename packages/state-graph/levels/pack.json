@@ -27,7 +27,7 @@
   "tasks": [
     {
       "id": "pack",
-      "play": "state-graph:pack",
+      "play": "state-graph/pack",
       "tests": [
         {
           "W": 5,

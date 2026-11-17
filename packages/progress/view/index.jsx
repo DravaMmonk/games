@@ -18,7 +18,7 @@ function WorkshopSwitch({ value, locked, write }) {
 }
 
 export function register(kernel) {
-  kernel.game('progress:workshop', (game, content) => {
+  kernel.game('progress/workshop', (game, content) => {
     game.workshop = {
       replaces: content.replaces ?? {},
       trays: content.registries['circuit/tray'] ?? {},
@@ -32,7 +32,7 @@ export function register(kernel) {
     game.bindPassingBoard = workshop.bind
     game.restoreBuilt = workshop.restore
   })
-  kernel.unlocks('progress:parts', partUnlocks)
-  kernel.editorExtension('progress:part', { type: 'circuit/part', stageChain: StageChain })
-  kernel.editorExtension('progress:tray', { type: 'circuit/tray', workshop: WorkshopSwitch })
+  kernel.unlocks('progress/parts', partUnlocks)
+  kernel.editorExtension('progress/part', { type: 'circuit/part', stageChain: StageChain })
+  kernel.editorExtension('progress/tray', { type: 'circuit/tray', workshop: WorkshopSwitch })
 }

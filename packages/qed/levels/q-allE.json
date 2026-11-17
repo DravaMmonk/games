@@ -12,7 +12,7 @@
   "tasks": [
     {
       "id": "q-allE",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i"
       ],

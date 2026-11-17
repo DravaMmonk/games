@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "h-eq-sym",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i",
         "j"

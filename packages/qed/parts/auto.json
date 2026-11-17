@@ -1,12 +1,12 @@
 {
   "name": "@part.auto.name",
   "desc": "@part.auto.desc",
-  "family": "logic:family-built",
+  "family": "logic/built",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0 = search(in, body: c1) {",
           "  body {",
@@ -25,12 +25,12 @@
           "}",
           "out <- c0"
         ],
-        "want": "logic:want-proved",
+        "want": "logic/proved",
         "inputs": [{ "name": "in", "label": "in" }],
         "tests": [{ "goal": "Rain ∧ (Wind ∨ Wet) → (Rain ∧ Wind) ∨ (Rain ∧ Wet)" }]
       }
     }
   ],
-  "inputs": [{ "name": "in", "type": "logic:machine-value" }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "in", "type": "logic/machine-value" }],
+  "outputType": "logic/machine-value"
 }

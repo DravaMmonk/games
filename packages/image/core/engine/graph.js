@@ -42,12 +42,12 @@ export function runnerOf(types, partsFor = (_task, parts) => parts) {
     if (spec.kit) return spec
     if (!wrapped.has(spec)) {
       wrapped.set(spec, type === 'input'
-        ? source({ spec, outputType: 'image:image', eval: (_, node, ctx, key) => {
+        ? source({ spec, outputType: 'image/image', eval: (_, node, ctx, key) => {
             const value = ctx.bind?.[node.params?.name]
             return key == null || value == null ? value : channel(value, { r: 0, g: 1, b: 2 }[key])
           } })
         : type === 'output'
-          ? sink({ spec, inputTypes: Object.fromEntries(spec.inputs.map((name) => [name, 'image:image'])), inputs: spec.inputs, optional: spec.optional, collect: (ins) => {
+          ? sink({ spec, inputTypes: Object.fromEntries(spec.inputs.map((name) => [name, 'image/image'])), inputs: spec.inputs, optional: spec.optional, collect: (ins) => {
               const planes = ['r', 'g', 'b'].map((key) => ins[key])
               const sample = planes.find(Boolean)
               if (!sample) return ins.in

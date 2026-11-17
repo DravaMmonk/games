@@ -1,0 +1,19 @@
+{
+  "name": "@part.dg-decode.name",
+  "desc": "@part.dg-decode.desc",
+  "icon": "Activity",
+  "family": "image/learned",
+  "inputs": [
+    {
+      "name": "in",
+      "label": ""
+    }
+  ],
+  "settings": {
+    "w": {
+      "label": "@part.dg-decode.settings.w.label",
+      "fixed": true
+    }
+  },
+  "op": "image/dg-decode"
+}

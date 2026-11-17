@@ -5,14 +5,14 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "a = table:add(view.src, facts.value)",
-          "m = table:mmax(view.old, a)",
+          "a = table/add(view.src, facts.value)",
+          "m = table/mmax(view.old, a)",
           "cell <- m"
         ],
-        "world": "state-graph:world-roll",
-        "robot": "state-graph:robot-reach",
+        "world": "state-graph/roll",
+        "robot": "state-graph/reach",
         "facts": [
           "value"
         ],

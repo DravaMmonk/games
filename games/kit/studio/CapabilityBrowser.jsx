@@ -1,6 +1,6 @@
 // The kernel's capabilities, read only (games/DESIGN.md 6.2, 6.7): what a package can pick and combine — value types,
 // operations, primitive parts, boards, task kinds, content items, displays, languages, content kinds — each by its
-// `<module>:<name>`, listed in the left column narrowed by kind, module and a search; the one picked in the middle, with
+// `<package>/<name>`, listed in the left column narrowed by kind, module and a search; the one picked in the middle, with
 // what it says and what it takes; its description as JSON on the right.
 import { useMemo, useState } from 'react'
 import { L, tr } from '../shell/i18n.js'
@@ -10,28 +10,35 @@ import SidebarListTools from './SidebarListTools.jsx'
 
 const KINDS = [
   ['operation', '运算', 'Operations'], ['primitive', '原始元件', 'Primitive parts'], ['valueType', '值类型', 'Value types'],
-  ['board', '板', 'Boards'], ['task', '任务种类', 'Task kinds'], ['content', '内容项', 'Content items'],
-  ['display', '显示', 'Displays'], ['language', '语言', 'Languages'], ['contentKind', '内容种类', 'Content kinds'],
+  ['board', '板', 'Boards'], ['kind', '任务种类', 'Task kinds'], ['play', '玩法', 'Plays'],
+  ['mode', '模式', 'Modes'], ['want', '目标条件', 'Goals'], ['display', '显示', 'Displays'], ['language', '语言', 'Languages'],
+  ['family', '元件族', 'Families'], ['mark', '图记', 'Marks'], ['widget', '控件', 'Widgets'],
+  ['view', '视图', 'Views'], ['picture', '图片', 'Pictures'], ['scene', '场景', 'Scenes'],
+  ['target', '目标', 'Targets'], ['constraint', '约束', 'Constraints'], ['benchModel', '实验模型', 'Bench models'],
+  ['unlock', '解锁项', 'Unlocks'], ['world', '世界', 'Worlds'], ['robot', '机器人', 'Robots'],
+  ['figure', '图示', 'Figures'], ['condition', '条件', 'Conditions'], ['trace', '轨迹', 'Traces'],
+  ['panel', '面板', 'Panels'], ['explain', '讲解', 'Explanations'], ['port', '端口', 'Ports'],
 ]
 const ALL = ''
-export const moduleOf = (name) => name.slice(0, name.indexOf(':'))
+const kindsOf = capabilities => [...KINDS, ...Object.keys(capabilities ?? {}).filter(kind => !KINDS.some(([key]) => key === kind)).map(kind => [kind, kind, kind])]
+export const moduleOf = (name) => name.split('/')[0]
 
 /** The capability `key` names (left-lists.js capabilityKey), else the first listed: { kind, name, it }, or null. */
 export function currentCapability(capabilities, key) {
   const picked = capabilityOf(key)
   if (picked && capabilities?.[picked.kind]?.[picked.name]) return { ...picked, it: capabilities[picked.kind][picked.name] }
-  const kind = KINDS.map(([k]) => k).find((k) => Object.keys(capabilities?.[k] ?? {}).length)
+  const kind = kindsOf(capabilities).map(([k]) => k).find((k) => Object.keys(capabilities?.[k] ?? {}).length)
   if (!kind) return null
   const [name, it] = Object.entries(capabilities[kind])[0]
   return { kind, name, it }
 }
 
 /**
- * The left list of capabilities (`capabilities`: { kind: { '<module>:<name>': description } }, the vocabulary's index),
+ * The left list of capabilities (`capabilities`: { kind: { '<package>/<name>': description } }, the vocabulary's index),
  * narrowed by kind, module and a search. `current`: { kind, name } open; `onOpen(kind, name)` opens one.
  */
 export function CapabilityList({ capabilities, current, onOpen }) {
-  const kinds = KINDS.filter(([kind]) => Object.keys(capabilities?.[kind] ?? {}).length)
+  const kinds = kindsOf(capabilities).filter(([kind]) => Object.keys(capabilities?.[kind] ?? {}).length)
   const [kind, setKind] = useState(current?.kind ?? kinds[0]?.[0] ?? 'operation')
   const [module, setModule] = useState(ALL)
   const [query, setQuery] = useState('')

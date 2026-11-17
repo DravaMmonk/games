@@ -95,10 +95,10 @@ function derivationPlay(readout, run) {
   })
 }
 
-const circuits = { 'logic:gates': gates, 'logic:proof': derivationPlay(proofReadout, runProof), 'logic:machine': derivationPlay(machineReadout, runMachine) }
+const circuits = { 'logic/gates': gates, 'logic/proof': derivationPlay(proofReadout, runProof), 'logic/machine': derivationPlay(machineReadout, runMachine) }
 const notCovered = (kind) => ({
   covered: false,
-  why: kind === 'logic:truth' ? T('真值表（逐行手填或勾选），harness 还不支持') : T(`「${kind}」玩法，harness 还不支持`, `a “${kind}” play; the harness does not cover it yet`),
+  why: kind === 'logic/truth' ? T('真值表（逐行手填或勾选），harness 还不支持') : T(`「${kind}」玩法，harness 还不支持`, `a “${kind}” play; the harness does not cover it yet`),
 })
 
 export const play = {

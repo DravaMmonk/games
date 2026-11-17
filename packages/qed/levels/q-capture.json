@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "q-capture",
-      "kind": "logic:model",
+      "kind": "logic/model",
       "say": "@level.q-capture.tasks.q-capture.say",
       "given": [
         "∀x. ∃y. Likes(x, y)"

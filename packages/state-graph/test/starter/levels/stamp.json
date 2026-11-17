@@ -10,10 +10,10 @@
     "goal": "@level.stamp.mission.goal",
     "how": "@level.stamp.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:const",
-    "table:pass"
+    "table/const",
+    "table/pass"
   ],
   "debrief": {
     "title": "@level.stamp.debrief.title",
@@ -24,30 +24,30 @@
   "tasks": [
     {
       "id": "stamp",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "hints": [
         "@level.stamp.tasks.stamp.hints.0"
       ],
       "ports": [
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 1,
             "sensor": "up"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 2,
             "sensor": "left"
           }
         },
         {
-          "state-graph:port-start": {
+          "state-graph/start": {
             "sensor": "start"
           }
         }
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start"
       ],
@@ -66,13 +66,13 @@
         20
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "g = table:pass(facts.start, k)",
-        "m = table:msum(view.up, view.left, g)",
+        "k = table/const[value=1]()",
+        "g = table/pass(facts.start, k)",
+        "m = table/msum(view.up, view.left, g)",
         "cell <- m"
       ],
       "naive": [
-        "m = table:msum(view.up, view.left)",
+        "m = table/msum(view.up, view.left)",
         "cell <- m"
       ],
       "publishes": [

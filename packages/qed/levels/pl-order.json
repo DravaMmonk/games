@@ -13,8 +13,8 @@
   "tasks": [
     {
       "id": "pl-order",
-      "kind": "logic:machine",
-      "want": "logic:want-answers",
+      "kind": "logic/machine",
+      "want": "logic/answers",
       "inputs": [
         {
           "name": "in",

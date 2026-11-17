@@ -5,7 +5,7 @@
     {
       "t": "@level.rocks.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 3,
           "cells": {
@@ -19,7 +19,7 @@
     {
       "t": "@level.rocks.intro.1.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "u",
@@ -73,7 +73,7 @@
     {
       "t": "@level.rocks.intro.2.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "c",
@@ -124,9 +124,9 @@
     "goal": "@level.rocks.mission.goal",
     "how": "@level.rocks.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:block"
+    "table/block"
   ],
   "debrief": {
     "title": "@level.rocks.debrief.title",
@@ -139,12 +139,12 @@
   "tasks": [
     {
       "id": "rocks",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "hints": [
         "@level.rocks.tasks.rocks.hints.0",
         "@level.rocks.tasks.rocks.hints.1"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start",
         "rock"
@@ -200,7 +200,7 @@
       ],
       "solution": [
         "c = counter(view.up, view.left, facts.start)",
-        "b = table:block(facts.rock, c)",
+        "b = table/block(facts.rock, c)",
         "cell <- b"
       ]
     }

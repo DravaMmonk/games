@@ -1,12 +1,12 @@
 {
   "name": "@part.unifier.name",
   "desc": "@part.unifier.desc",
-  "family": "logic:family-built",
+  "family": "logic/built",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "r = repeat(in, body: c5) {",
           "  body {",
@@ -20,7 +20,7 @@
           "}",
           "out <- r"
         ],
-        "want": "logic:want-unify",
+        "want": "logic/unify",
         "inputs": [
           {
             "name": "in",
@@ -33,10 +33,10 @@
   "inputs": [
     {
       "name": "in",
-      "type": "logic:machine-value"
+      "type": "logic/machine-value"
     }
   ],
-  "outputType": "logic:machine-value",
+  "outputType": "logic/machine-value",
   "stages": [
     {
       "id": "unifier-r-pattern-desc",

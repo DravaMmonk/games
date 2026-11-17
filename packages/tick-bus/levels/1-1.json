@@ -25,12 +25,12 @@
         }
       ],
       "want": {
-        "bit": "tick-bus:want-line"
+        "bit": "tick-bus/line"
       },
       "solution": [
         "bit <- line"
       ],
-      "play": "tick-bus:board"
+      "play": "tick-bus/board"
     }
   ]
 }

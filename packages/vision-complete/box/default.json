@@ -1,0 +1,16 @@
+{
+  "sample": "1-1",
+  "inLevel": {
+    "image/dg-decoder": "8-4",
+    "image/dg-reparam": "8-4"
+  },
+  "boards": {
+    "image/dg-reparam": [
+      "m = dg-mu[w=[0.4, -0.3]]()",
+      "s = dg-sigma[w=[0.5, 0.25]]()",
+      "r = dg-reparam(m, s, eps)",
+      "d = dg-decoder(r)",
+      "out <- d"
+    ]
+  }
+}

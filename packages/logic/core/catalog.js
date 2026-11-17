@@ -10,7 +10,7 @@ const vocabularyProjection = Symbol.for('study-notes.logic-vocabulary')
 export const meaning = {
   type: 'level', read: value => value, baselineReports: logicReports,
   configuration: { words: 'course.json' },
-  blueprintRules: ({ objects }) => Object.entries(objects['circuit/part'] ?? {}).filter(([, part]) => part.inside && ['logic:family-lemma', 'logic:family-rule'].includes(part.family)).map(([id]) => id.split('/').at(-1)),
+  blueprintRules: ({ objects }) => Object.entries(objects['circuit/part'] ?? {}).filter(([, part]) => part.inside && ['logic/lemma', 'logic/rule'].includes(part.family)).map(([id]) => id.split('/').at(-1)),
   baselineStructure: ({ content }) => Object.keys(content.registries['logic/symbol'] ?? {}).length ? { symbols: content.registries['logic/symbol'] } : {},
   vocabulary(base) {
     if (base[vocabularyProjection]) return base
@@ -20,7 +20,7 @@ export const meaning = {
     const game = S.obj({ ...base.game.fields, ...Object.fromEntries(Object.entries(own.game.fields).filter(([key]) => !['title', 'kicker', 'lede', 'chapters'].includes(key)).map(([key, field]) => [key, S.opt(field)])) })
     return { ...base, [vocabularyProjection]: true, level, game,
       kinds: Object.fromEntries([...new Set([...Object.keys(base.kinds), ...Object.keys(registry.kinds)])].map(kind => [kind, { ...base.kinds[kind], ...registry.kinds[kind] }])),
-      capabilities: Object.fromEntries(Object.entries(registry.tables).map(([kind, items]) => [kind, { ...base.capabilities[kind], ...items }])),
+      capabilities: { ...base.capabilities, ...Object.fromEntries(Object.entries(registry.tables).map(([kind, items]) => [kind, { ...base.capabilities[kind], ...items }])) },
       languages: { ...base.languages, ...registry.languages },
     }
   },

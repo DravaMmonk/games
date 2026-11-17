@@ -11,9 +11,9 @@
   ],
   "tasks": [
     {
-      "id": "au-refute_1",
-      "kind": "logic:proof",
-      "step": "@level.au-refute.tasks.au-refute_1.step",
+      "id": "au-refute-1",
+      "kind": "logic/proof",
+      "step": "@level.au-refute.tasks.au-refute-1.step",
       "tests": [
         {
           "premises": {
@@ -34,9 +34,9 @@
           "B": "Up"
         }
       ],
-      "briefNote": "@level.au-refute.tasks.au-refute_1.briefNote",
+      "briefNote": "@level.au-refute.tasks.au-refute-1.briefNote",
       "hint": [
-        "@level.au-refute.tasks.au-refute_1.hint.0"
+        "@level.au-refute.tasks.au-refute-1.hint.0"
       ],
       "solution": [
         "r1 = res(q, p)",
@@ -45,9 +45,9 @@
       ]
     },
     {
-      "id": "au-refute_2",
-      "kind": "logic:proof",
-      "step": "@level.au-refute.tasks.au-refute_2.step",
+      "id": "au-refute-2",
+      "kind": "logic/proof",
+      "step": "@level.au-refute.tasks.au-refute-2.step",
       "tests": [
         {
           "premises": {
@@ -71,9 +71,9 @@
           "C": "Awake"
         }
       ],
-      "brief": "@level.au-refute.tasks.au-refute_2.brief",
+      "brief": "@level.au-refute.tasks.au-refute-2.brief",
       "hint": [
-        "@level.au-refute.tasks.au-refute_2.hint.0"
+        "@level.au-refute.tasks.au-refute-2.hint.0"
       ],
       "solution": [
         "r1 = res(p, q)",

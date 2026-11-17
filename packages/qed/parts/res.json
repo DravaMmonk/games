@@ -1,12 +1,12 @@
 {
   "name": "@part.res.name",
   "desc": "@part.res.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "e = orE(p, left: e2, right: o2) {",
           "  left {",
@@ -30,7 +30,7 @@
       }
     }
   ],
-  "card": "logic:res",
-  "inputs": [{ "name": "p0", "type": "logic:judgment" }, { "name": "p1", "type": "logic:judgment" }],
-  "outputType": "logic:judgment"
+  "card": "logic/res",
+  "inputs": [{ "name": "p0", "type": "logic/judgment" }, { "name": "p1", "type": "logic/judgment" }],
+  "outputType": "logic/judgment"
 }

@@ -9,8 +9,8 @@
   "tasks": [
     {
       "id": "au-hyps",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",

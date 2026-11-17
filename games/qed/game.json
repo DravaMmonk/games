@@ -35,5 +35,5 @@
     "qed/limits",
     "qed/assist"
   ],
-  "hero": "qed:hero"
+  "hero": "qed/hero"
 }

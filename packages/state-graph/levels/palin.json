@@ -8,7 +8,7 @@
     {
       "t": "@level.palin.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "t0",
@@ -144,7 +144,7 @@
     "goal": "@level.palin.mission.goal",
     "how": "@level.palin.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.palin.debrief.title",
     "body": [
@@ -156,7 +156,7 @@
   "tasks": [
     {
       "id": "palin",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "boardOpt": {
         "minScale": 0.6,
         "maxScale": 1.15
@@ -166,7 +166,7 @@
         "@level.palin.tasks.palin.hints.1",
         "@level.palin.tasks.palin.hints.2"
       ],
-      "world": "state-graph:world-interval",
+      "world": "state-graph/interval",
       "facts": [
         "same"
       ],
@@ -187,10 +187,10 @@
         7
       ],
       "solution": [
-        "k = table:const[value=2]()",
-        "a = table:add(view.dl, k)",
-        "g = table:pass(facts.same, a)",
-        "m = table:mmax(view.left, view.down, g)",
+        "k = table/const[value=2]()",
+        "a = table/add(view.dl, k)",
+        "g = table/pass(facts.same, a)",
+        "m = table/mmax(view.left, view.down, g)",
         "cell <- m"
       ],
       "scan": "len",

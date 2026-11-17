@@ -2,15 +2,15 @@
   "title": "@level.kk-three.title",
   "tasks": [
     {
-      "id": "kk-three_1",
-      "kind": "logic:gates",
+      "id": "kk-three-1",
+      "kind": "logic/gates",
       "tray": "gates",
-      "step": "@level.kk-three.tasks.kk-three_1.step",
+      "step": "@level.kk-three.tasks.kk-three-1.step",
       "blind": true,
       "target": "KA ↔ ¬KA ∨ KB",
-      "brief": "@level.kk-three.tasks.kk-three_1.brief",
+      "brief": "@level.kk-three.tasks.kk-three-1.brief",
       "hint": [
-        "@level.kk-three.tasks.kk-three_1.hint.0"
+        "@level.kk-three.tasks.kk-three-1.hint.0"
       ],
       "solution": [
         "na = gNot(KA)",
@@ -20,10 +20,10 @@
       ]
     },
     {
-      "id": "kk-three_2",
-      "kind": "logic:proof",
+      "id": "kk-three-2",
+      "kind": "logic/proof",
       "tray": "proof",
-      "step": "@level.kk-three.tasks.kk-three_2.step",
+      "step": "@level.kk-three.tasks.kk-three-2.step",
       "tests": [
         {
           "premises": {
@@ -43,8 +43,8 @@
         }
       ],
       "hint": [
-        "@level.kk-three.tasks.kk-three_2.hint.0",
-        "@level.kk-three.tasks.kk-three_2.hint.1"
+        "@level.kk-three.tasks.kk-three-2.hint.0",
+        "@level.kk-three.tasks.kk-three-2.hint.1"
       ],
       "solution": [
         "l = lem[A=A]()",

@@ -5,31 +5,31 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "a = table:add(view.upk, facts.value)",
-          "m = table:mmax(view.up, a)",
+          "a = table/add(view.upk, facts.value)",
+          "m = table/mmax(view.up, a)",
           "cell <- m"
         ],
-        "world": "state-graph:world-knap",
-        "robot": "state-graph:robot-reach",
+        "world": "state-graph/knap",
+        "robot": "state-graph/reach",
         "ports": [
           {
-            "state-graph:port-named": {
+            "state-graph/named": {
               "label": "up",
               "short": "up",
               "sensor": "up"
             }
           },
           {
-            "state-graph:port-named": {
+            "state-graph/named": {
               "label": "upk",
               "short": "upk",
               "sensor": "upk"
             }
           },
           {
-            "state-graph:port-named": {
+            "state-graph/named": {
               "label": "value",
               "short": "value",
               "sensor": "value"
@@ -45,16 +45,16 @@
   "inputs": [
     {
       "name": "up",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "upk",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "value",
-      "type": "circuit:number"
+      "type": "circuit/number"
     }
   ],
-  "outputType": "circuit:number"
+  "outputType": "circuit/number"
 }

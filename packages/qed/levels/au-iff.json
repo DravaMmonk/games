@@ -7,10 +7,10 @@
   ],
   "tasks": [
     {
-      "id": "au-iff_1",
-      "kind": "logic:proof",
+      "id": "au-iff-1",
+      "kind": "logic/proof",
       "tray": "proof",
-      "step": "@level.au-iff.tasks.au-iff_1.step",
+      "step": "@level.au-iff.tasks.au-iff-1.step",
       "tests": [
         {
           "premises": {
@@ -30,7 +30,7 @@
         }
       ],
       "hint": [
-        "@level.au-iff.tasks.au-iff_1.hint.0"
+        "@level.au-iff.tasks.au-iff-1.hint.0"
       ],
       "solution": [
         "e = andE(p)",
@@ -47,10 +47,10 @@
       ]
     },
     {
-      "id": "au-iff_2",
-      "kind": "logic:proof",
+      "id": "au-iff-2",
+      "kind": "logic/proof",
       "tray": "proof",
-      "step": "@level.au-iff.tasks.au-iff_2.step",
+      "step": "@level.au-iff.tasks.au-iff-2.step",
       "tests": [
         {
           "premises": {
@@ -70,7 +70,7 @@
         }
       ],
       "hint": [
-        "@level.au-iff.tasks.au-iff_2.hint.0"
+        "@level.au-iff.tasks.au-iff-2.hint.0"
       ],
       "solution": [
         "e = andE(p)",
@@ -90,18 +90,18 @@
       ]
     },
     {
-      "id": "au-iff_3",
-      "kind": "logic:machine",
+      "id": "au-iff-3",
+      "kind": "logic/machine",
       "tray": "machine",
-      "want": "logic:want-becomes",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.au-iff.tasks.au-iff_3.inputs.0.label"
+          "label": "@level.au-iff.tasks.au-iff-3.inputs.0.label"
         }
       ],
       "backtrack": true,
-      "step": "@level.au-iff.tasks.au-iff_3.step",
+      "step": "@level.au-iff.tasks.au-iff-3.step",
       "tests": [
         {
           "goal": "Sat ↔ Rest",
@@ -120,9 +120,9 @@
           ]
         }
       ],
-      "brief": "@level.au-iff.tasks.au-iff_3.brief",
+      "brief": "@level.au-iff.tasks.au-iff-3.brief",
       "hint": [
-        "@level.au-iff.tasks.au-iff_3.hint.0"
+        "@level.au-iff.tasks.au-iff-3.hint.0"
       ],
       "solution": [
         "c0r0 = iff[use=[\"iff.elim\"]]()",

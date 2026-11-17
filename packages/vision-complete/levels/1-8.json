@@ -14,29 +14,29 @@
       "t": "@level.1-8.intro.2.t"
     }
   ],
-  "unlocks": ["image:unlock-kernel3"],
+  "unlocks": ["image/kernel3"],
   "tasks": [
     {
       "id": "1-8",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.1-8.tasks.1-8.brief",
       "hint": "@level.1-8.tasks.1-8.hint",
-      "scene": "image:scene-filter",
-      "setup": { "target": { "image:target-convolve": { "kernel": [0, 0.5, 0, 0, 0, 0, 0, 0, 0.5] } } },
+      "scene": "image/filter",
+      "setup": { "target": { "image/convolve": { "kernel": [0, 0.5, 0, 0, 0, 0, 0, 0, 0.5] } } },
       "tests": [
         {
           "label": "@level.1-8.tasks.1-8.tests.0.label",
-          "in": { "image:picture-impulse": { "x": 7, "y": 7 } }
+          "in": { "image/impulse": { "x": 7, "y": 7 } }
         },
-        { "label": "@level.1-8.tasks.1-8.tests.1.label", "in": "image:picture-square" },
-        { "label": "@level.1-8.tasks.1-8.tests.2.label", "in": { "image:picture-glyph": { "letter": "F" } } }
+        { "label": "@level.1-8.tasks.1-8.tests.1.label", "in": "image/square" },
+        { "label": "@level.1-8.tasks.1-8.tests.2.label", "in": { "image/glyph": { "letter": "F" } } }
       ],
       "hidden": [
         {
           "label": "@level.1-8.tasks.1-8.hidden.0.label",
-          "in": { "image:picture-glyph": { "letter": "T", "lo": 0.1, "hi": 0.9, "ox": 5, "oy": 4 } }
+          "in": { "image/glyph": { "letter": "T", "lo": 0.1, "hi": 0.9, "ox": 5, "oy": 4 } }
         },
-        { "label": "@level.1-8.tasks.1-8.hidden.1.label", "in": { "image:picture-noise": { "seed": 22 } } }
+        { "label": "@level.1-8.tasks.1-8.hidden.1.label", "in": { "image/noise": { "seed": 22 } } }
       ],
       "solution": [
         "kN = const[c=0.5]()",

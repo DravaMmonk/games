@@ -8,7 +8,7 @@
   "tasks": [
     {
       "id": "au-onepair",
-      "kind": "logic:truth",
+      "kind": "logic/truth",
       "ask": "sat",
       "formulas": [
         "(Rain ∨ Wind) ∧ (¬Rain ∨ ¬Wind)"

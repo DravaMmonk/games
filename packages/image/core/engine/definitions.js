@@ -7,12 +7,12 @@ import { NODE_TYPES } from './nodes.js'
 const native = Object.entries(NODE_TYPES).filter(([, spec]) => !spec.fixed)
 const nativeForResource = new Map(native.flatMap(([type, spec]) => {
   const outputs = typeof spec.outputs === 'function' ? spec.outputs() : [null]
-  return outputs.map((output) => [`${type}${output ? `_${output}` : ''}`, { type, spec }])
+  return outputs.map((output) => [`${type}${output ? `-${output}` : ''}`, { type, spec }])
 }))
 
 const parameterSchema = ({ kind, options, buttons, min, max, step, default: value }) => {
   const control = options ? (buttons ? 'buttons' : 'select') : kind === 'kernel' ? 'custom' : kind
-  const presentation = { control, ...(buttons && { layout: buttons }), ...(kind === 'kernel' && { widget: 'image:widget-imageKernel' }) }
+  const presentation = { control, ...(buttons && { layout: buttons }), ...(kind === 'kernel' && { widget: 'image/imageKernel' }) }
   const bounds = { ...(min !== undefined && { min }), ...(max !== undefined && { max }), ...(step !== undefined && { step }), ...(value !== undefined && { default: value }) }
   if (options) return S.opt(S.oneOf(options.map(([option]) => String(option)), { ...presentation, default: String(value) }))
   if (kind === 'kernel') return S.opt(S.list(S.num(), { ...presentation, default: value }))
@@ -24,11 +24,11 @@ export const IMAGE_OPS = Object.fromEntries(native.flatMap(([type, spec]) => {
   const settings = spec.params ?? []
   const outputs = typeof spec.outputs === 'function' ? spec.outputs() : [null]
   return outputs.map((output) => [
-    `${type}${output ? `_${output}` : ''}`,
+    `${type}${output ? `-${output}` : ''}`,
     {
       about: spec.label,
-      args: spec.inputs.map((name) => ({ name, type: 'image:image', ...(spec.optional?.includes(name) && { optional: true }) })),
-      returns: 'image:image',
+      args: spec.inputs.map((name) => ({ name, type: 'image/image', ...(spec.optional?.includes(name) && { optional: true }) })),
+      returns: 'image/image',
       params: S.obj(Object.fromEntries(settings.map((setting) => [setting.key, parameterSchema(setting)]))),
       run(args, namedParams, ctx) {
         const input = Object.fromEntries(spec.inputs.flatMap((name, index) => args[index] == null ? [] : [[name, args[index]]]))
@@ -74,7 +74,7 @@ export function imageDefinitions(file) {
     const original = nativeSpec?.spec
     const part = defined.PARTS[type]
     const namespace = type.includes('/') ? type.slice(0, type.indexOf('/') + 1) : ''
-    const flag = (value) => value && !value.includes(':') ? `${namespace}${value}` : value
+    const flag = (value) => value && !value.includes('/') ? `${namespace}${value}` : value
     const params = def.settings.map((setting) => settingOf(
       { ...setting, default: part.defaults[setting.key] },
       original?.params?.find(({ key }) => key === setting.key),

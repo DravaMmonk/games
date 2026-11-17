@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "gd-check",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

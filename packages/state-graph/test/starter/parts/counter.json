@@ -5,30 +5,30 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "k = table:const[value=1]()",
-          "g = table:pass(facts.start, k)",
-          "m = table:msum(view.up, view.left, g)",
+          "k = table/const[value=1]()",
+          "g = table/pass(facts.start, k)",
+          "m = table/msum(view.up, view.left, g)",
           "cell <- m"
         ],
-        "world": "state-graph:world-grid",
-        "robot": "state-graph:robot-scout",
+        "world": "state-graph/grid",
+        "robot": "state-graph/scout",
         "ports": [
           {
-            "state-graph:port-way": {
+            "state-graph/way": {
               "n": 1,
               "sensor": "up"
             }
           },
           {
-            "state-graph:port-way": {
+            "state-graph/way": {
               "n": 2,
               "sensor": "left"
             }
           },
           {
-            "state-graph:port-start": {
+            "state-graph/start": {
               "sensor": "start"
             }
           }
@@ -42,16 +42,16 @@
   "inputs": [
     {
       "name": "up",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "left",
-      "type": "circuit:number"
+      "type": "circuit/number"
     },
     {
       "name": "start",
-      "type": "circuit:boolean"
+      "type": "circuit/boolean"
     }
   ],
-  "outputType": "circuit:number"
+  "outputType": "circuit/number"
 }

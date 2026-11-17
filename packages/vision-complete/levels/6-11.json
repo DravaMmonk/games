@@ -16,15 +16,15 @@
       "t": "@level.6-11.intro.3.t"
     }
   ],
-  "unlocks": ["image:unlock-homography"],
+  "unlocks": ["image/homography"],
   "tasks": [
     {
       "id": "6-11",
-      "play": "image:board",
+      "play": "image/board",
       "brief": "@level.6-11.tasks.6-11.brief",
       "hint": "@level.6-11.tasks.6-11.hint",
       "bench": {
-        "model": "vision-complete:benchModel-cover",
+        "model": "vision-complete/cover",
         "setup": {
           "cover": { "w": 60, "h": 84 },
           "photo": { "w": 200, "h": 150 },
@@ -64,7 +64,7 @@
           }
         ],
         "layout": {
-          "main": [{ "vision-complete:display-coverPairs": { "with": ["image:display-goals"] } }],
+          "main": [{ "vision-complete/coverPairs": { "with": ["image/goals"] } }],
           "foot": [
             {
               "panel": [
@@ -73,24 +73,24 @@
                     {
                       "stack": [
                         {
-                          "image:display-text": {
+                          "image/text": {
                             "text": "@level.6-11.tasks.6-11.bench.layout.foot.0.panel.0.row.0.stack.0.text.text",
                             "look": "label"
                           }
                         },
-                        { "image:display-text": { "of": "transform", "look": "note" } },
-                        { "row": ["image:display-knobs", "image:display-actions"], "tight": true }
+                        { "image/text": { "of": "transform", "look": "note" } },
+                        { "row": ["image/knobs", "image/actions"], "tight": true }
                       ]
                     },
                     {
                       "stack": [
                         {
-                          "image:display-text": {
+                          "image/text": {
                             "text": "@level.6-11.tasks.6-11.bench.layout.foot.0.panel.0.row.1.stack.0.text.text",
                             "look": "label"
                           }
                         },
-                        "vision-complete:display-coverPairList"
+                        "vision-complete/coverPairList"
                       ]
                     }
                   ]

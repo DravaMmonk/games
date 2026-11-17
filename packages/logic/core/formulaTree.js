@@ -81,7 +81,7 @@ export function chipsOf(level) {
   const symbols = level.notation.formulaSymbols
   const ordered = (marks) => symbols ? Object.keys(symbols).filter((symbol) => marks.includes(symbol)) : marks
   const quantifiers = ordered(QUANTIFIERS).filter((q) => level.notation.symbols.includes(q))
-  const vars = level.vars ?? (level.kind === 'logic:query' ? ['x', 'y', 'z'] : quantifiers.length ? ['x', 'y'] : [])
+  const vars = level.vars ?? (level.kind === 'logic/query' ? ['x', 'y', 'z'] : quantifiers.length ? ['x', 'y'] : [])
   const fns = level.vocab.fns ?? []
   const connectives = ordered(level.connectives ?? CONNECTIVES)
   return [
@@ -91,7 +91,7 @@ export function chipsOf(level) {
     // A function (s, plus) is a thing with a box for each of its things.
     ...fns.map(([f, n]) => ({ key: `f:${f}`, kind: 'term', group: 'name', name: f, places: n, make: () => fn(f, Array(n).fill(null)) })),
     ...vars.map((v) => ({ key: `v:${v}`, kind: 'term', group: 'var', text: v, make: () => tvar(v) })),
-    ...quantifiers.flatMap((q) => vars.filter((v) => level.kind !== 'logic:query' || v !== 'x').map((v) => ({ key: `${q}${v}`, kind: 'formula', group: 'quant', symbol: symbols?.[q], text: `${q}${v}.`, make: () => (q === '∀' ? all : ex)(v, null) }))),
+    ...quantifiers.flatMap((q) => vars.filter((v) => level.kind !== 'logic/query' || v !== 'x').map((v) => ({ key: `${q}${v}`, kind: 'formula', group: 'quant', symbol: symbols?.[q], text: `${q}${v}.`, make: () => (q === '∀' ? all : ex)(v, null) }))),
     // A connective between two sentences (`leads`) can take the sentence the line ends with as its first.
     ...connectives.map((c) => ({ key: c, kind: 'formula', group: 'conn', symbol: symbols?.[c], text: symbols?.[c]?.name ?? c, leads: !['¬', '⊥'].includes(c), make: () => (c === '¬' ? not(null) : c === '⊥' ? BOT : bin(c, null, null)) })),
   ]
@@ -127,7 +127,7 @@ export function chipsFrom(formulas, { consts = [], notation = {} } = {}) {
   const equal = needed.has('P:=') ? [['=', 2]] : []
   const vocab = { preds: [...preds, ...equal], consts: [...fns].filter(([, n]) => n === 0).map(([c]) => c), fns: [...fns].filter(([, n]) => n > 0) }
   const vars = [...needed].filter((k) => k.startsWith('v:')).map((k) => k.slice(2))
-  const parts = { kind: 'logic:translate', consts, vars, vocab, notation: { ...notation, symbols: ['∀', '∃'] } }
+  const parts = { kind: 'logic/translate', consts, vars, vocab, notation: { ...notation, symbols: ['∀', '∃'] } }
   const free = new Set(formulas.flatMap((formula) => [...freeVars(formula)]))
   return chipsOf(parts).filter((c) => needed.has(c.key)).map((chip) => chip.group === 'var' && free.has(chip.text) ? { ...chip, free: true } : chip)
 }
@@ -146,5 +146,5 @@ export function termChips(terms, notation = {}) {
   }
   terms.forEach(walk)
   const named = [...fns].sort(([a], [b]) => (a < b ? -1 : 1))
-  return chipsOf({ kind: 'logic:translate', consts: [], vars: [...vars].sort(), vocab: { preds: [], consts: named.filter(([, n]) => n === 0).map(([c]) => c), fns: named.filter(([, n]) => n > 0) }, notation: { ...notation, symbols: [] }, connectives: [] })
+  return chipsOf({ kind: 'logic/translate', consts: [], vars: [...vars].sort(), vocab: { preds: [], consts: named.filter(([, n]) => n === 0).map(([c]) => c), fns: named.filter(([, n]) => n > 0) }, notation: { ...notation, symbols: [] }, connectives: [] })
 }

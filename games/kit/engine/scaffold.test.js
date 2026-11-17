@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { newPackage, gameOnPackage } from './scaffold.js'
 import { proofsRoot } from './ops/fixture.js'
-import { readPackage, readContent } from './resolver.js'
+import { readPackage, readContent, packageConfig } from './resolver.js'
 
 const roots = []
 after(() => roots.forEach(root => rmSync(root, { recursive: true, force: true })))
@@ -13,10 +13,12 @@ after(() => roots.forEach(root => rmSync(root, { recursive: true, force: true })
 test('packages start empty or copy installed objects without a template catalog', () => {
   const root = mkdtempSync(join(tmpdir(), 'new-package-'))
   roots.push(root)
-  newPackage({ root, id: 'sample', empty: true })
+  newPackage({ root, id: 'sample', kind: 'play', empty: true })
   assert.equal(readPackage('sample', root).levels.length, 0)
-  newPackage({ root, id: 'copy', from: 'sample' })
+  newPackage({ root, id: 'copy', kind: 'course', from: 'sample' })
   assert.equal(readPackage('copy', root).id, 'copy')
+  assert.equal(packageConfig('sample', root).kind, 'play')
+  assert.equal(packageConfig('copy', root).kind, 'course')
   assert.throws(() => newPackage({ root, id: 'missing' }), /choose --from/)
   assert.throws(() => newPackage({ root, id: 'copy', empty: true }), /there already/)
 })

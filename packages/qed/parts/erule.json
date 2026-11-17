@@ -1,18 +1,18 @@
 {
   "name": "@part.erule.name",
   "desc": "@part.erule.desc",
-  "family": "logic:family-built",
+  "family": "logic/built",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0 = rule(in, rules)",
           "c1 = assumption(c0)",
           "out <- c1"
         ],
-        "want": "logic:want-becomes",
+        "want": "logic/becomes",
         "inputs": [
           {
             "name": "in",
@@ -34,14 +34,14 @@
   "inputs": [
     {
       "name": "in",
-      "type": "logic:machine-value"
+      "type": "logic/machine-value"
     },
     {
       "name": "rules",
-      "type": "logic:machine-value"
+      "type": "logic/machine-value"
     }
   ],
-  "outputType": "logic:machine-value",
+  "outputType": "logic/machine-value",
   "stages": [
     {
       "id": "erule-s-results-desc",

@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "contra",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "(A → B) → (¬B → ¬A)"

@@ -2,6 +2,6 @@
   "name": "@part.sub.name",
   "desc": "@part.sub.desc",
   "icon": "Minus",
-  "family": "circuit:family-value",
-  "op": "circuit:sub"
+  "family": "circuit/value",
+  "op": "circuit/sub"
 }

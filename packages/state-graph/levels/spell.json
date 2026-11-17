@@ -16,7 +16,7 @@
     "goal": "@level.spell.mission.goal",
     "how": "@level.spell.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.spell.debrief.title",
     "body": [
@@ -28,12 +28,12 @@
   "tasks": [
     {
       "id": "spell",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "testLabel": "{left} → {top}",
       "hints": [
         "@level.spell.tasks.spell.hints.0"
       ],
-      "world": "state-graph:world-align",
+      "world": "state-graph/align",
       "facts": [
         "same",
         "start"
@@ -63,7 +63,7 @@
       ],
       "border0": false,
       "panel": {
-        "state-graph:panel-spell": {
+        "state-graph/spell": {
           "candidates": [
             "ACROSS",
             "CROSS",

@@ -1,0 +1,13 @@
+{
+  "name": "@part.dg-decoder.name",
+  "desc": "@part.dg-decoder.desc",
+  "icon": "Activity",
+  "family": "image/learned",
+  "inputs": [
+    {
+      "name": "in",
+      "label": ""
+    }
+  ],
+  "op": "image/dg-decoder"
+}

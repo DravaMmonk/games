@@ -1,12 +1,12 @@
 {
   "name": "@part.insLen.name",
   "desc": "@part.insLen.desc",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0r0 = math[use=[\"list.induct\"]]()",
           "c1r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", \"def.6\", \"def.7\", \"def.8\", \"def.9\", \"def.10\"]]()",
@@ -22,7 +22,7 @@
           "c12r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", \"def.6\", \"def.7\", \"def.8\", \"def.9\", \"def.10\"]]()",
           "c13r0 = refl()",
           "c0 = rule(in, c0r0)",
-          "c12r11 = logic:hyp(c12r0)",
+          "c12r11 = logic/hyp(c12r0)",
           "c1 = simp(c0, c1r0)",
           "c2 = rule(c1, c2r0)",
           "c3 = rule(c2, c3r0)",
@@ -39,7 +39,7 @@
           "c14 = assumption(c13)",
           "out <- c14"
         ],
-        "want": "logic:want-proved",
+        "want": "logic/proved",
         "defs": ["le", "if", "ins", "sort", "len"],
         "types": ["list", "bool"],
         "inputs": [{ "name": "in", "label": "in" }],
@@ -47,6 +47,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "before", "type": "logic:machine-value", "optional": true }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
 }

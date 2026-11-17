@@ -19,7 +19,7 @@
     "goal": "@level.parse.mission.goal",
     "how": "@level.parse.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.parse.debrief.title",
     "body": [
@@ -31,7 +31,7 @@
   "tasks": [
     {
       "id": "parse",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "boardOpt": {
         "minScale": 0.6,
         "maxScale": 1.15
@@ -40,7 +40,7 @@
         "@level.parse.tasks.parse.hints.0",
         "@level.parse.tasks.parse.hints.1"
       ],
-      "world": "state-graph:world-interval",
+      "world": "state-graph/interval",
       "tests": [
         {
           "words": [
@@ -73,8 +73,8 @@
         14
       ],
       "solution": [
-        "x = table:mul(view.segL, view.segR)",
-        "s = table:msum(x)",
+        "x = table/mul(view.segL, view.segR)",
+        "s = table/msum(x)",
         "cell <- s"
       ],
       "diag": 1

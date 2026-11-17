@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "state-graph:seam",
+  "play": "state-graph/seam",
   "fields": {},
   "schema": {
     "type": "obj",

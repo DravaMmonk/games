@@ -4,7 +4,7 @@
   "tasks": [
     {
       "id": "s-darii",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

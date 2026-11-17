@@ -67,7 +67,7 @@ export function encodeBlobCentre(img) {
 }
 
 export const GENERATIVE = {
-  dg_encode: {
+  'dg-encode': {
     label: { zh: '编码器', en: 'Encoder' },
     description: { zh: '把整张图压成一行 k 个数（权重靠训练）', en: 'Squeezes the whole image into a row of k numbers (weights come from training)' },
     inputs: ['in'],
@@ -80,7 +80,7 @@ export const GENERATIVE = {
     cost: 16,
     unlock: 'dg-autoencoder',
   },
-  dg_decode: {
+  'dg-decode': {
     label: { zh: '解码器', en: 'Decoder' },
     description: { zh: '由那几个数画回一张图（权重靠训练）', en: 'Draws an image back from those numbers (weights come from training)' },
     inputs: ['in'],
@@ -89,7 +89,7 @@ export const GENERATIVE = {
     cost: 16,
     unlock: 'dg-autoencoder',
   },
-  dg_encoder: {
+  'dg-encoder': {
     label: { zh: '编码器（已训练）', en: 'Encoder (trained)' },
     description: { zh: '一个斑点 → 两个数：它在左右、上下的位置', en: 'One blob → two numbers: where it is left–right and up–down' },
     inputs: ['in'],
@@ -97,7 +97,7 @@ export const GENERATIVE = {
     cost: 16,
     unlock: 'dg-decoder',
   },
-  dg_decoder: {
+  'dg-decoder': {
     label: { zh: '解码器（已训练）', en: 'Decoder (trained)' },
     description: { zh: '两个数 → 一个斑点：z₁ 管左右，z₂ 管上下', en: 'Two numbers → one blob: z₁ moves it left–right, z₂ up–down' },
     inputs: ['in'],
@@ -108,7 +108,7 @@ export const GENERATIVE = {
     cost: 16,
     unlock: 'dg-decoder',
   },
-  dg_mu: {
+  'dg-mu': {
     label: 'μ',
     description: { zh: '两个可训练的数：分布的中心', en: 'Two trainable numbers: the centre of the distribution' },
     inputs: [],
@@ -117,7 +117,7 @@ export const GENERATIVE = {
     cost: 0,
     unlock: 'dg-latent',
   },
-  dg_sigma: {
+  'dg-sigma': {
     label: 'σ',
     description: { zh: '两个可训练的数：分布有多散', en: 'Two trainable numbers: how spread out the distribution is' },
     inputs: [],
@@ -126,7 +126,7 @@ export const GENERATIVE = {
     cost: 0,
     unlock: 'dg-latent',
   },
-  dg_sample: {
+  'dg-sample': {
     label: { zh: '采样 z ~ N(μ, σ²)', en: 'Sample z ~ N(μ, σ²)' },
     description: { zh: '每算一次都重新抽一个随机数', en: 'Draws a fresh random number every time it runs' },
     inputs: ['mu', 'sigma'],
@@ -139,7 +139,7 @@ export const GENERATIVE = {
     cost: 2,
     unlock: 'dg-latent',
   },
-  dg_reparam: {
+  'dg-reparam': {
     label: { zh: '重参数化 μ + σ·ε', en: 'Reparameterization μ + σ·ε' },
     description: { zh: '随机只从 ε 进来，μ、σ 照常求导', en: 'Randomness enters only through ε; μ and σ differentiate as usual' },
     inputs: ['mu', 'sigma', 'eps'],

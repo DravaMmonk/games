@@ -8,17 +8,17 @@
   "after": "@level.au-sledge.after",
   "tasks": [
     {
-      "id": "au-sledge_1",
-      "kind": "logic:machine",
-      "want": "logic:want-decide",
+      "id": "au-sledge-1",
+      "kind": "logic/machine",
+      "want": "logic/decide",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.au-sledge.tasks.au-sledge_1.inputs.0.label"
+          "label": "@level.au-sledge.tasks.au-sledge-1.inputs.0.label"
         }
       ],
       "backtrack": true,
-      "step": "@level.au-sledge.tasks.au-sledge_1.step",
+      "step": "@level.au-sledge.tasks.au-sledge-1.step",
       "tests": [
         {
           "goal": "Wet",
@@ -49,9 +49,9 @@
           ]
         }
       ],
-      "brief": "@level.au-sledge.tasks.au-sledge_1.brief",
+      "brief": "@level.au-sledge.tasks.au-sledge-1.brief",
       "hint": [
-        "@level.au-sledge.tasks.au-sledge_1.hint.0"
+        "@level.au-sledge.tasks.au-sledge-1.hint.0"
       ],
       "solution": [
         "c0 = clausify(in)",
@@ -65,21 +65,21 @@
       ]
     },
     {
-      "id": "au-sledge_2",
-      "kind": "logic:truth",
-      "step": "@level.au-sledge.tasks.au-sledge_2.step",
+      "id": "au-sledge-2",
+      "kind": "logic/truth",
+      "step": "@level.au-sledge.tasks.au-sledge-2.step",
       "ask": "counter",
       "formulas": [
         "(Bus → OnTime) ∧ (Bike ∨ Bus) → OnTime"
       ],
       "intro": [
         {
-          "t": "@level.au-sledge.tasks.au-sledge_2.intro.0.t"
+          "t": "@level.au-sledge.tasks.au-sledge-2.intro.0.t"
         }
       ],
-      "brief": "@level.au-sledge.tasks.au-sledge_2.brief",
+      "brief": "@level.au-sledge.tasks.au-sledge-2.brief",
       "hint": [
-        "@level.au-sledge.tasks.au-sledge_2.hint.0"
+        "@level.au-sledge.tasks.au-sledge-2.hint.0"
       ]
     }
   ],

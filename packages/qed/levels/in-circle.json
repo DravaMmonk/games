@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "in-circle",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",

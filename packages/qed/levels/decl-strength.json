@@ -76,11 +76,11 @@
   ],
   "tasks": [
     {
-      "id": "decl-strength_1",
-      "kind": "logic:iso",
-      "step": "@level.decl-strength.tasks.decl-strength_1.step",
-      "play": "logic:audit",
-      "want": "logic:want-expose",
+      "id": "decl-strength-1",
+      "kind": "logic/iso",
+      "step": "@level.decl-strength.tasks.decl-strength-1.step",
+      "play": "logic/audit",
+      "want": "logic/expose",
       "boards": [
         {
           "rules": [
@@ -151,20 +151,20 @@
       ],
       "intro": [
         {
-          "t": "@level.decl-strength.tasks.decl-strength_1.intro.0.t"
+          "t": "@level.decl-strength.tasks.decl-strength-1.intro.0.t"
         }
       ],
-      "brief": "@level.decl-strength.tasks.decl-strength_1.brief",
+      "brief": "@level.decl-strength.tasks.decl-strength-1.brief",
       "hint": [
-        "@level.decl-strength.tasks.decl-strength_1.hint.0"
+        "@level.decl-strength.tasks.decl-strength-1.hint.0"
       ]
     },
     {
-      "id": "decl-strength_2",
-      "kind": "logic:iso",
-      "step": "@level.decl-strength.tasks.decl-strength_2.step",
-      "play": "logic:audit",
-      "want": "logic:want-expose",
+      "id": "decl-strength-2",
+      "kind": "logic/iso",
+      "step": "@level.decl-strength.tasks.decl-strength-2.step",
+      "play": "logic/audit",
+      "want": "logic/expose",
       "boards": [
         {
           "rules": [
@@ -237,15 +237,15 @@
       ],
       "intro": [
         {
-          "t": "@level.decl-strength.tasks.decl-strength_2.intro.0.t"
+          "t": "@level.decl-strength.tasks.decl-strength-2.intro.0.t"
         },
         {
-          "t": "@level.decl-strength.tasks.decl-strength_2.intro.1.t"
+          "t": "@level.decl-strength.tasks.decl-strength-2.intro.1.t"
         }
       ],
-      "brief": "@level.decl-strength.tasks.decl-strength_2.brief",
+      "brief": "@level.decl-strength.tasks.decl-strength-2.brief",
       "hint": [
-        "@level.decl-strength.tasks.decl-strength_2.hint.0"
+        "@level.decl-strength.tasks.decl-strength-2.hint.0"
       ]
     }
   ],

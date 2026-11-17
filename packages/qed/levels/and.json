@@ -12,9 +12,9 @@
   "after": "@level.and.after",
   "tasks": [
     {
-      "id": "and_1",
-      "kind": "logic:proof",
-      "step": "@level.and.tasks.and_1.step",
+      "id": "and-1",
+      "kind": "logic/proof",
+      "step": "@level.and.tasks.and-1.step",
       "tests": [
         {
           "premises": {
@@ -34,7 +34,7 @@
         }
       ],
       "hint": [
-        "@level.and.tasks.and_1.hint.0"
+        "@level.and.tasks.and-1.hint.0"
       ],
       "solution": [
         "e = andE(p)",
@@ -43,9 +43,9 @@
       ]
     },
     {
-      "id": "and_2",
-      "kind": "logic:proof",
-      "step": "@level.and.tasks.and_2.step",
+      "id": "and-2",
+      "kind": "logic/proof",
+      "step": "@level.and.tasks.and-2.step",
       "tests": [
         {
           "goal": "A ∧ B → B ∧ A"
@@ -62,11 +62,11 @@
         }
       ],
       "hint": [
-        "@level.and.tasks.and_2.hint.0"
+        "@level.and.tasks.and-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.and.tasks.and_2.intro.0.t"
+          "t": "@level.and.tasks.and-2.intro.0.t"
         }
       ],
       "solution": [

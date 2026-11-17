@@ -2,6 +2,6 @@
   "name": "@part.uCheck.name",
   "desc": "@part.uCheck.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uCheck"
+  "family": "logic/tactic",
+  "op": "logic/uCheck"
 }

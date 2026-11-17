@@ -2,12 +2,12 @@
   "name": "@part.allI.name",
   "desc": "@part.allI.desc",
   "icon": "Box",
-  "family": "logic:family-box",
+  "family": "logic/box",
   "settings": {
     "x": {
       "control": "select",
       "label": "@part.allI.settings.x.label",
-      "from": "logic:names()"
+      "from": "logic/names()"
     }
   },
   "regions": [
@@ -17,5 +17,5 @@
       "closes": true
     }
   ],
-  "op": "logic:allI"
+  "op": "logic/allI"
 }

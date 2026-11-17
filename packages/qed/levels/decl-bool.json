@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "decl-bool",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "words": [
         "qed/everyday",
         "qed/terms"

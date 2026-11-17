@@ -14,9 +14,9 @@
   ],
   "tasks": [
     {
-      "id": "assume_1",
-      "kind": "logic:proof",
-      "step": "@level.assume.tasks.assume_1.step",
+      "id": "assume-1",
+      "kind": "logic/proof",
+      "step": "@level.assume.tasks.assume-1.step",
       "tests": [
         {
           "premises": {
@@ -38,10 +38,10 @@
       "adds": [
         "impI"
       ],
-      "briefNote": "@level.assume.tasks.assume_1.briefNote",
+      "briefNote": "@level.assume.tasks.assume-1.briefNote",
       "hint": [
-        "@level.assume.tasks.assume_1.hint.0",
-        "@level.assume.tasks.assume_1.hint.1"
+        "@level.assume.tasks.assume-1.hint.0",
+        "@level.assume.tasks.assume-1.hint.1"
       ],
       "solution": [
         "f = impI[A=B](body: p)",
@@ -53,9 +53,9 @@
       ]
     },
     {
-      "id": "assume_2",
-      "kind": "logic:proof",
-      "step": "@level.assume.tasks.assume_2.step",
+      "id": "assume-2",
+      "kind": "logic/proof",
+      "step": "@level.assume.tasks.assume-2.step",
       "tests": [
         {
           "premises": {
@@ -77,11 +77,11 @@
         }
       ],
       "hint": [
-        "@level.assume.tasks.assume_2.hint.0"
+        "@level.assume.tasks.assume-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.assume.tasks.assume_2.intro.0.t"
+          "t": "@level.assume.tasks.assume-2.intro.0.t"
         }
       ],
       "solution": [

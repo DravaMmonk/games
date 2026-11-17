@@ -4,7 +4,7 @@
 // when every call of the function on a right side takes apart a smaller argument: one built inside the constructor of
 // that row's left side. Such a definition is one use of the recursor, so it always stops.
 //
-// A level: { kind: 'logic:define', fn, on: the index of the argument taken apart (none for a definition by a condition),
+// A level: { kind: 'logic/define', fn, on: the index of the argument taken apart (none for a definition by a condition),
 // rows: [{ lhs, when?, choices: [rhs] }], tests: [{ term, value }], solution: [rhs], naive?: [rhs], defs?: the
 // definitions it uses (by name, course.js) }; terms are written
 // as everywhere (u … z, xs, ys, zs variables; schematic.js). The equations (`equations`) are what later levels get by

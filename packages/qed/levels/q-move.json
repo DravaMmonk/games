@@ -8,9 +8,9 @@
   ],
   "tasks": [
     {
-      "id": "q-move_1",
-      "kind": "logic:proof",
-      "step": "@level.q-move.tasks.q-move_1.step",
+      "id": "q-move-1",
+      "kind": "logic/proof",
+      "step": "@level.q-move.tasks.q-move-1.step",
       "tests": [
         {
           "premises": {
@@ -30,7 +30,7 @@
         }
       ],
       "hint": [
-        "@level.q-move.tasks.q-move_1.hint.0"
+        "@level.q-move.tasks.q-move-1.hint.0"
       ],
       "solution": [
         "g = impI[A=\"exists x. P(x)\"](body: f) {",
@@ -47,9 +47,9 @@
       ]
     },
     {
-      "id": "q-move_2",
-      "kind": "logic:proof",
-      "step": "@level.q-move.tasks.q-move_2.step",
+      "id": "q-move-2",
+      "kind": "logic/proof",
+      "step": "@level.q-move.tasks.q-move-2.step",
       "tests": [
         {
           "premises": {
@@ -69,7 +69,7 @@
         }
       ],
       "hint": [
-        "@level.q-move.tasks.q-move_2.hint.0"
+        "@level.q-move.tasks.q-move-2.hint.0"
       ],
       "solution": [
         "g = allI[x=a](body: h) {",

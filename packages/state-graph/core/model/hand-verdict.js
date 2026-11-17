@@ -101,14 +101,14 @@ export function judgeSeam(L, work = {}) {
 
 const judges = { trace: judgeTrace, fill: judgeFill, link: judgeLink, pack: judgePack, breach: judgeBreach, policy: judgePolicy, seam: judgeSeam }
 export const judgeHand = (level, work) => {
-  const judge = judges[level.play.split(':').at(-1)]
+  const judge = judges[level.play.split('/').at(-1)]
   if (!judge) throw new Error(`no hand judge for ${level.play}`)
   return judge(level, work)
 }
 
 /** Deterministic reference works and intentionally incomplete/greedy naive works, without authored data changes. */
 export function handExamples(L) {
-  switch (L.play.split(':').at(-1)) {
+  switch (L.play.split('/').at(-1)) {
     case 'trace': return { reference: { found: allRoutes(L.start, L.end, L.edges) }, naive: { found: [] } }
     case 'fill': return { reference: { vals: evalGraph(L.cells.map(c => c.id === L.start ? { ...c, fixed: 1 } : c), L.edges).val }, naive: { vals: {} } }
     case 'link': return { reference: { links: L.tests.map(t => lcsTrace(t.a, t.b, lcsTable(t.a, t.b)).pairs) }, naive: { links: L.tests.map(() => []) } }

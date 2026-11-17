@@ -59,8 +59,8 @@ try {
 
   // Install only the text mechanism, with one freshly authored level and no circuit provider.
   for (const side of ['core', 'view', 'kinds']) cpSync(resolve(app, '../packages/text', side), resolve(root, 'packages/text', side), { recursive: true })
-  put('packages/text/package.json', { version: '0.0.0', kernel: '^0.0.0', uses: {} })
-  put('packages/text/levels/hello.json', { title: 'Hello', after: 'Correct.', tasks: [{ id: 'hello', play: 'text:answer', brief: 'Type hello.', answerRule: { type: 'exact', answer: 'hello' }, referenceAnswer: 'hello', wrongAnswers: ['no'] }] })
+  put('packages/text/package.json', { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+  put('packages/text/levels/hello.json', { title: 'Hello', after: 'Correct.', tasks: [{ id: 'hello', play: 'text/answer', brief: 'Type hello.', answerRule: { type: 'exact', answer: 'hello' }, referenceAnswer: 'hello', wrongAnswers: ['no'] }] })
   await command([resolve(kit, 'engine/deps.js'), 'lock', '--package', 'text'])
   await command([resolve(kit, 'engine/check.js'), '--package', 'text'])
   base = await openServer()

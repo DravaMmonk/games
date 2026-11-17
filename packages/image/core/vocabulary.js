@@ -22,7 +22,7 @@ const items = (all) => Object.fromEntries(Object.entries(all).map(([name, it]) =
 
 /* ---------- the parts, what levels unlock, how a picture is drawn ---------- */
 
-const PARTS = Object.fromEntries(Object.entries(NODE_TYPES).filter(([, spec]) => !spec.fixed && !spec.kit).map(([type, spec]) => [type, { about: spec.label, inputs: spec.inputs.map((name) => ({ name, type: 'image:image' })), outputType: 'image:image' }]))
+const PARTS = Object.fromEntries(Object.entries(NODE_TYPES).filter(([, spec]) => !spec.fixed && !spec.kit).map(([type, spec]) => [type, { about: spec.label, inputs: spec.inputs.map((name) => ({ name, type: 'image/image' })), outputType: 'image/image' }]))
 // What a level may unlock: a part (its flag), one of a part's settings, or one option of a setting.
 const FLAGS = new Map()
 for (const spec of Object.values(NODE_TYPES)) {
@@ -43,7 +43,7 @@ export const vocabulary = qualifyVocabulary('image', defineVocabulary({
   module: 'image',
   version: 1,
   kinds: {
-    valueType: { 'image:image': { about: { en: 'An image or scalar image with named colour channels', zh: '带颜色通道的图像或标量图像' } } },
+    valueType: { 'image/image': { about: { en: 'An image or scalar image with named colour channels', zh: '带颜色通道的图像或标量图像' } } },
     part: PARTS,
     kind: {
       graph: { about: t('图像电路', 'Image circuit') },
@@ -74,4 +74,4 @@ export const vocabulary = qualifyVocabulary('image', defineVocabulary({
 
   // A level is a list of tasks (../../engine/tasks.js), each by its kind, and a circuit task by its scene too.
 
-}), { bareKinds: ['part'], categories: { part: 'primitive' } })
+}))

@@ -1,7 +1,7 @@
 {
   "name": "@part.arrow.name",
   "desc": "@part.arrow.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "settings": {
     "form": {
       "control": "select",
@@ -20,7 +20,7 @@
       "form": "elim",
       "label": "A → B ⟹ ¬A ∨ B",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "l = lem[A=A]()",
           "e = orE(l, left: i1, right: i2) {",
@@ -49,7 +49,7 @@
       "form": "intro",
       "label": "¬A ∨ B ⟹ A → B",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "f = impI[A=A](body: e) {",
           "  body {",
@@ -77,10 +77,10 @@
   "inputs": [
     {
       "name": "p0",
-      "type": "logic:judgment"
+      "type": "logic/judgment"
     }
   ],
-  "outputType": "logic:judgment",
+  "outputType": "logic/judgment",
   "stages": [
     {
       "id": "arrow-intro",

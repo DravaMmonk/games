@@ -12,9 +12,9 @@ test('search is the last list of the package workspace; the object lists are tol
 })
 
 test('the address keeps what is open: an object list’s object, or a group’s heading', () => {
-  assert.deepEqual(openParams('kernel', { capability: 'operation/logic:and', override: 'x' }), [['capability', 'operation/logic:and']])
+  assert.deepEqual(openParams('kernel', { capability: 'operation/logic/and', override: 'x' }), [['capability', 'operation/logic/and']])
   assert.deepEqual(openParams('tree', { capability: 'x' }), [])
-  assert.deepEqual(readOpen(new URLSearchParams('capability=operation/logic:and')), { list: 'kernel', open: { capability: 'operation/logic:and' } })
+  assert.deepEqual(readOpen(new URLSearchParams('capability=operation/logic/and')), { list: 'kernel', open: { capability: 'operation/logic/and' } })
   // The old tabs that only switched to a list open that list.
   assert.deepEqual(readOpen(new URLSearchParams('tab=kernel')), { list: 'kernel', open: {} })
   assert.deepEqual(readOpen(new URLSearchParams('tab=page')), { list: null, open: {} })
@@ -28,8 +28,8 @@ test('the address keeps what is open: an object list’s object, or a group’s 
 })
 
 test('a capability and an override have one key each', () => {
-  assert.equal(capabilityKey('operation', 'logic:and'), 'operation/logic:and')
-  assert.deepEqual(capabilityOf('operation/logic:and'), { kind: 'operation', name: 'logic:and' })
+  assert.equal(capabilityKey('operation', 'logic/and'), 'operation/logic/and')
+  assert.deepEqual(capabilityOf('operation/logic/and'), { kind: 'operation', name: 'logic/and' })
   assert.equal(capabilityOf('nothing'), null)
   assert.equal(overrideKey({ layer: '@game', kind: 'section', name: 'demo/map' }), '@game section demo/map')
   assert.deepEqual(currentOf([['a', 1], ['b', 2]], 'b'), ['b', 2])

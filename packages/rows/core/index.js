@@ -18,10 +18,10 @@ export const equationPlay = {
 }
 
 export function register(kernel) {
-  kernel.kind('rows:equation', meaning)
-  kernel.play('rows:equation', equationPlay)
-  kernel.check('rows:equations', ({ content }) => runtime.validate(runtime.spec(content)))
-  kernel.agent('rows:equation', {
+  kernel.kind('rows/equation', meaning)
+  kernel.play('rows/equation', equationPlay)
+  kernel.check('rows/equations', ({ content }) => runtime.validate(runtime.spec(content)))
+  kernel.agent('rows/equation', {
     observe: ({ task }) => play.open({ level: task }),
     act: ({ task }, answer) => play.attempt({ level: task }, answer),
   })

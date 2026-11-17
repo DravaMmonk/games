@@ -31,12 +31,12 @@ import BoardField from './studio/BoardField.jsx'
 import { onPartPage } from './studio/part-page.js'
 import BoardPlay from './BoardPlay.jsx'
 export function register(kernel) {
-  kernel.editor('circuit:part', { type: 'circuit/part', listKey: 'parts', route: { type: 'circuit/part', selector: 'part', file: 'parts', root: 'parts' }, component: PartObjectEditor, page: PartEditor, list: PartsList, preview: PartStudioPreview,
+  kernel.editor('circuit/part', { type: 'circuit/part', listKey: 'parts', route: { type: 'circuit/part', selector: 'part', file: 'parts', root: 'parts' }, component: PartObjectEditor, page: PartEditor, list: PartsList, preview: PartStudioPreview,
     name: ['元件', 'Parts'], groupings: ['tag', 'circuit/tray', 'relation'], relations: [['replaces', '取代', 'Replaces']],
     fields: { expr: ExprField, icon: IconField, board: BoardField }, onPage: onPartPage })
-  kernel.editor('circuit:tray', { type: 'circuit/tray', component: TrayEditor, group: { listType: 'circuit/part', name: ['托盘', 'Trays'], createLabel: ['新的托盘', 'New tray'], initial: () => ({ values: [] }) } })
-  kernel.display('circuit:part-link', { reference: 'part', icon: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>', action: name => tr(`在元件箱里看 ${name}`, `See ${name} in the components box`) })
-  kernel.play('circuit:board', { component: BoardPlay, preview: BoardPlay, define: defineCircuit })
+  kernel.editor('circuit/tray', { type: 'circuit/tray', component: TrayEditor, group: { listType: 'circuit/part', name: ['托盘', 'Trays'], createLabel: ['新的托盘', 'New tray'], initial: () => ({ values: [] }) } })
+  kernel.display('circuit/part-link', { reference: 'part', icon: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>', action: name => tr(`在元件箱里看 ${name}`, `See ${name} in the components box`) })
+  kernel.play('circuit/board', { component: BoardPlay, preview: BoardPlay, define: defineCircuit })
 }
 
 export { displays as circuitDisplays } from './mechanism/displays.js'

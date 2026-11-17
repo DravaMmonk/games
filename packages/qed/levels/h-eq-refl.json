@@ -13,7 +13,7 @@
   "tasks": [
     {
       "id": "h-eq-refl",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i",
         "j"

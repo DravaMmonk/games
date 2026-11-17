@@ -4,7 +4,7 @@
   "tasks": [
     {
       "id": "e-two",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "(KA ↔ ¬KB) ∧ (KB ↔ KA ∧ KB)",
       "blind": true,
       "brief": "@level.e-two.tasks.e-two.brief",

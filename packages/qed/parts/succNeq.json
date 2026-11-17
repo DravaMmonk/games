@@ -1,12 +1,12 @@
 {
   "name": "@part.succNeq.name",
   "desc": "@part.succNeq.desc",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "c0r0 = math[use=[\"nat.induct\"]]()",
           "c1r0 = impI()",
@@ -23,13 +23,13 @@
           "c6 = assumption(c5)",
           "out <- c6"
         ],
-        "want": "logic:want-proved",
+        "want": "logic/proved",
         "types": ["nat"],
         "inputs": [{ "name": "in", "label": "in" }],
         "tests": [{ "goal": "∀x. ¬(x = s(x))" }]
       }
     }
   ],
-  "inputs": [{ "name": "before", "type": "logic:machine-value", "optional": true }],
-  "outputType": "logic:machine-value"
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
 }

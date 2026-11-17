@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "image:board",
+  "play": "image/board",
   "fields": {
     "optional": {
       "type": "bool",
@@ -28,10 +28,10 @@
       "type": "by",
       "field": "model",
       "cases": {
-        "image:benchModel-obscura": {
+        "image/obscura": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["image:benchModel-obscura"] },
+            "model": { "type": "oneOf", "values": ["image/obscura"] },
             "setup": {
               "type": "obj",
               "fields": {
@@ -104,10 +104,10 @@
             }
           }
         },
-        "image:benchModel-wave": {
+        "image/wave": {
           "type": "obj",
           "fields": {
-            "model": { "type": "oneOf", "values": ["image:benchModel-wave"] },
+            "model": { "type": "oneOf", "values": ["image/wave"] },
             "setup": { "type": "obj", "fields": { "N": { "type": "int", "min": 2 } } },
             "stages": {
               "type": "list",

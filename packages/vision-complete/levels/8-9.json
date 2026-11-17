@@ -14,7 +14,7 @@
   "tasks": [
     {
       "id": "8-9",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.8-9.tasks.8-9.brief",
       "hint": "@level.8-9.tasks.8-9.hint",
       "inputs": ["eps", "c", "left", "right", "sigma"],
@@ -26,7 +26,7 @@
         "sigma": "@level.8-9.tasks.8-9.inputLabels.sigma"
       },
       "check": { "tolerance": 0.05, "mismatches": 2 },
-      "scene": "vision-complete:scene-sides",
+      "scene": "vision-complete/sides",
       "setup": { "left": [-1, 0], "right": [1, 0], "sigma": [0.3, 0.3] },
       "tests": [
         {
@@ -58,11 +58,11 @@
         "wr = arith[op=mul](right, c)",
         "wl = arith[op=mul](left, oc)",
         "mu = arith[op=add](wl, wr)",
-        "r = dg_reparam(mu, sigma, eps)",
-        "d = dg_decoder(r)",
+        "r = dg-reparam(mu, sigma, eps)",
+        "d = dg-decoder(r)",
         "out <- d"
       ],
-      "naive": ["r = dg_reparam(left, sigma, eps)", "d = dg_decoder(r)", "out <- d"]
+      "naive": ["r = dg-reparam(left, sigma, eps)", "d = dg-decoder(r)", "out <- d"]
     }
   ]
 }

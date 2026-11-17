@@ -1,7 +1,7 @@
 import { qualifyItems } from 'kernel'
 import { obscura } from '../benches/obscura.js'
 import { wave } from '../benches/waves.js'
-export const BENCH_MODELS = qualifyItems('image', 'benchModel', { obscura, wave })
+export const BENCH_MODELS = qualifyItems('image', { obscura, wave })
 
 export function benchOf(bench, models = BENCH_MODELS) {
   const item = models[bench.model]

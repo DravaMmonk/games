@@ -16,7 +16,7 @@ const put = (root, name, data) => {
   writeFileSync(file, typeof data === 'string' ? data : JSON.stringify(data, null, 2) + '\n')
 }
 const project = () => mkdtempSync(resolve(tmpdir(), 'versions-contract-'))
-const config = (uses = {}) => ({ version: '1.0.0', kernel: '^0.0.0', uses })
+const config = (uses = {}) => ({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses })
 const entry = value => ({ hash: hash(JSON.stringify(value)), value })
 
 test('ranges use exact, tilde and caret semantics including zero-major boundaries', () => {
@@ -73,7 +73,7 @@ test('checked archives and workspace sources use the same reader, manifests and 
   try {
     put(root, 'packages/library/package.json', config())
     put(root, 'packages/library/core/index.js', "export const answerValue = 42; export function register(kernel) { kernel.tag('library/read', 'entry') }")
-    put(root, 'packages/library/view/index.jsx', "export function Widget() { return <span /> } export function register(kernel) { kernel.display('library:widget', Widget) }")
+    put(root, 'packages/library/view/index.jsx', "export function Widget() { return <span /> } export function register(kernel) { kernel.display('library/widget', Widget) }")
     put(root, 'packages/library/test/contract.test.js', "import test from 'node:test'; import assert from 'node:assert/strict'; import { answerValue } from '../core/index.js'; test('public value', () => assert.equal(answerValue, 42))")
     put(root, 'packages/library/entries/one.json', { title: 'One', body: ['An explanatory test entry.'] })
     const target = { id: 'library', kind: 'package' }
@@ -81,7 +81,8 @@ test('checked archives and workspace sources use the same reader, manifests and 
     const first = publishPackage('library', root, { launch: true })
     assert.equal(first.version, '1.0.0')
     const source = resolveLayers({ package: 'library', closure: true, root }).layers[0]
-    assert.ok(source.manifest.surface['display:library:widget'])
+    assert.ok(source.manifest.surface['display:library/widget'])
+    assert.equal(source.manifest.kind, 'lib')
     assert.ok(source.manifest.surface['tag:entry:library/read'])
     assert.deepEqual(source.manifest.exports.core, ['answerValue', 'register'])
     renameSync(resolve(root, 'packages/library'), resolve(root, 'held'))
@@ -134,8 +135,8 @@ test('publication compares real dependent checks and reports a major behavioral 
     lockTarget({ id: 'library', kind: 'package' }, root)
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.0.0')
     put(root, 'packages/course/package.json', config({ library: '^1.0.0' }))
-    put(root, 'packages/course/core/index.js', "import { answerValue } from 'library'; export function register(kernel) { kernel.play('course:probe', { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: () => ({ pass: true }), judge: report => report }); kernel.check('course:probe', () => [{ text: `probe ${answerValue}` }]) }")
-    put(root, 'packages/course/levels/sum.json', { title: 'Probe', tasks: [{ id: 'probe', play: 'course:probe', brief: 'Observe the public value.' }] })
+    put(root, 'packages/course/core/index.js', "import { answerValue } from 'library'; export function register(kernel) { kernel.play('course/probe', { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: () => ({ pass: true }), judge: report => report }); kernel.check('course/probe', () => [{ text: `probe ${answerValue}` }]) }")
+    put(root, 'packages/course/levels/sum.json', { title: 'Probe', tasks: [{ id: 'probe', play: 'course/probe', brief: 'Observe the public value.' }] })
     lockTarget({ id: 'course', kind: 'package' }, root)
     checkTarget({ id: 'course', kind: 'package' }, root)
     put(root, 'packages/library/core/index.js', code(43))

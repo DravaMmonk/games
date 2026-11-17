@@ -13,7 +13,7 @@
     "goal": "@level.frog.mission.goal",
     "how": "@level.frog.mission.how"
   },
-  "robot": "state-graph:robot-reach",
+  "robot": "state-graph/reach",
   "debrief": {
     "title": "@level.frog.debrief.title",
     "body": [
@@ -23,12 +23,12 @@
   "tasks": [
     {
       "id": "frog",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-uses": "back"
+            "state-graph/not": {
+              "state-graph/uses": "back"
             }
           },
           "say": "@level.frog.tasks.frog.diagnose.0.say"
@@ -38,7 +38,7 @@
         "@level.frog.tasks.frog.hints.0",
         "@level.frog.tasks.frog.hints.1"
       ],
-      "world": "state-graph:world-river",
+      "world": "state-graph/river",
       "facts": [
         "bank"
       ],
@@ -86,11 +86,11 @@
         2
       ],
       "solution": [
-        "k = table:const[value=1]()",
-        "z = table:const[value=0]()",
-        "a = table:add(view.back, k)",
-        "g = table:pass(facts.bank, z)",
-        "m = table:msum(a, g)",
+        "k = table/const[value=1]()",
+        "z = table/const[value=0]()",
+        "a = table/add(view.back, k)",
+        "g = table/pass(facts.bank, z)",
+        "m = table/msum(a, g)",
         "cell <- m"
       ]
     }

@@ -11,10 +11,10 @@ export async function runtimeOf(content, root) {
   const { contentRoot } = await import('./resolver.js')
   root ??= contentRoots.get(content) ?? contentRoot()
   const plugins = await loadPlugins(content, root)
-  const pluginIds = new Set([...plugins.tables.play.keys()].map(name => name.split(':')[0]))
+  const pluginIds = new Set([...plugins.tables.play.keys()].map(name => name.split('/')[0]))
   const vocabulary = contentSchemas.get(content) ?? vocabularyFor()
   const runtimes = runtimeIds(content).filter(id => pluginIds.has(id)).map(id => ({ id, runtime: pluginRuntime(id, plugins, vocabulary) }))
-  const provided = id => [...plugins.tables.play].find(([name, play]) => name.startsWith(`${id}:`) && play.runtime)?.[1].runtime
+  const provided = id => [...plugins.tables.play].find(([name, play]) => name.startsWith(`${id}/`) && play.runtime)?.[1].runtime
   for (const entry of runtimes) if (provided(entry.id)) entry.runtime = provided(entry.id)
   if (!runtimes.length) runtimes.push({ id: 'kernel', runtime: pluginRuntime('kernel', plugins, vocabulary) })
   const complete = runtime => ({ ...runtime, checkPhase: context => plugins.checks(context), validate: async spec => [...await runtime.validate(spec), ...await plugins.checks({ content, levels: spec.levels, excludePackages: runtimes.map(({ id }) => id) })] })

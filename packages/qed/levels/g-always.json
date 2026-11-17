@@ -8,14 +8,14 @@
   ],
   "tasks": [
     {
-      "id": "g-always_1",
-      "kind": "logic:gates",
-      "step": "@level.g-always.tasks.g-always_1.step",
+      "id": "g-always-1",
+      "kind": "logic/gates",
+      "step": "@level.g-always.tasks.g-always-1.step",
       "target": "(Rain → Wet) ∨ (Wet → Rain)",
       "hideTarget": true,
-      "brief": "@level.g-always.tasks.g-always_1.brief",
+      "brief": "@level.g-always.tasks.g-always-1.brief",
       "hint": [
-        "@level.g-always.tasks.g-always_1.hint.0"
+        "@level.g-always.tasks.g-always-1.hint.0"
       ],
       "solution": [
         "i1 = gImp(Rain, Wet)",
@@ -25,18 +25,18 @@
       ]
     },
     {
-      "id": "g-always_2",
-      "kind": "logic:gates",
-      "step": "@level.g-always.tasks.g-always_2.step",
+      "id": "g-always-2",
+      "kind": "logic/gates",
+      "step": "@level.g-always.tasks.g-always-2.step",
       "target": "(Rain → Wet) ∧ (Rain ∧ ¬Wet)",
       "hideTarget": true,
-      "brief": "@level.g-always.tasks.g-always_2.brief",
+      "brief": "@level.g-always.tasks.g-always-2.brief",
       "hint": [
-        "@level.g-always.tasks.g-always_2.hint.0"
+        "@level.g-always.tasks.g-always-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.g-always.tasks.g-always_2.intro.0.t"
+          "t": "@level.g-always.tasks.g-always-2.intro.0.t"
         }
       ],
       "solution": [

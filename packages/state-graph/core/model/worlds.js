@@ -18,4 +18,4 @@ import { pic } from './worlds/picture.js';
 
 export { visibleSensors, sensorsOf } from 'table';
 
-export const WORLDS = qualifyItems('state-graph', 'world', { grid, gridYes, piles, tri, lawn, strip, pile, coins, parts, rob1, rob2, ring, prefix, heights, gains, keys: keysMaze, river, stock, align, local, knap, roll, interval, vgrid, tags, pic });
+export const WORLDS = qualifyItems('state-graph', { grid, gridYes, piles, tri, lawn, strip, pile, coins, parts, rob1, rob2, ring, prefix, heights, gains, keys: keysMaze, river, stock, align, local, knap, roll, interval, vgrid, tags, pic });

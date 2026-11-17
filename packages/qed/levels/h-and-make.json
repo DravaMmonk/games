@@ -12,9 +12,9 @@
   "after": "@level.h-and-make.after",
   "tasks": [
     {
-      "id": "h-and-make_1",
-      "kind": "logic:proof",
-      "step": "@level.h-and-make.tasks.h-and-make_1.step",
+      "id": "h-and-make-1",
+      "kind": "logic/proof",
+      "step": "@level.h-and-make.tasks.h-and-make-1.step",
       "tests": [
         {
           "premises": {
@@ -35,8 +35,8 @@
         }
       ],
       "hint": [
-        "@level.h-and-make.tasks.h-and-make_1.hint.0",
-        "@level.h-and-make.tasks.h-and-make_1.hint.1"
+        "@level.h-and-make.tasks.h-and-make-1.hint.0",
+        "@level.h-and-make.tasks.h-and-make-1.hint.1"
       ],
       "solution": [
         "s = allI[x=R](body: f) {",
@@ -53,9 +53,9 @@
       ]
     },
     {
-      "id": "h-and-make_2",
-      "kind": "logic:proof",
-      "step": "@level.h-and-make.tasks.h-and-make_2.step",
+      "id": "h-and-make-2",
+      "kind": "logic/proof",
+      "step": "@level.h-and-make.tasks.h-and-make-2.step",
       "tests": [
         {
           "premises": {
@@ -76,12 +76,12 @@
       ],
       "intro": [
         {
-          "t": "@level.h-and-make.tasks.h-and-make_2.intro.0.t"
+          "t": "@level.h-and-make.tasks.h-and-make-2.intro.0.t"
         }
       ],
       "hint": [
-        "@level.h-and-make.tasks.h-and-make_2.hint.0",
-        "@level.h-and-make.tasks.h-and-make_2.hint.1"
+        "@level.h-and-make.tasks.h-and-make-2.hint.0",
+        "@level.h-and-make.tasks.h-and-make-2.hint.1"
       ],
       "solution": [
         "k = axK[A=A, B=B]()",

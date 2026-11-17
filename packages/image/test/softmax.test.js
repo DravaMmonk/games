@@ -6,7 +6,7 @@ import { image } from '../core/engine/image.js'
 
 const kit = imageKit({ ...NODE_TYPES })
 const io = { inputs: ['a', 'b', 'c'], outputs: ['x', 'y', 'z'] }
-const graph = kit.fromText(['p = image:softmax(a, b, c)', 'x <- p.p1', 'y <- p.p2', 'z <- p.p3'], io)
+const graph = kit.fromText(['p = image/softmax(a, b, c)', 'x <- p.p1', 'y <- p.p2', 'z <- p.p3'], io)
 const evaluate = (numbers) => {
   const inputs = Object.fromEntries(['a', 'b', 'c'].map((name, i) => [name, image(1, 1, numbers[i])]))
   const { values, errors } = kit.evaluate(graph, inputs)
@@ -26,13 +26,13 @@ test('three Softmax outputs correspond to their input scores, including large va
 })
 
 test('Softmax accepts two scores and gives zero at the unused third output', () => {
-  const two = kit.fromText(['p = image:softmax(a, b)', 'x <- p.p1', 'y <- p.p2', 'z <- p.p3'], io)
+  const two = kit.fromText(['p = image/softmax(a, b)', 'x <- p.p1', 'y <- p.p2', 'z <- p.p3'], io)
   const { errors, values } = kit.evaluate(two, { a: image(1, 1, 1000), b: image(1, 1, 999) })
   assert.equal(errors.size, 0)
   assert.ok(Math.abs(values.get('x').data[0] - 1 / (1 + Math.exp(-1))) < 1e-6)
   assert.ok(Math.abs(values.get('y').data[0] - 1 / (1 + Math.exp(1))) < 1e-6)
   assert.equal(values.get('z').data[0], 0)
-  const missing = kit.fromText(['p = image:softmax(a)', 'x <- p.p1'], io)
+  const missing = kit.fromText(['p = image/softmax(a)', 'x <- p.p1'], io)
   assert.ok(kit.evaluate(missing, { a: image(1, 1, 1) }).errors.size > 0)
 })
 

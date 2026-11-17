@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "q-exE",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

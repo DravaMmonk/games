@@ -21,7 +21,7 @@
   "tasks": [
     {
       "id": "g-not",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "¬¬Rain",
       "brief": "@level.g-not.tasks.g-not.brief",
       "hint": [

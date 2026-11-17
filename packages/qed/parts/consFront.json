@@ -2,7 +2,7 @@
   "name": "@part.consFront.name",
   "desc": "@part.consFront.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
+  "family": "logic/tactic",
   "inputs": [
     {
       "name": "first",
@@ -13,5 +13,5 @@
       "label": "@part.consFront.inputs.1.label"
     }
   ],
-  "op": "logic:consFront"
+  "op": "logic/consFront"
 }

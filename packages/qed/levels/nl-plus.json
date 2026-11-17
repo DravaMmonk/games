@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "nl-plus",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "zero"
       ],

@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "gen-nat",
-      "kind": "logic:machine",
-      "want": "logic:want-elim",
+      "kind": "logic/machine",
+      "want": "logic/elim",
       "inputs": [
         {
           "name": "it",

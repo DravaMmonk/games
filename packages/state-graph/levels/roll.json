@@ -5,7 +5,7 @@
     {
       "t": "@level.roll.intro.0.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "ax0",
@@ -200,7 +200,7 @@
     {
       "t": "@level.roll.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "d0",
@@ -274,7 +274,7 @@
     "goal": "@level.roll.mission.goal",
     "how": "@level.roll.mission.how"
   },
-  "robot": "state-graph:robot-reach",
+  "robot": "state-graph/reach",
   "debrief": {
     "title": "@level.roll.debrief.title",
     "body": [
@@ -287,24 +287,24 @@
   "tasks": [
     {
       "id": "roll",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "a = table:add(view.src, facts.value)",
+        "a = table/add(view.src, facts.value)",
         "cell <- a"
       ],
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-not": {
-              "state-graph:condition-all": [
+            "state-graph/not": {
+              "state-graph/all": [
                 {
-                  "state-graph:condition-uses": "old"
+                  "state-graph/uses": "old"
                 },
                 {
-                  "state-graph:condition-uses": "src"
+                  "state-graph/uses": "src"
                 },
                 {
-                  "state-graph:condition-uses": "value"
+                  "state-graph/uses": "value"
                 }
               ]
             }
@@ -312,13 +312,13 @@
           "say": "@level.roll.tasks.roll.diagnose.0.say"
         }
       ],
-      "explain": "state-graph:explain-roll",
+      "explain": "state-graph/roll",
       "boardOpt": {
         "minScale": 0.66,
         "maxScale": 1.15
       },
       "noTrace": true,
-      "world": "state-graph:world-roll",
+      "world": "state-graph/roll",
       "facts": [
         "value"
       ],
@@ -410,8 +410,8 @@
         15
       ],
       "solution": [
-        "a = table:add(view.src, facts.value)",
-        "m = table:mmax(view.old, a)",
+        "a = table/add(view.src, facts.value)",
+        "m = table/mmax(view.old, a)",
         "cell <- m"
       ],
       "dirs": {
@@ -424,7 +424,7 @@
           "variant": "base"
         }
       ],
-      "panel": "state-graph:panel-roll"
+      "panel": "state-graph/roll"
     }
   ]
 }

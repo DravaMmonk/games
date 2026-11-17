@@ -3,9 +3,9 @@ import assert from 'node:assert/strict'
 import { S } from 'kernel'
 import { newStageId, partAtStage, stageChain, stageChanges, stageId } from '../core/studio-stages.js'
 
-const operations = { 'demo:blur': { params: S.obj({ sigma: S.num({ min: 0, max: 5, default: 1 }), border: S.oneOf(['zero', 'edge']) }) } }
+const operations = { 'demo/blur': { params: S.obj({ sigma: S.num({ min: 0, max: 5, default: 1 }), border: S.oneOf(['zero', 'edge']) }) } }
 const raw = {
-  op: 'demo:blur', name: 'Blur',
+  op: 'demo/blur', name: 'Blur',
   settings: { sigma: { min: 0.5, max: 2.5 }, border: { fixed: true } },
   stages: [{ id: 'blur-border', settings: { border: { fixed: false } } }, { id: 'blur-free', settings: { sigma: {} }, desc: 'Free' }],
 }

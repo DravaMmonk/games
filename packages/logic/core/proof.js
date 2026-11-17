@@ -371,8 +371,8 @@ function lemmaForm({ name, statement, premises = [], metas }, key, suffix = '') 
   const binders = [...schemas, conclusion].reduce((out, f) => bindersIn(f, out), {})
   return {
     inputs: schemas.map((_, k) => `p${k}`),
-    inputTypes: Object.fromEntries(schemas.map((_, k) => [`p${k}`, 'logic:judgment'])),
-    outputType: 'logic:judgment',
+    inputTypes: Object.fromEntries(schemas.map((_, k) => [`p${k}`, 'logic/judgment'])),
+    outputType: 'logic/judgment',
     params: open,
     eval: (ins, node, ctx) => {
       const bind = {}
@@ -525,19 +525,19 @@ export function lemmaParts(lemmas = {}) {
   return Object.fromEntries(Object.entries(lemmas).map(([type, l]) => {
     const forms = l.forms ?? [l]
     const open = [...new Set(forms.flatMap((f) => lemmaForm({ metas: l.metas, ...f }, '').params))]
-    const inputs = (forms[0].premises ?? []).map((premise, k) => ({ name: `p${k}`, type: 'logic:judgment', label: l.ports?.[k] ?? premise }))
+    const inputs = (forms[0].premises ?? []).map((premise, k) => ({ name: `p${k}`, type: 'logic/judgment', label: l.ports?.[k] ?? premise }))
     return [type, {
       name: l.name,
       desc: l.desc,
       icon: 'Puzzle',
-      family: 'logic:family-lemma',
+      family: 'logic/lemma',
       inputs,
-      outputType: 'logic:judgment',
+      outputType: 'logic/judgment',
       settings: [
         ...(l.forms ? [{ key: 'form', control: 'select', label: T('形状', 'Shape'), options: l.forms.map((f) => ({ value: f.key, label: { zh: f.label, en: f.label } })) }] : []),
         ...open.map((m) => ({ key: m, control: 'tree', label: l.params?.[m] ?? { zh: m, en: m } })),
       ],
-      op: l.card ?? 'logic:lemma',
+      op: l.card ?? 'logic/lemma',
     }]
   }))
 }

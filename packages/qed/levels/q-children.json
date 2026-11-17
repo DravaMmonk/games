@@ -11,7 +11,7 @@
   "tasks": [
     {
       "id": "q-children",
-      "kind": "logic:query",
+      "kind": "logic/query",
       "consts": [
         "h",
         "i",

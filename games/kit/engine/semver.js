@@ -1,4 +1,6 @@
 // Environment-neutral semantic versions and dependency declarations.
+import { validatePackageKind } from './package-kinds.js'
+
 export function parseVersion(version) {
   if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version)) throw new Error(`invalid version ${version}`)
   return version.split('.').map(Number)
@@ -17,7 +19,10 @@ export function satisfies(version, range) {
 }
 export const dependencyIds = config => Object.keys(config.uses ?? config.packages ?? {})
 export function validateConfig(config, game = false) {
-  if (!game) parseVersion(config.version)
+  if (!game) {
+    validatePackageKind(config.kind)
+    parseVersion(config.version)
+  }
   satisfies('1.0.0', config.kernel)
   const dependencies = game ? config.packages : config.uses
   if (!dependencies || Array.isArray(dependencies) || typeof dependencies !== 'object' || game && !Object.keys(dependencies).length) throw new Error(`${game ? 'packages' : 'uses'} must be a range map`)

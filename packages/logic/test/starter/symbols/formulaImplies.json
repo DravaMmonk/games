@@ -1,5 +1,5 @@
 {
-  "mark": "logic:mark-formulaImplies",
+  "mark": "logic/formulaImplies",
   "icon": "Rows3",
   "name": "→",
   "desc": "@symbol.formulaImplies.desc"

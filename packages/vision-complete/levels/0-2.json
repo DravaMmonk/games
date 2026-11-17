@@ -13,13 +13,13 @@
       "t": "@level.0-2.intro.2.t"
     }
   ],
-  "unlocks": ["image:unlock-shift"],
+  "unlocks": ["image/shift"],
   "tasks": [
     {
       "id": "0-2",
-      "play": "image:probe",
+      "play": "image/probe",
       "brief": "@level.0-2.tasks.0-2.brief",
-      "part": "image:mystery",
+      "part": "image/mystery",
       "question": "@level.0-2.tasks.0-2.question",
       "answers": ["→", "←", "↓", "↑"],
       "answer": "→",
@@ -27,16 +27,16 @@
       "probes": [
         {
           "label": "@level.0-2.tasks.0-2.probes.0.label",
-          "picture": { "image:picture-impulse": { "x": 7, "y": 7 } }
+          "picture": { "image/impulse": { "x": 7, "y": 7 } }
         },
-        { "label": "@level.0-2.tasks.0-2.probes.1.label", "picture": { "image:picture-bar": { "x": 4 } } },
+        { "label": "@level.0-2.tasks.0-2.probes.1.label", "picture": { "image/bar": { "x": 4 } } },
         {
           "label": "@level.0-2.tasks.0-2.probes.2.label",
-          "picture": { "image:picture-glyph": { "letter": "F" } }
+          "picture": { "image/glyph": { "letter": "F" } }
         },
         {
           "label": "@level.0-2.tasks.0-2.probes.3.label",
-          "picture": { "image:picture-square": { "x0": 2, "y0": 2, "s": 6 } }
+          "picture": { "image/square": { "x0": 2, "y0": 2, "s": 6 } }
         }
       ]
     }

@@ -2,7 +2,7 @@
   "name": "@part.exI.name",
   "desc": "@part.exI.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "a",
@@ -15,5 +15,5 @@
       "optional": true
     }
   },
-  "op": "logic:exI"
+  "op": "logic/exI"
 }

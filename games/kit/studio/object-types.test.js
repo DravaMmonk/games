@@ -67,7 +67,7 @@ test('package lists use registration and otherwise the full declared type', asyn
   const { registerPlugins } = await import('../engine/plugins.js')
   assert.equal(listOfType('sample/item'), 'type:sample/item')
   const kernel = await registerPlugins([{ id: 'sample', view: { register(k) {
-    k.editor('sample:item', { type: 'sample/item', component() {}, listKey: 'items' })
+    k.editor('sample/item', { type: 'sample/item', component() {}, listKey: 'items' })
   } } }], { view: true })
   installStudioPlugins(kernel)
   assert.equal(listOfType('sample/item'), 'items')

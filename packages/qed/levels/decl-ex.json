@@ -87,11 +87,11 @@
   ],
   "tasks": [
     {
-      "id": "decl-ex_1",
-      "kind": "logic:iso",
-      "step": "@level.decl-ex.tasks.decl-ex_1.step",
-      "play": "logic:audit",
-      "want": "logic:want-expose",
+      "id": "decl-ex-1",
+      "kind": "logic/iso",
+      "step": "@level.decl-ex.tasks.decl-ex-1.step",
+      "play": "logic/audit",
+      "want": "logic/expose",
       "boards": [
         {
           "rules": [
@@ -159,28 +159,28 @@
       ],
       "intro": [
         {
-          "t": "@level.decl-ex.tasks.decl-ex_1.intro.0.t"
+          "t": "@level.decl-ex.tasks.decl-ex-1.intro.0.t"
         }
       ],
-      "brief": "@level.decl-ex.tasks.decl-ex_1.brief",
+      "brief": "@level.decl-ex.tasks.decl-ex-1.brief",
       "hint": [
-        "@level.decl-ex.tasks.decl-ex_1.hint.0",
-        "@level.decl-ex.tasks.decl-ex_1.hint.1"
+        "@level.decl-ex.tasks.decl-ex-1.hint.0",
+        "@level.decl-ex.tasks.decl-ex-1.hint.1"
       ]
     },
     {
-      "id": "decl-ex_2",
-      "kind": "logic:iso",
-      "step": "@level.decl-ex.tasks.decl-ex_2.step",
+      "id": "decl-ex-2",
+      "kind": "logic/iso",
+      "step": "@level.decl-ex.tasks.decl-ex-2.step",
       "intro": [
         {
-          "t": "@level.decl-ex.tasks.decl-ex_2.intro.0.t"
+          "t": "@level.decl-ex.tasks.decl-ex-2.intro.0.t"
         }
       ],
-      "brief": "@level.decl-ex.tasks.decl-ex_2.brief",
+      "brief": "@level.decl-ex.tasks.decl-ex-2.brief",
       "hint": [
-        "@level.decl-ex.tasks.decl-ex_2.hint.0",
-        "@level.decl-ex.tasks.decl-ex_2.hint.1"
+        "@level.decl-ex.tasks.decl-ex-2.hint.0",
+        "@level.decl-ex.tasks.decl-ex-2.hint.1"
       ]
     }
   ],

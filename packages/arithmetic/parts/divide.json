@@ -2,6 +2,6 @@
   "name": "@part.divide.name",
   "desc": "@part.divide.desc",
   "icon": "Divide",
-  "family": "circuit:family-value",
-  "op": "circuit:over"
+  "family": "circuit/value",
+  "op": "circuit/over"
 }

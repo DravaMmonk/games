@@ -222,9 +222,9 @@ test('a tray keeps one draft until it is cleared', () => {
 })
 
 test('workshop identity follows the operation while stage progress keeps the part identity stable', () => {
-  const part = { op: 'toy:scale', settings: { gain: { control: 'number', default: 2 } } }
+  const part = { op: 'toy/scale', settings: { gain: { control: 'number', default: 2 } } }
   const signature = workshopIdentity({ parts: { scale: part } }, 'scale')
-  assert.notEqual(workshopIdentity({ parts: { scale: { ...part, op: 'toy:divide' } } }, 'scale'), signature)
+  assert.notEqual(workshopIdentity({ parts: { scale: { ...part, op: 'toy/divide' } } }, 'scale'), signature)
   assert.equal(workshopIdentity({ parts: { scale: { ...part, stages: [{ id: 'adjustable', settings: { gain: {} } }] } } }, 'scale'), signature)
 })
 

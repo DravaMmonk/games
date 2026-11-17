@@ -2,10 +2,10 @@
    configure (first-order levels, definitions, the rule table). Colours come from the kit's tokens. */
 [data-family='given'] { --fam: var(--w0); }
 [data-family='hyp'] { --fam: var(--w4); }
-[data-family='logic:family-rule'] { --fam: var(--n2); }
-[data-family='logic:family-box'] { --fam: var(--w1); }
-[data-family='logic:family-lemma'], [data-family='logic:family-tactic'] { --fam: var(--n1); }
-[data-family='logic:family-loop'] { --fam: var(--w1); }
+[data-family='logic/rule'] { --fam: var(--n2); }
+[data-family='logic/box'] { --fam: var(--w1); }
+[data-family='logic/lemma'], [data-family='logic/tactic'] { --fam: var(--n1); }
+[data-family='logic/loop'] { --fam: var(--w1); }
 [data-family='end'] { --fam: var(--accent); }
 
 /* ---- what a screen says wrong, and its verdict ---- */

@@ -13,15 +13,15 @@ export function useCircuitShell(context) {
     ...tools,
     mapActions: <>
       {tools.mapActions}
-      {game.parts && <button className="kit-btn is-label wiki-button" onClick={() => setSheet('circuit:parts')}><Package size={15} /><span>{tr('元件箱')}</span><b>{box.unread.length > 0 ? tr(`新增 ${box.unread.length} 个`, `${box.unread.length} new`) : `${game.parts.earned(progress).length}/${game.parts.all.length}`}</b></button>}
+      {game.parts && <button className="kit-btn is-label wiki-button" onClick={() => setSheet('circuit/parts')}><Package size={15} /><span>{tr('元件箱')}</span><b>{box.unread.length > 0 ? tr(`新增 ${box.unread.length} 个`, `${box.unread.length} new`) : `${game.parts.earned(progress).length}/${game.parts.all.length}`}</b></button>}
     </>,
     reference(kind, id) {
       if (kind !== 'part') return null
       const value = part(id)
-      return value && { title: L(value.name), open: box.earned.has(id), at: levelOf(game, value), panel: 'circuit:parts' }
+      return value && { title: L(value.name), open: box.earned.has(id), at: levelOf(game, value), panel: 'circuit/parts' }
     },
     panel({ sheet, start, close }) {
-      return sheet === 'circuit:parts' && <PartsBook game={game} box={box} phone={phone} start={start} onClose={close} />
+      return sheet === 'circuit/parts' && <PartsBook game={game} box={box} phone={phone} start={start} onClose={close} />
     },
     progressText: {
       all: tr('所有关卡、任务、元件和百科均已开放，进度照常记录。清空进度会恢复正常解锁。'),

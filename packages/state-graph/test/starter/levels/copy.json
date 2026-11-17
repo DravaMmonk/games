@@ -10,7 +10,7 @@
     "goal": "@level.copy.mission.goal",
     "how": "@level.copy.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.copy.debrief.title",
     "body": [
@@ -20,11 +20,11 @@
   "tasks": [
     {
       "id": "copy",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "hints": [
         "@level.copy.tasks.copy.hints.0"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "tests": [
         {
           "R": 1,

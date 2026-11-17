@@ -5,7 +5,7 @@ import { checkingTests } from '../../core/engine/graph.js'
 import { startBoard, tidyImageBoard } from '../../core/engine/board.js'
 import { INPUT_LABELS } from '../../core/words.js'
 
-const VIEW_NAMES = { 'image:view-pixels': 'pixels', 'image:view-terrain': 'surface', 'image:view-slope': 'slope', 'image:view-profile': 'profile', 'image:view-spectrum': 'spectrum' }
+const VIEW_NAMES = { 'image/pixels': 'pixels', 'image/terrain': 'surface', 'image/slope': 'slope', 'image/profile': 'profile', 'image/spectrum': 'spectrum' }
 const viewName = (name) => VIEW_NAMES[name]
 
 const IMAGE_VIEWS = {
@@ -18,8 +18,8 @@ const IMAGE_VIEWS = {
 
 function viewsOf(task, value, role) {
   if (value?.h === 1 && value.w > 1 && (value.c ?? 1) === 1) return ['plot']
-  const offered = Object.keys(IMAGE_VIEWS).filter((view) => (task.shows ?? ['image:view-pixels']).some((name) => viewName(name) === view))
-  const first = viewName(task.views?.[role] ?? (role === 'mid' ? task.views?.out : null) ?? 'image:view-pixels')
+  const offered = Object.keys(IMAGE_VIEWS).filter((view) => (task.shows ?? ['image/pixels']).some((name) => viewName(name) === view))
+  const first = viewName(task.views?.[role] ?? (role === 'mid' ? task.views?.out : null) ?? 'image/pixels')
   return offered.includes(first) ? [first, ...offered.filter((view) => view !== first)] : offered
 }
 

@@ -15,7 +15,7 @@
   "tasks": [
     {
       "id": "copy",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

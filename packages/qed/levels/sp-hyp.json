@@ -1,7 +1,7 @@
 {
   "title": "@level.sp-hyp.title",
   "adds": [
-    "logic:hyp"
+    "logic/hyp"
   ],
   "tray": "machine",
   "intro": [
@@ -12,8 +12,8 @@
   "tasks": [
     {
       "id": "sp-hyp",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -48,7 +48,7 @@
         "c1r0 = math[use=[\"def.1\", \"def.3\", \"def.5\"]]()",
         "c2r0 = refl()",
         "c0 = rule(in, c0r0)",
-        "c1r3 = logic:hyp(c1r0)",
+        "c1r3 = logic/hyp(c1r0)",
         "c1 = simp(c0, c1r3)",
         "c2 = rule(c1, c2r0)",
         "out <- c2"

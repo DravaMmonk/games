@@ -7,14 +7,14 @@
 //   family 'view'  a board cell near the robot, at = [dr, dc]; every cell within REACH has one (named or not)
 //          'here'  a fact about the robot's own cell (num(), yes(), cat())
 //          'arm'   what the robot's arm brings in (listed in armSensors; seg() for a whole segment)
-//   type   'circuit:number' | 'circuit:boolean' | 'table:numbers' | 'table:booleans' | 'table:category' (one of `cats`: [[value, label]], say a key's colour)
+//   type   'circuit/number' | 'circuit/boolean' | 'table/numbers' | 'table/booleans' | 'table/category' (one of `cats`: [[value, label]], say a key's colour)
 // The board reads sensors through its input cards (parts.js); a level offers some of them (its facts, the robot's
 // vision and arm). W.read(t, cell, id, get, o, layer) reads one; a world of several layers may read a view sensor on
 // another layer too (layer: 'self' or a layer number).
 //
 // World interface (built with world()):
 //   sensors, armSensors?, facts: the 'here' sensors a level offers by default
-//   cellType?: 'circuit:boolean' when the table holds 是 / 否 rather than numbers (the view sensors and the outputs follow it)
+//   cellType?: 'circuit/boolean' when the table holds 是 / 否 rather than numbers (the view sensors and the outputs follow it)
 //   shown?(L, dr, dc) → true for an offset the robot sees but cannot read (e.g. a fact drawn on the board)
 //   outs: [[id, label, [layer, dr, dc] | null]]        the cells the robot writes (null: an output that writes no cell,
 //                                                      read by answer(t, table, o, steps) from the steps' `out`)
@@ -38,11 +38,11 @@ import { signal } from './format.js';
 import { sensor } from 'circuit'
 
 /** A board cell near the robot (off = [dr, dc]), a number or yes / no about its own cell, a whole segment, a category. */
-export const cell = (label, short, off, type = 'circuit:number') => ({ label, short, type, off });
-export const num = (label, short, icon) => ({ label, short, type: 'circuit:number', icon });
-export const yes = (label, short, icon) => ({ label, short, type: 'circuit:boolean', icon });
-export const seg = (label, short, type = 'table:numbers') => ({ label, short, type });
-export const cat = (label, short, cats, icon) => ({ label, short, type: 'table:category', cats, icon });
+export const cell = (label, short, off, type = 'circuit/number') => ({ label, short, type, off });
+export const num = (label, short, icon) => ({ label, short, type: 'circuit/number', icon });
+export const yes = (label, short, icon) => ({ label, short, type: 'circuit/boolean', icon });
+export const seg = (label, short, type = 'table/numbers') => ({ label, short, type });
+export const cat = (label, short, cats, icon) => ({ label, short, type: 'table/category', cats, icon });
 
 /** How far any robot can see; a robot's vision (1 or 2) picks the view sensors it can use. */
 const REACH = 2;
@@ -67,7 +67,7 @@ function dirName(dr, dc) {
  * not named gets a view sensor of its own ('o0_<dr>_<dc>'), but for the robot's own cell and the cells it writes.
  */
 export function world(def) {
-  const type = def.cellType || 'circuit:number', arm = def.armSensors || [], sensors = {}, sensorAt = {};
+  const type = def.cellType || 'circuit/number', arm = def.armSensors || [], sensors = {}, sensorAt = {};
   const outAt = new Set(def.outs.filter(o => o[2]).map(o => o[2].slice(1).join(',')));
   const add = (id, m) => {
     const { off, label, type: own, ...rest } = m, at = off ? off.slice(-2) : null;

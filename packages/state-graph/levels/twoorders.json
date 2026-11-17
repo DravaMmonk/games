@@ -16,7 +16,7 @@
     "goal": "@level.twoorders.mission.goal",
     "how": "@level.twoorders.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.twoorders.debrief.title",
     "body": [
@@ -28,7 +28,7 @@
   "tasks": [
     {
       "id": "twoorders",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "tests": [
         {
           "w": [
@@ -50,7 +50,7 @@
           ]
         }
       ],
-      "world": "state-graph:world-interval",
+      "world": "state-graph/interval",
       "facts": [
         "weight"
       ],
@@ -77,8 +77,8 @@
       }
     },
     {
-      "id": "twoorders_2",
-      "play": "state-graph:circuit",
+      "id": "twoorders-2",
+      "play": "state-graph/circuit",
       "tests": [
         {
           "w": [
@@ -100,7 +100,7 @@
           ]
         }
       ],
-      "world": "state-graph:world-interval",
+      "world": "state-graph/interval",
       "facts": [
         "weight"
       ],
@@ -115,10 +115,10 @@
       "scan": "rowBR",
       "diag": 0,
       "hints": [
-        "@level.twoorders.tasks.twoorders_2.hints.0",
-        "@level.twoorders.tasks.twoorders_2.hints.1"
+        "@level.twoorders.tasks.twoorders-2.hints.0",
+        "@level.twoorders.tasks.twoorders-2.hints.1"
       ],
-      "ask": "@level.twoorders.tasks.twoorders_2.ask",
+      "ask": "@level.twoorders.tasks.twoorders-2.ask",
       "carries": true,
       "publishes": [
         {

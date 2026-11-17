@@ -2,7 +2,7 @@
   "name": "@part.box3.name",
   "desc": "@part.box3.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -25,7 +25,7 @@
       "fixed": true
     }
   },
-  "op": "image:box3",
+  "op": "image/box3",
   "stages": [
     {
       "id": "box3-border",

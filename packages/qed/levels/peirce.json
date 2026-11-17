@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "peirce",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "((A → B) → A) → A"

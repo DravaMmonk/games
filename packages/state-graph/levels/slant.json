@@ -5,7 +5,7 @@
     {
       "t": "@level.slant.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 4,
           "moves": [
@@ -32,7 +32,7 @@
     {
       "t": "@level.slant.intro.1.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "ul",
@@ -98,7 +98,7 @@
     "goal": "@level.slant.mission.goal",
     "how": "@level.slant.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.slant.debrief.title",
     "body": [
@@ -110,11 +110,11 @@
   "tasks": [
     {
       "id": "slant",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-uses": "up"
+            "state-graph/uses": "up"
           },
           "say": "@level.slant.tasks.slant.diagnose.0.say"
         }
@@ -123,7 +123,7 @@
         "@level.slant.tasks.slant.hints.0",
         "@level.slant.tasks.slant.hints.1"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start"
       ],

@@ -20,11 +20,11 @@
   "tasks": [
     {
       "id": "1-10",
-      "play": "image:board",
+      "play": "image/board",
       "brief": "@level.1-10.tasks.1-10.brief",
       "hint": "@level.1-10.tasks.1-10.hint",
       "bench": {
-        "model": "vision-complete:benchModel-racer",
+        "model": "vision-complete/racer",
         "setup": {
           "kernels": [
             { "id": "identity", "cells": [0, 0, 0, 0, 1, 0, 0, 0, 0], "div": 1 },
@@ -39,14 +39,14 @@
             { "id": "laplace", "cells": [0, 1, 0, 1, -4, 1, 0, 1, 0], "div": 1 }
           ],
           "inputs": [
-            { "image:picture-impulse": { "x": 7, "y": 7 } },
-            "image:picture-square",
-            { "image:picture-glyph": { "letter": "F" } },
-            { "image:picture-glyph": { "letter": "L" } },
-            "image:picture-disk",
-            { "image:picture-stepX": { "edge": 8 } },
-            { "image:picture-checker": { "cell": 4 } },
-            "image:picture-corner"
+            { "image/impulse": { "x": 7, "y": 7 } },
+            "image/square",
+            { "image/glyph": { "letter": "F" } },
+            { "image/glyph": { "letter": "L" } },
+            "image/disk",
+            { "image/stepX": { "edge": 8 } },
+            { "image/checker": { "cell": 4 } },
+            "image/corner"
           ],
           "rounds": 10,
           "minGap": 0.15,
@@ -64,31 +64,31 @@
         "goal": [{ "of": "final", "atLeast": 8 }],
         "layout": {
           "head": [
-            { "image:display-progress": { "of": "dots" } },
-            { "image:display-chips": { "of": "score" } },
-            "image:display-knobs"
+            { "image/progress": { "of": "dots" } },
+            { "image/chips": { "of": "score" } },
+            "image/knobs"
           ],
           "main": [
-            { "vision-complete:display-kernelRound": { "when": "playing" } },
+            { "vision-complete/kernelRound": { "when": "playing" } },
             {
               "stack": [
-                { "image:display-text": { "of": "result", "look": "title", "unless": "playing" } },
+                { "image/text": { "of": "result", "look": "title", "unless": "playing" } },
                 {
-                  "image:display-text": {
+                  "image/text": {
                     "text": "@level.1-10.tasks.1-10.bench.layout.main.1.stack.1.text.text",
                     "look": "lede",
                     "unless": "playing"
                   }
                 },
-                { "image:display-chips": { "of": "rules", "look": "plain", "unless": "playing" } },
-                { "image:display-actions": { "unless": "playing" } }
+                { "image/chips": { "of": "rules", "look": "plain", "unless": "playing" } },
+                { "image/actions": { "unless": "playing" } }
               ],
               "center": true
             }
           ],
           "side": [
-            { "vision-complete:display-kernelChoices": { "when": "playing" } },
-            { "image:display-verdict": { "center": true, "when": "playing" } }
+            { "vision-complete/kernelChoices": { "when": "playing" } },
+            { "image/verdict": { "center": true, "when": "playing" } }
           ],
           "split": "even"
         }

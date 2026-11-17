@@ -2,7 +2,7 @@
   "name": "Softmax",
   "desc": "@part.softmax.desc",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "s1",
@@ -33,8 +33,8 @@
   ],
   "nulls": "pass",
   "op": {
-    "p1": "image:softmax_p1",
-    "p2": "image:softmax_p2",
-    "p3": "image:softmax_p3"
+    "p1": "image/softmax-p1",
+    "p2": "image/softmax-p2",
+    "p3": "image/softmax-p3"
   }
 }

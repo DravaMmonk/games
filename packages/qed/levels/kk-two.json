@@ -7,15 +7,15 @@
   ],
   "tasks": [
     {
-      "id": "kk-two_1",
-      "kind": "logic:gates",
+      "id": "kk-two-1",
+      "kind": "logic/gates",
       "tray": "gates",
-      "step": "@level.kk-two.tasks.kk-two_1.step",
+      "step": "@level.kk-two.tasks.kk-two-1.step",
       "blind": true,
       "target": "KA ↔ ¬KA ∧ ¬KB",
-      "brief": "@level.kk-two.tasks.kk-two_1.brief",
+      "brief": "@level.kk-two.tasks.kk-two-1.brief",
       "hint": [
-        "@level.kk-two.tasks.kk-two_1.hint.0"
+        "@level.kk-two.tasks.kk-two-1.hint.0"
       ],
       "solution": [
         "na = gNot(KA)",
@@ -26,10 +26,10 @@
       ]
     },
     {
-      "id": "kk-two_2",
-      "kind": "logic:proof",
+      "id": "kk-two-2",
+      "kind": "logic/proof",
       "tray": "proof",
-      "step": "@level.kk-two.tasks.kk-two_2.step",
+      "step": "@level.kk-two.tasks.kk-two-2.step",
       "tests": [
         {
           "premises": {
@@ -49,8 +49,8 @@
         }
       ],
       "hint": [
-        "@level.kk-two.tasks.kk-two_2.hint.0",
-        "@level.kk-two.tasks.kk-two_2.hint.1"
+        "@level.kk-two.tasks.kk-two-2.hint.0",
+        "@level.kk-two.tasks.kk-two-2.hint.1"
       ],
       "solution": [
         "na = impI[A=A](body: m2) {",

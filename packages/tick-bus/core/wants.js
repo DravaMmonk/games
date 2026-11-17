@@ -3,7 +3,7 @@ import { callOf } from 'kernel'
 
 const each = (test, f) => test.line.map((_, t) => f(t))
 
-const WANTS = qualifyItems('tick-bus', 'want', {
+const WANTS = qualifyItems('tick-bus', {
   line: () => (test) => test.line.map((v) => v ?? 0),
   delayed: ({ input, first }) => (test) => each(test, (t) => (t ? test.inputs[input][t - 1] : first)),
 })

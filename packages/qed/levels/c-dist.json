@@ -8,9 +8,9 @@
   ],
   "tasks": [
     {
-      "id": "c-dist_1",
-      "kind": "logic:proof",
-      "step": "@level.c-dist.tasks.c-dist_1.step",
+      "id": "c-dist-1",
+      "kind": "logic/proof",
+      "step": "@level.c-dist.tasks.c-dist-1.step",
       "tests": [
         {
           "premises": {
@@ -32,7 +32,7 @@
         }
       ],
       "hint": [
-        "@level.c-dist.tasks.c-dist_1.hint.0"
+        "@level.c-dist.tasks.c-dist-1.hint.0"
       ],
       "solution": [
         "e = orE(p, left: c1, right: c2) {",
@@ -58,9 +58,9 @@
       ]
     },
     {
-      "id": "c-dist_2",
-      "kind": "logic:proof",
-      "step": "@level.c-dist.tasks.c-dist_2.step",
+      "id": "c-dist-2",
+      "kind": "logic/proof",
+      "step": "@level.c-dist.tasks.c-dist-2.step",
       "tests": [
         {
           "premises": {
@@ -82,8 +82,8 @@
         }
       ],
       "hint": [
-        "@level.c-dist.tasks.c-dist_2.hint.0",
-        "@level.c-dist.tasks.c-dist_2.hint.1"
+        "@level.c-dist.tasks.c-dist-2.hint.0",
+        "@level.c-dist.tasks.c-dist-2.hint.1"
       ],
       "solution": [
         "s = andE(p)",
@@ -116,9 +116,9 @@
       ]
     },
     {
-      "id": "c-dist_3",
-      "kind": "logic:proof",
-      "step": "@level.c-dist.tasks.c-dist_3.step",
+      "id": "c-dist-3",
+      "kind": "logic/proof",
+      "step": "@level.c-dist.tasks.c-dist-3.step",
       "tests": [
         {
           "premises": {
@@ -140,7 +140,7 @@
         }
       ],
       "hint": [
-        "@level.c-dist.tasks.c-dist_3.hint.0"
+        "@level.c-dist.tasks.c-dist-3.hint.0"
       ],
       "solution": [
         "e = orE(p, left: c1, right: c2) {",
@@ -169,9 +169,9 @@
       ]
     },
     {
-      "id": "c-dist_4",
-      "kind": "logic:proof",
-      "step": "@level.c-dist.tasks.c-dist_4.step",
+      "id": "c-dist-4",
+      "kind": "logic/proof",
+      "step": "@level.c-dist.tasks.c-dist-4.step",
       "tests": [
         {
           "premises": {
@@ -193,7 +193,7 @@
         }
       ],
       "hint": [
-        "@level.c-dist.tasks.c-dist_4.hint.0"
+        "@level.c-dist.tasks.c-dist-4.hint.0"
       ],
       "solution": [
         "s = andE(p)",

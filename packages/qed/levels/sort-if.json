@@ -9,13 +9,13 @@
   "after": "@level.sort-if.after",
   "tasks": [
     {
-      "id": "sort-if_1",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "sort-if-1",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sort-if.tasks.sort-if_1.inputs.0.label"
+          "label": "@level.sort-if.tasks.sort-if-1.inputs.0.label"
         }
       ],
       "backtrack": true,
@@ -23,7 +23,7 @@
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.sort-if.tasks.sort-if_1.step",
+      "step": "@level.sort-if.tasks.sort-if-1.step",
       "types": [
         "bool"
       ],
@@ -35,10 +35,10 @@
           "goal": "∀u. ∀v. ∀w. u = tt → if(u, v, w) = v"
         }
       ],
-      "brief": "@level.sort-if.tasks.sort-if_1.brief",
+      "brief": "@level.sort-if.tasks.sort-if-1.brief",
       "hint": [
-        "@level.sort-if.tasks.sort-if_1.hint.0",
-        "@level.sort-if.tasks.sort-if_1.hint.1"
+        "@level.sort-if.tasks.sort-if-1.hint.0",
+        "@level.sort-if.tasks.sort-if-1.hint.1"
       ],
       "solution": [
         "c2r0 = impI()",
@@ -50,7 +50,7 @@
         "    c1 = rule(c0.body, c1r0)",
         "  }",
         "}",
-        "c3r2 = logic:hyp(c3r0)",
+        "c3r2 = logic/hyp(c3r0)",
         "c2 = rule(c0, c2r0)",
         "c3 = simp(c2, c3r2)",
         "c4 = rule(c3, c4r0)",
@@ -79,13 +79,13 @@
       ]
     },
     {
-      "id": "sort-if_2",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "id": "sort-if-2",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sort-if.tasks.sort-if_2.inputs.0.label"
+          "label": "@level.sort-if.tasks.sort-if-2.inputs.0.label"
         }
       ],
       "backtrack": true,
@@ -93,7 +93,7 @@
         "qed/everyday",
         "qed/terms"
       ],
-      "step": "@level.sort-if.tasks.sort-if_2.step",
+      "step": "@level.sort-if.tasks.sort-if-2.step",
       "types": [
         "bool"
       ],
@@ -105,9 +105,9 @@
           "goal": "∀u. ∀v. ∀w. u = ff → if(u, v, w) = w"
         }
       ],
-      "brief": "@level.sort-if.tasks.sort-if_2.brief",
+      "brief": "@level.sort-if.tasks.sort-if-2.brief",
       "hint": [
-        "@level.sort-if.tasks.sort-if_2.hint.0"
+        "@level.sort-if.tasks.sort-if-2.hint.0"
       ],
       "solution": [
         "c2r0 = impI()",
@@ -119,7 +119,7 @@
         "    c1 = rule(c0.body, c1r0)",
         "  }",
         "}",
-        "c3r2 = logic:hyp(c3r0)",
+        "c3r2 = logic/hyp(c3r0)",
         "c2 = rule(c0, c2r0)",
         "c3 = simp(c2, c3r2)",
         "c4 = rule(c3, c4r0)",

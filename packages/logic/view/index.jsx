@@ -15,6 +15,6 @@ export function LogicPlay({ context, work, onChange, phone }) {
 }
 export function register(kernel) {
   registerEditors(kernel)
-  kernel.unlocks('logic:symbols', (game, ...args) => (game.moduleGames?.logic ?? game).symbolUnlocks?.(...args) ?? [])
+  kernel.unlocks('logic/symbols', (game, ...args) => (game.moduleGames?.logic ?? game).symbolUnlocks?.(...args) ?? [])
   for (const name of Object.keys(plays)) kernel.play(name, { component: LogicPlay, preview: LogicPlay, define })
 }

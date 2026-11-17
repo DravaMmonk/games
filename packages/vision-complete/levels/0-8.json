@@ -19,11 +19,11 @@
   "tasks": [
     {
       "id": "0-8",
-      "play": "image:board",
+      "play": "image/board",
       "brief": "@level.0-8.tasks.0-8.brief",
       "hint": "@level.0-8.tasks.0-8.hint",
       "bench": {
-        "model": "image:benchModel-obscura",
+        "model": "image/obscura",
         "setup": { "arrow": 100, "shaft": 4, "table": 640, "gap": 20 },
         "knobs": {
           "Z": { "min": 150, "max": 520, "step": 1, "start": 360, "drawn": true },
@@ -60,10 +60,10 @@
           }
         ],
         "layout": {
-          "main": ["image:display-obscura"],
+          "main": ["image/obscura"],
           "foot": [
-            { "panel": ["image:display-knobs"] },
-            { "row": ["image:display-obscuraScreen", "image:display-goals"], "narrow": true }
+            { "panel": ["image/knobs"] },
+            { "row": ["image/obscuraScreen", "image/goals"], "narrow": true }
           ]
         }
       }

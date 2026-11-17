@@ -2,11 +2,11 @@
   "name": "@part.homography.name",
   "desc": "@part.homography.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "settings": {
     "k": {
       "label": "@part.homography.settings.k.label"
     }
   },
-  "op": "image:homography"
+  "op": "image/homography"
 }

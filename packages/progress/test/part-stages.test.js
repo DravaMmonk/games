@@ -13,14 +13,14 @@ import { boardView } from 'circuit'
 import { referenceResolver, expandRelations } from "../../../games/kit/engine/objects.js"
 
 const operations = {
-  'toy:scale': {
-    args: [{ name: 'a', type: 'circuit:number' }], returns: 'circuit:number',
+  'toy/scale': {
+    args: [{ name: 'a', type: 'circuit/number' }], returns: 'circuit/number',
     params: S.obj({ gain: S.num({ min: 1, max: 8, default: 2 }), mode: S.oneOf(['up', 'down'], { default: 'up' }) }),
     run: ([a], { gain, mode }) => mode === 'down' ? a / gain : a * gain,
   },
 }
 const part = {
-  name: 'Scale', desc: 'Scale a number.', icon: 'Scaling', family: 'toy:family', op: 'toy:scale',
+  name: 'Scale', desc: 'Scale a number.', icon: 'Scaling', family: 'toy/family', op: 'toy/scale',
   settings: { gain: { fixed: true }, mode: { remove: ['down'] } },
   stages: [
     { id: 'adjustable', settings: { gain: {} }, desc: 'Choose the gain.' },
@@ -34,8 +34,8 @@ test('stage deltas inherit signatures and reset settings without mutating the pa
   const base = partDefinition(stages.get('sample/scale'), operations)
   const editable = partDefinition(stages.get('sample/adjustable'), operations)
   const division = partDefinition(stages.get('sample/division'), operations)
-  assert.deepEqual(base.inputs, [{ name: 'a', type: 'circuit:number' }])
-  assert.equal(base.outputType, 'circuit:number')
+  assert.deepEqual(base.inputs, [{ name: 'a', type: 'circuit/number' }])
+  assert.equal(base.outputType, 'circuit/number')
   assert.equal(base.setting.gain.fixed, true)
   assert.equal(editable.setting.gain.fixed, undefined)
   assert.deepEqual(division.setting.mode.options.map(option => option.value), ['up', 'down'])
@@ -58,7 +58,7 @@ test('reference cards select the earliest stage that admits their explicit setti
 
 test('the normal circuit view evaluates stage defaults under the stable part id', (context) => {
   Object.assign(registeredOperations, operations)
-  context.after(() => delete registeredOperations['toy:scale'])
+  context.after(() => delete registeredOperations['toy/scale'])
   const definitions = { scale: { ...part, stages: [{ id: 'advanced', settings: { gain: { default: 4 } } }] } }
   const { PARTS } = defineParts({ parts: definitions }, operations)
   const course = defineCourse({ levels: [{ id: 'early' }, { id: 'later' }], parts: definitions,
@@ -81,7 +81,7 @@ test('part tags expand stages while replaces accepts only distinct base parts', 
 })
 
 test('all stage settings are checked against their operation and empty output maps fail', () => {
-  const vocabulary = { kinds: { op: operations, family: { 'toy:family': {} } } }
+  const vocabulary = { kinds: { op: operations, family: { 'toy/family': {} } } }
   const stages = definition => progressMeaning.validate({ content: { levels: [], partDefs: { parts: { scale: definition } } }, vocabulary })
   assert.deepEqual(stages(part), [])
   const invalid = { ...part, stages: [{ id: 'invalid', settings: { gain: { max: 9 } } }] }

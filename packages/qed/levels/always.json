@@ -12,7 +12,7 @@
   "tasks": [
     {
       "id": "always",
-      "kind": "logic:truth",
+      "kind": "logic/truth",
       "ask": "valid",
       "formulas": [
         "Rain → Rain",

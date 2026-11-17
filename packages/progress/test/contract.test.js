@@ -44,10 +44,10 @@ test('progress registers its course, unlocks and Studio extensions through paire
     register(kernel.forPackage('progress', 'core'))
     const view = await loadModule(new URL('../view/index.jsx', import.meta.url).pathname)
     view.register(kernel.forPackage('progress', 'view'))
-    assert.equal(typeof kernel.tables.kind.get('progress:part').circuitProgress, 'function')
-    assert.equal(typeof kernel.tables.unlocks.get('progress:parts'), 'function')
-    assert.equal(typeof kernel.tables.editorExtension.get('progress:part').stageChain, 'function')
-    assert.equal(typeof kernel.tables.editorExtension.get('progress:tray').workshop, 'function')
+    assert.equal(typeof kernel.tables.kind.get('progress/part').circuitProgress, 'function')
+    assert.equal(typeof kernel.tables.unlocks.get('progress/parts'), 'function')
+    assert.equal(typeof kernel.tables.editorExtension.get('progress/part').stageChain, 'function')
+    assert.equal(typeof kernel.tables.editorExtension.get('progress/tray').workshop, 'function')
   } finally {
     await closeGames()
   }

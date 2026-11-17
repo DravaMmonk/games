@@ -11,23 +11,23 @@
   "title": "@level.p-split.title",
   "tasks": [
     {
-      "id": "p-split_1",
-      "kind": "logic:translate",
-      "step": "@level.p-split.tasks.p-split_1.step",
-      "brief": "@level.p-split.tasks.p-split_1.brief",
-      "say": "@level.p-split.tasks.p-split_1.say",
+      "id": "p-split-1",
+      "kind": "logic/translate",
+      "step": "@level.p-split.tasks.p-split-1.step",
+      "brief": "@level.p-split.tasks.p-split-1.brief",
+      "say": "@level.p-split.tasks.p-split-1.say",
       "target": "((∀x. Bird(x)) → (∀x. Flies(x))) → (∀x. Bird(x) → Flies(x))",
       "hint": [
-        "@level.p-split.tasks.p-split_1.hint.0"
+        "@level.p-split.tasks.p-split-1.hint.0"
       ],
       "decoys": []
     },
     {
-      "id": "p-split_2",
-      "kind": "logic:model",
-      "step": "@level.p-split.tasks.p-split_2.step",
-      "say": "@level.p-split.tasks.p-split_2.say",
-      "brief": "@level.p-split.tasks.p-split_2.brief",
+      "id": "p-split-2",
+      "kind": "logic/model",
+      "step": "@level.p-split.tasks.p-split-2.step",
+      "say": "@level.p-split.tasks.p-split-2.say",
+      "brief": "@level.p-split.tasks.p-split-2.brief",
       "given": [
         "(∀x. Bird(x)) → (∀x. Flies(x))"
       ],
@@ -41,7 +41,7 @@
         }
       },
       "hint": [
-        "@level.p-split.tasks.p-split_2.hint.0"
+        "@level.p-split.tasks.p-split-2.hint.0"
       ]
     }
   ]

@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "e-says",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "KA ↔ KB",
       "blind": true,
       "brief": "@level.e-says.tasks.e-says.brief",

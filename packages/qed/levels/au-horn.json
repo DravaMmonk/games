@@ -13,8 +13,8 @@
   "tasks": [
     {
       "id": "au-horn",
-      "kind": "logic:machine",
-      "want": "logic:want-refuted",
+      "kind": "logic/machine",
+      "want": "logic/refuted",
       "inputs": [
         {
           "name": "in",

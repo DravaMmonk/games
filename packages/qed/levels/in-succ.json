@@ -4,8 +4,8 @@
   "tasks": [
     {
       "id": "in-succ",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -41,7 +41,7 @@
         "    c2r0 = math[use=[\"def.0\", \"def.1\"]]()",
         "    c3r0 = allI()",
         "    c4r0 = refl()",
-        "    c2r2 = logic:hyp(c2r0)",
+        "    c2r2 = logic/hyp(c2r0)",
         "    c2 = simp(c1.body, c2r2)",
         "    c3 = rule(c2, c3r0)",
         "    c4 = rule(c3, c4r0)",
@@ -55,7 +55,7 @@
         "c2r0 = math[use=[\"def.0\", \"def.1\"]]()",
         "c3r0 = refl()",
         "c0 = rule(in, c0r0)",
-        "c2r2 = logic:hyp(c2r0)",
+        "c2r2 = logic/hyp(c2r0)",
         "c1 = rule(c0, c1r0)",
         "c2 = simp(c1, c2r2)",
         "c3 = rule(c2, c3r0)",

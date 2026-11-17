@@ -1,6 +1,8 @@
+import { CODE_NAME } from './object-name.js'
 import { registerMeaning } from './kind-meanings.js'
 import { tagKey, kernelTags } from './tag-identity.js'
 // Environment-neutral package registration. Each assembly owns its registry.
+const PACKAGE_OBJECT = /^[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9-]*$/
 const CORE = ['play', 'kind', 'state', 'check', 'agent']
 const VIEW = ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension']
 const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'] }
@@ -18,7 +20,7 @@ export function createPluginKernel() {
     tables, objects,
     forPackage(id, side) {
       const api = Object.fromEntries((side === 'core' ? CORE : VIEW).map(type => [type, (name, value) => {
-        if (!name.startsWith(`${id}:`) || !/^[a-z][a-z0-9-]*:[A-Za-z][A-Za-z0-9_-]*$/.test(name)) throw new Error(`${id}: invalid ${type} name ${name}`)
+        if (!name.startsWith(`${id}/`) || !CODE_NAME.test(name)) throw new Error(`${id}: invalid ${type} name ${name}`)
         const required = side === 'core' ? REQUIRED[type] ?? [] : type === 'play' ? ['component', 'preview'] : []
         for (const key of required) if (typeof value?.[key] !== 'function') throw new Error(`${name}: ${type} needs ${key}()`)
         if (type === 'editor') {
@@ -32,13 +34,13 @@ export function createPluginKernel() {
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
       }]))
       api.object = (kind, name, value = {}) => {
-        if (side !== 'core' || !name.startsWith(`${id}/`)) throw new Error(`${id}: objects register their own full name in core`)
+        if (side !== 'core' || !name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: objects register their own full name in core`)
         if (objects.some(object => object.kind === kind && object.name === name && object.value.kind === value.kind)) throw new Error(`duplicate ${kind} ${name}`)
         objects.push({ kind, name, value })
       }
       api.tag = (name, member) => {
         if (side !== 'core') throw new Error('tag readers register in core')
-        if (!name.startsWith(`${id}/`) || !/^[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9_-]*$/.test(name)) throw new Error(`${id}: tag reader needs its own full name`)
+        if (!name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: tag reader needs its own full name`)
         if (typeof member !== 'string' || !member) throw new Error(`${name}: tag reader needs a member type`)
         add('tag', tagKey(member, name), { name, member, reader: id })
         api.object('tag', name, { kind: member, values: [] })
@@ -54,7 +56,7 @@ export function createPluginKernel() {
     },
     meanings(type, value, context) { return Object.fromEntries([...tables.kind].filter(([, meaning]) => meaning.type === type).map(([name, meaning]) => [name, meaning.read(value, context)])) },
     state(context) { return Object.fromEntries([...tables.state].map(([name, derive]) => [name, derive(context)])) },
-    async checks(context) { return (await Promise.all([...tables.check].filter(([name, check]) => (context.phase ? check.phase === context.phase : !check.phase) && (!context.package || name.startsWith(`${context.package}:`)) && !context.excludePackages?.includes(name.split(':')[0])).map(async ([name, check]) => (await check(context)).map(line => ({ ...line, plugin: name }))))).flat() },
+    async checks(context) { return (await Promise.all([...tables.check].filter(([name, check]) => (context.phase ? check.phase === context.phase : !check.phase) && (!context.package || name.startsWith(`${context.package}/`)) && !context.excludePackages?.includes(name.split('/')[0])).map(async ([name, check]) => (await check(context)).map(line => ({ ...line, plugin: name }))))).flat() },
   }
 }
 
@@ -76,5 +78,5 @@ export async function registerPlugins(entries, { view = false, tasks = [] } = {}
 
 /** Public identities registered by code, shared by Node and browser assembly. */
 export function pluginObjects(kernel) {
-  return [...kernel.objects, ...Object.entries(kernel.tables).filter(([kind]) => kind !== 'tag').flatMap(([kind, table]) => [...table].map(([name, value]) => ({ kind, name, value: value?.type ? { type: value.type } : {} })))]
+  return [...kernel.objects, ...Object.entries(kernel.tables).filter(([kind]) => kind !== 'tag').flatMap(([kind, table]) => [...table].map(([name, value]) => ({ kind: ({ kind: 'kindMeaning', game: 'gameHook' })[kind] ?? kind, name, value: value?.type ? { type: value.type } : {} })))]
 }

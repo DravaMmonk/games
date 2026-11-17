@@ -5,7 +5,7 @@
     {
       "id": "base",
       "reference": {
-        "kind": "image:graph",
+        "kind": "image/graph",
         "solution": [
           "g = const[c=0.5]()",
           "n = const[c=9]()",
@@ -19,6 +19,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "in", "type": "image:image" }, { "name": "w", "type": "image:image" }],
-  "outputType": "image:image"
+  "inputs": [{ "name": "in", "type": "image/image" }, { "name": "w", "type": "image/image" }],
+  "outputType": "image/image"
 }

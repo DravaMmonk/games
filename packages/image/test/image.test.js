@@ -22,17 +22,17 @@ import domain from '../core/runtime.js'
 
 // A course of three levels: one a built part runs, one holds that part, one is two tasks.
 const L = (s) => ({ zh: s, en: s })
-const square = { "image:picture-square": { x0: 4, y0: 4, s: 8 } }
-const filter = (id, rest) => ({ id, kind: 'image:graph', brief: L('b'), scene: "image:scene-filter", setup: { target: "image:target-same" }, tests: [{ label: L('t'), in: square }], ...rest })
+const square = { "image/square": { x0: 4, y0: 4, s: 8 } }
+const filter = (id, rest) => ({ id, kind: 'image/graph', brief: L('b'), scene: "image/filter", setup: { target: "image/same" }, tests: [{ label: L('t'), in: square }], ...rest })
 const level = (id, tasks, once = {}) => ({ id, title: L(id), after: L('a'), intro: [{ t: L('i') }], ...once, tasks })
-const wide = ['l = image:shift[dir=left](in)', 'r = image:shift[dir=right](in)', 'h = image:max(l, r)', 'out <- h']
+const wide = ['l = image/shift[dir=left](in)', 'r = image/shift[dir=right](in)', 'h = image/max(l, r)', 'out <- h']
 const content = deepFreeze(withProgressFixture({
-  primitives: ["image:const", "image:add", "image:sub", "image:mul", "image:arith", "image:merge"],
+  primitives: ["image/const", "image/add", "image/sub", "image/mul", "image/arith", "image/merge"],
   eras: [{ id: 0, levels: [{ id: 'wide' }, { id: 'use' }, { id: 'two' }], links: [{ from: 'wide', to: 'use' }, { from: 'use', to: 'two' }], chapter: { title: L('c'), label: L('l'), question: L('q') } }],
   levels: [
     level('wide', [filter('wide', { solution: wide, publishes: [{ part: 'widen', variant: 'base' }] })]),
-    level('use', [filter('use', { solution: ['k = image:const[c="pi/8"]()', 'm = image:arith[op=mul](in, k)', 'p = widen(m)', 'out <- p'], naive: ['out <- in'] })]),
-    level('two', [filter('two_1', { solution: ['s = image:shift[dir=up, n=2](in)', 'out <- s'] }), filter('two_2', { carries: true, solution: ['t = image:threshold[t=0.3](in)', 'out <- t'] })], { adds: ["image:shift"] }),
+    level('use', [filter('use', { solution: ['k = image/const[c="pi/8"]()', 'm = image/arith[op=mul](in, k)', 'p = widen(m)', 'out <- p'], naive: ['out <- in'] })]),
+    level('two', [filter('two_1', { solution: ['s = image/shift[dir=up, n=2](in)', 'out <- s'] }), filter('two_2', { carries: true, solution: ['t = image/threshold[t=0.3](in)', 'out <- t'] })], { adds: ["image/shift"] }),
   ],
   partDefs: { parts: { widen: { name: L('p'), desc: L('d'), inside: [{ id: 'base', reference: { solution: wide } }] } } },
 }))
@@ -62,7 +62,7 @@ test('line and homography estimation stop before sampling when there are too few
 })
 
 test('blueprint text reads into a board and writes back the same', () => {
-  const lines = ['k = image:const[c="pi/8"]()', 's = image:shift[dir=left, n=2](in)', 'm = image:arith[op=mul](s, k)', 'out <- m']
+  const lines = ['k = image/const[c="pi/8"]()', 's = image/shift[dir=left, n=2](in)', 'm = image/arith[op=mul](s, k)', 'out <- m']
   const b = fromText(lines)
   assert.deepEqual(b.nodes.find((n) => n.id === 's').params, { dir: 'left', n: 2, border: 'zero' })
   assert.equal(b.nodes.find((n) => n.id === 'k').params.c, Math.PI / 8)
@@ -72,12 +72,12 @@ test('blueprint text reads into a board and writes back the same', () => {
 
 test('blueprint text names the line it cannot read', () => {
   assert.throws(() => fromText(['s = nope(in)', 'out <- s']), (e) => e.line === 1 && /nope/.test(e.en))
-  assert.throws(() => fromText(['s = image:shift[speed=2](in)', 'out <- s']), (e) => e.line === 1 && /speed/.test(e.en))
+  assert.throws(() => fromText(['s = image/shift[speed=2](in)', 'out <- s']), (e) => e.line === 1 && /speed/.test(e.en))
   assert.throws(() => fromText(['out <- s']), (e) => e.line === 1)
 })
 
 test('a board read from text has each part a column after what it reads, and its outputs after them all', () => {
-  const b = fromText(['a = image:shift[dir=left](in)', 'k = image:const[c=2]()', 'm = image:arith[op=mul](a, k)', 'out <- m'])
+  const b = fromText(['a = image/shift[dir=left](in)', 'k = image/const[c=2]()', 'm = image/arith[op=mul](a, k)', 'out <- m'])
   const at = Object.fromEntries(b.nodes.map((n) => [n.id, n.x]))
   assert.ok(at.in < at.a && at.a === at.k && at.k < at.m && at.m < at.out)
   const cards = b.nodes.map((n) => `${n.x},${n.y}`)
@@ -93,7 +93,7 @@ test('a course’s reference boards, a packed part’s and every task’s, read 
 })
 
 test('a packed part runs the circuit the player passed its level with, in its own course only', () => {
-  const input = { in: picture("image:picture-square") }
+  const input = { in: picture("image/square") }
   const runOf = (course) => {
     const { solution } = course.levelById.use.tasks[0]
     return () => Array.from(course.kit.evaluate(solution, input).outputs.out.data)
@@ -200,16 +200,16 @@ test('a course read writes nothing into its content', () => {
 test('network constraints follow wires from named outputs', () => {
   const nodes = [{ id: 'in', type: 'input' }, { id: 'out', type: 'output' }]
   const encoded = {
-    nodes: [...nodes, { id: 'e', type: 'image:dg_encode', params: { k: 2 } }],
+    nodes: [...nodes, { id: 'e', type: 'image/dg-encode', params: { k: 2 } }],
     wires: [{ from: 'in', to: 'e', port: 'input' }, { from: 'e', to: 'out', port: 'r' }],
   }
-  const bottleneck = constraintOf({ "image:constraint-bottleneck": { max: 2 } })
+  const bottleneck = constraintOf({ "image/bottleneck": { max: 2 } })
   assert.equal(bottleneck({}, encoded), '')
   const bypass = { ...encoded, wires: [...encoded.wires, { from: 'in#b', to: 'out', port: 'b' }] }
   assert.match(bottleneck({}, bypass).en, /does not pass through the encoder/)
 
   const layers = {
-    nodes: [...nodes, { id: 'a', type: 'image:learn3' }, { id: 'b', type: 'image:lrnConv' }],
+    nodes: [...nodes, { id: 'a', type: 'image/learn3' }, { id: 'b', type: 'image/lrnConv' }],
     wires: [{ from: 'in#r', to: 'a', port: 'input' }, { from: 'a#result', to: 'b', port: 'input' }, { from: 'b#result', to: 'out', port: 'in' }],
   }
   assert.equal(depthOf(layers), 2)

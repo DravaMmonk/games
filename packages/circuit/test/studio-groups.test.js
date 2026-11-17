@@ -48,5 +48,5 @@ import { registerPlugins } from '../../../games/kit/engine/plugins.js'
 import { installStudioPlugins } from '../../../games/kit/studio/editors.js'
 import * as core from '../core/index.js'
 const plugins = await registerPlugins([{ id: 'circuit', core }, { id: 'progress', core: progress }])
-plugins.forPackage('circuit', 'view').editor('circuit:part', { type: 'circuit/part', component() {}, groupings: ['tag', 'circuit/tray', 'relation'] })
+plugins.forPackage('circuit', 'view').editor('circuit/part', { type: 'circuit/part', component() {}, groupings: ['tag', 'circuit/tray', 'relation'] })
 installStudioPlugins(plugins)

@@ -2,6 +2,6 @@
   "name": "@part.uConflict.name",
   "desc": "@part.uConflict.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uConflict"
+  "family": "logic/tactic",
+  "op": "logic/uConflict"
 }

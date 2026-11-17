@@ -18,8 +18,8 @@
   "tasks": [
     {
       "id": "r-match",
-      "kind": "logic:machine",
-      "want": "logic:want-unify",
+      "kind": "logic/machine",
+      "want": "logic/unify",
       "inputs": [
         {
           "name": "in",

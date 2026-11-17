@@ -9,7 +9,7 @@ import { T as t } from 'kernel'
 
 
 const LOCAL_NAME = S.str({ pattern: '^[A-Za-z_][A-Za-z0-9_]*$', about: t('ASCII 名字：字母或下划线开头') })
-export const NAME = { ...LOCAL_NAME, pattern: '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z_][A-Za-z0-9_]*$' }
+export const NAME = S.str({ pattern: '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$' })
 const WORD = S.str({ pattern: '^[A-Za-z0-9_][A-Za-z0-9_.-]*$', about: t('ASCII 值：写进蓝图文本') })
 export const EXPR = S.str({ view: 'expr', about: t('一行式子：调用领域的引擎资源') })
 export const ICON = S.str({ view: 'icon', about: t('内核图标表里的一个名字') })

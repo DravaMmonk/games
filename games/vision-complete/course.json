@@ -16,17 +16,17 @@
     "vision-complete/warp",
     "vision-complete/zeroUp",
     "vision-complete/argmin4",
-    "vision-complete/dg_encode",
-    "vision-complete/dg_decode",
-    "vision-complete/dg_mu",
-    "vision-complete/dg_sigma",
-    "vision-complete/dg_sample"
+    "vision-complete/dg-encode",
+    "vision-complete/dg-decode",
+    "vision-complete/dg-mu",
+    "vision-complete/dg-sigma",
+    "vision-complete/dg-sample"
   ],
   "views": {
-    "image:view-profile": "vision-complete/1-1",
-    "image:view-terrain": "vision-complete/1-4",
-    "image:view-spectrum": "vision-complete/2-6",
-    "image:view-slope": "vision-complete/3-9"
+    "image/profile": "vision-complete/1-1",
+    "image/terrain": "vision-complete/1-4",
+    "image/spectrum": "vision-complete/2-6",
+    "image/slope": "vision-complete/3-9"
   },
   "optional": [
     "vision-complete/0-10",

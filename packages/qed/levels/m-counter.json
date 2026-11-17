@@ -17,23 +17,23 @@
   "after": "@level.m-counter.after",
   "tasks": [
     {
-      "id": "m-counter_1",
-      "kind": "logic:translate",
-      "step": "@level.m-counter.tasks.m-counter_1.step",
-      "brief": "@level.m-counter.tasks.m-counter_1.brief",
-      "say": "@level.m-counter.tasks.m-counter_1.say",
+      "id": "m-counter-1",
+      "kind": "logic/translate",
+      "step": "@level.m-counter.tasks.m-counter-1.step",
+      "brief": "@level.m-counter.tasks.m-counter-1.brief",
+      "say": "@level.m-counter.tasks.m-counter-1.say",
       "target": "(∀x. Human(x) → Mortal(x)) ∧ Mortal(h) → Human(h)",
       "hint": [
-        "@level.m-counter.tasks.m-counter_1.hint.0"
+        "@level.m-counter.tasks.m-counter-1.hint.0"
       ],
       "decoys": []
     },
     {
-      "id": "m-counter_2",
-      "kind": "logic:model",
-      "step": "@level.m-counter.tasks.m-counter_2.step",
-      "say": "@level.m-counter.tasks.m-counter_2.say",
-      "brief": "@level.m-counter.tasks.m-counter_2.brief",
+      "id": "m-counter-2",
+      "kind": "logic/model",
+      "step": "@level.m-counter.tasks.m-counter-2.step",
+      "say": "@level.m-counter.tasks.m-counter-2.say",
+      "brief": "@level.m-counter.tasks.m-counter-2.brief",
       "given": [
         "∀x. Human(x) → Mortal(x)",
         "Mortal(h)"
@@ -51,14 +51,14 @@
         }
       },
       "hint": [
-        "@level.m-counter.tasks.m-counter_2.hint.0"
+        "@level.m-counter.tasks.m-counter-2.hint.0"
       ],
       "intro": [
         {
-          "t": "@level.m-counter.tasks.m-counter_2.intro.0.t"
+          "t": "@level.m-counter.tasks.m-counter-2.intro.0.t"
         },
         {
-          "t": "@level.m-counter.tasks.m-counter_2.intro.1.t"
+          "t": "@level.m-counter.tasks.m-counter-2.intro.1.t"
         }
       ]
     }

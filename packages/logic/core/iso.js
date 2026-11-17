@@ -43,7 +43,7 @@ function introduce(level, rules, test, goal) {
   let best = null
   rules.forEach((rule, k) => {
     const items = satisfy(rule, ctx)
-    if (items && (!best || items.length > best.items.length)) best = { kind: 'logic:proof', way: k + 1, items }
+    if (items && (!best || items.length > best.items.length)) best = { kind: 'logic/proof', way: k + 1, items }
   })
   return best
 }

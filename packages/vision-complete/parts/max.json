@@ -2,7 +2,7 @@
   "name": "@part.max.name",
   "desc": "@part.max.desc",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "a",
@@ -13,5 +13,5 @@
       "label": "b"
     }
   ],
-  "op": "image:max"
+  "op": "image/max"
 }

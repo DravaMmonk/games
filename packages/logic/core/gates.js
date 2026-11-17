@@ -2,7 +2,7 @@
 // values of its letters. Its test is every row of the sentence's truth table, the way 《状态之图》's robot runs one board
 // on every cell: the board passes when it gives the sentence's value on every row.
 //
-// A gates level: { kind: 'logic:gates', target: formula text (in WORDS letters), builds?: gate type, budget?: gates allowed,
+// A gates level: { kind: 'logic/gates', target: formula text (in WORDS letters), builds?: gate type, budget?: gates allowed,
 // gates }. Its `gates` are every gate its board may hold, by type: the game's primitive gates (parts.json, run as the
 // kernel's defined parts) and the ones its levels build (game.json gates, each { name, desc, ports }), which run the
 // board of the level that builds them (builtGates).
@@ -58,8 +58,8 @@ export function builtGates(gates, builders, ownBoard) {
     all[type] = {
       ...g,
       ...packed({ circuit, inputs: g.ports, outputs: ['out'] }),
-      inputTypes: Object.fromEntries(g.ports.map((name) => [name, 'circuit:boolean'])),
-      outputType: 'circuit:boolean',
+      inputTypes: Object.fromEntries(g.ports.map((name) => [name, 'circuit/boolean'])),
+      outputType: 'circuit/boolean',
       built: true,
       opens: () => ({ circuit: circuit(), level }),
     }

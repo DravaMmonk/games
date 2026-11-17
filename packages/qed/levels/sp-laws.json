@@ -8,17 +8,17 @@
   ],
   "tasks": [
     {
-      "id": "sp-laws_1",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "id": "sp-laws-1",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sp-laws.tasks.sp-laws_1.inputs.0.label"
+          "label": "@level.sp-laws.tasks.sp-laws-1.inputs.0.label"
         }
       ],
       "backtrack": true,
-      "step": "@level.sp-laws.tasks.sp-laws_1.step",
+      "step": "@level.sp-laws.tasks.sp-laws-1.step",
       "tests": [
         {
           "goal": "(Rain → Wet) ∧ Wind",
@@ -45,9 +45,9 @@
           ]
         }
       ],
-      "brief": "@level.sp-laws.tasks.sp-laws_1.brief",
+      "brief": "@level.sp-laws.tasks.sp-laws-1.brief",
       "hint": [
-        "@level.sp-laws.tasks.sp-laws_1.hint.0"
+        "@level.sp-laws.tasks.sp-laws-1.hint.0"
       ],
       "solution": [
         "c0r0 = arrow[use=[\"arrow.elim\"]]()",
@@ -56,17 +56,17 @@
       ]
     },
     {
-      "id": "sp-laws_2",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "id": "sp-laws-2",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sp-laws.tasks.sp-laws_2.inputs.0.label"
+          "label": "@level.sp-laws.tasks.sp-laws-2.inputs.0.label"
         }
       ],
       "backtrack": true,
-      "step": "@level.sp-laws.tasks.sp-laws_2.step",
+      "step": "@level.sp-laws.tasks.sp-laws-2.step",
       "tests": [
         {
           "goal": "Rain ∨ (Wind ∧ Wet)",
@@ -85,10 +85,10 @@
           ]
         }
       ],
-      "brief": "@level.sp-laws.tasks.sp-laws_2.brief",
+      "brief": "@level.sp-laws.tasks.sp-laws-2.brief",
       "hint": [
-        "@level.sp-laws.tasks.sp-laws_2.hint.0",
-        "@level.sp-laws.tasks.sp-laws_2.hint.1"
+        "@level.sp-laws.tasks.sp-laws-2.hint.0",
+        "@level.sp-laws.tasks.sp-laws-2.hint.1"
       ],
       "solution": [
         "c0 = append(in, first: c1, second: c2) {",

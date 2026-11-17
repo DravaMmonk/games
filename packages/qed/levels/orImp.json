@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "orImp",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

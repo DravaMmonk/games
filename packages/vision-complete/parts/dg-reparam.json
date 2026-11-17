@@ -1,8 +1,8 @@
 {
-  "name": "@part.dg_reparam.name",
-  "desc": "@part.dg_reparam.desc",
+  "name": "@part.dg-reparam.name",
+  "desc": "@part.dg-reparam.desc",
   "icon": "Activity",
-  "family": "image:family-learned",
+  "family": "image/learned",
   "inputs": [
     {
       "name": "mu",
@@ -17,5 +17,5 @@
       "label": "ε"
     }
   ],
-  "op": "image:dg_reparam"
+  "op": "image/dg-reparam"
 }

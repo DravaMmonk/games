@@ -2,7 +2,7 @@
   "name": "@part.resolve.name",
   "desc": "@part.resolve.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
+  "family": "logic/tactic",
   "settings": {
     "unit": {
       "label": "@part.resolve.settings.unit.label",
@@ -18,5 +18,5 @@
       ]
     }
   },
-  "op": "logic:resolve"
+  "op": "logic/resolve"
 }

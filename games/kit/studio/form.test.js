@@ -10,7 +10,7 @@ import { S } from '../engine/schema.js'
 import { taskLevel } from '../engine/tasks.js'
 
 
-const levels = [{ id: 'l', tasks: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }, { id: 'l_2' }]
+const levels = [{ id: 'l', tasks: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }, { id: 'l-2' }]
 const before = levels[0].tasks.map((x) => ({ ...x, n: 1 }))
 
 test('a reordered list moves tasks; nothing else changes', () => {
@@ -22,7 +22,7 @@ test('a new task is added where it stands, a task gone is removed, a changed one
   const ops = taskListOps('l', before, [before[0], { n: 2 }, { ...before[2], n: 3 }], levels)
   assert.deepEqual(ops, [
     { op: 'task.remove', task: 'b' },
-    { op: 'task.add', level: 'l', data: { n: 2, id: 'l_3' }, after: 'a' },
+    { op: 'task.add', level: 'l', data: { n: 2, id: 'l-3' }, after: 'a' },
     { op: 'level.set', level: 'l', path: ['tasks', 2], value: { id: 'c', n: 3 } },
   ])
 })
@@ -81,9 +81,9 @@ test('JSON editing uses catalog references and leaves locale edits on the Copy t
 test('copying a level retains locale values while assigning independent text and task identities', () => {
   const step = withTextKey({ en: 'Run', zh: '运行' }, 'level.a.tasks.0.step')
   const source = { id: 'a', tasks: [{ id: 'a', step }, { id: 'a_2' }] }
-  const levels = [source, { id: 'b_2' }]
+  const levels = [source, { id: 'b-2' }]
   assert.deepEqual(copyLevelData(source, 'b', levels), {
-    tasks: [{ id: 'b_3', step: { en: 'Run', zh: '运行' } }, { id: 'b_4' }],
+    tasks: [{ id: 'b-3', step: { en: 'Run', zh: '运行' } }, { id: 'b-4' }],
   })
 })
 

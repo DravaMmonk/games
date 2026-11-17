@@ -4,7 +4,7 @@
   "tasks": [
     {
       "id": "mergeUse",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "x-merge",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "sentences": [
         "A → A"
       ],

@@ -5,7 +5,7 @@
   "tasks": [
     {
       "id": "g-xor",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "(Rain ∨ Wind) ∧ ¬(Rain ∧ Wind)",
       "blind": true,
       "budget": 4,

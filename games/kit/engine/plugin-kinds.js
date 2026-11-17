@@ -56,12 +56,13 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
       raw[object.name] = mergeFields(raw[object.name], read(object), KIND_DECLARATION)
     }
   }
-  for (const [name, d] of Object.entries(raw)) {
+  for (const [name, rawDefinition] of Object.entries(raw)) {
+    const d = rawDefinition.extends ? rawDefinition : { folder: name.split('/').at(-1), ...rawDefinition }
     const errors = validate(KIND_DECLARATION, d)
     if (errors.length) throw new Error(`${name}: ${JSON.stringify(errors)}`)
     if (d.play && d.extends !== 'task') throw new Error(`${name}: play scopes a task extension`)
     if (d.extends ? !d.fields || d.folder || d.schema && !d.play : !d.schema || !d.folder || d.fields) throw new Error(`${name}: declare folder + schema, or extends + fields`)
-    if (!d.extends && Object.values(definitions).some(other => other.folder === d.folder)) throw new Error(`${name}: duplicate object folder ${d.folder}`)
+    if (!d.extends && Object.entries(definitions).some(([otherName, other]) => other.folder === d.folder && other.declares === d.declares && otherName.split('/')[0] === name.split('/')[0])) throw new Error(`${name}: duplicate object folder ${d.folder}`)
     if (!d.extends && ['levels', 'tasks', 'entries', 'tags', 'relations', 'sections', 'chapters', 'kinds', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
     const inspect = schema => {
       const types = ['any', 'bool', 'num', 'int', 'str', 'text', 'oneOf', 'list', 'set', 'edges', 'map', 'obj', 'either', 'by', 'ref', 'name', 'level', 'task', 'board', 'syntax', 'call']
@@ -139,4 +140,20 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
   }
 
   return { ...vocabulary, level, kindPolicies: { ...BUILTIN_POLICIES, ...definitions }, objectKinds: definitions }
+}
+
+/** A namespaced kind owns its folder in its own layer. Shared kinds are available in other layers. */
+export function objectFoldersFor(namespace, definitions, scope = namespace.startsWith('@') ? 'game' : 'package') {
+  const groups = new Map()
+  for (const [kind, definition] of Object.entries(definitions)) {
+    if (definition.extends || definition.declares !== scope) continue
+    const candidates = groups.get(definition.folder) ?? []
+    candidates.push(kind)
+    groups.set(definition.folder, candidates)
+  }
+  return Object.fromEntries([...groups].flatMap(([folder, candidates]) => {
+    const owned = candidates.find(kind => kind.startsWith(`${namespace}/`))
+    const kind = owned ?? (candidates.length === 1 ? candidates[0] : null)
+    return kind ? [[kind, folder]] : []
+  }))
 }

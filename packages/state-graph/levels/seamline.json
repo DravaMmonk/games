@@ -13,7 +13,7 @@
     "goal": "@level.seamline.mission.goal",
     "how": "@level.seamline.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "debrief": {
     "title": "@level.seamline.debrief.title",
     "body": [
@@ -23,13 +23,13 @@
   "tasks": [
     {
       "id": "seamline",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "checkAll": true,
       "hints": [
         "@level.seamline.tasks.seamline.hints.0",
         "@level.seamline.tasks.seamline.hints.1"
       ],
-      "world": "state-graph:world-pic",
+      "world": "state-graph/pic",
       "facts": [
         "energy",
         "top"
@@ -105,10 +105,10 @@
         21
       ],
       "solution": [
-        "z = table:const[value=0]()",
-        "g = table:pass(facts.top, z)",
-        "m = table:msum(view.up, g)",
-        "a = table:add(m, facts.energy)",
+        "z = table/const[value=0]()",
+        "g = table/pass(facts.top, z)",
+        "m = table/msum(view.up, g)",
+        "a = table/add(m, facts.energy)",
         "cell <- a"
       ]
     }

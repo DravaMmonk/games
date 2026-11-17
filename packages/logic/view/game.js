@@ -24,10 +24,10 @@ import { truth } from '../core/truthValues.js'
 
 
 // A level's declaration task, if it has one: a declaration on the rule board (iso.js).
-const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic:iso') ?? null
+const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic/iso') ?? null
 // A level that gives proof-board rules by passing it (a declaration, a generator), rather than by playing on the proof
 // board.
-const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic:proof')
+const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic/proof')
 
 /**
  * content (../../engine/content.js; vocabulary.js GAME): { id, title, kicker, lede, …the course (course.js), levels,
@@ -61,7 +61,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
   // The parts box lists circuit parts, each from the levels that bring it in.
   // The rules a proof-board part gives as a rule part on the machine board (the kernel's rules it is), and those a
   // lemma gives, one for each of its shapes: a shape after the first only once the player has earned it (`form`).
-  const kernelRules = (type) => KERNEL_RULES.filter((r) => `logic:${r.part}` === logic.partResources[type]).map((r) => ({ text: ruleText(r) }))
+  const kernelRules = (type) => KERNEL_RULES.filter((r) => `logic/${r.part}` === logic.partResources[type]).map((r) => ({ text: ruleText(r) }))
   const lemmaRows = (type) => lemmaRules(type, lemmas[type]).map((r, k) => ({ text: ruleText(r), ...(k ? { form: r.key.split('.')[1] } : {}) }))
   const primitives = [...introductions(logic.course)].map(([type, at]) => {
     const text = logic.defs[type] ?? parts[type]
@@ -102,28 +102,28 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     intro: (level) => level.source.intro,
     kinds: playKinds(plays, {
       declaration, definition, audit, truth, translation, query, script, worldCheck,
-      proof: { ...ui['logic:proof-screen'], cards }, machine: { ...ui['logic:machine-screen'], cards }, gates: { ...ui['logic:gates-screen'], cards },
+      proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
     }, {
-      'logic:proof': { icon: Workflow, label: { zh: '证明', en: 'Proof' } },
-      'logic:machine': { icon: Cog, label: { zh: '证明助手', en: 'Proof assistant' } },
-      'logic:truth': { icon: Grid2x2Check, label: { zh: '真值表', en: 'Truth table' } },
-      'logic:gates': { icon: Cpu, label: { zh: '真值电路', en: 'Truth circuit' } },
-      'logic:iso': { icon: FileSignature, label: { zh: '规则板', en: 'Rule board' } },
-      'logic:define': { icon: SquareFunction, label: { zh: '定义', en: 'Definition' } },
-      'logic:translate': { icon: Languages, label: { zh: '翻译', en: 'Translate' } },
-      'logic:query': { icon: Search, label: { zh: '查询', en: 'Query' } },
-      'logic:model': { icon: FileSignature, label: { zh: '造世界', en: 'Build a world' } },
-      'logic:script': { icon: ScrollText, label: { zh: '写脚本', en: 'Write a script' } },
+      'logic/proof': { icon: Workflow, label: { zh: '证明', en: 'Proof' } },
+      'logic/machine': { icon: Cog, label: { zh: '证明助手', en: 'Proof assistant' } },
+      'logic/truth': { icon: Grid2x2Check, label: { zh: '真值表', en: 'Truth table' } },
+      'logic/gates': { icon: Cpu, label: { zh: '真值电路', en: 'Truth circuit' } },
+      'logic/iso': { icon: FileSignature, label: { zh: '规则板', en: 'Rule board' } },
+      'logic/define': { icon: SquareFunction, label: { zh: '定义', en: 'Definition' } },
+      'logic/translate': { icon: Languages, label: { zh: '翻译', en: 'Translate' } },
+      'logic/query': { icon: Search, label: { zh: '查询', en: 'Query' } },
+      'logic/model': { icon: FileSignature, label: { zh: '造世界', en: 'Build a world' } },
+      'logic/script': { icon: ScrollText, label: { zh: '写脚本', en: 'Write a script' } },
     }, { circuit: circuitScreen }),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its
     // rules, from here on).
     unlocked: (level) => [
       ...level.unlocks.map((flag) => flag.slice('lemma:'.length)).filter((type) => !logic.course.local(type)).map((type) => ({ part: type, label: parts[type].name })),
-      ...(givesRules(level) ? level.source.adds : []).filter((type) => RULES[type]).map((type) => primitives.find((p) => p.part === type)).filter(Boolean).map((p) => ({ part: p.part, label: p.name, icon: p.icon, family: 'logic:family-rule' })),
+      ...(givesRules(level) ? level.source.adds : []).filter((type) => RULES[type]).map((type) => primitives.find((p) => p.part === type)).filter(Boolean).map((p) => ({ part: p.part, label: p.name, icon: p.icon, family: 'logic/rule' })),
     ],
     passed: (level) => {
       const declared = isoOf(level.source)
-      return declared ? ui['logic:passed'](declared) : null
+      return declared ? ui['logic/passed'](declared) : null
     },
     core: (level) => isCore(logic.course, level),
     parts: {

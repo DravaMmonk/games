@@ -2,7 +2,7 @@
   "name": "@part.shade.name",
   "desc": "@part.shade.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "settings": {
     "lx": {
       "label": "@part.shade.settings.lx.label"
@@ -14,5 +14,5 @@
       "label": "@part.shade.settings.lz.label"
     }
   },
-  "op": "image:shade"
+  "op": "image/shade"
 }

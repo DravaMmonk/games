@@ -5,7 +5,7 @@
     {
       "t": "@level.slantcost.intro.0.t",
       "fig": {
-        "state-graph:figure-grid": {
+        "state-graph/grid": {
           "R": 3,
           "C": 4,
           "moves": [
@@ -68,7 +68,7 @@
     {
       "t": "@level.slantcost.intro.3.t",
       "fig": {
-        "state-graph:figure-circuit": {
+        "state-graph/circuit": {
           "taps": [
             {
               "id": "a",
@@ -115,9 +115,9 @@
     "goal": "@level.slantcost.mission.goal",
     "how": "@level.slantcost.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:add"
+    "table/add"
   ],
   "debrief": {
     "title": "@level.slantcost.debrief.title",
@@ -130,34 +130,34 @@
   "tasks": [
     {
       "id": "slantcost",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "ports": [
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 1,
             "sensor": "left"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 2,
             "sensor": "ul"
           }
         },
         {
-          "state-graph:port-start": {
+          "state-graph/start": {
             "sensor": "start"
           }
         },
         {
-          "state-graph:port-named": {
+          "state-graph/named": {
             "label": "@level.slantcost.tasks.slantcost.ports.3.named.label",
             "short": "@level.slantcost.tasks.slantcost.ports.3.named.short",
             "sensor": "cost"
           }
         },
         {
-          "state-graph:port-way": {
+          "state-graph/way": {
             "n": 3,
             "input": "way3"
           }
@@ -166,7 +166,7 @@
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-uses": "up"
+            "state-graph/uses": "up"
           },
           "say": "@level.slantcost.tasks.slantcost.diagnose.0.say"
         }
@@ -177,7 +177,7 @@
         "@level.slantcost.tasks.slantcost.hints.2",
         "@level.slantcost.tasks.slantcost.hints.3"
       ],
-      "world": "state-graph:world-grid",
+      "world": "state-graph/grid",
       "facts": [
         "start",
         "cost"
@@ -273,11 +273,11 @@
         8
       ],
       "solution": [
-        "m = table:mmin(view.left, view.ul, way3)",
-        "k = table:const[value=0]()",
-        "g = table:pass(facts.start, k)",
-        "s = table:mmin(m, g)",
-        "a = table:add(s, facts.cost)",
+        "m = table/mmin(view.left, view.ul, way3)",
+        "k = table/const[value=0]()",
+        "g = table/pass(facts.start, k)",
+        "s = table/mmin(m, g)",
+        "a = table/add(s, facts.cost)",
         "cell <- a"
       ],
       "publishes": [

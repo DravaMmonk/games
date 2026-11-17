@@ -15,7 +15,7 @@
   "tasks": [
     {
       "id": "onerow",
-      "kind": "logic:truth",
+      "kind": "logic/truth",
       "ask": "counter",
       "formulas": [
         "(Rain → Wet) → (Wet → Rain)"

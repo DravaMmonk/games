@@ -28,23 +28,23 @@ const box = face => look(`<path class="bot-ant" d="M16 2.5V6.5"/><circle class="
   <rect class="bot-base" x="8" y="24.5" width="16" height="4.5" rx="2.2"/>`);
 
 export const PART_LOOKS = {
-  'table:msum': funnel('<path class="bot-mark" d="M16 9.2V14.2M13.5 11.7H18.5"/>'),
-  'table:mmin': funnel('<path class="bot-mark" d="M13 10.2L16 13.4L19 10.2"/>'),
-  'table:mmax': funnel('<path class="bot-mark" d="M13 13.4L16 10.2L19 13.4"/>'),
-  'table:many': funnel('<circle class="bot-eye-l" cx="16" cy="11.7" r="2.6"/>'),
+  'table/msum': funnel('<path class="bot-mark" d="M16 9.2V14.2M13.5 11.7H18.5"/>'),
+  'table/mmin': funnel('<path class="bot-mark" d="M13 10.2L16 13.4L19 10.2"/>'),
+  'table/mmax': funnel('<path class="bot-mark" d="M13 13.4L16 10.2L19 13.4"/>'),
+  'table/many': funnel('<circle class="bot-eye-l" cx="16" cy="11.7" r="2.6"/>'),
   /** All the merger models as one entry: the funnel, waiting for its model. */
   merger: funnel('<circle class="bot-eye" cx="12.6" cy="11.7" r="1.3"/><circle class="bot-eye" cx="16" cy="11.7" r="1.3"/><circle class="bot-eye" cx="19.4" cy="11.7" r="1.3"/>'),
-  'table:add': twoArm('<path class="bot-mark" d="M16 10.5V18.5M12 14.5H20"/>'),
-  'table:mul': twoArm('<path class="bot-mark" d="M12.9 11.4L19.1 17.6M19.1 11.4L12.9 17.6"/>'),
-  'table:not': look(`<path class="bot-ant" d="M16 2.5V7"/><circle class="bot-lamp" cx="16" cy="2.6" r="2.2"/>
+  'table/add': twoArm('<path class="bot-mark" d="M16 10.5V18.5M12 14.5H20"/>'),
+  'table/mul': twoArm('<path class="bot-mark" d="M12.9 11.4L19.1 17.6M19.1 11.4L12.9 17.6"/>'),
+  'table/not': look(`<path class="bot-ant" d="M16 2.5V7"/><circle class="bot-lamp" cx="16" cy="2.6" r="2.2"/>
     <rect class="bot-head" x="5" y="7" width="22" height="16" rx="5"/>
     <rect class="bot-visor" x="9" y="11.5" width="14" height="7" rx="3.5"/><circle class="bot-eye-l" cx="19.5" cy="15" r="2.4"/>
     <rect class="bot-base" x="8" y="24" width="16" height="5" rx="2.5"/>`),
-  'table:const': look(`<rect class="bot-base" x="12" y="2.5" width="8" height="4.5" rx="1.5"/>
+  'table/const': look(`<rect class="bot-base" x="12" y="2.5" width="8" height="4.5" rx="1.5"/>
     <rect class="bot-head" x="7" y="6.5" width="18" height="22" rx="4"/>
     <rect class="bot-eye-l" x="11" y="11" width="10" height="3.2" rx="1"/><rect class="bot-eye-l" x="11" y="16" width="10" height="3.2" rx="1"/><rect class="bot-eye-l" x="11" y="21" width="10" height="3.2" rx="1"/>`),
-  'table:pass': gate('bot-eye-l', '<path class="bot-bar" d="M12 16.5L27 6"/>'),
-  'table:block': gate('bot-lamp', '<path class="bot-bar is-stop" d="M13 18.5H29"/>'),
+  'table/pass': gate('bot-eye-l', '<path class="bot-bar" d="M12 16.5L27 6"/>'),
+  'table/block': gate('bot-lamp', '<path class="bot-bar is-stop" d="M13 18.5H29"/>'),
   // The parts the levels leave behind (game.json parts), for the components box: one machine body, and on its face
   // what the part does.
   counter: box('<path class="bot-mark" d="M19.5 8.8V12.4M17.6 10.8L19.5 12.7L21.4 10.8M8.6 17.6H12.8M10.9 15.7L12.8 17.6L10.9 19.5"/><rect class="bot-eye-l" x="15" y="14.6" width="9" height="6.2" rx="1.4"/><path class="bot-mark" d="M19.5 15.9V19.5M17.7 17.7H21.3" style="stroke-width:1.6"/>'),

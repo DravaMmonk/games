@@ -2,7 +2,7 @@
   "name": "@part.shift.name",
   "desc": "@part.shift.desc",
   "icon": "Move",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -57,7 +57,7 @@
       ]
     }
   },
-  "op": "image:shift",
+  "op": "image/shift",
   "stages": [
     {
       "id": "shift-border",

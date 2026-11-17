@@ -2,12 +2,12 @@
   "name": "cos",
   "desc": "cos",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:cos"
+  "op": "image/cos"
 }

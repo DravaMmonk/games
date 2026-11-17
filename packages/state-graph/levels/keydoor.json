@@ -19,7 +19,7 @@
     "goal": "@level.keydoor.mission.goal",
     "how": "@level.keydoor.mission.how"
   },
-  "robot": "state-graph:robot-stack",
+  "robot": "state-graph/stack",
   "debrief": {
     "title": "@level.keydoor.debrief.title",
     "body": [
@@ -30,7 +30,7 @@
   "tasks": [
     {
       "id": "keydoor",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "boardOpt": {
         "minScale": 0.62,
         "maxScale": 1.15
@@ -40,7 +40,7 @@
         "@level.keydoor.tasks.keydoor.hints.0",
         "@level.keydoor.tasks.keydoor.hints.1"
       ],
-      "world": "state-graph:world-keys",
+      "world": "state-graph/keys",
       "facts": [
         "start",
         "gain",
@@ -110,11 +110,11 @@
       ],
       "solution": [
         "c = counter(view.up, view.left, facts.start)",
-        "p = table:msum(view.upPrev, view.leftPrev)",
-        "b1 = table:block(facts.shut, c)",
-        "g = table:pass(facts.gain, p)",
-        "b2 = table:block(facts.lose, b1)",
-        "m = table:msum(b2, g)",
+        "p = table/msum(view.upPrev, view.leftPrev)",
+        "b1 = table/block(facts.shut, c)",
+        "g = table/pass(facts.gain, p)",
+        "b2 = table/block(facts.lose, b1)",
+        "m = table/msum(b2, g)",
         "cell <- m"
       ],
       "remember": [

@@ -8,7 +8,7 @@ import { GanChart } from './Gan.jsx'
 import { ChoiceMatrix, Embedding } from './Contrast.jsx'
 import { KernelChoices, KernelRound } from './Kernels.jsx'
 import { AttentionRoles } from './AttentionRoles.jsx'
-export const displays = qualifyItems('vision-complete', 'display', {
+export const displays = qualifyItems('vision-complete', {
   attentionRoles: AttentionRoles,
   separableKernels: SeparableKernels,
   appleChannels: AppleChannels,

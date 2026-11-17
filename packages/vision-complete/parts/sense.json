@@ -2,7 +2,7 @@
   "name": "@part.sense.name",
   "desc": "@part.sense.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
@@ -28,5 +28,5 @@
       ]
     }
   },
-  "op": "image:sense"
+  "op": "image/sense"
 }

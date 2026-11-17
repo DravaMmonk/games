@@ -5,19 +5,19 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "a = table:add(view.ul, facts.score)",
-          "k = table:const[value=-1]()",
-          "z = table:const[value=0]()",
-          "b = table:add(view.up, k)",
-          "c = table:add(view.left, k)",
-          "m = table:mmax(a, b, c)",
-          "n = table:mmax(m, z)",
+          "a = table/add(view.ul, facts.score)",
+          "k = table/const[value=-1]()",
+          "z = table/const[value=0]()",
+          "b = table/add(view.up, k)",
+          "c = table/add(view.left, k)",
+          "m = table/mmax(a, b, c)",
+          "n = table/mmax(m, z)",
           "cell <- n"
         ],
-        "world": "state-graph:world-local",
-        "robot": "state-graph:robot-ranger",
+        "world": "state-graph/local",
+        "robot": "state-graph/ranger",
         "facts": [
           "score"
         ]

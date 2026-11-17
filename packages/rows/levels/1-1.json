@@ -16,7 +16,7 @@
           "naive": "0 + 3"
         }
       ],
-      "play": "rows:equation"
+      "play": "rows/equation"
     }
   ]
 }

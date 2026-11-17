@@ -19,7 +19,7 @@
     "goal": "@level.localalign.mission.goal",
     "how": "@level.localalign.mission.how"
   },
-  "robot": "state-graph:robot-ranger",
+  "robot": "state-graph/ranger",
   "debrief": {
     "title": "@level.localalign.debrief.title",
     "body": [
@@ -31,36 +31,36 @@
   "tasks": [
     {
       "id": "localalign",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "a = table:add(view.ul, facts.score)",
-        "k = table:const[value=-1]()",
-        "b = table:add(view.up, k)",
-        "c = table:add(view.left, k)",
-        "m = table:mmax(a, b, c)",
+        "a = table/add(view.ul, facts.score)",
+        "k = table/const[value=-1]()",
+        "b = table/add(view.up, k)",
+        "c = table/add(view.left, k)",
+        "m = table/mmax(a, b, c)",
         "cell <- m"
       ],
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-all": [
+            "state-graph/all": [
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-has": {
-                    "part": "table:const",
+                "state-graph/not": {
+                  "state-graph/has": {
+                    "part": "table/const",
                     "value": 0
                   }
                 }
               },
               {
-                "state-graph:condition-uses": "score"
+                "state-graph/uses": "score"
               }
             ]
           },
           "say": "@level.localalign.tasks.localalign.diagnose.0.say"
         }
       ],
-      "trace": "state-graph:trace-local",
+      "trace": "state-graph/local",
       "boardOpt": {
         "minScale": 0.62,
         "maxScale": 1.15
@@ -76,7 +76,7 @@
         "@level.localalign.tasks.localalign.hints.0",
         "@level.localalign.tasks.localalign.hints.1"
       ],
-      "world": "state-graph:world-local",
+      "world": "state-graph/local",
       "facts": [
         "score"
       ],
@@ -95,13 +95,13 @@
         9
       ],
       "solution": [
-        "a = table:add(view.ul, facts.score)",
-        "k = table:const[value=-1]()",
-        "z = table:const[value=0]()",
-        "b = table:add(view.up, k)",
-        "c = table:add(view.left, k)",
-        "m = table:mmax(a, b, c)",
-        "n = table:mmax(m, z)",
+        "a = table/add(view.ul, facts.score)",
+        "k = table/const[value=-1]()",
+        "z = table/const[value=0]()",
+        "b = table/add(view.up, k)",
+        "c = table/add(view.left, k)",
+        "m = table/mmax(a, b, c)",
+        "n = table/mmax(m, z)",
         "cell <- n"
       ],
       "border0": true,
@@ -111,7 +111,7 @@
           "variant": "base"
         }
       ],
-      "panel": "state-graph:panel-local"
+      "panel": "state-graph/local"
     }
   ]
 }

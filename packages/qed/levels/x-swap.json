@@ -13,7 +13,7 @@
       "sentences": [
         "(A → B) → (A → C)"
       ],
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

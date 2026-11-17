@@ -38,7 +38,7 @@ export function validate({ levels }) {
 }
 
 const languages = {
-  'rows:sum': (text) => {
+  'rows/sum': (text) => {
     try { readSum(text); return null }
     catch (error) { return error.message }
   },

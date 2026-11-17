@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "x-self",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "A → A"

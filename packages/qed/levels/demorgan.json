@@ -8,9 +8,9 @@
   ],
   "tasks": [
     {
-      "id": "demorgan_1",
-      "kind": "logic:proof",
-      "step": "@level.demorgan.tasks.demorgan_1.step",
+      "id": "demorgan-1",
+      "kind": "logic/proof",
+      "step": "@level.demorgan.tasks.demorgan-1.step",
       "tests": [
         {
           "premises": {
@@ -30,8 +30,8 @@
         }
       ],
       "hint": [
-        "@level.demorgan.tasks.demorgan_1.hint.0",
-        "@level.demorgan.tasks.demorgan_1.hint.1"
+        "@level.demorgan.tasks.demorgan-1.hint.0",
+        "@level.demorgan.tasks.demorgan-1.hint.1"
       ],
       "solution": [
         "na = impI[A=A](body: m) {",
@@ -57,9 +57,9 @@
       ]
     },
     {
-      "id": "demorgan_2",
-      "kind": "logic:proof",
-      "step": "@level.demorgan.tasks.demorgan_2.step",
+      "id": "demorgan-2",
+      "kind": "logic/proof",
+      "step": "@level.demorgan.tasks.demorgan-2.step",
       "tests": [
         {
           "premises": {
@@ -79,8 +79,8 @@
         }
       ],
       "hint": [
-        "@level.demorgan.tasks.demorgan_2.hint.0",
-        "@level.demorgan.tasks.demorgan_2.hint.1"
+        "@level.demorgan.tasks.demorgan-2.hint.0",
+        "@level.demorgan.tasks.demorgan-2.hint.1"
       ],
       "solution": [
         "f = impI[A=\"A | B\"](body: o) {",
@@ -109,9 +109,9 @@
       ]
     },
     {
-      "id": "demorgan_3",
-      "kind": "logic:proof",
-      "step": "@level.demorgan.tasks.demorgan_3.step",
+      "id": "demorgan-3",
+      "kind": "logic/proof",
+      "step": "@level.demorgan.tasks.demorgan-3.step",
       "tests": [
         {
           "premises": {
@@ -131,8 +131,8 @@
         }
       ],
       "hint": [
-        "@level.demorgan.tasks.demorgan_3.hint.0",
-        "@level.demorgan.tasks.demorgan_3.hint.1"
+        "@level.demorgan.tasks.demorgan-3.hint.0",
+        "@level.demorgan.tasks.demorgan-3.hint.1"
       ],
       "solution": [
         "f = impI[A=\"A & B\"](body: o) {",
@@ -161,9 +161,9 @@
       ]
     },
     {
-      "id": "demorgan_4",
-      "kind": "logic:proof",
-      "step": "@level.demorgan.tasks.demorgan_4.step",
+      "id": "demorgan-4",
+      "kind": "logic/proof",
+      "step": "@level.demorgan.tasks.demorgan-4.step",
       "tests": [
         {
           "premises": {
@@ -183,8 +183,8 @@
         }
       ],
       "hint": [
-        "@level.demorgan.tasks.demorgan_4.hint.0",
-        "@level.demorgan.tasks.demorgan_4.hint.1"
+        "@level.demorgan.tasks.demorgan-4.hint.0",
+        "@level.demorgan.tasks.demorgan-4.hint.1"
       ],
       "solution": [
         "l = lem[A=A]()",

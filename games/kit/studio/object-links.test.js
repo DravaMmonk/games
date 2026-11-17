@@ -7,7 +7,7 @@ import { objectPlaces } from './objects-edit.js'
 import { registerPlugins } from '../engine/plugins.js'
 import { installStudioPlugins } from './editors.js'
 installStudioPlugins(await registerPlugins([{ id: 'sample', core: { register(k) {
-  k.kind('sample:item', { type: 'sample/item', read: value => value, studio: { collections: {
+  k.kind('sample/item', { type: 'sample/item', read: value => value, studio: { collections: {
     'sample/collection': { accepts: kind => kind === 'sample/item' },
   } } })
 } } }]))

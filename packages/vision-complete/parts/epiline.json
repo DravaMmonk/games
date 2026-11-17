@@ -5,7 +5,7 @@
     {
       "id": "base",
       "reference": {
-        "kind": "image:graph",
+        "kind": "image/graph",
         "solution": [
           "a = arith[op=mul](c1, px)",
           "b = arith[op=mul](c2, py)",
@@ -17,11 +17,11 @@
     }
   ],
   "inputs": [
-    { "name": "c1", "type": "image:image" },
-    { "name": "c2", "type": "image:image" },
-    { "name": "c3", "type": "image:image" },
-    { "name": "px", "type": "image:image" },
-    { "name": "py", "type": "image:image" }
+    { "name": "c1", "type": "image/image" },
+    { "name": "c2", "type": "image/image" },
+    { "name": "c3", "type": "image/image" },
+    { "name": "px", "type": "image/image" },
+    { "name": "py", "type": "image/image" }
   ],
-  "outputType": "image:image"
+  "outputType": "image/image"
 }

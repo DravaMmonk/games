@@ -5,7 +5,7 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:seam"
+        "play": "state-graph/seam"
       }
     }
   ]

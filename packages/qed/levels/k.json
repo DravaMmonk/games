@@ -9,9 +9,9 @@
   "after": "@level.k.after",
   "tasks": [
     {
-      "id": "k_1",
-      "kind": "logic:proof",
-      "step": "@level.k.tasks.k_1.step",
+      "id": "k-1",
+      "kind": "logic/proof",
+      "step": "@level.k.tasks.k-1.step",
       "tests": [
         {
           "goal": "A → A"
@@ -26,7 +26,7 @@
         }
       ],
       "hint": [
-        "@level.k.tasks.k_1.hint.0"
+        "@level.k.tasks.k-1.hint.0"
       ],
       "solution": [
         "f = impI[A=A](body: f.body)",
@@ -34,9 +34,9 @@
       ]
     },
     {
-      "id": "k_2",
-      "kind": "logic:proof",
-      "step": "@level.k.tasks.k_2.step",
+      "id": "k-2",
+      "kind": "logic/proof",
+      "step": "@level.k.tasks.k-2.step",
       "tests": [
         {
           "goal": "A → (B → A)"
@@ -53,12 +53,12 @@
         }
       ],
       "hint": [
-        "@level.k.tasks.k_2.hint.0",
-        "@level.k.tasks.k_2.hint.1"
+        "@level.k.tasks.k-2.hint.0",
+        "@level.k.tasks.k-2.hint.1"
       ],
       "intro": [
         {
-          "t": "@level.k.tasks.k_2.intro.0.t"
+          "t": "@level.k.tasks.k-2.intro.0.t"
         }
       ],
       "solution": [

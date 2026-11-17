@@ -389,15 +389,15 @@ test('tasks by id: task.add, task.move in a level and across levels, task.remove
   assert.deepEqual([ws.levels.get('r').tasks, ids('q')], [[], ['q', 'r1']])
   for (const { op, ...args } of merged.inverse) go(op, args)
   const added = go('task.add', { level: 'p', data: { brief: tx('new') }, first: true })
-  assert.deepEqual(ids('p'), ['p_2', 'p', 'p2'])
+  assert.deepEqual(ids('p'), ['p-2', 'p', 'p2'])
   assert.throws(() => go('task.add', { level: 'q', data: { id: 'p', brief: tx('x') } }), /there is a task p already/)
   assert.throws(() => go('task.add', { level: 'p', data: { id: 'r', brief: tx('x') } }), /r is a level’s id/)
   const inLevel = go('task.move', { task: 'p2', to: { level: 'p', first: true } })
-  assert.deepEqual(ids('p'), ['p2', 'p_2', 'p'])
+  assert.deepEqual(ids('p'), ['p2', 'p-2', 'p'])
   const across = go('task.move', { task: 'p', to: { level: 'q', after: 'q' } })
-  assert.deepEqual([ids('p'), ids('q')], [['p2', 'p_2'], ['q', 'p']])
+  assert.deepEqual([ids('p'), ids('q')], [['p2', 'p-2'], ['q', 'p']])
   assert.throws(() => go('task.remove', { task: 'r1' }), /only task: remove the level/)
-  const removed = go('task.remove', { task: 'p_2' })
+  const removed = go('task.remove', { task: 'p-2' })
   assert.deepEqual(ids('p'), ['p2'])
   for (const done of [removed, across, inLevel, added]) for (const { op, ...args } of done.inverse) go(op, args)
   assert.equal(JSON.stringify([...ws.levels]), before)
@@ -407,11 +407,11 @@ test('tasks by id: task.add, task.move in a level and across levels, task.remove
 const PVOCAB = defineVocabulary({
   module: 'ptoy',
   version: 1,
-  kinds: { op: { add: { about: 'a + b', args: [{ name: 'a', type: 'circuit:number' }, { name: 'b', type: 'circuit:number' }], returns: 'circuit:number' } }, family: { value: { about: 'numbers' } } },
+  kinds: { op: { add: { about: 'a + b', args: [{ name: 'a', type: 'circuit/number' }, { name: 'b', type: 'circuit/number' }], returns: 'circuit/number' } }, family: { value: { about: 'numbers' } } },
   game: S.obj({ title: S.text(), primitives: S.list(S.ref('part', { reference: 'circuit/part' })), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
   level: S.obj({ title: S.text(), brief: S.opt(S.text()), adds: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))), solution: S.opt(S.board()), uses: S.opt(S.map(S.str(), { key: S.ref('part', { reference: 'circuit/part' }) })) }),
 })
-const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'circuit:number' }, { name: 'b', type: 'circuit:number' }], outputType: 'circuit:number', op: 'add' }
+const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'circuit/number' }, { name: 'b', type: 'circuit/number' }], outputType: 'circuit/number', op: 'add' }
 function partsToy() {
   const root = mkdtempSync(join(tmpdir(), 'ops-ptoy-'))
   const game = { vocabulary: 1, title: { en: 'Toy' }, primitives: ['sum'], chapters: [{ id: 'one', levels: ['a1'] }] }

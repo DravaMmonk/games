@@ -50,8 +50,8 @@
       "make": false
     }
   ],
-  "play": "logic:audit",
-  "want": "logic:want-agree",
+  "play": "logic/audit",
+  "want": "logic/agree",
   "slots": [
     {
       "make": true,
@@ -128,7 +128,7 @@
   "tasks": [
     {
       "id": "decl-order",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "boards": [
         {
           "rules": [
@@ -149,8 +149,8 @@
       "step": "@level.decl-order.tasks.decl-order.step"
     },
     {
-      "id": "decl-order_2",
-      "kind": "logic:iso",
+      "id": "decl-order-2",
+      "kind": "logic/iso",
       "boards": [
         {
           "rules": [
@@ -164,11 +164,11 @@
           ]
         }
       ],
-      "brief": "@level.decl-order.tasks.decl-order_2.brief",
+      "brief": "@level.decl-order.tasks.decl-order-2.brief",
       "hint": [
-        "@level.decl-order.tasks.decl-order_2.hint.0"
+        "@level.decl-order.tasks.decl-order-2.hint.0"
       ],
-      "step": "@level.decl-order.tasks.decl-order_2.step"
+      "step": "@level.decl-order.tasks.decl-order-2.step"
     }
   ]
 }

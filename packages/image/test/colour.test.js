@@ -45,7 +45,7 @@ test('an RGB image can be corrected directly with a single-channel illumination 
   const graph = { nodes: [
     { id: 'photo', type: 'input', params: { name: 'photo' } },
     { id: 'light', type: 'input', params: { name: 'light' } },
-    { id: 'divide', type: 'image:arith', params: { op: 'div' } },
+    { id: 'divide', type: 'image/arith', params: { op: 'div' } },
     { id: 'out', type: 'output', params: { name: 'out' } },
   ], wires: [
     { from: 'photo', to: 'divide', port: 'a' }, { from: 'light', to: 'divide', port: 'b' },
@@ -103,7 +103,7 @@ test('image content and editor imports enforce the same task ports', async () =>
   const kit = imageKit(NODE_TYPES)
   const grey = plane([0.2, 0.4])
   const task = { tests: [{ inputs: { in: grey }, expected: { out: grey } }] }
-  for (const line of ['out <- in.unknown', 'out <- in.r', 'out.r <- in', 'a = image:arith[unknown=1](in, in)']) {
+  for (const line of ['out <- in.unknown', 'out <- in.r', 'out.r <- in', 'a = image/arith[unknown=1](in, in)']) {
     const { errors } = read(line, startBoard(task), kit.boardParts(task.tests[0]), Object.keys(NODE_TYPES))
     assert.equal(errors.length, 1)
     assert.throws(() => kit.fromText([line], task), (error) => error.line === 1 && error.en === errors[0].en)

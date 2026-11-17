@@ -23,7 +23,7 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
   parts = new Set([...parts, ...Object.keys(objects['circuit/part'] ?? {}).map(id => id.split('/').at(-1))])
   partRules = new Set([...partRules, ...(vocabulary?.meanings ?? []).flatMap(meaning => meaning.blueprintRules?.({ objects }) ?? [])])
   const part = value => {
-    if (typeof value !== 'string' || value.includes(':')) return value
+    if (typeof value !== 'string') return value
     if (value.includes('/')) return name(value)
     return parts.has(value.split(/[.=]/)[0]) || !vocabulary?.kinds.part?.[value.split(/[.=]/)[0]] ? name(value) : value
   }
@@ -40,10 +40,7 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
       if (['rules', 'using', 'simp'].includes(key) && Array.isArray(value)) return { value: value.map(rule) }
       if (key === 'tray') return { value: Array.isArray(value) ? value.map(name) : name(value) }
       if (context === 'configuration' && path.at(-2) === 'borrow') return { key: part(key) }
-      if (key === 'open' && context === 'configuration') return { value: Object.fromEntries(Object.entries(value).map(([rule, items]) => [rule, items.map(item => {
-        const at = item.indexOf('@', item.startsWith('@') ? 1 : 0)
-        return at < 0 ? item : `${part(item.slice(0, at))}@${name(item.slice(at + 1))}`
-      })])) }
+      if (key === 'open' && context === 'configuration') return { value: Object.fromEntries(Object.entries(value).map(([rule, items]) => [rule, items.map(entry => ({ ...entry, part: part(entry.part), level: name(entry.level) }))])) }
       if (key === 'reference' && vocabulary?.level?.fields?.tasks) return { schema: { type: 'obj', fields: { ...vocabulary.level.fields, ...shapeAt(vocabulary.level.fields.tasks.of, value, [], { vocabulary })?.fields, solution: { type: 'board' } } } }
       void object
     },
@@ -113,7 +110,7 @@ export const partMeaning = {
     const parts = Object.values(content.partDefs?.parts ?? content.registries?.['circuit/part'] ?? {})
     const references = parts.flatMap(part => part.inside?.map(entry => entry.reference) ?? [])
     if (references.length) return [...new Set(references.map(task => taskModule(task) ?? 'circuit'))]
-    const owner = name => typeof name === 'string' && name.includes(':') ? name.split(':')[0] : null
+    const owner = name => typeof name === 'string' && name.includes('/') ? name.split('/')[0] : null
     const types = parts.flatMap(part => [part.outputType, ...(part.inputs ?? []).map(port => port.type)])
     return [[...types.map(owner), ...parts.map(part => owner(part.family) ?? owner(part.mark))].find(id => id && id !== 'circuit') ?? 'circuit']
   },
@@ -187,7 +184,7 @@ export function circuitVocabulary(vocabulary) {
     level: vocabulary.level ?? own.level,
     game: S.obj({ ...Object.fromEntries(Object.entries(own.game.fields).map(([key, field]) => [key, S.opt(field)])), ...vocabulary.game.fields }),
     kinds: Object.fromEntries([...new Set([...Object.keys(vocabulary.kinds), ...Object.keys(capabilityRegistry.kinds)])].map(kind => [kind, { ...capabilityRegistry.kinds[kind], ...vocabulary.kinds[kind] }])),
-    capabilities: Object.fromEntries(Object.entries(capabilityRegistry.tables).map(([kind, items]) => [kind, { ...items, ...vocabulary.capabilities?.[kind] }])),
+    capabilities: { ...vocabulary.capabilities, ...Object.fromEntries(Object.entries(capabilityRegistry.tables).map(([kind, items]) => [kind, { ...items, ...vocabulary.capabilities?.[kind] }])) },
   }
   const grantFields = new Set(['tray', 'adds', 'gives', 'withholds', 'opens', 'awards', 'local', 'featuredParts', 'publishes'])
   const strip = schema => {

@@ -2,7 +2,7 @@
   "name": "@part.ransac.name",
   "desc": "@part.ransac.desc",
   "icon": "Box",
-  "family": "image:family-other",
+  "family": "image/other",
   "inputs": [
     {
       "name": "in",
@@ -17,5 +17,5 @@
       "label": "δ"
     }
   },
-  "op": "image:ransac"
+  "op": "image/ransac"
 }

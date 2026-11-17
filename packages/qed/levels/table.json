@@ -15,7 +15,7 @@
   "tasks": [
     {
       "id": "table",
-      "kind": "logic:truth",
+      "kind": "logic/truth",
       "ask": "fill",
       "formulas": [
         "Rain → Wet"

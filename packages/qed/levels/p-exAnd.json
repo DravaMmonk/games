@@ -11,23 +11,23 @@
   "title": "@level.p-exAnd.title",
   "tasks": [
     {
-      "id": "p-exAnd_1",
-      "kind": "logic:translate",
-      "step": "@level.p-exAnd.tasks.p-exAnd_1.step",
-      "brief": "@level.p-exAnd.tasks.p-exAnd_1.brief",
-      "say": "@level.p-exAnd.tasks.p-exAnd_1.say",
+      "id": "p-exAnd-1",
+      "kind": "logic/translate",
+      "step": "@level.p-exAnd.tasks.p-exAnd-1.step",
+      "brief": "@level.p-exAnd.tasks.p-exAnd-1.brief",
+      "say": "@level.p-exAnd.tasks.p-exAnd-1.say",
       "target": "(∃x. Bird(x)) ∧ (∃x. Flies(x)) → (∃x. Bird(x) ∧ Flies(x))",
       "hint": [
-        "@level.p-exAnd.tasks.p-exAnd_1.hint.0"
+        "@level.p-exAnd.tasks.p-exAnd-1.hint.0"
       ],
       "decoys": []
     },
     {
-      "id": "p-exAnd_2",
-      "kind": "logic:model",
-      "step": "@level.p-exAnd.tasks.p-exAnd_2.step",
-      "say": "@level.p-exAnd.tasks.p-exAnd_2.say",
-      "brief": "@level.p-exAnd.tasks.p-exAnd_2.brief",
+      "id": "p-exAnd-2",
+      "kind": "logic/model",
+      "step": "@level.p-exAnd.tasks.p-exAnd-2.step",
+      "say": "@level.p-exAnd.tasks.p-exAnd-2.say",
+      "brief": "@level.p-exAnd.tasks.p-exAnd-2.brief",
       "given": [
         "∃x. Bird(x)",
         "∃x. Flies(x)"
@@ -45,7 +45,7 @@
         }
       },
       "hint": [
-        "@level.p-exAnd.tasks.p-exAnd_2.hint.0"
+        "@level.p-exAnd.tasks.p-exAnd-2.hint.0"
       ]
     }
   ]

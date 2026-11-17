@@ -9,8 +9,8 @@
   "tasks": [
     {
       "id": "au-machine",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -41,7 +41,7 @@
             "∀x. Bird(x) → Flies(x)",
             "Bird(j)"
           ],
-          "want": "logic:want-fails"
+          "want": "logic/fails"
         }
       ],
       "brief": "@level.au-machine.tasks.au-machine.brief",

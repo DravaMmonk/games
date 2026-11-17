@@ -1,5 +1,5 @@
 {
-  "machine": "state-graph:robot-broom",
+  "machine": "state-graph/broom",
   "chapter": {
     "title": "@course.eras.broom.chapter.title",
     "desc": "@course.eras.broom.chapter.desc"

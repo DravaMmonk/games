@@ -1,6 +1,6 @@
 {
   "extends": "task",
-  "play": "state-graph:pack",
+  "play": "state-graph/pack",
   "fields": {},
   "schema": {
     "type": "obj",

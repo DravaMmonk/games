@@ -23,7 +23,7 @@ test('file assembly qualifies each layer and keeps the registries independent', 
     id: 'demo', packageId: 'library', schemas,
     game: { title: t('heading', 'Demo'), primitives: ['library/calc'], chapters: [{ id: 'chapter', levels: ['library/calc'] }] },
     levels: [['calc', { title: t('heading', 'Calculate'), tasks: [{ id: 'work', part: 'calc', carry: 'other/start', solution: ['n = calc()', 'out <- n'] }] }]],
-    partDefs: { parts: { calc: { inputs: [{ name: 'a' }], settings: { 'value': { control: 'number', default: 1 } }, op: 'circuit:constant' } } },
+    partDefs: { parts: { calc: { inputs: [{ name: 'a' }], settings: { 'value': { control: 'number', default: 1 } }, op: 'circuit/constant' } } },
     glossary: { groups: [], entries: [{ id: 'calc', at: 'calc', title: 'Calculate', body: [], see: ['other/entry'] }] },
     sections: [['entries-calc', { title: 'Numbers', values: ['#entries-calc'] }]],
     tags: [['calc', { kind: 'level', title: 'Group', values: ['calc'] }], ['entries-calc', { kind: 'entry', title: 'Numbers', values: ['calc'] }]],
@@ -83,7 +83,7 @@ test('blueprint tokens accept full names and rewriting preserves quoted formulas
 test('item references and audit identities retain the game namespace', () => {
   const expanded = expandNames({ opens: ['calc.how=minus'], withholds: ['calc'], gives: ['@demo/pin.value'] }, 'library', { vocabulary: schemas, parts: new Set(['calc']) })
   assert.deepEqual(expanded, { opens: ['library/calc.how=minus'], withholds: ['library/calc'], gives: ['@demo/pin.value'] })
-  assert.deepEqual(validate(OPEN, { audit: ['@demo/pin@@demo/start'] }), [])
+  assert.deepEqual(validate(OPEN, { audit: [{ part: '@demo/pin', level: '@demo/start' }] }), [])
 })
 
 test('bench stage controls remain local when a task has item availability fields', () => {

@@ -2,7 +2,7 @@
   "name": "@part.blur3h.name",
   "desc": "@part.blur3h.desc",
   "icon": "Grid3x3",
-  "family": "image:family-neighbour",
+  "family": "image/neighbour",
   "inputs": [
     {
       "name": "in",
@@ -25,7 +25,7 @@
       "fixed": true
     }
   },
-  "op": "image:blur3h",
+  "op": "image/blur3h",
   "stages": [
     {
       "id": "blur3h-border",

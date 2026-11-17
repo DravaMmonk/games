@@ -27,8 +27,8 @@ const fixture = () => {
     mkdirSync(dirname(path), { recursive: true })
     writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`)
   }
-  put('packages/library/package.json', { version: '1.0.0', kernel: '^0.0.0', uses: {} })
-  put('packages/library/parts/apply.json', { name: 'Apply', desc: 'Apply an implication.', icon: 'GitFork', family: 'logic:family-rule', inputs: [{ name: 'imp', type: 'logic:judgment' }, { name: 'a', type: 'logic:judgment' }], outputType: 'logic:judgment', op: 'logic:mp' })
+  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
+  put('packages/library/parts/apply.json', { name: 'Apply', desc: 'Apply an implication.', icon: 'GitFork', family: 'logic/rule', inputs: [{ name: 'imp', type: 'logic/judgment' }, { name: 'a', type: 'logic/judgment' }], outputType: 'logic/judgment', op: 'logic/mp' })
   lockFixture(root)
   return { root, put }
 }
@@ -89,9 +89,9 @@ test('single-level play uses task trays, ignores prerequisites and opens setting
 
 test('a levels-only package plays dependency parts and checks references and naive answers independently', async () => {
   const { root, put } = fixture()
-  put('packages/problems/package.json', { version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0' } })
+  put('packages/problems/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0' } })
   put('packages/problems/levels/implication.json', {
-    title: 'Implication', after: 'Use the implication.', tasks: [{ id: 'solve', kind: 'logic:proof',
+    title: 'Implication', after: 'Use the implication.', tasks: [{ id: 'solve', kind: 'logic/proof',
       tests: [{ premises: { p: 'A → B', q: 'A' }, goal: 'B' }], cases: [{ A: 'A', B: 'B' }],
       solution: ['m = library/apply(p, q)', 'goal <- m'], naive: ['goal <- q'],
       brief: 'Prove B.', hint: ['Apply the implication.'],
@@ -110,7 +110,7 @@ test('a levels-only package plays dependency parts and checks references and nai
 
 test('package dependencies are readable while only the selected layer can be edited', async () => {
   const { root, put } = fixture()
-  put('packages/extra/package.json', { version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0' } })
+  put('packages/extra/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0' } })
   lockFixture(root)
   const ws = openPackage('extra', root)
   assert.ok(ws.content().registries['circuit/part']['library/apply'])
@@ -146,7 +146,7 @@ test('default check targets include every game followed by unplayed packages; na
   const { root, id } = proofsRoot()
   roots.push(root)
   mkdirSync(resolve(root, 'packages/library'), { recursive: true })
-  writeFileSync(resolve(root, 'packages/library/package.json'), JSON.stringify({ version: '1.0.0', kernel: '^0.0.0', uses: {} }))
+  writeFileSync(resolve(root, 'packages/library/package.json'), JSON.stringify({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} }))
   assert.deepEqual(contentTargets([], root), [{ id, kind: 'game' }, { id: 'library', kind: 'package' }])
   assert.deepEqual(contentTargets([id], root), [{ id, kind: 'game' }])
   assert.deepEqual(contentTargets([id], root, { package: true }), [{ id, kind: 'package' }])
@@ -168,7 +168,7 @@ test('game course writes maintain the derived hub count without writing package 
 
 test('packages reject invalid authored package fields', async () => {
   const { root, put } = fixture()
-  put('packages/library/package.json', { version: '1.0.0', kernel: '^0.0.0', uses: {}, unknownField: true })
+  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {}, unknownField: true })
   assert.throws(() => readPackage('library', root), /unknownField/)
 })
 
@@ -182,11 +182,11 @@ test('package lists use prerequisites then names without constructing chapters',
 
 test('symbol files, wording, typed tags and overrides use symbols throughout authoring', async () => {
   const { root, put } = fixture()
-  put('packages/library/symbols/and.json', { mark: 'logic:mark-formulaAnd', name: '∧', desc: '@symbol.and.desc', icon: 'Rows3' })
+  put('packages/library/symbols/and.json', { mark: 'logic/formulaAnd', name: '∧', desc: '@symbol.and.desc', icon: 'Rows3' })
   put('packages/library/i18n/en.json', { 'symbol.and.desc': 'Conjunction' })
   put('packages/library/tags/logic/symbol/formulas.json', { values: ['and'] })
   put('packages/library/trays/mixed.json', { values: ['apply', '#formulas'] })
-  put('packages/extra/package.json', { version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0', logic: '^0.0.0' } })
+  put('packages/extra/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0', logic: '^0.0.0' } })
   put('packages/extra/overrides/library/symbols/and.json', { icon: 'Box' })
   lockFixture(root)
   const content = readPackage('extra', root)

@@ -8,17 +8,17 @@
   ],
   "tasks": [
     {
-      "id": "sp-dm_1",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "id": "sp-dm-1",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sp-dm.tasks.sp-dm_1.inputs.0.label"
+          "label": "@level.sp-dm.tasks.sp-dm-1.inputs.0.label"
         }
       ],
       "backtrack": true,
-      "step": "@level.sp-dm.tasks.sp-dm_1.step",
+      "step": "@level.sp-dm.tasks.sp-dm-1.step",
       "tests": [
         {
           "goal": "¬(Rain ∨ Wind) → Wet",
@@ -37,10 +37,10 @@
           ]
         }
       ],
-      "brief": "@level.sp-dm.tasks.sp-dm_1.brief",
+      "brief": "@level.sp-dm.tasks.sp-dm-1.brief",
       "hint": [
-        "@level.sp-dm.tasks.sp-dm_1.hint.0",
-        "@level.sp-dm.tasks.sp-dm_1.hint.1"
+        "@level.sp-dm.tasks.sp-dm-1.hint.0",
+        "@level.sp-dm.tasks.sp-dm-1.hint.1"
       ],
       "solution": [
         "c0 = append(in, first: c1, second: c2) {",
@@ -57,17 +57,17 @@
       ]
     },
     {
-      "id": "sp-dm_2",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "id": "sp-dm-2",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",
-          "label": "@level.sp-dm.tasks.sp-dm_2.inputs.0.label"
+          "label": "@level.sp-dm.tasks.sp-dm-2.inputs.0.label"
         }
       ],
       "backtrack": true,
-      "step": "@level.sp-dm.tasks.sp-dm_2.step",
+      "step": "@level.sp-dm.tasks.sp-dm-2.step",
       "tests": [
         {
           "goal": "¬∀x. Drinks(x)",
@@ -86,9 +86,9 @@
           ]
         }
       ],
-      "brief": "@level.sp-dm.tasks.sp-dm_2.brief",
+      "brief": "@level.sp-dm.tasks.sp-dm-2.brief",
       "hint": [
-        "@level.sp-dm.tasks.sp-dm_2.hint.0"
+        "@level.sp-dm.tasks.sp-dm-2.hint.0"
       ],
       "solution": [
         "c0 = append(in, first: c1, second: c2) {",

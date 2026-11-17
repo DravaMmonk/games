@@ -28,7 +28,7 @@
   "tasks": [
     {
       "id": "carve",
-      "play": "state-graph:seam",
+      "play": "state-graph/seam",
       "img": [
         [
           1,

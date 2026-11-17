@@ -2,7 +2,7 @@
   "name": "@part.arith.name",
   "desc": "@part.arith.desc",
   "icon": "Plus",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "a",
@@ -58,5 +58,5 @@
     }
   },
   "nulls": "pass",
-  "op": "image:arith"
+  "op": "image/arith"
 }

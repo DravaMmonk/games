@@ -13,7 +13,7 @@
   "tasks": [
     {
       "id": "decl-eq",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "words": [
         "qed/everyday",
         "qed/terms",

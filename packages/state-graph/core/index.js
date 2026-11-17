@@ -42,9 +42,9 @@ const meaning = {
  },
 }
 export function register(kernel) {
- kernel.kind('state-graph:level', meaning)
+ kernel.kind('state-graph/level', meaning)
  for (const name of Object.keys(plays)) {
-  const circuit = name === 'state-graph:circuit'
+  const circuit = name === 'state-graph/circuit'
   kernel.play(name, {
    initial(context) { return circuit ? fitted(blank(), tableContext(context).task.given) : {} },
    read(work, context) {
@@ -61,7 +61,7 @@ export function register(kernel) {
    act(context, work) { return play.attempt(textContext(context), work) },
   })
  }
- kernel.check('state-graph:levels', ({ content }) => content.levels.some(level => level.tasks.some(task => task.play?.startsWith('state-graph:'))) ? runtime.validate(runtime.spec(content)) : [])
+ kernel.check('state-graph/levels', ({ content }) => content.levels.some(level => level.tasks.some(task => task.play?.startsWith('state-graph/'))) ? runtime.validate(runtime.spec(content)) : [])
 }
 function textContext(context) {
  const { task, works } = tableContext(context)

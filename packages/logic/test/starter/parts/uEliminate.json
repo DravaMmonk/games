@@ -2,6 +2,6 @@
   "name": "@part.uEliminate.name",
   "desc": "@part.uEliminate.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uEliminate"
+  "family": "logic/tactic",
+  "op": "logic/uEliminate"
 }

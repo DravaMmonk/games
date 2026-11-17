@@ -2,7 +2,7 @@
   "name": "@part.orI.name",
   "desc": "@part.orI.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "a",
@@ -28,5 +28,5 @@
       ]
     }
   },
-  "op": "logic:orI"
+  "op": "logic/orI"
 }

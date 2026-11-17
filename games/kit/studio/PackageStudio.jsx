@@ -1,3 +1,4 @@
+import { PackagePicker } from './PackageGroups.jsx'
 // The package workspace of the studio (games/DESIGN.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
 // and plays a package's levels without code, a level group at a time. It is a thin skin over the operation set (the
 // package's side of it, useChangeset.js): the tree, the forms, the copy table, the comparisons, the game played, the
@@ -698,10 +699,8 @@ export default function PackageStudio({ pkg, packages, onPackage, space }) {
   return (
     <div className={`studio ${moving ? 'is-moving' : ''} ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onPalette={() => openOverlay('palette')}>
-        <select className="studio-game" value={pkg} disabled={saving} aria-label={tr('内容包', 'Package')}
-          onChange={(e) => { onPackage(e.target.value); select(null); setPlay(null); setOpened({}); setHeading(null) }}>
-          {packages.map(({ id }) => <option key={id} value={id}>{id}</option>)}
-        </select>
+        <PackagePicker packages={packages} current={pkg} disabled={saving} label={tr('内容包', 'Package')}
+          onChange={id => { onPackage(id); select(null); setPlay(null); setOpened({}); setHeading(null) }} />
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-${objectList ? 'objects' : middle} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>

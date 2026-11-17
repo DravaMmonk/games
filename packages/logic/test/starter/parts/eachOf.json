@@ -2,7 +2,7 @@
   "name": "@part.eachOf.name",
   "desc": "@part.eachOf.desc",
   "icon": "Box",
-  "family": "logic:family-loop",
+  "family": "logic/loop",
   "regions": [
     {
       "name": "body",
@@ -10,5 +10,5 @@
       "opens": true
     }
   ],
-  "op": "logic:eachOf"
+  "op": "logic/eachOf"
 }

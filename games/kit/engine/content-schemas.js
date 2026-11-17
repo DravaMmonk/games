@@ -11,11 +11,11 @@ export const GLOSSARY = S.obj({
 })
 
 /**
- * The audit findings a game.json leaves open (`open`): { rule: ['object@level'] }, the findings of the course audit
+ * The audit findings a game.json leaves open (`open`): { rule: [{ part, level }] }, the findings of the course audit
  * (../course.js) its curriculum has not met yet, each on the work list in the game's design doc. npm run check lists them
  * without failing, and fails on any other finding and on one listed that is gone.
  */
-export const OPEN = S.map(S.list(S.str({ pattern: '^(?:@?[a-z][a-z0-9-]*/)?[^@]*@(?:@?[a-z][a-z0-9-]*/)?[^@]+$' })))
+export const OPEN = S.map(S.list(S.obj({ part: S.str(), level: S.level() })))
 
 
 export function defineVocabulary({ module, kinds, game, level, languages = {} }) {

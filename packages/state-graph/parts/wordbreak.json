@@ -5,16 +5,16 @@
     {
       "id": "base",
       "reference": {
-        "play": "state-graph:circuit",
+        "play": "state-graph/circuit",
         "solution": [
-          "a = table:add(view.seg, view.cost)",
-          "z = table:const[value=0]()",
-          "g = table:pass(facts.ground, z)",
-          "m = table:mmin(a, g)",
+          "a = table/add(view.seg, view.cost)",
+          "z = table/const[value=0]()",
+          "g = table/pass(facts.ground, z)",
+          "m = table/mmin(a, g)",
           "cell <- m"
         ],
-        "world": "state-graph:world-parts",
-        "robot": "state-graph:robot-broom",
+        "world": "state-graph/parts",
+        "robot": "state-graph/broom",
         "facts": [
           "ground"
         ]

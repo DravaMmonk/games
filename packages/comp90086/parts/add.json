@@ -2,7 +2,7 @@
   "name": "@part.add.name",
   "desc": "@part.add.desc",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "a",
@@ -13,5 +13,5 @@
       "label": "b"
     }
   ],
-  "op": "image:add"
+  "op": "image/add"
 }

@@ -3,7 +3,7 @@
   "tasks": [
     {
       "id": "q-grand",
-      "kind": "logic:query",
+      "kind": "logic/query",
       "consts": [
         "h",
         "i",

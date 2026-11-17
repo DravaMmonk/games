@@ -6,7 +6,7 @@ import { callOf } from 'kernel';
 import { tr } from 'table';
 
 /** Explains: (t, res, o) → text or ''. `res` is the run, `o` the task's settings. */
-const EXPLAINS = qualifyItems('state-graph', 'explain', {
+const EXPLAINS = qualifyItems('state-graph', {
   roll(t, res, o) {
     let item = -1, touched = new Set();
     const s = res.steps.find(x => {

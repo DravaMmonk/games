@@ -17,7 +17,7 @@ const radiusOf = (img) => fromFn(img.w, img.h, (x, y) => Math.hypot(x - img.w / 
 const BORDER = S.opt(S.oneOf(['zero', 'edge', 'wrap']))
 const KERNEL = S.list(S.num(), { min: 1, view: 'grid', about: t('(2r+1)² 个权重，按行写出') })
 
-export const TARGETS = qualifyItems('image', 'target', {
+export const TARGETS = qualifyItems('image', {
   same: {
     about: t('原样：输出就是输入'),
     make: () => (img) => img,

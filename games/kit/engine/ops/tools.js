@@ -61,7 +61,7 @@ const about = (lines, level) => lines.filter((l) => new RegExp(`^${escape(level)
 /**
  * The levels a line of the check is about (`ids`: the levels in play order, as the check's paths count them): the
  * level a domain names, the level file a content problem is in, the level a copy problem's path counts to, the level
- * a blind-play report is on, the levels a course finding lists (`object@level`), or the level the line starts with.
+ * a blind-play report is on, the levels a course finding lists (`object (level)`), or the level the line starts with.
  */
 export function levelsOfLine(line, ids) {
   if (line.level) return [line.level]
@@ -72,7 +72,7 @@ export function levelsOfLine(line, ids) {
   if (copy) return ids[Number(copy[1])] ? [ids[Number(copy[1])]] : []
   const report = /^REPORT [\w-]+: (\S+) /.exec(text)
   if (report) return ids.includes(report[1]) ? [report[1]] : []
-  if (/^(OPEN )?course: /.test(text)) return [...new Set([...text.matchAll(/@([^\s,)]+)/g)].map((m) => m[1]).filter((id) => ids.includes(id)))]
+  if (/^(OPEN )?course: /.test(text)) return [...new Set([...text.matchAll(/\(([^\s,)]+)\)/g)].map((m) => m[1]).filter((id) => ids.includes(id)))]
   const head = [...ids].sort((a, b) => b.length - a.length).find((id) => new RegExp(`^${escape(id)}[ :/]`).test(text))
   return head ? [head] : []
 }
@@ -442,6 +442,7 @@ const tools = {
         // Package declarations and their projected public vocabulary drive authoring.
         packageCode: Boolean(vocabulary.packageCode),
         objectKinds: vocabulary.objectKinds ?? {},
+        kindDeclarations: Object.fromEntries(Object.keys(vocabulary.objectKinds ?? {}).map(name => [name, content.registries.kind[name]])),
         kindPolicies: Object.fromEntries(Object.entries({ ...BUILTIN_POLICIES, ...vocabulary.objectKinds }).map(([name, { declares, overrides, variants }]) => [name, { declares, overrides, ...(variants && { variants }) }])),
         vocabulary: describe({ ...vocabulary, objectKinds: undefined, kindPolicies: undefined }),
         operations: Object.fromEntries(Object.entries(operationsFor(vocabulary)).map(([name, op]) => [name, { about: op.about, params: op.params }])),

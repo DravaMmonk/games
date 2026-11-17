@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "q-exI",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i"
       ],

@@ -4,7 +4,7 @@ import { ArrowRightFromLine, ArrowRightToLine, AudioWaveform, Box, Calculator, G
 
 // How each part looks on the board and in the parts list: a family (colour and icon); families group parts by what they
 // look at, which is the idea the game is teaching. What a part does is ../words.js.
-export const FAMILIES = qualifyItems('image', 'family', {
+export const FAMILIES = qualifyItems('image', {
   io: { label: { zh: '输入与输出', en: 'Inputs and outputs' }, icon: ArrowRightFromLine },
   pixel: { label: { zh: '逐像素', en: 'Per-pixel' }, icon: Calculator },
   neighbour: { label: { zh: '看邻居', en: 'Neighbours' }, icon: Grid3x3 },
@@ -28,8 +28,8 @@ const FAMILY_OF = Object.fromEntries(Object.entries({
   fqSpectrum: 'frequency', fqLowpass: 'frequency', fqWave: 'frequency', fqMean: 'global',
   globalMax: 'global', attention: 'global',
   learn3: 'learned', lrnConv: 'learned', lrnConst: 'learned', lrnDense: 'learned', lrnRgb: 'learned', lrnRes: 'learned',
-  dg_encode: 'learned', dg_decode: 'learned', dg_decoder: 'learned', dg_mu: 'learned', dg_sigma: 'learned', dg_sample: 'learned', dg_reparam: 'learned',
-}).map(([name, family]) => [name === 'input' || name === 'output' ? name : `image:${name}`, `image:family-${family}`]))
+  'dg-encode': 'learned', 'dg-decode': 'learned', 'dg-decoder': 'learned', 'dg-mu': 'learned', 'dg-sigma': 'learned', 'dg-sample': 'learned', 'dg-reparam': 'learned',
+}).map(([name, family]) => [name === 'input' || name === 'output' ? name : `image/${name}`, `image/${family}`]))
 
-export const familyOf = (type, types) => types?.[type]?.definition?.family ?? (types?.[type]?.circuitOf ? 'image:family-own' : FAMILY_OF[type] ?? 'image:family-other')
+export const familyOf = (type, types) => types?.[type]?.definition?.family ?? (types?.[type]?.circuitOf ? 'image/own' : FAMILY_OF[type] ?? 'image/other')
 export const iconOf = (type, types) => definedIcon(types?.[type]?.definition?.icon) ?? (type === 'output' ? ArrowRightToLine : FAMILIES[familyOf(type, types)].icon)

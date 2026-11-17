@@ -64,11 +64,11 @@ test('the part dependency graph: where each part comes in, what a built part is 
 
 test('findings a game leaves open are listed, new ones and ones met since are not', () => {
   const found = [{ rule: 'not-built', level: '1', part: 'a' }, { rule: 'not-built', level: '1', part: 'a' }, { rule: 'not-built', level: '5', part: 'b' }, { rule: 'built-later', level: '3', part: 'P' }]
-  assert.deepEqual(againstOpen(found, { 'not-built': ['a@1', 'c@7'] }), [
-    { rule: 'not-built', fresh: ['b@5'], left: ['a@1'], gone: ['c@7'] },
-    { rule: 'built-later', fresh: ['P@3'], left: [], gone: [] },
+  assert.deepEqual(againstOpen(found, { 'not-built': [{ part: 'a', level: '1' }, { part: 'c', level: '7' }] }), [
+    { rule: 'not-built', fresh: ['b (5)'], left: ['a (1)'], gone: ['c (7)'] },
+    { rule: 'built-later', fresh: ['P (3)'], left: [], gone: [] },
   ])
-  assert.deepEqual(againstOpen([], { nothing: ['x@1'] }), [{ rule: 'nothing', fresh: [], left: [], gone: ['x@1'] }])
+  assert.deepEqual(againstOpen([], { nothing: [{ part: 'x', level: '1' }] }), [{ rule: 'nothing', fresh: [], left: [], gone: ['x (1)'] }])
 })
 
 

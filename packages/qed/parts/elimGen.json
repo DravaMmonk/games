@@ -1,12 +1,12 @@
 {
   "name": "@part.elimGen.name",
   "desc": "@part.elimGen.desc",
-  "family": "logic:family-built",
+  "family": "logic/built",
   "inside": [
     {
       "id": "v1",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "r = anyR()",
           "s = swapConcl(ways, r)",
@@ -14,14 +14,14 @@
           "m = mkRule(c, r)",
           "out <- m"
         ],
-        "want": "logic:want-elim",
+        "want": "logic/elim",
         "inputs": [{ "name": "it", "label": "it" }, { "name": "ways", "label": "ways" }]
       }
     },
     {
       "id": "v2",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "r = anyR()",
           "e = eachOf(ways, body: s) {",
@@ -33,14 +33,14 @@
           "m = mkRule(c, r)",
           "out <- m"
         ],
-        "want": "logic:want-elim",
+        "want": "logic/elim",
         "inputs": [{ "name": "it", "label": "it" }, { "name": "ways", "label": "ways" }]
       }
     },
     {
       "id": "v3",
       "reference": {
-        "kind": "logic:machine",
+        "kind": "logic/machine",
         "solution": [
           "r = anyR()",
           "e = eachOf(ways, body: a) {",
@@ -56,14 +56,14 @@
           "m = mkRule(c, r)",
           "out <- m"
         ],
-        "want": "logic:want-elim",
+        "want": "logic/elim",
         "inputs": [{ "name": "it", "label": "it" }, { "name": "ways", "label": "ways" }]
       }
     }
   ],
   "inputs": [
-    { "name": "it", "type": "logic:machine-value" },
-    { "name": "ways", "type": "logic:machine-value" }
+    { "name": "it", "type": "logic/machine-value" },
+    { "name": "ways", "type": "logic/machine-value" }
   ],
-  "outputType": "logic:machine-value"
+  "outputType": "logic/machine-value"
 }

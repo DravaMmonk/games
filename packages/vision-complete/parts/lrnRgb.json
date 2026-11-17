@@ -2,7 +2,7 @@
   "name": "@part.lrnRgb.name",
   "desc": "@part.lrnRgb.desc",
   "icon": "Activity",
-  "family": "image:family-learned",
+  "family": "image/learned",
   "inputs": [
     {
       "name": "b",
@@ -15,5 +15,5 @@
       "fixed": true
     }
   },
-  "op": "image:lrnRgb"
+  "op": "image/lrnRgb"
 }

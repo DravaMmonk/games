@@ -195,14 +195,15 @@ export function audit(course) {
 
 /**
  * The audit's findings (audit, or a game's own) against the ones a game leaves open (game.json `open`, the work list in
- * its design doc: { rule: ['part@level'] }): for every rule with any, { rule, fresh: found and not listed, left: found
+ * its design doc: { rule: [{ part, level }] }): for every rule with any, { rule, fresh: found and not listed, left: found
  * and listed, gone: listed and met since }. npm run check fails on fresh and gone, and lists left.
  */
 export function againstOpen(found, open = {}) {
   const rules = [...new Set([...found.map((f) => f.rule), ...Object.keys(open)])]
+  const location = ({ part, level }) => `${part} (${level})`
   return rules.map((rule) => {
-    const hits = [...new Set(found.filter((f) => f.rule === rule).map((f) => `${f.part}@${f.level}`))]
-    const listed = open[rule] ?? []
+    const hits = [...new Set(found.filter((f) => f.rule === rule).map(location))]
+    const listed = (open[rule] ?? []).map(location)
     return { rule, fresh: hits.filter((h) => !listed.includes(h)), left: hits.filter((h) => listed.includes(h)), gone: listed.filter((h) => !hits.includes(h)) }
   })
 }

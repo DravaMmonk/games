@@ -8,7 +8,7 @@ import { caseCells, DERIVABLE } from './auditCells.js'
 import { declarationValues, inView, ruleLines } from './rowValues.js'
 
 export function audit(source, { game, progress, saved }) {
-  const parent = game.byId[source.carry]?.source.tasks.findLast((task) => task.kind === 'logic:iso' && task.play !== 'logic:audit')
+  const parent = game.byId[source.carry]?.source.tasks.findLast((task) => task.kind === 'logic/iso' && task.play !== 'logic/audit')
   const kept = passedWork(progress, parent)?.rules
   const carried = kept && !checkDeclaration(parent)(kept) ? linesOf(kept) : null
   // One task tests one declaration; a level with several to test has a task for each.
@@ -44,13 +44,13 @@ export function audit(source, { game, progress, saved }) {
       }
     },
     passed: (work) => {
-      if (level.want === 'logic:want-agree') return T('每一条条例的预期都符合需求，这份声明的结果也都和预期相符。')
-      if (level.want === 'logic:want-expose') return T('每一条条例的预期都符合需求，这份声明的结果都和预期不符。')
+      if (level.want === 'logic/agree') return T('每一条条例的预期都符合需求，这份声明的结果也都和预期相符。')
+      if (level.want === 'logic/expose') return T('每一条条例的预期都符合需求，这份声明的结果都和预期不符。')
       const { caught } = report(work)
       return T(`已找出错误：这份声明在第 ${caught[0] + 1} 条条例上得出错误结论。`, `Fault found: this declaration gets case ${caught[0] + 1} wrong.`)
     },
     go: T('运行检验条例'),
-    done: level.want === 'logic:want-agree' ? T('结果全部相符') : T('已找出错误'),
+    done: level.want === 'logic/agree' ? T('结果全部相符') : T('已找出错误'),
     checks: (k) => ({
       cells: caseCells(inView(level, k)), resultLabel: T('实际结果', 'Actual'), blank: () => blankCase(level), max: AUDIT_CASE_LIMIT, addLabel: T('添加条例'),
       formTitle: (n) => T(`第 ${n + 1} 条检验条例`, `Test case ${n + 1}`),

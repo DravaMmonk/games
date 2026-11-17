@@ -1,15 +1,15 @@
 {
   "primitives": [
-    "table:msum",
-    "table:mmin",
-    "table:mmax",
-    "table:many",
-    "table:const",
-    "table:pass",
-    "table:block",
-    "table:add",
-    "table:not",
-    "table:mul"
+    "table/msum",
+    "table/mmin",
+    "table/mmax",
+    "table/many",
+    "table/const",
+    "table/pass",
+    "table/block",
+    "table/add",
+    "table/not",
+    "table/mul"
   ],
   "borrow": {
     "state-graph/seam": "state-graph/seam"

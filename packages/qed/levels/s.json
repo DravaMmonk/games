@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "s",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "goal": "(A → (B → C)) → ((A → B) → (A → C))"

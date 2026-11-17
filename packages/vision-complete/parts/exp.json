@@ -2,12 +2,12 @@
   "name": "exp",
   "desc": "exp",
   "icon": "Calculator",
-  "family": "image:family-pixel",
+  "family": "image/pixel",
   "inputs": [
     {
       "name": "in",
       "label": ""
     }
   ],
-  "op": "image:exp"
+  "op": "image/exp"
 }

@@ -1,3 +1,4 @@
+import { CODE_NAME } from './object-name.js'
 import { meaningsOf } from './kind-meanings.js'
 import { sourceValue } from './catalogs.js'
 // Public identities are collected from the same qualified layers as existence checking.
@@ -39,11 +40,11 @@ export function viewRegistrations(file) {
   const visit = node => {
     if (!node || typeof node !== 'object') return
     if (node.type === 'VariableDeclarator' && node.id.type === 'Identifier') constants.set(node.id.name, literal(node.init))
-    if (node.type === 'CallExpression' && node.callee.type === 'MemberExpression' && ['play', 'editor', 'display'].includes(node.callee.property.name)) {
+    if (node.type === 'CallExpression' && node.callee.type === 'MemberExpression' && ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension'].includes(node.callee.property.name)) {
       const name = literal(node.arguments[0])
-      if (typeof name === 'string' && /^[a-z][a-z0-9-]*:[A-Za-z][A-Za-z0-9_-]*$/.test(name)) {
+      if (typeof name === 'string' && CODE_NAME.test(name)) {
         const type = literal(node.arguments[1]?.properties?.find(property => property.key.name === 'type')?.value)
-        registrations.push({ kind: node.callee.property.name === 'play' ? 'playView' : node.callee.property.name, name, value: type ? { type } : {} })
+        registrations.push({ kind: ({ play: 'playView', game: 'gameHook' })[node.callee.property.name] ?? node.callee.property.name, name, value: type ? { type } : {} })
       }
     }
     for (const value of Object.values(node)) if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') visit(value)
@@ -70,5 +71,5 @@ export function layerManifest(layer, layers, schemas, dir) {
   const exports = Object.fromEntries(Object.entries(layer.entryPaths ?? {}).map(([side, file]) => [side, exportedNames(file)]))
   for (const [side, names] of Object.entries(exports)) for (const name of names) surface[`export:${side}/${name}`] = { kind: 'export', name: `${layer.id}/${side}/${name}`, hash: hash(name), value: name }
   const files = fileHashes(dir)
-  return { id: layer.id, version: layer.config.version, kernel: layer.config.kernel, uses: layer.config.uses, surface, exports, files, hash: contentHash(files) }
+  return { id: layer.id, kind: layer.config.kind, version: layer.config.version, kernel: layer.config.kernel, uses: layer.config.uses, surface, exports, files, hash: contentHash(files) }
 }

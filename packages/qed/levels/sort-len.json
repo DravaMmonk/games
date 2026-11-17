@@ -10,8 +10,8 @@
   "tasks": [
     {
       "id": "sort-len",
-      "kind": "logic:machine",
-      "want": "logic:want-proved",
+      "kind": "logic/machine",
+      "want": "logic/proved",
       "inputs": [
         {
           "name": "in",
@@ -49,7 +49,7 @@
         "  body {",
         "    c2r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", \"def.6\", \"def.7\", \"def.8\", \"def.9\", \"def.10\", insLen]]()",
         "    c3r0 = refl()",
-        "    c2r12 = logic:hyp(c2r0)",
+        "    c2r12 = logic/hyp(c2r0)",
         "    c2 = simp(c1.body, c2r12)",
         "    c3 = rule(c2, c3r0)",
         "  }",
@@ -63,7 +63,7 @@
         "  body {",
         "    c2r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", \"def.6\", \"def.7\", \"def.8\", \"def.9\", \"def.10\"]]()",
         "    c3r0 = refl()",
-        "    c2r11 = logic:hyp(c2r0)",
+        "    c2r11 = logic/hyp(c2r0)",
         "    c2 = simp(c1.body, c2r11)",
         "    c3 = rule(c2, c3r0)",
         "  }",

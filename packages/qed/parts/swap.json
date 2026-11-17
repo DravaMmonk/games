@@ -1,12 +1,12 @@
 {
   "name": "@part.swap.name",
   "desc": "@part.swap.desc",
-  "family": "logic:family-lemma",
+  "family": "logic/lemma",
   "inside": [
     {
       "id": "base",
       "reference": {
-        "kind": "logic:proof",
+        "kind": "logic/proof",
         "solution": [
           "f = impI[A=B](body: g) {",
           "  body {",
@@ -24,6 +24,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "p0", "type": "logic:judgment" }],
-  "outputType": "logic:judgment"
+  "inputs": [{ "name": "p0", "type": "logic/judgment" }],
+  "outputType": "logic/judgment"
 }

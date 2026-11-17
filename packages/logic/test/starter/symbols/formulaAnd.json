@@ -1,5 +1,5 @@
 {
-  "mark": "logic:mark-formulaAnd",
+  "mark": "logic/formulaAnd",
   "icon": "Rows3",
   "name": "∧",
   "desc": "@symbol.formulaAnd.desc",

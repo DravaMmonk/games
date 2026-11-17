@@ -2,7 +2,7 @@ export const vocabulary = {
   "module": "rows",
   "kinds": {
     "kind": {
-      "rows:equation": {
+      "rows/equation": {
         "about": {
           "zh": "补齐等式右边的加法式"
         }
@@ -10,7 +10,7 @@ export const vocabulary = {
     }
   },
   "languages": {
-    "rows:sum": {
+    "rows/sum": {
       "about": {
         "zh": "由整数和加号组成的等式右边",
         "en": "The right side of an equation, built from integers and addition"

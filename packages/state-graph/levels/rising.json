@@ -5,7 +5,7 @@
     {
       "t": "@level.rising.intro.0.t",
       "fig": {
-        "state-graph:figure-scene": {
+        "state-graph/scene": {
           "cells": [
             {
               "id": "h0",
@@ -106,7 +106,7 @@
     "goal": "@level.rising.mission.goal",
     "how": "@level.rising.mission.how"
   },
-  "robot": "state-graph:robot-broom",
+  "robot": "state-graph/broom",
   "debrief": {
     "title": "@level.rising.debrief.title",
     "body": [
@@ -118,13 +118,13 @@
   "tasks": [
     {
       "id": "rising",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "checkAll": true,
       "hints": [
         "@level.rising.tasks.rising.hints.0",
         "@level.rising.tasks.rising.hints.1"
       ],
-      "world": "state-graph:world-heights",
+      "world": "state-graph/heights",
       "facts": [
         "money"
       ],
@@ -168,9 +168,9 @@
         4
       ],
       "solution": [
-        "m = table:mmax(view.seg)",
-        "k = table:const[value=1]()",
-        "a = table:add(m, k)",
+        "m = table/mmax(view.seg)",
+        "k = table/const[value=1]()",
+        "a = table/add(m, k)",
         "cell <- a"
       ],
       "filter": "lower"

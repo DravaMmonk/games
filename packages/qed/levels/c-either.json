@@ -9,7 +9,7 @@
   "tasks": [
     {
       "id": "c-either",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

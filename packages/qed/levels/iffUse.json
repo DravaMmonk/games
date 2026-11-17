@@ -8,9 +8,9 @@
   ],
   "tasks": [
     {
-      "id": "iffUse_1",
-      "kind": "logic:proof",
-      "step": "@level.iffUse.tasks.iffUse_1.step",
+      "id": "iffUse-1",
+      "kind": "logic/proof",
+      "step": "@level.iffUse.tasks.iffUse-1.step",
       "tests": [
         {
           "premises": {
@@ -31,7 +31,7 @@
         }
       ],
       "hint": [
-        "@level.iffUse.tasks.iffUse_1.hint.0"
+        "@level.iffUse.tasks.iffUse-1.hint.0"
       ],
       "solution": [
         "e = andE(p)",
@@ -40,9 +40,9 @@
       ]
     },
     {
-      "id": "iffUse_2",
-      "kind": "logic:proof",
-      "step": "@level.iffUse.tasks.iffUse_2.step",
+      "id": "iffUse-2",
+      "kind": "logic/proof",
+      "step": "@level.iffUse.tasks.iffUse-2.step",
       "tests": [
         {
           "premises": {
@@ -63,7 +63,7 @@
         }
       ],
       "hint": [
-        "@level.iffUse.tasks.iffUse_2.hint.0"
+        "@level.iffUse.tasks.iffUse-2.hint.0"
       ],
       "solution": [
         "f = impI[A=B](body: m2) {",

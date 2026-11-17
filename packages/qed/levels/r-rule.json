@@ -15,8 +15,8 @@
   "tasks": [
     {
       "id": "r-rule",
-      "kind": "logic:machine",
-      "want": "logic:want-becomes",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
       "inputs": [
         {
           "name": "in",

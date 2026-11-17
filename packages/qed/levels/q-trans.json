@@ -8,7 +8,7 @@
         "qed/everyday",
         "qed/stars"
       ],
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "consts": [
         "i",
         "k",

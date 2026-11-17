@@ -2,8 +2,8 @@
   "name": "@part.uDecompose.name",
   "desc": "@part.uDecompose.desc",
   "icon": "Sigma",
-  "family": "logic:family-tactic",
-  "op": "logic:uDecompose",
+  "family": "logic/tactic",
+  "op": "logic/uDecompose",
   "stages": [
     {
       "id": "uDecompose-r-pattern-desc",

@@ -17,11 +17,11 @@
   "tasks": [
     {
       "id": "5-2",
-      "play": "image:graph",
+      "play": "image/graph",
       "brief": "@level.5-2.tasks.5-2.brief",
       "hint": "@level.5-2.tasks.5-2.hint",
-      "constraint": { "image:constraint-nodes": { "max": 3 } },
-      "scene": "vision-complete:scene-mend",
+      "constraint": { "image/nodes": { "max": 3 } },
+      "scene": "vision-complete/mend",
       "tests": [
         {
           "label": "@level.5-2.tasks.5-2.tests.0.label",

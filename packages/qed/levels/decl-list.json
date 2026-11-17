@@ -8,7 +8,7 @@
   "tasks": [
     {
       "id": "decl-list",
-      "kind": "logic:iso",
+      "kind": "logic/iso",
       "words": [
         "qed/everyday",
         "qed/terms"

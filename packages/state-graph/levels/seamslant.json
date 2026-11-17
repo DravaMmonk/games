@@ -10,9 +10,9 @@
     "goal": "@level.seamslant.mission.goal",
     "how": "@level.seamslant.mission.how"
   },
-  "robot": "state-graph:robot-scout",
+  "robot": "state-graph/scout",
   "adds": [
-    "table:block"
+    "table/block"
   ],
   "debrief": {
     "title": "@level.seamslant.debrief.title",
@@ -23,19 +23,19 @@
   "tasks": [
     {
       "id": "seamslant",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "diagnose": [
         {
           "when": {
-            "state-graph:condition-any": [
+            "state-graph/any": [
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-uses": "ul"
+                "state-graph/not": {
+                  "state-graph/uses": "ul"
                 }
               },
               {
-                "state-graph:condition-not": {
-                  "state-graph:condition-uses": "ur"
+                "state-graph/not": {
+                  "state-graph/uses": "ur"
                 }
               }
             ]
@@ -48,7 +48,7 @@
         "@level.seamslant.tasks.seamslant.hints.0",
         "@level.seamslant.tasks.seamslant.hints.1"
       ],
-      "world": "state-graph:world-pic",
+      "world": "state-graph/pic",
       "facts": [
         "energy",
         "top"

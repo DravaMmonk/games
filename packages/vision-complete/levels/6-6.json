@@ -20,15 +20,15 @@
       "t": "@level.6-6.intro.3.t"
     }
   ],
-  "unlocks": ["image:unlock-ransac"],
+  "unlocks": ["image/ransac"],
   "tasks": [
     {
       "id": "6-6",
-      "play": "image:board",
+      "play": "image/board",
       "brief": "@level.6-6.tasks.6-6.brief",
       "hint": "@level.6-6.tasks.6-6.hint",
       "bench": {
-        "model": "vision-complete:benchModel-ransac",
+        "model": "vision-complete/ransac",
         "setup": {
           "n": 80,
           "sigma": 0.5,
@@ -68,19 +68,19 @@
         "goal": [{ "of": "rate", "atLeast": 0.99 }, { "of": "overBudget", "atMost": 0 }],
         "layout": {
           "head": [
-            { "image:display-cases": { "passed": "@level.6-6.tasks.6-6.bench.layout.head.0.cases.passed" } }
+            { "image/cases": { "passed": "@level.6-6.tasks.6-6.bench.layout.head.0.cases.passed" } }
           ],
           "main": [
-            "vision-complete:display-ransacTrial",
-            "image:display-knobs",
+            "vision-complete/ransacTrial",
+            "image/knobs",
             {
-              "image:display-text": {
+              "image/text": {
                 "text": "@level.6-6.tasks.6-6.bench.layout.main.2.text.text",
                 "look": "caption"
               }
             }
           ],
-          "side": ["vision-complete:display-ransacCases"],
+          "side": ["vision-complete/ransacCases"],
           "split": "even"
         }
       }

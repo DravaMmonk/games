@@ -2,12 +2,12 @@
   "name": "@part.raa.name",
   "desc": "@part.raa.desc",
   "icon": "GitFork",
-  "family": "logic:family-rule",
+  "family": "logic/rule",
   "inputs": [
     {
       "name": "nna",
       "label": "@part.raa.inputs.0.label"
     }
   ],
-  "op": "logic:raa"
+  "op": "logic/raa"
 }

@@ -10,7 +10,7 @@
   "tasks": [
     {
       "id": "g-tree",
-      "kind": "logic:gates",
+      "kind": "logic/gates",
       "target": "¬(Rain ∧ Wind)",
       "brief": "@level.g-tree.tasks.g-tree.brief",
       "hint": [

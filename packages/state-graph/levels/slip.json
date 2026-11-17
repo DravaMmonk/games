@@ -19,7 +19,7 @@
     "goal": "@level.slip.mission.goal",
     "how": "@level.slip.mission.how"
   },
-  "robot": "state-graph:robot-loop",
+  "robot": "state-graph/loop",
   "debrief": {
     "title": "@level.slip.debrief.title",
     "body": [
@@ -31,12 +31,12 @@
   "tasks": [
     {
       "id": "slip",
-      "play": "state-graph:circuit",
+      "play": "state-graph/circuit",
       "naive": [
-        "a = table:mmax(view.up, view.down, view.left)",
-        "k = table:const[value=0.9]()",
-        "b = table:mmax(a, view.right)",
-        "x = table:mul(b, k)",
+        "a = table/mmax(view.up, view.down, view.left)",
+        "k = table/const[value=0.9]()",
+        "b = table/mmax(a, view.right)",
+        "x = table/mul(b, k)",
         "cell <- x"
       ],
       "boardOpt": {
@@ -57,7 +57,7 @@
         "@level.slip.tasks.slip.hints.1",
         "@level.slip.tasks.slip.hints.2"
       ],
-      "world": "state-graph:world-vgrid",
+      "world": "state-graph/vgrid",
       "facts": [
         "slip",
         "grip"
@@ -167,17 +167,17 @@
         3.003619968
       ],
       "solution": [
-        "k8 = table:const[value=0.8]()",
-        "k2 = table:const[value=0.2]()",
-        "k9 = table:const[value=0.9]()",
-        "a = table:mul(k8, view.right)",
-        "b = table:mul(k2, view.down)",
-        "c = table:mul(k8, view.down)",
-        "d = table:mul(k2, view.right)",
-        "p = table:add(a, b)",
-        "q = table:add(c, d)",
-        "m = table:mmax(p, q)",
-        "x = table:mul(m, k9)",
+        "k8 = table/const[value=0.8]()",
+        "k2 = table/const[value=0.2]()",
+        "k9 = table/const[value=0.9]()",
+        "a = table/mul(k8, view.right)",
+        "b = table/mul(k2, view.down)",
+        "c = table/mul(k8, view.down)",
+        "d = table/mul(k2, view.right)",
+        "p = table/add(a, b)",
+        "q = table/add(c, d)",
+        "m = table/mmax(p, q)",
+        "x = table/mul(m, k9)",
         "cell <- x"
       ],
       "rounds": true,

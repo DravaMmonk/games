@@ -13,7 +13,7 @@
   "tasks": [
     {
       "id": "s-barbara",
-      "kind": "logic:proof",
+      "kind": "logic/proof",
       "tests": [
         {
           "premises": {

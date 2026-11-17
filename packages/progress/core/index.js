@@ -36,7 +36,7 @@ export const progressMeaning = {
       if (!['adds', 'local', 'gives', 'withholds', 'opens', 'awards'].includes(key) || !Array.isArray(value)) return undefined
       if (path.length !== 1 && path.at(-3) !== 'tasks' && path.at(-2) !== 'reference') return undefined
       const own = new Set([...parts ?? [], ...Object.keys(objects?.['circuit/part'] ?? {}).map(id => id.split('/').at(-1))])
-      return { value: value.map(id => id.includes(':') || (!own.has(id.split(/[.=]/)[0]) && vocabulary?.kinds.part?.[id]) ? id : name(id)) }
+      return { value: value.map(id => (!own.has(id.split(/[.=]/)[0]) && vocabulary?.kinds.part?.[id]) ? id : name(id)) }
     },
   }),
   identities: ({ kind, value }) => kind === 'circuit/part' ? (value.stages ?? []).map(stage => ({ kind, name: stage.id, value: stage })) : [],
@@ -67,9 +67,9 @@ export const progressMeaning = {
 }
 
 export function register(kernel) {
-  kernel.kind('progress:part', progressMeaning)
-  kernel.check('progress:course', Object.assign(courseChecks, { phase: 'course' }))
-  kernel.check('progress:references', Object.assign(referenceChecks, { phase: 'references' }))
+  kernel.kind('progress/part', progressMeaning)
+  kernel.check('progress/course', Object.assign(courseChecks, { phase: 'course' }))
+  kernel.check('progress/references', Object.assign(referenceChecks, { phase: 'references' }))
 }
 
 export {

@@ -9,7 +9,7 @@ const passed = (view) => view?.end && view.pass
 const line = (s, drawn) => [...s].map((text, k) => ({ text, tone: drawn.has(k) ? 'ins' : null }))
 const escaped = (v) => String(v ?? '').replace(/[&<>]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[ch])
 
-const PANELS = qualifyItems('state-graph', 'panel', {
+const PANELS = qualifyItems('state-graph', {
   lcs(_, t, view) {
     if (!passed(view)) return null
     const { pairs } = lcsTrace(t.top, t.left, lcsTable(t.top, t.left))

@@ -13,8 +13,8 @@
   "tasks": [
     {
       "id": "au-clauses",
-      "kind": "logic:machine",
-      "want": "logic:want-clauses",
+      "kind": "logic/machine",
+      "want": "logic/clauses",
       "inputs": [
         {
           "name": "in",

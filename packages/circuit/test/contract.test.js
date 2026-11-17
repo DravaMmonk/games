@@ -8,13 +8,13 @@ import { register, boardPlay } from '../core/index.js'
 
 const root = new URL('../../../', import.meta.url).pathname
 const fixture = () => {
-  const parts = { 'sample/add': { name: 'Add', desc: 'Add inputs', family: 'circuit:family-value', icon: 'Plus', op: 'circuit:add' } }
+  const parts = { 'sample/add': { name: 'Add', desc: 'Add inputs', family: 'circuit/value', icon: 'Plus', op: 'circuit/add' } }
   return {
     id: 'sample', title: 'Sample', eras: [], primitives: ['sample/add'], trays: {},
     standalone: { level: 'sample/sum' }, glossary: { groups: [], entries: [] },
     partDefs: { parts }, registries: { 'circuit/part': parts },
     levels: [{ id: 'sample/sum', title: 'Sum', tasks: [{
-      id: 'sample/task', play: 'circuit:board', brief: 'Add both inputs',
+      id: 'sample/task', play: 'circuit/board', brief: 'Add both inputs',
       inputs: [{ name: 'a', label: 'A' }, { name: 'b', label: 'B' }], outputs: [{ name: 'out', label: 'Result' }],
       tests: [{ inputs: { a: 2, b: 3 }, expect: { out: 5 } }],
       hidden: [{ inputs: { a: -1, b: 4 }, expect: { out: 3 } }],
@@ -37,7 +37,7 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   assert.deepEqual(boardPlay.read(boardPlay.write(graph), context), graph)
   assert.deepEqual(evaluatePlay(kernel, task, task.solution, context).verdict, { pass: true, score: 1 })
   assert.equal(evaluatePlay(kernel, task, task.naive, context).verdict.pass, false)
-  const agent = kernel.tables.agent.get('circuit:board')
+  const agent = kernel.tables.agent.get('circuit/board')
   assert.equal(agent.observe(context).solution, undefined)
   assert.equal(agent.act(context, task.solution).verdict.pass, true)
   assert.equal(agent.act(context, task.solution).report, undefined)
@@ -50,7 +50,7 @@ test('circuit view pairs with its core through the public view entry', async () 
     const kernel = createPluginKernel()
     core.register(kernel.forPackage('circuit', 'core'))
     view.register(kernel.forPackage('circuit', 'view'))
-    kernel.pair([{ play: 'circuit:board' }], true)
-    assert.equal(typeof kernel.tables.playView.get('circuit:board').component, 'function')
+    kernel.pair([{ play: 'circuit/board' }], true)
+    assert.equal(typeof kernel.tables.playView.get('circuit/board').component, 'function')
   } finally { await closeGames() }
 })

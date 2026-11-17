@@ -299,10 +299,11 @@ export function freeSpot(graph, { w = 140, h = 170, cols = 3, rows = 5, x0 = 200
 /**
  * Where a card of size `size` ([w, h]) wanted at `at` ([x, y]) can sit clear of `boxes` ([x, y, w, h] each, the cards
  * beside it as drawn), `gap` apart: `at` itself if it is clear, else the nearest clear spot on a 20px grid, sideways
- * (right, or with `toward` -1 left) or below. Null when `at` is already clear.
+ * (right, or with `toward` -1 left) or below, its left edge never past `limit` (a spot further right is passed over, so
+ * a card kept short of the outputs goes on down). Null when `at` is already clear.
  */
-export function clearSpot(boxes, [w, h], [x0, y0], gap = 16, toward = 1) {
-  const clear = (x, y) => boxes.every(([bx, by, bw, bh]) => x >= bx + bw + gap || x + w + gap <= bx || y >= by + bh + gap || y + h + gap <= by)
+export function clearSpot(boxes, [w, h], [x0, y0], gap = 16, toward = 1, limit = Infinity) {
+  const clear = (x, y) => x <= limit && boxes.every(([bx, by, bw, bh]) => x >= bx + bw + gap || x + w + gap <= bx || y >= by + bh + gap || y + h + gap <= by)
   if (clear(x0, y0)) return null
   for (let d = 1; d < 200; d++) {
     for (let j = 0; j <= d; j++) if (clear(x0 + toward * (d - j) * 20, y0 + j * 20)) return [x0 + toward * (d - j) * 20, y0 + j * 20]
@@ -311,9 +312,40 @@ export function clearSpot(boxes, [w, h], [x0, y0], gap = 16, toward = 1) {
 }
 
 /**
- * Room on the desktop board for a new card: in a frame's region from its corner; on the board itself left of `before`
- * (the outputs' left edge, when the board has them), column by column leftwards, else from the board's left.
+ * Where a new card of size `size` ([w, h]) goes among `boxes` ([x, y, w, h] each, the other parts as drawn), between
+ * `left` (the inputs' right edge) and `right` (the outputs' left edge), row by row from `top`. Each row is tried left
+ * to right with each padding of `gaps` in turn, roomiest first; a padding is [side, between]: `side` clear of `left`
+ * and `right`, `between` clear of every box sideways, and `gapY` clear above and below. So a row takes a card at the
+ * roomy padding while it can, then at the tight one, and only a row with no room even for the card and the tight
+ * padding sends it down to the next row, just under the lowest card in the way. The spots tried are the row's start
+ * and those just past a box (its right edge plus `between`, its bottom plus `gapY`), so the gaps come out exact.
+ * Where the card fits at no padding at all it goes straight down, the tight padding right of `left`.
  */
-export const spotIn = (graph, region = null, before = null) => (region
-  ? freeSpot({ nodes: graph.nodes.filter((n) => n.in === region) }, { w: 170, h: 150, x0: 44, y0: 20, dx: 190, cols: 2 })
-  : freeSpot({ nodes: graph.nodes.filter((n) => !n.in) }, Number.isFinite(before) ? { w: 170, h: 150, x0: before - 230, dx: -200 } : { w: 170, h: 150, x0: 240, dx: 200 }))
+export function rowSpot(boxes, [w, h], { left, right = Infinity, top, gaps = [[48, 72], [24, 24]], gapY = 16 }) {
+  const clear = (x, y, gap) => boxes.every(([bx, by, bw, bh]) => x >= bx + bw + gap || x + w + gap <= bx || y >= by + bh + gapY || y + h + gapY <= by)
+  const sorted = (values) => [...new Set(values)].sort((a, b) => a - b)
+  const ys = sorted([top, ...boxes.map(([, by, , bh]) => by + bh + gapY)].filter((y) => y >= top))
+  const lanes = gaps.map(([side, between]) => ({ between, from: left + side, to: right - side - w })).filter(({ from, to }) => from <= to)
+    .map(({ between, from, to }) => ({ between, xs: sorted([from, ...boxes.map(([bx, , bw]) => bx + bw + between)].filter((x) => x >= from && x <= to)) }))
+  for (const y of ys) for (const { between, xs } of lanes) for (const x of xs) if (clear(x, y, between)) return [x, y]
+  const [side, between] = gaps.at(-1)
+  return [left + side, ys.find((y) => clear(left + side, y, between)) ?? ys.at(-1)]
+}
+
+/**
+ * Room on the desktop board for a new card: in a frame's region from its corner; on the board itself just right of
+ * `after` (the inputs' rightmost left edge, when the board has them), column by column rightwards while short of
+ * `before` (the outputs' left edge), so a new part stands at the circuit's left, between its inputs and outputs;
+ * a board with no inputs goes left from `before`, else from the board's left. The canvas then sets it beside the
+ * inputs as they are drawn (CanvasEditor).
+ */
+export const spotIn = (graph, region = null, before = null, after = null) => {
+  if (region) return freeSpot({ nodes: graph.nodes.filter((n) => n.in === region) }, { w: 170, h: 150, x0: 44, y0: 20, dx: 190, cols: 2 })
+  const board = { nodes: graph.nodes.filter((n) => !n.in) }
+  if (Number.isFinite(after)) {
+    const x0 = after + 180
+    const cols = Number.isFinite(before) ? Math.max(1, Math.floor((before - 230 - x0) / 240) + 1) : 3
+    return freeSpot(board, { w: 170, h: 150, x0, dx: 240, cols })
+  }
+  return freeSpot(board, Number.isFinite(before) ? { w: 170, h: 150, x0: before - 230, dx: -200 } : { w: 170, h: 150, x0: 240, dx: 200 })
+}

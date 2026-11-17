@@ -94,6 +94,17 @@ test('a new card on the board goes left of the outputs, clear of what is there',
   assert(Math.abs(x - 370) >= 170)
 })
 
+test('a new card on a board with inputs goes just right of them, short of the outputs, rightwards then down', () => {
+  const inputs = [{ id: 'a', type: 'in', x: 0, y: 40 }, { id: 'b', type: 'in', x: 0, y: 200 }]
+  const out = { id: 'out', type: 'out', x: 900, y: 40 }
+  const [x, y] = spotIn({ nodes: [...inputs, out] }, null, 900, 0)
+  assert.deepEqual([x, y], [180, 40], 'beside the inputs, at their top')
+  const [x2] = spotIn({ nodes: [...inputs, out, { id: 'p', type: 'and', x: 180, y: 40 }] }, null, 900, 0)
+  assert.equal(x2, 420, 'the next column rightwards')
+  const [x3, y3] = spotIn({ nodes: [...inputs, { id: 'o', type: 'out', x: 300, y: 40 }, { id: 'p', type: 'and', x: 180, y: 40 }] }, null, 300, 0)
+  assert.deepEqual([x3, y3], [180, 230], 'outputs near: down the same column')
+})
+
 test('changing a card shape preserves occupied regions and preset wires, and drops unused ports atomically', () => {
   const regions = (node) => node.type === 'frame' && node.params.extra ? [{ name: 'body', opens: true }] : []
   const parts = {

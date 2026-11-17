@@ -6,7 +6,7 @@ import { movePhonePart, phoneBlockBoard, placeInPhoneSlot } from '../../core/ind
 import { flowBoard, primitivesOnly } from '../../core/index.js'
 import { frameTree, regionsFit } from '../../core/index.js'
 import { keepLocked, lockedCards, presetOf, withPreset } from '../../core/index.js'
-import { boardFits, clearSpot, placement, removeNode, wireRefusal } from '../../core/index.js'
+import { boardFits, clearSpot, rowSpot, placement, removeNode, wireRefusal } from '../../core/index.js'
 import { traySize } from '../../core/index.js'
 
 // A box `f` with one region that opens a value, and a card `m` inside it; `p` and `g` on the board.
@@ -233,6 +233,24 @@ test('a card added over another moves to the nearest clear spot beside it', () =
   const [lx, ly] = clearSpot([frame], [140, 120], [200, 40], 16, -1)
   assert.ok(lx + 140 + 16 <= 0 || ly >= 516)
   assert.ok(lx < 200)
+  const [kx, ky] = clearSpot([[0, 0, 140, 120]], [140, 120], [0, 0], 16, 1, 0)
+  assert.deepEqual([kx, ky], [0, 140], 'kept short of a limit, it goes down')
+})
+
+test('a card placed from the tray fills a row left to right, tighter before it takes a new row', () => {
+  const card = [100, 60]
+  const band = { left: 100, right: 800, top: 0 }
+  assert.deepEqual(rowSpot([], card, band), [148, 0], 'an empty row: the roomy side padding right of the inputs')
+  const first = [148, 0, 100, 60]
+  assert.deepEqual(rowSpot([first], card, band), [320, 0], 'beside it, the roomy padding between cards')
+  const two = [first, [320, 0, 100, 60]]
+  assert.deepEqual(rowSpot(two, card, band), [492, 0], 'a third still fits roomily: 492 + 100 + 48 <= 800')
+  const three = [...two, [492, 0, 100, 60]]
+  assert.deepEqual(rowSpot(three, card, band), [616, 0], 'no roomy room left: the tight padding, still on the row')
+  const full = [...three, [616, 0, 100, 60]]
+  assert.deepEqual(rowSpot(full, card, band), [148, 76], 'a full row: the next, gapY under it')
+  assert.deepEqual(rowSpot([], card, { left: 100, right: 260, top: 0 }), [124, 0], 'a narrow band: the tight padding both sides')
+  assert.deepEqual(rowSpot([[124, 0, 100, 200]], card, { left: 100, right: 200, top: 0 }), [124, 216], 'no room at all: straight down')
 })
 
 test('presets retain both enclosing frames of a locked card or wire end', () => {

@@ -275,12 +275,19 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     let k = 1
     while (taken.has(`${type}${k}`)) k += 1
     const id = `${type}${k}`
-    const [x, y] = spotIn(graph, region ?? null, Math.min(...graph.nodes.filter((n) => !n.in && parts.role(n) === 'sink' && Number.isFinite(n.x)).map((n) => n.x)))
+    const xs = (role) => graph.nodes.filter((n) => !n.in && parts.role(n) === role && Number.isFinite(n.x)).map((n) => n.x)
+    const [x, y] = spotIn(graph, region ?? null, Math.min(...xs('sink')), Math.max(...xs('source')))
     return { id, graph: { ...graph, nodes: [...graph.nodes, { id, type, params: partDefaults(type), x, y, ...(slot !== undefined ? { slot } : {}), ...(region ? { in: region } : {}) }] } }
   })
   // A new card goes into the region chosen last, while its frame is there and open.
   const into = isOpenRegion(circuit, parts, target) ? target : null
-  const add = (type) => change(withNewSlots(make(circuit, type, { region: into }).graph, parts))
+  // The card a tray click just made: the canvas sets it in the first room along the rows (an undone removal is not one).
+  const [placing, setPlacing] = useState(null)
+  const add = (type) => {
+    const made = make(circuit, type, { region: into })
+    if (made.id) setPlacing({ id: made.id })
+    change(withNewSlots(made.graph, parts))
+  }
   const protectedIds = lockedCards(circuit)
   const onClear = circuit.nodes.some((n) => canRemoveCard(parts, n, protectedIds)) || board.clearable?.(circuit) ? board.clear : null
 
@@ -332,6 +339,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
               wireState={(wire) => card.wireState(wire, ctx)}
               {...portNotes(card, ctx)}
               onTarget={setTarget}
+              placing={placing}
               inspect={(node) => (details || isDefined(node) || !isPart(parts, node) || isPacked(node, top)) ? () => setDetail(node.id) : null}
               onClear={onClear}
               types={types}

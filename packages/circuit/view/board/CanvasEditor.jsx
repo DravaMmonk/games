@@ -35,7 +35,7 @@ import Glyph from "./Glyph.jsx"
 import { cardPorts, namesPorts, NO_CARD_PORT, portOnCard } from "../../core/board/card-ports.js"
 import { moveInto } from "../../core/board/frames.js"
 import { isOpenRegion, regionAddress, regionsOf } from "../../core/board/regions.js"
-import { canRemoveCard, clearSpot, connectWire, ends, inPort, isPart, outPort, parsePort, removeNode, unplugWire, wireRefusal } from "../../core/board/model.js"
+import { canRemoveCard, clearSpot, rowSpot, connectWire, ends, inPort, isPart, outPort, parsePort, removeNode, unplugWire, wireRefusal } from "../../core/board/model.js"
 import { leavesLockedRegion, lockedCards, lockedRefusal, PRESET_CARD_REFUSAL } from "../../core/board/presets.js"
 import { useCircuitEdits } from "./useCircuitEdits.js"
 import { historyKey } from 'kernel/view'
@@ -101,7 +101,7 @@ function pointerPose(pointers) {
  * choose: a circuit too big for the board at it starts at its top left, and the rest is a pan away. An editable board
  * receives both its change callback and its history. A display without them only pans, zooms and fits.
  */
-export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, emptyNote, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect }) {
+export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, emptyNote, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect, placing = null }) {
   const [connectionLabels] = useSetting('connectionLabels')
   const readOnly = !onChange
   const [view, setView] = useState({ x: 0, y: 0, zoom: 1 })
@@ -284,6 +284,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   // Until it has moved, it is not yet seen as added, so the view follows it to where it lands.
   const seen = useRef(null)
   const moving = useRef(false)
+  const consumed = useRef(null)
   useLayoutEffect(() => {
     const before = seen.current
     seen.current = new Set(graph.nodes.map((n) => n.id))
@@ -300,14 +301,39 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const others = (groups.length ? top : graph.nodes).filter((n) => n.id !== node.id && (n.in ?? null) === (node.in ?? null))
     const beside = others.map((n) => [n.x, n.y, ...drawn(n)])
     const size = drawn(node)
-    // On the board itself a card goes left of the outputs, as wide as it is drawn, at the height it was given (or
-    // the outputs' top): a card reaching past their left edge is brought back, and one in the way of another moves
-    // on leftwards or down. Elsewhere it moves right or down from where the layout would put it.
-    const sinks = node.in ? [] : others.filter((n) => !n.hiddenBlock && parts.role(n) === 'sink' && Number.isFinite(n.x))
-    const edge = Math.min(...sinks.map((n) => n.x)) - Math.max(gapOf('--board-gap-x'), 56)
-    const want = sinks.length ? [Math.min(node.x ?? edge, edge - size[0]), Number.isFinite(node.y) ? node.y : Math.min(...sinks.map((n) => n.y))] : null
-    const candidate = want ? { x: want[0], y: want[1] } : arrange().nodes.get(node.id) ?? node
-    const spot = clearSpot(beside, size, [candidate.x, candidate.y], 16, want ? -1 : 1) ?? (want && (want[0] !== node.x || want[1] !== node.y) ? want : null)
+    // On the board itself a card goes to the circuit's left, between its inputs and outputs. One a tray click just made
+    // takes the first room along the rows from just right of the inputs as they are drawn, its left edge short of the
+    // outputs by its width: left to right, roomy padding first and a tight one where only that fits, and down a row
+    // only when the row has no room even for that; wider apart sideways than up and down. Any other card added (a removal undone) stays where it was put while it is clear, else moves on rightwards,
+    // or down once the outputs are near. A board with no inputs keeps it left of the outputs, moving on leftwards.
+    // Elsewhere it moves right or down from where the layout would put it.
+    const terminals = (role) => node.in ? [] : others.filter((n) => !n.hiddenBlock && parts.role(n) === role && Number.isFinite(n.x))
+    const sinks = terminals('sink')
+    const sources = terminals('source')
+    const gapX = Math.max(gapOf('--board-gap-x') * 3, 72)
+    const edge = Math.min(...sinks.map((n) => n.x)) - gapX
+    const y = Number.isFinite(node.y) ? node.y : Math.min(...(sources.length ? sources : sinks).map((n) => n.y))
+    const start = Math.max(...sources.map((n) => n.x + drawn(n)[0])) + gapX
+    const limit = Math.max(start, edge - size[0])
+    const fresh = placing?.id === node.id && consumed.current !== placing
+    if (fresh) consumed.current = placing
+    let spot
+    if (fresh && sources.length) {
+      // The band's own bounds keep it clear of the inputs and outputs, so they are not boxes in its way.
+      const tight = gapOf('--board-gap-x') || 24
+      const terminal = new Set([...sources, ...sinks])
+      const at = rowSpot(others.filter((n) => !terminal.has(n)).map((n) => [n.x, n.y, ...drawn(n)]), size, {
+        left: start - gapX, right: Math.min(...sinks.map((n) => n.x)), top: Math.min(...sources.map((n) => n.y)),
+        gaps: [[tight * 2, gapX], [tight, tight]], gapY: gapOf('--board-gap-y') || 16,
+      })
+      spot = at[0] !== node.x || at[1] !== node.y ? at : null
+    } else {
+      const want = sources.length ? [Math.min(Math.max(node.x ?? start, start), limit), y]
+        : sinks.length ? [Math.min(node.x ?? edge, edge - size[0]), y] : null
+      const toward = sources.length || !want ? 1 : -1
+      const candidate = want ? { x: want[0], y: want[1] } : arrange().nodes.get(node.id) ?? node
+      spot = clearSpot(beside, size, [candidate.x, candidate.y], 16, toward, sources.length ? limit : Infinity) ?? (want && (want[0] !== node.x || want[1] !== node.y) ? want : null)
+    }
     if (!spot) return
     moving.current = true
     onChange({ ...graph, nodes: graph.nodes.map((n) => (n.id === node.id ? { ...n, x: spot[0], y: spot[1] } : n)) }, { keep: true })

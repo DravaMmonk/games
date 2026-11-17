@@ -1,14 +1,16 @@
-import { contentMeanings } from '../../core/index.js'
+import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { contentMeanings } from 'circuit'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { registeredOperations } from "../../../../games/kit/engine/capabilities.js"
-import { S } from "../../../../games/kit/engine/schema.js"
-import { partStages, stageDefinition, requiredStage } from '../../core/index.js'
-import { defineParts, partProblems } from '../../core/index.js'
-import { audit, defineCourse, holds } from '../../core/index.js'
-import { contentCourse } from '../../core/index.js'
-import { boardView } from '../../core/index.js'
-import { referenceResolver, expandRelations } from "../../../../games/kit/engine/objects.js"
+import { registeredOperations } from "../../../games/kit/engine/capabilities.js"
+import { S } from "../../../games/kit/engine/schema.js"
+import { partStages, requiredStage, progressMeaning } from '../core/index.js'
+import { partDefinition, holds } from 'circuit'
+import { defineParts, partProblems } from 'circuit'
+import { audit, defineCourse } from '../core/index.js'
+import { contentCourse } from 'circuit'
+import { boardView } from 'circuit'
+import { referenceResolver, expandRelations } from "../../../games/kit/engine/objects.js"
 
 const operations = {
   'toy:scale': {
@@ -29,9 +31,9 @@ const part = {
 test('stage deltas inherit signatures and reset settings without mutating the part', () => {
   const before = structuredClone(part)
   const stages = partStages({ 'sample/scale': part })
-  const base = stageDefinition(stages.get('sample/scale'), operations)
-  const editable = stageDefinition(stages.get('sample/adjustable'), operations)
-  const division = stageDefinition(stages.get('sample/division'), operations)
+  const base = partDefinition(stages.get('sample/scale'), operations)
+  const editable = partDefinition(stages.get('sample/adjustable'), operations)
+  const division = partDefinition(stages.get('sample/division'), operations)
   assert.deepEqual(base.inputs, [{ name: 'a', type: 'circuit:number' }])
   assert.equal(base.outputType, 'circuit:number')
   assert.equal(base.setting.gain.fixed, true)
@@ -70,7 +72,7 @@ test('the normal circuit view evaluates stage defaults under the stable part id'
 
 test('part tags expand stages while replaces accepts only distinct base parts', () => {
   const problems = []
-  const resolve = referenceResolver({ 'circuit/part': { scale: { stages: [{ id: 'advanced' }] } }, tag: { tray: { kind: 'circuit/part', values: ['scale', 'advanced'] } } }, problems, { meanings: contentMeanings })
+  const resolve = referenceResolver({ 'circuit/part': { scale: { stages: [{ id: 'advanced' }] } }, tag: { tray: { kind: 'circuit/part', values: ['scale', 'advanced'] } } }, problems, { meanings: [...contentMeanings, progressMeaning] })
   assert.deepEqual(resolve('#tray', 'circuit/part'), ['advanced', 'scale'])
   resolve('scale.gain', 'circuit/part')
   assert.deepEqual(problems, [])
@@ -80,10 +82,11 @@ test('part tags expand stages while replaces accepts only distinct base parts', 
 
 test('all stage settings are checked against their operation and empty output maps fail', () => {
   const vocabulary = { kinds: { op: operations, family: { 'toy:family': {} } } }
-  assert.deepEqual(partProblems({ parts: { scale: part } }, vocabulary), [])
+  const stages = definition => progressMeaning.validate({ content: { levels: [], partDefs: { parts: { scale: definition } } }, vocabulary })
+  assert.deepEqual(stages(part), [])
   const invalid = { ...part, stages: [{ id: 'invalid', settings: { gain: { max: 9 } } }] }
-  assert.ok(partProblems({ parts: { scale: invalid } }, vocabulary).some(problem => /cannot widen/.test(problem.says)))
-  assert.ok(partProblems({ parts: { scale: { ...part, stages: [], op: {} } } }, vocabulary).some(problem => /at least one output/.test(problem.says)))
+  assert.ok(stages(invalid).some(problem => /cannot widen/.test(problem.says)))
+  assert.ok(partProblems({ parts: { scale: { ...partStages({ scale: part }).get('scale').definition, op: {} } } }, vocabulary).some(problem => /at least one output/.test(problem.says)))
 })
 
 test('earned stage flags upgrade the same card without changing its saved identity', () => {
@@ -100,7 +103,7 @@ test('a level award waits for its final task to pass', () => {
     partDefs: { parts: { scale: { stages: [{ id: 'advanced' }] } } },
     eras: [{ id: 0, levels: [{ id: 'only' }], links: [] }],
     levels: [{ id: 'only', adds: ['scale'], awards: ['advanced'], tasks: [{ id: 'first' }, { id: 'last' }] }] }
-  const course = contentCourse(content)
+  const course = contentCourse(withProgressFixture(content))
   assert.deepEqual(course.awards({ id: 'only', task: 1 }), [])
   assert.deepEqual(course.awards({ id: 'only', task: 2 }), ['advanced'])
 })

@@ -1,12 +1,14 @@
+import * as progress from '../../progress/core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { groupingsFor, groupsOf, relationKind, stageOwners, ungrouped } from '../../../games/kit/studio/list-groups.js'
+
 
 const content = {
   partDefs: { parts: { 'p/add': { stages: [{ id: 'add-carry' }] }, 'p/mul': {}, 'p/neg': {} } },
   registries: {
     level: { 'p/a': {}, 'p/b': {}, 'p/c': {} },
-    'circuit/part': { 'p/add': {}, 'p/mul': {}, 'p/neg': {} },
+    'circuit/part': { 'p/add': { stages: [{ id: 'add-carry' }] }, 'p/mul': {}, 'p/neg': {} },
     entry: { 'p/e1': {}, 'p/e2': {} },
     tag: {
       'level:p/basics': { kind: 'level', values: ['p/b', 'p/a'] },
@@ -45,6 +47,6 @@ test('each list groups by the tags of its kind, or by the objects that gather it
 import { registerPlugins } from '../../../games/kit/engine/plugins.js'
 import { installStudioPlugins } from '../../../games/kit/studio/editors.js'
 import * as core from '../core/index.js'
-const plugins = await registerPlugins([{ id: 'circuit', core }])
+const plugins = await registerPlugins([{ id: 'circuit', core }, { id: 'progress', core: progress }])
 plugins.forPackage('circuit', 'view').editor('circuit:part', { type: 'circuit/part', component() {}, groupings: ['tag', 'circuit/tray', 'relation'] })
 installStudioPlugins(plugins)

@@ -1,11 +1,6 @@
-import { withBoardRuntime } from "../boards.js"
-import { isWorkshopType, usesWorkshop, workshopCompatible, workshopDefinitions, workshopIdentity, workshopInput, workshopParts } from "../workshop.js"
-import { WORKSHOP_OUTPUT } from "../workshop-terminals.js"
-
-const captured = Symbol('captured workshop parts')
-
-export const workshopOf = (board) => board?.[captured]
-export const workView = (board, view) => workshopOf(board)?.project(view) ?? view
+import { withBoardRuntime, withWorkExtension, workExtension } from 'circuit'
+import { isWorkshopType, usesWorkshop, workshopCompatible, workshopDefinitions, workshopIdentity, workshopInput, workshopParts } from "./workshop.js"
+import { WORKSHOP_OUTPUT } from "./workshop-terminals.js"
 
 /** The runner and the editor can supply different representations of the task's native parts. */
 export function runtimeOf(task, view) {
@@ -39,7 +34,7 @@ function bindWorkshopWork(graph, task, circuit, library, { partDefs }) {
   }
   if (!include(graph) || !versions.size) return graph
   const view = workshopView(circuit, { parts: Object.fromEntries(versions) }, () => true, runtime)
-  return withBoardRuntime({ ...graph, [captured]: view }, (partOf) => (type) => view.known(type) ? view.resolve(type) : partOf(type))
+  return withBoardRuntime(withWorkExtension(graph, { ...view, open: openWorkshopPart }), (partOf) => (type) => view.known(type) ? view.resolve(type) : partOf(type))
 }
 
 /** Reattach browser-held versions to passed work, both on pass and after a reload. */
@@ -77,7 +72,7 @@ export function workshopView(circuit, library, available, runtime) {
     const view = {
       ...scope,
       workshop: parts,
-      workshopPart: (type) => indexes.get(type),
+      extraPart: (type) => indexes.get(type),
       opening: (task, progress) => scope.opening(task, progress, project),
       stageChain: (task, built) => scope.stageChain(task, built, project),
       partOf: (type) => known(type) ? partOf(type) : scope.partOf(type),
@@ -108,7 +103,7 @@ const outputsOf = ({ outputs }) => outputs.length > 1 ? outputs.map((name) => ({
 
 /** Open a workshop version in the library captured on the parent, or in the active library for a draft. */
 export function openWorkshopPart(node, parent, activeWorkshop) {
-  const workshop = parent.workshop ?? workshopOf(parent.circuit) ?? activeWorkshop
+  const workshop = parent.workshop ?? workExtension(parent.circuit) ?? activeWorkshop
   if (!workshop?.known(node.type)) return null
   return { key: node.type, circuit: workshop.resolve.definition(node.type).graph, level: parent.level, workshop }
 }

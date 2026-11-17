@@ -1,7 +1,6 @@
+import { symbolFor } from './symbols.js'
 import { registeredOperations, registeredValueTypes, S, withHidden, taskModule, runtimeWorks } from 'kernel'
-import { grants } from 'circuit'
 import { registry, meaning } from './catalog.js'
-import { symbolGrant } from './grants.js'
 import runtime from './runtime.js'
 import { logicWorks } from './work.js'
 import { plays } from './plays.js'
@@ -44,12 +43,17 @@ const identity = value => value
 const judged = (judge, work) => { const fail = judge(work); return { pass: !fail, fail } }
 
 export function register(kernel) {
-  if (!grants.types.has(symbolGrant.type)) grants.register(symbolGrant)
   Object.assign(registeredOperations, registry.operations)
   Object.assign(registeredValueTypes, registry.tables.valueType)
   kernel.kind('logic:level', meaning)
   kernel.kind('logic:symbol', {
-    type: 'logic/symbol', read: value => value, selector: 'symbol', selectors: ['symbol'], textPrefix: 'symbol',
+    type: 'logic/symbol', read: value => value,
+    levelPuzzle({ content, level }) {
+      const introduced = Object.values(content.registries?.['logic/symbol'] ?? {})
+        .filter(symbol => symbol.at === level.id).map(symbol => symbolFor[symbol.mark]).filter(Boolean)
+      return introduced.length ? { symbols: introduced } : {}
+    },
+    selector: 'symbol', selectors: ['symbol'], textPrefix: 'symbol',
     textParameters: { symbol: S.opt(S.str()) },
     search({ content, texts }) {
       for (const [symbol, value] of Object.entries(content.registries['logic/symbol'] ?? {})) texts(value, content.objectKinds['logic/symbol'].schema, { file: `symbols/${symbol}.json`, selector: { symbol } })

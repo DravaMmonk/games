@@ -1,6 +1,6 @@
 {
   "title": "@level.in-revapp.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.in-revapp.intro.0.t"

@@ -1,3 +1,4 @@
+import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
 import { resolve } from 'node:path'
 import { starterParts } from '../../../games/kit/engine/ops/fixture.js'
 // The logic domain on its content: boards as blueprint text both ways, a course's data read into its levels (test
@@ -41,7 +42,7 @@ const halfOf = (form, goal) => ({
 })
 const CONTENT = {
   words: ['everyday'],
-  registries: { 'logic/symbol': Object.fromEntries(Object.entries(readStarter(resolve(import.meta.dirname, '../../logic/test')).registries['logic/symbol']).map(([name, value]) => [name.split('/').at(-1), value])), wordset: {
+  registries: { 'logic/symbol': Object.fromEntries(Object.entries(readStarter(resolve(import.meta.dirname, '../../logic/test')).registries['logic/symbol']).map(([name, value]) => [name.split('/').at(-1), { ...value, at: ({ formulaOr: 'or', formulaImplies: 'chain', formulaAnd: 'chain', formulaForall: 'chain' })[name.split('/').at(-1)] }])), wordset: {
     everyday: { Rain: L('下雨', 'it rains'), Wind: L('刮风', 'it is windy'), Wet: L('地湿', 'the ground is wet'), Slip: L('路滑', 'the road is slippery'), Bright: L('{0}很亮', '{0} is bright'), Seen: L('{0}看得见', '{0} can be seen'), i: L('安', 'Ann'), j: L('博', 'Bo') },
     stars: { a: L('晨星', 'the Morning Star'), b: L('昏星', 'the Evening Star'), i: L('晨星', 'the Morning Star'), j: L('昏星', 'the Evening Star') },
     properties: { P: L('{0}具有该性质', '{0} has that property'), Q: L('{0}具有该性质', '{0} has that property') },
@@ -57,8 +58,8 @@ const CONTENT = {
   } },
   eras: [{ id: 'one', machine: null, levels: [{ id: 'or' }, { id: 'chain' }, { id: 'useChain' }, { id: 'half' }, { id: 'useHalf' }, { id: 'eqSym' }, { id: 'andDef' }, { id: 'eqUse' }, { id: 'eqTerm' }, { id: 'rows' }, { id: 'negate' }], links: [{ from: 'or', to: 'chain' }, { from: 'chain', to: 'useChain' }, { from: 'useChain', to: 'half' }, { from: 'half', to: 'useHalf' }, { from: 'useHalf', to: 'eqSym' }, { from: 'eqSym', to: 'andDef' }, { from: 'andDef', to: 'eqUse' }, { from: 'eqUse', to: 'eqTerm' }, { from: 'eqTerm', to: 'rows' }, { from: 'rows', to: 'negate' }], chapter: { title: L('c'), question: L('q') } }],
   levels: [
-    one({ id: 'or', publishes: [{ part: 'gOr', variant: 'base' }], kind: 'logic:gates', adds: ['formulaOr'], title: L('or'), target: 'Rain ∨ Wind', brief: L('b'), solution: ['n1 = gNot(Rain)', 'n2 = gNot(Wind)', 'a = gAnd(n1, n2)', 'n3 = gNot(a)', 'out <- n3'] }),
-    proofLevel('chain', { publishes: [{ part: 'chain', variant: 'base' }], title: L('接起来', 'Join them'), adds: ['formulaImplies', 'formulaAnd', 'formulaForall'], tests: [{ premises: { p: 'A → B', q: 'B → C' }, goal: 'A → C' }], cases: [{ A: 'Rain', B: 'Wet', C: 'Slip' }],
+    one({ id: 'or', publishes: [{ part: 'gOr', variant: 'base' }], kind: 'logic:gates', title: L('or'), target: 'Rain ∨ Wind', brief: L('b'), solution: ['n1 = gNot(Rain)', 'n2 = gNot(Wind)', 'a = gAnd(n1, n2)', 'n3 = gNot(a)', 'out <- n3'] }),
+    proofLevel('chain', { publishes: [{ part: 'chain', variant: 'base' }], title: L('接起来', 'Join them'), tests: [{ premises: { p: 'A → B', q: 'B → C' }, goal: 'A → C' }], cases: [{ A: 'Rain', B: 'Wet', C: 'Slip' }],
       solution: box('f = impI[A=A](body: m2)', ["m1 = mp(p, f.body)", "m2 = mp(q, m1)"], 'f') }),
     proofLevel('useChain', { tests: [{ premises: { p: 'A → B', q: 'B → C' }, goal: 'A → C' }], cases: [{ A: 'Wind', B: 'Wet', C: 'Slip' }], solution: ['c = chain(p, q)', 'goal <- c'] }),
     { id: 'half', title: L('half'), tasks: [
@@ -91,7 +92,7 @@ const CONTENT = {
 }
 CONTENT.wordSets = CONTENT.registries.wordset
 delete CONTENT.registries.wordset
-const course = logicWorks(CONTENT)
+const course = logicWorks(withProgressFixture(CONTENT))
 const syncOwn = course.syncOwn
 const level = (id) => course.LEVELS.find((l) => l.id === id)
 // A level of one task, as read.
@@ -242,7 +243,7 @@ test('a lemma runs the proof the player passed its level with, a level of tasks 
   syncOwn({ chain: own })
   assert.equal(course.proofs.chain[''].board(), own)
   // Another read of the same content (another game of the domain in this process) keeps its own boards.
-  const other = logicWorks(CONTENT)
+  const other = logicWorks(withProgressFixture(CONTENT))
   assert.notEqual(other.proofs.chain[''].board(), own)
   assert.equal(run('useChain', 0).pass, true)
   syncOwn({ chain: { ...own, wires: [...own.wires, { from: 'missing', to: 'goal', port: 'in' }] } })
@@ -298,31 +299,29 @@ test('formula chips use the registered symbols and keep contextual names', () =>
   assert.ok(level.notation.symbols.includes('∨'))
 })
 
-test('formula and circuit groups share a task, combining in order and respecting unlocks', () => {
+test('symbol keys use prerequisite order while the board has its own part tray', () => {
   const content = readStarter(resolve(import.meta.dirname, '../../logic/test'))
   content.trays = {
-    gates: { name: 'Gates', desc: 'Logic gates', items: ['starter/gNot', 'starter/gAnd'] },
-    basic: { name: 'Basic', desc: 'Basic symbols', items: ['starter/formulaAnd', 'starter/formulaNot'] },
-    extended: { name: 'Extended', desc: 'Additional symbols', items: ['starter/formulaOr', 'starter/formulaNot'] },
+    gates: { name: 'Gates', items: ['starter/gNot', 'starter/gAnd'] },
   }
-  const levels = content.levels
-  const first = levels.find(({ id }) => id === 'starter/g-not')
-  first.tray = ['gates', 'basic', 'extended']
-  const last = levels.find(({ id }) => id === 'starter/g-use')
-  last.tray = ['gates', 'extended', 'basic']
-  last.without = ['starter/formulaNot']
+  const first = content.levels.find(level => level.id === 'starter/g-not')
+  const last = content.levels.find(level => level.id === 'starter/g-use')
+  first.tray = last.tray = 'gates'
+  for (const symbol of Object.values(content.registries['logic/symbol'])) symbol.at = 'not-in-this-course'
+  content.registries['logic/symbol']['starter/formulaNot'].at = first.id
+  content.registries['logic/symbol']['starter/formulaAnd'].at = last.id
+  content.registries['logic/symbol']['starter/formulaOr'].at = last.id
   const logic = logicWorks(content)
-  const read = (id) => logic.LEVELS.find((level) => level.id === id).tasks[0]
-  const chips = (id) => chipsOf({
+  const read = id => logic.LEVELS.find(level => level.id === id).tasks[0]
+  const chips = id => chipsOf({
     kind: 'logic:translate', notation: read(id).notation, vocab: { preds: [['Rain', 0]], consts: [] },
   }).map(({ key }) => key)
-
-  assert.deepEqual(chips('starter/g-not'), ['P:Rain', '¬'])
-  assert.deepEqual(chips('starter/g-use'), ['P:Rain', '∨', '∧'])
-  assert.deepEqual(fixedTray(logic.course, read('starter/g-use')), ['starter/gNot', 'starter/gAnd', 'starter/formulaOr', 'starter/formulaNot', 'starter/formulaAnd'])
-  const { shown, folded, types } = logic.offerIn(read('starter/g-use'), new Set())
+  assert.deepEqual(chips(first.id), ['P:Rain', '¬'])
+  assert.deepEqual(chips(last.id), ['P:Rain', '¬', '∧', '∨'])
+  assert.deepEqual(fixedTray(logic.course, read(last.id)), ['starter/gNot', 'starter/gAnd'])
+  const { shown, folded, types } = logic.offerIn(read(last.id), new Set())
   assert.deepEqual(types, [...shown, ...folded])
-  assert.ok(types.every((type) => ['starter/gNot', 'starter/gAnd'].includes(type)))
+  assert.ok(types.every(type => ['starter/gNot', 'starter/gAnd'].includes(type)))
 })
 
 test('a proof tray groups disjunction rules and leaves truth gates off the proof board', () => {
@@ -341,14 +340,14 @@ test('a machine reference can use rule cards granted by its task', () => {
   const content = structuredClone(CONTENT)
   const level = content.levels.at(-1)
   level.tasks[0].rules = { own: { name: L('Own rule'), premises: [], conclusion: 'A' } }
-  const logic = logicWorks(content)
+  const logic = logicWorks(withProgressFixture(content))
   const task = logic.LEVELS.at(-1).tasks[0]
   assert.ok(logic.course.gives(task).includes('own'))
 })
 
 
 test('proof-board lemma cards expose packed boards and selected forms to workshop expansion', () => {
-  const logic = logicWorks(CONTENT)
+  const logic = logicWorks(withProgressFixture(CONTENT))
   const use = logic.LEVELS.find(level => level.id === 'useChain').tasks[0]
   const view = logic.proofBoards.forTask(use)
   const node = use.solution.nodes.find(node => node.type === 'chain')

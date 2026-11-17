@@ -2,5 +2,6 @@
   "mark": "logic:mark-formulaIff",
   "icon": "Rows3",
   "name": "↔",
-  "desc": "@symbol.formulaIff.desc"
+  "desc": "@symbol.formulaIff.desc",
+  "at": "g-iff"
 }

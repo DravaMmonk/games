@@ -1,6 +1,5 @@
 {
   "title": "@level.decl-check.title",
-  "tray": "formula",
   "declare": "@level.decl-check.declare",
   "target": "A ∧ B",
   "sentences": [

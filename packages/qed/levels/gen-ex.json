@@ -8,7 +8,7 @@
     "eachOf",
     "keepBound"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.gen-ex.intro.0.t"

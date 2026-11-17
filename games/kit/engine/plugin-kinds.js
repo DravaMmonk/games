@@ -9,7 +9,7 @@ export const BUILTIN_KIND_NAMES = ['level', 'task', 'entry', 'tag', 'relation', 
 
 export const KIND_DECLARATION = S.obj({
   folder: S.opt(S.str({ pattern: '^[a-z][a-z0-9-]*$' })),
-  schema: S.opt(S.any()), extends: S.opt(S.oneOf(['level', 'task'])),
+  schema: S.opt(S.any()), extends: S.opt(S.str({ pattern: '^(?:level|task|[a-z][a-z0-9-]*/[a-z][a-z0-9-]*)$' })),
   fields: S.opt(S.map(S.any())), play: S.opt(S.str({ reference: 'play' })), references: S.opt(S.list(S.str())),
   relations: S.opt(S.map(S.obj({ from: S.str(), to: S.str() }))),
   declares: S.oneOf(['package', 'game']),
@@ -42,7 +42,7 @@ function declarationSchema(source) {
   return schema
 }
 
-export function withKindDeclarations(vocabulary, layers, plugin = false) {
+export function withKindDeclarations(vocabulary, layers, plugin = false, { checked = false } = {}) {
   const definitions = {}, raw = {}
   for (const layer of layers) {
     const catalogs = Object.fromEntries(Object.entries(layer.catalogs ?? {}).map(([lang, entries]) => [lang, {
@@ -84,6 +84,17 @@ export function withKindDeclarations(vocabulary, layers, plugin = false) {
     }
     definitions[name] = definition
   }
+  for (const [name, definition] of Object.entries(definitions)) {
+    const target = definition.extends
+    if (!target || target === 'level' || target === 'task') continue
+    if (!definitions[target]?.schema || definitions[target].extends) throw new Error(`${name}: unknown object type ${target}`)
+    const owner = name.split('/')[0]
+    const layer = layers.find(layer => layer.id === owner)
+    if (target.split('/')[0] !== owner && !layer?.config?.uses?.[target.split('/')[0]] && !layer?.resolved && !checked) {
+      throw new Error(`${name}: ${target} requires a declared package dependency`)
+    }
+    definitions[target] = { ...definitions[target], schema: extend(definitions[target].schema, definition.fields) }
+  }
   let level = vocabulary.level
   if (plugin) {
     const task = S.obj({ id: S.task(), step: S.opt(S.text()), brief: S.text(), play: S.str({ reference: 'play' }), after: S.opt(S.text()) })
@@ -91,7 +102,7 @@ export function withKindDeclarations(vocabulary, layers, plugin = false) {
     if (!level) level = generic
     else level = S.obj({ ...generic.fields, ...level.fields, tasks: S.list(S.either(level.fields.tasks.of, task), { min: 1 }) })
   }
-  const extensions = Object.values(definitions).filter(d => d.extends)
+  const extensions = Object.values(definitions).filter(d => d.extends === 'level' || d.extends === 'task')
   for (const d of extensions.filter(d => !d.play)) {
     if (d.extends === 'level') level = extend(level, d.fields)
     else {

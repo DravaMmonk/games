@@ -2,5 +2,6 @@
   "mark": "logic:mark-formulaForall",
   "icon": "Rows3",
   "name": "∀",
-  "desc": "@symbol.formulaForall.desc"
+  "desc": "@symbol.formulaForall.desc",
+  "at": "fo-all"
 }

@@ -1,5 +1,5 @@
 import { partStages, requiredStage } from './part-stages.js'
-import { parse } from './board/text.js'
+import { textParse as parse } from 'circuit'
 const list = items => Array.isArray(items) ? items : []
 const refOf = level => `levels/${level}.json`
 

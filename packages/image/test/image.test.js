@@ -1,12 +1,13 @@
+import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
 // The image board as content and saves hold it: blueprint text both ways (a course's references too), how a board
 // read from text is laid out, and a packed part running the player's own circuit, on a course written here; and a
 // course read, of that course and of every image game, writing nothing into its content.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { deepFreeze } from '../../../games/kit/engine/content.js'
-import { captureWorkshop, publishWorkshop, workshopIdentity } from 'circuit'
+import { captureWorkshop, publishWorkshop, workshopIdentity } from 'progress'
 import { packedBoards } from 'circuit'
-import { courseWorkshop } from 'circuit'
+import { courseWorkshop } from 'progress'
 import { progress as circuitProgress } from 'circuit'
 import { boxBlur3, gradientMagnitude, horizontalDifference, sobelGradient, squaredGradient } from '../core/engine/filters.js'
 import { at, fromFn } from '../core/engine/image.js'
@@ -25,7 +26,7 @@ const square = { "image:picture-square": { x0: 4, y0: 4, s: 8 } }
 const filter = (id, rest) => ({ id, kind: 'image:graph', brief: L('b'), scene: "image:scene-filter", setup: { target: "image:target-same" }, tests: [{ label: L('t'), in: square }], ...rest })
 const level = (id, tasks, once = {}) => ({ id, title: L(id), after: L('a'), intro: [{ t: L('i') }], ...once, tasks })
 const wide = ['l = image:shift[dir=left](in)', 'r = image:shift[dir=right](in)', 'h = image:max(l, r)', 'out <- h']
-const content = deepFreeze({
+const content = deepFreeze(withProgressFixture({
   primitives: ["image:const", "image:add", "image:sub", "image:mul", "image:arith", "image:merge"],
   eras: [{ id: 0, levels: [{ id: 'wide' }, { id: 'use' }, { id: 'two' }], links: [{ from: 'wide', to: 'use' }, { from: 'use', to: 'two' }], chapter: { title: L('c'), label: L('l'), question: L('q') } }],
   levels: [
@@ -34,7 +35,7 @@ const content = deepFreeze({
     level('two', [filter('two_1', { solution: ['s = image:shift[dir=up, n=2](in)', 'out <- s'] }), filter('two_2', { carries: true, solution: ['t = image:threshold[t=0.3](in)', 'out <- t'] })], { adds: ["image:shift"] }),
   ],
   partDefs: { parts: { widen: { name: L('p'), desc: L('d'), inside: [{ id: 'base', reference: { solution: wide } }] } } },
-})
+}))
 const image = imageWorks(content)
 const { fromText, toText } = image.kit
 
@@ -146,9 +147,9 @@ test('a course reward runs and displays the exact workshop version used by its p
     const views = packedBoards(circuit, (opened, view) => ({ ...opened, view }))
     const reward = views.root('widen')
     const placed = reward.circuit.nodes.find(({ id }) => id === 'wrapped')
-    assert.equal(reward.view.workshopPart(placed.type).name, 'Original version')
-    assert.deepEqual(reward.view.workshopPart(placed.type).graph, original.graph)
-    assert.deepEqual(reward.view.workshopPart(inner.id).graph, inner.graph)
+    assert.equal(reward.view.extraPart(placed.type).name, 'Original version')
+    assert.deepEqual(reward.view.extraPart(placed.type).graph, original.graph)
+    assert.deepEqual(reward.view.extraPart(inner.id).graph, inner.graph)
   }
   delete library.parts[inner.id]
   made.syncOwn(bindings.restore(saved))

@@ -12,7 +12,6 @@
     }
   ],
   "after": "@level.table.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "table",

@@ -182,7 +182,7 @@ test('package lists use prerequisites then names without constructing chapters',
 
 test('symbol files, wording, typed tags and overrides use symbols throughout authoring', async () => {
   const { root, put } = fixture()
-  put('packages/library/symbols/and.json', { mark: 'logic:mark-formulaAnd', name: '∧', desc: '@symbol.and.desc', icon: 'Rows3', stages: [{ id: 'wide', name: 'AND' }] })
+  put('packages/library/symbols/and.json', { mark: 'logic:mark-formulaAnd', name: '∧', desc: '@symbol.and.desc', icon: 'Rows3' })
   put('packages/library/i18n/en.json', { 'symbol.and.desc': 'Conjunction' })
   put('packages/library/tags/logic/symbol/formulas.json', { values: ['and'] })
   put('packages/library/trays/mixed.json', { values: ['apply', '#formulas'] })
@@ -192,8 +192,9 @@ test('symbol files, wording, typed tags and overrides use symbols throughout aut
   const content = readPackage('extra', root)
   assert.equal(content.registries['logic/symbol']['library/and'].icon, 'Box')
   assert.equal(content.registries['logic/symbol']['library/and'].desc.en, 'Conjunction')
-  assert.deepEqual(content.objectProblems, [])
-  assert.deepEqual(content.trays['library/mixed'].items, ['library/apply', 'library/and'])
+  assert.ok(content.objectProblems.some(problem => /formulas/.test(problem.says)))
+  put('packages/library/trays/mixed.json', { values: ['apply'] })
+  lockFixture(root)
   const ws = openPackage('library', root)
   const result = await runChangeset(ws, { why: 'Edit a symbol.', ops: [{ op: 'object.set', kind: 'logic/symbol', name: 'and', path: 'icon', value: 'Box' }, { op: 'text.set', symbol: 'and', path: 'desc', lang: 'en', value: 'Both sentences' }] }, { write: true, check: false })
   assert.equal(result.ok, true, result.problems.join('\n'))

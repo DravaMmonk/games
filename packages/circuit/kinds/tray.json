@@ -11,10 +11,6 @@
         "type": "text",
         "optional": true
       },
-      "workshop": {
-        "type": "bool",
-        "optional": true
-      },
       "menuThreshold": {
         "type": "int",
         "min": 1,
@@ -29,7 +25,7 @@
         "of": {
           "type": "str",
           "pattern": "^#?(?:(?:@?[a-z][a-z0-9-]*/)|(?:[a-z][a-z0-9-]*:))?[A-Za-z0-9][A-Za-z0-9_-]*$",
-          "reference": "circuit/grant"
+          "reference": "circuit/part"
         }
       },
       "menus": {
@@ -50,7 +46,7 @@
               "of": {
                 "type": "str",
                 "pattern": "^#?(?:(?:@?[a-z][a-z0-9-]*/)|(?:[a-z][a-z0-9-]*:))?[A-Za-z0-9][A-Za-z0-9_-]*$",
-                "reference": "circuit/grant"
+                "reference": "circuit/part"
               }
             }
           }

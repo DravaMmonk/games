@@ -3,7 +3,7 @@
   "adds": [
     "assumption"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-assumption.intro.0.t"

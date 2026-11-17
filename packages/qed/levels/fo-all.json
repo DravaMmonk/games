@@ -1,5 +1,4 @@
 {
-  "tray": "formula",
   "consts": [
     "h",
     "i",
@@ -8,9 +7,6 @@
     "l",
     "m",
     "n"
-  ],
-  "adds": [
-    "formulaForall"
   ],
   "title": "@level.fo-all.title",
   "intro": [

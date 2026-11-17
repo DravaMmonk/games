@@ -1,54 +1,6 @@
 {
   "extends": "task",
   "fields": {
-    "adds": {
-      "type": "list",
-      "of": {
-        "type": "str",
-        "reference": "circuit/grant"
-      },
-      "optional": true
-    },
-    "local": {
-      "type": "list",
-      "of": {
-        "type": "str",
-        "reference": "circuit/grant"
-      },
-      "optional": true
-    },
-    "gives": {
-      "type": "list",
-      "of": {
-        "type": "str",
-        "reference": "circuit/grant"
-      },
-      "optional": true
-    },
-    "withholds": {
-      "type": "list",
-      "of": {
-        "type": "str",
-        "reference": "circuit/grant"
-      },
-      "optional": true
-    },
-    "opens": {
-      "type": "list",
-      "of": {
-        "type": "str",
-        "reference": "circuit/grant"
-      },
-      "optional": true
-    },
-    "awards": {
-      "type": "list",
-      "of": {
-        "type": "str",
-        "reference": "circuit/grant"
-      },
-      "optional": true
-    },
     "tray": {
       "type": "name",
       "kind": "circuit/tray",

@@ -2,5 +2,6 @@
   "mark": "logic:mark-formulaImplies",
   "icon": "Rows3",
   "name": "→",
-  "desc": "@symbol.formulaImplies.desc"
+  "desc": "@symbol.formulaImplies.desc",
+  "at": "always"
 }

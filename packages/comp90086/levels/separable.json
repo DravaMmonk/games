@@ -2,7 +2,7 @@
   "title": "@level.separable.title",
   "intro": [],
   "after": "@level.separable.after",
-  "adds": ["line3", "add"],
+  "tray": "separable",
   "tasks": [
     {
       "id": "separable",

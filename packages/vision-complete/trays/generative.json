@@ -1,6 +1,7 @@
 {
   "title": "@tray.generative.title",
   "desc": "@tray.generative.desc",
+  "includeUnlisted": true,
   "values": [
     "shift-n",
     "const",

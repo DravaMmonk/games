@@ -12,7 +12,6 @@
     }
   ],
   "after": "@level.onerow.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "onerow",

@@ -25,8 +25,8 @@ function gameModule(id) {
   const pluginIds = runtimeIds(content).filter(id => layers.some(layer => layer.id === id && layer.hasCore))
   return [
     pluginSource(layers),
-    `import { composeGame } from ${q(resolve(KIT, 'app/compose-game.js'))}`,
-    `const define = content => { const game = composeGame(content, [${pluginIds.map(id => `pluginGame(${q(id)}, kernel, vocabulary)`).join(', ')}]); game.pluginKernel = kernel; return game }`,
+    `import { composeGame, configureGame } from ${q(resolve(KIT, 'app/compose-game.js'))}`,
+    `const define = content => configureGame(composeGame(content, [${pluginIds.map(id => `pluginGame(${q(id)}, kernel, vocabulary)`).join(', ')}]), content, kernel)`,
     'export default { define, vocabulary }',
   ].join('\n')
 }

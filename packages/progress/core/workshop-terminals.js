@@ -1,7 +1,7 @@
-import { sourceOf, splitSource } from "./wire-source.js"
+import { sourceOf, splitSource, VIRTUAL_INPUT, VIRTUAL_OUTPUT } from 'circuit'
 
-export const WORKSHOP_INPUT = '$workshopInput'
-export const WORKSHOP_OUTPUT = '$workshopOutput'
+export const WORKSHOP_INPUT = VIRTUAL_INPUT
+export const WORKSHOP_OUTPUT = VIRTUAL_OUTPUT
 export const MAX_TERMINAL_PORTS = 16
 
 export const terminalRole = (parts, node) => node.type === WORKSHOP_INPUT ? 'source' : node.type === WORKSHOP_OUTPUT ? 'sink' : parts.role(node)

@@ -6,6 +6,7 @@
     {
       "id": "projection",
       "play": "image:board",
+      "tray": "bench",
       "brief": "@level.projection.tasks.projection.brief",
       "bench": {
         "model": "image:benchModel-obscura",

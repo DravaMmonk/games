@@ -1,27 +1,22 @@
 import circuitModule from './mechanism/module.js'
-import { createCapabilityRegistry, registeredOperations, registeredValueTypes } from 'kernel'
+import { contentSchemas, createCapabilityRegistry, registeredOperations, registeredValueTypes } from 'kernel'
 let capabilityRegistry
-import { partStages } from './part-stages.js'
-import { grantObjects } from './grants.js'
-import { RULE_TEXT } from './course.js'
 import { circuitTools } from './author-tools.js'
 import { availabilityRecords, circuitReports } from './baseline.js'
 import { dependencies, dot, mermaid } from './dependencies.js'
 import { boardSvg } from './board/svg.js'
 import { specProblems, validateProblems } from './contracts.js'
 import { circuitOperations } from './author-operations.js'
-import { PART } from './parts/schema.js'
 import { S, parsePath } from 'kernel'
 import { firstText } from 'kernel'
-import { referenceDependencies, externalSupplies } from './course-links.js'
 import { readWorkSet } from './course-model.js'
 import { implementationProblems } from './parts/dependencies.js'
 import { taskIdsOf } from 'kernel'
 import { partProblems, withParts } from './parts/define.js'
 import { shapeAt } from 'kernel'
 import { mapBlueprintNames } from './board/text.js'
-import { grantIndex, grants } from './grants.js'
-import { PARTS_FILE } from './parts/schema.js'
+import { progressFieldsProblems } from './progress-fields.js'
+import { partFileSchema } from './parts/schema.js'
 
 /** Package-owned qualification of references embedded in circuit works and grant fields. */
 export function circuitNames({ name, vocabulary, objects = {}, parts = new Set(), partRules = new Set(), context }) {
@@ -40,11 +35,9 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
       return `${target.slice(0, colon + 1)}${part(target.slice(colon + 1))}`
     },
     rewrite({ value, schema, path, key, object }) {
-      if (['circuit/part', 'grant', 'circuit/grant'].includes(schema?.reference) || ['part', 'unlock', 'circuit/part'].includes(schema?.kind) && ['ref', 'name'].includes(schema?.type)) return { value: part(value) }
+      if (schema?.reference === 'circuit/part' || ['part', 'unlock', 'circuit/part'].includes(schema?.kind) && ['ref', 'name'].includes(schema?.type)) return { value: part(value) }
       if (schema?.type === 'board' || schema?.view === 'board') return { value: Array.isArray(value) && value.every(line => typeof line === 'string') ? mapBlueprintNames(value, type => type.includes('/') || parts.has(type) ? name(type) : type, rule) : value }
-      if (key === 'id' && path.length === 3 && path[0] === 'stages') return { value: name(value) }
       if (['rules', 'using', 'simp'].includes(key) && Array.isArray(value)) return { value: value.map(rule) }
-      if (['gives', 'opens', 'withholds', 'awards'].includes(key) && Array.isArray(value) && (path.length === 1 || path.at(-3) === 'tasks' || path.at(-2) === 'reference')) return { value: value.map(part) }
       if (key === 'tray') return { value: Array.isArray(value) ? value.map(name) : name(value) }
       if (context === 'configuration' && path.at(-2) === 'borrow') return { key: part(key) }
       if (key === 'open' && context === 'configuration') return { value: Object.fromEntries(Object.entries(value).map(([rule, items]) => [rule, items.map(item => {
@@ -60,16 +53,10 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
 export const partMeaning = {
   capability: 'part',
   studio: {
-    schemas: { partDefs: PARTS_FILE },
+    schemas: { partDefs: partFileSchema },
     relations: { replaces: 'circuit/part' },
-    collections: { 'circuit/tray': { accepts: kind => grants.types.has(kind), members: value => [...(value.values ?? []), ...(value.menus ?? []).flatMap(menu => menu.values ?? [])], types: () => [...grants.types.keys()] } },
-    rules: RULE_TEXT,
-    member: (content, kind, name) => grants.types.has(kind) ? partStages(content.registries?.[kind]).get(name)?.definition : null,
-    owners(content) {
-      return Object.entries(grantObjects(content ?? {})).flatMap(([part, raw]) => [
-        [part, part], ...(raw.stages ?? []).map(stage => [stage.id.includes('/') ? stage.id : `${part.slice(0, part.indexOf('/'))}/${stage.id}`, part]),
-      ])
-    },
+    collections: { 'circuit/tray': { accepts: kind => kind === 'circuit/part', members: value => [...(value.values ?? []), ...(value.menus ?? []).flatMap(menu => menu.values ?? [])], types: () => ['circuit/part'] } },
+    owners: content => Object.keys(content.partDefs?.parts ?? {}).map(part => [part, part]),
   },
   configuration: { primitives: 'course.json', borrow: 'course.json' },
   tools: circuitTools,
@@ -79,8 +66,8 @@ export const partMeaning = {
   baselineStructure: ({ content }) => ({ parts: content.partDefs, trays: content.trays }),
   baselineRecords: availabilityRecords,
   baselineReports: circuitReports,
-  search({ content, texts }) {
-    for (const [id, part] of Object.entries(content.partDefs?.parts ?? {})) texts(part, PARTS_FILE.fields.parts.of, { file: `parts/${id}.json`, in: 'parts', annotations: path => path.at(-1) === 'desc' ? { literal: { rule: 'part-description-reference', says: 'component descriptions are plain text; write names without reference markup' } } : {} }, ['parts', id])
+  search({ content, texts, vocabulary }) {
+    for (const [id, part] of Object.entries(content.partDefs?.parts ?? {})) texts(part, partFileSchema(vocabulary).fields.parts.of, { file: `parts/${id}.json`, in: 'parts', annotations: path => path.at(-1) === 'desc' ? { literal: { rule: 'part-description-reference', says: 'component descriptions are plain text; write names without reference markup' } } : {} }, ['parts', id])
   },
   dependencyGraph: ({ course, dot: asDot, levels }) => (asDot ? dot : mermaid)(dependencies(course), { levels }),
   renderWork: ({ text, title }) => boardSvg(text, { title }),
@@ -91,10 +78,13 @@ export const partMeaning = {
   contract: { spec: specProblems, validate: validateProblems },
   operations: circuitOperations,
   selectors: ['part'],
-  textTarget({ workspace, args }) {
-    return args.in === 'parts' ? [{ id: 'parts', value: workspace.partDefs, schema: PARTS_FILE, selector: { in: 'parts' }, set: value => { workspace.partDefs = value } }] : []
+  textTarget({ workspace, args, vocabulary }) {
+    return args.in === 'parts' ? [{ id: 'parts', value: workspace.partDefs, schema: partFileSchema(vocabulary), selector: { in: 'parts' }, set: value => { workspace.partDefs = value } }] : []
   },
-  operationTargets: ({ workspace, args }) => ({ part: [PART, workspace.partDefs?.parts?.[args.part]], parts: [PARTS_FILE, workspace.partDefs] }),
+  operationTargets: ({ workspace, args, vocabulary }) => {
+    const schema = partFileSchema(vocabulary)
+    return { part: [schema.fields.parts.of, workspace.partDefs?.parts?.[args.part]], parts: [schema, workspace.partDefs] }
+  },
   sourceArguments({ args, operation, local }) {
     if (args.path !== undefined && (operation.startsWith('parts.') || args.in === 'parts')) {
       const path = parsePath(args.path)
@@ -116,14 +106,11 @@ export const partMeaning = {
     return { part: names }
   },
   texts: ({ content, game }) => ({ parts: game ? (game.parts?.all ?? []).map(part => ({ key: part.key, name: part.name, desc: part.desc })) : content.partDefs?.parts }),
-  dependencies: referenceDependencies,
-  plan: externalSupplies,
-  supplies: ({ plan, level }) => plan.externalAwardSources?.has(level),
   readWorks: ({ content, readers }) => readWorkSet(content, readers),
   taskModule: () => 'circuit',
   runtimeIds({ content, tasks, taskModule }) {
     if (tasks.length) return tasks.some(task => !taskModule(task)) ? ['circuit'] : []
-    const parts = [...Object.values(content.partDefs?.parts ?? content.registries?.['circuit/part'] ?? {}), ...Object.entries(content.registries ?? {}).filter(([kind]) => kind !== 'circuit/part' && grants.types.has(kind)).flatMap(([, objects]) => Object.values(objects))]
+    const parts = Object.values(content.partDefs?.parts ?? content.registries?.['circuit/part'] ?? {})
     const references = parts.flatMap(part => part.inside?.map(entry => entry.reference) ?? [])
     if (references.length) return [...new Set(references.map(task => taskModule(task) ?? 'circuit'))]
     const owner = name => typeof name === 'string' && name.includes(':') ? name.split(':')[0] : null
@@ -138,7 +125,10 @@ export const partMeaning = {
   validationNames: ({ content }) => ({ tray: new Set(Object.keys(content.registries?.['circuit/tray'] ?? {})) }),
   validate({ content, vocabulary }) {
     if (content.partDefs !== undefined) {
-      const problems = partProblems(content.partDefs, vocabulary, { tasks: taskIdsOf(content.levels) })
+      const required = progressFieldsProblems(content, vocabulary)
+      const parts = Object.fromEntries(Object.entries(content.partDefs.parts).map(([id, { stages: _stages, ...part }]) => [id, part]))
+      const tasks = taskIdsOf(content.levels)
+      const problems = [...required, ...partProblems({ parts }, vocabulary, { tasks })]
       return problems.length ? problems : implementationProblems(content.partDefs)
     }
     return []
@@ -147,9 +137,6 @@ export const partMeaning = {
   names: circuitNames,
   vocabulary: circuitVocabulary,
   derived: ['partDefs', 'trays', 'replaces'],
-  matches: (expected, actual) => ['grant', 'circuit/grant'].includes(expected) && grants.types.has(actual),
-  identities: ({ kind, value }) => (grants.types.has(kind) ? (value.stages ?? []).map(stage => ({ kind, name: stage.id, value: stage })) : []),
-  indexes: ({ registries }) => [...grantIndex(registries)].map(([name, entry]) => ({ kind: entry.type, name, value: entry.object })),
   source: ({ content }) => ({ 'circuit/part': content.partDefs?.parts ?? {} }),
   assemble({ registries, relationEdges, resolve, problems, schemas }) {
     const parts = registries['circuit/part'] ?? {}
@@ -158,10 +145,10 @@ export const partMeaning = {
     for (const { from, to } of relationEdges.replaces ?? []) (replaces[from] ??= []).push(to)
     const trays = {}
     for (const [name, tray] of Object.entries(registries['circuit/tray'] ?? {})) {
-      const menus = (tray.menus ?? []).map(menu => ({ id: menu.id, title: menu.title, items: menu.values.flatMap(value => resolve(value, 'circuit/grant', `trays/${name}/menus/${menu.id}`)) }))
+      const menus = (tray.menus ?? []).map(menu => ({ id: menu.id, title: menu.title, items: menu.values.flatMap(value => resolve(value, 'circuit/part', `trays/${name}/menus/${menu.id}`)) }))
       if (new Set(menus.map(menu => menu.id)).size !== menus.length) problems.push({ at: `trays/${name}`, says: 'duplicate menu id' })
-      const direct = tray.values.flatMap(value => resolve(value, 'circuit/grant', `trays/${name}`))
-      trays[name] = { name: tray.title, desc: tray.desc, workshop: tray.workshop, ...(tray.menuThreshold !== undefined && { menuThreshold: tray.menuThreshold }),
+      const direct = tray.values.flatMap(value => resolve(value, 'circuit/part', `trays/${name}`))
+      trays[name] = { name: tray.title, desc: tray.desc, ...(tray.menuThreshold !== undefined && { menuThreshold: tray.menuThreshold }),
         items: [...menus.map(menu => menu.id), ...direct].map(id => menus.find(menu => menu.id === id) ?? id) }
     }
     return { partDefs: { parts }, trays, replaces }
@@ -169,11 +156,10 @@ export const partMeaning = {
   relationProblems({ name, relation, edges, expand }) {
     if (relation.kind !== 'replaces') return []
     return edges.flatMap(edge => [
-      ...[edge.from, edge.to].flatMap(endpoint => expand(endpoint, 'circuit/part').some(id => grantIndex(expand.registries).get(id)?.part !== id) ? [{ at: `relations/${name}`, says: 'replaces only links different base parts; stages upgrade in their declared order' }] : []),
       ...(edge.from === edge.to ? [{ at: `relations/${name}`, says: 'a part cannot replace itself' }] : []),
     ])
   },
-  stamp: ({ content, plain }) => plain(content.partDefs ?? null, PARTS_FILE),
+  stamp: ({ content, plain }) => plain(content.partDefs ?? null, partFileSchema(contentSchemas.get(content))),
 }
 
 export const trayMeaning = {

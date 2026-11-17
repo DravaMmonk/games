@@ -2,8 +2,7 @@
 import { fullName } from 'kernel'
 
 
-import { operationPart } from "./parts/operation.js"
-import { resolveSettings } from "./parts/settings.js"
+import { partDefinition } from 'circuit'
 
 /** Merge a stage delta. An empty setting resets its specialization to the operation declaration. */
 export function stagePatch(base, patch) {
@@ -43,21 +42,11 @@ export function partStages(parts = {}) {
   return entries
 }
 
-/** Runtime card shape for a selected stage, sharing the stable part id. */
-export function stageDefinition(entry, operations) {
-  if (!entry) return null
-  const part = operationPart(entry.definition, operations)
-  const settings = resolveSettings(part, operations)
-  return { ...part, type: entry.part, stage: entry.id, settings,
-    setting: Object.fromEntries(settings.map(setting => [setting.key, setting])),
-    outputNames: part.outputs?.map(port => port.name) ?? null }
-}
-
 /** The earliest stage admitting the explicit settings of a reference card. */
 export function requiredStage(parts, type, params = {}, stages = partStages(parts)) {
   const chain = [...stages.values()].filter(entry => entry.part === type)
   return chain.find(entry => {
-    const settings = stageDefinition(entry)?.setting ?? {}
+    const settings = partDefinition(entry)?.setting ?? {}
     return Object.entries(params).every(([key, value]) => {
       const setting = settings[key]
       if (!setting) return true

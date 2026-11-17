@@ -3,7 +3,7 @@
   "adds": [
     "logic:hyp"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.sp-hyp.intro.0.t"

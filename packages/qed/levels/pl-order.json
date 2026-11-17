@@ -2,7 +2,7 @@
   "adds": [
     "defer"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "title": "@level.pl-order.title",
   "intro": [
     {

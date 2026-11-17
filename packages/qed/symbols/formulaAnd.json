@@ -2,5 +2,6 @@
   "mark": "logic:mark-formulaAnd",
   "icon": "Rows3",
   "name": "∧",
-  "desc": "@symbol.formulaAnd.desc"
+  "desc": "@symbol.formulaAnd.desc",
+  "at": "g-and"
 }

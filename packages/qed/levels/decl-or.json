@@ -4,7 +4,6 @@
     "orE"
   ],
   "title": "@level.decl-or.title",
-  "tray": "formula",
   "declare": "@level.decl-or.declare",
   "target": "A ∨ B",
   "sentences": [

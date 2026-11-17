@@ -1,6 +1,6 @@
 {
   "title": "@level.in-noteq.title",
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.in-noteq.intro.0.t"

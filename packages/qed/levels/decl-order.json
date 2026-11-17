@@ -9,7 +9,6 @@
     }
   ],
   "after": "@level.decl-order.after",
-  "tray": "formula",
   "declare": "@level.decl-order.declare",
   "target": "A ∧ B",
   "sentences": [

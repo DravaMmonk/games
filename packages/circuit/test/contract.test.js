@@ -4,7 +4,7 @@ import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { packageCodeProblems } from '../../../games/kit/engine/plugin-boundaries.js'
 import { evaluatePlay } from '../../../games/kit/engine/plugin-runtime.js'
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
-import { register, boardPlay, grants } from '../core/index.js'
+import { register, boardPlay } from '../core/index.js'
 
 const root = new URL('../../../', import.meta.url).pathname
 const fixture = () => {
@@ -27,7 +27,6 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   const content = fixture()
   const kernel = createPluginKernel()
   register(kernel.forPackage('circuit', 'core'))
-  assert.equal(grants.types.has('circuit/part'), true)
   assert.deepEqual(packageCodeProblems('circuit', root), [])
   assert.deepEqual((await kernel.checks({ content })).filter(line => line.fail), [])
   const task = content.levels[0].tasks[0]

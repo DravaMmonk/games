@@ -6,6 +6,7 @@
     {
       "id": "sinusoid",
       "play": "image:board",
+      "tray": "bench",
       "brief": "@level.sinusoid.tasks.sinusoid.brief",
       "bench": {
         "model": "image:benchModel-wave",

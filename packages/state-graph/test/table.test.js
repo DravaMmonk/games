@@ -1,3 +1,4 @@
+import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
 import { resolve } from 'node:path'
 // The table board as content and saves hold it: blueprint text both ways, fitting a board to its task, the checks on
 // a board that becomes a part; a course read of every table game leaves its content as it was; a save of a level's
@@ -7,7 +8,7 @@ import assert from 'node:assert/strict';
 import { plainBoard } from 'circuit';
 import { readStarter } from '../../../games/kit/engine/ops/fixture.js';
 import { textPrint as print, read, readLines } from 'circuit'
-import { workshopView } from 'circuit'
+import { workshopView } from 'progress'
 import { tableWorks } from '../core/work.js';
 import { fitted, portsProblem } from 'table';
 import { modelOf } from 'table';
@@ -214,7 +215,7 @@ test('the parts box lists only choices open on its selected robot', () => {
   content.levels[1].robot = 'state-graph:robot-ranger';
   content.levels[1].adds.push('table:mmin');
   content.levels[1].tasks[0].consts = [3];
-  const table = tableWorks(content);
+  const table = tableWorks(withProgressFixture(content));
   const values = (type, options) => table.settingsIn(type, { flags: new Set(), open: () => true, ...options })[0]?.values.map(({ value }) => value);
   assert.deepEqual(values('table:msum', { scope: 'state-graph:robot-scout' }), ['table:msum']);
   assert.deepEqual(values('table:msum', { scope: 'state-graph:robot-ranger' }), ['table:msum', 'table:mmin']);

@@ -3,7 +3,7 @@
     "saturate",
     "clausify"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "title": "@level.au-sledge.title",
   "after": "@level.au-sledge.after",
   "tasks": [

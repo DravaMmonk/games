@@ -180,7 +180,12 @@ export default function GameShell({ game, store, author = null }) {
     setFailure(null)
     // What the level opens, measured from the progress without it, so passing it again shows the same as the first time.
     const without = { ...before, solved: before.solved.filter((id) => id !== level.id) }
-    if (done.solved.includes(level.id)) setWon({ id: level.id, ...(game.progress?.rewards?.(level, without, done) ?? { rewards: [], levels: [] }), entries: openedEntries(game, wiki.entries, level, without, done) })
+    if (done.solved.includes(level.id)) {
+      const wasSolved = new Set(without.solved), solvedNow = new Set(done.solved)
+      const levels = game.levels.filter(next => next.id !== level.id && !game.isOpen(next, wasSolved) && game.isOpen(next, solvedNow))
+      const rewards = [...(game.pluginKernel?.tables.unlocks.values() ?? [])].flatMap(unlocks => unlocks(game, level, without, done))
+      setWon({ id: level.id, levels, rewards, entries: openedEntries(game, wiki.entries, level, without, done) })
+    }
     else setTaskWon({ index: taskAt, next: nextRequiredTask(game, done, level.id, taskAt) })
   }
   const fail = (info) => {

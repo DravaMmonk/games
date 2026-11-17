@@ -3,7 +3,7 @@
   "adds": [
     "defer"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.s-defer.intro.0.t"

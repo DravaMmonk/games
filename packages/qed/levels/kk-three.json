@@ -1,11 +1,10 @@
 {
   "title": "@level.kk-three.title",
-  "tray": "formula",
   "tasks": [
     {
       "id": "kk-three_1",
       "kind": "logic:gates",
-      "tray": "gates-formula",
+      "tray": "gates",
       "step": "@level.kk-three.tasks.kk-three_1.step",
       "blind": true,
       "target": "KA ↔ ¬KA ∨ KB",
@@ -23,7 +22,7 @@
     {
       "id": "kk-three_2",
       "kind": "logic:proof",
-      "tray": "proof-formula",
+      "tray": "proof",
       "step": "@level.kk-three.tasks.kk-three_2.step",
       "tests": [
         {

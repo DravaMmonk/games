@@ -1,20 +1,19 @@
 import { useMemo, useState } from 'react'
 import { ArrowDownFromLine, ArrowUpFromLine, Check, CircuitBoard, Layers, Pin, Plus, Trash2, X } from 'lucide-react'
-import CircuitLevel from "./CircuitLevel.jsx"
+import { CircuitEditor as CircuitLevel, Glyph } from 'circuit/view'
 import { RunDock } from 'kernel/view'
 
 import { Popover } from 'kernel/view'
 
 import { Sheet } from 'kernel/view'
 
-import Glyph from "./board/Glyph.jsx"
-import { boardFits } from "../core/board/model.js"
+import { boardFits } from 'circuit'
 import { isPair, L, sideOf, tr } from 'kernel/view'
 
 import {
   draftWorkshop, featureWorkshop, publishWorkshop, removeWorkshopPart, trayKey, trayTypes, workshopEntries, workshopInTray,
 } from "../core/workshop.js"
-import { sourceOf } from "../core/wire-source.js"
+import { sourceOf } from 'circuit'
 import {
   addTerminalPort, addWorkshopTerminal, editWorkshopTerminal, flattenWorkshopTerminals, MAX_TERMINAL_PORTS, sideLabels,
   terminalPorts, terminalRole, workshopTerminalParts, WORKSHOP_INPUT, WORKSHOP_OUTPUT,

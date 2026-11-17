@@ -96,18 +96,12 @@ const NAMED = {
   name: S.text(),
   desc: S.text({ about: t('只写功能：读哪些口、给出什么、碰到「—」怎么办') }),
 }
-const STAGES = { stages: S.opt(S.list(S.obj({
-  id: { ...NAME, pattern: '^(?:[a-z][a-z0-9-]*/)?[A-Za-z_][A-Za-z0-9_-]*$' },
-  ...Object.fromEntries(Object.entries({ ...NAMED, ...SETTINGS, ...PAINT, inputs: HOLES.inputs, outputs: HOLES.outputs }).map(([key, value]) => [key, S.opt(value)])),
-}))) }
-
 /**
  * A primitive: it computes an expression over the domain's engine resources, or keeps an input (`keeps`): a sink that
  * stores what reaches `input` in the register its setting `register` names, read from the next tick on (held()).
  */
 export const PRIMITIVE = S.obj({
   ...NAMED,
-  ...STAGES,
   ...HOLES,
   outputType: S.opt(S.ref('valueType')),
   ...SETTINGS,
@@ -132,7 +126,6 @@ export const INSIDE = S.list(S.obj({
 }), { min: 1 })
 export const BUILT = S.obj({
   ...NAMED,
-  ...STAGES,
   inputs: S.opt(S.list(PORT)),
   outputs: HOLES.outputs,
   outputType: S.opt(S.ref('valueType')),
@@ -177,4 +170,9 @@ export const PARTS_FILE = S.obj({
 export function partPath(path) {
   const match = /^\.parts\.([^.[\]]+)(.*)$/.exec(path)
   return match ? `parts/${match[1]}.json${match[2]}` : `parts${path}`
+}
+
+export function partFileSchema(vocabulary) {
+  const declared = vocabulary?.objectKinds?.['circuit/part']?.schema
+  return S.obj({ parts: S.map(declared?.type === 'either' ? declared : PART, { keys: NAME.pattern }) })
 }

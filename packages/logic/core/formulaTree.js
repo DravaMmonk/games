@@ -9,7 +9,7 @@
 import { BOT, all, atom, bin, ex, fn, freeVars, not, signature, tvar } from './formula.js'
 import { holeTree } from 'kernel'
 
-// The supported connective marks. The course's selected trays decide which of these are present.
+// The supported connective marks. The level's notation decides which of these are present.
 const CONNECTIVES = ['¬', '∧', '∨', '→', '↔', '⊥']
 const QUANTIFIERS = ['∀', '∃']
 

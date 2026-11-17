@@ -9,7 +9,7 @@
 import { packed, runBoard } from 'circuit'
 import { OUTPUTS, circuitBoard } from 'circuit'
 import { boardView } from 'circuit'
-import { workshopNodes } from 'circuit'
+import { workNodes } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, parse } from './formula.js'
 import { say } from './notation.js'
@@ -102,7 +102,7 @@ const GATE_TESTS = {
   },
   score: (level, board, _runs, options) => ({
     steps: options?.workshopParts
-      ? workshopNodes(board, options.workshopParts).filter(({ node }) => level.gates[node.type]).length
+      ? workNodes(board, options.workshopParts).filter(({ node }) => level.gates[node.type]).length
       : countGates(level, board),
   }),
 }

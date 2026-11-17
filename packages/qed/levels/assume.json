@@ -1,6 +1,6 @@
 {
   "title": "@level.assume.title",
-  "tray": "proof-formula",
+  "tray": "proof",
   "intro": [
     {
       "t": "@level.assume.intro.0.t"

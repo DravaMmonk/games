@@ -3,7 +3,7 @@
   "adds": [
     "search"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.s-search.intro.0.t"

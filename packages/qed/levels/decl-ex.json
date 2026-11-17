@@ -4,7 +4,6 @@
     "exE"
   ],
   "title": "@level.decl-ex.title",
-  "tray": "formula",
   "declare": "@level.decl-ex.declare",
   "target": "∃y. P(y)",
   "sentences": [

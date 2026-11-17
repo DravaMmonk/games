@@ -1,4 +1,12 @@
-import { unavailableGrants } from './grants.js'
+import { holds } from 'circuit'
+
+function unavailableParts(course, work, at, flags) {
+  const holding = holds(course, at, flags)
+  const given = new Set(course.available ? course.gives(at).map(course.partOf) : [])
+  return [...new Set((work?.nodes ?? []).map(node => node.type))]
+    .filter(type => course.stages.has(type) && !holding(type) && !given.has(course.partOf(type)))
+    .map(type => `circuit/part ${type} is unavailable to the reference work`)
+}
 import { RULE_TEXT, againstOpen, audit } from './course.js'
 
 function referenceGrantChecks(spec) {
@@ -10,7 +18,7 @@ function referenceGrantChecks(spec) {
       const at = { id: level.id, task: task.task ?? index }
       const flags = new Set(course.levels.filter(prior => course.before(prior.id, level.id)).flatMap(prior => prior.unlocks ?? []))
       const runtimeTask = works?.LEVELS?.find(entry => entry.id === level.id)?.tasks[index] ?? task
-      for (const work of [runtimeTask, ...course.boards(at)]) for (const text of unavailableGrants(course, work, at, flags)) {
+      for (const work of [runtimeTask, ...course.boards(at)]) for (const text of unavailableParts(course, work, at, flags)) {
         lines.push({ fail: true, level: level.id, text: `${level.id}: ${text}` })
       }
     }

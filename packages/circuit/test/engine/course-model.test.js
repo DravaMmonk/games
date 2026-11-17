@@ -1,3 +1,4 @@
+import { withProgressFixture } from '../../../../games/kit/engine/ops/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { resolve } from 'node:path'
@@ -6,11 +7,11 @@ import { holds, met, offer } from '../../core/index.js'
 import { readStarter } from "../../../../games/kit/engine/ops/fixture.js"
 import { runtimeOf } from "../../../../games/kit/engine/runtime.js"
 
-const sample = () => ({
+const sample = () => withProgressFixture({
   partDefs: { parts: { base: { settings: { border: { control: 'select', options: [{ value: 'edge' }] } }, stages: [{ id: 'base-wrap', settings: { border: { options: [{ value: 'edge' }, { value: 'wrap' }] } } }] } } },
   id: 'sample', domain: 'irrelevant', primitives: ['base', 'local'],
   replaces: { built: ['base'] },
-  trays: { tools: { items: ['base', 'local', 'built'] } },
+  trays: { tools: { includeUnlisted: true, items: ['base', 'local', 'built'] } },
   eras: [{ id: 'chapter', levels: [{ id: 'first' }, { id: 'next' }], links: [{ from: 'first', to: 'next' }] }],
   levels: [
     { id: 'first', tray: 'tools', adds: ['base', 'local'], local: ['local'], tasks: [{ id: 'introduce', opens: ['base-wrap'] }, { id: 'publish', gives: ['extra'], withholds: ['base-wrap'] }] },
@@ -49,7 +50,7 @@ test('heterogeneous work readers receive one model after all publications have b
   assert.equal(works[0].course, works[1].course)
   assert.deepEqual(works[1].available, ['built'])
   assert.deepEqual(works[0].course.needed({ id: 'first' }), ['first', 'first'])
-  assert.deepEqual(content, before)
+  assert.deepEqual(structuredClone(content), before)
 })
 
 test('proved stages open after the publishing task and carry along prerequisites', () => {

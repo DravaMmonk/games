@@ -1,7 +1,8 @@
+import Workshop from './Workshop.jsx'
 import { useMemo } from 'react'
-import { partsFor, packedView } from "./board/board-parts.js"
-import { runtimeOf, workshopView } from "../core/board/workshop-view.js"
-import { trayMembers } from "../core/trays.js"
+import { partsFor, packedView } from 'circuit/view'
+import { runtimeOf, workshopView, openWorkshopPart, workshopWiring } from "../core/workshop-view.js"
+import { trayMembers } from 'circuit'
 import { captureWorkshop, publishWorkshop, trayKey, workshopAvailable, workshopEntries, workshopIdentity } from "../core/workshop.js"
 import { L, tr } from 'kernel/view'
 
@@ -30,7 +31,10 @@ export function useCircuitWorkshop({ screen, course, base, cards, portLabels, de
   const workshop = workshopView(base, library, available, runtime)
   const { known, view: circuit, resolve } = workshop
   const parts = partsFor(level, circuit, { cards, portLabels, defined })
-  const packed = packedView(course, { cards, portLabels, defined }, workshop)
+  const packed = packedView(course, { cards, portLabels, defined }, (node, at) => {
+    const opened = openWorkshopPart(node, at, workshop)
+    return opened && { ...opened, parts: workshopWiring(at.parts) }
+  })
   const personal = workshopEntries(library).filter((part) => available(part)
     && !(part.tray && JSON.parse(part.tray)[0] === game.id && offers.types.includes(part.rewardType)))
   const pickedTrays = game.course?.tray(level) ?? []
@@ -73,7 +77,12 @@ export function useCircuitWorkshop({ screen, course, base, cards, portLabels, de
     }
   }
   return { offers, has, known, circuit, resolve, parts, packed, palette, folded, types, held, hasPersonal,
-    hold, capture, publish, library, update, available, notice }
+    hold, publish, library, notice,
+    render: screen.workshopOnly ? ({ board, cards, defined, tileSettings, phoneRegionLabel }) =>
+      <Workshop screen={screen} tray={screen.workshopTray} board={board} parts={parts} packed={packed} cards={cards}
+        defined={defined} defaults={defaults} types={offers.types} library={library} tileSettings={tileSettings}
+        phoneRegionLabel={phoneRegionLabel} available={available} capture={capture} update={update} /> : null,
+  }
 }
 
 /** What stopped a board being kept as a part (captureWorkshop's `why`), in a sentence. */

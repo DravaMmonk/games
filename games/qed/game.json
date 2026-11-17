@@ -3,6 +3,7 @@
   "packages": {
     "qed": "^0.0.0",
     "circuit": "^0.0.0",
+    "progress": "^0.0.0",
     "logic": "^0.0.0"
   },
   "title": "@course.title",

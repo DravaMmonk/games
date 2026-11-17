@@ -9,7 +9,7 @@ import { splitSource } from 'circuit'
 import { packed } from 'circuit'
 import { previousCircuitTask } from 'circuit'
 import { keptBoards } from 'circuit'
-import { workshopOf } from 'circuit'
+import { workExtension } from 'circuit'
 import { inheritedBoard } from 'circuit';
 import { deepFreeze } from 'kernel';
 import { taskLevels } from 'kernel'
@@ -142,7 +142,7 @@ export function* prepareTableWorks(content) {
     const b = own.board(task);
     if (!b) return artifact.solution();
     if (!fits.has(b)) {
-      const view = workshopOf(b)?.view;
+      const view = workExtension(b)?.view;
       const active = view && { parts: view.board.wiring(artifact, view), knows: view.partOf };
       const fitted = restoreRobotBoard(model, artifact, b, active);
       fits.set(b, fitted && !portsProblem(fitted, artifact.ports) ? fitted : null);

@@ -3,7 +3,7 @@
   "adds": [
     "each"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.s-each.intro.0.t"

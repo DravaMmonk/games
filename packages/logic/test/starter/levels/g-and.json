@@ -1,7 +1,6 @@
 {
   "adds": [
-    "gAnd",
-    "formulaAnd"
+    "gAnd"
   ],
   "title": "@level.g-and.title",
   "intro": [

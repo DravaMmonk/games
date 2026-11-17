@@ -1,4 +1,4 @@
-import { workshopNodes } from 'circuit'
+import { workNodes } from 'circuit'
 // The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
 // clause sets instead of proved judgments. Its sources (`in` cards, one per input the level names) give the test's
 // inputs, its sink `out` is checked against what the level wants. A part is a rule of unification, a tactic, a frame
@@ -717,7 +717,7 @@ export const MACHINE_TESTS = {
   // Rule parts are what the cards read, not steps of the machine.
   score: (level, circuit, _runs, options) => {
     const rules = rulePartsOf(level)
-    const nodes = options?.workshopParts ? workshopNodes(circuit, options.workshopParts).map(({ node }) => node) : circuit.nodes
+    const nodes = options?.workshopParts ? workNodes(circuit, options.workshopParts).map(({ node }) => node) : circuit.nodes
     return { steps: nodes.filter((n) => n.type !== 'in' && n.type !== 'out' && !rules.has(n.type)).length }
   },
 }

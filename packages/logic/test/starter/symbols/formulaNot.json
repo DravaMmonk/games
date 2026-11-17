@@ -2,5 +2,6 @@
   "mark": "logic:mark-formulaNot",
   "icon": "Rows3",
   "name": "¬",
-  "desc": "@symbol.formulaNot.desc"
+  "desc": "@symbol.formulaNot.desc",
+  "at": "g-not"
 }

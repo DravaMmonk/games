@@ -1,5 +1,5 @@
 import { S, shapeAt, T as t, getAt, parsePath, showPath, setAt, unsetAt } from 'kernel'
-import { NAME as PART_NAME, PARTS_FILE } from './parts/schema.js'
+import { NAME as PART_NAME, partFileSchema } from './parts/schema.js'
 import { ITEM_REFERENCE } from './task-fields.js'
 import { parse } from './board/text.js'
 import { partRefs } from './author-references.js'
@@ -92,11 +92,11 @@ export const circuitOperations = {
       const parent = keys.slice(0, -1)
       if (keys.length === 4 && keys[0] === 'parts' && keys[2] === 'views' && getAt(ws.partDefs, parent) === undefined) {
         const inverse = [restore('parts', ws.partDefs, parent, {})]
-        ws.partDefs = setAt(ws.partDefs, parent, { [keys[3]]: value }, orderOf(PARTS_FILE, ws.partDefs, vocabulary))
+        ws.partDefs = setAt(ws.partDefs, parent, { [keys[3]]: value }, orderOf(partFileSchema(vocabulary), ws.partDefs, vocabulary))
         return { says: `parts: set ${showPath(keys)}`, inverse }
       }
       const inverse = [restore('parts', ws.partDefs, keys, {})]
-      ws.partDefs = setAt(ws.partDefs, keys, value, orderOf(PARTS_FILE, ws.partDefs, vocabulary))
+      ws.partDefs = setAt(ws.partDefs, keys, value, orderOf(partFileSchema(vocabulary), ws.partDefs, vocabulary))
       return { says: `parts: set ${showPath(keys)}`, inverse }
     },
   },

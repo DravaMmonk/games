@@ -2,7 +2,7 @@ import { registerMeaning } from './kind-meanings.js'
 import { tagKey, kernelTags } from './tag-identity.js'
 // Environment-neutral package registration. Each assembly owns its registry.
 const CORE = ['play', 'kind', 'state', 'check', 'agent']
-const VIEW = ['play', 'editor', 'display']
+const VIEW = ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension']
 const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'] }
 
 export function createPluginKernel() {
@@ -27,7 +27,7 @@ export function createPluginKernel() {
           if ([...tables.editor.values()].some(editor => editor.type === value.type)) throw new Error(`${name}: duplicate editor type ${value.type}`)
         }
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)
-        if (['check', 'state'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
+        if (['check', 'state', 'game', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
         if (type === 'kind') registerMeaning(value)
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
       }]))

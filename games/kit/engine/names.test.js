@@ -1,3 +1,4 @@
+import { progressMeaning } from '../../../packages/progress/core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { assembleCircuitFixture as assemble } from './ops/fixture.js'
@@ -10,7 +11,7 @@ import { contentMeanings, NAME } from '../../../packages/circuit/core/index.js'
 import { mapBlueprintNames, textParse as parse } from '../../../packages/circuit/core/index.js'
 
 const schemas = {
-  meanings: contentMeanings,
+  meanings: [...contentMeanings, progressMeaning],
   kinds: { part: { given: {} } },
   game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), primitives: S.list(S.ref('part', { reference: 'circuit/part' })) }),
   level: S.obj({ title: S.text(), tasks: S.list(S.obj({ id: S.str(), part: S.ref('part', { reference: 'circuit/part' }), carry: S.level(), solution: S.board() })) }),

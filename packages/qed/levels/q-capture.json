@@ -6,7 +6,6 @@
     }
   ],
   "after": "@level.q-capture.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "q-capture",

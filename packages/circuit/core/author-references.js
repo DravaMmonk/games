@@ -9,8 +9,8 @@ const placing = (type) => new RegExp(`(=\\s*)${escape(type)}(?=\\s*[[(])`, 'g')
 /** Typed item fields include references to a part's settings and individual values. */
 const itemHits = (schema, value, vocabulary) => [
   ...find(schema, value, 'ref', { vocabulary }), ...find(schema, value, 'name', { vocabulary }),
-  ...find(schema, value, 'str', { vocabulary }).filter((hit) => ['circuit/part', 'grant'].includes(hit.schema.reference)),
-].filter((hit) => hit.schema.kind === 'circuit/part' || ['circuit/part', 'grant'].includes(hit.schema.reference))
+  ...find(schema, value, 'str', { vocabulary }).filter((hit) => ['circuit/part'].includes(hit.schema.reference)),
+].filter((hit) => hit.schema.kind === 'circuit/part' || ['circuit/part'].includes(hit.schema.reference))
 
 const namesItem = (value, name, namespace) => [name, `${namespace}/${name}`].some((base) => value === base)
 

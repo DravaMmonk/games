@@ -1,7 +1,6 @@
 {
   "adds": [
-    "gNot",
-    "formulaNot"
+    "gNot"
   ],
   "title": "@level.g-not.title",
   "intro": [

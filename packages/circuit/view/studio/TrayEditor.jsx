@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
-import { L, tr, getLang, Picker, TextField, confirmDelete, localName, namespaceOf, shownName, tagKeyOfRef, tagName, overridesIt, textWith, reordered, stageOwners, gatherWriter as writer, withoutId, Members, GatherHead as Head } from 'kernel/view'
-import { MENU_THRESHOLD, grantObjects, grants } from '../../core/index.js'
+import { L, tr, getLang, Picker, TextField, confirmDelete, localName, namespaceOf, shownName, tagKeyOfRef, tagName, overridesIt, textWith, reordered, stageOwners, editorSlot, gatherWriter as writer, withoutId, Members, GatherHead as Head } from 'kernel/view'
+import { MENU_THRESHOLD } from '../../core/index.js'
 
 /** The tray `full`: its members and menus, and the order the tray shows them in. */
 export function TrayEditor({ content, namespace, full, pending, onSelect, onEdit, onOps, onPick }) {
@@ -12,16 +12,17 @@ export function TrayEditor({ content, namespace, full, pending, onSelect, onEdit
   const editable = own || overriding
   const locked = pending || !editable
   const write = writer({ kind: 'circuit/tray', full, namespace, own, value: withoutId(value), content, onEdit, onOps })
-  const parts = grantObjects(content)
+  const parts = content.registries?.['circuit/part'] ?? {}
+  const WorkshopSwitch = editorSlot(content, 'circuit/tray', 'workshop')
   const owners = stageOwners(content)
   const titleOf = (ref) => {
-    if (ref.startsWith('#')) return L(content.registries?.tag?.[tagKeyOfRef(content, [...grants.types.keys()], ref)]?.title)
+    if (ref.startsWith('#')) return L(content.registries?.tag?.[tagKeyOfRef(content, ['circuit/part'], ref)]?.title)
     const part = parts[owners.get(ref) ?? ref]
     return L(part?.name) ?? ''
   }
   const candidates = (taken) => [
     ...[...owners.keys()].filter((id) => !taken.includes(id)).map((id) => ({ value: id, label: shownName(namespace, id), title: titleOf(id), group: owners.get(id) === id ? tr('元件', 'Parts') : tr('阶段', 'Stages') })),
-    ...Object.entries(content.registries?.tag ?? {}).filter(([name, tag]) => grants.types.has(tag.kind) && !taken.includes(`#${tagName(name)}`)).map(([name]) => ({ value: `#${tagName(name)}`, label: shownName(namespace, `#${name}`), title: titleOf(`#${name}`), group: tr('标签', 'Tags') })),
+    ...Object.entries(content.registries?.tag ?? {}).filter(([name, tag]) => tag.kind === 'circuit/part' && !taken.includes(`#${tagName(name)}`)).map(([name]) => ({ value: `#${tagName(name)}`, label: shownName(namespace, `#${name}`), title: titleOf(`#${name}`), group: tr('标签', 'Tags') })),
   ]
   const menus = value.menus ?? []
   const setMenus = (next) => write.set('menus', next)
@@ -39,10 +40,7 @@ export function TrayEditor({ content, namespace, full, pending, onSelect, onEdit
   return (
     <article className="arrange gather-editor">
       <Head kind="circuit/tray" full={full} value={value} own={own} overriding={overriding} setOverriding={setOverriding} content={content} namespace={namespace} pending={pending} write={write} onRemove={remove} onPick={onPick}>
-        <label className="object-flag">
-          <input type="checkbox" className="field-check" checked={value.workshop ?? true} disabled={locked} onChange={(e) => write.set('workshop', e.target.checked)} />
-          {tr('工坊', 'Workshop')}
-        </label>
+        {WorkshopSwitch && <WorkshopSwitch value={value} locked={locked} write={write} />}
         <label className="object-flag" title={tr('关卡里未折叠的元件达到这个数时，从元件最多的菜单起逐个收进二级菜单，直到少于这个数；折叠的元件总在二级菜单里', 'When a level shows at least this many parts, the fullest menus gather them one by one until fewer remain; folded parts always sit in their menus')}>
           {tr('达到', 'Gather at')}
           <input type="number" className="field-number" min={1} step={1} value={value.menuThreshold ?? MENU_THRESHOLD} disabled={locked}

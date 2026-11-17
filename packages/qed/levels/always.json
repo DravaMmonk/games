@@ -1,8 +1,5 @@
 {
   "title": "@level.always.title",
-  "adds": [
-    "formulaImplies"
-  ],
   "intro": [
     {
       "t": "@level.always.intro.0.t"
@@ -12,7 +9,6 @@
     }
   ],
   "after": "@level.always.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "always",

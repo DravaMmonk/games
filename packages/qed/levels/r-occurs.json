@@ -5,7 +5,7 @@
     "uDecompose",
     "uEliminate"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-occurs.intro.0.t"

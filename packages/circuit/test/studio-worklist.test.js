@@ -1,10 +1,11 @@
+import * as progress from '../../progress/core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { filterItems, itemOf, ruleOf, stepIn, tally } from '../../../games/kit/studio/worklist.js'
 import { registerPlugins } from '../../../games/kit/engine/plugins.js'
 import { installStudioPlugins } from '../../../games/kit/studio/editors.js'
 import * as core from '../core/index.js'
-installStudioPlugins(await registerPlugins([{ id: 'circuit', core }]))
+installStudioPlugins(await registerPlugins([{ id: 'circuit', core }, { id: 'progress', core: progress }]))
 
 test('the check’s lines as a worklist: severity, rule, levels; filtered and stepped through', () => {
   assert.equal(ruleOf('content: levels/a.json.title: is not a text'), 'content')

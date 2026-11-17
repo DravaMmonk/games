@@ -6,7 +6,6 @@
     }
   ],
   "after": "@level.decl-bool.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-bool",

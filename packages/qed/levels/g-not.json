@@ -1,10 +1,9 @@
 {
   "adds": [
-    "gNot",
-    "formulaNot"
+    "gNot"
   ],
   "title": "@level.g-not.title",
-  "tray": "gates-formula",
+  "tray": "gates",
   "intro": [
     {
       "t": "@level.g-not.intro.0.t"

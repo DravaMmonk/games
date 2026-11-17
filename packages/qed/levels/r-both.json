@@ -6,7 +6,7 @@
     "uConflict",
     "uEliminate"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-both.intro.0.t"

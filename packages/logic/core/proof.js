@@ -1,4 +1,4 @@
-import { workshopNodes } from 'circuit'
+import { workNodes } from 'circuit'
 // Proofs as circuits (《证明完毕》). A wire carries a proved judgment:
 //
 //   { formula, hyps: Map(hypothesis id → formula) }   the formula, proved from the hypotheses still open
@@ -569,7 +569,7 @@ const LOGIC_TESTS = {
   },
   // A shorter proof is a better one.
   score: (_level, circuit, _runs, options) => ({
-    steps: countSteps(options?.workshopParts ? { nodes: workshopNodes(circuit, options.workshopParts).map(({ node }) => node) } : circuit),
+    steps: countSteps(options?.workshopParts ? { nodes: workNodes(circuit, options.workshopParts).map(({ node }) => node) } : circuit),
   }),
 }
 const countSteps = (circuit) => circuit.nodes.filter((node) => node.type !== 'premise' && node.type !== 'goal').length

@@ -3,7 +3,7 @@
   "adds": [
     "rule"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "intro": [
     {
       "t": "@level.r-rule.intro.0.t"

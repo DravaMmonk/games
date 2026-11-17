@@ -1,13 +1,13 @@
 // Player-owned circuit artifacts. Versions are immutable; the visible library points at the latest publication.
-import { packed, sink, source, withBoardRuntime } from "./boards.js"
+import { packed, sink, source, withBoardRuntime } from 'circuit'
 import { canonicalJson } from 'kernel'
 
 
-import { defaultOf } from "./parts/define.js"
-import { operationPart } from "./parts/operation.js"
-import { resolveSettings } from "./parts.js"
-import { sourceOf, splitSource } from "./wire-source.js"
-import { trayMembers } from "./trays.js"
+import { defaultOf } from 'circuit'
+import { operationPart } from 'circuit'
+import { resolveSettings } from 'circuit'
+import { sourceOf, splitSource } from 'circuit'
+import { trayMembers } from 'circuit'
 import { WORKSHOP_INPUT, WORKSHOP_OUTPUT } from "./workshop-terminals.js"
 
 export const WORKSHOP_KEY = 'games.workshop.v2'
@@ -237,7 +237,7 @@ export function workshopParts(library, resolve, { ticks = false } = {}) {
     }
     return definitions.get(type)
   }
-  return Object.assign(partOf, { definition: (type) => entries.get(type) })
+  return Object.assign(partOf, { definition: (type) => entries.get(type), nodes: board => workshopNodes(board, partOf) })
 }
 
 const input = source()

@@ -4,7 +4,6 @@ import { Monitor, PanelRight, Plus, Smartphone } from 'lucide-react'
 
 import { picker } from '../parts/PartSheet.jsx'
 import { SCENES, editorFor } from '../parts/previews.js'
-import { partAtStage } from '../../core/studio-stages.js'
 
 // A part on the studio's part page (games/DESIGN.md 6.7): the scenes its editor draws (../shell/parts/previews.js),
 // several side by side over its sheet, a single detail beside it; each scene a pane with its drawing face
@@ -22,7 +21,7 @@ const at = (path) => JSON.stringify(path)
 
 function PartPreview({ game, type, stage = null, edit, onTask, label }) {
   const declared = game.partDefs?.parts?.[type]
-  const raw = declared && stage ? partAtStage(type, declared, stage) : declared
+  const raw = declared && stage ? game.partAtStage?.(type, declared, stage) ?? declared : declared
   const state = useState(undefined)
   const [, setState] = state
   useEffect(() => setState(undefined), [type, raw, setState])

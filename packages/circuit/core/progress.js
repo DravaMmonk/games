@@ -2,7 +2,7 @@ import { solutionStamp } from './stamp.js'
 // Circuit saved works, publications, rewards and availability derived from task progress.
 import { createProgress as createProgressStore, current as currentProgress, fresh as freshProgress, taskKey, completedTask, taskPassed } from 'kernel'
 import { openPackedPart, packedWorkReferences } from './board/packed-boards.js'
-import { openWorkshopPart } from './board/workshop-view.js'
+import { workExtension } from './board/work-extension.js'
 
 
 /** The work kept from a prerequisite's pass. */
@@ -45,25 +45,6 @@ export function earnedUnlocks(level, progress) {
   })
 }
 
-/** The course rewards made available by this completion, in course order. */
-export function completionUnlocks(game, level, before, after) {
-  const wasSolved = new Set(before.solved)
-  const solved = new Set(after.solved)
-  const known = new Set(game.earnedParts({ ...before, all: false }).map(({ part }) => part))
-  const parts = new Map()
-  if (!wasSolved.has(level.id)) {
-    for (const part of game.unlocked({ ...level, unlocks: earnedUnlocks(level, after) })) {
-      if (part.part) parts.set(part.part, part)
-    }
-  }
-  for (const part of game.earnedParts({ ...after, all: false })) {
-    if (!known.has(part.part)) parts.set(part.part, { ...part, label: part.name })
-  }
-  // The levels this completion opens, passed already or not (a level passed again still shows what it leads to).
-  const levels = game.levels.filter((next) => next.id !== level.id && !game.isOpen(next, wasSolved) && game.isOpen(next, solved))
-  return { parts: [...parts.values()], levels }
-}
-
 /** The work and the exact dependencies the game selected when the task passed. */
 export function recordSolution(game, p, level, taskAt, work) {
   const task = level.tasks[taskAt]
@@ -76,7 +57,7 @@ export function recordSolution(game, p, level, taskAt, work) {
       view.syncOwn(p.built)
       synced.add(view.syncOwn)
     }
-    const packed = view ? packedWorkReferences(at, (node, parent) => openWorkshopPart(node, parent) ?? openPackedPart(view, node)) : []
+    const packed = view ? packedWorkReferences(at, (node, parent) => (parent.workshop ?? workExtension(parent.circuit))?.open?.(node, parent) ?? openPackedPart(view, node)) : []
     return [...packed, ...(game.workReferences?.(entry) ?? [])].map(stamped)
   })
 }
@@ -117,9 +98,5 @@ export const circuitProgress = game => ({
   },
   afterPass(progress, level) {
     return progress.solved.includes(level.id) ? { ...progress, flags: [...new Set([...progress.flags, ...earnedUnlocks(level, progress)])] } : progress
-  },
-  rewards: (level, before, after) => {
-    const { parts, levels } = completionUnlocks(game, level, before, after)
-    return { rewards: [{ label: { zh: '解锁的元件', en: 'Parts unlocked' }, items: parts.map(part => ({ ...part, key: part.part })) }], levels }
   },
 })

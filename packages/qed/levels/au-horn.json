@@ -8,7 +8,7 @@
   "adds": [
     "resolve"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "after": "@level.au-horn.after",
   "tasks": [
     {

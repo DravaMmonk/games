@@ -1,7 +1,7 @@
 import { createElement, useMemo } from 'react'
 import WorkshopPlay from './WorkshopPlay.jsx'
 import { circuitScreen } from 'circuit/view'
-import { stageDefinition } from 'circuit'
+import { partDefinition } from 'circuit'
 import { displays as ui } from './ui/displays.js'
 // An image game on the shared shell (../../shell), from its content (games/DESIGN.md 6.3): the course (course.js)
 // becomes the shell's game description, with the image domain's play resources, its
@@ -80,7 +80,7 @@ export default function imageGame(content, image = imageWorks(content), { kernel
       settings: (part, progress) => {
         const staged = game.textFor(part, progress)
         const stage = course.stages.get(staged.stage ?? part.part)
-        const definition = stage && stageDefinition(stage)
+        const definition = stage && partDefinition(stage)
         return (definition?.settings ?? []).filter(setting => !setting.fixed).map(setting => ({
           key: setting.key, label: setting.label ?? setting.key,
           values: (setting.options ?? []).map(option => ({ value: option.value, label: option.label ?? option.value })),

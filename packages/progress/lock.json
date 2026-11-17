@@ -1,0 +1,13 @@
+{
+  "target": "progress",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "e5baa4c568acb1b2e5a344510295a470bf695405309ded31b24748ad0b41db89"
+    },
+    "circuit": {
+      "version": "0.0.0",
+      "hash": "75192b8b01e58c36a6a629a713423ab0aaca78267d1a9626157f6ed59c016f2c"
+    }
+  }
+}

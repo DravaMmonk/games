@@ -1735,7 +1735,7 @@ export const gameSchema = {
       "type": "list",
       "of": {
         "type": "str",
-        "reference": "grant"
+        "reference": "circuit/part"
       }
     },
     "chapters": {

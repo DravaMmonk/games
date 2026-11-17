@@ -9,7 +9,6 @@
     }
   ],
   "after": "@level.decl-nat.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-nat",

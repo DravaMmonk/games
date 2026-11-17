@@ -2,7 +2,7 @@
   "adds": [
     "frule"
   ],
-  "tray": "machine-formula",
+  "tray": "machine",
   "title": "@level.in-loop.title",
   "intro": [
     {

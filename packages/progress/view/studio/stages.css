@@ -1,0 +1,15 @@
+.stage-chain { display: grid; gap: 6px; padding: 8px 10px; border-top: 1px solid var(--hairline); background: var(--paper); max-height: 40vh; overflow: auto; }
+.stage-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.stage-step { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px; border: 1px solid var(--hairline); border-radius: 12px; color: var(--ink); background: none; cursor: pointer; }
+.stage-step small { color: var(--faint); font: var(--fs-mini)/1 var(--mono); }
+.stage-step code { font: var(--fs-mini)/1 var(--mono); }
+.stage-step.is-on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.stage-changes { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.stage-changes li { display: flex; gap: 8px; min-width: 0; font-size: 12px; }
+.stage-changes code { flex: none; color: var(--accent-ink); font: var(--fs-mini)/1.5 var(--mono); }
+.stage-changes span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stage-settings { width: 100%; border-collapse: collapse; font-size: 12px; }
+.stage-settings th, .stage-settings td { padding: 2px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.stage-settings thead th { color: var(--muted); font: 600 11px/1.4 var(--sans); }
+.stage-settings tr.is-changed { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+@media (max-width: 760px) { .stage-settings { display: block; overflow-x: auto; } }

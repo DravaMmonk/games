@@ -1,4 +1,4 @@
-import { workshopNodes } from 'circuit'
+import { workNodes } from 'circuit'
 import { PartError } from 'circuit'
 import { runBoard, sink, source } from 'circuit'
 import { runOutputTests } from 'kernel'
@@ -100,7 +100,7 @@ export function runnerOf(types, partsFor = (_task, parts) => parts) {
       const values = new Map(results[0]?.values)
       const key = (path, id) => JSON.stringify([...path, id])
       for (const step of results[0]?.trace ?? []) if (step.path?.length && step.key == null) values.set(key(step.path, step.id), step.value)
-      const nodes = workshopNodes(graph, options.workshopParts)
+      const nodes = workNodes(graph, options.workshopParts)
         .map(({ node, path }) => path.length ? { ...node, id: key(path, node.id) } : node)
       return score({ nodes }, values)
     },

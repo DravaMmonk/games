@@ -19,7 +19,6 @@
     }
   ],
   "after": "@level.decl-and.after",
-  "tray": "formula",
   "tasks": [
     {
       "id": "decl-and",

@@ -54,7 +54,8 @@ export function openedEntries(game, entries, level, before, after) {
     const solved = new Set(progress.solved)
     return (id) => {
       const at = game.byId[id]
-      return !at || progress.all || solved.has(id) || id === also || game.isOpen(at, solved, progress.all)
+      // By what is open, not what is passed: a level passed since still opens with this one (a level passed again).
+      return !at || progress.all || id === also || game.isOpen(at, solved, progress.all)
     }
   }
   const was = reachedIn(before, level.id)

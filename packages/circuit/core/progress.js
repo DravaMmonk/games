@@ -59,7 +59,8 @@ export function completionUnlocks(game, level, before, after) {
   for (const part of game.earnedParts({ ...after, all: false })) {
     if (!known.has(part.part)) parts.set(part.part, { ...part, label: part.name })
   }
-  const levels = game.levels.filter((next) => !solved.has(next.id) && !game.isOpen(next, wasSolved) && game.isOpen(next, solved))
+  // The levels this completion opens, passed already or not (a level passed again still shows what it leads to).
+  const levels = game.levels.filter((next) => next.id !== level.id && !game.isOpen(next, wasSolved) && game.isOpen(next, solved))
   return { parts: [...parts.values()], levels }
 }
 

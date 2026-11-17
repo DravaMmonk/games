@@ -176,6 +176,10 @@ test('completion reports newly opened branches and their parts, and waits for ev
   assert.deepEqual(rewards.levels, [left, right])
   assert.deepEqual(completionUnlocks(game, level, after, after), { parts: [], levels: [] })
   assert.deepEqual(completionUnlocks(game, level, { ...before, solved: ['other'] }, { ...after, solved: ['other', 'start'] }).levels, [left, right, join])
+  // Passed again, measured from the progress without it (GameShell), it shows what it opens, levels passed since too.
+  const later = { ...after, solved: ['start', 'left'] }
+  const again = completionUnlocks(game, level, { ...later, solved: ['left'] }, later)
+  assert.deepEqual([again.parts.map(({ part }) => part), again.levels], [['gate', 'symbol'], [left, right]])
 })
 
 test('optional tasks can be skipped without granting their rewards or appearing passed', () => {

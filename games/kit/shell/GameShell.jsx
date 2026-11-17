@@ -178,7 +178,9 @@ export default function GameShell({ game, store, author = null }) {
     const done = task.screen.solve(score, work)
     if (!done) return
     setFailure(null)
-    if (done.solved.includes(level.id)) setWon({ id: level.id, ...(game.progress?.rewards?.(level, before, done) ?? { rewards: [], levels: [] }), entries: openedEntries(game, wiki.entries, level, before, done) })
+    // What the level opens, measured from the progress without it, so passing it again shows the same as the first time.
+    const without = { ...before, solved: before.solved.filter((id) => id !== level.id) }
+    if (done.solved.includes(level.id)) setWon({ id: level.id, ...(game.progress?.rewards?.(level, without, done) ?? { rewards: [], levels: [] }), entries: openedEntries(game, wiki.entries, level, without, done) })
     else setTaskWon({ index: taskAt, next: nextRequiredTask(game, done, level.id, taskAt) })
   }
   const fail = (info) => {

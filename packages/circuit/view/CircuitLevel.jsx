@@ -193,7 +193,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *   view            what the board shows now: { values, errors } (the default wire state reads it)
  *   card            the faces of a card, each (node, ctx): body, head, caption, cardClass, outNote (node, key, ctx),
  *                   wireState (wire, ctx), regionNote / resultNote (node, region, ctx); on a phone thumb, tileExtra,
- *                   sinkBody, sinkClass, nodeClass, phoneRegionLabel (node, index), phoneRegionResult (node, region, ctx)
+ *                   sinkBody, sinkClass, nodeClass, phoneRegionLabel (node, index)
  *   tileSettings    show configuration summaries on phone tiles (the details always show the settings)
  *   canvas          more for the desktop editor: height, emptyNote, corner, minFit
  *   brief           the task board's content (Layout.jsx Brief), or the workshop shelf
@@ -291,7 +291,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     const cards = (trayNames === undefined && game.course ? fixedTray(game.course, source) : types ?? [])
       .filter((type) => game.isCircuitPart(type))
     const size = traySize(cards, trayParts ?? parts, partDefaults)
-    const phoneCard = { ...card, tileExtra: tileSettings ? card.tileExtra : undefined, resultNote: card.phoneRegionResult ?? card.resultNote }
+    const phoneCard = { ...card, tileExtra: tileSettings ? card.tileExtra : undefined }
     const needsSetting = (node) => {
       const def = defined?.of(node.type)
       const params = node.params ?? {}

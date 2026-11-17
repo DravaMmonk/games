@@ -141,7 +141,8 @@ const readMode = () => {
  * @param regionNote(node, region)         in a frame's region (frames.js), what the value it opens is (or, for a
  *                                         region that opens none, what the frame holds there: the thing a
  *                                         for-any box takes, say);
- *        resultNote(node, region)         what reaches the conclusion port of the region
+ *        resultNote(node, region)         by the conclusion port of the region, what the frame gives (its own
+ *                                         output, the whole conclusion: A → B for an assumption box), or why not
  *
  * A frame is a block a row wide: its own inputs on top, its output under it, and between them each region, a grid
  * of its own (model.js placement) between two dashed lines: on the top one the dot of the value the region opens (as

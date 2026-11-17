@@ -14,7 +14,7 @@ import { MISSING } from "../core/circuit.js"
 import { traceSteps } from '../core/trace.js'
 import { viewAt } from '../core/trace.js'
 
-import { feeding, outputsOf } from "../core/board/model.js"
+import { outputsOf } from "../core/board/model.js"
 import { isFixed } from "../core/board/presets.js"
 import { runTestGroups, TEST_WORDS } from 'kernel/view'
 
@@ -444,10 +444,6 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
               return v === undefined ? null : <Value value={v} show={show} />
             },
             resultNote: (node, _region, ctx) => <Value value={valueOf(node, null, ctx.view)} error={ctx.view.errors.get(node.id)} show={show} />,
-            phoneRegionResult: (node, region, ctx) => {
-              const value = ctx.view.values.get(feeding(ctx.board.circuit, node.id, region))
-              return value === undefined ? null : <Value value={value} show={show} />
-            },
             ...faces,
             ...(outputTarget && { cardClass: withTargetClass(faces.cardClass), sinkClass: withTargetClass(faces.sinkClass) }),
           }}

@@ -163,12 +163,14 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
     named.push(entry)
     byName.set(entry.name, named)
   }
+  const scopes = meaningsOf(schemas).map(meaning => meaning.scopeReferences?.(layers)).filter(Boolean)
+  const scoped = (kind, layer) => scopes.map(scope => scope(kind, layer)).find(Boolean) ?? [kind]
   const problems = []
   for (const ref of targets) {
     const { target, member, layer, at, object, path } = ref
-    const kinds = Array.isArray(ref.kind) ? ref.kind : [ref.kind]
+    const kinds = (Array.isArray(ref.kind) ? ref.kind : [ref.kind]).flatMap(kind => scoped(kind, layer))
     const kind = kinds.join('|')
-    const matches = (byName.get(target) ?? []).filter(entry => (kind === 'tag' ? entry.kind === 'tag' && (!member || kindMatches(schemas, member, entry.member)) : entry.kind !== 'tag' && kinds.some(expected => kindMatches(schemas, expected, entry.kind))))
+    const matches = (byName.get(target) ?? []).filter(entry => (kind === 'tag' ? entry.kind === 'tag' && (!member || scoped(member, layer).some(expected => kindMatches(schemas, expected, entry.member))) : entry.kind !== 'tag' && kinds.some(expected => kindMatches(schemas, expected, entry.kind))))
     // Menu identities are valid untyped order endpoints.
     const owner = ownerOf(target)
     const author = layers.find(item => item.id === layer)

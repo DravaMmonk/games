@@ -13,7 +13,7 @@ export const kindForFolder = Object.fromEntries(Object.entries(folders).map(([ki
 export const schemaForKind = (kind, schemas = {}, value) => {
   const schema = ({ level: schemas.level, game: schemas.game, ...kindSchemas(schemas), ...Object.fromEntries(Object.entries(OBJECT_SCHEMAS).map(([folder, schema]) => [kindForFolder[folder], schema])) })[kind]
   if (!value || !schema) return schema
-  if (!['tag', 'relation'].includes(kind) && !Object.values(schema.fields ?? {}).some(field => field.reference === '$kind')) return schema
+  if (!['tag', 'relation'].includes(kind) && !Object.values(schema.fields ?? {}).some(field => field.reference === '$kind' || field.of?.reference === '$kind')) return schema
   const reference = kind === 'relation'
     ? (value.kind === 'requires' ? 'level' : Object.values(schemas.objectKinds ?? {}).map(d => d.relations?.[value.kind]?.from).find(Boolean) ?? 'any')
     : value.kind

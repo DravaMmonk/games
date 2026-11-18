@@ -1,3 +1,9 @@
+import { policyFor } from 'progress'
+import { installStageViews } from './progression/game-stages.js'
+import { partAtStage } from '../core/progression/studio-stages.js'
+import { partUnlocks } from '../core/progression/unlocks.js'
+import StageChain from './progression/studio/StageChain.jsx'
+import './progression/studio/stages.css'
 import './board/wires.css'
 import { displays } from './mechanism/displays.js'
 import './studio/studio.css'
@@ -16,6 +22,17 @@ import { onPartPage } from './studio/part-page.js'
 import BoardPlay from './BoardPlay.jsx'
 import { useCircuitShell } from './shell.jsx'
 export function register(kernel) {
+  kernel.game('circuit/stages', (game, content) => {
+    if (policyFor(content, 'circuit/part').stages) {
+      game.partAtStage = partAtStage
+      installStageViews(game)
+    }
+    if (policyFor(content, 'circuit/part').unlocks) {
+      game.progressUnlockSources = [...(game.progressUnlockSources ?? []), { kind: 'circuit/part', read: partUnlocks }]
+    }
+  })
+  kernel.editorExtension('circuit/stages', { type: 'circuit/part', stageChain: StageChain })
+
   kernel.implement('display', 'circuit/screen', displays['circuit/screen'])
   kernel.shell('circuit/parts', useCircuitShell)
   kernel.editor('circuit/part', { type: 'circuit/part', listKey: 'parts', route: { type: 'circuit/part', selector: 'part', file: 'parts', root: 'parts' }, component: PartObjectEditor, page: PartEditor, list: PartsList, preview: PartStudioPreview,

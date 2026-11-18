@@ -52,9 +52,10 @@ export function contentCourse(content, {
     carries: (at) => carries?.(at) ?? (level(at).carry ? [level(at).carry] : []),
     references,
   })
-  if (!progress) course.adds = (at) => course.tray(at) ? course.availableParts(at) : []
   if (content.standalone) course.availableParts = (at) => standaloneParts(content, at)
-  return progress?.circuitProgress(course, definitions, content, { level, tasks, task, local, additions, grants, withheld, opened }) ?? course
+  const adapted = progress?.circuitProgress(course, definitions, content, { level, tasks, task, local, additions, grants, withheld, opened })
+  if (!adapted) course.adds = (at) => course.tray(at) ? course.availableParts(at) : []
+  return course
 }
 
 /** Translate published variants into progress events, independently of the board that produced the work. */

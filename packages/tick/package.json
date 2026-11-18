@@ -7,7 +7,7 @@
   "kernel": "^0.0.0",
   "uses": {
     "circuit": "^0.0.0",
-    "circuit-progress": "^0.0.0",
+    "progress": "^0.0.0",
     "numlib": "^0.0.0",
     "wiki": "^0.0.0"
   }

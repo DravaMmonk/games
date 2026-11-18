@@ -1,0 +1,21 @@
+{
+  "folder": "progress-policies",
+  "declares": "package",
+  "overrides": { "package": ["*"], "game": [] },
+  "schema": {
+    "type": "obj",
+    "fields": {
+      "kind": { "type": "str", "reference": "kind" },
+      "targets": { "type": "set", "of": { "type": "str", "reference": "$kind" }, "optional": true },
+      "stages": { "type": "bool", "optional": true },
+      "grants": { "type": "bool", "optional": true },
+      "unlocks": { "type": "bool", "optional": true },
+      "checks": {
+        "type": "set",
+        "of": { "type": "oneOf", "values": ["stages", "availability", "course", "references"] },
+        "optional": true
+      }
+    }
+  },
+  "studio": { "name": "@kind.policy.name", "icon": "ListOrdered" }
+}

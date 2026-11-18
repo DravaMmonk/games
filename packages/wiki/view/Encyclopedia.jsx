@@ -34,12 +34,16 @@ export function glossaryLayout(game) {
  */
 export function useWiki(game, progress, solved, level) {
   const { seen, markSeen } = useSeen(`${game.id}.wiki.seen`)
-  const { groups, entries } = useMemo(() => glossaryLayout(game), [game])
+  const { groups, entries: source } = useMemo(() => glossaryLayout(game), [game])
   const reached = (id) => {
     const at = game.byId[id]
     return !at || progress.all || solved.has(id) || id === level?.id || game.isOpen(at, solved, progress.all)
   }
-  const tracks = game.objectProgress?.(progress)
+  const tracks = game.objectProgress?.(progress, { level: level?.id })
+  const entries = source.map(entry => {
+    const stage = tracks?.stage('entry', entry.id)
+    return stage ? { ...entry, ...stage.definition, id: entry.id, group: entry.group } : entry
+  })
   const isOpen = (entry) => {
     const stage = tracks?.stage('entry', entry.id)
     return stage === undefined ? !entry.at || reached(entry.at) : stage !== null

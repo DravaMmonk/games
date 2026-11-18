@@ -2,8 +2,8 @@ import { CHAPTER } from '../../../games/kit/engine/course-schema.js'
 import { kernelIdentity } from '../../../games/kit/engine/release-data.js'
 import { lockTarget } from '../../../games/kit/engine/releases.js'
 import { folders } from '../../../games/kit/engine/layers.js'
-import { progressMeaning } from '../../circuit-progress/core/index.js'
-import { trackMeaning } from '../../progress/core/index.js'
+import { progressMeaning } from '../../circuit/core/progression/index.js'
+import { progressMeaning as genericProgress } from '../../progress/core/index.js'
 import { register as registerLogic } from '../../logic/core/index.js'
 import { meaning as logicMeaning } from '../../logic/core/catalog.js'
 import { register as registerQED } from '../core/index.js'
@@ -64,7 +64,7 @@ const qedKernel = createPluginKernel()
 registerQED(qedKernel.forPackage('qed', 'core'))
 registerLogic(qedKernel.forPackage('logic', 'core'))
 const fixtureKinds = Object.fromEntries(['logic/symbol', 'qed/wordset'].map(name => [name, JSON.parse(readFileSync(new URL(`../../${name.split('/')[0]}/kinds/${name.split('/')[1]}.json`, import.meta.url)))]))
-export const logicVocabulary = withKindDeclarations(projectVocabulary({ ...contentVocabulary([]), meanings: [...contentMeanings, trackMeaning, progressMeaning, logicMeaning, ...qedKernel.tables.kind.values()] }), Object.entries(fixtureKinds).map(([name, value]) => ({ id: name.split('/')[0], resolved: true, objects: [{ kind: 'kind', name: name.split('/')[1], value }] })))
+export const logicVocabulary = withKindDeclarations(projectVocabulary({ ...contentVocabulary([]), meanings: [...contentMeanings, genericProgress, progressMeaning, logicMeaning, ...qedKernel.tables.kind.values()] }), Object.entries(fixtureKinds).map(([name, value]) => ({ id: name.split('/')[0], resolved: true, objects: [{ kind: 'kind', name: name.split('/')[1], value }] })))
 const proofVocabulary = logicVocabulary
 
 const GLOSSARY = {
@@ -145,6 +145,9 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   }
   if (id !== 'circuit') installCircuitFixture(root)
   installProgressFixture(root)
+  if (Object.values(partDefs?.parts ?? {}).some(part => part.stages?.length)
+    || Object.values(trays).some(tray => Object.hasOwn(tray, 'includeUnlisted'))
+    || Object.values(levels).some(level => [level, ...(level.tasks ?? [])].some(usesGrants))) installPartPolicy(pkg)
   installGlossaryFixture(root)
   const logic = Object.values(levels).some(level => level.tasks?.some(task => (task.play ?? task.kind)?.startsWith('logic/')))
   if (logic) installLogicFixture(root)
@@ -157,7 +160,7 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   const partsText = partDefs === undefined ? undefined : normalize(partDefs, PARTS_FILE, 'parts')
   const levelText = Object.entries(levels).map(([level, value]) => [level, normalize(value, vocabulary.level, `level.${level}`)])
   const objectText = Object.entries({ tags, relations, sections, trays }).flatMap(([kind, values]) => Object.entries(values).map(([name, value]) => [kind, name, normalize(value, kind === 'trays' ? JSON.parse(readFileSync(new URL('../../circuit/kinds/tray.json', import.meta.url))).schema : kind === 'sections' ? kindSchemas(vocabulary).section : OBJECT_SCHEMAS[kind], `${kind.split('/').at(-1)}.${name}`)]))
-  put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', 'circuit-progress': '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0', numlib: '^0.0.0', sentence: '^0.0.0', workshop: '^0.0.0', 'circuit-wiki': '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
+  put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0', numlib: '^0.0.0', sentence: '^0.0.0', workshop: '^0.0.0', 'circuit-wiki': '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
   for (const [path, values] of Object.entries(tagOverrides)) {
     const file = join(course, 'overrides', path + '.json')
     mkdirSync(join(file, '..'), { recursive: true })
@@ -165,7 +168,7 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   }
   mkdirSync(join(course, 'chapters'), { recursive: true })
   for (const [name, value] of chapterText) put(join(course, 'chapters', `${name}.json`), sourceValue(expandNames(value, id, { schema: CHAPTER, vocabulary, textKeys: false })))
-  const packageConfig = { kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: { circuit: '^0.0.0', progress: '^0.0.0', 'circuit-progress': '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0' }) } }
+  const packageConfig = { kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: { circuit: '^0.0.0', progress: '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0' }) } }
   if (glossaryText.entries.length) mkdirSync(join(pkg, 'entries'), { recursive: true })
   for (const { id, group: _group, ...entry } of glossaryText.entries) put(join(pkg, 'entries', `${id}.json`), sourceValue(entry))
   if (glossaryText.groups.length) mkdirSync(join(pkg, 'tags/entry'), { recursive: true })
@@ -217,15 +220,16 @@ export function lockFixture(root) {
     const logic = ['parts', 'levels', 'symbols'].some(folder => objectFiles(dir, folder).some(([, file]) => /logic\//.test(readFileSync(file, 'utf8'))))
     if (logic) { installLogicFixture(root); config.uses = { ...config.uses, logic: '^0.0.0', qed: '^0.0.0' }; writeFileSync(file, JSON.stringify(config, null, 2) + '\n') }
     if (config.uses?.['circuit-wiki']) installCircuitWikiFixture(root)
-    const progressing = config.uses?.['circuit-progress'] || ['parts', 'levels', 'trays'].some(folder => objectFiles(dir, folder).some(([, file]) => {
+    const progressing = (config.uses?.progress && config.uses?.circuit) || ['parts', 'levels', 'trays'].some(folder => objectFiles(dir, folder).some(([, file]) => {
       const object = JSON.parse(readFileSync(file))
       if (folder === 'parts') return Object.hasOwn(object, 'stages')
       if (folder === 'trays') return Object.hasOwn(object, 'includeUnlisted')
-      return [object, ...(object.tasks ?? [])].some(value => ['adds', 'gives', 'withholds', 'opens', 'awards', 'local'].some(field => Object.hasOwn(value, field)))
+      return [object, ...(object.tasks ?? [])].some(usesGrants)
     }))
     if (progressing) {
       installProgressFixture(root)
-      config.uses = { ...config.uses, progress: '^0.0.0', 'circuit-progress': '^0.0.0' }
+      installPartPolicy(dir)
+      config.uses = { ...config.uses, progress: '^0.0.0' }
       writeFileSync(file, JSON.stringify(config, null, 2) + '\n')
     }
     if (legacy) { config.uses = { ...config.uses, circuit: '^0.0.0' }; writeFileSync(file, JSON.stringify(config, null, 2) + '\n') }
@@ -235,7 +239,7 @@ export function lockFixture(root) {
     const file = join(games, id, 'game.json')
     if (!existsSync(file)) continue
     const game = JSON.parse(readFileSync(file))
-    game.packages = { ...game.packages, ...Object.fromEntries(packageIds(root).filter(id => ['logic', 'qed', 'progress', 'circuit-progress', 'circuit-wiki', 'numlib', 'sentence', 'wiki', 'workshop'].includes(id)).map(id => [id, '^0.0.0'])), circuit: '^0.0.0' }; game.kernel = `^${kernelIdentity().version}`
+    game.packages = { ...game.packages, ...Object.fromEntries(packageIds(root).filter(id => ['logic', 'qed', 'progress', 'circuit-wiki', 'numlib', 'sentence', 'wiki', 'workshop'].includes(id)).map(id => [id, '^0.0.0'])), circuit: '^0.0.0' }; game.kernel = `^${kernelIdentity().version}`
     writeFileSync(file, JSON.stringify(game, null, 2) + '\n')
   }
   for (const id of packageIds(root)) {
@@ -249,11 +253,12 @@ export function lockFixture(root) {
 
 // Synthetic projects reuse mechanism declarations, without authored course content.
 export function installCircuitFixture(root) {
+  installProgressFixture(root)
   const dir = join(root, 'packages', 'circuit')
   if (existsSync(join(dir, 'package.json'))) return
   mkdirSync(dir, { recursive: true })
   for (const folder of ['kinds', 'shapes', 'i18n', 'core', 'view', 'capabilities']) cpSync(new URL(`../../circuit/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
-  writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'feature', type: 'module', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {}, title: '@package.title', desc: '@package.desc' }, null, 2) + '\n')
+  writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'feature', type: 'module', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: { progress: '^0.0.0' }, title: '@package.title', desc: '@package.desc' }, null, 2) + '\n')
 }
 
 export const circuitFixtureKinds = {
@@ -364,23 +369,27 @@ function installCircuitWikiFixture(root) {
   }
 }
 
-export function installProgressFixture(root) {
-  installCircuitFixture(root)
-  cpSync(new URL('../../circuit/view', import.meta.url), join(root, 'packages/circuit/view'), { recursive: true })
-  for (const id of ['progress', 'circuit-progress']) {
-    const dir = join(root, 'packages', id)
-    if (existsSync(join(dir, 'package.json'))) continue
-    mkdirSync(dir, { recursive: true })
-    for (const path of ['core', 'view', 'kinds', 'i18n', 'package.json']) {
-      cpSync(new URL(`../../${id}/${path}`, import.meta.url), join(dir, path), { recursive: true })
-    }
+const partPolicy = { kind: 'circuit/part', stages: true, grants: true, unlocks: true, checks: ['stages', 'availability', 'course', 'references'] }
+const usesGrants = object => ['adds', 'gives', 'withholds', 'opens', 'awards', 'local'].some(field => Object.hasOwn(object, field))
+function installPartPolicy(dir) {
+  const folder = join(dir, 'progress-policies')
+  mkdirSync(folder, { recursive: true })
+  if (!existsSync(join(folder, 'parts.json'))) writeFileSync(join(folder, 'parts.json'), JSON.stringify(partPolicy) + '\n')
+}
+
+function installProgressFixture(root) {
+  const dir = join(root, 'packages/progress')
+  if (existsSync(join(dir, 'package.json'))) return
+  mkdirSync(dir, { recursive: true })
+  for (const path of ['core', 'view', 'kinds', 'i18n', 'package.json']) {
+    cpSync(new URL(`../../progress/${path}`, import.meta.url), join(dir, path), { recursive: true })
   }
 }
 
 // Runtime fixtures that author progress fields opt into the same policy used by real content.
 export function withProgressFixture(content) {
   const vocabulary = contentSchemas.get(content)
-  const data = { ...content }
-  contentSchemas.set(data, { ...vocabulary, meanings: [...(vocabulary?.meanings ?? []), trackMeaning, progressMeaning] })
+  const data = { ...content, registries: { ...content.registries, 'progress/policy': { parts: partPolicy } } }
+  contentSchemas.set(data, { ...vocabulary, meanings: [...(vocabulary?.meanings ?? []), genericProgress, progressMeaning] })
   return data
 }

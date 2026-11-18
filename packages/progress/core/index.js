@@ -1,69 +1,103 @@
-import { completedTask } from 'kernel'
+import { referenceDependencies, stageProviders } from './requirements.js'
+import { excluded, grantScope, objectsOf, policyFor, type } from './policies.js'
+import { stageName, stageSchema } from './stages.js'
 
+export { referenceDependencies, externalSupplies, stageProviders } from './requirements.js'
+export { policyFor, grantScope, objectsOf } from './policies.js'
 export { grantingFields } from './content-course.js'
+export { stageChain, stageName, stagePatch } from './stages.js'
 
 export const levelMarks = { optional: 'progress/optional', skippable: 'progress/skippable' }
-const type = 'progress/track'
-const keyOf = (kind, target) => JSON.stringify([kind, target])
+const fields = ['adds', 'local', 'gives', 'withholds', 'opens', 'awards', 'requiresObjects']
 
-export const trackMeaning = {
+export const progressMeaning = {
   type,
   read: value => value,
   vocabulary: vocabulary => ({ ...vocabulary, levelMarks }),
-  contentChecks({ content }) {
-    const seen = new Set()
-    const problems = []
-    for (const [id, track] of Object.entries(content.registries?.[type] ?? {})) {
-      const key = keyOf(track.kind, track.target)
-      const at = `progress-tracks/${id}.json`
-      if (seen.has(key)) problems.push({ at: `${at}.target`, says: `more than one track for ${track.kind} ${track.target}` })
-      seen.add(key)
-      const stages = new Set()
-      for (const [index, stage] of (track.stages ?? []).entries()) {
-        const path = `${at}.stages[${index}]`
-        if (stages.has(stage.id)) problems.push({ at: `${path}.id`, says: `duplicate stage ${stage.id}` })
-        stages.add(stage.id)
-        if (stage.afterLevel && stage.afterTask) problems.push({ at: path, says: 'choose a level or a task for this stage' })
-        if (index > 0 && !stage.afterLevel && !stage.afterTask) problems.push({ at: path, says: 'a later stage needs a level or task to pass' })
+  schemaForObject: ({ kind, schema }) => excluded.has(kind) ? schema : stageSchema(schema),
+  matches: (expected, actual, vocabulary) => ['progress/item', 'progress/required'].includes(expected)
+    && !excluded.has(actual) && (['entry', 'section', 'chapter', 'level', 'task'].includes(actual) || Object.values(vocabulary?.objectKinds ?? {}).some(definition => definition.objectKind === actual) || Object.hasOwn(vocabulary?.objectKinds ?? {}, actual)),
+  scopeReferences(layers) {
+    const policies = layers.flatMap(layer => (layer.objects ?? []).filter(object => object.kind === type)
+      .map(object => [object.name.includes('/') ? object.name : `${layer.id}/${object.name}`, object.value]))
+    const scopes = { 'progress/item': grantScope(policies), 'progress/required': grantScope(policies, policy => policy.checks?.includes('references')) }
+    return (kind, layer) => {
+      const kinds = scopes[kind]?.(layer)
+      return kinds?.length ? kinds : undefined
+    }
+  },
+  identities: ({ kind, value }) => excluded.has(kind) ? [] : (Array.isArray(value.stages) ? value.stages : []).filter(stage => typeof stage.id === 'string').map(stage => ({ kind, name: stage.id, value: stage })),
+  names: ({ name }) => ({
+    rewrite: ({ value, schema }) => schema?.stageId ? { value: name(value) } : undefined,
+  }),
+  dependencies(context) {
+    const { content } = context
+    if (!content.levels.some(level => level.requiresObjects?.length || level.tasks?.some(task => task.requiresObjects?.length))) return
+    const stages = []
+    for (const [kind, values] of Object.entries(objectsOf(content))) for (const [target, value] of Object.entries(values)) {
+      if (!policyFor(content, kind, target).checks.has('references')) continue
+      const first = value.stages?.[0]
+      for (const stage of value.stages ?? []) {
+        stages.push({ ...stage, item: stageName(target, stage.id) })
+        if (stage === first) stages.push({ ...stage, item: target })
       }
     }
-    return problems.map(({ at, says }) => ({ fail: true, text: `${at}: ${says}` }))
+    const prerequisites = new Set(stages.map(stage => stage.item))
+    const extraProviders = stageProviders(content, stages)
+    const scope = grantScope(Object.entries(content.registries?.[type] ?? {}), policy => policy.checks?.includes('references'))
+    return referenceDependencies(context, { introductions: true, extraProviders, itemsOf: (level, task) => [
+      ...(level.requiresObjects ?? []), ...(task?.requiresObjects ?? []),
+    ].filter(id => prerequisites.has(id) || scope(level.id).some(kind => policyFor(content, kind, id).checks.has('references'))) })
+  },
+  contentChecks({ content }) {
+    const problems = []
+    const fail = text => problems.push({ fail: true, text })
+    const objects = objectsOf(content)
+    const policies = Object.entries(content.registries?.[type] ?? {})
+    const scope = grantScope(policies)
+    const requiredScope = grantScope(policies, policy => policy.checks?.includes('references'))
+    const managed = new Map(), required = new Map()
+    for (const [kind, values] of Object.entries(objects)) {
+      if (excluded.has(kind)) continue
+      const stages = new Set(Object.keys(values))
+      const grants = new Set()
+      const references = new Set()
+      managed.set(kind, grants)
+      required.set(kind, references)
+      for (const [target, value] of Object.entries(values)) {
+        const policy = policyFor(content, kind, target)
+        if (policy.grants) grants.add(target)
+        if (policy.checks.has('references')) references.add(target)
+        if (!value.stages?.length) continue
+        if (!policy.stages) fail(`${kind} ${target}: stages require an enabled progress policy`)
+        for (const [index, stage] of value.stages.entries()) {
+          const id = stageName(target, stage.id)
+          if (policy.grants) grants.add(id)
+          if (policy.checks.has('references')) references.add(id)
+          const at = `${kind} ${target}.stages[${index}]`
+          if (stages.has(id)) fail(`${at}: duplicate object or stage ${id}`)
+          stages.add(id)
+          if (id.split('/')[0] !== target.split('/')[0]) fail(`${at}: a stage belongs to its object's namespace`)
+          if (stage.afterLevel && stage.afterTask) fail(`${at}: choose a level or a task for this stage`)
+          if (policy.checks.has('stages') && !policy.grants && index && !stage.afterLevel && !stage.afterTask) fail(`${at}: a later stage needs a level or task to pass`)
+        }
+      }
+    }
+    for (const level of content.levels) {
+      for (const object of [level, ...(level.tasks ?? [])]) {
+        for (const field of fields) for (const id of object[field] ?? []) {
+          const [kinds, targets] = field === 'requiresObjects' ? [requiredScope(level.id), required] : [scope(level.id), managed]
+          if (!kinds.some(kind => targets.get(kind)?.has(id))) fail(`${object.id}.${field}: ${id} has no applicable progress policy`)
+        }
+      }
+    }
+    return problems
   },
 }
 
-/** Read the highest consecutively reached stage of any tracked object from the existing task save. */
-export function objectProgress(content) {
-  const tracks = new Map(Object.values(content.registries?.[type] ?? {}).map(track => [keyOf(track.kind, track.target), track]))
-  const tasks = new Map(content.levels.flatMap(level => (level.tasks ?? []).map(task => [task.id, { level: level.id, optional: task.optional }])))
-  return progress => {
-    const solved = new Set(progress.solved)
-    const reached = ({ afterLevel, afterTask }) => {
-      if (progress.all) return true
-      if (afterLevel) return solved.has(afterLevel)
-      if (!afterTask) return true
-      const task = tasks.get(afterTask)
-      return Boolean(task && completedTask(progress, task.level, afterTask, task.optional))
-    }
-    const stage = (track) => {
-      const stages = track.stages ?? []
-      const locked = stages.findIndex(entry => !reached(entry))
-      return locked < 0 ? stages.at(-1) : stages[locked - 1]
-    }
-    return {
-      // Undefined is untracked; null is tracked but still locked.
-      stage(kind, target) {
-        const track = tracks.get(keyOf(kind, target))
-        return track && (stage(track) ?? null)
-      },
-      reached: () => [...tracks.values()].flatMap(track => {
-        const current = stage(track)
-        return current ? [{ ...track, stage: current }] : []
-      }),
-    }
-  }
-}
+export { objectProgress } from './objects.js'
 
 export function register(kernel) {
   for (const name of Object.values(levelMarks)) kernel.tag(name, 'level')
-  kernel.kind('progress/track', trackMeaning)
+  kernel.kind('progress/policy', progressMeaning)
 }

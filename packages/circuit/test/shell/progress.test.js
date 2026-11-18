@@ -1,4 +1,4 @@
-import { partUnlocks } from '../../../circuit-progress/core/unlocks.js'
+import { partUnlocks } from '../../core/progression/unlocks.js'
 // node --test games/kit/shell — a game's progress in the browser: kept task by task for the puzzle each was made on.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'

@@ -1,4 +1,5 @@
 import { find, textEntries, workspaceFiles } from 'kernel'
+import { grantScope } from 'progress'
 const texts = value => typeof value === 'string' ? [{ path: [], value }] : textEntries(value).map(([lang, text]) => ({ path: [lang], value: text }))
 
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -7,10 +8,10 @@ const partLink = (type, namespace) => new RegExp(`(<part-ref to="(?:${namespace}
 const placing = (type) => new RegExp(`(=\\s*)${escape(type)}(?=\\s*[[(])`, 'g')
 
 /** Typed item fields include references to a part's settings and individual values. */
-const itemHits = (schema, value, vocabulary) => [
+const itemHits = (schema, value, vocabulary, references) => [
   ...find(schema, value, 'ref', { vocabulary }), ...find(schema, value, 'name', { vocabulary }),
-  ...find(schema, value, 'str', { vocabulary }).filter((hit) => ['circuit/part'].includes(hit.schema.reference)),
-].filter((hit) => hit.schema.kind === 'circuit/part' || ['circuit/part'].includes(hit.schema.reference))
+  ...find(schema, value, 'str', { vocabulary }),
+].filter(hit => hit.schema.kind === 'circuit/part' || references.has(hit.schema.reference))
 
 const namesItem = (value, name, namespace) => [name, `${namespace}/${name}`].some((base) => value === base)
 
@@ -22,8 +23,15 @@ const namesItem = (value, name, namespace) => [name, `${namespace}/${name}`].som
 export function partRefs(ws, vocabulary, type) {
   const out = []
   const names = [type, ...(ws.partDefs?.parts[type]?.stages ?? []).map(stage => stage.id)]
+  const policies = [...ws.contentObjects?.['progress/policy'] ?? []]
+    .map(([id, policy]) => [id.includes('/') ? id : `${ws.packageId}/${id}`, policy])
+  const references = new Set(['circuit/part'])
+  if (grantScope(policies)(ws.packageId).includes('circuit/part')) references.add('progress/item')
+  if (grantScope(policies, policy => policy.checks?.includes('references'))(ws.packageId).includes('circuit/part')) references.add('progress/required')
   for (const [file, value, schema] of workspaceFiles(ws, vocabulary)) {
-    for (const hit of itemHits(schema, value, vocabulary)) if (names.some(name => namesItem(hit.value, name, ws.packageId))) out.push({ file, path: hit.path, how: 'field' })
+    if (!schema) continue
+    const fields = file.startsWith('progress-policies/') && value.kind === 'circuit/part' ? new Set([...references, '$kind']) : references
+    for (const hit of itemHits(schema, value, vocabulary, fields)) if (names.some(name => namesItem(hit.value, name, ws.packageId))) out.push({ file, path: hit.path, how: 'field' })
     for (const t of find(schema, value, 'text', { vocabulary })) for (const s of texts(t.value)) if (partLink(type, ws.packageId).test(s.value)) out.push({ file, path: [...t.path, ...s.path], how: 'link' })
     for (const b of find(schema, value, 'board', { vocabulary })) b.value.forEach((line, k) => { if (placing(type).test(line)) out.push({ file, path: [...b.path, k], how: 'board' }) })
   }

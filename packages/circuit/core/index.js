@@ -4,6 +4,8 @@ import { circuitVocabulary } from './content-meaning.js'
 import circuitRuntime from './mechanism/runtime.js'
 import { partMeaning, trayMeaning } from './content-meaning.js'
 import { boardPlay, boardChecks } from './board-play.js'
+import { progressMeaning } from './progression/index.js'
+import { courseChecks, referenceChecks } from './progression/content-checks.js'
 
 export function register(kernel) {
   // Install operations before any consumer compiles its part definitions.
@@ -13,6 +15,9 @@ export function register(kernel) {
   kernel.tag(PRIMITIVE_TAG, 'circuit/part')
   kernel.kind('circuit/part', partMeaning)
   kernel.kind('circuit/tray', trayMeaning)
+  kernel.kind('circuit/progression', progressMeaning)
+  kernel.check('circuit/course', Object.assign(courseChecks, { phase: 'course' }))
+  kernel.check('circuit/progress-references', Object.assign(referenceChecks, { phase: 'references' }))
   kernel.play('circuit/board', { ...boardPlay, runtime: circuitRuntime })
   kernel.check('circuit/boards', boardChecks)
   kernel.agent('circuit/board', {

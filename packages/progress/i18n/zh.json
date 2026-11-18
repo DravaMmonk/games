@@ -1,5 +1,5 @@
 {
   "package.title": "学习进度",
   "package.desc": "根据关卡和任务的通过记录，分阶段解锁课程中的对象。",
-  "kind.track.name": "进度轨迹"
+  "kind.policy.name": "进度规则"
 }

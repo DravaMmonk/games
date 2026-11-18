@@ -2,5 +2,5 @@
 export const meaningsOf = vocabulary => vocabulary?.meanings ?? []
 export const interpret = (vocabulary, method, context) => meaningsOf(vocabulary).flatMap(meaning => meaning[method]?.(context) ?? [])
 export const projectVocabulary = vocabulary => meaningsOf(vocabulary).reduce((value, meaning) => meaning.vocabulary?.(value) ?? value, vocabulary)
-export const kindMatches = (vocabulary, expected, actual) => expected === 'any' || expected === actual || meaningsOf(vocabulary).some(meaning => meaning.matches?.(expected, actual))
+export const kindMatches = (vocabulary, expected, actual) => expected === 'any' || expected === actual || meaningsOf(vocabulary).some(meaning => meaning.matches?.(expected, actual, vocabulary))
 export const derivedFields = vocabulary => meaningsOf(vocabulary).flatMap(meaning => meaning.derived ?? [])

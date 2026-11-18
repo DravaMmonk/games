@@ -1,0 +1,19 @@
+{
+  "extends": "circuit/tray",
+  "fields": {
+    "includeUnlisted": {
+      "type": "bool",
+      "optional": true,
+      "about": "@kind.progress-tray.fields.includeUnlisted.about"
+    }
+  },
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  }
+}

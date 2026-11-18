@@ -1,5 +1,5 @@
 {
   "package.title": "Learning progress",
   "package.desc": "Tracks the stages at which any course object becomes available.",
-  "kind.track.name": "Progress tracks"
+  "kind.policy.name": "Progress policies"
 }

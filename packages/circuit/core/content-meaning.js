@@ -130,7 +130,7 @@ export const partMeaning = {
   validationNames: ({ content }) => ({ tray: new Set(Object.keys(content.registries?.['circuit/tray'] ?? {})) }),
   validate({ content, vocabulary }) {
     if (content.partDefs !== undefined) {
-      const required = progressFieldsProblems(content, vocabulary)
+      const required = progressFieldsProblems(content)
       const parts = Object.fromEntries(Object.entries(puzzleParts(content.partDefs.parts, vocabulary)).map(([id, { stages: _stages, ...part }]) => [id, part]))
       const tasks = taskIdsOf(content.levels)
       const problems = [...required, ...partProblems({ parts }, vocabulary, { tasks })]

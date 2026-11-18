@@ -15,21 +15,33 @@
 }
 ```
 
-**对象进度。** `progress/track` 可以在包或游戏的 `progress-tracks/` 目录声明。每条轨迹用 `kind` 和 `target` 指定一个对象，同名的不同类型分开跟踪。阶段按顺序解锁，每个阶段用 `afterLevel` 或 `afterTask` 指定通过条件。首阶段省略条件时从开局可用。以通关记录计算当前阶段，无需额外存档。
+**对象进度。** 课程包在 `progress-policies/<名>.json` 声明 `progress/policy`，用 `kind` 选择对象类型。填写 `targets` 时只启用所列对象。同名的不同类型分开跟踪。策略分别启用对象阶段、发放和通关时的解锁提示，并在 `checks` 选用阶段检查或引用依赖检查。电路课程还可以选用托盘可用性和电路课程检查。
 
 ```json
 {
-  "title": "@progress.guide",
   "kind": "entry",
-  "target": "guide",
+  "targets": ["guide"],
+  "stages": true,
+  "grants": true,
+  "unlocks": true,
+  "checks": ["stages", "references"]
+}
+```
+
+阶段写在对象自己的 `stages` 字段中。每阶段用 `afterLevel` 或 `afterTask` 声明通过条件，并可覆盖对象字段。首阶段省略条件时从开局可用，也可以由关卡或任务的发放字段引入。进度用现有通关记录计算。
+
+```json
+{
+  "title": "@guide.title",
+  "body": ["@guide.intro"],
   "stages": [
     { "id": "introduced", "afterTask": "first-task" },
-    { "id": "practised", "afterLevel": "practice" }
+    { "id": "practised", "afterLevel": "practice", "body": ["@guide.practice"] }
   ]
 }
 ```
 
-游戏通过 `game.objectProgress(progress).stage(kind, target)` 查询阶段。该方法返回当前阶段、待解锁时的 `null` 或未纳入轨迹时的 `undefined`。百科词条纳入轨迹后按该轨迹开放。其他对象的展示与行为由其使用包根据阶段决定。电路元件可继续用 `circuit-progress` 提供的专用阶段字段配置端口和设置。
+关卡和任务可用 `awards` 指定通关奖励。发放字段按课程策略解析对象或阶段 ID。启用引用检查后，`requiresObjects` 声明关卡或任务所需的对象或阶段。游戏通过 `game.objectProgress(progress).stage(kind, target)` 查询当前阶段，待解锁时返回 `null`，未参与进度时返回 `undefined`。百科据此显示当前阶段的词条内容，电路用阶段字段决定元件的端口和设置。
 
 **先修来自关系。** 包的 `relations/<名>.json` 声明 `requires`；一条边两端都在课程里才生效。游戏要改变它，就覆盖这份关系，不另写一套依赖图。普通前置要求通过；来源关可跳过时，普通边改等它的前置，带 `required: true` 的边仍要求通过来源关。跨游戏边写 `{ "from": "qed/table", "game": "qed", "to": "…" }`，读取来源游戏的通过记录。参考解所需能力也参与技术依赖检查。关内任务的 `optional` 和课程的可选关分开。
 

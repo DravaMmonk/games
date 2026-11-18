@@ -23,7 +23,10 @@ export const KIND_DECLARATION = S.obj({
 export const objectKindNames = definitions => Object.fromEntries(Object.entries(definitions ?? {})
   .filter(([, definition]) => !definition.extends).map(([name, definition]) => [definition.objectKind ?? name, name]))
 export const definitionOfKind = (definitions, kind) => definitions?.[kind] ?? definitions?.[objectKindNames(definitions)[kind]]
-export const kindSchemas = schemas => ({ chapter: CHAPTER, kind: KIND_DECLARATION, shape: S.any(),
+const objectSchema = (vocabulary, kind, schema) => (vocabulary?.meanings ?? []).reduce(
+  (current, meaning) => meaning.schemaForObject?.({ kind, schema: current }) ?? current, schema,
+)
+export const kindSchemas = schemas => ({ chapter: objectSchema(schemas, 'chapter', CHAPTER), kind: KIND_DECLARATION, shape: S.any(),
   ...Object.fromEntries(Object.entries(schemas?.objectKinds ?? {}).filter(([, d]) => !d.extends).map(([name, d]) => [d.objectKind ?? name, d.schema])) })
 
 const extend = (schema, fields) => {
@@ -179,6 +182,18 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
     }
     level = exclude(level)
   }
+
+  for (const [name, definition] of Object.entries(definitions)) {
+    if (!definition.extends) definitions[name] = { ...definition, schema: objectSchema(vocabulary, definition.objectKind ?? name, definition.schema) }
+  }
+  const projectLevels = schema => {
+    if (schema?.type === 'either') return { ...schema, of: schema.of.map(projectLevels) }
+    if (!schema?.fields?.tasks) return schema
+    const task = schema => schema.type === 'either' ? { ...schema, of: schema.of.map(task) } : objectSchema(vocabulary, 'task', schema)
+    const { tasks } = schema.fields
+    return objectSchema(vocabulary, 'level', { ...schema, fields: { ...schema.fields, tasks: { ...tasks, of: task(tasks.of) } } })
+  }
+  level = projectLevels(level)
 
   const compileItems = tables => Object.fromEntries(Object.entries(tables ?? {}).map(([kind, items]) => [kind,
     Object.fromEntries(Object.entries(items).map(([name, item]) => {

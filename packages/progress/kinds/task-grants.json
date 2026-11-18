@@ -1,0 +1,71 @@
+{
+  "extends": "task",
+  "fields": {
+    "adds": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/item"
+      },
+      "optional": true
+    },
+    "local": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/item"
+      },
+      "optional": true
+    },
+    "gives": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/item"
+      },
+      "optional": true
+    },
+    "withholds": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/item"
+      },
+      "optional": true
+    },
+    "opens": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/item"
+      },
+      "optional": true
+    },
+    "awards": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/item"
+      },
+      "optional": true
+    },
+    "requiresObjects": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "progress/required"
+      },
+      "optional": true,
+      "section": "course"
+    }
+  },
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  }
+}

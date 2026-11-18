@@ -280,5 +280,6 @@
   "shape.rules.of.fields.set.about": "设置 → 新值的式子",
   "shape.rules.about": "交互：一个设置改了，另几个跟着改",
   "shape.setting-show.about": "一个设置：控件，或此刻的值的字",
-  "shape.summary-show.fields.text.about": "带 {设置} 的一句话"
+  "shape.summary-show.fields.text.about": "带 {设置} 的一句话",
+  "kind.progress-tray.fields.includeUnlisted.about": "托盘之后继续显示本关其余已持有的元件"
 }

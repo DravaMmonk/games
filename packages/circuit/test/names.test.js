@@ -1,4 +1,4 @@
-import { progressMeaning } from '../../circuit-progress/core/index.js'
+import { progressMeaning } from '../core/progression/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { assembleCircuitFixture as assemble } from '../../qed/test/fixture.js'
@@ -90,7 +90,7 @@ test('item references and audit identities retain the game namespace', () => {
 })
 
 test('bench stage controls remain local when a task has item availability fields', () => {
-  const schema = S.obj({ tasks: S.list(S.obj({ id: S.str(), opens: S.list(S.str()), bench: S.obj({ stages: S.list(S.obj({ opens: S.list(S.str()) })) }) })) })
+  const schema = S.obj({ tasks: S.list(S.obj({ id: S.str(), opens: S.list(S.str({ reference: 'progress/item' })), bench: S.obj({ stages: S.list(S.obj({ opens: S.list(S.str()) })) }) })) })
   const content = expandNames({ tasks: [{ id: 'work', opens: ['calc.how=minus'], bench: { stages: [{ opens: ['calc'] }] } }] }, 'library', { schema, vocabulary: schemas, parts: new Set(['calc']) })
   assert.deepEqual(content.tasks[0].opens, ['library/calc.how=minus'])
   assert.deepEqual(content.tasks[0].bench.stages[0].opens, ['calc'])

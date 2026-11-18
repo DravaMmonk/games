@@ -12,6 +12,5 @@ links and prerequisites; a glossary link is useful reference material, not a sub
 reasoning or visual evidence needed to play.
 
 Use `text.set`, `level.patch`, `game.set` and glossary operations through `./op --file <file>`; `--dry-run` previews
-changes. `./terminology`, `./lint`, `./check` and `./gate` report the current registry, copy and pipeline checks.
-These checks may enforce stricter mechanical criteria than the handbook's advisory teaching guidance. Distinguish
-an automatic failure from a judgment about learning, and report limitations or issues owned by earlier steps.
+changes. `./terminology`, `./check` and `./gate` validate the registry, links and content structure. Review wording
+and the choice of links against the handbook. Report limitations or issues owned by earlier steps.

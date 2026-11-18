@@ -1,5 +1,5 @@
 // The logic domain for the checks (games/design/README.md 6.3): its vocabulary, a game's spec from its content (the course,
-// its levels in play order, the texts a player reads and the names copy may quote), the domain's checks, and its play
+// its levels in play order, the texts a player reads), the domain's checks, and its play
 // hook for blind sessions (play.js). Nothing here draws: the page's side is game.js.
 
 import { vocabulary } from './vocabulary.js'
@@ -37,7 +37,6 @@ function spec(content, works = logicWorks(content)) {
     // The built parts that do not run a board syncOwn hands them unchecked: a gate runs the board kept for it only when
     // that board passes its level (gates.js builtGates), and a lemma with a card runs as the kit's card (proof.js).
     builtIn: [...new Set(logic.course.levels.flatMap((l) => logic.course.builds(l)))].filter((p) => logic.gates[p] || logic.lemmas[p]?.card),
-    quotes: Object.values(content.registries?.['circuit/quote'] ?? {}).map(quote => quote.text),
     texts: { chapters: logic.CHAPTERS, ...logic.texts },
   }
 }

@@ -5,15 +5,15 @@ import { objectFileName, objectOp, objectSchema } from './object-file.js'
 import { headingParam, listOfHeading, readHeading } from './left-lists.js'
 
 const scene = { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'scenes', schema: { type: 'obj', fields: { title: { type: 'str' } } }, studio: { name: { zh: '场景', en: 'Scenes' }, icon: 'Image' } }
-const quoteDeclaration = { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'quote', schema: { type: 'obj', fields: { text: { type: 'str' } } } }
+const noteDeclaration = { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'notes', schema: { type: 'obj', fields: { text: { type: 'str' } } } }
 const content = (tags = {}) => ({
   layerOrder: ['base', 'story'],
-  objectKinds: { 'circuit/quote': quoteDeclaration, 'story/scene': scene, 'story/extra': { extends: 'task', fields: {} } },
+  objectKinds: { 'story/note': noteDeclaration, 'story/scene': scene, 'story/extra': { extends: 'task', fields: {} } },
   partDefs: null, glossary: { entries: [] },
   registries: {
     level: { 'story/a': {}, 'story/b': {} },
     'story/scene': { 'story/start': { title: 'Start' } },
-    'circuit/quote': {},
+    'story/note': {},
     tag: tags,
   },
 })
@@ -25,9 +25,9 @@ test('the left column lists object types: kernel/studio-left, else what has obje
   assert.equal(studioLeft(plain), null)
   assert.deepEqual(defaultTypes(plain), ['level', 'story/scene'])
   assert.deepEqual(leftLists(plain), ['tree', 'type:story/scene', 'kernel', 'overrides', 'search'])
-  const said = content({ 'kind:kernel/studio-left': { kind: 'kind', values: ['story/scene', 'level', 'circuit/quote', 'gone'] } })
-  assert.deepEqual(studioLeft(said), ['circuit/quote', 'level', 'story/scene'], 'a tag is a set: its order is its order relation’s, else by name')
-  assert.deepEqual(leftLists(said, ['circuit/quote']), ['type:circuit/quote', 'kernel', 'overrides', 'search'])
+  const said = content({ 'kind:kernel/studio-left': { kind: 'kind', values: ['story/scene', 'level', 'story/note', 'gone'] } })
+  assert.deepEqual(studioLeft(said), ['level', 'story/note', 'story/scene'], 'a tag is a set: its order is its order relation’s, else by name')
+  assert.deepEqual(leftLists(said, ['story/note']), ['type:story/note', 'kernel', 'overrides', 'search'])
   assert.equal(typeOfList(listOfType('story/scene')), 'story/scene')
   assert.equal(typeOfList('tree'), 'level')
 })
@@ -38,9 +38,9 @@ test('a declared type’s object is edited through the object operations, in its
   assert.deepEqual(objectOp(object, ['title'], { unset: true }), { op: 'object.put', kind: 'story/scene', name: 'start', data: {} })
   assert.equal(objectFileName('story/scene', 'story/start', null, 'story', scene), 'scenes/start.json')
   assert.equal(objectSchema('story/scene', object), scene.schema)
-  const quote = { kind: 'circuit/quote', full: 'story/q', namespace: 'story', value: { text: 'x' }, declared: quoteDeclaration }
-  assert.deepEqual(objectOp(quote, ['text'], { set: 'y' }), { op: 'object.set', kind: 'circuit/quote', name: 'q', path: ['text'], value: 'y' })
-  assert.equal(objectFileName('circuit/quote', 'story/q', null, 'story', quoteDeclaration), 'quote/q.json')
+  const note = { kind: 'story/note', full: 'story/q', namespace: 'story', value: { text: 'x' }, declared: noteDeclaration }
+  assert.deepEqual(objectOp(note, ['text'], { set: 'y' }), { op: 'object.set', kind: 'story/note', name: 'q', path: ['text'], value: 'y' })
+  assert.equal(objectFileName('story/note', 'story/q', null, 'story', noteDeclaration), 'notes/q.json')
 })
 
 test('an object of any type is kept in the address', () => {

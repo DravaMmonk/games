@@ -21,9 +21,9 @@ test('language maps are independent of English or Chinese', () => {
   assert.deepEqual(languagesOf([field, { zh: '标题' }, 'a + b']), ['en', 'fr', 'pt-BR', 'zh'])
 })
 
-test('references are validated independently in every language', () => {
-  const names = { level: new Map([['start', 'Start']]), part: new Map(), wiki: new Map() }
-  const field = { zh: '开始', fr: '<level-ref to="start"></level-ref>', ja: '<level-ref to="missing"></level-ref>' }
+test('explicit references are validated independently in every language', () => {
+  const names = { level: new Map([['start', '开始']]), part: new Map(), wiki: new Map() }
+  const field = { zh: '上一关的「开始」', en: 'The previous level', fr: '<level-ref to="start"></level-ref>', ja: '<level-ref to="missing"></level-ref>' }
   assert.deepEqual(refProblems(field, 'title', names), ['title refers to a missing level: missing'])
 })
 

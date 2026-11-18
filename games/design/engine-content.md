@@ -23,7 +23,7 @@
 | 章 `chapter` | 游戏 `chapters/<名>.json` | `levels: list<level>`、`rows`、文案与显示配置 |
 | 游戏配置 `game` | 游戏 `game.json` | 选包、`chapters: list<chapter>`、入口文案 |
 | 包声明的对象 | `<声明目录>/<名>.json` | 自动参与引用、标签、关系、覆盖、来源、文案和操作集 |
-| 包声明的内容类型 | 声明指定的目录 | 例如 `qed/wordset`、`circuit/quote`，以及图像内容包各自的 power、box |
+| 包声明的内容类型 | 声明指定的目录 | 例如 `qed/wordset`，以及图像内容包各自的 power、box |
 
 对象目录默认取类型短名，例如两套图像课程包各用自己的 `box/` 和 `power/`。声明可指定 `folder`，如 `circuit/part` 的 `parts/`。一个对象一个文件，文件名提供 id，文件不再重复存对象 id。任务、阶段、菜单等对象内部的身份仍写在内部。标签只提供集合和 Studio 的名字、说明，不承担托盘、百科分组或概念功能；同一个词条可进几个分组，未分组的归「其它」。组装后的 `glossary`、`partDefs` 和 `eras` 是运行与显示投影，不是可写文件。
 

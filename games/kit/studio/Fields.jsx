@@ -112,7 +112,7 @@ export function Field({ field, label, onEdit, ctx, onRemove = null }) {
     switch (field.kind) {
       case 'text': return <TextField key={lang} lang={lang} value={field.value}
         onSet={(value) => onEdit(field.path, { set: value, lang: typeof field.value === 'string' ? undefined : lang }, 'text')}
-        label={name} field={ctx.textField?.(field.path) ?? ''} names={ctx.names} findings={found} />
+        label={name} names={ctx.names} findings={found} />
       case 'num': return <NumberField field={field} onSet={set} label={name} />
       case 'bool': return <input type="checkbox" className="field-check" checked={Boolean(field.value)} onChange={(e) => set(e.target.checked)} aria-label={name} />
       case 'str': return <StringField field={field} onSet={set} label={name} />

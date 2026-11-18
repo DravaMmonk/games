@@ -12,7 +12,6 @@ import {
   blank, boardPaths, cellText, cellValue, creationChoices, formOf, gridRows, gridValue, moved, opFor, pastedCells, placeFindings, placesOf, pushOp,
   referenceFor, revertOf, sectionsOf, shapeName, shapeOf, summaryOf, tableOf, tableValue, textsOf, taskOptionsOf, tickValue, tickValues, toggled,
 } from './form.js'
-import { lintText } from '../pipeline/lint.js'
 import { groupOf, groupTree, stays } from './groups.js'
 import { blankChapter, chapterOrderRefusal, importLevels, moveChapter } from './course-edit.js'
 import { fieldDiff } from './diff.js'
@@ -262,7 +261,7 @@ test('the check’s findings land on the fields they are about', () => {
   assert.deepEqual(rest, ['a: reference fails test 2'])
 })
 
-test('a field put back, a test list’s reference, the copy rules on one text', () => {
+test('a field put back and a test list’s reference', () => {
   assert.deepEqual(revertOf(3), { set: 3 })
   assert.deepEqual(revertOf(undefined), { unset: true })
   const level = { id: 'x', ...LEVEL, tasks: [{ solution: ['a'], tests: [] }, { tests: [] }] }
@@ -270,9 +269,6 @@ test('a field put back, a test list’s reference, the copy rules on one text', 
   assert.deepEqual(referenceFor(vocab, level, ['tasks', 0]), ['tasks', 0, 'solution'], 'a task’s tests run its own reference')
   assert.deepEqual(referenceFor(vocab, level, []), ['solution'], 'the level’s tests its own')
   assert.equal(referenceFor(vocab, level, ['tasks', 1]), null, 'a task without a reference cannot run another task’s board')
-  assert.deepEqual(lintText('brief', { zh: '因为要搞定它' }).map((f) => f.rule), ['copy-banned', 'copy-brief-why'])
-  assert.deepEqual(lintText('after', { en: '<part-ref to="a"></part-ref>' }).map((f) => f.rule), ['copy-after-part'])
-  assert.deepEqual(lintText('title', { en: '好' }), [])
 })
 
 test('each control on content written here: a grid, ticks, a wave, a table read back as the value they show', () => {

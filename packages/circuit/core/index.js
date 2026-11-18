@@ -13,7 +13,6 @@ export function register(kernel) {
   kernel.tag(PRIMITIVE_TAG, 'circuit/part')
   kernel.kind('circuit/part', partMeaning)
   kernel.kind('circuit/tray', trayMeaning)
-  kernel.kind('circuit/quote', { type: 'circuit/quote', read: value => value, selector: 'quote' })
   kernel.play('circuit/board', { ...boardPlay, runtime: circuitRuntime })
   kernel.check('circuit/boards', boardChecks)
   kernel.agent('circuit/board', {

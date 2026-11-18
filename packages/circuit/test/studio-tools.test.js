@@ -150,7 +150,7 @@ test('on every starter: the palette indexes every level and entry', () => {
   }
 })
 
-test('on every starter: the copy table’s rows: an era’s own texts and its levels’, the whole game, the encyclopedia; each with its copy rule and whose it is', async () => {
+test('on every starter: the copy table’s rows: an era’s own texts and its levels’, the whole game, the encyclopedia; each with its field path and owner', async () => {
   for (const game of STARTERS) {
     const content = starter(game)
     const { vocabulary } = await runtimeOf(content)
@@ -161,7 +161,7 @@ test('on every starter: the copy table’s rows: an era’s own texts and its le
     const head = era.findIndex((r) => !r.file.game)
     assert.ok(head >= 0 && era.slice(0, head).every((r) => r.file.game && r.path[0] === 'chapters' && r.path[1] === 0 && r.name === String(content.eras[0].id)), game)
     assert.ok(era.slice(head).every((r) => own.includes(r.file.level) && r.name === r.file.level), game)
-    assert.ok(own.every((id) => era.some((r) => r.file.level === id && r.field === 'title')), game)
+    assert.ok(own.every((id) => era.some((r) => r.file.level === id && r.path.length === 1 && r.path[0] === 'title')), game)
     const all = copyRows(content, vocabulary, 'all', order, 'game')
     assert.ok(all.length >= era.length && all[0].file.game, game)
     // The package workspace has the package's texts alone: nothing of game.json or the course.
@@ -171,7 +171,7 @@ test('on every starter: the copy table’s rows: an era’s own texts and its le
     assert.equal(new Set(all.map((r) => r.key)).size, all.length, `${game}: every row its own key`)
     const glossary = copyRows(content, vocabulary, 'glossary', order)
     const first = content.glossary.entries[0]
-    assert.deepEqual(glossary.find((r) => r.name === first.id && r.field === 'body').path, ['entries', 0, 'body', 0], game)
+    assert.deepEqual(glossary.find((r) => r.name === first.id && r.path[2] === 'body').path, ['entries', 0, 'body', 0], game)
     assert.ok(glossary.every((r) => r.file.glossary), game)
   }
 })

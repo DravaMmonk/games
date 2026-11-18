@@ -11,9 +11,8 @@ import { runtimeIds } from '../engine/runtime.js'
 //                                  it the last report of a later step that stopped on this one's product
 //   gate <step>                    run the step's gate and record it; exit 1 when it fails
 //   eras                           the course's eras as the blueprint lays them out (for the level designer)
-//   terminology [--json]           read-only term registry, reference errors and literal-name review candidates
+//   terminology [--json]           read-only term registry and reference errors
 //   pedagogy                       read-only structural pedagogy findings (no pipeline state written)
-//   lint                           the copy lint
 //   vocab                          the domain's vocabulary and the operations, as JSON
 //   resolve <k> --why "…"          mark finding k of the last review fixed (by which change)
 //   queue                          every gate again; when all are clean, the game's changes go into the review queue
@@ -25,16 +24,15 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { closeGames } from '../engine/games.mjs'
-import { runtimeOf, readContent, gameDirectory, contentRoot } from '../engine/resolver.js'
+import { runtimeOf, readContent, gameDirectory, contentRoot, packageDirectory } from '../engine/resolver.js'
 import { copyWithoutTextKeys } from '../engine/catalogs.js'
 import { describe } from '../engine/vocabulary.js'
 import { operationsFor } from '../engine/ops/operations.js'
 import { knownGames } from '../engine/cli-args.js'
 import { erasOf } from './blueprint.js'
-import { lintCopy } from './lint.js'
 import { STEPS, briefOf, pedagogyOf, stepOf, terminologyOf } from './steps.js'
 
-const USAGE = 'npm run pipeline -- <game> (status | brief <step> | run <step> [--from <step>] [--scope <scope>] | gate <step> [--scope <scope>] | eras | lint | pedagogy | terminology [--json] | vocab | resolve <k> --why … | queue | comment <at> --owner <step> --why …)'
+const USAGE = 'npm run pipeline -- <game> (status | brief <step> | run <step> [--from <step>] [--scope <scope>] | gate <step> [--scope <scope>] | eras | pedagogy | terminology [--json] | vocab | resolve <k> --why … | queue | comment <at> --owner <step> --why …)'
 const argv = process.argv.slice(2)
 const option = (name) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : undefined)
 const words = argv.filter((a, k) => !a.startsWith('--') && !argv[k - 1]?.startsWith('--'))
@@ -59,7 +57,7 @@ async function gate(step, state) {
   return { failures, reports }
 }
 
-const show = ({ failures, reports }, clean = 'gate clean') => {
+const show = ({ failures, reports = [] }, clean = 'gate clean') => {
   for (const f of failures) console.log(`FAIL ${f.rule} ${f.at}: ${f.says}`)
   for (const f of reports) console.log(`REPORT ${f.rule} ${f.at}: ${f.says}`)
   console.log(failures.length ? `${failures.length} failure(s)` : clean)
@@ -68,13 +66,12 @@ const show = ({ failures, reports }, clean = 'gate clean') => {
 // The commands an agent's directory offers, each a script that runs one tool on this game and logs its exit.
 const COMMANDS = {
   op: { run: () => `if [ "$1" = list ]; then node ../games/kit/engine/ops/cli.js list; else node ../games/kit/engine/ops/cli.js ${game} "$@"; fi`, about: './op --file <changeset.json> [--dry-run]   run a changeset through the operation set (./op list: the operations; ./op log: the change log)' },
-  check: { run: () => `node ../games/kit/engine/check.js ${game}`, about: './check   npm run check for this game: vocabulary, course audit, copy and links, every reference / naive answer' },
+  check: { run: () => `node ../games/kit/engine/check.js ${game}`, about: './check   npm run check for this game: vocabulary, course audit, link targets, every reference / naive answer' },
   gate: { run: (step) => `node ../games/kit/pipeline/pipeline.mjs ${game} gate ${step} "$@"`, about: './gate [--scope <scope>]   this step\'s gate: every failure names a rule' },
   deps: { run: () => `node ../games/kit/engine/deps.js ${game} --levels`, about: './deps   the part dependency graph (Mermaid), levels included' },
   eras: { run: () => `node ../games/kit/pipeline/pipeline.mjs ${game} eras`, about: './eras   the course\'s eras as the blueprint lays them out' },
-  lint: { run: () => `node ../games/kit/pipeline/pipeline.mjs ${game} lint`, about: './lint   the copy lint' },
   pedagogy: { run: () => `node ../games/kit/pipeline/pipeline.mjs ${game} pedagogy`, about: './pedagogy   read-only structural pedagogy findings; reports still need semantic review' },
-  terminology: { run: () => `node ../games/kit/pipeline/pipeline.mjs ${game} terminology "$@"`, about: './terminology [--json]   this game\'s glossary registry, reference checks and literal-name candidates for semantic review' },
+  terminology: { run: () => `node ../games/kit/pipeline/pipeline.mjs ${game} terminology "$@"`, about: './terminology [--json]   this game\'s glossary registry and reference checks' },
 }
 
 function inputs(step, state, scope) {
@@ -82,14 +79,14 @@ function inputs(step, state, scope) {
   const review = state.steps.review?.runs?.at(-1)?.findings?.filter((f) => f.fix && !f.resolved && f.owner === step.id) ?? []
   const last = state.steps[step.id]?.gates?.at(-1)
   const lines = [
-    `- Game: ${game} (its folder: ${dir}; modules: ${runtimeIds(content).join(', ')})`,
+    `- Game: ${game} (its folder: ${dir}; runtime packages: ${runtimeIds(content).join(', ')})`,
     `- Repository root: ${contentRoot()} (games/design/README.md is ${resolve(import.meta.dirname, '../../design/README.md')})`,
     `- Course material: ${['design/README.md', 'DESIGN.md'].map(file => resolve(dir, file)).find(existsSync) ?? '(none)'}`,
     // The sources the blueprint teaches from, each said to be there or not (the agent reads them; a missing one is a gap).
     ...(content.blueprint?.sources?.length ? [`- The blueprint's sources: ${content.blueprint.sources.map((f) => `${resolve(contentRoot(), f)}${existsSync(resolve(contentRoot(), f)) ? '' : ' (missing)'}`).join(', ')}`] : []),
     `- Blueprint: ${content.blueprint ? resolve(dir, 'blueprint.json') : '(none yet)'}`,
     `- Vocabulary: ./vocabulary.json (the domain's items and schemas, and the operations)`,
-    `- Module code: ${runtimeIds(content).map(module => resolve(import.meta.dirname, '../modules', module)).join(', ')}`,
+    `- Runtime package code: ${runtimeIds(content).map(id => packageDirectory(id)).join(', ')}`,
     ...(scope ? [`- Scope of this run: ${scope}`] : []),
   ]
   const out = [`## Inputs\n\n${lines.join('\n')}`]
@@ -198,18 +195,13 @@ if (command === 'status') {
   if (argv.includes('--json')) console.log(JSON.stringify(result, null, 2))
   else {
     console.log(`${result.terms.length} registered terms; definitions are the existing entry bodies`)
-    show(result, 'no registry/reference errors; terminology completeness still requires semantic review')
+    show(result, 'no registry or reference errors')
   }
   code = result.failures.length ? 1 : 0
 } else if (command === 'pedagogy') {
   const result = await pedagogyOf(game)
   show(result, 'no structural failures; reports still require semantic review')
   code = result.failures.length ? 1 : 0
-} else if (command === 'lint') {
-  const found = lintCopy(readContent(game))
-  for (const f of found) console.log(`FAIL ${f.rule} ${f.at}: ${f.says}`)
-  console.log(found.length ? `${found.length} finding(s)` : 'copy lint clean')
-  code = found.length ? 1 : 0
 } else if (command === 'vocab') {
   const content = readContent(game)
   console.log(JSON.stringify({ vocabulary: describe((await runtimeOf(content)).vocabulary), operations: Object.keys(operationsFor((await runtimeOf(content)).vocabulary)) }, null, 1))

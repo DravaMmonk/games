@@ -8,7 +8,7 @@ export const capabilities = createCapabilityRegistry()
 export const vocabulary = {
   plugins: { tags: { key: '<member>:<namespace>/<name>', register: 'tag(fullName, member)', reserved: ['kernel'], readers: [...kernelTags.values()].map(({ name, member }) => ({ name, member })) }, core: ['play', 'kind', 'state', 'check', 'agent', 'tag', 'object', 'capability', 'implement', 'reference'], view: ['play', 'editor', 'display', 'game', 'shell', 'unlocks', 'editorExtension'], exports: ['kernel', 'kernel/view'], declarations: 'kinds/<name>.json', shapes: 'shapes/<name>.json', capabilities: 'capabilities/<kind>.json' },
   meanings: capabilities.meanings,
-  references: { level: { target: 'level', quoteOrder: 1 } },
+  references: { level: { target: 'level' } },
   capabilities: capabilities.tables,
   kinds: capabilities.kinds,
   languages: capabilities.languages,

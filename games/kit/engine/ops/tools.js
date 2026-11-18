@@ -302,7 +302,7 @@ const tools = {
     },
   },
   names: {
-    about: { zh: '读取游戏引用和已登记对象类型的显示名称、标题和标签，供文案引用。', en: 'The labels, titles and names shown by a game’s references and registered object kinds, including names copy may quote.' },
+    about: { zh: '读取游戏引用和已登记对象类型的显示名称、标题和标签，供文案引用。', en: 'The labels, titles and names shown by a game’s references and registered object kinds.' },
     params: { game: 'string', changeset: 'object?', scope: 'string?' },
     async run({ game, changeset = null, scope }) {
       const content = await contentAfter(game, changeset, scope)
@@ -311,16 +311,14 @@ const tools = {
         tags,
         levels: packageLevelOrder(content).map(id => ({ id, label: id, title: levelIn(content, id).title })),
         ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.namesForTool?.({ content }))),
-        entries: (content.glossary?.entries ?? []).map(e => ({ id: e.id, title: e.title })), quotes: [],
+        entries: (content.glossary?.entries ?? []).map((e) => ({ id: e.id, title: e.title })),
       }
       const shown = await gameOf(content)
-      const domain = await runtimeOf(content)
       return {
         tags,
         levels: shown.levels.map((l) => ({ id: l.id, label: String(shown.levelLabel(l)), title: l.title })),
         ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.namesForTool?.({ content, game: shown }))),
         entries: (shown.glossary?.entries ?? []).map((e) => ({ id: e.id, title: e.title })),
-        quotes: domain.spec(content).quotes ?? [],
       }
     },
   },

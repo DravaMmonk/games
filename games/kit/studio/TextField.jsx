@@ -2,20 +2,19 @@
 // (<level-ref>, <part-ref>, <wiki-ref>, ../shell/refs.js) shows as a chip with the name it will show in the game, and
 // is put in from a picker that searches the game's levels, parts and entries, never typed as a tag: opened by 🔗, by
 // Ctrl/⌘+L (a selection becomes the search and is replaced by the link) or by typing [[ (【【 from a Chinese keyboard);
-// the links the other language has and this one lacks come first. The copy rules a machine can see
-// (../engine/text.js, ../pipeline/lint.js) are checked as it is typed, beside it.
+// the links the other language has and this one lacks come first. Link targets are checked
+// as the text is edited (../engine/text.js).
 //
-//   <TextField value field onSet names compact? />   onSet(text): the text typed into the selected language; compact: the findings
+//   <TextField value onSet names compact? />   onSet(text): the text typed into the selected language; compact: the findings
 //                                                    a count on the text, listed while it is being edited
-//   names: { level: Map(id → { label, title }), part: Map(key → name), wiki: Map(id → title), quotes, onLevel(id) }
+//   names: { level: Map(id → { label, title }), part: Map(key → name), wiki: Map(id → title), onLevel(id) }
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link2 } from 'lucide-react'
 import { getLang, sideOf, tr } from '../shell/i18n.js'
 import { REF, refProblems } from '../engine/text.js'
-import { lintText } from '../pipeline/lint.js'
 import { OptionList } from './Picker.jsx'
 import { MOD } from './Shortcuts.jsx'
-import { firstText, textIn } from '../engine/i18n.js'
+import { textIn } from '../engine/i18n.js'
 
 const HAS_REF = /<(level|part|wiki)-ref to="[^"]+"><\/\1-ref>/
 const tag = (kind, to) => `<${kind}-ref to="${to}"></${kind}-ref>`
@@ -205,22 +204,12 @@ function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, 
   )
 }
 
-/** The findings on a text: links that resolve, the copy rules for its field. */
-export function textFindings(pair, field, names) {
+export function textFindings(pair, names) {
   if (!names) return []
-  const namesById = {
-    level: new Map([...names.level].map(([id, l]) => [id, String(firstText(l.title) ?? '')])),
-    part: new Map([...names.part].map(([k, n]) => [k, String(firstText(n) ?? '')])),
-    wiki: new Map([...names.wiki].map(([k, n]) => [k, String(firstText(n) ?? '')])),
-  }
-  const found = [
-    ...refProblems(pair, '', namesById, names.quotes ?? []).map((s) => s.trim()),
-    ...lintText(field, pair).map((f) => `${f.rule}: ${f.says}`),
-  ]
-  return [...new Set(found)]
+  return [...new Set(refProblems(pair, '', names).map((problem) => problem.trim()))]
 }
 
-export function TextField({ value, onSet, label, field = '', names, findings = [], compact = false, lang = getLang(), placeholder, onFocus, onBlur }) {
+export function TextField({ value, onSet, label, names, findings = [], compact = false, lang = getLang(), placeholder, onFocus, onBlur }) {
   const text = textIn(value, lang)
   // Typed text kept here while the operation it makes is on its way back.
   const [draft, setDraft] = useState(text)
@@ -246,7 +235,7 @@ export function TextField({ value, onSet, label, field = '', names, findings = [
     ...[...names.wiki].map(([k, n]) => ({ value: `wiki:${k}`, label: k, title: n, group: tr('百科') })),
   ] : []), [names, pickerOpen])
   const close = () => { setLinking(null); box.current?.focus() }
-  const all = [...new Set([...textFindings({ [lang]: draft }, field, names), ...findings])]
+  const all = [...new Set([...textFindings({ [lang]: draft }, names), ...findings])]
   return (
     <div onFocus={onFocus} onBlur={(event) => {
       if (!event.currentTarget.contains(event.relatedTarget)) pending.current = null

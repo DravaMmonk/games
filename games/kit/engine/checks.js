@@ -7,11 +7,8 @@ import { contentSchemas } from './content.js'
 // run it.
 //
 // A game is checked through its spec, which its domain makes under node (the package core runtime: { vocabulary,
-// spec(content), validate(spec) }): { id, domain, title, course, levels, texts?, quotes?, audit?() → [{ rule, level,
+// spec(content), validate(spec) }): { id, domain, title, course, levels, texts?, audit?() → [{ rule, level,
 // part, text? }] }.
-// `texts` are the objects whose strings a player reads (levels are always included); `quotes` the level titles that
-// are also names of parts or ideas, which a text may quote (any other reference to a level, part or encyclopedia
-// entry is a link, ../shell/refs.js);
 // `audit` adds the game's own course problems to the shared audit's. game.json may leave findings open (`open`, the
 // work list in its design doc): they are listed, not failed, and one met since fails until it is dropped.
 import { REF, refProblems } from './text.js'
@@ -37,9 +34,8 @@ export async function checkPackage(content, { domain, root, mutants = false }) {
   if (wrong.length) return lines
   lines.push(...meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? []))
   const names = { ...registeredReferenceNames(content), ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, vocabulary: domain.vocabulary }))) }
-  const quotes = meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.quotes?.({ content }) ?? [])
   for (const [name, value] of Object.entries({ levels: content.levels, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
-    for (const problem of refProblems(value, name, names, quotes)) lines.push({ fail: true, text: `text ${problem}` })
+    for (const problem of refProblems(value, name, names)) lines.push({ fail: true, text: `text ${problem}` })
   }
   for (const level of content.levels) {
     try {
@@ -88,7 +84,7 @@ export async function checkGame(content, { domain, mutants = false, cache = null
   }
   const extraTexts = Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content, game, spec })))
   const placed = new Set(spec.levels.map(level => level.id))
-  for (const [name, value] of Object.entries({ levels: spec.levels, ...spec.texts, ...extraTexts })) for (const problem of refProblems(value, name, names, spec.quotes)) fail(`text ${problem}`)
+  for (const [name, value] of Object.entries({ levels: spec.levels, ...spec.texts, ...extraTexts })) for (const problem of refProblems(value, name, names)) fail(`text ${problem}`)
 
   // An entry is linked only where it is open already: in a level it opens at or after, in an entry opening no earlier.
   // The links are read off every text of the content, by its schema, whatever its fields are called.

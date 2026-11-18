@@ -30,7 +30,7 @@ const CopyRow = memo(function CopyRow({ row, first, found, names, side, wording,
         return (
           <div role="cell" aria-colspan={shared ? 2 : undefined} className={`${shared ? 'copy-shared' : ''} ${was !== undefined ? 'is-own' : ''}`} key={`${column}:${lang}`} title={was !== undefined ? was : undefined}>
             {fixed ? <span className="copy-fixed">{row.value}</span> : <TextField lang={lang} value={row.value} onSet={(text) => onEdit(copyEdit(row, lang, text, side))}
-              label={`${label} · ${shared ? tr('共享文本', 'Shared text') : lang}`} field={row.field} names={names} findings={found} compact />}
+              label={`${label} · ${shared ? tr('共享文本', 'Shared text') : lang}`} names={names} findings={found} compact />}
             {was !== undefined && <button type="button" className="kit-btn editor-tool copy-restore" title={tr('恢复包里的原文', 'Back to the package’s wording')}
               onClick={() => onEdit(copyEdit(row, lang, null, side))}><RotateCcw size={12} /></button>}
           </div>
@@ -79,8 +79,8 @@ export default function CopyTable({ side = 'package', content, vocabulary, scope
       const b = textIn(row.value, right)
       const empty = typeof row.value !== 'string' && (!a.trim() || !b.trim())
       if (queryText && ![a, b, row.name, showPath(row.path)].some((text) => text.toLowerCase().includes(queryText))) continue
-      if (only && !foundOf(row).length && !textFindings({ [left]: a }, row.field, names).length
-        && !textFindings({ [right]: b }, row.field, names).length) continue
+      if (only && !foundOf(row).length && !textFindings({ [left]: a }, names).length
+        && !textFindings({ [right]: b }, names).length) continue
       if (empty) missing++
       if (!missingOnly || empty) rows.push(row)
     }

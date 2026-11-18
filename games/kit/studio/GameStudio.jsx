@@ -20,7 +20,6 @@ import { placesOf } from './form.js'
 import { itemOf } from './worklist.js'
 import { usePref } from './prefs.js'
 import { confirmDelete } from './delete.js'
-import { textField } from './copy.js'
 import { blankChapter, chapterName, chaptersOrder, moveChapter, newChapterName } from './course-edit.js'
 import { missingDependencies, packageAddOps, packageRemoveOps } from './game-packages.js'
 import { useChangeset } from './useChangeset.js'
@@ -122,7 +121,6 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     level: new Map(rawNames.levels.map((l) => [l.id, l])),
     part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
     wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    quotes: rawNames.quotes,
     onLevel: () => {},
   }, [rawNames])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
@@ -195,7 +193,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     else select({ game: true })
     if (path.length) pickField(path)
   }
-  const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, textField, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
+  const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
   const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
   const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
   const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }

@@ -31,47 +31,23 @@ export function lacking(other, text) {
   }
   return out
 }
-// Ways of pointing at another level without a link: by position, or 「its title」 followed by 那一关.
-const POINTING = { zh: /上一关|下一关|前一关|(?<!最)后一关|前两关|前几关|」那一?关/, en: /\b(the last|previous|next|earlier) levels?\b|\blevel on how\b/i }
-const label = kind => referenceKinds.get(kind)?.label ?? kind
-
-/**
- * Problems with references inside `value` (../shell/refs.js), each as '<path> …'. A reference is written
- * <kind-ref to="id"> (closed at once) and names something the game has;
- * each language is checked separately. A level is never pointed at by position ("上一关", "the last level"), and no level,
- * object by 「its name」 instead of a link.
- * names: { [kind]: Map }, each mapping from id to its name; quotes: names that may stay quoted (a level
- * title that is also the name of an idea). An object with an `id` and a title or name is that thing: quoting its own
- * name inside it is fine.
- */
-export function refProblems(value, path, names, quotes = [], out = [], visited = new Set()) {
-  const byName = new Map()
-  for (const kind of Object.keys(names).sort((a, b) => (referenceKinds.get(a)?.quoteOrder ?? 2) - (referenceKinds.get(b)?.quoteOrder ?? 2))) for (const [id, name] of names[kind] ?? []) byName.set(name, { kind, id })
-  const own = new Set(Object.values(names).flatMap((m) => [...m.keys()]))
-  const refs = (s) => [...String(s).matchAll(REF)].map((m) => `${m[1]}:${m[2]}`).sort().join(' ')
-  const check = (text, lang, at, owner) => {
-    for (const r of refs(text).split(' ').filter(Boolean)) {
-      const [kind, id] = [r.slice(0, r.indexOf(':')), r.slice(r.indexOf(':') + 1)]
-      if (!names[kind]?.has(id)) out.push(`${at} refers to a missing ${label(kind)}: ${id}`)
-    }
-    const pointing = POINTING[lang] && text.match(POINTING[lang])?.[0]
-    if (pointing) out.push(`${at} points at a level without a link (${pointing}): ${text.slice(0, 50)}`)
-    if (lang !== 'zh') return
-    for (const m of text.matchAll(/「([^」]{1,24})」/g)) {
-      const it = byName.get(m[1])
-      if (it && it.id !== owner && !quotes.includes(m[1])) out.push(`${at} quotes the name of ${label(it.kind)} ${it.id} instead of linking it: 「${m[1]}」`)
-    }
-  }
-  const walk = (v, at, mine) => {
+/** Validate explicit links in translatable text against the registered targets. */
+export function refProblems(value, path, names) {
+  const out = []
+  const visited = new Set()
+  const walk = (v, at) => {
     if (!v || typeof v !== 'object' || visited.has(v) || ArrayBuffer.isView(v)) return
     visited.add(v)
     if (isText(v)) {
-      for (const [lang, text] of textEntries(v)) check(text, lang, at, mine)
+      for (const [, text] of textEntries(v)) {
+        for (const [, kind, id] of text.matchAll(REF)) {
+          if (!names[kind]?.has?.(id)) out.push(`${at} refers to a missing ${referenceKinds.get(kind)?.label ?? kind}: ${id}`)
+        }
+      }
       return
     }
-    const self = own.has(v.id) && (v.title || v.name) ? v.id : own.has(v.key) && v.name ? v.key : mine
-    for (const [key, inner] of Object.entries(v)) if (!SKIP.has(key)) walk(inner, `${at}.${key}`, own.has(key) ? key : self)
+    for (const [key, inner] of Object.entries(v)) if (!SKIP.has(key)) walk(inner, `${at}.${key}`)
   }
-  walk(value, path, null)
+  walk(value, path)
   return out
 }

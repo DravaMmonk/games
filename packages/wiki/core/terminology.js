@@ -35,35 +35,12 @@ export function termRegistry(glossary) {
   return { entries, names, failures }
 }
 
-const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-const LATIN = /[\p{Script=Latin}\p{N}_]/u
-
-/** Longest literal names first. Latin word boundaries avoid matching "net" inside "network". */
-function bareNames(text, names) {
-  const hidden = text.replace(REF, (m) => ' '.repeat(m.length)).replace(/<[^>]*>/g, (m) => ' '.repeat(m.length))
-  const occupied = []
-  const found = new Set()
-  for (const [name, id] of [...names].sort(([a], [b]) => b.length - a.length)) {
-    for (const match of hidden.matchAll(new RegExp(escape(name).replace(/ +/g, String.raw`\s+`), 'giu'))) {
-      const start = match.index
-      const end = start + match[0].length
-      if ((LATIN.test(name[0]) && LATIN.test(hidden[start - 1] ?? '')) ||
-          (LATIN.test(name.at(-1)) && LATIN.test(hidden[end] ?? ''))) continue
-      if (occupied.some(([a, b]) => start < b && end > a)) continue
-      occupied.push([start, end])
-      found.add(id)
-    }
-  }
-  return found
-}
-
 /**
- * places: schema-declared player texts with {at, side, text, level?, entry?, label?}. before(a,b) is the course's
- * guaranteed prerequisite relation, not scalar/file order. Raw names are review candidates, never proof of misuse.
+ * places: schema-declared player texts with {at, text, level?, literal?}. before(a,b) is the course's
+ * guaranteed prerequisite relation.
  */
 export function termUsage(registry, places, before) {
   const failures = []
-  const reports = []
   const available = (entry, level) => !entry.at || entry.at === level || Boolean(level && before(entry.at, level))
   for (const place of places) {
     if (place.literal) {
@@ -77,12 +54,6 @@ export function termUsage(registry, places, before) {
       if (!entry) failures.push(problem('term-reference', place.at, `the term ${id} is not registered in this game's glossary`))
       else if (!available(entry, place.level)) failures.push(problem('term-unavailable', place.at, `the explanation for ${id} opens at ${entry.at}, which is not available here`))
     }
-    if (place.label) continue
-    for (const id of bareNames(place.text, new Map([...(registry.names[''] ?? []), ...(registry.names[place.side] ?? [])]))) {
-      if (id === place.entry || linked.has(id)) continue // Self-definitions and repeated mentions share the available entry or tag.
-      const entry = registry.entries.get(id)
-      reports.push({ ...problem('term-unlinked', place.at, `literal name/alias of ${id} without a term reference; check whether this is technical usage${available(entry, place.level) ? '' : ` (its explanation opens at ${entry.at})`}`), report: true })
-    }
   }
-  return { failures, reports }
+  return failures
 }

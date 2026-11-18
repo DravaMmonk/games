@@ -66,6 +66,5 @@ export function runtimeSpec(content, runtimes) {
     texts: {
       ...Object.fromEntries(specs.map((spec, index) => [scopes[index].id, spec.texts ?? {}])),
     },
-    quotes: meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.quotes?.({ content }) ?? []),
   }
 }

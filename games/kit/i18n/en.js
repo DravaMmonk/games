@@ -859,8 +859,6 @@ export default {
   "文件路径 → 它占的 token 和它的段（函数）": "a file’s path → its tokens and its segments (functions)",
   "文字": "Text",
   "文案表": "Copy table",
-  "文案里可以照字面引用的名字（说的是别的东西）": "names a text may quote rather than link (they mean something else there)",
-  "文案里可以直接引用、不用链接的名字": "names copy may quote rather than link",
   "斑点的中心 (x, y)": "the blob’s centre (x, y)",
   "斑点：每格 base + amp × 一个随机数，种子定下是哪一张": "speckles: base + amp × a random number a cell, the seed saying which",
   "斑马板：圆心 (cx, cy) 起越往外越密的同心圆，0.5 ± A": "a zone plate: rings from (cx, cy) getting denser outwards, 0.5 ± A",

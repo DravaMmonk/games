@@ -16,7 +16,7 @@ import { placesOf } from './form.js'
 import { itemOf } from './worklist.js'
 import { usePref } from './prefs.js'
 import { confirmDelete } from './delete.js'
-import { allCopyRows, copyFieldOf, copyFiles, textField } from './copy.js'
+import { allCopyRows, copyFieldOf, copyFiles } from './copy.js'
 import { groupTree } from './groups.js'
 import { sidebarSearch } from './sidebar-list.js'
 import { useChangeset } from './useChangeset.js'
@@ -94,7 +94,6 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     level: new Map(rawNames.levels.map((l) => [l.id, l])),
     part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
     wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    quotes: rawNames.quotes,
     onLevel: () => {},
   }, [rawNames])
   const order = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
@@ -137,7 +136,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type] && Object.keys(content.registries?.[type] ?? {}).length).map(info => [listOfType(info.type), tr(...typeName(info))]),
   ]
   const matches = sidebarSearch(query)
-  const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, textField, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
+  const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
   // A game edits only its own files here; its packages' texts get its own wording in the table.
   const sideField = picked && (side === 'package' || picked.at.game) ? picked : null
   const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout

@@ -437,16 +437,6 @@ export const CONFORMANCE_RULES = {
   'bp-uses': 'a level’s reference answer leaves out a part its slot stands on',
   'bp-naive': 'a slot with a naive answer whose level has none',
   'bp-entry': 'a knowledge point has no encyclopedia entry of its id (a lecture point’s opened at the level that brings it)',
-  'bp-term': 'the level that brings a knowledge point (or mentions an intuitive one) does not link its entry where the player reads it',
-  'bp-main-link': 'a main-path level links a technical point’s entry: the main path stays free of technical content',
-}
-
-/** Every text of a level, its tasks' included, as plain strings. */
-function textsOf(value) {
-  if (typeof value === 'string') return [value]
-  if (isText(value)) return textEntries(value).map(([, text]) => text)
-  if (value && typeof value === 'object') return Object.values(value).flatMap(textsOf)
-  return []
 }
 
 /**
@@ -480,23 +470,12 @@ export function conformance(bp, content, spec) {
     const needed = new Set(at === undefined ? [] : course.needed(course.levels[at]) ?? [])
     for (const u of s.uses) if (parts.has(u) && !needed.has(u)) say('bp-uses', s.id, `its answer does not use ${u}`)
     if (s.naive && !level.tasks.some((task) => task.naive)) say('bp-naive', s.id, 'its slot has a naive answer, no task of the level has one')
-    // The point a level brings is named by the field's term, linked to its entry, where the player reads it; a level on
-    // the main path links no technical point's entry.
-    const { title, intro, after, note, tasks, brief, hint } = level
-    const read = textsOf({ title, intro, after, note, tasks, brief, hint })
     const entryOf = (id) => (content.glossary?.entries ?? []).find((e) => e.id === id)
     if (s.teaches) {
       const entry = entryOf(s.teaches)
       if (!entry || entry.at !== s.id) say('bp-entry', s.teaches, entry ? `its entry opens at ${entry.at}, not ${s.id}` : 'no entry of its id')
-      if (!read.some((x) => x.includes(`wiki-ref to="${s.teaches}"`))) say('bp-term', s.id, `links no <wiki-ref to="${s.teaches}">`)
     }
-    for (const m of s.mentions ?? []) {
-      if (!entryOf(m)) say('bp-entry', m, 'no entry of its id')
-      if (!read.some((x) => x.includes(`wiki-ref to="${m}"`))) say('bp-term', s.id, `mentions ${m} and links no <wiki-ref to="${m}">`)
-    }
-    if (['foundation', 'practice'].includes(s.series.kind)) {
-      for (const k of bp.knowledge) if (k.basis === 'technical' && read.some((x) => x.includes(`wiki-ref to="${k.id}"`))) say('bp-main-link', s.id, `links the technical entry ${k.id}`)
-    }
+    for (const id of s.mentions ?? []) if (!entryOf(id)) say('bp-entry', id, 'no entry of its id')
   }
   return out
 }

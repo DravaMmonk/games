@@ -5,22 +5,21 @@ import { meaningsOf } from '../engine/kind-meanings.js'
 
 export function reviewTerminology(content, spec, vocabulary) {
   const terms = meaningsOf(contentSchemas.get(content) ?? vocabulary).find(meaning => meaning.terminology)?.terminology
-  if (!terms) return { terms: [], failures: [], reports: [] }
+  if (!terms) return { terms: [], failures: [] }
   const { termRegistry, termUsage } = terms
   const registry = termRegistry(content.glossary)
   const places = searchable(content, vocabulary, ['text']).map((p) => {
     const entry = p.entry ? content.glossary.entries.find(item => item.id === p.entry) : null
     const path = p.path.join('.')
     return {
-      at: `${p.file}:${path}${p.side ? `.${p.side}` : ''}`, side: p.side, text: p.text,
-      level: entry ? entry.at : p.level, entry: entry?.id,
-      label: p.path.some((k) => ['title', 'name', 'label', 'step', 'unit', 'aliases'].includes(k)),
+      at: `${p.file}:${path}${p.side ? `.${p.side}` : ''}`, text: p.text,
+      level: entry ? entry.at : p.level,
       literal: p.literal,
     }
   })
-  const usage = termUsage(registry, places, (a, b) => spec.course.before(a, b))
+  const failures = termUsage(registry, places, (a, b) => spec.course.before(a, b))
   return {
     terms: [...registry.entries.values()],
-    failures: [...registry.failures, ...usage.failures], reports: usage.reports,
+    failures: [...registry.failures, ...failures],
   }
 }

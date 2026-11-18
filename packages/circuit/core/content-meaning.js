@@ -65,7 +65,6 @@ export const partMeaning = {
     owners: content => Object.keys(content.partDefs?.parts ?? {}).map(part => [part, part]),
   },
   tools: circuitTools,
-  quotes: ({ content }) => Object.values(content.registries?.['circuit/quote'] ?? {}).map(quote => quote.text),
   catalogKey: ({ prefix, path: [field, id, ...rest], segment }) => prefix === 'parts' && field === 'parts' ? ['part', id, ...rest].map(segment).join('.') : null,
   baselineCourse: ({ fragment }) => ({ publications: fragment.course.publications, stages: fragment.course.stages }),
   baselineStructure: ({ content }) => ({ parts: content.partDefs, trays: content.trays }),

@@ -4,9 +4,8 @@ import { objectTypes, listOfType } from './object-types.js'
 import { glossaryTarget } from './form.js'
 // The copy table's rows (CopyTable.jsx): every text of a scope — an era (its own texts, then its levels'), a level group
 // (its name, then its levels'), the whole game or package (the configuration's texts, then every level's), the
-// encyclopedia or the parts — in play order, each with the file it is in, its path, the copy rule it is held to (the
-// field it is) and whose it is (`own`: the package's, or the game's own). A workspace (`side`) sees its own: the package
-// workspace the package's texts; the game workspace the game's and the package's, which it puts its own wording over.
+// encyclopedia or the parts — in play order, each with the file it is in, its path, and whose it is (`own`: the package's or the game's).
+// The package workspace the package's texts; the game workspace the game's and the package's, which it puts its own wording over.
 import { languagesOf } from '../engine/i18n.js'
 import { find } from '../engine/schema.js'
 import { fileSchema as projectionSchema } from './editors.js'
@@ -16,26 +15,23 @@ import { levelTags } from './groups.js'
 import { textKey } from '../engine/i18n.js'
 
 const NOT_GAME = ['id', 'levels', 'glossary', 'vocabulary', 'open', 'blueprint', 'partDefs', 'tags', 'relations', 'sections', 'sourceChapters', 'relationEdges', 'objectProblems', 'registries', 'eras', 'trays', 'replaces', 'overridden']
-/** The copy rule a text is held to: the field it is (a task's own field for a task's text). */
-export const textField = (path) => String(path[0] === 'tasks' ? path[2] ?? '' : path[0] === 'chapters' ? path[2] ?? '' : path[0] ?? '')
-
 /**
  * The rows of `scope` (an era's index, 'group:<id>', 'all', 'glossary' or 'parts') as workspace `side` sees them,
  * `order` the levels in play order: [{ key, file: { level } | { group } | { game } | { glossary } | { parts }, name,
- * path, value, field, own }].
+ * path, value, own }].
  */
 export function copyRows(content, vocabulary, scope, order, side = 'package') {
   const rows = []
-  const add = (file, name, at) => ({ path, value }) => {
+  const add = (file, name) => ({ path, value }) => {
     const own = file.game ? 'game' : 'package'
     if (side === 'package' && own === 'game') return
-    rows.push({ key: `${name}|${showPath(path)}`, file, name, path, value, own, field: at === 'glossary' ? String(path.at(-2) === 'body' ? 'body' : path.at(-1)) : textField(path) })
+    rows.push({ key: `${name}|${showPath(path)}`, file, name, path, value, own })
   }
   const declared = Object.entries(content.objectKinds ?? {}).find(([type, declaration]) => !declaration.extends && listOfType(type) === scope)
   if (declared) {
     const [kind, declaration] = declared
     for (const [name, value] of Object.entries(content.registries?.[kind] ?? {})) {
-      find(declaration.schema, value, 'text', { vocabulary }).forEach(add({ object: { kind, name, folder: declaration.folder, declared: declaration } }, name, kind))
+      find(declaration.schema, value, 'text', { vocabulary }).forEach(add({ object: { kind, name, folder: declaration.folder, declared: declaration } }, name))
     }
     return rows
   }
@@ -46,7 +42,7 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
       const entry = content.glossary[t.path[0]]?.[t.path[1]]
       const target = glossaryTarget(content.glossary, t.path)
       if (!target) continue
-      add({ glossary: true, target }, entry?.id ?? showPath(t.path.slice(0, 2)), 'glossary')(t)
+      add({ glossary: true, target }, entry?.id ?? showPath(t.path.slice(0, 2)))(t)
     }
     return rows
   }
@@ -54,15 +50,15 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
   const era = typeof scope === 'number' ? content.eras?.[scope] : null
   const group = typeof scope === 'string' && scope.startsWith('group:') ? scope.slice('group:'.length) : null
   const ids = era ? new Set(eraLevels(era)) : group !== null ? new Set((levelTags(content)[group]?.levels ?? []).map(({ id }) => id)) : null
-  if (era) find(kindSchemas(vocabulary).chapter, content.sourceChapters?.[scope] ?? era, 'text', { vocabulary }).forEach((t) => add({ game: true }, String(era.id), 'game')({ ...t, path: ['chapters', scope, ...t.path] }))
+  if (era) find(kindSchemas(vocabulary).chapter, content.sourceChapters?.[scope] ?? era, 'text', { vocabulary }).forEach((t) => add({ game: true }, String(era.id))({ ...t, path: ['chapters', scope, ...t.path] }))
   if (scope === 'all') {
     const game = Object.fromEntries(Object.entries(content).filter(([k]) => !NOT_GAME.includes(k)))
-    find(vocabulary.game, game, 'text', { vocabulary }).forEach(add({ game: true }, side === 'game' ? 'game.json' : 'package.json', 'game'))
+    find(vocabulary.game, game, 'text', { vocabulary }).forEach(add({ game: true }, side === 'game' ? 'game.json' : 'package.json'))
   }
   for (const id of order) {
     if (ids && !ids.has(id)) continue
     const { id: _, ...level } = byId.get(id) ?? {}
-    find(vocabulary.level, level, 'text', { vocabulary }).forEach(add({ level: id }, id, 'level'))
+    find(vocabulary.level, level, 'text', { vocabulary }).forEach(add({ level: id }, id))
   }
   return rows
 }

@@ -67,7 +67,6 @@ import { objectFileName, objectSchema, objectValue, ownObjectData } from './obje
 import { levelTags, treeMoves } from './groups.js'
 import Inspector from './Inspector.jsx'
 import { inspectorTabKey } from './InspectorTabs.jsx'
-import { textField } from './copy.js'
 import Palette from './Palette.jsx'
 import Shortcuts, { MOD } from './Shortcuts.jsx'
 
@@ -228,7 +227,6 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     level: new Map(rawNames.levels.map((l) => [l.id, l])),
     part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
     wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    quotes: rawNames.quotes,
     stamp: rawNames.stamp,
     onLevel: (id) => select({ level: id }),
   }, [rawNames]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -618,7 +616,6 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     levels: content.levels.map((l) => l.id),
     names,
     levelOptions,
-    textField,
     lang,
     onPart: (part) => { showList(listOfType(editorRoute()?.type)); select({ [editorRoute()?.selector]: part }) },
     ...(sideFile?.level && {

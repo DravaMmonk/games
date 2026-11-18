@@ -14,14 +14,14 @@ export const TAGS = ['b', 'i', 'strong', 'code']
 export const referenceKinds = new Map()
 
 /** Register a markup tag and the object registry its targets come from. */
-export function registerReferenceKind(kind, { target, label = kind, quoteOrder = 0 } = {}) {
+export function registerReferenceKind(kind, { target, label = kind } = {}) {
   if (!/^[a-z][a-z0-9-]*$/.test(kind)) throw new Error(`invalid reference kind ${kind}`)
   const previous = referenceKinds.get(kind)
-  if (previous && (previous.target !== target || previous.label !== label || previous.quoteOrder !== quoteOrder)) throw new Error(`duplicate reference kind ${kind}`)
-  referenceKinds.set(kind, { target, label, quoteOrder })
+  if (previous && (previous.target !== target || previous.label !== label)) throw new Error(`duplicate reference kind ${kind}`)
+  referenceKinds.set(kind, { target, label })
 }
 
-registerReferenceKind('level', { target: 'level', quoteOrder: 1 })
+registerReferenceKind('level', { target: 'level' })
 const TOKEN = /\\\(([\s\S]*?)\\\)|\\\[([\s\S]*?)\\\]|(\\\(|\\\[)|<([a-z][a-z0-9-]*)-ref to="([^"<>]+)"><\/\4-ref>|<(\/?)([A-Za-z][A-Za-z0-9-]*)([^<>]*)>/g
 
 /**

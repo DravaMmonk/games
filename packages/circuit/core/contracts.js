@@ -74,7 +74,6 @@ export function specProblems(domain, content, spec) {
     if (!isText(l.title)) say(`${l.id}: no title`)
   }
   if (spec.texts !== undefined && (typeof spec.texts !== 'object' || Array.isArray(spec.texts))) say('texts is not { name: what a player reads }')
-  if (spec.quotes !== undefined && !strings(spec.quotes)) say('quotes is not a list of names')
   if (spec.audit !== undefined) {
     if (!isFn(spec.audit)) say('audit is not a function')
     else for (const f of spec.audit()) if (!f.rule || !f.level) say(`its own audit reports ${JSON.stringify(f)}: no { rule, level, part }`)

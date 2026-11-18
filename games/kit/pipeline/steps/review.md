@@ -2,7 +2,7 @@
 
 Review the course as a learner using the supplied blueprint, game data, levels, glossary and relevant domain
 implementation. This step reports findings; it does not change content. Read `games/design/README.md` §§1–4 and 8, and
-use `.agents/skills/turing-complete-games/references/learning-review.md` when useful. `./deps`, `./check`, `./lint`,
+use `.agents/skills/turing-complete-games/references/learning-review.md` when useful. `./deps`, `./check`,
 `./pedagogy` and `./terminology --json` provide evidence but do not establish pedagogical quality on their own.
 
 Assess the actual learning goals, dependencies, conceptual load, available guidance and evidence, interactions,

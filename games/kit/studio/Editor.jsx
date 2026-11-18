@@ -18,7 +18,6 @@ import { holdsLevels } from '../engine/schema.js'
 import { freeName } from './names.js'
 import { Field, FieldTags } from './Fields.jsx'
 import Rows from './Rows.jsx'
-import { textField } from './copy.js'
 import Bulk from './Bulk.jsx'
 import { usePref } from './prefs.js'
 import { confirmDelete } from './delete.js'
@@ -38,7 +37,7 @@ export default function Editor({ side, content, base, vocab, at, picked, field, 
   return <GameEditor {...common} side={side} content={content} base={base} />
 }
 
-const ctxOf = ({ vocabulary, order, names, levelOptions }, extra = {}) => ({ vocabulary, levels: order, names, levelOptions, textField, ...extra })
+const ctxOf = ({ vocabulary, order, names, levelOptions }, extra = {}) => ({ vocabulary, levels: order, names, levelOptions, ...extra })
 /** The edit of a field in `file` as its operation. */
 const editIn = (file, onEdit) => (path, edit, type) => onEdit(opFor(file, path, edit, type))
 /** An optional field added blank in `file`, and opened in the side panel. */

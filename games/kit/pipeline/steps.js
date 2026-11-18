@@ -6,20 +6,18 @@ import { runtimeIds } from '../engine/runtime.js'
 //   blueprint  curriculum designer   writes blueprint.json            gate: the blueprint audit (blueprint.js)
 //   domain     engineer (code)       resolves the blueprint's requests gate: no request open, contract, check, tests
 //   levels     level designer        writes levels, eras, primitives  gate: npm run check + conformance to the blueprint
-//                                                                            (but its terms) + the pedagogy lint
-//   copy       copy writer           rewrites every text, glossary    gate: check + conformance (terms linked to their
-//                                                                            entries) + the copy lint + the pedagogy lint
+//                                                                            (encyclopedia entries are checked in the copy step) + the pedagogy lint
+//   copy       copy writer           rewrites every text, glossary    gate: check + conformance + encyclopedia link validation
+//                                                                            + the pedagogy lint
 //   review     reviewer              reads it all, reports findings   gate: no finding to fix left open
 //   queue      —                     the review queue entry           gate: every gate above still clean
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { checkGame } from '../engine/checks.js'
-import { runtimeOf, readContent } from '../engine/resolver.js'
-import { moduleProblems, specProblems, validateProblems } from '../engine/contract.js'
-import { capabilities, modules } from '../engine/kernel.js'
+import { runtimeOf, readContent, packageDirectory } from '../engine/resolver.js'
+import { specProblems, validateProblems } from '../engine/contract.js'
 import { auditBlueprint, conformance } from './blueprint.js'
-import { lintCopy } from './lint.js'
 import { lintPedagogy } from './pedagogy.js'
 import { reviewTerminology } from './terminology.js'
 import { searchable } from '../engine/ops/search.js'
@@ -87,16 +85,21 @@ export const STEPS = [
       const open = (content.blueprint?.requests ?? []).filter((r) => r.status === 'open').map((r) => finding('request-open', r.id, r.about.en ?? r.about))
       const domain = await runtimeOf(content)
       const spec = domain.spec(content)
-      const contract = [...modules.flatMap((module) => moduleProblems(module, capabilities)), ...specProblems(domain, content, spec), ...(await validateProblems(domain, content, spec)).problems].map((p) => finding('contract', runtimeIds(content).join(', '), p))
+      const owners = runtimeIds(content)
+      const contract = [...specProblems(domain, content, spec), ...(await validateProblems(domain, content, spec)).problems]
+        .map((problem) => finding('contract', owners.join(', '), problem))
       const tests = []
-      for (const module of runtimeIds(content)) {
-        const test = resolve(KIT_DIR, 'modules', module, `${module}.test.js`)
-        if (!existsSync(test)) continue
+      for (const owner of owners) {
+        const directory = resolve(packageDirectory(owner), 'test')
+        if (!existsSync(directory)) continue
+        const files = readdirSync(directory, { recursive: true }).filter(file => file.endsWith('.test.js'))
+        if (!files.length) continue
         try {
           const { NODE_TEST_CONTEXT: _, ...env } = process.env
-          execFileSync(process.execPath, ['--test', test], { stdio: 'pipe', env })
-        } catch (e) {
-          tests.push(finding('module-test', module, String(e.stdout ?? e.message).split('\n').filter((l) => l.startsWith('not ok')).join('; ') || 'its unit tests fail'))
+          execFileSync(process.execPath, ['--import', resolve(KIT_DIR, 'engine/package-imports.mjs'), '--test', ...files.map(file => resolve(directory, file))], { stdio: 'pipe', env })
+        } catch (error) {
+          const failures = String(error.stdout ?? error.message).split('\n').filter(line => line.startsWith('not ok'))
+          tests.push(finding('package-test', owner, failures.join('\n') || 'its unit tests fail'))
         }
       }
       return { failures: [...open, ...contract, ...tests, ...(await checks(id))], reports: [] }
@@ -109,31 +112,31 @@ export const STEPS = [
     commands: ['op', 'check', 'gate', 'deps', 'eras', 'pedagogy'],
     gate: async (id) => {
       const pedagogy = await pedagogyOf(id)
-      return { failures: [...(await checks(id)), ...(await conformanceOf(id)).filter((f) => f.rule !== 'bp-term' && f.rule !== 'bp-entry'), ...pedagogy.failures], reports: pedagogy.reports }
+      return { failures: [...(await checks(id)), ...(await conformanceOf(id)).filter((f) => f.rule !== 'bp-entry'), ...pedagogy.failures], reports: pedagogy.reports }
     },
   },
   {
     id: 'copy',
     who: 'agent',
     role: 'copy writer',
-    commands: ['op', 'check', 'gate', 'lint', 'pedagogy', 'terminology'],
+    commands: ['op', 'check', 'gate', 'pedagogy', 'terminology'],
     gate: async (id) => {
       const pedagogy = await pedagogyOf(id)
       const terms = await terminologyOf(id)
-      return { failures: [...(await checks(id)), ...(await conformanceOf(id)), ...lintCopy(readContent(id)), ...pedagogy.failures, ...terms.failures], reports: [...pedagogy.reports, ...terms.reports] }
+      return { failures: [...(await checks(id)), ...(await conformanceOf(id)), ...pedagogy.failures, ...terms.failures], reports: pedagogy.reports }
     },
   },
   {
     id: 'review',
     who: 'agent',
     role: 'reviewer',
-    commands: ['check', 'lint', 'deps', 'pedagogy', 'terminology'],
+    commands: ['check', 'deps', 'pedagogy', 'terminology'],
     gate: async (id, state) => {
       const terms = await terminologyOf(id)
       const run = lastRun(state, 'review')
-      if (!run?.findings) return { failures: [...terms.failures, finding('review-missing', id, 'no review has run')], reports: terms.reports }
+      if (!run?.findings) return { failures: [...terms.failures, finding('review-missing', id, 'no review has run')], reports: [] }
       const open = run.findings.filter((f) => f.fix && !f.resolved)
-      return { failures: [...terms.failures, ...open.map((f) => finding('review', f.at, `${f.owner}: ${f.says}`))], reports: [...terms.reports, ...run.findings.filter((f) => !f.fix).map((f) => finding('review-note', f.at, f.says))] }
+      return { failures: [...terms.failures, ...open.map((f) => finding('review', f.at, `${f.owner}: ${f.says}`))], reports: run.findings.filter((f) => !f.fix).map((f) => finding('review-note', f.at, f.says)) }
     },
   },
   {

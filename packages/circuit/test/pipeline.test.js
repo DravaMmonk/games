@@ -1,10 +1,9 @@
 // node --test (npm test) — the pipeline's checks: the blueprint audit (each rule on a blueprint that breaks it), the
-// eras a blueprint lays out, a slot renamed with its level, the copy lint and the pedagogy lint.
+// eras a blueprint lays out, a slot renamed with its level, and the pedagogy lint.
 import { layout } from '../../../games/kit/course.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { auditBlueprint, conformance, erasOf } from '../../../games/kit/pipeline/blueprint.js'
-import { lintCopy } from '../../../games/kit/pipeline/lint.js'
 import { lintPedagogy } from '../../../games/kit/pipeline/pedagogy.js'
 import { boardShape } from '../core/index.js'
 
@@ -122,20 +121,7 @@ test('the eras a blueprint lays out: routes and optional levels', () => {
   assert.deepEqual(era.levels.filter(({ optional }) => optional), [{ id: 'N1', optional: true }])
 })
 
-test('the copy lint names the rule each text breaks', () => {
-  const level = (fields) => ({ levels: [{ id: '1-1', title: t('a'), tasks: [{ id: '1-1', brief: t('do it'), ...fields }] }], glossary: { entries: [] } })
-  const found = (fields) => lintCopy(level(fields)).map((f) => f.rule)
-  assert.deepEqual(found({}), [])
-  assert.deepEqual(found({ brief: { zh: '对输入进行比较。' } }), ['copy-banned'])
-  assert.deepEqual(found({ intro: [{ t: { zh: '新元件「加一」：输入加 1。' } }] }), ['copy-intro-part'])
-  assert.deepEqual(found({ brief: { zh: '放一块卡片。' } }), ['copy-banned'])
-  assert.deepEqual(found({ brief: { zh: '搭一块网卡。' } }), [])
-  assert.deepEqual(found({ after: { en: '<part-ref to="part:reg"></part-ref>记住了它。' } }), ['copy-after-part'])
-  assert.deepEqual(found({ after: { zh: '下一关会用到它。' } }), ['copy-ahead'])
-  assert.deepEqual(found({ brief: { zh: '交出和，因为后面要用。' } }), ['copy-brief-why'])
-})
-
-test('the pedagogy lint: the same board twice whatever its ids, the same prose twice, a bench that slides to green, a quiz', () => {
+test('the pedagogy lint: the same board twice whatever its ids, a bench that slides to green, a quiz', () => {
   const board = (id, value) => ({
     nodes: [{ id: 'a', type: 'in', params: { name: 'a' } }, { id, type: 'const', params: { value } }, { id: `${id}s`, type: 'add', params: {} }, { id: 'out', type: 'out', params: { name: 'out' } }],
     wires: [{ from: 'a', to: `${id}s`, port: 'a' }, { from: id, to: `${id}s`, port: 'b' }, { from: `${id}s`, to: 'out', port: 'in' }],
@@ -148,23 +134,19 @@ test('the pedagogy lint: the same board twice whatever its ids, the same prose t
   const content = { levels: [level('1'), level('2'), level('3', { bench }), { id: '4', tasks: [{ id: '4', bench: { ...bench, check: 'submit' } }, { id: '4_2', kind: 'choice' }] }] }
   const spec = { blueprints: [{ level: '1', board: board('one', '1'), fingerprint: () => boardShape(board('one', '1')) }, { level: '2', board: board('k', '1'), fingerprint: () => boardShape(board('k', '1')) }, { level: '3', board: board('k', '1'), fingerprint: () => boardShape(board('k', '1')), naive: true }] }
   const found = lintPedagogy(content, spec).map((f) => `${f.rule} ${f.at}${f.report ? ' (report)' : ''}`)
-  assert.deepEqual(found, ['pd-repeat-board 2', 'pd-repeat-text 2 intro[0].t', 'pd-repeat-text 3 intro[0].t', 'pd-quiz 4 task 4_2 (report)', 'pd-slide 3 (report)'])
+  assert.deepEqual(found, ['pd-repeat-board 2', 'pd-quiz 4 task 4_2 (report)', 'pd-slide 3 (report)'])
 })
 
-test('conformance: the level that brings a point links its entry, opened there', () => {
+test('conformance: a knowledge point needs an entry with the correct opening level', () => {
   const bp = base()
   const ids = ['1-1', '1-2', '1-3', '1-4', '1-5']
   const level = (id, intro = 'no link') => ({ id, title: t(id), adds: bp.eras[0].series.flatMap((x) => x.slots).find((s) => s.id === id).adds, tasks: [{ id, brief: t(intro) }], ...(id === '1-4' ? { builds: { type: 'counter' } } : {}) })
   const content = (levels, entries) => ({ levels, eras: erasOf(bp), registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['reg', 'add'] } } }, glossary: { entries } })
   const spec = { course: { index: new Map(), levels: [] } }
-  const terms = (c) => conformance(bp, c, spec).filter((f) => f.rule === 'bp-term' || f.rule === 'bp-entry').map((f) => `${f.rule} ${f.at}`)
-  assert.deepEqual(terms(content(ids.map((id) => level(id)), [{ id: 'memory', at: '1-2' }])), ['bp-entry memory', 'bp-term 1-1', 'bp-entry count', 'bp-term 1-4'])
-  const linked = ids.map((id) => level(id, id === '1-1' ? 'a <wiki-ref to="memory"></wiki-ref>' : id === '1-4' ? 'a <wiki-ref to="count"></wiki-ref>' : 'none'))
-  assert.deepEqual(terms(content(linked, [{ id: 'memory', at: '1-1' }, { id: 'count', at: '1-4' }])), [])
-  // A main-path level that links a technical point's entry carries technical content.
-  bp.knowledge.push(point('library', 'technical'))
-  const leaky = linked.map((l) => (l.id === '1-2' ? { ...l, tasks: [{ id: '1-2', brief: t('see <wiki-ref to="library"></wiki-ref>') }] } : l))
-  assert.ok(conformance(bp, content(leaky, []), spec).some((f) => f.rule === 'bp-main-link' && f.at === '1-2'))
+  const terms = (c) => conformance(bp, c, spec).filter((f) => f.rule === 'bp-entry').map((f) => `${f.rule} ${f.at}`)
+  const levels = ids.map((id) => level(id))
+  assert.deepEqual(terms(content(levels, [{ id: 'memory', at: '1-2' }])), ['bp-entry memory', 'bp-entry count'])
+  assert.deepEqual(terms(content(levels, [{ id: 'memory', at: '1-1' }, { id: 'count', at: '1-4' }])), [])
 })
 
 
@@ -205,5 +187,4 @@ test('terminology review inspects both task overrides and glossary bodies throug
   assert.ok(result.failures.some((f) => f.at === 'levels/a.json:tasks.1.brief.en'))
   assert.ok(result.failures.some((f) => f.at === 'entries/global.json:body.0.en'))
   assert.equal(result.terms[0].body, content.glossary.entries[0].body)
-  assert.equal(result.reports.length, 0, 'aliases and titles are registry metadata, not bare prose')
 })

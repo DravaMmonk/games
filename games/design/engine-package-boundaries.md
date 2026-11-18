@@ -42,7 +42,7 @@ JSON 声明名字、字段、类型、默认值和对作者有用的双语说明
 
 `table` 持有机器人板、世界构造与扫描、接线、运行与判定、场景绘制及七种手动模式。课程 `state-graph` 提供具体世界生成器、关卡声明与地图图示，并在 `state-graph/<play>` 下登记 `table` 的玩法实现。旧存档按这些玩法名计算任务印记。`vision-complete` 的场景和机关模型按声明的全名接入 `image`，课程专用显示留在课程视图。霍夫投票和 RANSAC 的实验计算由 `cvlib` 提供，曲线拟合计算由 `mllib` 提供。
 
-对象类型的含义由 `kind` 登记提供。 `progress` 通过词汇表的 `levelMarks` 提供关卡标记及其标签 ID，组装与 Studio 编排使用同一份声明。内核依 schema 读取、覆盖、展开引用和检查字段，调用含义对象完成派生。`circuit/part` 解释元件和 `replaces`，`progress/part` 解释阶段和发放，`circuit/tray` 解释托盘及菜单，`circuit/quote` 读取引语。它们的文件类型分别是 `circuit/part`、`circuit/tray`、`circuit/quote`。`relations` 声明给出自定义关系的端点类型。
+对象类型的含义由 `kind` 登记提供。 `progress` 通过词汇表的 `levelMarks` 提供关卡标记及其标签 ID，组装与 Studio 编排使用同一份声明。内核依 schema 读取、覆盖、展开引用和检查字段，调用含义对象完成派生。`circuit/part` 解释元件和 `replaces`，`progress/part` 解释阶段和发放，`circuit/tray` 解释托盘及菜单。它们的文件类型分别是 `circuit/part` 和 `circuit/tray`。`relations` 声明给出自定义关系的端点类型。
 
 - 内容生命周期包括 `vocabulary`、`names`、`identities`、`indexes`、`matches`、`assemble`、`source`、`override`、`validate` 和 `stamp`。派生字段由 `derived` 列明，`source` 给出派生注册表对应的源对象，写回时只序列化声明。`configuration` 为扩展字段声明所属配置文件。内核无需理解元件和发放字段。
 - 课程含义通过 `dependencies`、`plan`、`supplies`、`readWorks`、`taskModule`、`runtimeIds` 和 `scope` 参与通用课程组装。`state` 返回包的派生状态，`check` 判定作品，`play` 负责作品读写、运行和盲玩。运行时通过包的作品读者与课程投影适配。内核进度只推进任务和关卡。

@@ -27,9 +27,8 @@ import { isText } from '../engine/i18n.js'
 import { copyWithoutTextKeys } from '../engine/catalogs.js'
 import { getLang, L, tr } from '../shell/i18n.js'
 import { SECTIONS, callOf, find, sectionOf, validate } from '../engine/schema.js'
-import { parsePath, setAt, showPath, unsetAt } from '../engine/ops/edit.js'
-import { fileSchema as projectionSchema } from './editors.js'
-import { fileSchema } from './editors.js'
+import { parsePath, showPath } from '../engine/ops/edit.js'
+import { projectionFile } from './editors.js'
 import { newTaskId } from '../engine/tasks.js'
 
 import { objectOp, objectSchema, objectValue } from './object-file.js'
@@ -476,61 +475,14 @@ export function copyLevelData(source, level, levels) {
   return data
 }
 
-/** Name the source represented by an encyclopedia field. */
-export function glossaryFile(glossary, path) {
-  const object = glossary[path[0]]?.[path[1]]
-  if (!object?.id) return 'entries/ + tags/entry/'
-  return `${path[0] === 'entries' ? 'entries' : 'tags/entry'}/${object.id.split('/').at(-1)}.json`
-}
-
-/** Translate the encyclopedia projection's form paths to authored object targets. */
-export function glossaryTarget(glossary, keys) {
-  const object = glossary[keys[0]]?.[keys[1]]
-  if (!object?.id) return null
-  return { ...(keys[0] === 'entries' ? { entry: object.id } : { tag: object.id, member: 'entry' }), path: keys.slice(2) }
-}
-
-/**
- * The operation that makes an edit, on a file of the game: `file` { level } | { game: true } | { parts: true } |
- * { glossary } (the glossary as it is) | { object } (a tag, relation or layout: object-file.js). edit: { set: value } | { unset: true } at `path`; `type` is the schema type
- * there ('text' and 'board' have operations of their own). Null for an edit no operation makes (the glossary's own
- * list of groups or of entries, edited as a whole).
- */
+/** Translate an edit into an operation on a level, game, declared object or registered projection. */
 export function opFor(file, path, edit, type = null) {
   if (file.object) return objectOp(file.object, path, edit, type)
   const keys = parsePath(path)
+  if (file.projection) return file.projection.edit(file.value, keys, edit, type)
   if (type === 'text' && !edit.unset) {
-    const where = file.glossary ? glossaryTarget(file.glossary, keys) : file.level !== undefined ? { level: file.level } : { in: file.parts ? 'parts' : 'game' }
-    if (!where) return null
-    return { op: 'text.set', ...where, path: where.path ?? keys, ...(edit.lang ? { lang: edit.lang } : {}), value: edit.set }
-  }
-  // The glossary: a text by text.set; any other field of an entry by a merge patch of the entry's top field.
-  if (file.glossary) {
-    if (keys[0] === 'entries' && keys[2] === 'group') return null
-    if (keys[0] === 'groups' && keys.length >= 3) {
-      const target = glossaryTarget(file.glossary, keys)
-      return target ? { op: 'tag.set', ...target, value: edit.unset ? null : edit.set } : null
-    }
-    if (keys[0] === 'entries' && keys.length >= 3) {
-      const entry = file.glossary.entries[keys[1]]
-      const [top, ...rest] = keys.slice(2)
-      const value = !rest.length ? (edit.unset ? null : edit.set) : edit.unset ? unsetAt(entry[top], rest) : setAt(entry[top], rest, edit.set)
-      return { op: 'entry.patch', entry: entry.id, fields: { [top]: value } }
-    }
-    if (keys[0] === 'entries' && keys.length === 2 && !edit.unset) {
-      const { id, group: _group, ...data } = edit.set
-      return { op: 'entry.put', entry: id, data }
-    }
-    if (keys[0] === 'entries' && keys.length === 2) return { op: 'entry.remove', entry: file.glossary.entries[keys[1]].id }
-    return null
-  }
-  // parts/<name>.json: a field of it (a whole part is added and removed by the part operations).
-  if (file.parts) {
-    if (edit.unset && keys.length === 2) {
-      if (keys[0] === 'parts') return { op: 'part.remove', part: keys[1] }
-    }
-    if (edit.unset) return { op: 'parts.unset', path: keys }
-    return { op: 'parts.set', path: keys, value: edit.set }
+    const where = file.level !== undefined ? { level: file.level } : { in: 'game' }
+    return { op: 'text.set', ...where, path: keys, ...(edit.lang ? { lang: edit.lang } : {}), value: edit.set }
   }
   const where = file.level !== undefined ? { level: file.level } : {}
   const op = (name) => (file.level !== undefined ? `level.${name}` : `game.${name}`)
@@ -653,10 +605,10 @@ export function fileForm(content, vocabulary, at, order) {
     const value = objectValue(content, at.object.kind, at.object.full)
     return value && { value, form: formOf(objectSchema(at.object.kind, at.object), value, { vocabulary, levels: order }) }
   }
-  if (at?.glossary) return { value: content.glossary, form: formOf(projectionSchema(vocabulary, 'glossary'), content.glossary, { vocabulary, levels: order }) }
-  if (at?.parts) {
-    const value = content.partDefs ?? { parts: {} }
-    return { value, form: formOf(fileSchema(vocabulary, 'partDefs'), value, { vocabulary, levels: order }) }
+  const projected = projectionFile(content, vocabulary, at)
+  if (projected) {
+    const { value, schema } = projected
+    return { value, form: formOf(schema, value, { vocabulary, levels: order }), file: projected }
   }
   if (at?.level) {
     const level = content.levels.find((l) => l.id === at.level)

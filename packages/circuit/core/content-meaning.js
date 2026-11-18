@@ -18,6 +18,7 @@ import { mapBlueprintNames } from './board/text.js'
 import { progressFieldsProblems } from './progress-fields.js'
 import { primitiveParts } from './primitive-parts.js'
 import { partFileSchema } from './parts/schema.js'
+import { partProjection } from './studio.js'
 
 // Presentation-only part fields are validated as objects and do not affect board checks or saved work.
 function puzzleParts(parts, vocabulary) {
@@ -59,7 +60,7 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
 export const partMeaning = {
   capability: 'primitive',
   studio: {
-    schemas: { partDefs: partFileSchema },
+    projections: { parts: partProjection },
     relations: { replaces: 'circuit/part' },
     collections: { 'circuit/tray': { accepts: kind => kind === 'circuit/part', members: value => [...(value.values ?? []), ...(value.menus ?? []).flatMap(menu => menu.values ?? [])], types: () => ['circuit/part'] } },
     owners: content => Object.keys(content.partDefs?.parts ?? {}).map(part => [part, part]),

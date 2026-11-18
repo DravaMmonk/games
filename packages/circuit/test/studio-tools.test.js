@@ -172,6 +172,6 @@ test('on every starter: the copy table’s rows: an era’s own texts and its le
     const glossary = copyRows(content, vocabulary, 'glossary', order)
     const first = content.glossary.entries[0]
     assert.deepEqual(glossary.find((r) => r.name === first.id && r.path[2] === 'body').path, ['entries', 0, 'body', 0], game)
-    assert.ok(glossary.every((r) => r.file.glossary), game)
+    assert.ok(glossary.every((r) => r.file.projected === 'glossary' && r.file.source), game)
   }
 })

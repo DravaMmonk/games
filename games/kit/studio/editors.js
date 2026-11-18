@@ -13,7 +13,18 @@ export const registeredPlayCapabilities = (order) => Object.fromEntries(
 )
 export const fieldEditor = kind => [...(plugins?.tables.editor.values() ?? [])].map(editor => editor.fields?.[kind]).find(Boolean)
 export const editorRules = () => Object.assign({}, ...registeredMeanings().map(meaning => meaning.studio?.rules))
-export const fileSchema = (vocabulary, field) => (vocabulary?.meanings ?? registeredMeanings()).map(meaning => meaning.studio?.schemas?.[field]).map(schema => typeof schema === 'function' ? schema(vocabulary) : schema).find(Boolean)
+export const studioProjections = vocabulary => Object.assign({}, ...(vocabulary?.meanings ?? registeredMeanings())
+  .map(meaning => meaning.studio?.projections))
+
+export function projectionFile(content, vocabulary, at) {
+  const projections = studioProjections(vocabulary)
+  const name = Object.keys(projections).find(name => at?.[name])
+  if (!name) return null
+  const projection = projections[name]
+  const schema = typeof projection.schema === 'function' ? projection.schema(vocabulary) : projection.schema
+  return { name, projection, value: projection.read(content), schema }
+}
+
 export const contentVocabulary = (vocabulary, content) => !content ? vocabulary : (vocabulary?.meanings ?? registeredMeanings()).reduce((value, meaning) => meaning.validationVocabulary?.({ vocabulary: value, content }) ?? value, vocabulary)
 export const memberInfo = (content, kind, name) => registeredMeanings().map(meaning => meaning.studio?.member?.(content, kind, name)).find(Boolean) ?? content?.registries?.[kind]?.[name]
 export const memberOwners = content => new Map(registeredMeanings().flatMap(meaning => meaning.studio?.owners?.(content) ?? []))

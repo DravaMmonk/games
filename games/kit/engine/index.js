@@ -115,3 +115,4 @@ export { registerReferenceKind } from './markup.js'
 
 export { REF, refsIn } from './text.js'
 export { mergePatch } from './ops/edit.js'
+export { sourceValue } from './catalogs.js'

@@ -1,4 +1,4 @@
-import { glossaryFile } from './form.js'
+import { editorRoute, projectionFile } from './editors.js'
 import { useLayoutEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
@@ -8,10 +8,14 @@ import { showPath } from '../engine/ops/edit.js'
 export const inspectorTabKey = (at, path) => JSON.stringify([at, path])
 
 function describe({ at, path }, content) {
-  const owner = at.level ?? at.part
+  const route = editorRoute(at)
+  const selected = route && at[route.selector]
+  const projected = projectionFile(content, undefined, selected ? { [route.file]: true } : at)
+  const owner = at.level ?? selected
     ?? (at.era !== undefined ? L(content.eras?.[at.era]?.title) || content.eras?.[at.era]?.id : null)
-  const file = at.level ? `levels/${at.level.slice(at.level.indexOf('/') + 1)}.json` : at.part ? `parts/${at.part.slice(at.part.indexOf('/') + 1)}.json` : at.glossary ? glossaryFile(content.glossary, path) : content.packageTarget ? 'package.json' : 'game.json'
-  const nestedRoot = at.part || at.era !== undefined
+  const file = at.level ? `levels/${at.level.slice(at.level.indexOf('/') + 1)}.json`
+    : projected ? projected.projection.sourceFile(projected.value, path) : content.packageTarget ? 'package.json' : 'game.json'
+  const nestedRoot = selected || at.era !== undefined
   const ancestor = nestedRoot && path.length < 2
   const relative = nestedRoot && !ancestor ? path.slice(2) : path
   const label = [ancestor ? file : owner ?? file, showPath(relative)].filter(Boolean).join(' · ')

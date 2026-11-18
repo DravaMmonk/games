@@ -2,14 +2,13 @@ import { uiBase } from '../shell/ui-words.js'
 import { contentSchemas } from '../engine/content.js'
 import { kindSchemas } from '../engine/plugin-kinds.js'
 import { objectTypes, listOfType } from './object-types.js'
-import { glossaryTarget } from './form.js'
 // The copy table's rows (CopyTable.jsx): every text of a scope — an era (its own texts, then its levels'), a level group
 // (its name, then its levels'), the whole game or package (the configuration's texts, then every level's), the
 // encyclopedia or the parts — in play order, each with the file it is in, its path, and whose it is (`own`: the package's or the game's).
 // The package workspace the package's texts; the game workspace the game's and the package's, which it puts its own wording over.
 import { languagesOf } from '../engine/i18n.js'
 import { find } from '../engine/schema.js'
-import { fileSchema as projectionSchema } from './editors.js'
+import { projectionFile, studioProjections } from './editors.js'
 import { showPath } from '../engine/ops/edit.js'
 import { eraLevels } from '../course.js'
 import { levelTags } from './groups.js'
@@ -37,14 +36,16 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
     }
     return rows
   }
-  if (scope === 'glossary') {
-    const schema = projectionSchema(contentSchemas.get(content) ?? vocabulary, 'glossary')
-    if (!schema || !content.glossary) return rows
-    for (const t of find(schema, content.glossary, 'text')) {
-      const entry = content.glossary[t.path[0]]?.[t.path[1]]
-      const target = glossaryTarget(content.glossary, t.path)
-      if (!target) continue
-      add({ glossary: true, target }, entry?.id ?? showPath(t.path.slice(0, 2)))(t)
+  const projected = projectionFile(content, contentSchemas.get(content) ?? vocabulary, { [scope]: true })
+  if (projected?.projection.textTarget) {
+    const { projection, schema, value } = projected
+    if (!value) return rows
+    for (const text of find(schema, value, 'text', { vocabulary })) {
+      const row = projection.textTarget(value, text.path)
+      if (!row) continue
+      const { name, target } = row
+      const source = projection.sourceFile(value, text.path)
+      add({ projected: scope, target, source }, name)(text)
     }
     return rows
   }
@@ -74,12 +75,12 @@ function uiCopyRows({ uiCatalogs = {} }) {
   }))
 }
 
-export const allCopyRows = (content, vocabulary, order, side = 'package') => ['all', 'glossary', 'ui', ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type]).map(({ type }) => listOfType(type))]
+export const allCopyRows = (content, vocabulary, order, side = 'package') => ['all', 'ui', ...Object.entries(studioProjections(contentSchemas.get(content) ?? vocabulary)).filter(([, projection]) => projection.textTarget).map(([name]) => name), ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type]).map(({ type }) => listOfType(type))]
   .flatMap((scope) => copyRows(content, vocabulary, scope, order, side))
 
 export const copyLanguages = (rows) => [...new Set(['en', 'zh', ...languagesOf(rows.map((row) => row.value))])].sort()
 
-const fileOf = (row) => row.file.object ? { kind: row.file.object.kind, name: row.file.object.name } : row.file.target ?? (row.file.level !== undefined ? { level: row.file.level } : row.file.group !== undefined ? { group: row.file.group } : { in: row.file.glossary ? 'glossary' : 'game' })
+const fileOf = (row) => row.file.object ? { kind: row.file.object.kind, name: row.file.object.name } : row.file.target ?? (row.file.level !== undefined ? { level: row.file.level } : row.file.group !== undefined ? { group: row.file.group } : { in: 'game' })
 
 /** The edit of a row's text in `lang`: in the game workspace, a package text gets the game's own wording (text.override). */
 export function copyEdit(row, lang, value, side = 'package') {
@@ -102,10 +103,7 @@ export function copyFileOf(row) {
   if (row.file.ui !== undefined) return 'i18n/* · ui'
   if (row.file.object) return `${row.file.object.folder}/${shortName(row.file.object.name)}.json`
   if (row.file.level !== undefined) return `levels/${shortName(row.file.level)}.json`
-  if (row.file.glossary) {
-    const target = row.file.target ?? {}
-    return target.entry ? `entries/${shortName(target.entry)}.json` : target.tag ? `tags/entry/${shortName(target.tag)}.json` : 'entries/'
-  }
+  if (row.file.projected) return row.file.source
   return 'game.json'
 }
 
@@ -123,6 +121,6 @@ export function copyFiles(rows) {
 export function copyFieldOf(row) {
   if (row.file.object) return { at: { object: { ...row.file.object, full: row.file.object.name, namespace: row.file.object.name.split('/')[0], own: true } }, path: row.path }
   if (row.file.level !== undefined) return { at: { level: row.file.level }, path: row.path }
-  if (row.file.glossary) return { at: { glossary: true }, path: row.path }
+  if (row.file.projected) return { at: { [row.file.projected]: true }, path: row.path }
   return { at: { game: true }, path: row.path }
 }

@@ -48,7 +48,7 @@ JSON 声明名字、字段、类型、默认值和对作者有用的双语说明
 
 - 内容生命周期包括 `vocabulary`、`names`、`identities`、`indexes`、`matches`、`assemble`、`source`、`override`、`validate` 和 `stamp`。派生字段由 `derived` 列明，`source` 给出派生注册表对应的源对象，写回时只序列化声明。`configuration` 为扩展字段声明所属配置文件。内核无需理解元件和发放字段。
 - 课程含义通过 `dependencies`、`plan`、`supplies`、`readWorks`、`taskModule`、`runtimeIds` 和 `scope` 参与通用课程组装。`state` 返回包的派生状态，`check` 判定作品，`play` 负责作品读写、运行和盲玩。运行时通过包的作品读者与课程投影适配。内核进度只推进任务和关卡。
-- 对象编辑器提供专用页面和即时草稿，Studio 外壳负责选择和渲染。创作适配使用 `workspace`、`operations`、`selector`、`textTarget`、`sourceArguments`、`search`、`tools`、`dependencyGraph` 和 `renderWork`，共享操作集保持通用对象 CRUD。`part.*`、`parts.*`、`level.blueprint`、`level.adds` 和 `flow` 实现在包内。类型 schema 和文案定位由包提供。
+- 对象编辑器提供专用页面和即时草稿，Studio 外壳负责选择和渲染。元件和百科通过各自的 `studio.projections` 提供文件投影、文案目标和 JSON 编辑规则。通用编辑器负责读取 schema、验证输入与派发操作。创作适配使用 `workspace`、`operations`、`selector`、`textTarget`、`sourceArguments`、`search`、`tools`、`dependencyGraph` 和 `renderWork`，共享操作集保持通用对象 CRUD。`part.*`、`parts.*`、`level.blueprint`、`level.adds` 和 `flow` 实现在包内。类型 schema 和文案定位由包提供。
 - 外壳通过游戏的 `shell`、`settings`、`mapBadges`、`referenceName`、`describeObservation`、`composeModules` 接口挂载包行为，引用显示器由 `display` 登记元数据定义。元件册、工坊、元件奖励、连接标签设置和元件样式归包。`Workbench`、`Library`、运行控件、存档上下文和输入交互是共享布局部件。
 - 浏览器重建声明与 schema 时保留包的代码登记身份，存在性检查与 Node 共用公开身份投影。
 - 基线观察由含义对象的 `baselineCourse`、`baselineStructure`、`baselineRecords`、`baselineReports` 提供，继续比较完整作品、顺序、结果和轨迹。引擎工具保存通用快照与差异算法。

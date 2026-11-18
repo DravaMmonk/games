@@ -2,6 +2,7 @@ import { S, assertStableIds, mergePatch, refsIn, sideOf } from "kernel"
 import { T } from 'kernel/words'
 import { encyclopedia } from './glossary.js'
 import { GLOSSARY } from './schema.js'
+import { glossaryProjection } from './studio.js'
 import { termRegistry, termUsage } from './terminology.js'
 
 const REFERENCE = 'wiki'
@@ -28,7 +29,7 @@ export function register(kernel) {
     selector: 'entry',
     read: value => value,
     derived: ['glossary', 'sections'],
-    studio: { schemas: { glossary: GLOSSARY } },
+    studio: { projections: { glossary: glossaryProjection } },
     terminology: { termRegistry, termUsage },
     blindText,
     assemble({ game, id, packageId, registries, resolve }) {

@@ -1,4 +1,3 @@
-import { glossaryFile } from './form.js'
 // The side panel (games/design/README.md 6.7): the one field picked — on the game's page (a click on a text, a test, a task's
 // name), in the rows of a file (Rows.jsx), by a finding, the palette or a search — with its control from the schema
 // (Fields.jsx, the same controls the forms used), what it means, the findings on it and its undo. Above it the way to
@@ -35,7 +34,7 @@ export default function Inspector({ content, vocab, at, field, draft, ctx, place
   const order = ctx.levels
   const root = at?.root ?? []
   const shown = field?.path && fileForm(draft ?? content, vocabulary, at, order)
-  const file = at?.object ? { object: { ...at.object, value: shown?.value, tagKind: content.registries?.tag?.[at.object.full]?.kind } } : at?.level ? { level: at.level } : at?.parts ? { parts: true } : at?.glossary ? { glossary: content.glossary } : { game: true }
+  const file = at?.object ? { object: { ...at.object, value: shown?.value, tagKind: content.registries?.tag?.[at.object.full]?.kind } } : at?.level ? { level: at.level } : shown?.file ?? { game: true }
   // Another layer's object is read here only: it is overridden from the middle.
   const readOnly = Boolean(at?.object && !at.object.own)
   const asJson = json || readOnly
@@ -131,7 +130,7 @@ export default function Inspector({ content, vocab, at, field, draft, ctx, place
   const isTask = tasked && path.length === 2 && path[0] === 'tasks'
   const list = typeof last === 'number' && !isTask ? getAt(shown.value, parent) : null
   const optional = !list && hit.entry?.optional
-  const { at: findings } = placeFindings(shown.form, places.filter((p) => (at?.object ? false : at?.level ? p.level === at.level : at?.parts ? p.file === 'parts' : at?.glossary ? p.file === 'glossary' : !p.level && !p.file)))
+  const { at: findings } = placeFindings(shown.form, places.filter((p) => (at?.object ? false : at?.level ? p.level === at.level : file.projection ? p.file === file.name : !p.level && !p.file)))
   const ctxHere = { ...ctx, findings, content }
   return (
     <div className="insp">
@@ -252,13 +251,10 @@ function longConfig(value) {
 
 /** Breadcrumbs always start at the original JSON file. */
 function Head({ content, path, trail, file, root, onPick, json, onToggleJson, about, pinned, onPin, onRemove }) {
-  // A part is a file of its own (parts/<name>.json): its crumbs start at the part.
-  const part = file.parts && root?.length === 2 && root.every((key, i) => key === path[i] && key === trail[i]) ? root : null
-  const base = part ?? []
+  const base = file.projection && root?.every((key, i) => key === path[i] && key === trail[i]) ? root : []
   const name = file.object ? objectFileName(file.object.kind, file.object.full, file.object.tagKind, file.object.namespace, file.object.declared)
     : file.level ? `levels/${file.level.slice(file.level.indexOf('/') + 1)}.json`
-    : part ? `parts/${part[1].slice(part[1].indexOf('/') + 1)}.json` : file.parts ? 'parts/'
-    : file.glossary ? glossaryFile(file.glossary, path) : content.packageTarget ? 'package.json' : 'game.json'
+    : file.projection ? file.projection.sourceFile(file.value, path) : content.packageTarget ? 'package.json' : 'game.json'
   const atRoot = path.length === base.length
   const canOpenRoot = name !== 'package.json'
   const jsonLabel = tr("JSON 源码")

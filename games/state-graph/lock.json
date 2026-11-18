@@ -31,7 +31,7 @@
     },
     "image": {
       "version": "0.0.0",
-      "hash": "8d0f7736a9ad8ee59f49b030ee974a4800a51484c0a7c188120471b61d44bb95"
+      "hash": "a854e96618f7acfcc8e275ee70bc7b5d8d082d33d33fdd573c8653a644ec9e6a"
     },
     "table": {
       "version": "0.0.0",
@@ -39,7 +39,7 @@
     },
     "state-graph": {
       "version": "0.0.0",
-      "hash": "456cced9897dcab29ddcaa4fa37c44c8b92aec6737e7bfd2ed9d367e52c232de"
+      "hash": "2a1a7e13afa6829c24c56157185a85c1e2cb27c751c702f98c090d0f424bf3aa"
     },
     "workshop": {
       "version": "0.0.0",

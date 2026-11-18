@@ -1,5 +1,6 @@
+import { sentencePlaySchema } from 'sentence'
 import { circuitPlaySchema } from 'circuit'
-import { definePlays, playFor } from 'kernel'
+import { definePlays, playFor, resourcePlaySchema } from 'kernel'
 
 import declarationSource from '../capabilities/play.json' with { type: 'json' }
 
@@ -7,7 +8,15 @@ import { readCopy } from 'kernel/words'
 
 const declaration = readCopy(declarationSource)
 
-export const plays = definePlays(Object.fromEntries(Object.entries(declaration.items).map(([id, { configuration }]) => [`logic/${id}`, configuration])), circuitPlaySchema)
+const schemas = {
+  ...circuitPlaySchema,
+  sentence: sentencePlaySchema,
+  tree: resourcePlaySchema('tree', ['once']),
+  scenario: resourcePlaySchema('scenario', ['steps']),
+  checks: resourcePlaySchema('checks', ['boards']),
+}
+
+export const plays = definePlays(Object.fromEntries(Object.entries(declaration.items).map(([id, { configuration }]) => [`logic/${id}`, configuration])), schemas)
 
 /** Apply the task's reveal policy to the circuit template, for the screen and text play alike. */
 export function gatesPlayFor(task) {

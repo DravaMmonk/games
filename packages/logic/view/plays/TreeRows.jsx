@@ -1,6 +1,5 @@
-import TreeEditor from '../../strip/TreeEditor.jsx'
-import { L } from '../i18n.js'
-import RuleRows from '../RuleRows.jsx'
+import { TreeEditor } from 'sentence/view'
+import { L, RuleRows } from 'kernel/view'
 
 /** Rule rows whose editable slots are tree works. */
 export default function TreeRows({ editor, ...rows }) {

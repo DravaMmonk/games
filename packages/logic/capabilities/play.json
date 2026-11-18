@@ -60,11 +60,11 @@
     },
     "translate": {
       "configuration": {
-        "editor": "tree",
+        "editor": "sentence",
         "judge": "check",
         "checks": "hidden",
         "resources": "translation",
-        "stage": "fo-stage",
+        "stage": "",
         "layout": "fo-level",
         "taskBoard": [
           "title",
@@ -75,11 +75,11 @@
     },
     "query": {
       "configuration": {
-        "editor": "tree",
+        "editor": "sentence",
         "judge": "check",
         "checks": "shown",
         "resources": "query",
-        "stage": "fo-stage",
+        "stage": "",
         "layout": "fo-level",
         "taskBoard": [
           "title",

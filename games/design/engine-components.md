@@ -30,7 +30,7 @@ Studio 由对象类型声明生成资源列表，并挂载已选各包的编辑�
 | `slider` | 拖拉条 | `min`、`max`（必填）、`step`、`unit`、`marks`（刻度） | 数 |
 | `toggle` | 开关 | `on`、`off`（两端的字） | 真假 |
 | `list` | 依次选几项 | `options`，或 `from` | 选了的选项，按选的先后 |
-| `tree` | 拼一句 | `optional`（可以不填） | 一句话的文字：屏幕给出这个任务、这个测试的语言（`CircuitScreen` 的 `language`），词序条拼出（`strip/TreePick.jsx`） |
+| `tree` | 拼一句 | `optional`（可以不填） | 一句话的文字：`logic` 的证明玩法通过 `CircuitScreen` 的 `settingControls` 提供词序条，按任务和当前测试决定可用拼块。编辑器由 `sentence/view` 提供 |
 | `custom` | 自定义 | `widget`（包 `widget` 种类的一项）、`params`（合那一项的 schema） | 那一项说 |
 
 卡片的数字输入和卷积核权重直接传递数字。桌面的方向键、配置的加减按钮与 Studio 数字字段使用同一套步进和边界规则。桌面手输与手机小键盘也共用分数和科学计数的解析。

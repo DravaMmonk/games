@@ -1,6 +1,6 @@
 import { L } from "kernel"
 import { T } from 'kernel/words'
-import { treeKey as keyOf } from 'kernel'
+import { treeKey as keyOf } from 'sentence'
 import { show } from './formula.js'
 import { say } from './notation.js'
 import { bindsAt, chipsFrom, complete, holesOf, joinsOnto, kindAt, kidsOf, nodeAt, setAt, straysOf } from './formulaTree.js'

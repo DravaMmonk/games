@@ -71,8 +71,7 @@ export { taskModule } from './runtime-model.js'
 export { TASK_BOARD_SECTIONS } from './plays.js'
 
 export { judgeWorks } from './authoring.js'
-export { judgeFor, playFor, definePlays } from './plays.js'
-export { holeTree } from '../strip/tree.js'
+export { judgeFor, playFor, definePlays, resourcePlaySchema } from './plays.js'
 
 export { callOf } from "./schema.js"
 
@@ -111,7 +110,6 @@ export { reportedFailure } from './failure-text.js'
 
 export { hidden } from './judge.js'
 
-export { treeKey } from '../strip/tree.js'
 
 export { registerReferenceKind } from './markup.js'
 

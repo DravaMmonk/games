@@ -175,7 +175,7 @@
 
 **读数**：左栏任务下面的几个数（元件数、代价、步数、调用数……）用 `packages/circuit/view/Readouts.jsx`：一行几格，数在上、名字在下，样子和位置所有游戏一样；不加「评分」之类的标题。
 
-**样式只取 tokens。** 字号、颜色、圆角、间距用 `kit/tokens.css` 的变量。直接写出的字号（样式表里的 px）、间距和圆角（样式表里超过 1px 的 px）、颜色（样式表和代码里的色值）由 `npm run styles` 数出来（`kit/engine/styles.js`）：kit 自己的样式表、共用件（`shell`、`circuit`、`views`、`strip`）、各包自行检查；`npm test` 给每一项设上限（`styles.test.js`），只降不升，间距和圆角处处是零，新包全是零。studio 有自己更紧的一组值（第 6.7 节），不在其内。
+**样式只取 tokens。** 字号、颜色、圆角、间距用 `kit/tokens.css` 的变量。直接写出的字号（样式表里的 px）、间距和圆角（样式表里超过 1px 的 px）、颜色（样式表和代码里的色值）由 `npm run styles` 数出来（`kit/engine/styles.js`）：kit 自己的样式表、共用件（`shell`、`circuit`、`views`）、各包自行检查；`npm test` 给每一项设上限（`styles.test.js`），只降不升，间距和圆角处处是零，新包全是零。studio 有自己更紧的一组值（第 6.7 节），不在其内。
 
 **共用组件**
 

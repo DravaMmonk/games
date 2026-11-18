@@ -1,4 +1,6 @@
 import { T as catalogText } from 'kernel/words'
+import { sentenceScreen } from 'sentence/view'
+import { lazy } from 'react'
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
@@ -15,7 +17,7 @@ import { script } from '../core/scriptValues.js'
 import { KERNEL_RULES, lemmaRules, ruleText } from '../core/schematic.js'
 import { RULES } from '../core/proof.js'
 import { logicWorks } from '../core/work.js'
-import { playKinds } from 'kernel/view'
+import { playKinds, resourceScreen } from 'kernel/view'
 import { iconOf as partIcon } from 'circuit/view'
 import { OPS } from '../core/ops.js'
 import { plays } from '../core/plays.js'
@@ -23,6 +25,17 @@ import { declaration, definition } from '../core/rowValues.js'
 import { audit } from '../core/auditWork.js'
 import { truth } from '../core/truthValues.js'
 
+const Rows = lazy(() => import('./plays/Rows.jsx'))
+const BoardChecks = lazy(() => import('./plays/BoardChecks.jsx'))
+const ScenarioCheck = lazy(() => import('./plays/ScenarioCheck.jsx'))
+
+const bindings = {
+  circuit: circuitScreen,
+  sentence: sentenceScreen,
+  tree: (play, prepare) => resourceScreen(Rows, play, prepare),
+  scenario: (play, prepare) => resourceScreen(ScenarioCheck, play, prepare),
+  checks: (play, prepare) => resourceScreen(BoardChecks, play, prepare),
+}
 
 // A level's declaration task, if it has one: a declaration on the rule board (iso.js).
 const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic/iso') ?? null
@@ -115,7 +128,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
       'logic/query': { icon: Search, label: catalogText("查询") },
       'logic/model': { icon: FileSignature, label: catalogText("造世界") },
       'logic/script': { icon: ScrollText, label: catalogText("写脚本") },
-    }, { circuit: circuitScreen }),
+    }, bindings),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its
     // rules, from here on).
     unlocked: (level) => [

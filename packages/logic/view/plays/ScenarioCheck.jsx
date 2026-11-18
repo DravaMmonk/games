@@ -1,13 +1,7 @@
 import { Fragment, useMemo } from 'react'
-import { Strip } from '../../strip/index.js'
-import { CheckScenario } from '../Checks.jsx'
-import { L, T } from '../i18n.js'
-import { Markup } from '../Markup.jsx'
-import RunDock from '../RunDock.jsx'
-import Verdict from '../Verdict.jsx'
-import { usePlayback } from '../usePlayback.jsx'
-import PlayLayout from './PlayLayout.jsx'
-import { useSavedWork } from './useWork.js'
+import { Strip } from 'sentence/view'
+import { CheckScenario } from './Checks.jsx'
+import { L, T, Markup, RunDock, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
 
 /** Write a scenario, then play it against the given works. */
 export default function ScenarioCheck({ screen, resource, play }) {

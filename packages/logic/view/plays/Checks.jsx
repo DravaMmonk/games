@@ -1,8 +1,5 @@
-import { SentenceRow, TreeButton, TreeList } from '../strip/TreePick.jsx'
-import { ChoiceField, Field, InlineChoice } from './FormFields.jsx'
-import RowTable from './RowTable.jsx'
-import Verdict from './Verdict.jsx'
-import { L } from './i18n.js'
+import { SentenceRow, TreeButton, TreeList } from 'sentence/view'
+import { ChoiceField, Field, InlineChoice, RowTable, Verdict, L } from 'kernel/view'
 
 const read = (cell, row) => cell.read ? cell.read(row) : row[cell.name]
 const placeholder = (cell) => <span className="ck-placeholder">{L(cell.placeholder)}</span>

@@ -1,10 +1,11 @@
-// A proof level (《证明完毕》, ../proof.js) as the kernel's circuit screen plays it (../../../shell/CircuitScreen.jsx): its
+// A proof level (《证明完毕》, ../proof.js) as the circuit package plays it: its
 // premises down the left, the goal on the right, the rules and the lemmas as parts (a game's parts.json, the lemmas
 // registered by the course), a box's regions on the same board. Each test provides the premises and goal.
 // A card holds the schema's letters and shows them as the test's
 // sentences: its sentences are built in the language of the level's own (choices.js), its choices worked out by the
 // domain's resources on the test on view.
 import { T } from 'kernel/words'
+import { TreeButton } from 'sentence/view'
 import { parse, replaceAtoms } from '../../core/formula.js'
 import { choicesOf } from '../../core/choices.js'
 import { vocabulary } from '../../core/fol.js'
@@ -28,7 +29,15 @@ function language(task, test) {
 export const proofScreen = {
   course: (game) => game.logic.proofBoards,
   play: { ...proofReadout, runLevel: (task, board, _parts, options) => runProof(task, board, options) },
-  language,
+  settingControls(task, test) {
+    const build = language(task, test)
+    return {
+      tree: ({ setting, value, onChange, readOnly, id }) => (
+        <TreeButton value={value ?? ''} onChange={onChange} build={build} title={setting.label ?? setting.key}
+          placeholder={setting.optional ? '—' : T('拼一句')} scope={id} disabled={readOnly} clearable={Boolean(setting.optional)} />
+      ),
+    }
+  },
   context: (task, test) => ({ task, text: textOf(task, test) }),
   card: { phoneRegionLabel: (node, index) => node.type.split('/').at(-1) === 'orE' ? '①②'[index] : undefined },
   // A script the proof follows, a line each, indented as its blocks are.

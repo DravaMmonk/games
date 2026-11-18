@@ -96,7 +96,7 @@ import "./training.css"
 //   defaults?(type)       a new card's settings
 //   portLabels?           { type: { port: label } }               defined?  the game's parts.json parts (CircuitLevel)
 //   inspect?(node, ctx)   what a defined part's detail shows of its values (by default, as its card)
-//   language?(task, test) the language a defined part's tree setting is built in (../strip/TreePick.jsx)
+//   settingControls?(task, test) renderers for settings provided by this play
 //   context?(task, test)  what a resource sees on the screen when it works out a setting's options (`from`)
 //   sheet?(node, ctx, set), details   a card's detail (CircuitLevel sheet; set as settings' is), offered from desktop
 //                         card headers too (details); on a board run tick by tick, by default its settings and each of
@@ -151,7 +151,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, language, context, training, testLabel, useWorld = noWorld, log = false, revealOnPass = false, showResults = true, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, revealOnPass = false, showResults = true, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -323,10 +323,10 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const definedFaces = useMemo(() => defined && {
     ...defined,
     allowed,
-    language: language?.(level, onView),
+    controls: settingControls?.(level, onView),
     options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(level, onView), node } }, defined.ops),
     value: (node, ctx, output, face) => (face === 'detail' && inspect ? inspect(node, ctx) : output != null ? <Value value={valueOf(node, output, ctx.view)} error={ctx.view.errors.get(node.id)} show={show} of={valueKey(ctx, sourceOf(node.id, output))} views={valueViews?.(ctx.board.level ?? level, node, valueOf(node, output, ctx.view))} /> : ctx.board.parts.outputs(node) ? null : value(node, ctx)),
-  }, [defined, inspect, allowed, level, onView, drawn, valueViews])
+  }, [defined, inspect, allowed, level, onView, drawn, valueViews, settingControls])
 
   const itemOf = (type) => {
     if (known?.(type)) return { type, label: resolve.definition(type).name, desc: resolve.definition(type).description, icon: CircuitBoard, family: 'built', packed: true }

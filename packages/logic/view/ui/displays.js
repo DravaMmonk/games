@@ -1,5 +1,5 @@
 import '../logic.css'
-import { proofScreen } from './proof.js'
+import { proofScreen } from './proof.jsx'
 import { gatesScreen } from './gates.js'
 import { machineScreen } from './machine.js'
 import { declaredLines } from '../../core/iso.js'

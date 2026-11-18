@@ -57,3 +57,19 @@
 .ks-pick-drop { display: inline-flex; padding: var(--sp-1); border: 0; color: var(--muted); background: transparent; cursor: pointer; }
 .ks-pick-drop:hover { color: var(--fail); }
 
+
+/* Sentence selectors use the same sizing tokens as rule rows. */
+.ks-pick-sentence:not(:disabled) { cursor: pointer; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
+.ks-pick-sentence:not(:disabled):hover { border-color: var(--rule); }
+.ks-pick-sentence[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
+.ks-pick-sentence {
+  box-sizing: border-box; min-height: var(--sent-h); max-width: 100%; padding: var(--sp-1) var(--sent-px);
+  display: inline-flex; align-items: center; justify-content: flex-start;
+  border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas);
+  font: var(--sent-fs)/1.35 var(--serif); text-align: left; word-break: keep-all; overflow-wrap: break-word;
+}
+.ks-pick-sentence.is-empty {
+  border: 1px dashed var(--rule); color: var(--muted); background: transparent; font-family: var(--sans); font-size: calc(var(--sent-fs) - 1.5px);
+}
+@media (max-width: 760px) { .ks-pick-one { display: flex; width: 100%; } }
+.ks-pick-one > .ks-pick-sentence { flex: 1; }

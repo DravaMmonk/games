@@ -53,7 +53,7 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
   const words = (s) => valueWords(s, params[s.key] ?? s.default ?? s.options?.[0]?.value)
   const setting = (s, k) => (
     <div key={s.key} className="pf-slot" {...mark(['settings', k])}>
-      <SettingField setting={s} value={params[s.key] ?? s.default} allowed={defined.allowed?.(def.type, s.key) ?? null} readOnly={readOnly || isFixed(node, s.key)} roomy={roomy} phone={phone} widgets={defined.widgets} language={defined.language} onChange={(v) => set({ [s.key]: v }, s.key)} />
+      <SettingField setting={s} value={params[s.key] ?? s.default} allowed={defined.allowed?.(def.type, s.key) ?? null} readOnly={readOnly || isFixed(node, s.key)} roomy={roomy} phone={phone} widgets={defined.widgets} controls={defined.controls} onChange={(v) => set({ [s.key]: v }, s.key)} />
     </div>
   )
   const block = (b, path, key) => {

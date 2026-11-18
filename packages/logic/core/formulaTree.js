@@ -7,7 +7,7 @@
 //   chip   { key, kind: 'formula' | 'term', group, text, make() }
 //   path   the child indices from the root to a node: [] is the root, [1, 0] the first child of its second child
 import { BOT, all, atom, bin, ex, fn, freeVars, not, signature, tvar } from './formula.js'
-import { holeTree } from 'kernel'
+import { holeTree } from 'sentence'
 
 // The supported connective marks. The level's notation decides which of these are present.
 const CONNECTIVES = ['¬', '∧', '∨', '→', '↔', '⊥']

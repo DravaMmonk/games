@@ -1,13 +1,6 @@
 import { useState } from 'react'
-import { checkAction } from '../useCheckOnce.js'
-import RunDock from '../RunDock.jsx'
-import Verdict from '../Verdict.jsx'
-import { L } from '../i18n.js'
-import NamedLines from '../NamedLines.jsx'
-import PlayLayout from './PlayLayout.jsx'
-import TestTabs from '../TestTabs.jsx'
+import { checkAction, RunDock, Verdict, L, NamedLines, PlayLayout, TestTabs, inspectWork, useCheckedWork } from 'kernel/view'
 import TreeRows from './TreeRows.jsx'
-import { inspectWork, useCheckedWork } from './useWork.js'
 
 // `resource.tabs` (optional): the same rows read in other words — a level's cases, then its letters — as tabs that only
 // change how the rows read; rows, lines and the judge's words take the tab (`at`).

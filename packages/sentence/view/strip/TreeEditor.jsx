@@ -1,10 +1,9 @@
 import { forwardRef, useImperativeHandle, useMemo } from 'react'
-import { L, tr } from '../shell/i18n.js'
-import { useHistory } from '../shell/useHistory.js'
+import { L, tr, useHistory } from 'kernel/view'
 import { Chips, Strip } from './Strip.jsx'
 import { StripTools } from './StripTools.jsx'
 import { useStrip } from './useStrip.js'
-import { treeKey, treePath } from './tree.js'
+import { treeKey, treePath } from '../../core/tree.js'
 
 /** Edit a work on a strip. The language describes its tree, parts, accepted holes and text. */
 const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, language, scope }, ref) {

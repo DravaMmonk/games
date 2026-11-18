@@ -1,7 +1,6 @@
 import { useId } from 'react'
 import { X } from 'lucide-react'
 import Choice from "../board/Choice.jsx"
-import { TreeButton } from 'kernel/view'
 
 import { NumberField } from 'kernel/view'
 
@@ -15,9 +14,8 @@ import { numberText } from 'kernel/view'
 // One setting of a part, the same in every game (games/design/README.md 6.8): a part definition names one of the kernel controls
 // and the kernel draws it — compact on a desktop card, roomy in a sheet (`roomy`) and on a phone. The value a control
 // gives is what parts.json says (../../engine/parts/define.js coerce): a word for a select or buttons, a number for a
-// number or a slider, true or false for a toggle, the values picked in order for a list, the text of a tree (a sentence
-// in the language the screen gives, `language`: the strip's builder, ../../strip/TreePick.jsx); a custom control is the
-// domain's widget (`widgets[name]`).
+// number or a slider, true or false for a toggle, and the values picked in order for a list. Plays can provide
+// setting renderers by control type. A custom control uses the domain's widget (`widgets[name]`).
 //
 //   setting   the setting, resolved (its preset filled in, options worked out)        value    its value now
 //   onChange(value)    allowed   the option values the course offers here (null: all)    readOnly   shown only
@@ -48,8 +46,10 @@ function ListControl({ options, value, onChange, readOnly, label }) {
   )
 }
 
-function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone, widgets, language, id }) {
+function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone, widgets, controls, id }) {
   const label = s.label ? L(s.label) : s.about ? L(s.about) : s.key
+  const render = controls?.[s.control]
+  if (render) return render({ setting: s, value, onChange, readOnly, id })
   switch (s.control) {
     case 'select':
       return (
@@ -80,9 +80,7 @@ function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone,
     case 'list':
       return <ListControl options={optionsOf(s, allowed)} value={value} onChange={onChange} readOnly={readOnly} label={label} />
     case 'tree':
-      return language
-        ? <TreeButton value={value ?? ''} onChange={onChange} build={language} title={s.label ?? s.key} placeholder={s.optional ? '—' : T('拼一句')} scope={id} disabled={readOnly} clearable={Boolean(s.optional)} />
-        : <code>{value || '—'}</code>
+      return <code>{value || '—'}</code>
     case 'custom': {
       const Widget = widgets?.[s.widget]
       return Widget ? <Widget setting={s} params={s.params} value={value} onChange={onChange} readOnly={readOnly} roomy={roomy} phone={phone} /> : null
@@ -93,14 +91,14 @@ function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone,
 }
 
 /** A setting with its label: beside the control on a card, over it in a sheet. */
-export default function SettingField({ setting, value, onChange, allowed = null, readOnly = false, roomy = false, phone = false, widgets, language }) {
+export default function SettingField({ setting, value, onChange, allowed = null, readOnly = false, roomy = false, phone = false, widgets, controls }) {
   const id = useId()
   const fixed = readOnly || setting.fixed
   const unit = setting.unit && setting.control === 'number' ? <small className="pf-unit">{L(setting.unit)}</small> : null
   return (
     <div className={`pf-setting is-${setting.control} ${roomy ? 'is-roomy' : ''}`} title={setting.about ? L(setting.about) : undefined} onPointerDown={stop}>
       {setting.label && <label className="pf-label" htmlFor={id}>{L(setting.label)}</label>}
-      <span className="pf-control"><Control setting={setting} value={value} onChange={onChange} allowed={allowed} readOnly={fixed} roomy={roomy} phone={phone} widgets={widgets} language={language} id={id} />{unit}</span>
+      <span className="pf-control"><Control setting={setting} value={value} onChange={onChange} allowed={allowed} readOnly={fixed} roomy={roomy} phone={phone} widgets={widgets} controls={controls} id={id} />{unit}</span>
       {roomy && setting.about && <small className="pf-about">{L(setting.about)}</small>}
     </div>
   )

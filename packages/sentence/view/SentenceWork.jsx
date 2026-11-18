@@ -1,13 +1,6 @@
 import { useRef } from 'react'
-import TreeEditor from '../../strip/TreeEditor.jsx'
-import { L } from '../i18n.js'
-import { Markup } from '../Markup.jsx'
-import RunDock from '../RunDock.jsx'
-import Verdict from '../Verdict.jsx'
-import { checkAction } from '../useCheckOnce.js'
-import PlayLayout from './PlayLayout.jsx'
-import { inspectWork, useCheckedWork } from './useWork.js'
-import WorkGoal from './WorkGoal.jsx'
+import TreeEditor from './strip/TreeEditor.jsx'
+import { L, Markup, RunDock, Verdict, checkAction, PlayLayout, inspectWork, useCheckedWork, WorkGoal } from 'kernel/view'
 
 function TextLines({ lines }) {
   return (
@@ -32,7 +25,7 @@ function Examples({ examples }) {
   )
 }
 
-export default function TreeWork({ screen, resource, play }) {
+export default function SentenceWork({ screen, resource, play }) {
   const { level: entry } = screen
   const { work: tree, verdict, check, change } = useCheckedWork(screen, {
     read: (saved) => saved?.tree ?? resource.initial ?? null,
@@ -40,8 +33,8 @@ export default function TreeWork({ screen, resource, play }) {
   }, inspectWork(play, resource.judge))
   const editor = useRef(null)
   const stage = (
-    <div className={play.stage}>
-      {resource.prompt && <p className="fo-say fo-prompt"><Markup text={resource.prompt} /></p>}
+    <div className={`sentence-stage ${play.stage}`.trim()}>
+      {resource.prompt && <p className="sentence-prompt"><Markup text={resource.prompt} /></p>}
       {resource.goal && <WorkGoal premises={resource.premises} goal={resource.goal} />}
       {play.checks === 'shown' && resource.examples && <Examples examples={resource.examples} />}
       <TreeEditor tree={tree} onChange={change} chips={resource.chips(tree)} language={resource.language} scope={`${entry.id}:${entry.source.task}`} ref={editor} />

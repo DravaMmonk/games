@@ -1,9 +1,6 @@
 import { useRef } from 'react'
 import { Redo2, Undo2 } from 'lucide-react'
-import ClearButton from '../shell/ClearButton.jsx'
-import { tr } from '../shell/i18n.js'
-import { historyKey } from '../shell/useHistory.js'
-import { useWorkspaceKeys } from '../shell/useOverlay.js'
+import { ClearButton, tr, historyKey, useWorkspaceKeys } from 'kernel/view'
 
 // The strip's row of tools, laid out as the circuit boards' (packages/circuit): clear on the left (it asks first),
 // undo and redo on the right; ⌘/Ctrl+Z and ⇧⌘/Ctrl+Z (or Ctrl+Y) work too. `history` is the shared useHistory over

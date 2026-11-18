@@ -11,6 +11,8 @@ const fields = {
   gives: S.opt(S.oneOf(['reference'])),
   taskBoard,
 }
+export const resourcePlaySchema = (editor, judges) => S.obj({ ...fields, editor: S.oneOf([editor]), judge: S.oneOf(judges) })
+
 const label = S.obj({ zh: S.str(), en: S.str() })
 export const PLAY = S.by('editor', {
   board: S.obj({
@@ -29,14 +31,11 @@ export const PLAY = S.by('editor', {
       panelClass: S.str(),
     }),
   }),
-  tree: S.obj({ ...fields, editor: S.oneOf(['tree']), judge: S.oneOf(['once', 'check']) }),
-  values: S.obj({ ...fields, editor: S.oneOf(['values']), judge: S.oneOf(['table']) }),
-  fields: S.obj({ ...fields, editor: S.oneOf(['fields']), judge: S.oneOf(['rows']) }),
-  scenario: S.obj({ ...fields, editor: S.oneOf(['scenario']), judge: S.oneOf(['steps']) }),
-  checks: S.obj({ ...fields, editor: S.oneOf(['checks']), judge: S.oneOf(['boards']) }),
+  values: resourcePlaySchema('values', ['table']),
+  fields: resourcePlaySchema('fields', ['rows']),
 })
 
-/** A play selects kernel components and names the domain resources they use. */
+/** A play selects screen components and names the domain resources they use. */
 export function definePlays(plays, extensions = {}) {
   for (const [name, play] of Object.entries(plays)) {
     const wrong = validate({ ...PLAY, cases: { ...PLAY.cases, ...extensions } }, play)

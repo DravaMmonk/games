@@ -1,0 +1,4 @@
+{
+  "package.desc": "Provides a play area and an editor for assembling sentences with typed slots. Consumer packages supply the grammar and judge.",
+  "package.title": "Sentence Building"
+}

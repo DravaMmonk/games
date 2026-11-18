@@ -63,6 +63,29 @@
 
 
 /* The rules a declaration gives, as they stand: each named at the left, written out beside it. */
-/* A sentence being built for one of them (strip/TreePick.jsx, ui/RuleTable.jsx). */
+/* A sentence being built for one of them in the sentence editor. */
 /* The rule table's for-any switch takes the quantifiers' colour. */
 .lg-rule-table .rr-lead button[aria-pressed='true'] { background: color-mix(in srgb, var(--fam-quant, var(--accent)) 13%, transparent); box-shadow: inset 0 0 0 1.5px var(--fam-quant, var(--accent)); }
+
+/* The checks a player writes in the results area (Checks.jsx): the rows, then what the run said. */
+.ck { display: grid; gap: var(--sp-4); }
+.ck input { width: 7em; }
+.ck-wrong { color: var(--fail); font-weight: 600; }
+.ck-right { color: var(--status); font-weight: 600; }
+.ck-placeholder { color: var(--faint); font-style: normal; font-size: var(--fs-small); }
+.ck-lines span { display: block; }
+
+/* A scenario as a player-written check. */
+.ck-scenarios { display: grid; gap: var(--sp-4); }
+.ck-scenario-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-4); border-radius: var(--r-md); }
+.ck-scenario-row .ks-strip { margin: 0; }
+.ck-scenario-row.is-step { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); }
+.ck-scenario-line { margin: var(--sp-1) 0; border: 0; border-top: 1.5px solid var(--ink); }
+.ck-scenario { display: grid; gap: var(--sp-5); padding: var(--sp-5) var(--sp-6); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); }
+.ck-field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); font-size: 13.5px; }
+.ck-grid-label { min-width: 7em; color: var(--muted); }
+.ck-scenario-cells { display: flex; gap: var(--sp-3); }
+.ck-scenario button { min-width: 36px; height: 34px; padding: 0 var(--sp-4); border: 0; border-radius: var(--r-md); color: var(--muted); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: 14px var(--sans); cursor: pointer; }
+.ck-scenario button[aria-pressed='true'] { color: var(--paper); background: var(--accent); box-shadow: none; }
+.ck-grid { border-collapse: separate; border-spacing: 4px; }
+.ck-grid td { padding: 0; }

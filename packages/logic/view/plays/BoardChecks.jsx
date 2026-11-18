@@ -1,14 +1,7 @@
 import { useState } from 'react'
-import Checks from '../Checks.jsx'
-import { L } from '../i18n.js'
-import NamedLines from '../NamedLines.jsx'
-import RunDock from '../RunDock.jsx'
-import TestTabs from '../TestTabs.jsx'
-import Verdict from '../Verdict.jsx'
-import { usePlayback } from '../usePlayback.jsx'
-import PlayLayout from './PlayLayout.jsx'
+import Checks from './Checks.jsx'
+import { L, NamedLines, RunDock, TestTabs, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
 import TreeRows from './TreeRows.jsx'
-import { useSavedWork } from './useWork.js'
 
 /** Inspect given works and write cases that check how they behave. */
 export default function BoardChecks({ screen, resource, play }) {

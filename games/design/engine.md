@@ -13,7 +13,7 @@
 | 位置 | 职责 |
 |---|---|
 | `kit/engine/`、`kit/course.js` | 内容、解析器、注册表、通用路线拓扑、检查和操作集 |
-| `kit/shell/`、`kit/views/`、`kit/strip/` | 外壳、布局、表单、通用显示和输入组件 |
+| `kit/shell/`、`kit/views/` | 外壳、布局、表单、通用显示和输入组件 |
 | `kit/studio/` | 工作区、资源列表、schema 编辑、文案、编排、审计与日志 |
 | `kit/app/` | Node/Vite 加载、构建、内容资源、Studio HTTP 适配 |
 | `packages/<包>/core/` | 玩法、作品格式、含义、派生状态、检查、盲玩和无界面导出 |

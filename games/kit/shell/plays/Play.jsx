@@ -3,23 +3,16 @@ import { defineGame } from '../index.js'
 import { tr } from '../i18n.js'
 
 const ManualBoardPlay = lazy(() => import('./ManualBoardPlay.jsx'))
-const BoardChecks = lazy(() => import('./BoardChecks.jsx'))
-const Rows = lazy(() => import('./Rows.jsx'))
 const FieldRows = lazy(() => import('./FieldRows.jsx'))
-const ScenarioCheck = lazy(() => import('./ScenarioCheck.jsx'))
-const TreeWork = lazy(() => import('./TreeWork.jsx'))
 const ValueTables = lazy(() => import('./ValueTables.jsx'))
 
 const bind = {
   board: (play, resource) => (screen) => <ManualBoardPlay screen={screen} play={play} resource={resource} />,
-  tree: (play, prepare) => resourceScreen(play.judge === 'once' ? Rows : TreeWork, play, prepare),
   values: (play, prepare) => resourceScreen(ValueTables, play, prepare),
   fields: (play, prepare) => resourceScreen(FieldRows, play, prepare),
-  scenario: (play, prepare) => resourceScreen(ScenarioCheck, play, prepare),
-  checks: (play, prepare) => resourceScreen(BoardChecks, play, prepare),
 }
 
-function resourceScreen(Screen, play, prepare) {
+export function resourceScreen(Screen, play, prepare) {
   return function ResourcePlay(screen) {
     const source = screen.level.source
     const resource = useMemo(() => prepare(source, screen), [source, screen.progress, screen.saved])
@@ -27,7 +20,7 @@ function resourceScreen(Screen, play, prepare) {
   }
 }
 
-/** Bind each declared play's resource to the kernel screen selected by its editor and judge. */
+/** Bind each declared play's resource to the screen selected by its editor. */
 export function playKinds(plays, resources, presentation = {}, bindings = {}) {
   return Object.fromEntries(Object.entries(plays).map(([name, play]) => {
     if (!Object.hasOwn(resources, play.resources)) throw new Error(`play ${name}: missing resource ${play.resources}`)

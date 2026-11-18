@@ -1,0 +1,9 @@
+{
+  "target": "sentence",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "63dbdd28dfbf8c560cedc1526ade29324816c67bf4c8082867ae81bbb4579cfd"
+    }
+  }
+}

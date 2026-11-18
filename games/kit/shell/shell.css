@@ -555,9 +555,9 @@ level-ref, wiki-ref { display: inline; }
 .rr-item { display: inline-flex; align-items: center; }
 .rr-sep { padding: 0 var(--sp-3) 0 var(--sp-1); color: var(--faint); }
 .rr-end { margin-left: var(--sp-4); color: var(--muted); font-size: 13.5px; white-space: nowrap; }
-.rr-slot, .ks-pick-sentence:not(:disabled) { cursor: pointer; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
-.rr-slot:not(:disabled):not(.is-read):hover, .ks-pick-sentence:not(:disabled):hover { border-color: var(--rule); }
-.rr-slot[aria-expanded='true'], .ks-pick-sentence[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
+.rr-slot { cursor: pointer; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
+.rr-slot:not(:disabled):not(.is-read):hover { border-color: var(--rule); }
+.rr-slot[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
 .rr-slot.is-bad { color: var(--fail); border-color: var(--fail); background: color-mix(in srgb, var(--fail) 7%, var(--paper)); }
 .rr-slot:disabled, .rr-slot.is-read { cursor: default; }
 .rr-add { margin-left: var(--sp-4); transition: color 140ms ease, border-color 140ms ease, background 140ms ease; }
@@ -584,19 +584,18 @@ level-ref, wiki-ref { display: inline; }
    on a desktop. */
 :root { --sent-h: 30px; --sent-px: var(--sp-4); --sent-fs: 14px; }
 @media (max-width: 760px) { :root { --sent-h: 40px; --sent-px: var(--sp-5); --sent-fs: 15.5px; } }
-.rr-slot, .rr-goal, .ks-pick-sentence, .ff-fixed {
+.rr-slot, .rr-goal, .ff-fixed {
   box-sizing: border-box; min-height: var(--sent-h); max-width: 100%; padding: var(--sp-1) var(--sent-px);
   display: inline-flex; align-items: center; justify-content: flex-start;
   border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas);
   font: var(--sent-fs)/1.35 var(--serif); text-align: left; word-break: keep-all; overflow-wrap: break-word;
 }
-.rr-slot.is-blank, .ks-pick-sentence.is-empty, .rr-add {
+.rr-slot.is-blank, .rr-add {
   border: 1px dashed var(--rule); color: var(--muted); background: transparent; font-family: var(--sans); font-size: calc(var(--sent-fs) - 1.5px);
 }
 .rr-add { box-sizing: border-box; min-height: var(--sent-h); min-width: var(--sent-h); padding: 0 var(--sent-px); display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); border-radius: var(--r-md); cursor: pointer; }
 /* One sentence alone: on a phone the whole row, its text to the left; on a desktop as wide as it reads. */
-@media (max-width: 760px) { .ks-pick-one, .ff-fixed { display: flex; width: 100%; } }
-.ks-pick-one > .ks-pick-sentence { flex: 1; }
+@media (max-width: 760px) { .ff-fixed { display: flex; width: 100%; } }
 
 /* What a check or a run came to (Verdict.jsx). */
 .verdict { margin: 0; color: var(--muted); font-size: var(--fs-small); line-height: 1.6; }
@@ -693,13 +692,6 @@ level-ref, wiki-ref { display: inline; }
 
 .brief-skip { padding: var(--sp-3) var(--sp-4); border: 1px solid var(--rule); border-radius: var(--r-md); background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
 
-/* The checks a player writes in the results area (Checks.jsx): the rows, then what the run said. */
-.ck { display: grid; gap: var(--sp-4); }
-.ck input { width: 7em; }
-.ck-wrong { color: var(--fail); font-weight: 600; }
-.ck-right { color: var(--status); font-weight: 600; }
-.ck-placeholder { color: var(--faint); font-style: normal; font-size: var(--fs-small); }
-.ck-lines span { display: block; }
 .rr-empty { color: var(--faint); font-style: normal; font-size: var(--fs-small); }
 
 /* Value tables. */
@@ -731,14 +723,6 @@ level-ref, wiki-ref { display: inline; }
 }
 .level-phone .vt-stage { width: 100%; margin: 0; padding: 0; }
 
-.tree-evidence { display: grid; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-radius: var(--r-md); background: color-mix(in srgb, var(--fail) 6%, var(--paper)); font-size: var(--fs-small); }
-.tree-evidence p { margin: 0; }
-.tree-description { display: grid; gap: var(--sp-2); font-size: var(--fs-small); line-height: 1.6; color: var(--body, var(--ink)); }
-.tree-description p { margin: 0; }
-.tree-description .is-muted { color: var(--muted); }
-.tree-examples { display: grid; gap: var(--sp-4); }
-.tree-examples details { padding: var(--sp-4) var(--sp-5); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); }
-.tree-examples summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
 .tm-given { display: grid; gap: var(--sp-3); }
 .tm-given p { margin: 0; }
 .tm-premise { margin-right: var(--sp-5); }
@@ -770,21 +754,6 @@ level-ref, wiki-ref { display: inline; }
 
 .fr-region { margin-inline-start: calc(var(--depth, 0) * var(--sp-7)); padding-inline: var(--sp-4); color: var(--muted); font: var(--fs-small) var(--mono); }
 .fr-error { color: var(--fail); line-height: 1.45; }
-
-/* A scenario as a player-written check. */
-.ck-scenarios { display: grid; gap: var(--sp-4); }
-.ck-scenario-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-4); border-radius: var(--r-md); }
-.ck-scenario-row .ks-strip { margin: 0; }
-.ck-scenario-row.is-step { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); }
-.ck-scenario-line { margin: var(--sp-1) 0; border: 0; border-top: 1.5px solid var(--ink); }
-.ck-scenario { display: grid; gap: var(--sp-5); padding: var(--sp-5) var(--sp-6); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); }
-.ck-field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); font-size: 13.5px; }
-.ck-grid-label { min-width: 7em; color: var(--muted); }
-.ck-scenario-cells { display: flex; gap: var(--sp-3); }
-.ck-scenario button { min-width: 36px; height: 34px; padding: 0 var(--sp-4); border: 0; border-radius: var(--r-md); color: var(--muted); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: 14px var(--sans); cursor: pointer; }
-.ck-scenario button[aria-pressed='true'] { color: var(--paper); background: var(--accent); box-shadow: none; }
-.ck-grid { border-collapse: separate; border-spacing: 4px; }
-.ck-grid td { padding: 0; }
 
 /* useToast (useInteraction.jsx): a short note that slides down from the top of the screen and leaves on its own. */
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:60;max-width:calc(100% - 32px);transform:translate(-50%,calc(-100% - 24px));padding:var(--sp-5) var(--sp-6);border-radius:var(--r-lg);background:var(--ink);color:var(--canvas);font-weight:600;font-size:14px;box-shadow:0 10px 30px -10px rgba(0,0,0,.7);transition:transform .3s cubic-bezier(.2,.85,.25,1);text-align:center}

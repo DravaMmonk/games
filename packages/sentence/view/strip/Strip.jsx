@@ -1,6 +1,6 @@
 import './strip.css'
 import { Fragment } from 'react'
-import { L, tr } from '../shell/i18n.js'
+import { L, tr } from 'kernel/view'
 
 // The strip: what is being built, written out as it reads, with a framed box for every place still empty, the way a
 // calculator writes a formula in natural display. A part put in is plain text from then on, and its own empty places

@@ -22,7 +22,7 @@ const briefOf = ({ mission, hints }) => ({ text: [mission.goal, mission.how], hi
 const hand = Object.fromEntries(Object.entries(ui['manual']).map(([name, useBoard]) => [name, { useBoard, briefOf }]))
 
 /** A task's `done` as the shell's pass text of a task: its head in bold, then its paragraphs. */
-const doneText = ({ head, body = [] }) => [...(head ? [T(`<b>${head.zh ?? head.en}</b>`, `<b>${head.en ?? head.zh}</b>`)] : []), ...body]
+const doneText = ({ head, body = [] }) => [...(head ? [T("<b>{en}</b>", {en: { zh: String(head.zh ?? head.en), en: String(head.en ?? head.zh) }})] : []), ...body]
 
 /**
  * The components box can show an idea on another level's board, as selected by the part's demoLevel.
@@ -57,9 +57,9 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
   const nameOf = (k) => {
     const c = table.model.def(k)
     const twin = !modelsOf(k) && cards.some(([o]) => o !== k && String(table.model.def(o).name) === String(c.name))
-    return twin ? T(`${c.name.zh} · ${c.tag.zh}`, `${c.name.en} · ${c.tag.en}`) : c.name
+    return twin ? T("{zh} · {zh2}", {zh: { zh: String(c.name.zh), en: String(c.name.en) }, zh2: { zh: String(c.tag.zh), en: String(c.tag.en) }}) : c.name
   }
-  const descOf = (k) => (modelsOf(k) ? T('用所选模式把几个输入合并成一个值。', 'Combines the inputs into one value using the selected play.') : table.model.def(k).desc)
+  const descOf = (k) => (modelsOf(k) ? T("用所选模式把几个输入合并成一个值。") : table.model.def(k).desc)
   const primitives = cards.map(([k, at]) => ({ key: `part:${k}`, part: k, name: nameOf(k), desc: descOf(k), icon: lookIcon(k), at }))
 
   // The components box by robot: a robot can use every part earned in its era and the eras before it (parts carry over,

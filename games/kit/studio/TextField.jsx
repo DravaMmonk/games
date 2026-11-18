@@ -231,7 +231,7 @@ export function TextField({ value, onSet, label, names, findings = [], compact =
   const pickerOpen = linking !== null
   const options = useMemo(() => (names && pickerOpen ? [
     ...[...names.level].map(([id, l]) => ({ value: `level:${id}`, label: l.label, title: l.title, group: tr('关卡') })),
-    ...[...names.part].map(([k, n]) => ({ value: `part:${k}`, label: k, title: n, group: tr('元件', 'Parts') })),
+    ...[...names.part].map(([k, n]) => ({ value: `part:${k}`, label: k, title: n, group: tr("元件") })),
     ...[...names.wiki].map(([k, n]) => ({ value: `wiki:${k}`, label: k, title: n, group: tr('百科') })),
   ] : []), [names, pickerOpen])
   const close = () => { setLinking(null); box.current?.focus() }
@@ -244,7 +244,7 @@ export function TextField({ value, onSet, label, names, findings = [], compact =
       <Side value={draft} onChange={set} names={names} lang={lang} label={label} placeholder={placeholder} api={box} onLink={setLinking} />
       {names && (
         <div className="text-tools" ref={tools}>
-          <button type="button" className="text-link" onPointerDown={(e) => e.preventDefault()} onClick={() => setLinking(linking === null ? '' : null)} aria-label={tr('插入链接')} title={tr(`插入链接（${MOD}+L 或 [[）`, `Insert a link (${MOD}+L or [[)`)}><Link2 size={13} aria-hidden="true" /></button>
+          <button type="button" className="text-link" onPointerDown={(e) => e.preventDefault()} onClick={() => setLinking(linking === null ? '' : null)} aria-label={tr('插入链接')} title={tr("插入链接（{MOD}+L 或 [[）", {MOD})}><Link2 size={13} aria-hidden="true" /></button>
           {linking !== null && (
             <OptionList
               options={options} value={null} query={linking} anchor={tools} onClose={close} onOutside={() => setLinking(null)}

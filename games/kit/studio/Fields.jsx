@@ -60,7 +60,7 @@ function NumberField({ field, onSet, label }) {
           if (e.target.value !== '' && Number.isFinite(Number(e.target.value))) onSet(Number(e.target.value))
         }}
       />
-      <button type="button" className="num-step" onClick={() => put(after)} aria-label={tr('加', 'More')} disabled={after === null}><Plus size={12} /></button>
+      <button type="button" className="num-step" onClick={() => put(after)} aria-label={tr("加")} disabled={after === null}><Plus size={12} /></button>
       {range && <input className="num-slide" type="range" min={field.min} max={field.max} step={field.int ? 1 : field.step === 1 ? (field.max - field.min) / 100 : field.step} value={Number.isFinite(now) ? now : field.min} onChange={(e) => put(Number(e.target.value))} aria-label={label} />}
     </div>
   )
@@ -139,7 +139,7 @@ export function Field({ field, label, onEdit, ctx, onRemove = null }) {
     <div className="field-head">
       {label !== null && <span className="field-key" title={field.about ? L(field.about) : undefined}>{label}</span>}
       {field.tags && <FieldTags tags={field.tags} />}
-      {changed && <button type="button" className="field-undo" onClick={revert} title={tr('改回去')} aria-label={tr(`把 ${name} 改回去`, `Put ${name} back`)}><RotateCcw size={12} /></button>}
+      {changed && <button type="button" className="field-undo" onClick={revert} title={tr('改回去')} aria-label={tr("把 {name} 改回去", {name})}><RotateCcw size={12} /></button>}
       {onRemove && <button type="button" className="field-x" onClick={() => { if (confirmDelete(key)) onRemove() }} aria-label={tr('去掉')}><X size={13} /></button>}
     </div>
   )
@@ -211,7 +211,7 @@ function ListField({ field, onEdit, ctx }) {
           >
             <div className="li-head">
               <button
-                type="button" className="li-grip" draggable aria-label={tr(`第 ${k + 1} 项：拖动或 Alt+↑↓ 换位置`, `Item ${k + 1}: drag, or Alt+↑↓, to move it`)}
+                type="button" className="li-grip" draggable aria-label={tr("第 {k} 项：拖动或 Alt+↑↓ 换位置", {k: k + 1})}
                 onDragStart={(e) => { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(k)); setDrag(k) }} onDragEnd={() => { setDrag(null); setOver(null) }}
                 onKeyDown={(e) => {
                   if (!e.altKey || !['ArrowUp', 'ArrowDown'].includes(e.key)) return
@@ -243,7 +243,7 @@ function ListField({ field, onEdit, ctx }) {
         )
       })}
       {<AddMenu
-        options={[...choices, ...(items.length ? [{ value: 'copy', label: tr('复制最后一项', 'Duplicate last item') }] : [])]}
+        options={[...choices, ...(items.length ? [{ value: 'copy', label: tr("复制最后一项") }] : [])]}
         onPick={(action) => {
           setOpen((current) => new Set([...current, items.length]))
           const item = action === 'copy' ? duplicate(values.at(-1)) : choices[action].make()

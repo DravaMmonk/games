@@ -61,7 +61,7 @@ export default function NumberField({ id, label, value, onChange, phone, readOnl
   }
   const field = phone ? (
     <>
-      <button id={id} type="button" ref={trigger} className="number-field" aria-label={tr(`编辑${name}`, `Edit ${name}`)} disabled={readOnly} onPointerDown={stop} onClick={() => setOpen(true)}>{value === '' ? '—' : shownText(value)}</button>
+      <button id={id} type="button" ref={trigger} className="number-field" aria-label={tr("编辑{name}", {name})} disabled={readOnly} onPointerDown={stop} onClick={() => setOpen(true)}>{value === '' ? '—' : shownText(value)}</button>
       {open && <NumberPad label={label} value={value} onCancel={close} onCommit={(v) => { onChange(v); close() }}
         onNext={nextField() ? (v) => {
           const to = nextField()

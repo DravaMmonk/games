@@ -1,5 +1,6 @@
+import { L } from './shell/i18n.js'
 // Studio mounts the shared language and theme menus into its top bar.
-import { currentLang, applyLang, tr } from './lang.js';
+import { currentLang, applyLang, languageOptions, tr } from './lang.js';
 import { THEMES, currentTheme, applyTheme } from './theme.js';
 import { registerOverlay } from './overlays.js';
 
@@ -17,17 +18,14 @@ const swatch = id => { const [bg, ink, accent] = SWATCH[id] || SWATCH.paper; ret
 
 const MENUS = {
   lang: {
-    title: () => tr('语言', 'Language'),
+    title: () => tr("语言"),
     now: () => currentLang(),
-    options: () => [
-      { id: 'zh', label: '简体中文', lang: 'zh-CN' },
-      { id: 'en', label: 'English', lang: 'en' },
-    ],
+    options: () => languageOptions().map(([id, label]) => ({ id, label, lang: id === 'zh' ? 'zh-CN' : id })),
   },
   theme: {
-    title: () => tr('主题', 'Theme'),
+    title: () => tr("主题"),
     now: () => currentTheme(),
-    options: () => THEMES.map(([id, zh, en]) => ({ id, label: tr(zh, en), lead: swatch(id) })),
+    options: () => THEMES.map(([id, label]) => ({ id, label: L(label), lead: swatch(id) })),
   },
 };
 
@@ -63,7 +61,7 @@ function build(kind, pick) {
   const paint = () => {
     const now = spec.now(), current = spec.options().find(o => o.id === now);
     button.title = spec.title();
-    button.setAttribute('aria-label', `${spec.title()}${tr('：', ': ')}${current ? current.label : ''}`);
+    button.setAttribute('aria-label', `${spec.title()}${(currentLang() === 'en' ? ': ' : '：')}${current ? current.label : ''}`);
     pop.setAttribute('aria-label', spec.title());
     pop.innerHTML = `<div class="kit-pop-label">${spec.title()}</div>` + spec.options().map(o => `<button type="button" role="menuitemradio" class="kit-pop-item" data-v="${o.id}" aria-checked="${o.id === now}"${o.lang ? ` lang="${o.lang}"` : ''}>${o.lead || ''}<span>${o.label}</span>${svg('check', 15)}</button>`).join('');
   };

@@ -37,8 +37,8 @@ function portOf([name, p], W) {
   const sensor = s => W.sensors[s];
   switch (name.split('/').at(-1)) {
     case 'reads': return { label: sensor(p).label, short: sensor(p).short, type: SIGNAL_PORT[sensor(p).type], sensor: p, input: null };
-    case 'way': return { label: T(`来路${'一二三四'[p.n - 1]}`, `way in ${p.n}`), short: 'abcd'[p.n - 1], type: 'kernel/number', sensor: p.sensor ?? null, input: p.input ?? null };
-    case 'start': return { label: T('起点', 'start'), short: T('起', 'start'), type: 'kernel/boolean', sensor: p.sensor, input: null };
+    case 'way': return { label: T("来路{value}", {value: { zh: String('一二三四'[p.n - 1]), en: String(p.n) }}), short: 'abcd'[p.n - 1], type: 'kernel/number', sensor: p.sensor ?? null, input: p.input ?? null };
+    case 'start': return { label: T("起点"), short: T("起", {}, "work"), type: 'kernel/boolean', sensor: p.sensor, input: null };
     default: return { label: p.label, short: p.short, type: SIGNAL_PORT[sensor(p.sensor).type], sensor: p.sensor, input: null };
   }
 }
@@ -151,7 +151,7 @@ export function* prepareTableWorks(content) {
   /** The map's chapters, one per era: named after its robot (or the era's own title where there is none). */
   const CHAPTERS = eras.map((era, e) => ({
     era: era.id,
-    kicker: lazy(() => tr(`第 ${e} 代`, `Era ${e}`)),
+    kicker: lazy(() => tr("第 {e} 代", {e})),
     name: era.machine ? robotOf(era.machine).name : era.chapter.title,
     desc: era.chapter.desc,
     levels: eraLevels(era),
@@ -199,8 +199,7 @@ export function* prepareTableWorks(content) {
     const r = robotOf(L.robot), n = 2 * r.vision + 1, upgrade = met.size > 0;
     met.add(L.robot);
     return {
-      t: lazy(() => tr(`${upgrade ? '机器人升级了！新型号' : '认识你的机器人'}：<b>「${r.name}」</b>。${r.desc}图里蓝框是它的视野（${n}×${n}），红框是它脚下的格子。`,
-        `${upgrade ? 'Robot upgrade! The new model' : 'Meet your robot'}: <b>${r.name}</b>. ${r.desc} In the picture, the blue frames are its view (${n}×${n}) and the red frame is the cell it stands on.`)),
+      t: lazy(() => tr("{value}：<b>「{name}」</b>。{desc}图里蓝框是它的视野（{n}×{n}），红框是它脚下的格子。", {name: r.name, desc: r.desc, n, value: { zh: String(upgrade ? '机器人升级了！新型号' : '认识你的机器人'), en: String(upgrade ? 'Robot upgrade! The new model' : 'Meet your robot') }})),
       fig: visionFig(L.robot),
     };
   };
@@ -322,13 +321,13 @@ export function* prepareTableWorks(content) {
     if (merger) {
       const values = merger.filter(play => available.some(({ types }) => types.includes(play)));
       return values.length ? [{
-        key: 'model', label: T('模式', 'Mode'),
+        key: 'model', label: T("模式"),
         values: values.map(value => ({ value, label: model.def(value).tag })),
       }] : [];
     }
     const values = [...new Set(available.filter(({ types }) => types.includes(type))
       .flatMap(({ task }) => model.valueOptions(type, task) ?? []))];
-    return values.length ? [{ key: 'value', label: T('数值', 'Value'), values: values.map(value => ({ value, label: String(value) })) }] : [];
+    return values.length ? [{ key: 'value', label: T("数值"), values: values.map(value => ({ value, label: String(value) })) }] : [];
   };
 
   return { LEVELS, played, REQUIRES: plan.requires, PLACE: plan.place, TRACKS: plan.tracks, ROWS: plan.rows, CHAPTERS, LABELS, PARTS, course, model, run, syncOwn: own.sync, opening, offerIn, settingsIn, blueprints, wrong };

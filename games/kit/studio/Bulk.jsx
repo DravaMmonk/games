@@ -50,7 +50,7 @@ export default function Bulk({ content, vocabulary, ids, ctx, onAdd, onMove, onS
   return (
     <article className="editor bulk">
       <header className="editor-head">
-        <h1>{tr(`${levels.length} 关`, `${levels.length} levels`)}</h1>
+        <h1>{tr("{length} 关", {length: levels.length})}</h1>
         <div className="bulk-ids">{levels.map((l) => <button key={l.id} type="button" className="chip" onClick={() => onSelect({ level: l.id })}>{l.id}</button>)}</div>
         <span className="kit-spacer" />
         <button type="button" className="kit-btn is-label" onClick={() => onMove(levels.map((l) => l.id))} title={tr('一起移动：点树上的槽位')}><ArrowRightLeft size={14} aria-hidden="true" /></button>
@@ -83,7 +83,7 @@ export default function Bulk({ content, vocabulary, ids, ctx, onAdd, onMove, onS
         <section className="bulk-plan">
           <ol className="review-ops">{plan.ops.map((op, k) => <li key={k}><code>{op.op}</code><span>{op.level} {op.path ? showPath(op.path) : ''}{op.add ? ` +${op.add.join(' +')}` : ''}{op.remove ? ` −${op.remove.join(' −')}` : ''}{op.fields ? ` ${Object.keys(op.fields).join(', ')}` : ''}</span></li>)}</ol>
           {plan.skipped.length > 0 && <ul className="bulk-skipped">{plan.skipped.map((s) => <li key={s.level}><code>{s.level}</code> {s.why}</li>)}</ul>}
-          <button type="button" className="kit-btn is-label is-solid review-apply" disabled={!plan.ops.length} onClick={submit}><Check size={14} aria-hidden="true" />{tr(`加入变更集（${plan.ops.length}）`, `Into the changeset (${plan.ops.length})`)}</button>
+          <button type="button" className="kit-btn is-label is-solid review-apply" disabled={!plan.ops.length} onClick={submit}><Check size={14} aria-hidden="true" />{tr("加入变更集（{length}）", {length: plan.ops.length})}</button>
         </section>
       )}
     </article>

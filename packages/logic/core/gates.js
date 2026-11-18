@@ -14,7 +14,7 @@ import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, parse } from './formula.js'
 import { say } from './notation.js'
 import { lettersOf, rowsOf, valueOn } from './truth.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 /** A truth circuit's board: a card for each letter of the target on the left, the sentence's output on the right. */
 export const GATE_BOARD = circuitBoard({
@@ -108,7 +108,7 @@ const GATE_TESTS = {
 }
 
 const budgetFailure = ({ budget }, gates) => budget !== undefined && gates > budget
-  ? T(`每一行都正确，但用了 ${gates} 个门，这一关最多允许 ${budget} 个。`, `Every row is correct, but it uses ${gates} gates; this level allows ${budget}.`) : ''
+  ? T("每一行都正确，但用了 {gates} 个门，这一关最多允许 {budget} 个。", {gates, budget}) : ''
 
 export function runGates(level, board, _parts, options) {
   const task = { ...level, constraint: ({ steps }) => budgetFailure(level, steps) }

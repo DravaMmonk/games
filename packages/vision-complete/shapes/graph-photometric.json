@@ -21,10 +21,7 @@
         },
         "above": {
           "type": "num",
-          "about": {
-            "zh": "倾斜的门槛（lean：nx / nz；steep：坡度）",
-            "en": "the threshold of the tilt (lean: nx / nz; steep: the slope)"
-          },
+          "about": "@shape.graph-photometric.fields.setup.fields.above.about",
           "optional": true
         }
       }

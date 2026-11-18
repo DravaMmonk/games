@@ -227,10 +227,7 @@
           },
           "list": {
             "type": "bool",
-            "about": {
-              "zh": "一列东西（在图上点出的点对）",
-              "en": "a list of things (pairs picked on a picture)"
-            }
+            "about": "@shape.bench-knobs.of.of.4.fields.list.about"
           }
         }
       }

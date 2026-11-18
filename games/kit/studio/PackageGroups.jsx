@@ -1,15 +1,16 @@
+import { T } from '../shell/i18n.js'
 import { useState } from 'react'
 import { PACKAGE_KINDS } from '../engine/package-kinds.js'
 import { L, tr } from '../shell/i18n.js'
 
 const LABELS = {
-  play: ['玩法包', 'Play packages'],
-  ext: ['扩展包', 'Extensions'],
-  course: ['课程包', 'Course packages'],
-  lib: ['库包', 'Libraries'],
+  play: [T("玩法包")],
+  ext: [T("扩展包")],
+  course: [T("课程包")],
+  lib: [T("库包")],
 }
 
-export const packageKindLabel = kind => tr(...LABELS[kind])
+export const packageKindLabel = kind => L(LABELS[kind])
 
 export function packageGroups(packages, filter = '') {
   return PACKAGE_KINDS.flatMap(kind => {
@@ -20,26 +21,26 @@ export function packageGroups(packages, filter = '') {
 }
 
 const SOURCE_LABELS = {
-  workspace: ['工作区', 'Workspace'],
-  archive: ['发布归档', 'Release archive'],
-  unknown: ['未知来源', 'Unknown source'],
+  workspace: [T("工作区")],
+  archive: [T("发布归档")],
+  unknown: [T("未知来源")],
 }
 
 export function packageSidebarGroups(packages, by) {
   if (by === 'source') return Object.entries(SOURCE_LABELS).map(([id, words]) => ({
-    id, title: tr(...words),
+    id, title: L(words),
     items: packages.filter(pkg => (Object.hasOwn(SOURCE_LABELS, pkg.source) ? pkg.source : 'unknown') === id),
   }))
   return [
     ...packageGroups(packages).map(({ kind, items }) => ({ id: kind, title: packageKindLabel(kind), items })),
-    { id: 'unknown', title: tr('未分种类', 'No kind'), items: packages.filter(pkg => !PACKAGE_KINDS.includes(pkg.kind)) },
+    { id: 'unknown', title: tr("未分种类"), items: packages.filter(pkg => !PACKAGE_KINDS.includes(pkg.kind)) },
   ]
 }
 
 export function PackageKindFilter({ value, onChange, packages }) {
   return (
-    <select className="studio-game package-kind-filter" aria-label={tr('包种类', 'Package kind')} value={value} onChange={event => onChange(event.target.value)}>
-      <option value="">{tr('全部种类', 'All kinds')}</option>
+    <select className="studio-game package-kind-filter" aria-label={tr("包种类")} value={value} onChange={event => onChange(event.target.value)}>
+      <option value="">{tr("全部种类")}</option>
       {packageGroups(packages).map(({ kind }) => <option key={kind} value={kind}>{packageKindLabel(kind)}</option>)}
     </select>
   )

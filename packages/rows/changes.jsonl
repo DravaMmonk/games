@@ -3,3 +3,5 @@
 {"seq":3,"at":"2026-11-18T01:47:28.899Z","why":"Declare the package JavaScript as ES modules","adopt":true,"files":[{"file":"packages/rows/package.json","after":"98ee829bf6b8ecc7"}]}
 {"seq":4,"at":"2026-11-18T02:59:11.807Z","why":"Declare the optional encyclopedia dependency and its object kinds","adopt":true,"files":[{"file":"packages/rows/package.json","after":"edcb0608df867d43"}]}
 {"seq":5,"at":"2026-11-18T08:42:53.151Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/rows/package.json","after":"de29dc689a37fe9e"},{"file":"packages/rows/i18n/en.json","after":"c942c855750a9443"},{"file":"packages/rows/i18n/zh.json","after":"38c08aead66a3c6f"}]}
+{"seq":6,"at":"2026-11-18T09:10:34.108Z","why":"Move interface and declaration copy into owned language catalogs","adopt":true,"files":[{"file":"packages/rows/i18n/en.json","after":"f2fcaf1e65551e26"}]}
+{"seq":7,"at":"2026-11-18T09:16:12.036Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[{"file":"packages/rows/i18n/en.json","after":"f7af5ec445689d26"}]}

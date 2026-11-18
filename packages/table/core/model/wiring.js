@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { portsOf, paramsOf, printLines, readLines } from 'circuit'
 import { isCard } from './parts.js'
 import { blank, fitted, picksOf, roleOf } from './board.js'
@@ -21,7 +22,7 @@ export function wiring(model, u) {
       sets: node => (isCard(node.type) ? ['picks'] : []),
       check: (node, key, value) => {
         if (key !== 'picks') return null;
-        if (!Array.isArray(value)) return { zh: '传感器设置须写成列表。', en: 'Sensor picks must be a list.' };
+        if (!Array.isArray(value)) return catalogText("传感器设置须写成列表。");
         const unknown = value.findIndex(pick => !u.offers?.[node.type]?.includes(pick));
         if (unknown < 0) return null;
         return { zh: `「${node.id}」读不到「${value[unknown]}」。`, en: `“${node.id}” cannot read “${value[unknown]}”.` };

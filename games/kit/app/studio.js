@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { packageEntries } from '../engine/plugin-node.js'
 import { packageApp } from './package-vite.js'
 import { localSourceRequest, sourceTools } from './studio-source.js'
@@ -29,7 +30,7 @@ const PREFIX = '/studio/api/'
 const MODULE = 'virtual:studio-domains'
 
 const courseCatalog = {
-  about: { zh: '列出其他游戏中已编排的关卡，供跨游戏先修引用。', en: 'List placed levels in other games for cross-game prerequisite links.' },
+  about: catalogText("列出其他游戏中已编排的关卡，供跨游戏先修引用。"),
   params: { game: 'string' },
   async run({ game }) {
     const root = contentRoot()
@@ -135,7 +136,7 @@ export function studioApp() {
   const packages = packageApp(root)
   return {
     name: 'studio',
-    resolveId: (id) => (id === MODULE ? `\0${id}` : packages.resolveId(id)),
+    resolveId: (id, importer) => (id === MODULE ? `\0${id}` : packages.resolveId(id, importer)),
     load(id) {
       if (id !== `\0${MODULE}`) return null
       let code

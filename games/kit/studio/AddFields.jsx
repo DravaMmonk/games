@@ -4,7 +4,7 @@ import { AddMenu } from './Picker.jsx'
 
 /** Add an optional field offered by the current engine schema. */
 export function AddFields({ fields, ctx, onAdd }) {
-  const label = tr('添加字段', 'Add field')
+  const label = tr("添加字段")
   const entries = new Map()
   const options = fields.flatMap((field) => {
     const choices = creationChoices(field.schema, ctx)

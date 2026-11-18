@@ -9,10 +9,7 @@
     },
     "text": {
       "type": "text",
-      "about": {
-        "zh": "带 {设置} 的一句话",
-        "en": "words with {setting} in them"
-      },
+      "about": "@shape.summary-show.fields.text.about",
       "optional": true
     }
   }

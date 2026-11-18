@@ -35,7 +35,7 @@
       "scene": "vision-complete/xo",
       "tests": [
         {
-          "label": "@level.4-15.tasks.4-15.tests.0.label",
+          "label": "O 1",
           "letter": "O",
           "ox": 1,
           "oy": 4,
@@ -43,7 +43,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.1.label",
+          "label": "X 1",
           "letter": "X",
           "ox": 4,
           "oy": 1,
@@ -59,7 +59,7 @@
           "seed": 239
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.3.label",
+          "label": "X 2",
           "letter": "X",
           "ox": 1,
           "oy": 2,
@@ -67,7 +67,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.4.label",
+          "label": "O 3",
           "letter": "O",
           "ox": 1,
           "oy": 5,
@@ -75,7 +75,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.5.label",
+          "label": "X 3",
           "letter": "X",
           "ox": 3,
           "oy": 5,
@@ -83,7 +83,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.6.label",
+          "label": "O 4",
           "letter": "O",
           "ox": 4,
           "oy": 3,
@@ -91,7 +91,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.7.label",
+          "label": "X 4",
           "letter": "X",
           "ox": 3,
           "oy": 3,
@@ -99,7 +99,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.8.label",
+          "label": "O 5",
           "letter": "O",
           "ox": 2,
           "oy": 4,
@@ -107,7 +107,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.9.label",
+          "label": "X 5",
           "letter": "X",
           "ox": 4,
           "oy": 5,
@@ -115,7 +115,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.10.label",
+          "label": "O 6",
           "letter": "O",
           "ox": 5,
           "oy": 4,
@@ -123,7 +123,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.11.label",
+          "label": "X 6",
           "letter": "X",
           "ox": 2,
           "oy": 1,
@@ -131,7 +131,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.12.label",
+          "label": "O 7",
           "letter": "O",
           "ox": 1,
           "oy": 5,
@@ -139,7 +139,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.13.label",
+          "label": "X 7",
           "letter": "X",
           "ox": 2,
           "oy": 4,
@@ -155,7 +155,7 @@
           "seed": 570
         },
         {
-          "label": "@level.4-15.tasks.4-15.tests.15.label",
+          "label": "X 8",
           "letter": "X",
           "ox": 3,
           "oy": 3,

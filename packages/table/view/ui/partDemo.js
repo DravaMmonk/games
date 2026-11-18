@@ -4,7 +4,7 @@ import { insideAt } from 'circuit'
 import { columnDepths } from 'circuit'
 import { indexEdges } from 'kernel'
 import { splitSource, wireEdges } from 'circuit'
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 import { signal } from '../../core/model/format.js'
 import { recordReads } from '../../core/model/world.js'
 import { worldOf } from '../../core/model/task-world.js'
@@ -136,14 +136,14 @@ export function partDemo(model, course, tasks, demoLevel, key) {
       const value = tap ? inputs[id] ?? null : valueOf(values, id)
       if (tap) controls.push({ key: `${id}-${test}-${cell}`, kind: V.sensors[id].type, value, shown: signal(value), change: (next) => setInput(id, next) })
       const options = valueOptions(type, L)
-      if (options) controls.push(choice('value', T('数值', 'Value'), options.map((n) => [n, String(n)]), params?.value ?? valueDefault(type), (value) => change(id, { params: { ...params, value } })))
+      if (options) controls.push(choice('value', T("数值"), options.map((n) => [n, String(n)]), params?.value ?? valueDefault(type), (value) => change(id, { params: { ...params, value } })))
       const models = modelsOf(type)
       if (models) controls.push(choice('model', T('操作'), models.map((other) => [other, def(other).tag]), type, (next) => change(id, { type: next })))
       return {
         value: tap ? signal(value) : value,
         controls, isInput: tap, focus: focus.has(type), canOpen: Boolean(built && type === built),
         description: given ? null : def(type).desc, tag: given ? '' : tagsOf(node),
-        panelTag: tap || type === 'port' ? T('输入', 'Input') : type === 'out' ? T('答案') : def(type).tag,
+        panelTag: tap || type === 'port' ? T("输入") : type === 'out' ? T('答案') : def(type).tag,
       }
     }
 
@@ -184,7 +184,7 @@ export function partDemo(model, course, tasks, demoLevel, key) {
     start: (k) => ({ cell: runs[k].start, table: new Map(runs[k].table), typed: new Set(), overrides: {} }),
     view,
     layout: { scene: 'sg-bench-scene', canvas: 'sg-bench-canvas', inside: 'sg-inside', back: 'sg-inside-back', open: 'sg-open', body: 'sg-body', tag: 'sg-tag', value: 'sg-val', thumb: 'sg-thumb' },
-    note: T('点测试棋盘上的格子，让机器人站过去；输入元件读的就是棋盘上的格子，改它就是改那一格。改好点运行，答案会写进红框。', 'Click a cell on the test board to send the robot there; an input part reads a cell of the board, so changing it changes that cell. Then run, and the answer goes into the red frame.'),
+    note: T("点测试棋盘上的格子，让机器人站过去；输入元件读的就是棋盘上的格子，改它就是改那一格。改好点运行，答案会写进红框。"),
     help: T('点一块，在这里改它：输入、常数，或汇合器的操作。点棋盘上的格子换机器人的位置。'),
   }
 }

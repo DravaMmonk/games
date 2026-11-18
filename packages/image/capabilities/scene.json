@@ -2,17 +2,11 @@
   "name": "image/scene",
   "studio": {
     "order": 15,
-    "label": {
-      "zh": "场景",
-      "en": "Scenes"
-    }
+    "label": "@capability.scene.studio.label"
   },
   "items": {
     "filter": {
-      "about": {
-        "zh": "一张图（或几张）进，按一条规则算出的图出",
-        "en": "a picture (or a few) in, the picture a rule makes of them out"
-      },
+      "about": "@capability.scene.items.filter.about",
       "shape": "image/graph-filter",
       "params": {
         "type": "obj",
@@ -20,10 +14,7 @@
           "target": {
             "type": "call",
             "kind": "target",
-            "about": {
-              "zh": "输出怎样由测试的图算出（按关卡输入的顺序）",
-              "en": "how the output comes from the test’s pictures (in the order of the level’s inputs)"
-            }
+            "about": "@capability.scene.items.filter.params.fields.target.about"
           },
           "given": {
             "type": "map",
@@ -31,10 +22,7 @@
               "type": "call",
               "kind": "picture"
             },
-            "about": {
-              "zh": "每组测试都一样的输入（比如频率半径）",
-              "en": "inputs every test shares (the frequency radius, say)"
-            },
+            "about": "@capability.scene.items.filter.params.fields.given.about",
             "optional": true
           }
         }
@@ -53,10 +41,7 @@
               "type": "call",
               "kind": "picture"
             },
-            "about": {
-              "zh": "有几个输入时，每个输入的图",
-              "en": "the picture of each input, when there are several"
-            },
+            "about": "@capability.scene.items.filter.test.fields.inputs.about",
             "optional": true
           }
         }

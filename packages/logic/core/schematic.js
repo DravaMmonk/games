@@ -14,7 +14,7 @@
 // Some things are fixed (a, b … that a for-any box or Take the one there is took): a metavariable left by a rule may
 // only become a thing that was fixed before it was left (`scopes`: { name: [fixed name] }, `fixed`: every fixed name).
 import { BOT, all, atom, bin, ex, fn, meta, parse, same, sameTerm, show, showTerm, subst, substMany, tvar, unfoldConnective } from './formula.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 export const isMetaName = (name) => name.startsWith('?')
 const isTerm = (x) => 't' in x
@@ -149,12 +149,12 @@ const freshBound = (e, [va, a], [vb, b]) => {
 // Why a metavariable X may not become t: it is inside t, t has a bound variable that would leave its quantifier, or t
 // names a thing fixed after X was left (opts.scopes, opts.fixed). Null when it may.
 function blocked(e, X, t, opts = {}) {
-  if (metasIn(t).has(X)) return T(`${equationText(e)}：${X} 出现在另一边里面，代进去永远代不完`, `${equationText(e)}: ${X} occurs inside the other side, and putting it in never ends`)
+  if (metasIn(t).has(X)) return T("{value}：{X} 出现在另一边里面，代进去永远代不完", {value: equationText(e), X})
   const names = namesIn(t)
   const escapes = e.bound.filter((v) => names.has(v))
-  if (escapes.length) return T(`${equationText(e)}：${escapes.join('、')} 是量词管着的，${X} 不能带走它`, `${equationText(e)}: ${escapes.join(', ')} is bound by a quantifier, and ${X} cannot take it out`)
+  if (escapes.length) return T("{value}：{value2} 是量词管着的，{X} 不能带走它", {value: equationText(e), X, value2: { zh: String(escapes.join('、')), en: String(escapes.join(', ')) }})
   const late = (opts.fixed ?? []).filter((n) => names.has(n) && !(opts.scopes?.[X] ?? []).includes(n))
-  if (late.length) return T(`${equationText(e)}：${X} 是在取出 ${late.join('、')} 之前留下的，不能变成后来才有的东西`, `${equationText(e)}: ${X} was left before ${late.join(', ')} was taken, and cannot become something that came later`)
+  if (late.length) return T("{value}：{X} 是在取出 {value2} 之前留下的，不能变成后来才有的东西", {value: equationText(e), X, value2: { zh: String(late.join('、')), en: String(late.join(', ')) }})
   return null
 }
 
@@ -191,7 +191,7 @@ export const UNIFY_RULES = {
   // Different shapes, neither side a metavariable: no unifier.
   conflict: (eqs) => {
     const e = eqs.find((x) => { const [a, b] = [head(x.s), head(x.t)]; return a && b && a.key !== b.key })
-    return e ? { eqs, fail: T(`${equationText(e)}：两边的样子不同，怎样代都对不上`, `${equationText(e)}: the two sides have different shapes, and nothing put in makes them meet`) } : null
+    return e ? { eqs, fail: T("{value}：两边的样子不同，怎样代都对不上", {value: equationText(e)}) } : null
   },
   // A metavariable on the right only: turn it round.
   swap: (eqs) => {
@@ -274,7 +274,7 @@ export function unify(pairs, σ = {}, opts = {}) {
   if (set.fail) return { fail: set.fail }
   if (!solved(set.eqs)) {
     const e = nonPattern(set.eqs)
-    return { fail: e ? T(`${equationText(e)}：${(flexApp(e.s) ?? flexApp(e.t)).name} 后面跟的不都是不同的约束变量，解不止一个，证明助手不猜`, `${equationText(e)}: ${(flexApp(e.s) ?? flexApp(e.t)).name} is not applied to distinct bound variables, so there is more than one solution, and the proof assistant does not guess`) : T('合一不了') }
+    return { fail: e ? T("{value}：{name} 后面跟的不都是不同的约束变量，解不止一个，证明助手不猜", {value: equationText(e), name: (flexApp(e.s) ?? flexApp(e.t)).name}) : T('合一不了') }
   }
   // A solved set may still give a metavariable a thing fixed after it was left.
   const late = UNIFY_RULES.check(set.eqs, opts)
@@ -311,33 +311,32 @@ export function ruleText(rule, say = show) {
   return withBinders(rule.fixes, text)
 }
 
-const R = (zh, en) => T(zh, en)
 /**
  * The kernel's rules as rules with metavariables, in the order a card lists them, each with the name of the card it
  * is on the proof board: introduction rules first (used on a goal), then elimination rules (the first premise a
  * hypothesis to use up), then the rest.
  */
 export const KERNEL_RULES = [
-  ruleOf('conjI', R('拼接', 'Join'), ['?A', '?B'], '?A ∧ ?B'),
-  ruleOf('impI', R('假设框', 'Assumption box'), ['⟦?A⟧ ⟹ ?B'], '?A → ?B'),
-  ruleOf('disjI1', R('补充（左边）', 'Add alternative (left)'), ['?A'], '?A ∨ ?B'),
-  ruleOf('disjI2', R('补充（右边）', 'Add alternative (right)'), ['?B'], '?A ∨ ?B'),
-  ruleOf('allI', R('任取框', 'For-any box'), ['⋀x. ?P(x)'], '∀x. ?P(x)'),
-  ruleOf('exI', R('概括', 'Generalise'), ['?P(?t)'], '∃x. ?P(x)'),
-  ruleOf('mp', R('套用', 'Apply'), ['?A → ?B', '?A'], '?B'),
-  ruleOf('conjE', R('拆解', 'Split'), ['?A ∧ ?B', '⟦?A; ?B⟧ ⟹ ?C'], '?C'),
-  ruleOf('conjunct1', R('拆解（左边）', 'Split (left)'), ['?A ∧ ?B'], '?A'),
-  ruleOf('conjunct2', R('拆解（右边）', 'Split (right)'), ['?A ∧ ?B'], '?B'),
-  ruleOf('disjE', R('分类讨论', 'Case analysis'), ['?A ∨ ?B', '⟦?A⟧ ⟹ ?C', '⟦?B⟧ ⟹ ?C'], '?C'),
-  ruleOf('impE', R('用上「若…则…」', 'Use an “if”'), ['?A → ?B', '?A', '⟦?B⟧ ⟹ ?C'], '?C'),
-  ruleOf('botE', R('爆炸', 'Explosion'), ['⊥'], '?C'),
-  ruleOf('spec', R('选定一例', 'Choose an instance'), ['∀x. ?P(x)'], '?P(?t)'),
-  ruleOf('allE', R('选定一例后再使用', 'Choose an instance, then use it'), ['∀x. ?P(x)', '⟦?P(?t)⟧ ⟹ ?C'], '?C'),
-  ruleOf('exE', R('实例框', 'Instance box'), ['∃x. ?P(x)', '⋀x. ⟦?P(x)⟧ ⟹ ?C'], '?C'),
-  ruleOf('raa', R('反证法', 'By contradiction'), ['¬¬?A'], '?A'),
+  ruleOf('conjI', T("拼接"), ['?A', '?B'], '?A ∧ ?B'),
+  ruleOf('impI', T("假设框"), ['⟦?A⟧ ⟹ ?B'], '?A → ?B'),
+  ruleOf('disjI1', T("补充（左边）"), ['?A'], '?A ∨ ?B'),
+  ruleOf('disjI2', T("补充（右边）"), ['?B'], '?A ∨ ?B'),
+  ruleOf('allI', T("任取框"), ['⋀x. ?P(x)'], '∀x. ?P(x)'),
+  ruleOf('exI', T("概括"), ['?P(?t)'], '∃x. ?P(x)'),
+  ruleOf('mp', T("套用"), ['?A → ?B', '?A'], '?B'),
+  ruleOf('conjE', T("拆解"), ['?A ∧ ?B', '⟦?A; ?B⟧ ⟹ ?C'], '?C'),
+  ruleOf('conjunct1', T("拆解（左边）"), ['?A ∧ ?B'], '?A'),
+  ruleOf('conjunct2', T("拆解（右边）"), ['?A ∧ ?B'], '?B'),
+  ruleOf('disjE', T("分类讨论"), ['?A ∨ ?B', '⟦?A⟧ ⟹ ?C', '⟦?B⟧ ⟹ ?C'], '?C'),
+  ruleOf('impE', T("用上「若…则…」"), ['?A → ?B', '?A', '⟦?B⟧ ⟹ ?C'], '?C'),
+  ruleOf('botE', T("爆炸"), ['⊥'], '?C'),
+  ruleOf('spec', T("选定一例"), ['∀x. ?P(x)'], '?P(?t)'),
+  ruleOf('allE', T("选定一例后再使用"), ['∀x. ?P(x)', '⟦?P(?t)⟧ ⟹ ?C'], '?C'),
+  ruleOf('exE', T("实例框"), ['∃x. ?P(x)', '⋀x. ⟦?P(x)⟧ ⟹ ?C'], '?C'),
+  ruleOf('raa', T("反证法"), ['¬¬?A'], '?A'),
   // A sentence proved on the way and then used, as a wire on the proof board does (Lean's have).
-  ruleOf('cut', R('先证一句', 'Have'), ['?A', '⟦?A⟧ ⟹ ?C'], '?C'),
-  ruleOf('refl', R('自反律', 'Reflexivity'), [], '?t = ?t'),
+  ruleOf('cut', T("先证一句"), ['?A', '⟦?A⟧ ⟹ ?C'], '?C'),
+  ruleOf('refl', T("自反律"), [], '?t = ?t'),
 ]
 // The proof-board part each kernel rule is (a level has the rule once it holds the part); Have is Apply and a box.
 const PART = { conjI: 'andI', impI: 'impI', disjI1: 'orI', disjI2: 'orI', allI: 'allI', exI: 'exI', mp: 'mp', conjE: 'andE', conjunct1: 'andE', conjunct2: 'andE', disjE: 'orE', impE: 'mp', botE: 'botE', spec: 'allE', allE: 'allE', exE: 'exE', raa: 'raa', cut: 'mp', refl: 'refl' }
@@ -363,7 +362,7 @@ export function lemmaRules(type, l) {
   const read = (text) => metaRule(parse(text, { metas: l.metas }), l.metas)
   return forms.map((f) => ({
     key: f.key ? `${type}.${f.key}` : type,
-    name: f.key ? T(`${l.name.zh} ${f.label}`, `${l.name.en} ${f.label}`) : l.name,
+    name: f.key ? T("{zh} {label}", {label: f.label, zh: { zh: String(l.name.zh), en: String(l.name.en) }}) : l.name,
     premises: f.premises.map((p) => ({ fixes: [], hyps: [], show: read(p) })),
     conclusion: read(f.statement),
     lemma: type,

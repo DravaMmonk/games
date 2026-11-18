@@ -5,9 +5,6 @@
     "kind": "unlock"
   },
   "section": "course",
-  "about": {
-    "zh": "这一段搭出的能力：后面的任务马上能用，整关通过时解锁",
-    "en": "what this task builds: the tasks after it hold it at once, and passing the level unlocks it"
-  },
+  "about": "@shape.task-unlocks.about",
   "optional": true
 }

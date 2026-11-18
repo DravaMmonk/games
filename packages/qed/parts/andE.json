@@ -6,17 +6,17 @@
   "inputs": [
     {
       "name": "ab",
-      "label": "@part.andE.inputs.0.label"
+      "label": "A ∧ B"
     }
   ],
   "outputs": [
     {
       "name": "left",
-      "label": "@part.andE.outputs.0.label"
+      "label": "A"
     },
     {
       "name": "right",
-      "label": "@part.andE.outputs.1.label"
+      "label": "B"
     }
   ],
   "op": {

@@ -4,7 +4,7 @@
 // draws half the samples as μ_k + width·q. The discriminator is D(x) = sigmoid(w₀ + w₁u + w₂u²)
 // with u = x/2. D climbs log D(real) + log(1 − D(fake)); G climbs log D(fake) (the non-saturating form).
 import { judge, limitOf, startValues } from 'image'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 /**
  * The duel. n samples per hump at ±mode with spread `width`; rateD: the discriminator's step; start: the two pens'
@@ -95,8 +95,8 @@ export const gan = {
           ...measure,
           streak: state.streak,
           state,
-          round: t(`第 ${state.turn} 回合`, `Round ${state.turn}`),
-          labels: running ? { turn10: t(`还剩 ${running} 回合`, `${running} ${running === 1 ? 'round' : 'rounds'} left`) } : {},
+          round: t("第 {turn} 回合", {turn: state.turn}),
+          labels: running ? { turn10: t("还剩 {running} 回合", {running, value: running === 1 ? 'round' : 'rounds'}) } : {},
           say: merged && state.turn > 0
             ? { tone: 'fail', text: t('两支笔已经重合，无法再分开：模式坍塌。') }
             : { text: t('笔 1 和笔 2 各生成一半样本；竖线标出它们当前的位置。') },

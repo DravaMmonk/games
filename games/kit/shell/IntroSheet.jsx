@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { createElement, useState } from 'react'
 import { ArrowRight, X } from 'lucide-react'
 import { L, tr } from './i18n.js'
@@ -46,7 +47,7 @@ export default function IntroSheet({ game, level, pages, marks = [], step, theme
         </div>
         <footer className="intro-foot">
           <span className="intro-dots" aria-hidden="true">{pages.map((_, i) => <i key={i} className={i === page ? 'is-on' : ''} />)}</span>
-          {at && <AddMark at={at.at.replace(/\[\d+\]$/, '')} scope={at.scope} index={Number(/\[(\d+)\]$/.exec(at.at)[1])} label={{ zh: '一页', en: 'a page' }} />}
+          {at && <AddMark at={at.at.replace(/\[\d+\]$/, '')} scope={at.scope} index={Number(/\[(\d+)\]$/.exec(at.at)[1])} label={catalogText("一页")} />}
           {page > 0 && <button className="intro-back" onClick={() => setPage(page - 1)}>{tr('上一页')}</button>}
           <button className="intro-next" onClick={() => (last ? onClose() : setPage(page + 1))}>{last ? tr('开始') : tr('下一页')}<ArrowRight size={15} /></button>
         </footer>

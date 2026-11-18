@@ -4,8 +4,5 @@
     "type": "num"
   },
   "min": 4,
-  "about": {
-    "zh": "一条线经过的两点：x1, y1, x2, y2",
-    "en": "two points on a line: x1, y1, x2, y2"
-  }
+  "about": "@shape.lanes.about"
 }

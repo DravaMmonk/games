@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 import { useTween } from 'kernel/view'
 import { useElementSize } from 'kernel/view'
 import './gan.css'
@@ -89,7 +90,7 @@ export function GanChart({ ctx }) {
 
           {/* titles last, on a paper halo, so the pen lines pass behind them */}
           <text className="gan-title is-on-band" x={X0 + 8} y={DT + 16}>{tr('鉴定员 D(x)：判断 x 为真实数据的置信度')}</text>
-          <text className="gan-title" x={X0} y={TT - 10}>{tr(`两支笔的历史位置 ↓ 越往下越早（最近 ${TRACE} 回合）`, `Pen positions over time ↓ older further down (last ${TRACE} rounds)`)}</text>
+          <text className="gan-title" x={X0} y={TT - 10}>{tr("两支笔的历史位置 ↓ 越往下越早（最近 {TRACE} 回合）", {TRACE})}</text>
         </svg>
       </div>
     </div>

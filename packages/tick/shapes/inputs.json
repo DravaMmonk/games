@@ -31,10 +31,7 @@
           "dots",
           "sequence"
         ],
-        "about": {
-          "zh": "这个口的值起初画成哪种显示方式（玩家在详情和结果区里换）",
-          "en": "the view its value starts in (the player switches it in its detail and results row)"
-        },
+        "about": "@shape.inputs.of.fields.view.about",
         "optional": true
       }
     }

@@ -32,36 +32,13 @@ import { isPart, outputsOf } from "./board/model.js"
 
 
 
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 
 
 
 /** How to write a board as text, in the words of the blueprint dialog, for any circuit level. */
-export const GRAMMAR = T(
-  [
-    '每行一条：',
-    '  名字 = 类型(输入1, 输入2, …)        放一块元件，按输入口的顺序写它读的来源；_ 留空一个口',
-    '  名字 = 类型[设置=值, …](…)          带设置的元件',
-    '  名字 = 类型(口名: 来源, …)           也可以按口名写',
-    '  来源写元件的名字；元件有几个输出时写「名字.输出」',
-    '  输出 <- 来源                         接到关卡给的节点；有几个输入口的写「节点.口 <- 来源」',
-    '  框 = 类型(…) { 区域 { … } }           框里的元件写在区域的代码块里，区域给出的值读作「框.区域」',
-    '  # 注释',
-    '名字、类型、口名和设置值都用 ASCII。',
-  ].join('\n'),
-  [
-    'One statement a line:',
-    '  name = type(input1, input2, …)        place a part; its sources in the order of its inputs; _ leaves one open',
-    '  name = type[setting=value, …](…)      a part with settings',
-    '  name = type(port: source, …)          inputs may also go by port name',
-    '  a source is a part’s name, or name.output for one of several outputs',
-    '  node <- source                        wire into a node the level gives; node.port <- source for one with several inputs',
-    '  box = type(…) { region { … } }        parts inside a frame go in a block per region; what a region gives reads as box.region',
-    '  # a comment',
-    'Names, types, port names and setting values are ASCII.',
-  ].join('\n'),
-)
+export const GRAMMAR = T("每行一条：\n  名字 = 类型(输入1, 输入2, …)        放一块元件，按输入口的顺序写它读的来源；_ 留空一个口\n  名字 = 类型[设置=值, …](…)          带设置的元件\n  名字 = 类型(口名: 来源, …)           也可以按口名写\n  来源写元件的名字；元件有几个输出时写「名字.输出」\n  输出 <- 来源                         接到关卡给的节点；有几个输入口的写「节点.口 <- 来源」\n  框 = 类型(…) { 区域 { … } }           框里的元件写在区域的代码块里，区域给出的值读作「框.区域」\n  # 注释\n名字、类型、口名和设置值都用 ASCII。")
 
 /**
  * Tests as a step-by-step run shows them (../../shell/usePlayback.jsx): it stops at the first test that fails, so the
@@ -132,7 +109,7 @@ export function circuitPlay(hook) {
     attempt(ctx, text) {
       const board = playBoard(ctx)
       const result = read(text, board.start, board.parts, board.types)
-      if (result.errors) return { pass: false, refused: result.errors.map((e) => T(e.zh, e.en)), parts: [] }
+      if (result.errors) return { pass: false, refused: result.errors.map(({ zh, en }) => ({ zh, en })), parts: [] }
       const graph = result.graph
       const types = [...new Set(graph.nodes.filter((n) => isPart(board.parts, n)).map((n) => n.type))].sort()
       return { ...hook.run(ctx, graph), board: graph, parts: types, usage: { parts: types } }

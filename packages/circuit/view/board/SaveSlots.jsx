@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { ArrowUpFromLine, Check, ChevronDown, ClipboardPaste, Copy, FileText, Layers, Pencil, Plus, X } from 'lucide-react'
 import { Dialog } from 'kernel/view'
 
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 
 import { useOverlay } from 'kernel/view'
 
@@ -19,7 +19,7 @@ import { print } from "../../core/board/text.js"
  */
 import { SlotsContext } from 'kernel/view'
 
-const labelOf = (slot) => slot.name || tr(`电路 ${slot.no}`, `Board ${slot.no}`)
+const labelOf = (slot) => slot.name || tr("电路 {no}", {no: slot.no})
 
 /**
  * The switcher between a level's saved boards: a button naming the board played, opening a list to play another,
@@ -98,8 +98,8 @@ export default function SaveSlots({ phone = false, board = null }) {
                     <span>{labelOf(slot)}</span>
                   </button>
                 )}
-                <button type="button" className="slots-icon" onClick={() => setNaming(naming === slot.no ? null : slot.no)} aria-label={tr(`重命名「${labelOf(slot)}」`, `Rename “${labelOf(slot)}”`)} title={tr('重命名')}><Pencil size={13} /></button>
-                {slots.list.length > 1 && <button type="button" className="slots-icon is-danger" onClick={act(() => setDropping(slot.no))} aria-label={tr(`删除「${labelOf(slot)}」`, `Delete “${labelOf(slot)}”`)} title={tr('删除', 'Delete')}><X size={13} /></button>}
+                <button type="button" className="slots-icon" onClick={() => setNaming(naming === slot.no ? null : slot.no)} aria-label={tr("重命名「{value}」", {value: labelOf(slot)})} title={tr('重命名')}><Pencil size={13} /></button>
+                {slots.list.length > 1 && <button type="button" className="slots-icon is-danger" onClick={act(() => setDropping(slot.no))} aria-label={tr("删除「{value}」", {value: labelOf(slot)})} title={tr("删除")}><X size={13} /></button>}
               </li>
             ))}
           </ul>
@@ -125,9 +125,9 @@ export default function SaveSlots({ phone = false, board = null }) {
       {/* On the page itself: the tools' blurred backing would otherwise hold the dialog inside it. */}
       {pendingDrop && createPortal(
         <Dialog
-          title={tr(`删除「${labelOf(pendingDrop)}」？`, `Delete “${labelOf(pendingDrop)}”?`)}
+          title={tr("删除「{value}」？", {value: labelOf(pendingDrop)})}
           lines={[tr('删除后无法撤销。这一关的其他电路不受影响。')]}
-          actions={[[tr('取消'), () => setDropping(null)], [tr('删除', 'Delete'), () => { slots.drop(dropping); setDropping(null) }]]}
+          actions={[[tr('取消'), () => setDropping(null)], [tr("删除"), () => { slots.drop(dropping); setDropping(null) }]]}
           onClose={() => setDropping(null)}
         />,
         document.body,

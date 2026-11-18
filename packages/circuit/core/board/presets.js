@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { srcNode } from "../wire-source.js"
 import { cardPosition } from "./layout.js"
 import { frameTree } from "./regions.js"
@@ -27,10 +28,7 @@ export function lockedCards(graph) {
   return ids.length ? frameTree(graph.nodes).withParents(ids) : new Set()
 }
 
-export const PRESET_CARD_REFUSAL = {
-  zh: '关卡锁住了这个元件或它里面的内容。',
-  en: 'The level locks this part or something it contains.',
-}
+export const PRESET_CARD_REFUSAL = catalogText("关卡锁住了这个元件或它里面的内容。")
 export const leavesLockedRegion = (ids, node, region) => Boolean(node && ids.has(node.id) && (node.in ?? null) !== region)
 
 /** A level's preset, locked, at the positions on the board and with only the unfixed settings editable. */
@@ -63,7 +61,7 @@ export function keepLocked(prev, next) {
   return overlay(next, prev.nodes.filter((node) => ids.has(node.id)), prev.wires.filter((wire) => wire.locked))
 }
 
-const LOCKED = { zh: '这根线是关卡接好的，不能改。', en: 'This wire came with the level; it cannot be changed.' }
+const LOCKED = catalogText("这根线是关卡接好的，不能改。")
 /** Why the wire into input `port` of `to` cannot be changed: a locked wire is there. */
 export const lockedRefusal = (graph, to, port) => (graph.wires.some((w) => w.locked && w.to === to && w.port === port) ? LOCKED : null)
 /** Whether a setting of a node is one the level fixed. */
@@ -80,8 +78,5 @@ export function keepFixedSettings(node, params) {
   return next
 }
 
-export const PRESET_PORT_REFUSAL = {
-  zh: '这个设置会断开关卡接好的线。',
-  en: 'This setting would disconnect a wire placed by the level.',
-}
+export const PRESET_PORT_REFUSAL = catalogText("这个设置会断开关卡接好的线。")
 

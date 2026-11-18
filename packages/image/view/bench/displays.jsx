@@ -5,7 +5,8 @@ import { formatValue, knobKind, needText, rowValue } from '../../core/bench.js'
 
 import { GridPicture } from 'kernel/view'
 
-import { L, keyOf, tr } from 'kernel/view'
+import { L, keyOf } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { default as Knob } from './Knob.jsx'
 
@@ -62,7 +63,7 @@ function Step({ ctx }) {
   const { stage, stageIndex } = ctx
   return (
     <div>
-      <span className="bk-label">{tr(`第 ${stageIndex + 1} 步`, `Step ${stageIndex + 1}`)} · {L(stage.title)}</span>
+      <span className="bk-label">{tr("第 {stageIndex} 步", {stageIndex: stageIndex + 1})} · {L(stage.title)}</span>
       <p className="bench-note">{L(stage.note)}</p>
     </div>
   )
@@ -276,7 +277,7 @@ function Table({ params, ctx }) {
 // A row of dots, one per round: 'right', 'wrong', 'now' or not yet.
 function Progress({ params, ctx }) {
   const dots = ctx.q[params.of]
-  return <div className="bench-progress" style={{ '--n': dots.length }} role="img" aria-label={tr(`${dots.filter((d) => d === 'right').length} 对`, `${dots.filter((d) => d === 'right').length} right`)}>{dots.map((d, i) => <i key={i} className={d ? `is-${d}` : ''} />)}</div>
+  return <div className="bench-progress" style={{ '--n': dots.length }} role="img" aria-label={tr("{length} 对", {length: dots.filter((d) => d === 'right').length})}>{dots.map((d, i) => <i key={i} className={d ? `is-${d}` : ''} />)}</div>
 }
 
 export const displays = {

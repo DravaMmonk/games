@@ -1,4 +1,5 @@
-import { L, tr, call } from 'kernel/view'
+import { L, call } from "kernel/view"
+import { tr } from 'kernel/words'
 // A part's way through the course, under its page in the studio (games/design/README.md 6.7): read-only, from the course
 // (the tool `flow`, ../engine/flow.js), one tick a level in course order, each event a mark on it — at hand from the
 // start, brought in (+), given there only (↑), withheld (−), superseded (⇢), a step of its chains (■, its form). A tick
@@ -7,12 +8,12 @@ import { useEffect, useState } from 'react'
 
 const MARK = { start: '○', adds: '+', gives: '↑', withholds: '−', replaced: '⇢', step: '■' }
 const SAYS = {
-  start: () => tr('一开始就在手上', 'at hand from the start'),
-  adds: () => tr('这一关带来', 'brought in here'),
-  gives: () => tr('只在这里给', 'given here only'),
-  withholds: () => tr('这里扣下', 'withheld here'),
-  replaced: (e) => tr(`${e.by} 取代它`, `${e.by} supersedes it`),
-  step: (e) => tr(`里面跑这个任务的作品${e.form ? `（${e.form}）` : ''}`, `runs this task’s work inside${e.form ? ` (${e.form})` : ''}`),
+  start: () => tr("一开始就在手上"),
+  adds: () => tr("这一关带来"),
+  gives: () => tr("只在这里给"),
+  withholds: () => tr("这里扣下"),
+  replaced: (e) => tr("{by} 取代它", {by: e.by}),
+  step: (e) => tr("里面跑这个任务的作品{value}", {value: { zh: String(e.form ? `（${e.form}）` : ''), en: String(e.form ? ` (${e.form})` : '') }}),
 }
 
 export default function Flow({ target, part, changeset, label, onOpen }) {

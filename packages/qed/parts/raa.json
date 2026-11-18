@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "nna",
-      "label": "@part.raa.inputs.0.label"
+      "label": "¬¬A"
     }
   ],
   "op": "logic/raa"

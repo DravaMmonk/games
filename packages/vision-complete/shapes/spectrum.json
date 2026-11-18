@@ -4,8 +4,5 @@
     "type": "num"
   },
   "min": 10,
-  "about": {
-    "zh": "十个波段（400–700 nm，每段 30 nm）的强度",
-    "en": "the strength in ten bands (400–700 nm, 30 nm each)"
-  }
+  "about": "@shape.spectrum.about"
 }

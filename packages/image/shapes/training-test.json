@@ -1,8 +1,5 @@
 {
   "type": "bool",
-  "about": {
-    "zh": "false：不拿来训练，只用来检查训练（新样本）",
-    "en": "false: not trained on, only checking the training (a new sample)"
-  },
+  "about": "@shape.training-test.about",
   "optional": true
 }

@@ -1,5 +1,6 @@
 import { circuitPlay, definedSettings, untilFail } from 'circuit'
-import { valueText, TEST_WORDS, splitTests, T, runTestGroups, failureOf, failureText } from 'kernel'
+import { valueText, TEST_WORDS, splitTests, runTestGroups, failureOf, failureText } from "kernel"
+import { T } from 'kernel/words'
 
 /**
  * The play hook of a domain on the circuit base whose boards run tick by tick (../circuit-preset.js, the course read as
@@ -37,7 +38,7 @@ export function tickPlay({ run, given, lanes, more = () => [], settings = {}, sh
     key: ({ game }, type) => (game.circuit.BUILT[type] ? type : `part:${type}`),
     settings: ({ game }, type) => (game.circuit.BUILT[type] ? [] : game.defined?.of(type) ? definedSettings(game.defined.of(type)) : settings[type] ?? []),
     given: ({ level }) => given(level.source),
-    tests: ({ level: { source: task }, solved }) => splitTests(task, solved).shown.map((test, k) => ({ label: label(k), text: T(text(task, test, 'zh'), text(task, test, 'en')) })),
+    tests: ({ level: { source: task }, solved }) => splitTests(task, solved).shown.map((test, k) => ({ label: label(k), text: { zh: text(task, test, 'zh'), en: text(task, test, 'en') } })),
     notes: ({ level: { source: task }, solved }) => {
       const { hiddenCount } = splitTests(task, solved)
       return hiddenCount ? [words.note(hiddenCount)] : []

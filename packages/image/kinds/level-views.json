@@ -9,10 +9,7 @@
       },
       "optional": true,
       "section": "read",
-      "about": {
-        "zh": "到这一关时开放的图像值视图",
-        "en": "Image value views opened when this level is reached"
-      }
+      "about": "@kind.level-views.fields.opensViews.about"
     }
   },
   "declares": "package",

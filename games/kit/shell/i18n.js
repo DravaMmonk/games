@@ -9,28 +9,10 @@
 // during render follows the switch. A value stored in state or memoised must store the pair, not its resolved
 // string, so it still follows.
 import { currentLang } from '../lang.js'
-import EN from '../i18n/en.js'
-import { firstText, isText, textIn, textKey } from '../engine/i18n.js'
+import { firstText, isText, textIn, textKey, isDeveloperTextKey } from '../engine/i18n.js'
+export { tr, T } from 'kernel/words'
 
-let lang = 'en'
-try {
-  lang = currentLang()
-} catch {
-  // No browser (npm run check): Use the same language for headless runs throughout.
-}
-if (typeof window !== 'undefined') window.addEventListener('langchange', (event) => { lang = event.detail })
-
-export const getLang = () => lang
-
-// The kit's own words are written in the base language alone; how one reads in English is the catalog's
-// (../i18n/en.js, kept by npm run words). A sentence put together from values still gives both: T(`第 ${n} 关`,
-// `Level ${n}`).
-
-/** A text for what code says: T('清空'), its other languages from the catalog; or T(`…${x}`, `…${x}`) giving both. */
-export const T = (zh, en = EN[zh]) => (en === undefined ? { zh } : { zh, en })
-
-/** The string for the current language: tr('清空'), or tr(`…${x}`, `…${x}`) giving both. */
-export const tr = (zh, en = EN[zh]) => (lang === 'en' ? en ?? zh : zh)
+export const getLang = currentLang
 
 /** Is this an object of language-specific texts? */
 export const isPair = isText
@@ -39,15 +21,19 @@ export const isPair = isText
 const selfRendering = (v) => v !== null && typeof v === 'object' && !Array.isArray(v) && v.toString !== Object.prototype.toString
 
 /** Resolve a text pair (or pass a plain string, number or nothing through). */
-export const L = (v) => (isPair(v) ? sideOf(v, lang) : selfRendering(v) ? String(v) : v)
+export const L = (v) => (isPair(v) ? sideOf(v, currentLang()) : selfRendering(v) ? String(v) : v)
 
 /** Resolve the requested language and expose missing catalog copy in the game preview. */
 export function sideOf(value, side) {
   if (!isPair(value)) return value
   const text = textIn(value, side)
   const key = textKey(value)
-  return text.trim() ? text : key ? `⟦${key} · ${side}⟧` : firstText(value)
+  return text.trim() ? text : isDeveloperTextKey(key) ? value.zh ?? firstText(value) : key ? `⟦${key} · ${side}⟧` : firstText(value)
 }
 
 /** A reading-language-independent key for React and comparisons. */
 export const keyOf = firstText
+
+// Shared punctuation follows the reader's typography and stays outside the catalogs.
+const EN_PUNCTUATION = { '：': ': ', '、': ', ', '；': '; ', '？？？': '???', '¥': '$' }
+export const punctuation = (mark, lang = currentLang()) => lang === 'en' ? EN_PUNCTUATION[mark] ?? mark : mark

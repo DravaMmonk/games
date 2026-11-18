@@ -1,7 +1,13 @@
 import { defineVocabulary, qualifyVocabulary } from 'kernel'
-import family from '../../capabilities/family.json' with { type: 'json' }
-import game from '../../shapes/game.json' with { type: 'json' }
-import level from '../../shapes/level.json' with { type: 'json' }
+import familySource from '../../capabilities/family.json' with { type: 'json' }
+import gameSource from '../../shapes/game.json' with { type: 'json' }
+import levelSource from '../../shapes/level.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const family = readCopy(familySource)
+const game = readCopy(gameSource)
+const level = readCopy(levelSource)
 
 export const vocabulary = qualifyVocabulary('circuit', defineVocabulary({
   module: 'circuit',

@@ -1,5 +1,7 @@
+import { punctuation } from 'kernel'
 import { cases, inOrder, property } from 'kernel'
-import { T, sideOf } from 'kernel'
+import { sideOf } from "kernel"
+import { T } from 'kernel/words'
 import { difference, extent, structureOf } from './fol.js'
 import { freeVars, parse } from './formula.js'
 import { chipsOf, complete, straysOf } from './formulaTree.js'
@@ -12,7 +14,7 @@ function formulaReady(free) {
     property(complete, () => ({ why: T('还有空位：句子的每个位置都须填写。') })),
     (tree) => {
       const loose = [...freeVars(tree)].filter((v) => !free.includes(v))
-      return loose.length ? { why: T(`${loose.join('、')} 不受 ∀ 或 ∃ 约束：它指的是什么？`, `${loose.join(', ')} is not bound by ∀ or ∃: what does it refer to?`) } : null
+      return loose.length ? { why: T("{value} 不受 ∀ 或 ∃ 约束：它指的是什么？", {value: { zh: String(loose.join('、')), en: String(loose.join(', ')) }}) } : null
     },
   )
 }
@@ -48,13 +50,13 @@ export function query(level) {
     if (!extra.length && !missing.length) return null
     const message = (lang) => {
       const name = thingName(notation, world, lang)
-      const head = sideOf(world.title, lang) + sideOf(T('：'), lang)
+      const head = sideOf(world.title, lang) + punctuation("：", lang)
       const picked = extra.map(name)
       const omitted = missing.map(name)
       if (lang === 'zh') return head + (picked.length ? `多选了 ${picked.join('、')}；` : '') + (omitted.length ? `漏掉了 ${omitted.join('、')}。` : '')
       return head + (picked.length ? `wrongly picks ${picked.join(', ')}; ` : '') + (omitted.length ? `misses ${omitted.join(', ')}.` : '')
     }
-    return { want, got, why: T(message('zh'), message('en')), lines: [] }
+    return { want, got, why: { zh: message('zh'), en: message('en') }, lines: [] }
   })
   return {
     judge: inOrder(formulaReady(['x']), judge),

@@ -2,13 +2,13 @@
 // is how good it is to stand there. Levels on these maps scan in rounds until the table stops changing.
 
 import { sceneEdge, slipAt, tileAt, policy, valueBase, valueOrder } from 'table';
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { rcName } from 'table';
 import { world, look, num } from 'table';
 import { gridDef } from './grid.js';
 
-const LABEL = { gold: T('宝藏', 'treasure'), trap: T('陷阱', 'trap'), cliff: T('悬崖', 'cliff'), wall: '' };
+const LABEL = { gold: T("宝藏"), trap: T("陷阱"), cliff: T("悬崖"), wall: '' };
 /** The icon a special tile carries in its corner (svg.js MARKS); its name stays for screen readers. */
 const MARK_OF = { gold: 'gold', trap: 'trap', cliff: 'cliff' };
 
@@ -16,7 +16,7 @@ export const vgrid = world({
   ...gridDef,
   sensors: {
     ul: gridDef.sensors.ul, up: gridDef.sensors.up, ur: gridDef.sensors.ur, left: gridDef.sensors.left, right: gridDef.sensors.right, dl: gridDef.sensors.dl, down: gridDef.sensors.down, dr: gridDef.sensors.dr,
-    slip: num(T('打滑的可能', 'chance to slip'), T('滑', 'slip'), 'ice'), grip: num(T('站稳的可能', 'chance to hold'), T('稳', 'hold'), 'hold'),
+    slip: num(T("打滑的可能"), T("滑"), 'ice'), grip: num(T("站稳的可能", {}, "value"), T("稳"), 'hold'),
   },
   facts: [],
   // The floor under the robot: how likely it is to slip, and (so no subtracting is needed) how likely to hold.
@@ -31,8 +31,8 @@ export const vgrid = world({
   base: valueBase,
   order: valueOrder,
   answerKey: () => '0,0',
-  label: t => `${t.R}×${t.C}${t.slip ? tr(' · 会打滑', ' · slippery') : t.ice ? tr(' · 有冰', ' · icy') : ''}`,
-  orderText: () => tr('逐行，从左上开始，一轮一轮地扫', 'row by row from the top left, round after round'),
+  label: t => `${t.R}×${t.C}${t.slip ? tr(" · 会打滑") : t.ice ? tr(" · 有冰") : ''}`,
+  orderText: () => tr("逐行，从左上开始，一轮一轮地扫"),
   sample: t => ({ r: 0, c: 0, id: '0,0' }),
   scene(t, view, o) {
     const g = look(view, [this.answerKey(t, o)], this.base(t, o), o.bench), cells = [];

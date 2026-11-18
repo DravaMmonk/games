@@ -1,13 +1,25 @@
 import { defineVocabulary, qualifyVocabulary } from 'kernel'
-import primitive from '../capabilities/primitive.json' with { type: 'json' }
-import operation from '../capabilities/operation.json' with { type: 'json' }
-import family from '../capabilities/family.json' with { type: 'json' }
-import kind from '../capabilities/kind.json' with { type: 'json' }
-import want from '../capabilities/want.json' with { type: 'json' }
-import mark from '../capabilities/mark.json' with { type: 'json' }
-import language from '../capabilities/language.json' with { type: 'json' }
-import game from '../shapes/game.json' with { type: 'json' }
-import level from '../shapes/level.json' with { type: 'json' }
+import primitiveSource from '../capabilities/primitive.json' with { type: 'json' }
+import operationSource from '../capabilities/operation.json' with { type: 'json' }
+import familySource from '../capabilities/family.json' with { type: 'json' }
+import kindSource from '../capabilities/kind.json' with { type: 'json' }
+import wantSource from '../capabilities/want.json' with { type: 'json' }
+import markSource from '../capabilities/mark.json' with { type: 'json' }
+import languageSource from '../capabilities/language.json' with { type: 'json' }
+import gameSource from '../shapes/game.json' with { type: 'json' }
+import levelSource from '../shapes/level.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const primitive = readCopy(primitiveSource)
+const operation = readCopy(operationSource)
+const family = readCopy(familySource)
+const kind = readCopy(kindSource)
+const want = readCopy(wantSource)
+const mark = readCopy(markSource)
+const language = readCopy(languageSource)
+const game = readCopy(gameSource)
+const level = readCopy(levelSource)
 
 export const vocabulary = qualifyVocabulary('logic', defineVocabulary({
   module: 'logic',

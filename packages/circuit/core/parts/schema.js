@@ -1,7 +1,13 @@
 // Adapt the declaration of a component registry to the authoring tools.
-import { S, T as t } from 'kernel'
-import partViews from '../../shapes/part-views.json' with { type: 'json' }
-import fileSchema from '../../shapes/compiled-parts.json' with { type: 'json' }
+import { S } from "kernel"
+import { T as t } from 'kernel/words'
+import partViewsSource from '../../shapes/part-views.json' with { type: 'json' }
+import fileSchemaSource from '../../shapes/compiled-parts.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const partViews = readCopy(partViewsSource)
+const fileSchema = readCopy(fileSchemaSource)
 
 export { default as SETTING } from '../../shapes/resolved-setting.json' with { type: 'json' }
 export const PARTS_FILE = fileSchema
@@ -14,12 +20,12 @@ const BLANKS = {
 }
 /** Part creation options read by authoring tools. A built part needs a task before it has data. */
 export function partCreationOptions(vocabulary, tasks = []) {
-  const labels = { circuit: t('电路件', 'Circuit part') }
+  const labels = { circuit: t("电路件") }
   const choices = Object.entries(BLANKS).flatMap(([value, blank]) => {
     const data = blank(vocabulary)
     return data ? [{ value, label: labels[value], data }] : []
   })
-  if (tasks.length) choices.push({ value: 'task', label: t('用任务作品搭件', 'Build from a task') })
+  if (tasks.length) choices.push({ value: 'task', label: t("用任务作品搭件") })
   return choices
 }
 

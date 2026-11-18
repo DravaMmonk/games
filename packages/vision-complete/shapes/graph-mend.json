@@ -17,10 +17,7 @@
             1,
             2
           ],
-          "about": {
-            "zh": "图案的一格画成几格（2：8 × 8 的图案）",
-            "en": "how many cells a pattern pixel takes (2: 8 × 8 patterns)"
-          },
+          "about": "@shape.graph-mend.fields.setup.fields.scale.about",
           "optional": true
         }
       },

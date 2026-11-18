@@ -2,23 +2,14 @@
   "name": "target",
   "studio": {
     "order": 16,
-    "label": {
-      "zh": "目标",
-      "en": "Targets"
-    }
+    "label": "@capability.target.studio.label"
   },
   "items": {
     "same": {
-      "about": {
-        "zh": "原样：输出就是输入",
-        "en": "unchanged: the output is the input"
-      }
+      "about": "@capability.target.items.same.about"
     },
     "shift": {
-      "about": {
-        "zh": "整张图挪 (dx, dy) 格，图外补 0（或照 border 补）",
-        "en": "the whole picture moved by (dx, dy), padded with 0 (or as border says)"
-      },
+      "about": "@capability.target.items.shift.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -41,16 +32,10 @@
       }
     },
     "negative": {
-      "about": {
-        "zh": "底片：每格变成 1 − 自己",
-        "en": "the negative: every cell becomes 1 − itself"
-      }
+      "about": "@capability.target.items.negative.about"
     },
     "correlate": {
-      "about": {
-        "zh": "邻居的加权和（互相关）：核按行写出，中心对着这一格",
-        "en": "a weighted sum of the neighbours (cross-correlation): the kernel row by row, its centre on the cell"
-      },
+      "about": "@capability.target.items.correlate.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -61,10 +46,7 @@
             },
             "min": 1,
             "view": "grid",
-            "about": {
-              "zh": "(2r+1)² 个权重，按行写出",
-              "en": "(2r+1)² weights, row by row"
-            }
+            "about": "@capability.target.items.correlate.params.fields.kernel.about"
           },
           "border": {
             "type": "oneOf",
@@ -79,10 +61,7 @@
       }
     },
     "convolve": {
-      "about": {
-        "zh": "用核盖印章（卷积）：每个像素按核的样子盖一个，挪到位、乘上权重再相加",
-        "en": "stamping with a kernel (convolution): every pixel presses the kernel’s shape, moved into place, weighted and added up"
-      },
+      "about": "@capability.target.items.convolve.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -93,19 +72,13 @@
             },
             "min": 1,
             "view": "grid",
-            "about": {
-              "zh": "(2r+1)² 个权重，按行写出",
-              "en": "(2r+1)² weights, row by row"
-            }
+            "about": "@capability.target.items.convolve.params.fields.kernel.about"
           }
         }
       }
     },
     "box": {
-      "about": {
-        "zh": "size×size 的平均",
-        "en": "the average over size × size"
-      },
+      "about": "@capability.target.items.box.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -126,10 +99,7 @@
       }
     },
     "gauss": {
-      "about": {
-        "zh": "高斯模糊：σ，核的半径",
-        "en": "a Gaussian blur: σ, and the kernel’s radius"
-      },
+      "about": "@capability.target.items.gauss.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -154,10 +124,7 @@
       }
     },
     "sharpen": {
-      "about": {
-        "zh": "锐化：原图 + amount ×（原图 − σ 的高斯模糊）",
-        "en": "sharpening: the picture + amount × (the picture − its Gaussian blur of σ)"
-      },
+      "about": "@capability.target.items.sharpen.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -171,28 +138,16 @@
       }
     },
     "diffx": {
-      "about": {
-        "zh": "横向差分：右边邻居 − 自己",
-        "en": "the difference across: right neighbour − itself"
-      }
+      "about": "@capability.target.items.diffx.about"
     },
     "absdiff": {
-      "about": {
-        "zh": "两种边都要：|右边邻居 − 自己|",
-        "en": "both kinds of edge: |right neighbour − itself|"
-      }
+      "about": "@capability.target.items.absdiff.about"
     },
     "max": {
-      "about": {
-        "zh": "两张图逐格取较大",
-        "en": "the larger of two pictures, cell by cell"
-      }
+      "about": "@capability.target.items.max.about"
     },
     "stride": {
-      "about": {
-        "zh": "步幅 2 的卷积层：按核做互相关，再隔点取样",
-        "en": "a convolution layer of stride 2: cross-correlate with the kernel, then keep every other pixel"
-      },
+      "about": "@capability.target.items.stride.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -203,19 +158,13 @@
             },
             "min": 1,
             "view": "grid",
-            "about": {
-              "zh": "(2r+1)² 个权重，按行写出",
-              "en": "(2r+1)² weights, row by row"
-            }
+            "about": "@capability.target.items.stride.params.fields.kernel.about"
           }
         }
       }
     },
     "meanBlend": {
-      "about": {
-        "zh": "向 3×3 平均靠：a + amount ×（平均 − a）；amount 为负是锐化",
-        "en": "a pull towards the 3×3 mean: a + amount × (mean − a); a negative amount sharpens"
-      },
+      "about": "@capability.target.items.meanBlend.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -226,34 +175,19 @@
       }
     },
     "ask": {
-      "about": {
-        "zh": "图块 a 向 a、b 两块提问：两块按 softmax(4 × 平均(a × 这一块)) 加权平均",
-        "en": "patch a asks patches a and b: the two averaged with the weights softmax(4 × average(a × each))"
-      }
+      "about": "@capability.target.items.ask.about"
     },
     "projectedAsk": {
-      "about": {
-        "zh": "用共享的标量投影生成 Q、K、V，再计算两个图块的注意力",
-        "en": "produce Q, K and V with shared scalar projections, then compute two-patch attention"
-      }
+      "about": "@capability.target.items.projectedAsk.about"
     },
     "gradientEnergy": {
-      "about": {
-        "zh": "3×3 邻域内两个方向的梯度平方平均之和",
-        "en": "sum of the mean squared gradients in both directions over a 3×3 neighbourhood"
-      }
+      "about": "@capability.target.items.gradientEnergy.about"
     },
     "cornerResponse": {
-      "about": {
-        "zh": "Harris 角点响应图",
-        "en": "Harris corner response map"
-      }
+      "about": "@capability.target.items.cornerResponse.about"
     },
     "corners": {
-      "about": {
-        "zh": "角点：Harris 响应大于 threshold 的地方",
-        "en": "corners: where the Harris response is over threshold"
-      },
+      "about": "@capability.target.items.corners.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -264,10 +198,7 @@
       }
     },
     "cornerPeaks": {
-      "about": {
-        "zh": "一个角一个点：Harris 响应乘 gain 后的峰（比 3×3 邻居都不小、又大于 above）",
-        "en": "one point a corner: the peaks of the Harris response times gain (no smaller than the 3×3 neighbours, and above `above`)"
-      },
+      "about": "@capability.target.items.cornerPeaks.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -281,10 +212,7 @@
       }
     },
     "upsample": {
-      "about": {
-        "zh": "放大一倍：补零放大，再按核做互相关（转置卷积）",
-        "en": "twice the size: zero-upsampled, then cross-correlated with the kernel (a transposed convolution)"
-      },
+      "about": "@capability.target.items.upsample.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -295,31 +223,19 @@
             },
             "min": 1,
             "view": "grid",
-            "about": {
-              "zh": "(2r+1)² 个权重，按行写出",
-              "en": "(2r+1)² weights, row by row"
-            }
+            "about": "@capability.target.items.upsample.params.fields.kernel.about"
           }
         }
       }
     },
     "cross": {
-      "about": {
-        "zh": "两个三维向量的叉积 a × b",
-        "en": "the cross product a × b of two 3-vectors"
-      }
+      "about": "@capability.target.items.cross.about"
     },
     "meet": {
-      "about": {
-        "zh": "两条线的交点：过 p、q 的线和过 r、s 的线（齐次坐标）",
-        "en": "where two lines meet: the line through p and q and the line through r and s (homogeneous coordinates)"
-      }
+      "about": "@capability.target.items.meet.about"
     },
     "gradmag": {
-      "about": {
-        "zh": "梯度幅值：√(Sobel x² + Sobel y²)",
-        "en": "the gradient magnitude: √(Sobel x² + Sobel y²)"
-      },
+      "about": "@capability.target.items.gradmag.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -336,10 +252,7 @@
       }
     },
     "lowpass": {
-      "about": {
-        "zh": "频域低通：半径 R 以内的频率留下（disk 一刀切，gauss 平滑落下）",
-        "en": "a low-pass in frequency: what is within radius R stays (disk cuts sharply, gauss falls smoothly)"
-      },
+      "about": "@capability.target.items.lowpass.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -357,10 +270,7 @@
       }
     },
     "sharpness": {
-      "about": {
-        "zh": "清晰度：频谱里离中心超过 beyond 的部分的平均",
-        "en": "sharpness: the mean of the spectrum beyond radius `beyond` from its centre"
-      },
+      "about": "@capability.target.items.sharpness.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -371,10 +281,7 @@
       }
     },
     "descreen": {
-      "about": {
-        "zh": "去网纹：频谱里半径 radius 以外、比 threshold 亮的格子去掉，其余照旧",
-        "en": "descreening: the spectrum’s cells beyond `radius` brighter than `threshold` removed, the rest kept"
-      },
+      "about": "@capability.target.items.descreen.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -388,10 +295,7 @@
       }
     },
     "hybrid": {
-      "about": {
-        "zh": "混合图像：A 的低频 + B 的高频（半径 R 的高斯）",
-        "en": "a hybrid image: the low frequencies of A + the high frequencies of B (a Gaussian of radius R)"
-      },
+      "about": "@capability.target.items.hybrid.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -402,10 +306,7 @@
       }
     },
     "shrink": {
-      "about": {
-        "zh": "缩小：σ 的高斯模糊一次（复制边缘），再隔点取样 halvings 次",
-        "en": "shrinking: one Gaussian blur of σ (the edge replicated), then every other pixel kept, halvings times"
-      },
+      "about": "@capability.target.items.shrink.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -420,10 +321,7 @@
       }
     },
     "pyramid": {
-      "about": {
-        "zh": "图像金字塔：模糊一点（σ = 1，复制边缘）再减半，做 levels 次",
-        "en": "an image pyramid: blur a little (σ = 1, the edge replicated) and halve, levels times"
-      },
+      "about": "@capability.target.items.pyramid.about",
       "params": {
         "type": "obj",
         "fields": {

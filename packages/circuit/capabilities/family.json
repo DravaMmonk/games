@@ -2,17 +2,11 @@
   "name": "family",
   "studio": {
     "order": 10,
-    "label": {
-      "zh": "元件族",
-      "en": "Families"
-    }
+    "label": "@capability.family.studio.label"
   },
   "items": {
     "value": {
-      "about": {
-        "zh": "算数的元件",
-        "en": "parts that work on numbers"
-      }
+      "about": "@capability.family.items.value.about"
     }
   }
 }

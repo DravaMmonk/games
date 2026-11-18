@@ -8,7 +8,7 @@
 // assumption it makes), and what is made inside a region comes back out through the frame's input named after it.
 // So a value is seen where it is made and in every region inside that: a wire may run inward, never outward.
 import { sourceOf, splitSource, srcNode } from "../wire-source.js"
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 
 import { evaluate } from "../circuit.js"
@@ -82,7 +82,7 @@ export function moveInto(graph, parts, id, region, x, y) {
   return { ...moved, wires: moved.wires.filter((w) => !scopeRefusal(moved, parts, w.from, w.to, w.port, tree)) }
 }
 
-const fail = (zh, en) => new OperationError(T(zh, en))
+const fail = (text) => new OperationError(text)
 /**
  * A region run on its own, as a function: a frame that runs its region again and again (a loop, a search, one item of a
  * list at a time) calls it with the value the region opens with and gets back what reaches the region's result. The
@@ -95,11 +95,11 @@ export function runRegion(node, ctx, region) {
   const graph = ctx.graph
   const tree = frameTree(graph.nodes)
   const scope = regionAddress(node.id, region)
-  if (tree.ancestors(scope) === null) throw fail('框的区域出现循环嵌套', 'Frame regions form a containment cycle')
+  if (tree.ancestors(scope) === null) throw fail(T("框的区域出现循环嵌套"))
   const ids = tree.included(graph.nodes.filter((part) => part.in === scope).map((part) => part.id))
   const inside = graph.nodes.filter((part) => ids.has(part.id))
   const back = graph.wires.find((w) => w.to === node.id && w.port === region)
-  if (!back) throw fail('框里还没有接到「结果」上', 'Nothing inside is wired to the result yet')
+  if (!back) throw fail(T("框里还没有接到「结果」上"))
   const parts = ctx.engine.parts
   const partOf = (type) => (typeof parts === 'function' ? parts(type) : parts[type])
   const opened = sourceOf(node.id, region)
@@ -114,7 +114,7 @@ export function runRegion(node, ctx, region) {
     return fixed
   }
   for (const w of graph.wires.filter((x) => ids.has(x.to))) {
-    if (!ids.has(srcNode(w.from)) && w.from !== opened && !constant(srcNode(w.from))) throw fail('框里只能用框开出来的东西和框外的常量', 'Inside the frame, only what the frame opens and constants from outside can be used')
+    if (!ids.has(srcNode(w.from)) && w.from !== opened && !constant(srcNode(w.from))) throw fail(T("框里只能用框开出来的东西和框外的常量"))
   }
   const OPEN = '__open'
   const strip = ({ in: _, ...n }) => n
@@ -126,7 +126,7 @@ export function runRegion(node, ctx, region) {
     const { values } = evaluate(sub, { parts: (type) => (type === OPEN ? { inputs: [], eval: () => value } : partOf(type)), ctx: quiet ? { ...ctx, trace: null } : ctx })
     // A region that only passes on what it opens with gives it back.
     const out = back.from === opened ? value : values.get(back.from)
-    if (out === undefined) throw fail('框里有一个元件算不出来', 'A part inside cannot compute')
+    if (out === undefined) throw fail(T("框里有一个元件算不出来"))
     return out
   }
 }

@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 import { OperationError } from 'kernel'
 import { runBoard, sink, source } from 'circuit'
@@ -9,7 +10,7 @@ import { gradientStep } from 'mllib'
 // part whose inputs are different things by nature (`anySize`: a picture, a matrix and a canvas).
 export function prepare(ins, node, part) {
   const big = part.anySize || part.spec?.anySize ? [] : Object.values(ins).filter((img) => img.w * img.h > 1)
-  if (new Set(big.map((img) => `${img.w}×${img.h}`)).size > 1) throw new OperationError({ zh: '输入尺寸不同', en: 'Inputs differ in size' })
+  if (new Set(big.map((img) => `${img.w}×${img.h}`)).size > 1) throw new OperationError(catalogText("输入尺寸不同"))
   if (!big.length) return ins
   const out = { ...ins }
   for (const [port, img] of Object.entries(ins)) if (img.w * img.h === 1) {

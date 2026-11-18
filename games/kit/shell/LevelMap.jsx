@@ -95,7 +95,7 @@ function LevelButton({ game, level, style, solved, all, best, current, next, nee
       {score ? <span className="map-node-best">{score}</span> : kind?.icon && !compact && <span className="map-node-kind" aria-label={L(kind.label)}>{createElement(kind.icon, { size: game.core(level) ? 13 : 12 })}</span>}
       {/* An optional level shows as one by its look (is-optional), without a word for it. */}
       {level.skippable && <span className="map-node-tags">
-        <span className="map-node-tag">{tr('可跳过', 'Skippable')}</span>
+        <span className="map-node-tag">{tr("可跳过")}</span>
       </span>}
     </button>
   )
@@ -175,7 +175,7 @@ export function MapChapter({ game, chapter, k, solved, all, best, next, compact,
   return (
     <section className={`map-chapter ${finished === inChapter.length ? 'is-complete' : ''}`}>
       <header {...fileMark(edit, 'game', ['eras', k])}>
-        <span className="chapter-index">{chapter.kicker ? L(chapter.kicker) : tr(`第 ${chapter.number ?? chapter.id} 章`, `Chapter ${chapter.number ?? chapter.id}`)}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
+        <span className="chapter-index">{chapter.kicker ? L(chapter.kicker) : tr("第 {id} 章", {id: chapter.number ?? chapter.id})}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
         <h2>{L(chapter.title)}</h2>
         {chapter.question && <p>{L(chapter.question)}</p>}
         <span className="chapter-meter"><i style={{ width: `${(finished / inChapter.length) * 100}%` }} /></span>
@@ -192,7 +192,7 @@ function UnlockChip({ items, style }) {
   const [first] = items
   const fresh = items.filter((item) => item.fresh && item.open).map((item) => L(item.label))
   const built = items.filter((item) => !item.fresh && item.open).map((item) => L(item.label))
-  const title = [fresh.length && tr(`这一关新带来：${fresh.join('、')}`, `New in this level: ${fresh.join(', ')}`), built.length && tr(`已解锁：${built.join('、')}`, `Unlocked: ${built.join(', ')}`), items.some((item) => !item.open) && tr('进入或通过这一关后可见')].filter(Boolean).join('\n')
+  const title = [fresh.length && tr("这一关新带来：{value}", {value: { zh: String(fresh.join('、')), en: String(fresh.join(', ')) }}), built.length && tr("已解锁：{value}", {value: { zh: String(built.join('、')), en: String(built.join(', ')) }}), items.some((item) => !item.open) && tr('进入或通过这一关后可见')].filter(Boolean).join('\n')
   return (
     <span className={`map-unlock ${first.open ? 'is-open' : 'is-locked'} ${first.fresh ? 'is-fresh' : ''}`} style={style} title={title}>
       {first.open ? <Package size={11} /> : <Lock size={10} />}
@@ -229,7 +229,7 @@ export function NeededNote({ game, needed, onOpen }) {
   return (
     <div className="map-needed" role="status">
       <p>
-        {tr(`${game.levelLabel(level)}「${L(level.title)}」还需先通过 ${count} 关。`, `${game.levelLabel(level)} “${L(level.title)}” needs ${count} more level${count === 1 ? '' : 's'} passed first.`)}
+        {tr("{value}「{value2}」还需先通过 {count} 关。", {value: game.levelLabel(level), value2: L(level.title), count, value3: count === 1 ? '' : 's'})}
         {needed.ready.length > 0 && <>{tr('现在可以进行：')}{needed.ready.map((r) => <button key={r.id} type="button" onClick={() => { needed.clear(); onOpen(r.id) }}>{game.levelLabel(r)} {L(r.title)}</button>)}</>}
         {needed.external.map(({ game: id, level }) => {
           const entry = GAMES.find(({ id: candidate }) => candidate === id)
@@ -275,11 +275,11 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
         <div className="map-hero-text">
           <p className="map-kicker" {...fileMark(edit, 'game', ['kicker'])}>{L(game.kicker)}</p>
           <h1 {...fileMark(edit, 'game', ['title'])}>{L(game.title)}</h1>
-          {game.author && <p className="map-author" {...fileMark(edit, 'game', ['author'])}>{tr('作者', 'By')} <span>{game.author}</span></p>}
+          {game.author && <p className="map-author" {...fileMark(edit, 'game', ['author'])}>{tr("作者")} <span>{game.author}</span></p>}
           <Text className="map-lede" text={game.lede} mark={fileMark(edit, 'game', ['lede'])} />
-          <div className="map-progress" aria-label={tr(`已通过 ${done} / ${levels.length} 关`, `${done} of ${levels.length} levels passed`)}>
+          <div className="map-progress" aria-label={tr("已通过 {done} / {length} 关", {done, length: levels.length})}>
             <span className="map-progress-bar"><i style={{ width: `${(done / levels.length) * 100}%` }} /></span>
-            <span>{tr(`${done} / ${levels.length} 关`, `${done} / ${levels.length} levels`)}</span>
+            <span>{tr("{done} / {length} 关", {done, length: levels.length})}</span>
           </div>
           {next && (
             <button className="map-continue" onClick={() => onOpen(next.id)}>
@@ -323,11 +323,11 @@ function ProgressDialog({ progressText, progress, onAll, onReset, onClose }) {
             ? <strong role="status"><LockOpen size={14} />{tr('已全部解锁')}</strong>
             : <button type="button" className="kit-btn is-label" onClick={onAll}><Lock size={14} />{tr('全部解锁')}</button>}
           <small>{progress.all
-            ? progressText?.all ?? tr('所有关卡和任务均已开放，进度照常记录。', 'All levels and tasks are open. Progress is recorded normally.')
-            : progressText?.open ?? tr('开放所有关卡和任务。', 'Open all levels and tasks.')}</small>
+            ? progressText?.all ?? tr("所有关卡和任务均已开放，进度照常记录。")
+            : progressText?.open ?? tr("开放所有关卡和任务。")}</small>
         </div>
         <div className="progress-clear">
-          <p>{progressText?.clear ?? tr('清空后，这台设备上的作品和进度将全部删除，无法恢复。', 'Clearing removes all work and progress on this device permanently.')}</p>
+          <p>{progressText?.clear ?? tr("清空后，这台设备上的作品和进度将全部删除，无法恢复。")}</p>
           <button
             type="button"
             className={`progress-clear-btn ${armed ? 'is-armed' : ''}`}

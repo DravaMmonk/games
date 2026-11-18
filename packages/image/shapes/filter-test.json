@@ -19,10 +19,7 @@
         "type": "call",
         "kind": "picture"
       },
-      "about": {
-        "zh": "有几个输入时，每个输入的图",
-        "en": "the picture of each input, when there are several"
-      },
+      "about": "@shape.filter-test.fields.inputs.about",
       "optional": true
     }
   }

@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "ex",
-      "label": "@part.exE.inputs.0.label"
+      "label": "∃x. P(x)"
     }
   ],
   "settings": {

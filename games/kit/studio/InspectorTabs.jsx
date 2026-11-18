@@ -31,7 +31,7 @@ export default function InspectorTabs({ tabs, active, content, onOpen, onClose }
   }, [active, tabs.length])
   if (!tabs.length) return null
   return (
-    <nav className="insp-tabs" aria-label={tr('配置标签页', 'Configuration tabs')}>
+    <nav className="insp-tabs" aria-label={tr("配置标签页")}>
       {tabs.map((tab) => {
         const key = inspectorTabKey(tab.at, tab.path)
         const current = key === active
@@ -40,7 +40,7 @@ export default function InspectorTabs({ tabs, active, content, onOpen, onClose }
           <div className={`insp-tab ${current ? 'is-on' : ''}`} key={key} ref={current ? selected : null}>
             <button type="button" className="insp-tab-label" onClick={() => onOpen(tab)} aria-current={current ? 'true' : undefined} title={title}>{label}</button>
             <button type="button" className="insp-tab-close" onClick={() => onClose(tab, current)}
-              aria-label={tr(`关闭标签页 ${label}`, `Close tab ${label}`)}><X size={12} aria-hidden="true" /></button>
+              aria-label={tr("关闭标签页 {label}", {label})}><X size={12} aria-hidden="true" /></button>
           </div>
         )
       })}

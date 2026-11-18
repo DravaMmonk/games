@@ -1,10 +1,23 @@
 import { S, contentSchemas } from 'kernel'
 import { imageReports } from './baseline.js'
-import levelSchema from '../shapes/level.json' with { type: 'json' }
+import levelSchemaSource from '../shapes/level.json' with { type: 'json' }
 import { SCENES } from './items/scenes/index.js'
 import { BENCH_MODELS } from './items/benches.js'
 
+import { readCopy } from 'kernel/words'
+
+const levelSchema = readCopy(levelSchemaSource)
+
+import { isLanguageNeutral } from 'kernel'
+
 export const meaning = {
+  stampText({ path, value }) {
+    if (!isLanguageNeutral(value) || path[0] !== 'tasks') return false
+    if (['inputLabels', 'outputLabels'].includes(path[2])) return /_[{]?[0-9a-z]/u.test(value)
+    if (path.at(-1) !== 'label') return false
+    if (['tests', 'hidden'].includes(path[2])) return /\d/.test(value)
+    return path[2] === 'bench' && path[3] === 'knobs' && path[5] === 'choices' && /^[XO]$/.test(value)
+  },
   type: 'level', read: value => value, baselineReports: imageReports,
   assemble({ registries, problems }) {
     const owners = new Map()

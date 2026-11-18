@@ -18,10 +18,7 @@
     },
     "after": {
       "type": "text",
-      "about": {
-        "zh": "通关后的一句（只说这一关，不剧透做法）",
-        "en": "the pass text (this level only, never the way it is solved)"
-      },
+      "about": "@shape.level.fields.after.about",
       "optional": true
     },
     "adds": {
@@ -31,10 +28,7 @@
         "reference": "circuit/part"
       },
       "section": "course",
-      "about": {
-        "zh": "这一关新带来的元件",
-        "en": "the parts this level brings in"
-      },
+      "about": "@shape.level.fields.adds.about",
       "optional": true
     },
     "tray": {
@@ -48,16 +42,10 @@
         "type": "ref",
         "kind": "primitive",
         "reference": "circuit/part",
-        "about": {
-          "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-          "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-        }
+        "about": "@shape.level.fields.without.of.about"
       },
       "section": "course",
-      "about": {
-        "zh": "这一关不给的元件（一段证明不许用框）",
-        "en": "parts the level holds back (a proof without boxes)"
-      },
+      "about": "@shape.level.fields.without.about",
       "optional": true
     },
     "brief": {
@@ -80,10 +68,7 @@
           }
         ]
       },
-      "about": {
-        "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-        "en": "the word sets to use (named or written inline), merged in order"
-      },
+      "about": "@shape.level.fields.words.about",
       "optional": true
     },
     "consts": {
@@ -91,10 +76,7 @@
       "of": {
         "type": "str"
       },
-      "about": {
-        "zh": "这一关的名字（特定的东西）",
-        "en": "the names (particular things) the level reads"
-      },
+      "about": "@shape.level.fields.consts.about",
       "optional": true
     },
     "propertyWords": {
@@ -106,27 +88,18 @@
       "of": {
         "type": "text"
       },
-      "about": {
-        "zh": "最后一个测试（字母）里，这些词怎么读",
-        "en": "how these words read in the last test, the letters"
-      },
+      "about": "@shape.level.fields.symbolicWords.about",
       "optional": true
     },
     "declare": {
       "type": "text",
-      "about": {
-        "zh": "声明的是什么词",
-        "en": "the word declared"
-      },
+      "about": "@shape.level.fields.declare.about",
       "optional": true
     },
     "target": {
       "type": "syntax",
       "lang": "logic/formula",
-      "about": {
-        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-      },
+      "about": "@shape.level.fields.target.about",
       "optional": true
     },
     "sentences": {
@@ -134,10 +107,7 @@
       "of": {
         "type": "syntax",
         "lang": "logic/formula",
-        "about": {
-          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-        }
+        "about": "@shape.level.fields.sentences.of.about"
       },
       "optional": true
     },
@@ -151,19 +121,13 @@
             "of": {
               "type": "syntax",
               "lang": "logic/formula",
-              "about": {
-                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-              }
+              "about": "@shape.level.fields.tests.of.fields.given.of.about"
             }
           },
           "goal": {
             "type": "syntax",
             "lang": "logic/formula",
-            "about": {
-              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-            },
+            "about": "@shape.level.fields.tests.of.fields.goal.about",
             "optional": true
           },
           "make": {
@@ -174,10 +138,7 @@
             "of": {
               "type": "syntax",
               "lang": "logic/formula",
-              "about": {
-                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-              }
+              "about": "@shape.level.fields.tests.of.fields.uses.of.about"
             },
             "optional": true
           }
@@ -201,18 +162,12 @@
             "of": {
               "type": "syntax",
               "lang": "logic/formula",
-              "about": {
-                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-              }
+              "about": "@shape.level.fields.solution.of.fields.needs.of.about"
             }
           }
         }
       },
-      "about": {
-        "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
-        "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
-      },
+      "about": "@shape.level.fields.solution.about",
       "optional": true
     },
     "naive": {
@@ -234,18 +189,12 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.naive.of.0.of.fields.needs.of.about"
                 }
               }
             }
           },
-          "about": {
-            "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
-            "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
-          }
+          "about": "@shape.level.fields.naive.of.0.about"
         },
         {
           "type": "list",
@@ -257,19 +206,13 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.naive.of.1.of.fields.given.of.about"
                 }
               },
               "goal": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.naive.of.1.of.fields.goal.about",
                 "optional": true
               },
               "make": {
@@ -280,10 +223,7 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.naive.of.1.of.fields.uses.of.about"
                 },
                 "optional": true
               }
@@ -309,10 +249,7 @@
       "values": [
         "logic/audit"
       ],
-      "about": {
-        "zh": "用条例检验别人的声明",
-        "en": "checking someone’s declarations by test cases"
-      },
+      "about": "@shape.level.fields.play.about",
       "optional": true
     },
     "want": {
@@ -349,18 +286,12 @@
                   "of": {
                     "type": "syntax",
                     "lang": "logic/formula",
-                    "about": {
-                      "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                      "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                    }
+                    "about": "@shape.level.fields.boards.of.fields.rules.of.fields.needs.of.about"
                   }
                 }
               }
             },
-            "about": {
-              "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
-              "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
-            }
+            "about": "@shape.level.fields.boards.of.fields.rules.about"
           }
         }
       },
@@ -376,19 +307,13 @@
             "of": {
               "type": "syntax",
               "lang": "logic/formula",
-              "about": {
-                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-              }
+              "about": "@shape.level.fields.answer.of.fields.given.of.about"
             }
           },
           "goal": {
             "type": "syntax",
             "lang": "logic/formula",
-            "about": {
-              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-            },
+            "about": "@shape.level.fields.answer.of.fields.goal.about",
             "optional": true
           },
           "make": {
@@ -399,10 +324,7 @@
             "of": {
               "type": "syntax",
               "lang": "logic/formula",
-              "about": {
-                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-              }
+              "about": "@shape.level.fields.answer.of.fields.uses.of.about"
             },
             "optional": true
           }
@@ -427,20 +349,14 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.slots.of.1.of.fields.given.of.about"
                 },
                 "optional": true
               },
               "goal": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.slots.of.1.of.fields.goal.about",
                 "optional": true
               },
               "make": {
@@ -452,10 +368,7 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.slots.of.1.of.fields.keep.of.about"
                 },
                 "optional": true
               },
@@ -479,10 +392,7 @@
     "caseGoal": {
       "type": "syntax",
       "lang": "logic/formula",
-      "about": {
-        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-      },
+      "about": "@shape.level.fields.caseGoal.about",
       "optional": true
     },
     "binder": {
@@ -546,17 +456,11 @@
         "of": {
           "type": "syntax",
           "lang": "logic/formula",
-          "about": {
-            "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-            "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-          }
+          "about": "@shape.level.fields.cases.of.of.about"
         }
       },
       "section": "tests",
-      "about": {
-        "zh": "每组测试把字母换成哪些句子",
-        "en": "the sentences each test puts in place of the letters"
-      },
+      "about": "@shape.level.fields.cases.about",
       "optional": true
     },
     "requires": {
@@ -565,10 +469,7 @@
         "type": "level"
       },
       "section": "course",
-      "about": {
-        "zh": "这关固有的知识前置",
-        "en": "Knowledge prerequisites for this level"
-      },
+      "about": "@shape.level.fields.requires.about",
       "optional": true
     },
     "tasks": {
@@ -583,17 +484,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -620,10 +515,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -631,10 +523,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -646,10 +535,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -673,10 +559,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -686,10 +569,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -703,16 +583,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -728,18 +602,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.carries.about",
                 "optional": true
               },
               "tests": {
@@ -752,24 +620,15 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.tests.of.fields.premises.of.about"
                       },
-                      "about": {
-                        "zh": "已知：名字 → 句子",
-                        "en": "the givens: name → sentence"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.tests.of.fields.premises.about",
                       "optional": true
                     },
                     "goal": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      }
+                      "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.tests.of.fields.goal.about"
                     },
                     "term": {
                       "type": "str",
@@ -779,10 +638,7 @@
                 },
                 "min": 1,
                 "section": "tests",
-                "about": {
-                  "zh": "一个模式（用字母写）",
-                  "en": "one pattern, written in letters"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.tests.about"
               },
               "cases": {
                 "type": "list",
@@ -791,31 +647,19 @@
                   "of": {
                     "type": "syntax",
                     "lang": "logic/formula",
-                    "about": {
-                      "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                      "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                    }
+                    "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.cases.of.of.about"
                   }
                 },
                 "section": "tests",
-                "about": {
-                  "zh": "每组测试把字母换成哪些句子",
-                  "en": "the sentences each test puts in place of the letters"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.cases.about"
               },
               "solution": {
                 "type": "board",
-                "about": {
-                  "zh": "一块电路板的蓝图文本，每行一个字符串",
-                  "en": "a board as blueprint text, one string a line"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.solution.about"
               },
               "naive": {
                 "type": "board",
-                "about": {
-                  "zh": "一块电路板的蓝图文本，每行一个字符串",
-                  "en": "a board as blueprint text, one string a line"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.naive.about",
                 "optional": true
               },
               "sentences": {
@@ -823,10 +667,7 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.sentences.of.about"
                 },
                 "optional": true
               },
@@ -852,10 +693,7 @@
                     "stmt": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-proof.fields.script.of.fields.stmt.about",
                       "optional": true
                     },
                     "by": {
@@ -889,17 +727,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -926,10 +758,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -937,10 +766,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -952,10 +778,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -979,10 +802,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -992,10 +812,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -1009,16 +826,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -1034,18 +845,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.carries.about",
                 "optional": true
               },
               "ask": {
@@ -1062,10 +867,7 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-truth.fields.formulas.of.about"
                 }
               }
             }
@@ -1076,17 +878,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -1113,10 +909,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -1124,10 +917,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -1139,10 +929,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -1166,10 +953,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -1179,10 +963,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -1196,16 +977,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -1221,27 +996,18 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.carries.about",
                 "optional": true
               },
               "target": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.target.about"
               },
               "hideTarget": {
                 "type": "bool",
@@ -1258,17 +1024,11 @@
               },
               "solution": {
                 "type": "board",
-                "about": {
-                  "zh": "一块电路板的蓝图文本，每行一个字符串",
-                  "en": "a board as blueprint text, one string a line"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.solution.about"
               },
               "naive": {
                 "type": "board",
-                "about": {
-                  "zh": "一块电路板的蓝图文本，每行一个字符串",
-                  "en": "a board as blueprint text, one string a line"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-gates.fields.naive.about",
                 "optional": true
               }
             }
@@ -1279,17 +1039,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -1316,10 +1070,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -1327,10 +1078,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -1342,10 +1090,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -1369,10 +1114,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -1382,10 +1124,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -1399,16 +1138,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -1424,35 +1157,23 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.carries.about",
                 "optional": true
               },
               "declare": {
                 "type": "text",
-                "about": {
-                  "zh": "声明的是什么词",
-                  "en": "the word declared"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.declare.about",
                 "optional": true
               },
               "target": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.target.about",
                 "optional": true
               },
               "sentences": {
@@ -1460,10 +1181,7 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.sentences.of.about"
                 },
                 "optional": true
               },
@@ -1477,19 +1195,13 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.tests.of.fields.given.of.about"
                       }
                     },
                     "goal": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.tests.of.fields.goal.about",
                       "optional": true
                     },
                     "make": {
@@ -1500,10 +1212,7 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.tests.of.fields.uses.of.about"
                       },
                       "optional": true
                     }
@@ -1527,18 +1236,12 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.solution.of.fields.needs.of.about"
                       }
                     }
                   }
                 },
-                "about": {
-                  "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
-                  "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.solution.about",
                 "optional": true
               },
               "naive": {
@@ -1560,18 +1263,12 @@
                           "of": {
                             "type": "syntax",
                             "lang": "logic/formula",
-                            "about": {
-                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                            }
+                            "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.0.of.fields.needs.of.about"
                           }
                         }
                       }
                     },
-                    "about": {
-                      "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
-                      "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
-                    }
+                    "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.0.about"
                   },
                   {
                     "type": "list",
@@ -1583,19 +1280,13 @@
                           "of": {
                             "type": "syntax",
                             "lang": "logic/formula",
-                            "about": {
-                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                            }
+                            "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.1.of.fields.given.of.about"
                           }
                         },
                         "goal": {
                           "type": "syntax",
                           "lang": "logic/formula",
-                          "about": {
-                            "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                            "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                          },
+                          "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.1.of.fields.goal.about",
                           "optional": true
                         },
                         "make": {
@@ -1606,10 +1297,7 @@
                           "of": {
                             "type": "syntax",
                             "lang": "logic/formula",
-                            "about": {
-                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                            }
+                            "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.1.of.fields.uses.of.about"
                           },
                           "optional": true
                         }
@@ -1635,10 +1323,7 @@
                 "values": [
                   "logic/audit"
                 ],
-                "about": {
-                  "zh": "用条例检验别人的声明",
-                  "en": "checking someone’s declarations by test cases"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.play.about",
                 "optional": true
               },
               "want": {
@@ -1675,18 +1360,12 @@
                             "of": {
                               "type": "syntax",
                               "lang": "logic/formula",
-                              "about": {
-                                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                              }
+                              "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.boards.of.fields.rules.of.fields.needs.of.about"
                             }
                           }
                         }
                       },
-                      "about": {
-                        "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
-                        "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
-                      }
+                      "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.boards.of.fields.rules.about"
                     }
                   }
                 },
@@ -1702,19 +1381,13 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.answer.of.fields.given.of.about"
                       }
                     },
                     "goal": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.answer.of.fields.goal.about",
                       "optional": true
                     },
                     "make": {
@@ -1725,10 +1398,7 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.answer.of.fields.uses.of.about"
                       },
                       "optional": true
                     }
@@ -1753,20 +1423,14 @@
                           "of": {
                             "type": "syntax",
                             "lang": "logic/formula",
-                            "about": {
-                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                            }
+                            "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.slots.of.1.of.fields.given.of.about"
                           },
                           "optional": true
                         },
                         "goal": {
                           "type": "syntax",
                           "lang": "logic/formula",
-                          "about": {
-                            "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                            "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                          },
+                          "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.slots.of.1.of.fields.goal.about",
                           "optional": true
                         },
                         "make": {
@@ -1778,10 +1442,7 @@
                           "of": {
                             "type": "syntax",
                             "lang": "logic/formula",
-                            "about": {
-                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                            }
+                            "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.slots.of.1.of.fields.keep.of.about"
                           },
                           "optional": true
                         },
@@ -1805,10 +1466,7 @@
               "caseGoal": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.caseGoal.about",
                 "optional": true
               },
               "binder": {
@@ -1872,17 +1530,11 @@
                   "of": {
                     "type": "syntax",
                     "lang": "logic/formula",
-                    "about": {
-                      "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                      "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                    }
+                    "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.cases.of.of.about"
                   }
                 },
                 "section": "tests",
-                "about": {
-                  "zh": "每组测试把字母换成哪些句子",
-                  "en": "the sentences each test puts in place of the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-iso.fields.cases.about",
                 "optional": true
               }
             }
@@ -1893,17 +1545,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -1930,10 +1576,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -1941,10 +1584,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -1956,10 +1596,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -1983,10 +1620,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -1996,10 +1630,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -2013,16 +1644,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -2038,18 +1663,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-define.fields.carries.about",
                 "optional": true
               },
               "fn": {
@@ -2143,17 +1762,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -2180,10 +1793,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -2191,10 +1801,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -2206,10 +1813,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -2233,10 +1837,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -2246,10 +1847,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -2263,16 +1861,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -2288,18 +1880,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.carries.about",
                 "optional": true
               },
               "say": {
@@ -2308,20 +1894,14 @@
               "target": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.target.about"
               },
               "decoys": {
                 "type": "list",
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-translate.fields.decoys.of.about"
                 },
                 "optional": true
               }
@@ -2333,17 +1913,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -2370,10 +1944,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -2381,10 +1952,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -2396,10 +1964,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -2423,10 +1988,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -2436,10 +1998,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -2453,16 +2012,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -2478,18 +2031,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.carries.about",
                 "optional": true
               },
               "say": {
@@ -2498,20 +2045,14 @@
               "target": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.target.about"
               },
               "decoys": {
                 "type": "list",
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.decoys.of.about"
                 },
                 "optional": true
               },
@@ -2548,10 +2089,7 @@
                           ]
                         }
                       },
-                      "about": {
-                        "zh": "每个谓词对哪些东西成立（一样东西，或几样一组）",
-                        "en": "what each predicate holds of (a thing, or a tuple of things)"
-                      }
+                      "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.worlds.of.fields.preds.about"
                     }
                   }
                 }
@@ -2564,17 +2102,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -2601,10 +2133,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -2612,10 +2141,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -2627,10 +2153,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -2654,10 +2177,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -2667,10 +2187,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -2684,16 +2201,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -2709,18 +2220,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.carries.about",
                 "optional": true
               },
               "say": {
@@ -2730,19 +2235,13 @@
               "meant": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.meant.about",
                 "optional": true
               },
               "wrong": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.wrong.about",
                 "optional": true
               },
               "answer": {
@@ -2776,20 +2275,14 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.given.of.about"
                 },
                 "optional": true
               },
               "goal": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-model.fields.goal.about",
                 "optional": true
               }
             }
@@ -2800,17 +2293,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -2837,10 +2324,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -2848,10 +2332,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -2863,10 +2344,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -2890,10 +2368,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -2903,10 +2378,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -2920,16 +2392,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -2945,18 +2411,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.carries.about",
                 "optional": true
               },
               "want": {
@@ -2997,10 +2457,7 @@
                     "goal": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.tests.of.fields.goal.about",
                       "optional": true
                     },
                     "hyps": {
@@ -3008,10 +2465,7 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.tests.of.fields.hyps.of.about"
                       },
                       "optional": true
                     },
@@ -3044,10 +2498,7 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.tests.of.fields.clauses.of.about"
                       },
                       "optional": true
                     },
@@ -3099,10 +2550,7 @@
                     "goal": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.hidden.of.fields.goal.about",
                       "optional": true
                     },
                     "hyps": {
@@ -3110,10 +2558,7 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.hidden.of.fields.hyps.of.about"
                       },
                       "optional": true
                     },
@@ -3146,10 +2591,7 @@
                       "of": {
                         "type": "syntax",
                         "lang": "logic/formula",
-                        "about": {
-                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                        }
+                        "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.hidden.of.fields.clauses.of.about"
                       },
                       "optional": true
                     },
@@ -3188,17 +2630,11 @@
               },
               "solution": {
                 "type": "board",
-                "about": {
-                  "zh": "一块电路板的蓝图文本，每行一个字符串",
-                  "en": "a board as blueprint text, one string a line"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.solution.about"
               },
               "naive": {
                 "type": "board",
-                "about": {
-                  "zh": "一块电路板的蓝图文本，每行一个字符串",
-                  "en": "a board as blueprint text, one string a line"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.naive.about",
                 "optional": true
               },
               "budget": {
@@ -3229,10 +2665,7 @@
                     }
                   }
                 },
-                "about": {
-                  "zh": "这一关自带的规则（元件）",
-                  "en": "rules the level states, each a part"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.rules.about",
                 "optional": true
               },
               "preset": {
@@ -3240,10 +2673,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "参考解里预先放在板上的元件（锁住）",
-                  "en": "cards of the reference answer the board starts with, locked"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-machine.fields.preset.about",
                 "optional": true
               },
               "defs": {
@@ -3275,17 +2705,11 @@
               "id": {
                 "type": "str",
                 "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
-                "about": {
-                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
-                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.id.about"
               },
               "step": {
                 "type": "text",
-                "about": {
-                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
-                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.step.about",
                 "optional": true
               },
               "kind": {
@@ -3312,10 +2736,7 @@
                     }
                   ]
                 },
-                "about": {
-                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
-                  "en": "the word sets to use (named or written inline), merged in order"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.words.about",
                 "optional": true
               },
               "consts": {
@@ -3323,10 +2744,7 @@
                 "of": {
                   "type": "str"
                 },
-                "about": {
-                  "zh": "这一关的名字（特定的东西）",
-                  "en": "the names (particular things) the level reads"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.consts.about",
                 "optional": true
               },
               "propertyWords": {
@@ -3338,10 +2756,7 @@
                 "of": {
                   "type": "text"
                 },
-                "about": {
-                  "zh": "最后一个测试（字母）里，这些词怎么读",
-                  "en": "how these words read in the last test, the letters"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.symbolicWords.about",
                 "optional": true
               },
               "hint": {
@@ -3365,10 +2780,7 @@
               },
               "after": {
                 "type": "text",
-                "about": {
-                  "zh": "通关后的一句（只说这一关，不剧透做法）",
-                  "en": "the pass text (this level only, never the way it is solved)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.after.about",
                 "optional": true
               },
               "adds": {
@@ -3378,10 +2790,7 @@
                   "reference": "circuit/part"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关新带来的元件",
-                  "en": "the parts this level brings in"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.adds.about",
                 "optional": true
               },
               "tray": {
@@ -3395,16 +2804,10 @@
                   "type": "ref",
                   "kind": "primitive",
                   "reference": "circuit/part",
-                  "about": {
-                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
-                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.without.of.about"
                 },
                 "section": "course",
-                "about": {
-                  "zh": "这一关不给的元件（一段证明不许用框）",
-                  "en": "parts the level holds back (a proof without boxes)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.without.about",
                 "optional": true
               },
               "rule": {
@@ -3420,18 +2823,12 @@
                     "type": "str"
                   }
                 },
-                "about": {
-                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
-                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.rule.about",
                 "optional": true
               },
               "carries": {
                 "type": "bool",
-                "about": {
-                  "zh": "接着上一个任务的电路往下做",
-                  "en": "goes on from the last task’s board"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.carries.about",
                 "optional": true
               },
               "premises": {
@@ -3439,24 +2836,15 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.premises.of.about"
                 },
-                "about": {
-                  "zh": "已知：名字 → 句子",
-                  "en": "the givens: name → sentence"
-                },
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.premises.about",
                 "optional": true
               },
               "goal": {
                 "type": "syntax",
                 "lang": "logic/formula",
-                "about": {
-                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                }
+                "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.goal.about"
               },
               "answer": {
                 "type": "list",
@@ -3476,10 +2864,7 @@
                     "stmt": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.answer.of.fields.stmt.about",
                       "optional": true
                     },
                     "by": {
@@ -3518,10 +2903,7 @@
                     "stmt": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.naive.of.fields.stmt.about",
                       "optional": true
                     },
                     "by": {
@@ -3561,10 +2943,7 @@
                     "stmt": {
                       "type": "syntax",
                       "lang": "logic/formula",
-                      "about": {
-                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                      },
+                      "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.given.of.fields.stmt.about",
                       "optional": true
                     },
                     "by": {
@@ -3609,10 +2988,7 @@
                 "of": {
                   "type": "syntax",
                   "lang": "logic/formula",
-                  "about": {
-                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
-                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
-                  }
+                  "about": "@shape.level.fields.tasks.of.cases.logic-script.fields.sentences.of.about"
                 },
                 "optional": true
               },
@@ -3636,10 +3012,7 @@
       },
       "min": 1,
       "section": "tasks",
-      "about": {
-        "zh": "依次做的任务，最后一个通过就通过这一关",
-        "en": "the tasks done in turn; passing the last passes the level"
-      }
+      "about": "@shape.level.fields.tasks.about"
     }
   }
 }

@@ -20,7 +20,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
   const tree = useMemo(() => groupTree(content, playOrder), [content, playOrder])
   const [query, setQuery] = useState('')
   const [sort, setSort] = usePref('package-list-sort', 'group')
-  const sortOptions = [{ value: 'group', label: tr('按分组', 'By group') }, ...sidebarSortOptions()]
+  const sortOptions = [{ value: 'group', label: tr("按分组") }, ...sidebarSortOptions()]
   const view = !moving && sortOptions.some(({ value }) => value === sort) ? sort : 'group'
   const filtering = !moving && Boolean(query.trim())
   const ids = (section) => section.levels.map(({ id }) => id)
@@ -104,7 +104,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
       <i className="family-chip"><Flag size={12} aria-hidden="true" /></i>
       <span>{L(byId.get(id)?.title) || shownName(namespace, id)}</span>
       {placements.get(id)?.optional && <small className="tree-optional">{tr('可选')}</small>}
-      {placements.get(id)?.skippable && <small className="tree-optional">{tr('可跳过', 'Skippable')}</small>}
+      {placements.get(id)?.skippable && <small className="tree-optional">{tr("可跳过")}</small>}
       <code>{shownName(namespace, id)}</code>
     </button>
   )
@@ -134,7 +134,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
             onDragEnd={() => { setTaskDrag(null); setTaskOver(null) }}
             {...(taskDrag && taskTarget(task.id, { level: id, after: task.id }))}
           >
-            <span>{L(task.step) ?? tr(`任务 ${k + 1}`, `Task ${k + 1}`)}</span>
+            <span>{L(task.step) ?? tr("任务 {k}", {k: k + 1})}</span>
             {task.optional && <small className="tree-optional">{tr('可选')}</small>}
           </button>
         ))}
@@ -177,8 +177,8 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
   )
 
   return (
-    <nav className="tree" aria-label={tr('关卡分组', 'Level groups')}>
-      <SidebarListTools addOptions={addOptions} addLabel={tr('新的关卡', 'New level')} onAdd={onAdd} query={query} onQuery={setQuery}
+    <nav className="tree" aria-label={tr("关卡分组")}>
+      <SidebarListTools addOptions={addOptions} addLabel={tr("新的关卡")} onAdd={onAdd} query={query} onQuery={setQuery}
         sortOptions={sortOptions} sort={view} onSort={setSort} {...(grouping ?? {})}
         folded={!flat && tree.sections.every((section) => folded.has(section.key))} onFoldAll={flat ? null : (shut) => setAll(tree.sections.map((section) => section.key), shut)} />
       {flat ? <div className="tree-levels">{rows.map(row)}</div>
@@ -186,7 +186,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
         const levels = ids(section).filter((id) => visible.has(id))
         if ((filtering || section.group === null) && !levels.length && !moving) return null
         const shut = folded.has(section.key) && !filtering && !moving
-        const title = section.group === null ? tr('未分组', 'Ungrouped') : L(levelTags(content)[section.group].title) || shownName(namespace, section.group)
+        const title = section.group === null ? tr("未分组") : L(levelTags(content)[section.group].title) || shownName(namespace, section.group)
         return (
           <SidebarSection key={section.key} title={title} name={section.group ? shownName(namespace, section.group) : ''} active={section.group !== null && at?.group === section.group} collapsed={shut}
             onSelect={section.group === null ? undefined : () => onSelect({ group: section.group })} onToggle={() => fold(section.key)}

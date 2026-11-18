@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { useState } from 'react'
 import { Plus, Trash2, X } from 'lucide-react'
 import Sheet from './Sheet.jsx'
@@ -51,7 +52,7 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
           <thead>
             <tr>
               {columns.map((c) => <th key={c.key} scope="col" className={cellClass(c)}><div className="rt-cell">{L(c.label)}</div></th>)}
-              {deleteColumn && <th className="rt-actions" scope="col" aria-label={tr('删除', 'Delete')} />}
+              {deleteColumn && <th className="rt-actions" scope="col" aria-label={tr("删除")} />}
             </tr>
           </thead>
           <tbody>
@@ -70,7 +71,7 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
                 {columns.map((c) => <td key={c.key} className={cellClass(c)}><div className="rt-cell">{inPlace && c.edit ? c.edit(row, (next) => setRow(k, next), k) : c.cell(row, k)}</div></td>)}
                 {deleteColumn && (
                   <td className="rt-actions">
-                    <button type="button" className="rt-drop" aria-label={tr('删除这一行', 'Delete this row')} onClick={(e) => { e.stopPropagation(); remove(k) }}><X size={14} /></button>
+                    <button type="button" className="rt-drop" aria-label={tr("删除这一行")} onClick={(e) => { e.stopPropagation(); remove(k) }}><X size={14} /></button>
                   </td>
                 )}
               </tr>
@@ -79,7 +80,7 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
         </table>
         {!rows.length && empty && <p className="rt-empty">{L(empty)}</p>}
       </div>
-      {editable && !inPlace && rows.length > 0 && <p className="rt-tip">{L(tip ?? { zh: '点按任意一行即可修改。', en: 'Tap a row to edit it.' })}</p>}
+      {editable && !inPlace && rows.length > 0 && <p className="rt-tip">{L(tip ?? catalogText("点按任意一行即可修改。"))}</p>}
       {editable && !fixed && rows.length < max && (
         <button type="button" className="rt-add" onClick={add}>
           <Plus size={18} /> {L(addLabel)}
@@ -89,7 +90,7 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
         <Sheet title={text(formTitle)} onClose={() => setOpen(null)}>
           <div className="rt-form">
             {form(rows[open], (row) => setRow(open, row), open)}
-            {!fixed && <div className="sheet-actions"><button type="button" className="sheet-remove" onClick={() => remove(open)}><Trash2 size={15} />{tr('删除', 'Delete')}</button></div>}
+            {!fixed && <div className="sheet-actions"><button type="button" className="sheet-remove" onClick={() => remove(open)}><Trash2 size={15} />{tr("删除")}</button></div>}
           </div>
         </Sheet>
       )}

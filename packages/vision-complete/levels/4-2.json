@@ -26,14 +26,14 @@
       "scene": "vision-complete/samples",
       "setup": { "scale": 0.5, "offset": 0.2 },
       "tests": [
-        { "label": "@level.4-2.tasks.4-2.tests.0.label", "x": 0.2 },
-        { "label": "@level.4-2.tasks.4-2.tests.1.label", "x": 0.30000000000000004 },
-        { "label": "@level.4-2.tasks.4-2.tests.2.label", "x": 0.4 },
-        { "label": "@level.4-2.tasks.4-2.tests.3.label", "x": 0.5 },
-        { "label": "@level.4-2.tasks.4-2.tests.4.label", "x": 0.6000000000000001 },
-        { "label": "@level.4-2.tasks.4-2.tests.5.label", "x": 0.7 },
-        { "label": "@level.4-2.tasks.4-2.tests.6.label", "x": 0.8 },
-        { "label": "@level.4-2.tasks.4-2.tests.7.label", "x": 0.9000000000000001 }
+        { "label": "x = 0.2", "x": 0.2 },
+        { "label": "x = 0.3", "x": 0.30000000000000004 },
+        { "label": "x = 0.4", "x": 0.4 },
+        { "label": "x = 0.5", "x": 0.5 },
+        { "label": "x = 0.6", "x": 0.6000000000000001 },
+        { "label": "x = 0.7", "x": 0.7 },
+        { "label": "x = 0.8", "x": 0.8 },
+        { "label": "x = 0.9", "x": 0.9000000000000001 }
       ],
       "hidden": [
         { "label": "@level.4-2.tasks.4-2.hidden.0.label", "x": 0.1 },

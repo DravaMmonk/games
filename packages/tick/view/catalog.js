@@ -2,7 +2,7 @@
 // inputs and outputs are the base's own cards, its parts a game's parts.json). A description says only what a card does
 // (games/design/README.md 4).
 import { Activity, Megaphone } from 'lucide-react'
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 import { LINE } from '../core/line.js'
 
 export const CARDS = {

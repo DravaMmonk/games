@@ -1,9 +1,15 @@
 import { module as circuit } from 'circuit'
 import { OPS } from './ops.js'
 import { vocabulary } from './vocabulary.js'
-import display from '../capabilities/display.json' with { type: 'json' }
-import valueType from '../capabilities/valueType.json' with { type: 'json' }
-import board from '../capabilities/board.json' with { type: 'json' }
+import displaySource from '../capabilities/display.json' with { type: 'json' }
+import valueTypeSource from '../capabilities/valueType.json' with { type: 'json' }
+import boardSource from '../capabilities/board.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const display = readCopy(displaySource)
+const valueType = readCopy(valueTypeSource)
+const board = readCopy(boardSource)
 
 export default {
   id: 'logic',

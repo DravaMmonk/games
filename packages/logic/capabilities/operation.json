@@ -2,10 +2,7 @@
   "extends": "operation",
   "items": {
     "mp": {
-      "about": {
-        "zh": "套用：由 A → B 和 A 得到 B",
-        "en": "Apply: from A → B and A, B"
-      },
+      "about": "@capability.operation.items.mp.about",
       "args": [
         {
           "name": "imp",
@@ -23,10 +20,7 @@
       }
     },
     "impI": {
-      "about": {
-        "zh": "假设框：框里假设 A 证出 B，得到 A → B",
-        "en": "Assumption box: assume A inside, prove B, get A → B"
-      },
+      "about": "@capability.operation.items.impI.about",
       "args": [
         {
           "name": "body",
@@ -47,10 +41,7 @@
       }
     },
     "andI": {
-      "about": {
-        "zh": "拼接：由 A 和 B 得到 A ∧ B",
-        "en": "Join: from A and B, A ∧ B"
-      },
+      "about": "@capability.operation.items.andI.about",
       "args": [
         {
           "name": "a",
@@ -68,10 +59,7 @@
       }
     },
     "andE": {
-      "about": {
-        "zh": "拆解：由 A ∧ B 得到 A、B",
-        "en": "Split: from A ∧ B, A and B"
-      },
+      "about": "@capability.operation.items.andE.about",
       "args": [
         {
           "name": "ab",
@@ -85,10 +73,7 @@
       }
     },
     "orI": {
-      "about": {
-        "zh": "补充：由 A 得到 A ∨ B",
-        "en": "Add alternative: from A, A ∨ B"
-      },
+      "about": "@capability.operation.items.orI.about",
       "args": [
         {
           "name": "a",
@@ -119,10 +104,7 @@
       }
     },
     "orE": {
-      "about": {
-        "zh": "分类讨论：由 A ∨ B 和两个框得到 C",
-        "en": "Case analysis: from A ∨ B and two boxes, C"
-      },
+      "about": "@capability.operation.items.orE.about",
       "args": [
         {
           "name": "ab",
@@ -144,10 +126,7 @@
       }
     },
     "botE": {
-      "about": {
-        "zh": "爆炸：由 ⊥ 得到任意一句",
-        "en": "Explosion: from ⊥, anything"
-      },
+      "about": "@capability.operation.items.botE.about",
       "args": [
         {
           "name": "bot",
@@ -168,10 +147,7 @@
       }
     },
     "raa": {
-      "about": {
-        "zh": "反证法：由 ¬¬A 得到 A",
-        "en": "By contradiction: from ¬¬A, A"
-      },
+      "about": "@capability.operation.items.raa.about",
       "args": [
         {
           "name": "nna",
@@ -185,10 +161,7 @@
       }
     },
     "res": {
-      "about": {
-        "zh": "归结：两条子句消去一对文字",
-        "en": "Resolution: cancel one pair of literals"
-      },
+      "about": "@capability.operation.items.res.about",
       "args": [
         {
           "name": "p0",
@@ -206,10 +179,7 @@
       }
     },
     "allI": {
-      "about": {
-        "zh": "任取框：框里证 P(a)，得到 ∀x. P(x)",
-        "en": "For-any box: prove P(a) inside, get ∀x. P(x)"
-      },
+      "about": "@capability.operation.items.allI.about",
       "args": [
         {
           "name": "body",
@@ -230,10 +200,7 @@
       }
     },
     "allE": {
-      "about": {
-        "zh": "选定一例：由 ∀x. P(x) 得到 P(t)",
-        "en": "Choose an instance: from ∀x. P(x), P(t)"
-      },
+      "about": "@capability.operation.items.allE.about",
       "args": [
         {
           "name": "all",
@@ -254,10 +221,7 @@
       }
     },
     "exI": {
-      "about": {
-        "zh": "概括：由 P(t) 得到 ∃x. P(x)",
-        "en": "Generalise: from P(t), ∃x. P(x)"
-      },
+      "about": "@capability.operation.items.exI.about",
       "args": [
         {
           "name": "a",
@@ -278,10 +242,7 @@
       }
     },
     "exE": {
-      "about": {
-        "zh": "实例框：由 ∃x. P(x) 和框得到 C",
-        "en": "Witness box: from ∃x. P(x) and a box, C"
-      },
+      "about": "@capability.operation.items.exE.about",
       "args": [
         {
           "name": "ex",
@@ -306,10 +267,7 @@
       }
     },
     "natInd": {
-      "about": {
-        "zh": "数学归纳法",
-        "en": "Induction"
-      },
+      "about": "@capability.operation.items.natInd.about",
       "args": [
         {
           "name": "zero",
@@ -340,10 +298,7 @@
       }
     },
     "refl": {
-      "about": {
-        "zh": "自反律：t = t",
-        "en": "Reflexivity: t = t"
-      },
+      "about": "@capability.operation.items.refl.about",
       "args": [],
       "returns": "logic/judgment",
       "params": {
@@ -359,10 +314,7 @@
       }
     },
     "rewrite": {
-      "about": {
-        "zh": "等量代换：由 s = t 和 φ(s) 得到 φ(t)",
-        "en": "Rewrite: from s = t and φ(s), φ(t)"
-      },
+      "about": "@capability.operation.items.rewrite.about",
       "args": [
         {
           "name": "eq",
@@ -390,10 +342,7 @@
       }
     },
     "lemma": {
-      "about": {
-        "zh": "引理：照证出它的那段证明来推",
-        "en": "A lemma: runs the proof that proved it"
-      },
+      "about": "@capability.operation.items.lemma.about",
       "args": [],
       "returns": "logic/judgment",
       "params": {
@@ -402,10 +351,7 @@
       }
     },
     "anyR": {
-      "about": {
-        "zh": "任意结论",
-        "en": "Any conclusion"
-      },
+      "about": "@capability.operation.items.anyR.about",
       "args": [],
       "returns": "logic/machine-value",
       "params": {
@@ -414,10 +360,7 @@
       }
     },
     "swapConcl": {
-      "about": {
-        "zh": "替换结论",
-        "en": "Swap conclusion"
-      },
+      "about": "@capability.operation.items.swapConcl.about",
       "args": [
         {
           "name": "rule",
@@ -435,10 +378,7 @@
       }
     },
     "consFront": {
-      "about": {
-        "zh": "添加首项",
-        "en": "Put first"
-      },
+      "about": "@capability.operation.items.consFront.about",
       "args": [
         {
           "name": "first",
@@ -456,10 +396,7 @@
       }
     },
     "mkRule": {
-      "about": {
-        "zh": "构造规则",
-        "en": "Make a rule"
-      },
+      "about": "@capability.operation.items.mkRule.about",
       "args": [
         {
           "name": "premises",
@@ -477,10 +414,7 @@
       }
     },
     "eachOf": {
-      "about": {
-        "zh": "逐项处理",
-        "en": "For each"
-      },
+      "about": "@capability.operation.items.eachOf.about",
       "args": [
         {
           "name": "in",
@@ -500,10 +434,7 @@
       }
     },
     "keepBound": {
-      "about": {
-        "zh": "保留⋀",
-        "en": "Keep ⋀"
-      },
+      "about": "@capability.operation.items.keepBound.about",
       "args": [
         {
           "name": "in",
@@ -523,10 +454,7 @@
       }
     },
     "uDelete": {
-      "about": {
-        "zh": "删除",
-        "en": "Delete"
-      },
+      "about": "@capability.operation.items.uDelete.about",
       "args": [
         {
           "name": "in",
@@ -540,10 +468,7 @@
       }
     },
     "uDecompose": {
-      "about": {
-        "zh": "分解",
-        "en": "Decompose"
-      },
+      "about": "@capability.operation.items.uDecompose.about",
       "args": [
         {
           "name": "in",
@@ -557,10 +482,7 @@
       }
     },
     "uConflict": {
-      "about": {
-        "zh": "冲突",
-        "en": "Conflict"
-      },
+      "about": "@capability.operation.items.uConflict.about",
       "args": [
         {
           "name": "in",
@@ -574,10 +496,7 @@
       }
     },
     "uSwap": {
-      "about": {
-        "zh": "定向",
-        "en": "Orient"
-      },
+      "about": "@capability.operation.items.uSwap.about",
       "args": [
         {
           "name": "in",
@@ -591,10 +510,7 @@
       }
     },
     "uCheck": {
-      "about": {
-        "zh": "出现检查",
-        "en": "Occurs check"
-      },
+      "about": "@capability.operation.items.uCheck.about",
       "args": [
         {
           "name": "in",
@@ -608,10 +524,7 @@
       }
     },
     "uEliminate": {
-      "about": {
-        "zh": "消元",
-        "en": "Eliminate"
-      },
+      "about": "@capability.operation.items.uEliminate.about",
       "args": [
         {
           "name": "in",
@@ -625,10 +538,7 @@
       }
     },
     "uPattern": {
-      "about": {
-        "zh": "模式合一",
-        "en": "Pattern unification"
-      },
+      "about": "@capability.operation.items.uPattern.about",
       "args": [
         {
           "name": "in",
@@ -642,10 +552,7 @@
       }
     },
     "repeat": {
-      "about": {
-        "zh": "重复框",
-        "en": "Repeat frame"
-      },
+      "about": "@capability.operation.items.repeat.about",
       "args": [
         {
           "name": "in",
@@ -663,10 +570,7 @@
       }
     },
     "rule": {
-      "about": {
-        "zh": "逆用规则",
-        "en": "Rule"
-      },
+      "about": "@capability.operation.items.rule.about",
       "args": [
         {
           "name": "in",
@@ -684,10 +588,7 @@
       }
     },
     "assumption": {
-      "about": {
-        "zh": "由假设得证",
-        "en": "Assumption"
-      },
+      "about": "@capability.operation.items.assumption.about",
       "args": [
         {
           "name": "in",
@@ -701,10 +602,7 @@
       }
     },
     "defer": {
-      "about": {
-        "zh": "目标后移",
-        "en": "Defer"
-      },
+      "about": "@capability.operation.items.defer.about",
       "args": [
         {
           "name": "in",
@@ -718,10 +616,7 @@
       }
     },
     "append": {
-      "about": {
-        "zh": "依次尝试",
-        "en": "Alternatives"
-      },
+      "about": "@capability.operation.items.append.about",
       "args": [
         {
           "name": "in",
@@ -775,10 +670,7 @@
       }
     },
     "search": {
-      "about": {
-        "zh": "回溯搜索",
-        "en": "Search"
-      },
+      "about": "@capability.operation.items.search.about",
       "args": [
         {
           "name": "in",
@@ -816,10 +708,7 @@
       }
     },
     "each": {
-      "about": {
-        "zh": "逐个目标",
-        "en": "Every goal"
-      },
+      "about": "@capability.operation.items.each.about",
       "args": [
         {
           "name": "in",
@@ -839,10 +728,7 @@
       }
     },
     "rw": {
-      "about": {
-        "zh": "改写",
-        "en": "Rewrite"
-      },
+      "about": "@capability.operation.items.rw.about",
       "args": [
         {
           "name": "in",
@@ -871,10 +757,7 @@
       }
     },
     "skolem": {
-      "about": {
-        "zh": "Skolem 化",
-        "en": "Skolemise"
-      },
+      "about": "@capability.operation.items.skolem.about",
       "args": [
         {
           "name": "in",
@@ -888,10 +771,7 @@
       }
     },
     "toClauses": {
-      "about": {
-        "zh": "析出子句",
-        "en": "Into clauses"
-      },
+      "about": "@capability.operation.items.toClauses.about",
       "args": [
         {
           "name": "in",
@@ -905,10 +785,7 @@
       }
     },
     "resolve": {
-      "about": {
-        "zh": "一轮归结",
-        "en": "A round of resolution"
-      },
+      "about": "@capability.operation.items.resolve.about",
       "args": [
         {
           "name": "in",
@@ -933,10 +810,7 @@
       }
     },
     "oracle": {
-      "about": {
-        "zh": "外部证明器",
-        "en": "Someone else’s prover"
-      },
+      "about": "@capability.operation.items.oracle.about",
       "args": [
         {
           "name": "in",
@@ -950,10 +824,7 @@
       }
     },
     "replay": {
-      "about": {
-        "zh": "重放",
-        "en": "Replay"
-      },
+      "about": "@capability.operation.items.replay.about",
       "args": [
         {
           "name": "in",
@@ -967,10 +838,7 @@
       }
     },
     "rules": {
-      "about": {
-        "zh": "规则元件：给出它的规则",
-        "en": "A rule part: the rules it gives"
-      },
+      "about": "@capability.operation.items.rules.about",
       "args": [
         {
           "name": "before",
@@ -1010,10 +878,7 @@
       }
     },
     "instances": {
-      "about": {
-        "zh": "能代入的东西或句子",
-        "en": "Things or sentences to put in"
-      },
+      "about": "@capability.operation.items.instances.about",
       "args": [],
       "returns": "logic/options",
       "params": {
@@ -1022,10 +887,7 @@
       }
     },
     "occurrences": {
-      "about": {
-        "zh": "φ 里 s 出现的每一处",
-        "en": "Each place s stands in φ"
-      },
+      "about": "@capability.operation.items.occurrences.about",
       "args": [
         {
           "name": "eq",
@@ -1043,10 +905,7 @@
       }
     },
     "ruleChoices": {
-      "about": {
-        "zh": "规则元件能给出的规则",
-        "en": "The rules a rule part can give"
-      },
+      "about": "@capability.operation.items.ruleChoices.about",
       "args": [],
       "returns": "logic/options",
       "params": {

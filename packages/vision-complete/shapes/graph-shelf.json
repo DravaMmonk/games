@@ -24,10 +24,7 @@
         },
         "blur": {
           "type": "num",
-          "about": {
-            "zh": "先模糊（高斯的 σ，复制边缘）",
-            "en": "a blur first (the Gaussian’s σ, the edge replicated)"
-          },
+          "about": "@shape.graph-shelf.fields.setup.fields.blur.about",
           "optional": true
         }
       }

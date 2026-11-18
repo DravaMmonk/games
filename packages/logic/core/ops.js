@@ -1,10 +1,14 @@
-import declarations from '../capabilities/operation.json' with { type: 'json' }
+import declarationsSource from '../capabilities/operation.json' with { type: 'json' }
 // The logic domain's engine resources (games/design/README.md 6.8): what a game's parts.json calls, each with what it is and
 // its arguments. The proof rules and the lemmas' run are proof.js's, with the options a proof card's settings offer;
 // the machine board's parts and the rules a rule part offers are machine.js's.
 import { LEMMA, OPTIONS, RULES, lemmaParts } from './proof.js'
 import { MACHINE_PARTS, RULE_CHOICES } from './machine.js'
 import { compileParts, defineParts } from 'circuit'
+
+import { readCopy } from 'kernel/words'
+
+const declarations = readCopy(declarationsSource)
 
 const implementations = { ...RULES, lemma: LEMMA, ...MACHINE_PARTS, ...OPTIONS, ruleChoices: RULE_CHOICES }
 

@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 
 // Device preferences belong to presentation and editing, never to puzzle progress.
 const registry = new Map()
@@ -48,7 +49,7 @@ export const settings = createSettings()
 defineSetting({
   key: 'playbackSpeed',
   group: 'display',
-  label: { zh: '自动步进速度', en: 'Playback speed' },
+  label: catalogText("自动步进速度"),
   kind: 'choice',
   default: 1,
   options: [0.5, 1, 2].map((value) => ({ value, label: `${value}×` })),

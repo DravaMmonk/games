@@ -1,4 +1,5 @@
-import { L, tr, GroupedList, groupingsFor, shownName, taskOptionsOf, findTask } from 'kernel/view'
+import { L, GroupedList, groupingsFor, shownName, taskOptionsOf, findTask } from "kernel/view"
+import { tr } from 'kernel/words'
 import { copyWithoutTextKeys, freeName } from 'kernel/view'
 // The package's parts in the build workspace's left column. The kernel supplies creation options.
 
@@ -67,6 +68,6 @@ export default function PartsList({ content, vocabulary, namespace, game, levelO
   return (
     <GroupedList kind="circuit/part" content={content} namespace={namespace} game={game} items={items} label={(id) => L(file.parts[id]?.name)} row={row}
       groupings={groupingsFor('circuit/part')} by={by} onBy={onBy} heading={heading} onHeading={onHeading} newOptions={newOptions} onNew={onNew}
-      addOptions={[...choices, { value: 'copy', label: tr('复制所选元件', 'Duplicate the part open'), disabled: !picked }]} addLabel={tr('元件', 'Parts')} onAdd={create} />
+      addOptions={[...choices, { value: 'copy', label: tr("复制所选元件"), disabled: !picked }]} addLabel={tr("元件", {}, "parts-list")} onAdd={create} />
   )
 }

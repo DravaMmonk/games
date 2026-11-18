@@ -20,10 +20,7 @@
         "type": "num"
       },
       "min": 2,
-      "about": {
-        "zh": "右图的点 (x′, y′)",
-        "en": "the right point (x′, y′)"
-      }
+      "about": "@shape.on-epiline-test.fields.q.about"
     }
   }
 }

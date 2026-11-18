@@ -27,20 +27,20 @@
       "trainRate": 10,
       "scene": "vision-complete/strokes",
       "tests": [
-        { "label": "@level.4-6.tasks.4-6.tests.0.label", "letter": "X", "f1": 0.85, "f2": 0.15 },
-        { "label": "@level.4-6.tasks.4-6.tests.1.label", "letter": "X", "f1": 0.15, "f2": 0.85 },
-        { "label": "@level.4-6.tasks.4-6.tests.2.label", "letter": "X", "f1": 0.8, "f2": 0.25 },
-        { "label": "@level.4-6.tasks.4-6.tests.3.label", "letter": "X", "f1": 0.25, "f2": 0.8 },
-        { "label": "@level.4-6.tasks.4-6.tests.4.label", "letter": "X", "f1": 0.9, "f2": 0.3 },
-        { "label": "@level.4-6.tasks.4-6.tests.5.label", "letter": "X", "f1": 0.3, "f2": 0.9 },
-        { "label": "@level.4-6.tasks.4-6.tests.6.label", "letter": "O", "f1": 0.15, "f2": 0.15 },
-        { "label": "@level.4-6.tasks.4-6.tests.7.label", "letter": "O", "f1": 0.85, "f2": 0.85 },
-        { "label": "@level.4-6.tasks.4-6.tests.8.label", "letter": "O", "f1": 0.2, "f2": 0.3 },
-        { "label": "@level.4-6.tasks.4-6.tests.9.label", "letter": "O", "f1": 0.8, "f2": 0.75 }
+        { "label": "X (0.85, 0.15)", "letter": "X", "f1": 0.85, "f2": 0.15 },
+        { "label": "X (0.15, 0.85)", "letter": "X", "f1": 0.15, "f2": 0.85 },
+        { "label": "X (0.8, 0.25)", "letter": "X", "f1": 0.8, "f2": 0.25 },
+        { "label": "X (0.25, 0.8)", "letter": "X", "f1": 0.25, "f2": 0.8 },
+        { "label": "X (0.9, 0.3)", "letter": "X", "f1": 0.9, "f2": 0.3 },
+        { "label": "X (0.3, 0.9)", "letter": "X", "f1": 0.3, "f2": 0.9 },
+        { "label": "O (0.15, 0.15)", "letter": "O", "f1": 0.15, "f2": 0.15 },
+        { "label": "O (0.85, 0.85)", "letter": "O", "f1": 0.85, "f2": 0.85 },
+        { "label": "O (0.2, 0.3)", "letter": "O", "f1": 0.2, "f2": 0.3 },
+        { "label": "O (0.8, 0.75)", "letter": "O", "f1": 0.8, "f2": 0.75 }
       ],
       "hidden": [
-        { "label": "@level.4-6.tasks.4-6.hidden.0.label", "letter": "O", "f1": 0.5, "f2": 0.45 },
-        { "label": "@level.4-6.tasks.4-6.hidden.1.label", "letter": "O", "f1": 0.55, "f2": 0.6 }
+        { "label": "O (0.5, 0.45)", "letter": "O", "f1": 0.5, "f2": 0.45 },
+        { "label": "O (0.55, 0.6)", "letter": "O", "f1": 0.55, "f2": 0.6 }
       ],
       "solution": [
         "hw1 = lrnConst[p=[4.0805]]()",

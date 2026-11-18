@@ -5,8 +5,8 @@ import { energy, shade } from 'table'
 // column without cutting through what stands out in it.
 
 import { rcName } from 'table';
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { world, look, num, yes } from 'table';
 import { gridDef } from './grid.js';
 
@@ -15,14 +15,14 @@ const energyOf = t => t.energy || energy(t.img);
 
 export const pic = world({
   ...gridDef,
-  sensors: { ul: gridDef.sensors.ul, up: gridDef.sensors.up, ur: gridDef.sensors.ur, left: gridDef.sensors.left, right: gridDef.sensors.right, dl: gridDef.sensors.dl, down: gridDef.sensors.down, dr: gridDef.sensors.dr, energy: num(T('本格能量', 'pixel energy'), T('能', 'E'), 'pixel'), top: yes(T('是顶行', 'is top row'), T('顶', 'top'), 'toprow') },
+  sensors: { ul: gridDef.sensors.ul, up: gridDef.sensors.up, ur: gridDef.sensors.ur, left: gridDef.sensors.left, right: gridDef.sensors.right, dl: gridDef.sensors.dl, down: gridDef.sensors.down, dr: gridDef.sensors.dr, energy: num(T("本格能量"), T("能"), 'pixel'), top: yes(T("是顶行"), T("顶"), 'toprow') },
   facts: ['energy', 'top'],
   mark: (t, key) => { const [r, c] = key.split(',').map(Number); return { corner: energyOf(t)[r][c] }; },
   sense: (t, { r, c }, id) => (id === 'top' ? r === 0 : energyOf(t)[r][c]),
   answerKeys: t => Array.from({ length: t.C }, (_, c) => `${t.R - 1},${c}`),
   answer(t, table) { return Math.min(...this.answerKeys(t).map(k => table.get(k) ?? Infinity)); },
-  label: t => tr(`${t.C}×${t.R} 像素`, `${t.C}×${t.R} pixel${t.C * t.R > 1 ? 's' : ''}`),
-  orderText: () => tr('逐行，从顶行往下', 'row by row, from the top row down'),
+  label: t => tr("{C}×{R} 像素", {C: t.C, R: t.R, value: t.C * t.R > 1 ? 's' : ''}),
+  orderText: () => tr("逐行，从顶行往下"),
   scene(t, view, o) {
     const g = look(view, [], [], o.bench), sp = 46, sz = 40, px = 13, cells = [], path = new Set(o.path || []);
     // The picture itself, small, to the left of its table (a test of plain energies has none).

@@ -1,8 +1,5 @@
 {
   "type": "bool",
-  "about": {
-    "zh": "在图上拖动来设，不另画控件",
-    "en": "set by dragging on a picture, no control of its own"
-  },
+  "about": "@shape.drawn-knob.about",
   "optional": true
 }

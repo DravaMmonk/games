@@ -14,7 +14,7 @@
 // not stop (schematic.js does the unifying).
 import { fn, subst } from './formula.js'
 import { KERNEL_RULES, instantiate, metasIn, unify } from './schematic.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 const NO_GOALS = T('已经没有目标了')
 // The names a fixed thing gets, in order.
@@ -105,7 +105,7 @@ export function rule(s, R) {
   const r = renamed(R, metasOfState(s))
   const scopes = { ...s.scopes, ...Object.fromEntries(r.metas.map((m) => [m, fixesOf(g)])) }
   const u = unify([[r.conclusion, g.goal]], s.inst ?? {}, { scopes, fixed: s.fixed ?? [] })
-  if (u.fail) return { fail: T(`「${R.name.zh}」的结论对不上第一个目标：${u.fail.zh}`, `The conclusion of “${R.name.en}” does not fit the first goal: ${u.fail.en}`) }
+  if (u.fail) return { fail: T("「{zh}」的结论对不上第一个目标：{zh2}", {zh: { zh: String(R.name.zh), en: String(R.name.en) }, zh2: { zh: String(u.fail.zh), en: String(u.fail.en) }}) }
   const { goals, fixed } = lift(r.premises, g, s)
   return { results: [after(s, u.σ, [...goals, ...s.goals.slice(1)], scopes, fixed)] }
 }

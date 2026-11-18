@@ -2,7 +2,7 @@ import { checkIso, sentenceOf } from './iso.js'
 import { freeVars, show } from './formula.js'
 import { chipsFrom, complete, missingChips, straysOf } from './formulaTree.js'
 import { say } from './notation.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { inOrder } from 'kernel'
 
 export const blankRule = () => ({ binds: [], needs: [] })
@@ -31,10 +31,10 @@ export const linesOf = (rules) => rules.map((rule) => ({ binds: rule.binds, need
 
 function problemText({ row, slot, why, missing }) {
   switch (why) {
-    case 'binder': return T(`可推导情形 ${row + 1} 使用了这一关未提供的任取设置。`, `Row ${row + 1} uses a “for any” this task does not offer.`)
-    case 'empty': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提还没写完。`, `Row ${row + 1}, premise ${slot + 1}: unfinished.`)
-    case 'stray': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提提到了没有任取的东西。`, `Row ${row + 1}, premise ${slot + 1}: names a thing the row does not take.`)
-    case 'chips': return T(`可推导情形 ${row + 1} 的第 ${slot + 1} 个前提用了这一关未提供的词：${missing.join('、')}。`, `Row ${row + 1}, premise ${slot + 1}: uses words not on offer: ${missing.join(', ')}.`)
+    case 'binder': return T("可推导情形 {row} 使用了这一关未提供的任取设置。", {row: row + 1})
+    case 'empty': return T("可推导情形 {row} 的第 {slot} 个前提还没写完。", {row: row + 1, slot: slot + 1})
+    case 'stray': return T("可推导情形 {row} 的第 {slot} 个前提提到了没有任取的东西。", {row: row + 1, slot: slot + 1})
+    case 'chips': return T("可推导情形 {row} 的第 {slot} 个前提用了这一关未提供的词：{value}。", {row: row + 1, slot: slot + 1, value: { zh: String(missing.join('、')), en: String(missing.join(', ')) }})
   }
 }
 

@@ -9,7 +9,7 @@ import { gridText } from 'kernel'
 import { runTestGroups, splitTests, TEST_WORDS } from 'kernel'
 import { plays } from './plays.js'
 import { INPUT_LABELS, descriptionOf } from './words.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 const pick = (v, lang) => (v && typeof v === 'object' ? v[lang] ?? v.en ?? v.zh : v)
 
@@ -23,7 +23,7 @@ const circuit = circuitPlay({
     const { types } = game.image.kit
     const cost = types[type].cost
     const desc = descriptionOf(types, type) ?? ''
-    return { name: types[type].label, desc: typeof cost === 'number' ? T(`${pick(desc, 'zh')}（计算量 ${cost}）`, `${pick(desc, 'en')} (cost ${cost})`) : desc }
+    return { name: types[type].label, desc: typeof cost === 'number' ? T("{value}（计算量 {cost}）", {cost, value: { zh: String(pick(desc, 'zh')), en: String(pick(desc, 'en')) }}) : desc }
   },
   settings: ({ game, level, flags }, type) => game.image.kit.settingsOf(type, game.circuit.forTask(level.source).holdsIn(level.source, flags)).filter((p) => !p.hidden).map((p) => ({
     key: p.key,
@@ -38,7 +38,7 @@ const circuit = circuitPlay({
       ...L.outputs.map((name) => `${name}: ${lang === 'en' ? 'output' : '输出'}${L.outputLabels?.[name] ? ` “${pick(L.outputLabels[name], lang)}”` : ''}`),
       ...(L.check?.tolerance !== undefined ? [lang === 'en' ? `A value passes within ${L.check.tolerance} of the target.` : `与目标相差 ${L.check.tolerance} 以内算对。`] : []),
     ].join('\n')
-    return T(side('zh'), side('en'))
+    return { zh: side('zh'), en: side('en') }
   },
   tests: (ctx) => testsOf(ctx).shown.map((t) => ({
     label: t.label,
@@ -53,10 +53,10 @@ const circuit = circuitPlay({
     const { shown: visible, checked, hidden, pass } = runTestGroups(ctx.level.source, revealed(ctx), (task) => runLevel(task, graph))
     // A failed test says, output by output, how far its picture is from the target.
     const why = (r, lang) => r.checks.filter((c) => !c.pass).map((c) => `${c.name}: ${pick(c.reason, lang)}`).join(lang === 'en' ? '; ' : '；')
-    const tests = checked.runs.map((r, k) => ({ label: visible[k].label, pass: r.pass, says: r.pass ? null : T(why(r, 'zh'), why(r, 'en')) }))
+    const tests = checked.runs.map((r, k) => ({ label: visible[k].label, pass: r.pass, says: r.pass ? null : { zh: why(r, 'zh'), en: why(r, 'en') } }))
     return {
       tests,
-      says: [...(checked.constraint ? [checked.constraint] : []), T(`元件 ${checked.score.nodes} · 计算量 ${checked.score.cost}`, `Parts ${checked.score.nodes} · cost ${checked.score.cost}`)],
+      says: [...(checked.constraint ? [checked.constraint] : []), T("元件 {nodes} · 计算量 {cost}", {nodes: checked.score.nodes, cost: checked.score.cost})],
       hidden: hidden && { ...hidden, says: TEST_WORDS.failed(hidden.failed, hidden.count) },
       constraint: checked.constraint,
       pass,

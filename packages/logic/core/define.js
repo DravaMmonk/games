@@ -13,7 +13,7 @@ import { cases, hidden, inOrder, property, sameAs } from 'kernel'
 import { sameTerm } from './formula.js'
 import { sayTerm } from './notation.js'
 import { parseS, parseSide } from './schematic.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 /** Most rewrites one test may take before it counts as never stopping. */
 export const BUDGET = 200
@@ -86,14 +86,14 @@ function nondecreasingRow(level, picks) {
 export function checkDefine(level) {
   const complete = property(
     (picks) => picks.every(Boolean) && picks.length === level.rows.length,
-    () => ({ why: T('每一行的右边都须写完', 'Every row needs a whole right side') }),
+    () => ({ why: T("每一行的右边都须写完") }),
   )
   const say = (term) => sayTerm(term, level.notation)
   const examples = hidden(cases(level.tests, (eqs, test) => {
     const got = evaluate(test.term, eqs)
     const term = say(parseSide(test.term))
     if (got.loops) return {
-      why: T(`算 ${term.zh}，${BUDGET} 步还没算完`, `Working out ${term.en}, ${BUDGET} steps did not finish`),
+      why: T("算 {zh}，{BUDGET} 步还没算完", {BUDGET, zh: { zh: String(term.zh), en: String(term.en) }}),
     }
     return sameAs(parseSide(test.value), {
       same: sameTerm,
@@ -102,7 +102,7 @@ export function checkDefine(level) {
   }))
   const termination = property((row) => row < 0, (row) => ({
     at: { row, slot: 0 },
-    why: T(`第 ${row + 1} 行的右边又用到了这个函数，可拆的那个参数没有变小：这样的定义可能永远算不完`, `Row ${row + 1} calls the function again on an argument that is no smaller: such a definition may never finish`),
+    why: T("第 {row} 行的右边又用到了这个函数，可拆的那个参数没有变小：这样的定义可能永远算不完", {row: row + 1}),
   }))
   return inOrder(
     complete,

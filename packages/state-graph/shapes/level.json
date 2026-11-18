@@ -41,10 +41,7 @@
     },
     "carry": {
       "type": "level",
-      "about": {
-        "zh": "第一个任务从这道先修关保存的电路板开始",
-        "en": "The first task starts from the board saved in this prerequisite level"
-      },
+      "about": "@shape.level.fields.carry.about",
       "optional": true
     },
     "debrief": {

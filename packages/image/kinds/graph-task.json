@@ -21,7 +21,7 @@
     "inputDescriptions": {
       "type": "map",
       "of": { "type": "text" },
-      "about": { "zh": "输入元件的说明，按输入名填写", "en": "descriptions of input parts, keyed by input name" },
+      "about": "@kind.graph-task.fields.inputDescriptions.about",
       "optional": true
     },
     "outputs": { "type": "list", "of": { "type": "str" }, "optional": true },
@@ -33,10 +33,7 @@
         "out": { "type": "ref", "kind": "view", "optional": true },
         "mid": { "type": "ref", "kind": "view", "optional": true }
       },
-      "about": {
-        "zh": "输入、输出、中间元件默认的画法",
-        "en": "how the inputs, the outputs and the parts between are drawn at first"
-      },
+      "about": "@kind.graph-task.fields.views.about",
       "optional": true
     },
     "check": {
@@ -45,25 +42,19 @@
         "tolerance": { "type": "num", "optional": true },
         "mismatches": { "type": "int", "min": 0, "optional": true }
       },
-      "about": {
-        "zh": "一格差多少算对（tolerance），最多几格不对（mismatches）",
-        "en": "how far a cell may be off (tolerance), how many cells may be wrong (mismatches)"
-      },
+      "about": "@kind.graph-task.fields.check.about",
       "optional": true
     },
     "constraint": { "type": "call", "kind": "constraint", "optional": true },
     "trainRate": {
       "type": "num",
-      "about": { "zh": "训练一步走多远", "en": "how far one training step goes" },
+      "about": "@kind.graph-task.fields.trainRate.about",
       "optional": true
     },
     "trainRates": {
       "type": "list",
       "of": { "type": "num" },
-      "about": {
-        "zh": "能选的学习率（选了就不再回退步长）",
-        "en": "the learning rates to choose from (a step is then taken as it is)"
-      },
+      "about": "@kind.graph-task.fields.trainRates.about",
       "optional": true
     },
     "solution": {
@@ -79,7 +70,7 @@
       "of": {
         "type": "board"
       },
-      "about": { "zh": "也必须失败的电路", "en": "boards that must fail too" },
+      "about": "@kind.graph-task.fields.alsoFails.about",
       "optional": true
     }
   },

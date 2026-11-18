@@ -2,5 +2,23 @@
   "kind.entry.name": "Entries",
   "kind.section.name": "Encyclopedia sections",
   "package.desc": "Provides grouped and cross-linked reference entries that unlock with progress.",
-  "package.title": "Encyclopedia"
+  "package.title": "Encyclopedia",
+  "ui": {
+    "其它": "Other",
+    "加入": "Add",
+    "在百科里看 {name}": "See {name} in the encyclopedia",
+    "按 JSON merge patch 改一条百科的几个字段": "change fields of an encyclopedia entry by a JSON merge patch",
+    "新增 {unread} 条": "{unread} new",
+    "新的分组": "New section",
+    "新的分组 ⟦studio-editor⟧": "New section",
+    "查找词条": "Find an entry",
+    "标签": "Tags",
+    "百科": "Encyclopedia",
+    "百科{value}": "Encyclopedia{value}",
+    "百科分组 ⟦studio-editor⟧": "Encyclopedia sections",
+    "相关词条": "See also",
+    "第 {value} 章 · {value2}": "Chapter {value} · {value2}",
+    "词条": "Entries",
+    "词条 ⟦studio-editor⟧": "Entries"
+  }
 }

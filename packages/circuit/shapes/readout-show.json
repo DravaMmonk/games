@@ -25,8 +25,5 @@
       "optional": true
     }
   },
-  "about": {
-    "zh": "由设置算出的读数",
-    "en": "a reading worked out from the settings"
-  }
+  "about": "@shape.readout-show.about"
 }

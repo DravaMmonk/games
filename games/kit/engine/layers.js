@@ -6,7 +6,7 @@ import { tagKey, kernelTags } from './tag-identity.js'
 import { kindSchemas } from './plugin-kinds.js'
 import { expandNames, fullName, OBJECT_KINDS } from './names.js'
 import { OBJECT_SCHEMAS } from './objects.js'
-import { catalogReader, sourceValue } from './catalogs.js'
+import { catalogReader, declarationReader, sourceValue } from './catalogs.js'
 
 export const folders = { level: 'levels', tag: 'tags', relation: 'relations', chapter: 'chapters', shape: 'shapes' }
 export const kindForFolder = Object.fromEntries(Object.entries(folders).map(([kind, folder]) => [folder, kind]))
@@ -111,6 +111,7 @@ export function composeLayers(layers, schemas) {
     const { qualify } = contextFor(layer, layers, schemas)
     const words = (text) => qualify({ en: text }, { type: 'text' }).en
     for (const [lang, entries] of Object.entries(layer.catalogs ?? {})) for (const [key, text] of Object.entries(entries)) {
+      if (key === 'ui') continue
       if (key.includes('/') && !key.startsWith(`${layer.id}/`)) throw new Error(`${layer.id}: declare foreign wording ${key} in overrides`)
       record('i18n', `${lang}:${fullName(layer.id, key)}`, words(text), layer, false)
     }
@@ -129,6 +130,9 @@ export function composeLayers(layers, schemas) {
     const object = (kind, value, before) => {
       const schema = schemaForKind(kind, schemas, { ...before, ...value })
       const qualified = qualify(value, schema)
+      if (kind === 'kind' || kind === 'shape') {
+        return declarationReader(catalogs, layer.id)(qualified)
+      }
       return readText(sourceValue(qualified), layer.id, schema, schemas)
     }
     if (!layer.id.startsWith('@') && !layer.missing) {

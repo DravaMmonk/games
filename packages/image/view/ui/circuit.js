@@ -1,4 +1,4 @@
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 import { valueText } from 'kernel/view'
 import { isGrid } from 'kernel/view'
 import { checkingTests } from '../../core/engine/graph.js'
@@ -9,11 +9,11 @@ const VIEW_NAMES = { 'image/pixels': 'pixels', 'image/terrain': 'surface', 'imag
 const viewName = (name) => VIEW_NAMES[name]
 
 const IMAGE_VIEWS = {
-  pixels: { label: T('像素', 'Pixels'), hint: T('亮度显示为灰度', 'Brightness as grey level') },
-  surface: { hint: T('亮度显示为高度', 'Brightness as height') },
-  slope: { hint: T('箭头指向变亮最快的方向', 'Arrows point where it brightens fastest') },
-  profile: { hint: T('一行像素的亮度曲线', 'Brightness along one row') },
-  spectrum: { hint: T('各频率分量的强度', 'Strength of each frequency') },
+  pixels: { label: T("像素"), hint: T("亮度显示为灰度") },
+  surface: { hint: T("亮度显示为高度") },
+  slope: { hint: T("箭头指向变亮最快的方向") },
+  profile: { hint: T("一行像素的亮度曲线") },
+  spectrum: { hint: T("各频率分量的强度") },
 }
 
 function viewsOf(task, value, role) {
@@ -39,8 +39,8 @@ function entries({ task, test, run, judged }) {
   const inputs = task.inputLabels ?? (many ? INPUT_LABELS : {})
   const tolerance = (test.check ?? task.check)?.tolerance ?? 0.02
   return [
-    ...Object.entries(test.inputs).map(([name, value]) => rowOf(task, 'in', value, name, inputs[name] ?? (many ? name : T('输入', 'Input')), { given: value })),
-    ...Object.entries(test.expected).map(([name, want]) => rowOf(task, 'out', want, name, task.outputLabels?.[name] ?? T('输出', 'Output'), {
+    ...Object.entries(test.inputs).map(([name, value]) => rowOf(task, 'in', value, name, inputs[name] ?? (many ? name : T("输入")), { given: value })),
+    ...Object.entries(test.expected).map(([name, want]) => rowOf(task, 'out', want, name, task.outputLabels?.[name] ?? T("输出"), {
       want, got: run?.outputs[name], tolerance, difference: true, pass: judged ? run?.checks.find((check) => check.name === name)?.pass : null,
     })),
   ]
@@ -63,7 +63,7 @@ export function imageCircuit(image, cards) {
     valueViews: (task, node, value) => viewsOf(task, value, node.type === 'input' ? 'in' : node.type === 'output' ? 'out' : 'mid'),
     readouts(_task, _board, report) {
       const { score } = report
-      return [{ value: score.nodes, label: T('元件', 'Parts') }, { value: score.cost, label: T('计算量') },
+      return [{ value: score.nodes, label: T("元件") }, { value: score.cost, label: T('计算量') },
         score.learned > 0 && { value: score.learned, label: T('参数') }]
     },
     training: {

@@ -3,7 +3,8 @@ import { useState } from 'react'
 import CanvasEditor from "./CanvasEditor.jsx"
 import DemoBench, { useExampleRun } from "./DemoBench.jsx"
 import SlotBoard from "./SlotBoard.jsx"
-import { L, T } from 'kernel/view'
+import { L } from "kernel/view"
+import { T } from 'kernel/words'
 
 import { definedFaces } from "../parts/faces.jsx"
 import { Show } from 'kernel/view'
@@ -35,7 +36,7 @@ export default function SampleCircuit({ example, defined, phone }) {
   const go = () => complete(tests.map((sample) => run(board, sample)))
   const reset = () => { setBoard(start); clear(); setSelected(null) }
   return <DemoBench
-    tests={tests.map((sample, k) => ({ label: sample.label ?? T(`测试 ${k + 1}`, `Test ${k + 1}`) }))}
+    tests={tests.map((sample, k) => ({ label: sample.label ?? T("测试 {k}", {k: k + 1}) }))}
     test={test} onTest={select} onRun={go} onReset={reset}
     state={status} height={phone ? 'auto' : 340} panel={panel}
   >

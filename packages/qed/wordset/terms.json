@@ -1,12 +1,12 @@
 {
-  "s": "@course.wordSets.terms.s",
-  "plus": "@course.wordSets.terms.plus",
-  "nil": "@course.wordSets.terms.nil",
-  "cons": "@course.wordSets.terms.cons",
-  "app": "@course.wordSets.terms.app",
+  "s": "S {0}",
+  "plus": "{0} + {1}",
+  "nil": "[]",
+  "cons": "{0} :: {1}",
+  "app": "{0} ++ {1}",
   "len": "@course.wordSets.terms.len",
   "pred": "@course.wordSets.terms.pred",
-  "le": "@course.wordSets.terms.le",
+  "le": "{0} ≤ {1}",
   "max": "@course.wordSets.terms.max",
   "tt": "@course.wordSets.terms.tt",
   "ff": "@course.wordSets.terms.ff",
@@ -16,5 +16,5 @@
   "itsum": "@course.wordSets.terms.itsum",
   "ins": "@course.wordSets.terms.ins",
   "sort": "@course.wordSets.terms.sort",
-  "f": "@course.wordSets.terms.f"
+  "f": "f {0}"
 }

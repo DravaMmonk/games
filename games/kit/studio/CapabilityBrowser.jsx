@@ -48,7 +48,7 @@ export function CapabilityList({ capabilities, definitions, namespace, current, 
     return by === 'source' ? ordered.sort((a, b) => a.id.localeCompare(b.id)) : ordered
   }
   return (
-    <nav className="parts-list capabilities" aria-label={tr('能力', 'Capabilities')}>
+    <nav className="parts-list capabilities" aria-label={tr("能力")}>
       <SidebarGrouping scope={namespace} foldKey="folded-capabilities" groupsOf={groupsOf} tools={{ query, onQuery: setQuery }}
         row={({ kind, name, title }) => (
           <ListRow key={capabilityKey(kind, name)} icon={Cpu} title={title} id={name}
@@ -64,18 +64,18 @@ export function CapabilityView({ current, onSource }) {
 }
 
 function CapabilityDetail({ name, it, onSource }) {
-  const ports = (list) => list.map((p) => <li key={p.name}><code>{p.name}</code><span className="capability-type">{p.type}</span>{p.optional && <small>{tr('可不接', 'Optional')}</small>}</li>)
+  const ports = (list) => list.map((p) => <li key={p.name}><code>{p.name}</code><span className="capability-type">{p.type}</span>{p.optional && <small>{tr("可不接")}</small>}</li>)
   return (
     <section className="capability-detail" aria-label={name}>
       <h2><code>{name}</code></h2>
       {it.about && <p>{L(it.about)}</p>}
-      {onSource && <button className="kit-btn is-label" type="button" onClick={onSource}>{tr('在源码中查找', 'Find in source')}</button>}
-      {it.args && <><h3>{tr('输入', 'Inputs')}</h3><ul className="capability-ports">{ports(it.args)}</ul></>}
-      {it.inputs && <><h3>{tr('输入口', 'Inputs')}</h3><ul className="capability-ports">{ports(it.inputs)}</ul></>}
-      {(it.returns || it.outputType) && <><h3>{tr('输出', 'Output')}</h3><p className="capability-type">{it.returns ?? it.outputType}</p></>}
-      {it.outputs && <><h3>{tr('输出口', 'Outputs')}</h3><ul className="capability-ports">{ports(it.outputs)}</ul></>}
-      {it.accepts && <><h3>{tr('也接受', 'Also accepts')}</h3><p className="capability-type">{it.accepts.join(' · ')}</p></>}
-      {it.params?.fields && Object.keys(it.params.fields).length > 0 && <><h3>{tr('参数', 'Parameters')}</h3><SchemaFields fields={it.params.fields} /></>}
+      {onSource && <button className="kit-btn is-label" type="button" onClick={onSource}>{tr("在源码中查找")}</button>}
+      {it.args && <><h3>{tr("输入", {}, "capability-browser")}</h3><ul className="capability-ports">{ports(it.args)}</ul></>}
+      {it.inputs && <><h3>{tr("输入口")}</h3><ul className="capability-ports">{ports(it.inputs)}</ul></>}
+      {(it.returns || it.outputType) && <><h3>{tr("输出")}</h3><p className="capability-type">{it.returns ?? it.outputType}</p></>}
+      {it.outputs && <><h3>{tr("输出口")}</h3><ul className="capability-ports">{ports(it.outputs)}</ul></>}
+      {it.accepts && <><h3>{tr("也接受")}</h3><p className="capability-type">{it.accepts.join(' · ')}</p></>}
+      {it.params?.fields && Object.keys(it.params.fields).length > 0 && <><h3>{tr("参数")}</h3><SchemaFields fields={it.params.fields} /></>}
     </section>
   )
 }
@@ -88,7 +88,7 @@ function SchemaFields({ fields, depth = 0 }) {
         <li key={key}>
           <code>{key}</code>
           <span className="capability-type">{typeOf(field)}</span>
-          {field.optional && <small>{tr('可选', 'Optional')}</small>}
+          {field.optional && <small>{tr("可选", {}, "capability-browser")}</small>}
           {field.about && <span className="capability-about">{L(field.about)}</span>}
           {depth < 2 && field.fields && <SchemaFields fields={field.fields} depth={depth + 1} />}
           {depth < 2 && field.of?.fields && <SchemaFields fields={field.of.fields} depth={depth + 1} />}

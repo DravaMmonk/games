@@ -1,26 +1,27 @@
 import { registeredOperations } from 'kernel'
-import { OperationError, qualifyItems, S, T as t } from 'kernel'
+import { OperationError, qualifyItems, S } from "kernel"
+import { T as t } from 'kernel/words'
 
 const args = (...names) => names.map(name => ({ name, type: 'kernel/any' }))
 const nums = (...names) => names.map(name => ({ name, type: 'kernel/number' }))
 
 function number(value, coerce = false) {
   const n = coerce ? Number(value) : value
-  if (!Number.isFinite(n)) throw new OperationError(t(`${value} 不是数`, `${value} is not a number`))
+  if (!Number.isFinite(n)) throw new OperationError(t("{value} 不是数", {value}))
   return n
 }
 
 const num = value => number(value, true)
 
 export const operations = qualifyItems('scalar', {
-  add: { about: t('a + b'), args: nums('a', 'b'), returns: 'kernel/number', params: S.obj({}), symmetric: true, run: ([a, b]) => number(a) + number(b) },
-  sub: { about: t('a − b'), args: nums('a', 'b'), returns: 'kernel/number', params: S.obj({}), run: ([a, b]) => number(a) - number(b) },
-  constant: { about: t('设置中的常量', 'The configured constant'), args: [], returns: 'kernel/number', params: { type: 'obj', fields: { value: { type: 'num', default: 0 } } }, run: (_args, { value }) => value },
+  add: { about: 'a + b', args: nums('a', 'b'), returns: 'kernel/number', params: S.obj({}), symmetric: true, run: ([a, b]) => number(a) + number(b) },
+  sub: { about: 'a − b', args: nums('a', 'b'), returns: 'kernel/number', params: S.obj({}), run: ([a, b]) => number(a) - number(b) },
+  constant: { about: t("设置中的常量"), args: [], returns: 'kernel/number', params: { type: 'obj', fields: { value: { type: 'num', default: 0 } } }, run: (_args, { value }) => value },
   zero: { args: [], returns: 'kernel/number', run: () => 0 },
-  lt: { about: t('a < b'), args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) < num(b) },
-  le: { about: t('a ≤ b'), args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) <= num(b) },
-  gt: { about: t('a > b'), args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) > num(b) },
-  ge: { about: t('a ≥ b'), args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) >= num(b) },
+  lt: { about: 'a < b', args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) < num(b) },
+  le: { about: 'a ≤ b', args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) <= num(b) },
+  gt: { about: 'a > b', args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) > num(b) },
+  ge: { about: 'a ≥ b', args: nums('a', 'b'), returns: 'kernel/boolean', run: ([a, b]) => num(a) >= num(b) },
   plus: { about: t('两数之和'), args: nums('a', 'b'), returns: 'kernel/number', run: ([a, b]) => num(a) + num(b) },
   minus: { about: t('两数之差'), args: nums('a', 'b'), returns: 'kernel/number', run: ([a, b]) => num(a) - num(b) },
   times: { about: t('两数之积'), args: nums('a', 'b'), returns: 'kernel/number', run: ([a, b]) => num(a) * num(b) },

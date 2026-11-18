@@ -29,9 +29,9 @@
             "choices": [
               {
                 "value": "cross",
-                "label": "@level.5-1.tasks.5-1-experiment.bench.knobs.query.choices.0.label"
+                "label": "X"
               },
-              { "value": "ring", "label": "@level.5-1.tasks.5-1-experiment.bench.knobs.query.choices.1.label" }
+              { "value": "ring", "label": "O" }
             ],
             "start": "cross"
           },

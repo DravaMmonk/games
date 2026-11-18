@@ -1,7 +1,4 @@
 {
   "type": "int",
-  "about": {
-    "zh": "噪点的种子，0 是没有噪点",
-    "en": "the noise’s seed, 0 for none"
-  }
+  "about": "@shape.seed.about"
 }

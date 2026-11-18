@@ -15,7 +15,7 @@ import { asImp, fn, parse, same, show, subst } from './formula.js'
 import { KERNEL, assumption, depthFirst, rule } from './tactics.js'
 import { ruleBookOf, runTactic } from './machine.js'
 import { cases } from 'kernel'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 
 /** The names of a script's facts, by row: h1 … for have, a1 … for assume, o1 … for obtain (a show ends its block). */
@@ -88,7 +88,7 @@ export function proves(level, method, goal, hyps) {
   }
   if (method === 'auto' || method === 'metis') {
     const out = runTactic(level, method, s)
-    return done(out) ? '' : out.error ?? T(`${method} 没有证完`, `${method} did not finish`)
+    return done(out) ? '' : out.error ?? T("{method} 没有证完", {method})
   }
   const simpWith = (x, extra = []) => {
     const out = runTactic(level, 'simp', x, [...(level.simp ?? []), ...extra])
@@ -123,7 +123,7 @@ export function checkScript(level, rows) {
   const read = (text) => parse(text, { consts: [...consts, ...things] })
   const env = new Map(Object.entries(level.premises ?? {}).map(([n, f]) => [n, parse(f, { consts })]))
   let k = 0
-  const fail = (i, zh, en) => { reasons[i] = T(zh, en); return null }
+  const fail = (i, text) => { reasons[i] = text; return null }
   // A block: rows from k on, proving `target`; its result is the block's own conclusion. Returns true when proved.
   const block = (target, scope) => {
     let want = target
@@ -131,42 +131,42 @@ export function checkScript(level, rows) {
       const i = k++
       const r = rows[i]
       const facts = (r.using ?? []).map((n) => scope.get(n))
-      if ((r.using ?? []).some((n) => !scope.has(n))) return fail(i, 'using 里有一个名字还不在这里', 'A name used is not available here')
+      if ((r.using ?? []).some((n) => !scope.has(n))) return fail(i, T("using 里有一个名字还不在这里"))
       let stmt = null
       if (r.k !== 'fix') {
-        if (!r.stmt) return fail(i, '还没选这一句', 'No sentence chosen yet')
-        try { stmt = read(r.stmt) } catch { return fail(i, '这一句读不出来', 'This sentence cannot be read') }
+        if (!r.stmt) return fail(i, T("还没选这一句"))
+        try { stmt = read(r.stmt) } catch { return fail(i, T("这一句读不出来")) }
       }
       if (r.k === 'assume') {
         const imp = asImp(want)
-        if (imp.op !== '→' || !same(imp.a, stmt)) return fail(i, 'assume 只能假设要证的「若…则…」的前一半', 'assume can only assume the “if” part of what is to be proved')
+        if (imp.op !== '→' || !same(imp.a, stmt)) return fail(i, T("assume 只能假设要证的「若…则…」的前一半"))
         scope = new Map([...scope, [names[i], stmt]])
         want = imp.b
         continue
       }
       if (r.k === 'fix') {
-        if (want.op !== '∀') return fail(i, 'fix 只能用在要证「对所有」的时候', 'fix only works when “for all” is to be proved')
-        if (!r.thing || [...scope.values(), want].some((f) => JSON.stringify(f).includes(`"f":"${r.thing}"`))) return fail(i, '取一个这里还没用过的名字', 'Pick a name not used here yet')
+        if (want.op !== '∀') return fail(i, T("fix 只能用在要证「对所有」的时候"))
+        if (!r.thing || [...scope.values(), want].some((f) => JSON.stringify(f).includes(`"f":"${r.thing}"`))) return fail(i, T("取一个这里还没用过的名字"))
         things.add(r.thing)
         want = subst(want.body, want.v, fn(r.thing))
         continue
       }
       if (r.k === 'obtain') {
         const e = facts[0]
-        if (!e || e.op !== '∃') return fail(i, 'obtain 要 using 一句「存在」', 'obtain must use a “there is”')
-        if (!r.thing || [...scope.values(), want].some((f) => JSON.stringify(f).includes(`"f":"${r.thing}"`))) return fail(i, '取一个这里还没用过的名字', 'Pick a name not used here yet')
+        if (!e || e.op !== '∃') return fail(i, T("obtain 要 using 一句「存在」"))
+        if (!r.thing || [...scope.values(), want].some((f) => JSON.stringify(f).includes(`"f":"${r.thing}"`))) return fail(i, T("取一个这里还没用过的名字"))
         things.add(r.thing)
-        if (!same(subst(e.body, e.v, fn(r.thing)), read(r.stmt))) return fail(i, `这一句不是那句「存在」说的 ${r.thing}`, `This is not what the “there is” says of ${r.thing}`)
+        if (!same(subst(e.body, e.v, fn(r.thing)), read(r.stmt))) return fail(i, T("这一句不是那句「存在」说的 {value}", { value: r.thing }))
         scope = new Map([...scope, [names[i], read(r.stmt)]])
         continue
       }
       // have / show: by a block or by a method.
-      if (r.k === 'show' && !same(stmt, want)) return fail(i, `这里要 show 的是「${show(want)}」`, `What is to be shown here is “${show(want)}”`)
+      if (r.k === 'show' && !same(stmt, want)) return fail(i, T("这里要 show 的是「{value}」", { value: show(want) }))
       if (r.by === 'proof') {
         if (!block(stmt, scope)) return null
       } else {
         const why = proves(level, r.by ?? '', stmt, facts)
-        if (why) return fail(i, why.zh, why.en)
+        if (why) return fail(i, why)
       }
       // A show ends the block. (A thing fix or obtain took is new, so what the block concludes cannot mention it.)
       if (r.k === 'show') return true

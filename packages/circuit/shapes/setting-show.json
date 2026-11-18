@@ -20,8 +20,5 @@
       "optional": true
     }
   },
-  "about": {
-    "zh": "一个设置：控件，或此刻的值的字",
-    "en": "one setting: its control, or the words for its value"
-  }
+  "about": "@shape.setting-show.about"
 }

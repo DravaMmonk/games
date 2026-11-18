@@ -43,10 +43,7 @@
               "type": "num"
             }
           },
-          "about": {
-            "zh": "一个能过关的节奏",
-            "en": "a rhythm that wins"
-          }
+          "about": "@shape.bench-gan.fields.setup.fields.good.about"
         }
       }
     },

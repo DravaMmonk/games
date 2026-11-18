@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { createElement, useMemo } from 'react'
 import WorkshopPlay from './WorkshopPlay.jsx'
 import { circuitScreen } from 'circuit/view'
@@ -64,9 +65,9 @@ export default function imageGame(content, image = imageWorks(content), { kernel
     intro: (level) => image.intros[level.id],
     IntroFigure: (props) => ui['image/introduction']({ ...props, types }),
     kinds: playKinds(plays, { imageCircuit: ui['image/circuit'](image, cards), parameters, probe: ui['image/probe'] }, {
-      'image/graph': { icon: Workflow, label: { zh: '搭电路', en: 'Build a circuit' } },
-      'image/board': { icon: FlaskConical, label: { zh: '机关台', en: 'Bench' } },
-      'image/probe': { icon: FlaskConical, label: { zh: '机关台', en: 'Bench' } },
+      'image/graph': { icon: Workflow, label: catalogText("搭电路") },
+      'image/board': { icon: FlaskConical, label: catalogText("机关台") },
+      'image/probe': { icon: FlaskConical, label: catalogText("机关台") },
     }, { circuit: circuitScreen, workshop: (play, prepare) => function Exercise(screen) { const resource = useMemo(() => prepare(screen.level.source, screen), [screen.level.source]); return createElement(WorkshopPlay, { screen, resource, play }) } }),
     unlocked: (level) => [...shownUnlocks(level).map(unlockOf), ...course.awards({ id: level.id }).map(id => {
       const stage = course.stages.get(id)

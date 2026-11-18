@@ -14,10 +14,7 @@
     },
     "seed": {
       "type": "int",
-      "about": {
-        "zh": "颗粒的种子",
-        "en": "the grain’s seed"
-      },
+      "about": "@shape.shelf-test.fields.seed.about",
       "optional": true
     }
   }

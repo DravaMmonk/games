@@ -62,7 +62,7 @@ export default function Review({ ops, redo, result, shown, reviewed, watch, why,
           </div>
           {shown.migration && (
             <section className="review-block">
-              <h2>{tr(`存档迁移 v${shown.migration.version}`, `Save migration v${shown.migration.version}`)}</h2>
+              <h2>{tr("存档迁移 v{version}", {version: shown.migration.version})}</h2>
               <ul className="review-migration">{shown.migration.ops.map((m, k) => <li key={k}><code>{Object.keys(m)[0]}</code> {JSON.stringify(Object.values(m)[0])}</li>)}</ul>
             </section>
           )}
@@ -85,7 +85,7 @@ function FileDiff({ change, onSelect }) {
   const [lines, setLines] = useState(false)
   const json = change.file.endsWith('.json')
   const level = /\/levels\/(.+)\.json$/.exec(change.file)?.[1]
-  const state = change.before === null ? tr('新文件') : change.after === null ? tr('删除', 'removed') : null
+  const state = change.before === null ? tr('新文件') : change.after === null ? tr("删除", {}, "review") : null
   return (
     <section className="review-block">
       <h2>

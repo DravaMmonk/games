@@ -114,10 +114,7 @@
                 "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
               }
             },
-            "about": {
-              "zh": "把这个输入存进设置 register 说的寄存器，下一拍起读得到（held）；存的件不写 compute",
-              "en": "keeps this input in the register its setting `register` names, readable from the next tick on (held); a keeping part writes no compute"
-            },
+            "about": "@kind.part.schema.of.0.fields.keeps.about",
             "optional": true
           },
           "op": {
@@ -143,10 +140,7 @@
               "give",
               "pass"
             ],
-            "about": {
-              "zh": "give：任何输入是「—」就给「—」（默认）；pass：交给运算",
-              "en": "give: 「—」 at any input gives 「—」 (default); pass: the resources see it"
-            },
+            "about": "@kind.part.schema.of.0.fields.nulls.about",
             "optional": true
           }
         }
@@ -199,10 +193,7 @@
                 },
                 "label": {
                   "type": "str",
-                  "about": {
-                    "zh": "这种形态在元件上叫什么",
-                    "en": "what this shape is called on the part"
-                  },
+                  "about": "@kind.part.schema.of.1.fields.inside.of.fields.label.about",
                   "optional": true
                 },
                 "reference": {
@@ -317,10 +308,7 @@
                       "optional": true
                     }
                   },
-                  "about": {
-                    "zh": "可独立读取的参考作品和接口",
-                    "en": "A standalone reference work and its interface"
-                  }
+                  "about": "@kind.part.schema.of.1.fields.inside.of.fields.reference.about"
                 }
               }
             },
@@ -329,10 +317,7 @@
           "card": {
             "type": "ref",
             "kind": "operation",
-            "about": {
-              "zh": "不跑内部的作品，照这个引擎资源跑（它能做的比证出的更多）；内部仍说它是什么、在哪里得到",
-              "en": "runs this engine resource instead of the work inside (it can do more than what was proved); the inside still says what the part is and where it is earned"
-            },
+            "about": "@kind.part.schema.of.1.fields.card.about",
             "optional": true
           },
           "settings": {

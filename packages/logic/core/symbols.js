@@ -1,6 +1,10 @@
 import { unasciiOf } from './formula.js'
 
-import marks from '../capabilities/mark.json' with { type: 'json' }
+import marksSource from '../capabilities/mark.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const marks = readCopy(marksSource)
 
 const stripOrder = Object.entries(marks.items).sort(([, a], [, b]) => a.order - b.order).map(([name]) => `logic/${name}`)
 export const symbolFor = Object.fromEntries(Object.entries(marks.items).map(([name, { symbol }]) => [`logic/${name}`, symbol]))

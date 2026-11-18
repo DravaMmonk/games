@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 
 
 function LossCurve({ losses }) {
@@ -20,8 +20,8 @@ function LossCurve({ losses }) {
         {last.check !== null && <polyline className="loss-check" points={line('check')} />}
       </svg>
       <figcaption>
-        {tr('训练误差', 'Training loss')} {last.train.toExponential(1)}
-        {last.check !== null && <> · {tr('新样本误差', 'New-sample loss')} {last.check.toExponential(1)}</>}
+        {tr("训练误差")} {last.train.toExponential(1)}
+        {last.check !== null && <> · {tr("新样本误差")} {last.check.toExponential(1)}</>}
         <span>{tr('对数刻度')}</span>
       </figcaption>
     </figure>

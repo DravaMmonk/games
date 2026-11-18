@@ -72,3 +72,4 @@
 {"seq":72,"at":"2026-11-18T07:54:54.298Z","why":"Record the Step 22 package declarations used by the game","adopt":true,"files":[{"file":"games/qed/capabilities/display.json","after":"3c80441ee4ee2cbd"}]}
 {"seq":73,"at":"2026-11-18T08:03:40.586Z","why":"Record the final shared shape declarations","adopt":true,"files":[]}
 {"seq":74,"at":"2026-11-18T08:34:29.141Z","why":"Adopt step 23 package namespace references","adopt":true,"files":[{"file":"games/qed/game.json","after":"3333e2de90cf9f64"}]}
+{"seq":75,"at":"2026-11-18T09:10:45.106Z","why":"Move interface and declaration copy into owned language catalogs","adopt":true,"files":[{"file":"games/qed/capabilities/display.json","after":null}]}

@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, ChevronDown, Lightbulb, Lock } from 'lucide-react'
 import { L, tr } from './i18n.js'
@@ -39,7 +40,7 @@ export function PhonePage({ rootRef, scrollRef, onScroll, className = '', brief,
         {taskNav}
         {brief && <TaskCard>{brief}</TaskCard>}
         {children}
-        {results && <section ref={box} className="pl-results" aria-label={tr('结果', 'Results')}>{results}</section>}
+        {results && <section ref={box} className="pl-results" aria-label={tr("结果")}>{results}</section>}
       </div>
       {tools}
       {dock && <footer className="run-foot"><RunResults.Provider value={shown}>{dock}</RunResults.Provider></footer>}
@@ -90,10 +91,10 @@ export function Brief({ game, level, sections = TASK_BOARD_SECTIONS, text, tip, 
       {sections.includes('hints') && (hints.length > 0 || edit) && (
         <div className="hint-block">
           {hints.slice(0, open).map((h, k) => <Text key={k} className="hint" text={h} mark={mark(hintAt(k))} />)}
-          {edit ? <AddMark at="hint" label={{ zh: '提示', en: 'a hint' }} /> : (
+          {edit ? <AddMark at="hint" label={catalogText("提示", {}, "layout")} /> : (
             <button className="hint-toggle" onClick={() => setShown(more ? shown + 1 : 0)} aria-expanded={shown > 0}>
               <Lightbulb size={14} />
-              {more ? (shown ? tr(`下一条提示（${shown + 1}/${hints.length}）`, `Next hint (${shown + 1}/${hints.length})`) : tr('提示')) : tr('收起提示')}
+              {more ? (shown ? tr("下一条提示（{shown}/{length}）", {shown: shown + 1, length: hints.length}) : tr('提示')) : tr('收起提示')}
             </button>
           )}
         </div>
@@ -111,7 +112,7 @@ export function TaskNavigation({ level }) {
   const steps = level.steps && (edit || level.steps.names.length > 1)
   if (!skip && !steps) return null
   return (
-    <nav className="task-navigation" aria-label={tr('任务导航', 'Task navigation')}>
+    <nav className="task-navigation" aria-label={tr("任务导航")}>
       {skip && <button type="button" className="brief-skip" onClick={level.skipLevel}>{tr('跳过此关')}</button>}
       {steps && <TaskSteps steps={level.steps} />}
     </nav>
@@ -135,13 +136,13 @@ function TaskSteps({ steps }) {
           <li key={k}>
             <button type="button" {...(k === steps.at ? mark('step') : {})} className={`${k === steps.at ? 'is-on' : ''} ${done ? 'is-done' : ''}`} disabled={!open} aria-current={k === steps.at ? 'step' : undefined} onClick={() => k !== steps.at && steps.go(k)} title={open ? undefined : tr('请先完成前一个任务')}>
               <i>{done ? <Check size={12} strokeWidth={2.6} /> : open ? k + 1 : <Lock size={11} strokeWidth={2.2} />}</i>
-              <span>{name ? L(name) : tr(`任务 ${k + 1}`, `Task ${k + 1}`)}{steps.optional?.[k] && ` · ${tr('可选')}`}</span>
+              <span>{name ? L(name) : tr("任务 {k}", {k: k + 1})}{steps.optional?.[k] && ` · ${tr('可选')}`}</span>
             </button>
           </li>
         )
       })}
       {!edit && steps.optional?.[steps.at] && !steps.passed[steps.at] && steps.at + 1 < steps.names.length && steps.open[steps.at + 1] && <li><button type="button" onClick={() => steps.skip(steps.at)}>{tr('跳过此任务')}</button></li>}
-      {edit && <li><AddMark at="tasks" scope="level" label={{ zh: '任务', en: 'a task' }} /></li>}
+      {edit && <li><AddMark at="tasks" scope="level" label={catalogText("任务", {}, "layout")} /></li>}
     </ol>
   )
 }

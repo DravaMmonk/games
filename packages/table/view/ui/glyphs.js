@@ -1,3 +1,4 @@
+import { punctuation } from 'kernel'
 // Symbols for facts about the robot's cell, drawn in SVG. Each fact has its own (a fact that means the same thing in
 // several worlds, 是起点 say, keeps one), so a fact's output can go by its symbol alone.
 
@@ -13,7 +14,7 @@ export const ICONS = {
   ground: '<path class="g-ink" d="M12 27H36M15 27V22H21V17H27V12H33"/><path class="g-mark" d="M12 27H21V22H15Z"/>',
   bolt: '<path class="g-mark" d="M27 4L17 18H24L21.5 28L32 13H25Z"/>',
   eq: '<rect class="g-cell" x="5" y="7" width="14" height="18" rx="2.5"/><rect class="g-cell" x="29" y="7" width="14" height="18" rx="2.5"/><text class="g-tx" x="12" y="20">A</text><text class="g-tx" x="36" y="20">A</text><path class="g-mark-o" d="M21 13.5H27M21 18.5H27"/>',
-  get coin() { return `<circle class="g-mark" cx="24" cy="16" r="11"/><text class="g-tx g-dark" x="24" y="20.5">${tr('¥', '$')}</text>`; },
+  get coin() { return `<circle class="g-mark" cx="24" cy="16" r="11"/><text class="g-tx g-dark" x="24" y="20.5">${punctuation("¥")}</text>`; },
   layers: '<path class="g-ink" d="M24 5L37 11L24 17L11 11Z"/><path class="g-mark" d="M11 16L24 22L37 16M11 21L24 27L37 21"/>',
   gem: '<path class="g-mark" d="M16 11L20 6H28L32 11L24 27Z"/><path class="g-gem" d="M16 11H32M20 6L24 27L28 6"/>',
   many: '<path class="g-mark-o" d="M24 16C21 10 13 10 13 16C13 22 21 22 24 16C27 10 35 10 35 16C35 22 27 22 24 16Z"/>',
@@ -55,9 +56,9 @@ export const ICONS = {
   // 这个词这么标: a tag.
   tag: '<path class="g-mark" d="M9 9H30L38.5 16L30 23H9Z"/><circle cx="30" cy="16" r="2.2" fill="#1E1606"/>',
   // 跟在名词 / 动词 / 形容词后: a word of that kind, then this one.
-  get afterN() { return `<rect class="g-cell" x="2" y="5" width="22" height="22" rx="3.5"/><text class="g-tx" x="13" y="21.5" style="font-size:15px">${tr('名', 'N')}</text><path class="g-mark-o" d="M28 16H44M39.5 11.5L44 16L39.5 20.5"/>`; },
-  get afterV() { return `<rect class="g-cell" x="2" y="5" width="22" height="22" rx="3.5"/><text class="g-tx" x="13" y="21.5" style="font-size:15px">${tr('动', 'V')}</text><path class="g-mark-o" d="M28 16H44M39.5 11.5L44 16L39.5 20.5"/>`; },
-  get afterA() { return `<rect class="g-cell" x="2" y="5" width="22" height="22" rx="3.5"/><text class="g-tx" x="13" y="21.5" style="font-size:15px">${tr('形', 'A')}</text><path class="g-mark-o" d="M28 16H44M39.5 11.5L44 16L39.5 20.5"/>`; },
+  get afterN() { return `<rect class="g-cell" x="2" y="5" width="22" height="22" rx="3.5"/><text class="g-tx" x="13" y="21.5" style="font-size:15px">${tr("名")}</text><path class="g-mark-o" d="M28 16H44M39.5 11.5L44 16L39.5 20.5"/>`; },
+  get afterV() { return `<rect class="g-cell" x="2" y="5" width="22" height="22" rx="3.5"/><text class="g-tx" x="13" y="21.5" style="font-size:15px">${tr("动")}</text><path class="g-mark-o" d="M28 16H44M39.5 11.5L44 16L39.5 20.5"/>`; },
+  get afterA() { return `<rect class="g-cell" x="2" y="5" width="22" height="22" rx="3.5"/><text class="g-tx" x="13" y="21.5" style="font-size:15px">${tr("形")}</text><path class="g-mark-o" d="M28 16H44M39.5 11.5L44 16L39.5 20.5"/>`; },
   // 图里的缝: a pixel's energy.
   pixel: '<rect class="g-cell" x="12" y="5" width="22" height="22" rx="2"/><path class="g-ink" d="M12 16H34M23 5V27"/><path class="g-mark" d="M30 3L22 14H27.5L25 26L34 12H28.5Z"/>',
   // 图里的缝: the picture's top row.

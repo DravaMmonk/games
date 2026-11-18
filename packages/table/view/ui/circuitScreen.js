@@ -1,4 +1,4 @@
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 import { fitted } from '../../core/model/board.js'
 import { CARDS, PRIMITIVES } from '../../core/model/parts.js'
 import { signal } from '../../core/model/format.js'
@@ -9,7 +9,7 @@ import { withDesktopAnchors } from './board.js'
 import { freshBoard, hasSensors } from './circuitCourse.js'
 import { useRobotWorld } from './useRobotWorld.js'
 
-const fixedCards = { ...CARDS, out: { name: T('结果', 'Result') }, port: { name: T('输入', 'Input') } }
+const fixedCards = { ...CARDS, out: { name: T("结果") }, port: { name: T("输入") } }
 const cards = Object.fromEntries(Object.entries({ ...PRIMITIVES, ...fixedCards }).map(([type, card]) => [
   type, { ...card, family: 'sg', icon: lookIcon(type) },
 ]))
@@ -25,7 +25,7 @@ export const robotScreenFor = ({ model }) => ({
     const values = model.valueOptions(node.type, task)
     return values ? [{
       key: 'value',
-      label: T('数值', 'Value'),
+      label: T("数值"),
       options: values.map((v) => [v, String(v)]),
       value: node.params?.value ?? model.valueDefault(node.type),
     }] : []

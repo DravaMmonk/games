@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { linePath, plotY } from 'kernel/view'
 import { clientToSvg } from 'kernel/view'
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { Rich } from './Rich.jsx'
 
 // A line plot over one width (u from 0 to 1). `lines`: [{ curve, kind, label, steps }] where curve is a function of u
@@ -53,7 +53,7 @@ export default function Plot({ lines = [], dots = [], width = 600, height = 200,
         ...dots.filter((d) => at.sample !== undefined && Math.abs(d.u - at.u) < 1e-9).map((d) => ({ kind: d.kind === 'ring' ? 'ring' : 'sample', label: d.label ?? (d.kind === 'ring' ? tr('参照点') : tr('采样值')), v: d.v, dot: true })),
       ]
     : []
-  const where = !at ? '' : at.sample !== undefined ? tr(`第 ${at.sample} 个点 / ${at.of}`, `point ${at.sample} / ${at.of}`) : at.pixel !== undefined ? `x = ${at.pixel}` : `x = ${(at.u * span).toFixed(1)} px`
+  const where = !at ? '' : at.sample !== undefined ? tr("第 {sample} 个点 / {of}", {sample: at.sample, of: at.of}) : at.pixel !== undefined ? `x = ${at.pixel}` : `x = ${(at.u * span).toFixed(1)} px`
 
   return (
     <div className="bench-plot-wrap">

@@ -49,7 +49,7 @@ class DraftPreview extends Component {
 
   render() {
     return this.state.failed
-      ? <p className="board-loading">{tr('当前配置无法预览。请在配置区检查任务字段。', 'This configuration cannot be previewed. Check the task fields in the inspector.')}</p>
+      ? <p className="board-loading">{tr("当前配置无法预览。请在配置区检查任务字段。")}</p>
       : this.props.children
   }
 }

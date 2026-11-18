@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // Small floating-point grayscale and RGB images and the test-image library every level draws from.
 // Values are nominally 0 (black) … 1 (white); edge and difference images may go negative.
 
@@ -113,7 +114,7 @@ export function compare(actual, expected, { tolerance = 0.02, mismatches = 0 } =
   if (!sameGridShape(actual, expected)) {
     const reason = actual
       ? { zh: `图像尺寸或通道数不符：应为 ${expected.w}×${expected.h}、${expected.c ?? 1} 通道，实际 ${actual.w}×${actual.h}、${actual.c ?? 1} 通道`, en: `Image size or channel count differs: expected ${expected.w}×${expected.h}, ${expected.c ?? 1} channels; got ${actual.w}×${actual.h}, ${actual.c ?? 1} channels` }
-      : { zh: '输出未连接', en: 'Output not connected' }
+      : catalogText("输出未连接")
     return { pass: false, reason, worst: Infinity, wrong: Infinity }
   }
   let wrong = 0

@@ -7,6 +7,7 @@ import { find, sectionOf, shapeAt } from './schema.js'
 import { meaningsOf } from './kind-meanings.js'
 import { contentSchemas } from './content.js'
 import { isText } from './i18n.js'
+import { getAt } from './ops/edit.js'
 import { canonicalJson } from './json-value.js'
 
 const PUZZLE = ['puzzle', 'tests']
@@ -31,14 +32,28 @@ function hash(text) {
 
 /** Each task's stamp and its level, keyed by task ID. Packages may contribute puzzle fields derived from their own objects. */
 export function taskStamps(vocabulary, content) {
-  const localizedFields = (schema, value) => new Set(find(schema, value, 'text', { vocabulary }).map((field) => field.value).filter(isText))
-  const plain = (value, texts) => JSON.stringify(value, (_k, v) => (texts.has(v) ? undefined : v))
+  const omittedFields = (schema, value, omit = () => false) => {
+    const localized = new Set(), neutral = new Map()
+    for (const field of find(schema, value, 'text', { vocabulary })) {
+      if (isText(field.value)) localized.add(field.value)
+      else if (omit(field)) {
+        const parent = getAt(value, field.path.slice(0, -1))
+        if (!neutral.has(parent)) neutral.set(parent, new Set())
+        neutral.get(parent).add(String(field.path.at(-1)))
+      }
+    }
+    return { localized, neutral }
+  }
+  const plain = (value, { localized, neutral }) => JSON.stringify(value, function (key, child) {
+    return localized.has(child) || neutral.get(this)?.has(key) ? undefined : child
+  })
   const semantics = contentSchemas.get(content) ?? vocabulary
-  const dependencies = meaningsOf(semantics).map(meaning => meaning.stamp?.({ content, plain: (value, schema) => plain(value, localizedFields(schema, value)) }) ?? '').join('')
+  const meanings = meaningsOf(semantics)
+  const dependencies = meanings.map(meaning => meaning.stamp?.({ content, plain: (value, schema, omit) => plain(value, omittedFields(schema, value, omit)) }) ?? '').join('')
   return Object.fromEntries(content.levels.flatMap((level) => {
-    const texts = localizedFields(vocabulary.level, level)
+    const texts = omittedFields(vocabulary.level, level, field => meanings.some(meaning => meaning.stampText?.(field)))
     const puzzle = puzzleOf(vocabulary.level, level, vocabulary)
-    const contributed = Object.assign({}, ...meaningsOf(semantics).map(meaning => meaning.levelPuzzle?.({ content, level, puzzle })))
+    const contributed = Object.assign({}, ...meanings.map(meaning => meaning.levelPuzzle?.({ content, level, puzzle })))
     const own = plain({ ...puzzle, ...contributed }, texts)
     return level.tasks.map((task, k) => [task.id, { level: level.id, stamp: hash(`${own}${plain(puzzleOf(shapeAt(vocabulary.level, level, ['tasks', k], { vocabulary }), task, vocabulary), texts)}${dependencies}`) }])
   }))

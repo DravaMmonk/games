@@ -3,7 +3,7 @@
 // bench model (image/core/bench.js): what it computes from the knobs, for the bench's displays and its goal.
 import { benchRun, limitOf, openKnobs, passingSettings, startValues } from 'image'
 import { aliasOf, cosine, maxDiff, sampleAt, sinusoid, throughSamples } from 'imglib'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 /* ---------- 叠加: 0.5 + Σ aₖ·sin(2π·k·x/N) ---------- */
 
@@ -26,7 +26,7 @@ export const sum = {
         return {
           gap,
           yours, target, row, targetRow,
-          formula: ['0.5', ...used.flatMap(([a, k]) => [' + ', { b: a.toFixed(2) }, `·sin(k=${k})`]), { muted: [' · ', t(`这一行的平均 ${mean.toFixed(3)}`, `row average ${mean.toFixed(3)}`), ' · ', t(`最大误差 ${gap.toFixed(3)}，须不超过 ${tolerance}`, `largest error ${gap.toFixed(3)}, at most ${tolerance}`)] }],
+          formula: ['0.5', ...used.flatMap(([a, k]) => [' + ', { b: a.toFixed(2) }, `·sin(k=${k})`]), { muted: [' · ', t("这一行的平均 {value}", {value: mean.toFixed(3)}), ' · ', t("最大误差 {value}，须不超过 {tolerance}", {value: gap.toFixed(3), tolerance})] }],
         }
       },
     }
@@ -78,7 +78,7 @@ export const probe = {
         const input = s.input ? wavesAt(s.input) : shifted(v.shift)
         const k = s.kind === 'find' || s.kind === 'read' ? v.j : w.k
         const forms = s.kind === 'combine' ? ['cos', 'sin'] : ['cos']
-        const probes = forms.map((form) => ({ name: t(`${form} 探针 · 频率 ${k}`, `${form} probe · frequency ${k}`), f: sinusoid(k, form) }))
+        const probes = forms.map((form) => ({ name: t("{form} 探针 · 频率 {k}", {form, k}), f: sinusoid(k, form) }))
         const products = probes.map(({ f }) => multiplyCurves(input, f))
         const averages = products.map(reading)
         const times = s.kind === 'read' ? v.m : 2
@@ -88,8 +88,8 @@ export const probe = {
           average: averages[0],
           reading: readings[0],
           signal: {
-            lines: [{ curve: input, kind: 'faint', label: t('输入', 'input') }, ...probes.map((p) => ({ curve: p.f, kind: 'seen', label: p.name }))],
-            legend: [{ kind: 'faint', label: t('输入', 'Input') }, { kind: 'seen', label: probes.flatMap((p, i) => (i ? [' · ', p.name] : [p.name])) }],
+            lines: [{ curve: input, kind: 'faint', label: t("输入") }, ...probes.map((p) => ({ curve: p.f, kind: 'seen', label: p.name }))],
+            legend: [{ kind: 'faint', label: t("输入", {}, "waves") }, { kind: 'seen', label: probes.flatMap((p, i) => (i ? [' · ', p.name] : [p.name])) }],
           },
           product: {
             lines: products.flatMap((product, i) => [{ curve: product, kind: 'yours', label: t('乘积') }, { curve: () => averages[i], kind: 'target', label: t('平均') }]),
@@ -131,9 +131,9 @@ export const alias = {
     const faithful = (w, M) => maxDiff(sampleAt(throughSamples(sampleAt(cosine(w), M)), fine), sampleAt(cosine(w), fine)) < 1e-6
     const smooth = (f) => sampleAt(f, fine)
     const dotsOf = (f, n, kind = 'sample') => sampleAt(f, n).map((value, j) => ({ u: j / n, v: value, kind }))
-    const TRUE = t('真实信号', 'true signal')
-    const SEEN = t('采样后看到的信号', 'signal as sampled')
-    const legendOf = (more = []) => [{ kind: 'faint', label: t('真实信号', 'True signal') }, { kind: 'seen', label: t('采样后看到的信号', 'Signal as sampled') }, ...more]
+    const TRUE = t("真实信号")
+    const SEEN = t("采样后看到的信号")
+    const legendOf = (more = []) => [{ kind: 'faint', label: t("真实信号", {}, "waves") }, { kind: 'seen', label: t("采样后看到的信号", {}, "waves") }, ...more]
     const views = {
       k(s, v) {
         const real = cosine({ ...s.reference, k: v })
@@ -143,12 +143,12 @@ export const alias = {
           sampleGap: maxDiff(sampleAt(real, s.samples), sampleAt(cosine(s.reference), s.samples)),
           plot: {
             lines: [{ curve: smooth(real), kind: 'faint', label: TRUE }, { curve: smooth(throughSamples(sampleAt(real, s.samples))), kind: 'seen', label: SEEN }],
-            dots: [...dotsOf(cosine(s.reference), s.samples, 'ring').map((d) => ({ ...d, label: t('k = 3 的采样点', 'sample of k = 3') })), ...dotsOf(real, s.samples)],
-            legend: legendOf([{ kind: 'ring', label: t('k = 3 的采样点', 'Samples of k = 3') }]),
+            dots: [...dotsOf(cosine(s.reference), s.samples, 'ring').map((d) => ({ ...d, label: t("k = 3 的采样点") })), ...dotsOf(real, s.samples)],
+            legend: legendOf([{ kind: 'ring', label: t("k = 3 的采样点", {}, "waves") }]),
           },
-          readout: t(`真实 k = ${v} · 16 个采样点呈现为 k = ${seen}`, `True k = ${v} · 16 points look like k = ${seen}`),
+          readout: t("真实 k = {v} · 16 个采样点呈现为 k = {seen}", {v, seen}),
           status: v === s.reference.k ? t('这是 k = 3 本身，请另选一个频率。') : t('采样点尚未与圆圈重合。'),
-          win: t(`k = ${v} 的采样结果与 k = 3 完全相同：16 − 3 = 13，16 + 3 = 19。`, `k = ${v} gives exactly the same samples as k = 3: 16 − 3 = 13, 16 + 3 = 19.`),
+          win: t("k = {v} 的采样结果与 k = 3 完全相同：16 − 3 = 13，16 + 3 = 19。", {v}),
         }
       },
       M(s, v) {
@@ -159,12 +159,9 @@ export const alias = {
           faithful: ok,
           fewer: faithful(s.wave, v - 1),
           plot: { lines: [{ curve: smooth(real), kind: 'faint', label: TRUE }, { curve: smooth(throughSamples(sampleAt(real, v))), kind: 'seen', label: SEEN }], dots: dotsOf(real, v), legend: legendOf() },
-          readout: t(
-            `M = ${v} · 每个周期 ${(v / s.wave.k).toFixed(1)} 个点 · ${ok ? `呈现为 k = ${s.wave.k}，判断正确` : as === s.wave.k ? '频率看似正确，但振幅和位置都已改变' : `呈现为 k = ${as}，判断错误`}`,
-            `M = ${v} · ${(v / s.wave.k).toFixed(1)} points per cycle · ${ok ? `looks like k = ${s.wave.k}: correct` : as === s.wave.k ? 'the frequency looks right, but the amplitude and position have changed' : `looks like k = ${as}: wrong`}`,
-          ),
+          readout: t("M = {v} · 每个周期 {value} 个点 · {value2}", {v, value: (v / s.wave.k).toFixed(1), value2: { zh: String(ok ? `呈现为 k = ${s.wave.k}，判断正确` : as === s.wave.k ? '频率看似正确，但振幅和位置都已改变' : `呈现为 k = ${as}，判断错误`), en: String(ok ? `looks like k = ${s.wave.k}: correct` : as === s.wave.k ? 'the frequency looks right, but the amplitude and position have changed' : `looks like k = ${as}: wrong`) }}),
           status: ok ? t('仍能正确识别。尝试进一步减少采样点。') : t('识别错误：采样点太少。'),
-          win: t(`${v} 个点是最少的点数：每个周期需要多于 2 个采样点（M > 2k）。`, `${v} is the fewest: each cycle needs more than 2 samples (M > 2k).`),
+          win: t("{v} 个点是最少的点数：每个周期需要多于 2 个采样点（M > 2k）。", {v}),
         }
       },
       K(s, v) {
@@ -175,15 +172,15 @@ export const alias = {
           sampleGap: maxDiff(samples, sampleAt(truth, s.samples)),
           keepsLow: v >= Math.max(...s.parts.filter((p) => 2 * p.k <= s.samples).map((p) => p.k)),
           plot: {
-            lines: [{ curve: smooth(real), kind: 'faint', label: TRUE }, { curve: smooth(truth), kind: 'target', label: t('期望的信号', 'expected signal') }, { curve: smooth(throughSamples(samples)), kind: 'seen', label: SEEN }],
+            lines: [{ curve: smooth(real), kind: 'faint', label: TRUE }, { curve: smooth(truth), kind: 'target', label: t("期望的信号") }, { curve: smooth(throughSamples(samples)), kind: 'seen', label: SEEN }],
             dots: dotsOf(real, s.samples),
-            legend: legendOf([{ kind: 'target', label: t('期望的信号', 'Expected signal') }]),
+            legend: legendOf([{ kind: 'target', label: t("期望的信号", {}, "waves") }]),
           },
-          readout: t(`16 个采样点可分辨到 k = 8 · 采样前保留 k ≤ ${v}`, `16 samples tell apart frequencies up to k = 8 · keep k ≤ ${v} before sampling`),
+          readout: t("16 个采样点可分辨到 k = 8 · 采样前保留 k ≤ {v}", {v}),
           chips: s.parts.map((part) => {
             const kept = part.k <= v
             const folded = kept && 2 * part.k > s.samples
-            return { text: [`k = ${part.k}`, folded ? t(` → 混叠为 ${aliasOf(part.k, s.samples)}`, ` → aliases to ${aliasOf(part.k, s.samples)}`) : kept ? '' : t(' 已滤除')], tone: folded ? 'alias' : kept ? '' : 'cut' }
+            return { text: [`k = ${part.k}`, folded ? t(" → 混叠为 {value}", {value: aliasOf(part.k, s.samples)}) : kept ? '' : t(' 已滤除')], tone: folded ? 'alias' : kept ? '' : 'cut' }
           }),
           status: s.parts.some((p) => p.k <= v && 2 * p.k > s.samples) ? t('有高频分量混入，采样后会混叠为低频。') : t('滤除过多，连应保留的分量也去掉了。'),
           win: t('只保留 k ≤ 8：采样结果与期望一致。'),

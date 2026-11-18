@@ -6,10 +6,7 @@
     },
     "after": {
       "type": "text",
-      "about": {
-        "zh": "通过这一关时说的话（最后一个任务的点题）",
-        "en": "what passing the level says (its last task’s pass text)"
-      }
+      "about": "@shape.level.fields.after.about"
     },
     "intro": {
       "type": "list",
@@ -112,10 +109,7 @@
                   "figure": {
                     "type": "str",
                     "pattern": "^[a-z0-9-]+$",
-                    "about": {
-                      "zh": "交互图示的名字（site/src/figures 登记的 id，检查时核对）",
-                      "en": "the id of an interactive game figure (as site/src/figures registers it, checked)"
-                    }
+                    "about": "@shape.level.fields.intro.of.fields.fig.of.2.fields.figure.about"
                   },
                   "caption": {
                     "type": "text",
@@ -129,10 +123,7 @@
         }
       },
       "section": "read",
-      "about": {
-        "zh": "引言：进关前读的几页，每页一段话和一张可选的图",
-        "en": "the intro: pages read before playing, each a paragraph and maybe a figure"
-      }
+      "about": "@shape.level.fields.intro.about"
     },
     "tasks": {
       "type": "list",
@@ -164,10 +155,7 @@
     "carry": {
       "type": "level",
       "section": "course",
-      "about": {
-        "zh": "从这关通过时的电路开始",
-        "en": "Start from the circuit that passed this level"
-      },
+      "about": "@shape.level.fields.carry.about",
       "optional": true
     },
     "unlocks": {

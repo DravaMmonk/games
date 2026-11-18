@@ -1,4 +1,4 @@
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { registerParts } from 'circuit'
 import { parse, show } from './formula.js'
 import { say } from './notation.js'
@@ -19,11 +19,11 @@ export function script(level, { game, progress }) {
   const sentences = options(sentencesOf(level).map((f) => [show(f), text(f)]))
   const things = options((level.things ?? []).map((name) => [name, level.notation.words?.[name] ?? name]))
   const { rules, tactics } = methodsOf(level)
-  const ruleChoices = options(rules.map(({ key, rule }) => [key, T(`${rule.name.zh} · ${key.slice(5)}`, `${rule.name.en ?? rule.name.zh} · ${key.slice(5)}`)]))
+  const ruleChoices = options(rules.map(({ key, rule }) => [key, T("{zh} · {value}", {value: key.slice(5), zh: { zh: String(rule.name.zh), en: String(rule.name.en ?? rule.name.zh) }})]))
   const tacticChoices = options(tactics.map((name) => [name, methodText(name)]))
   const methods = [{ value: 'proof', text: T('证明块（proof … qed）') }]
   const groups = [
-    { label: T('规则', 'Rules'), options: ruleChoices },
+    { label: T("规则"), options: ruleChoices },
     ...(tacticChoices.length ? [{ label: T('自建策略'), options: tacticChoices }] : []),
   ]
   const premises = Object.entries(level.premises ?? {}).map(([name, f]) => ({ name, text: text(f) }))

@@ -27,10 +27,7 @@
           },
           "min": 2
         },
-        "about": {
-          "zh": "擦掉的格子 [u, v]",
-          "en": "the pixels erased, [u, v]"
-        },
+        "about": "@shape.packed-items.of.fields.erased.about",
         "optional": true
       }
     }

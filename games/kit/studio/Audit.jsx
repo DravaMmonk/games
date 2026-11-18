@@ -1,3 +1,4 @@
+import { T } from '../shell/i18n.js'
 // The audit, a tab of the fold bar under the middle (Drawer.jsx; DIRECTION decision 6): how the check stands (auditSum,
 // on the bar) and a worklist: npm run check's lines for the game as the pending changeset
 // leaves it, recomputed on every edit, one row a line (worklist.js) — filtered by severity, rule, the level selected
@@ -9,14 +10,14 @@ import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { SEVERITIES, filterItems, stepIn, tally } from './worklist.js'
 import { usePref } from './prefs.js'
 
-const SEVERITY = { fail: ['不过', 'failing'], open: ['待办', 'open'], report: ['报告', 'reported'], pass: ['通过', 'passing'] }
+const SEVERITY = { fail: [T("不过")], open: [T("待办")], report: [T("报告", {}, "audit")], pass: [T("通过", {}, "audit")] }
 const SHOWN = 400 // rows drawn at most; the rest summed up
 
 /** How the check stands, for the fold bar: { fail: true when something fails, label }. */
 export function auditSum(items, last) {
   const fails = items.filter((it) => it.severity === 'fail').length
   const failedOp = last && last.failed !== null && last.failed !== undefined
-  return { fail: Boolean(fails || failedOp), label: failedOp ? tr('操作失败') : fails ? tr(`${fails} 处不过`, `${fails} failing`) : tr('全部通过', 'All clear') }
+  return { fail: Boolean(fails || failedOp), label: failedOp ? tr('操作失败') : fails ? tr("{fails} 处不过", {fails}) : tr("全部通过") }
 }
 
 /** `open`: the fold bar is open on the audit; `onOpen()` opens it there (F8 steps into a folded one). */
@@ -68,13 +69,13 @@ function Filters({ filter, set, toggle, severities, rules, at, query, setQuery }
     <div className="audit-filter">
       <div className="seg is-small" role="group" aria-label={tr('严重程度')}>
         {SEVERITIES.map((s) => (
-          <button key={s} type="button" className={`is-${s} ${filter.severities.includes(s) ? 'is-on' : ''}`} aria-pressed={filter.severities.includes(s)} onClick={() => toggle(s)} title={tr(...SEVERITY[s])}>
+          <button key={s} type="button" className={`is-${s} ${filter.severities.includes(s) ? 'is-on' : ''}`} aria-pressed={filter.severities.includes(s)} onClick={() => toggle(s)} title={L(SEVERITY[s])}>
             <i />{severities.get(s) ?? 0}
           </button>
         ))}
       </div>
       <button type="button" className={`audit-mine ${filter.mine ? 'is-on' : ''}`} aria-pressed={filter.mine} onClick={() => set({ mine: !filter.mine })} disabled={!at?.level} title={tr('只看选中的关')}>{at?.level ?? '—'}</button>
-      <select className="audit-rule" value={filter.rule} onChange={(e) => set({ rule: e.target.value })} aria-label={tr('规则', 'Rule')}>
+      <select className="audit-rule" value={filter.rule} onChange={(e) => set({ rule: e.target.value })} aria-label={tr("规则")}>
         <option value="">{tr('全部规则')}</option>
         {[...rules].sort(([a], [b]) => a.localeCompare(b)).map(([r, n]) => <option key={r} value={r}>{r} · {n}</option>)}
       </select>
@@ -95,7 +96,7 @@ function Lines({ shown, cursor, go }) {
           </button>
         </li>
       ))}
-      {shown.length > SHOWN && <li className="audit-more">{tr(`还有 ${shown.length - SHOWN} 行`, `${shown.length - SHOWN} more`)}</li>}
+      {shown.length > SHOWN && <li className="audit-more">{tr("还有 {value} 行", {value: shown.length - SHOWN})}</li>}
       {!shown.length && <li className="audit-more">—</li>}
     </ol>
   )

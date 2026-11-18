@@ -23,7 +23,7 @@ function sourceTexts(file, content) {
   }
   visit(file.game ? gameFields(content) : file.object ? content.registries : [content.levels, content.glossary, content.partDefs])
   return (key) => {
-    if (!texts.has(key)) throw new Error(tr(`当前配置的语言文件里没有文案键 @${key}。`, `No text for @${key} in this configuration's language files.`))
+    if (!texts.has(key)) throw new Error(tr("当前配置的语言文件里没有文案键 @{key}。", {key}))
     return texts.get(key)
   }
 }
@@ -40,11 +40,11 @@ export function sourceOps(file, before, path, value, vocabulary, content) {
     isText(value) || (typeof value === 'string' && !referenceKey(value) && !existingLiterals.has(value) && typeof getAt(before, path) !== 'string'))
   if (inline) {
     const at = showPath(inline.path)
-    throw new Error(tr(`${at}：请在文案页编辑各语言的文字。`, `${at}: edit language text in the Copy tab.`))
+    throw new Error(tr("{at}：请在文案页编辑各语言的文字。", {at}))
   }
   const after = resolveReferences(edited, sourceTexts(file, content))
   if (changesType(schema, before, after, vocabulary)) {
-    throw new Error(tr('已有配置的类型不能直接更改。请删除旧项后新增。', 'Delete the existing configuration and add a new one to change its type.'))
+    throw new Error(tr("已有配置的类型不能直接更改。请删除旧项后新增。"))
   }
   const existing = new Set(validate(schema, before, { vocabulary }).map(({ at, says }) => `${at}: ${says}`))
   const invalid = validate(schema, after, { vocabulary }).find(({ at, says }) => !existing.has(`${at}: ${says}`))
@@ -62,7 +62,7 @@ export function sourceOps(file, before, path, value, vocabulary, content) {
       if (!group) ops.push({ op: 'tag.remove', tag, member: 'entry' })
       else ops.push({ op: 'tag.put', tag, member: 'entry', data: { ...sourceValue(content.tags?.[`entry:${tag}`]), title: group.title, values: group.values ?? after.entries.filter((e) => e.group === tag).map((e) => e.id) } })
     }
-    if (after.entries.some((entry) => before.entries.find((old) => old.id === entry.id)?.group !== entry.group)) throw new Error(tr('请通过词条标签修改分组。', 'Edit encyclopedia membership through entry tags.'))
+    if (after.entries.some((entry) => before.entries.find((old) => old.id === entry.id)?.group !== entry.group)) throw new Error(tr("请通过词条标签修改分组。"))
     return ops
   }
   if (file.parts) {
@@ -72,7 +72,7 @@ export function sourceOps(file, before, path, value, vocabulary, content) {
       const next = after[group] ?? {}
       for (const id of changedKeys(old, next)) {
         if (!Object.hasOwn(old, id) || !Object.hasOwn(next, id)) {
-          throw new Error(tr('请用列表中的新增或删除按钮管理件和设置。', 'Use the list controls to add or delete parts and settings.'))
+          throw new Error(tr("请用列表中的新增或删除按钮管理件和设置。"))
         }
         for (const key of changedKeys(old[id], next[id])) edits.push(op([group, id, key], next[id][key]))
       }

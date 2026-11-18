@@ -25,10 +25,7 @@
           },
           "phase": {
             "type": "num",
-            "about": {
-              "zh": "错开多少度",
-              "en": "how many degrees it is shifted"
-            },
+            "about": "@shape.waveform-test.fields.waves.of.fields.phase.about",
             "optional": true
           }
         }

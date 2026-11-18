@@ -2,24 +2,15 @@
   "extends": "trace",
   "items": {
     "lcs": {
-      "about": {
-        "zh": "公共子序列表倒推出的路线和连线",
-        "en": "the walk back through a common-subsequence table, and its matched letters"
-      }
+      "about": "@capability.trace.items.lcs.about"
     },
     "edit": {},
     "local": {
-      "about": {
-        "zh": "局部对齐从最大的一格倒推到 0",
-        "en": "local alignment walked back from its best cell to a 0"
-      }
+      "about": "@capability.trace.items.local.about"
     },
     "knap": {},
     "seam": {
-      "about": {
-        "zh": "从最底一行最小的格子倒推的缝",
-        "en": "the seam walked back from the smallest cell of the bottom row"
-      }
+      "about": "@capability.trace.items.seam.about"
     },
     "tags": {}
   }

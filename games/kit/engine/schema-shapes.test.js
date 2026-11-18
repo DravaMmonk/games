@@ -45,7 +45,7 @@ test('shape references qualify, reject missing shapes and reject cycles even whe
   assert.throws(() => withKindDeclarations(vocab, [{ id: 'sample', objects: [
     shape('a', S.list(S.shape('sample/b'))), shape('b', S.shape('sample/a')),
   ] }]), /schema shape cycle/)
-  assert.throws(() => withKindDeclarations(vocab, [{ id: 'sample', objects: [shape('a', S.text({ about: { en: 'Missing Chinese' } }))] }]), /needs Chinese and English/)
+  assert.throws(() => withKindDeclarations(vocab, [{ id: 'sample', objects: [shape('a', S.text({ about: { en: 'Missing Chinese' } }))] }]), /needs Chinese text/)
 })
 
 test('expansion retains string patterns and schema compatibility ignores tooltip removal', () => {

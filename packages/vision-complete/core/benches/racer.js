@@ -3,7 +3,7 @@
 // bench it is a process: start, answer (or run out of time), a short look at the right card, the next round.
 import { limitOf, picture } from 'image'
 import { correlate, random } from 'imglib'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 export const maxAbsDiff = (a, b) => a.data.reduce((worst, v, i) => Math.max(worst, Math.abs(v - b.data[i])), 0)
 
@@ -81,9 +81,9 @@ export const racer = {
           round,
           seconds,
           dots: Array.from({ length: total }, (_, i) => (i < p.results.length ? (p.results[i] ? 'right' : 'wrong') : i === p.index && p.phase === 'play' ? 'now' : '')),
-          score: t(`答对 ${n} / ${total} · 过关需 ${pass}`, `Correct ${n} / ${total} · ${pass} to pass`),
-          result: p.phase === 'done' ? { text: n >= pass ? t(`答对 ${n} / ${total}，过关。`, `${n} / ${total} correct. Passed.`) : t(`答对 ${n} / ${total}，还差 ${pass - n} 轮。`, `${n} / ${total} correct, ${pass - n} short.`), tone: n >= pass ? 'pass' : '' } : null,
-          rules: [t(`${total} 轮`, `${total} rounds`), t(`答对 ${pass} 轮过关`, `${pass} correct to pass`), v.untimed ? t('不限时') : t(`首轮 ${timeFor(0).toFixed(0)} 秒，逐轮缩短`, `${timeFor(0).toFixed(0)} s for the first round, shorter after`)].map((text) => ({ text })),
+          score: t("答对 {n} / {total} · 过关需 {pass}", {n, total, pass}),
+          result: p.phase === 'done' ? { text: n >= pass ? t("答对 {n} / {total}，过关。", {n, total}) : t("答对 {n} / {total}，还差 {pass} 轮。", {n, total, pass: pass - n}), tone: n >= pass ? 'pass' : '' } : null,
+          rules: [t("{total} 轮", {total}), t("答对 {pass} 轮过关", {pass}), v.untimed ? t('不限时') : t("首轮 {value} 秒，逐轮缩短", {value: timeFor(0).toFixed(0)})].map((text) => ({ text })),
           labels: { start: p.phase === 'done' ? t('再玩一局') : t('开始') },
           say: !p.feedback
             ? { text: t('点击选择，或按数字键 1–4。'), phone: t('点击选择一个核。') }

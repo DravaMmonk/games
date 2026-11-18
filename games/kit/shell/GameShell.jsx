@@ -127,7 +127,7 @@ function GameShellInstance({ game, store, author = null }) {
   useEffect(() => applyTheme(theme), [theme])
   useEffect(() => {
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN'
-    document.title = tr(`${game.title.zh} — ${game.title.en}`, `${game.title.en} — ${game.title.zh}`)
+    document.title = tr("{zh} — {en}", {zh: game.title.zh, en: game.title.en})
   }, [game, lang])
   const [left, setLeft] = useState(null) // the level last left for the map, which the map opens at
   const open = (id, task) => {
@@ -324,7 +324,7 @@ function GameShellInstance({ game, store, author = null }) {
           ) : area ? (
             <button className="kit-btn is-label bar-button" onClick={() => open(null)} aria-label={area.leaveLabel}><ArrowLeft size={16} /><span>{tr('地图')}</span></button>
           ) : (
-            <a className="kit-btn is-label bar-button" href={SITE.games} aria-label={tr('返回游戏列表')}><ArrowLeft size={16} /><span>{tr('游戏', 'Games')}</span></a>
+            <a className="kit-btn is-label bar-button" href={SITE.games} aria-label={tr('返回游戏列表')}><ArrowLeft size={16} /><span>{tr("游戏")}</span></a>
           )}
           <span className="kit-brand game-brand"><i className="kit-chip" aria-hidden="true" /><span>{L(game.title)}</span></span>
           {level && (
@@ -404,10 +404,10 @@ function GameShellInstance({ game, store, author = null }) {
         )}
         {failure && level && <FailDialog fail={failure.info} fails={failure.fails} onClose={() => setFailure(null)} />}
         {extension.panel?.({ sheet, start: sheetAt, close: () => { setSheet(null); setSheetAt(null) } })}
-        {locked && <Dialog top title={tr(`「${locked.title}」尚未解锁`, `“${locked.title}” is still locked`)} lines={[locked.at && locked.at.id === level?.id ? tr('通过这一关后解锁。') : locked.at ? tr(`进行到 ${game.levelLabel(locked.at)}「${L(locked.at.title)}」时解锁。`, `Unlocks at ${game.levelLabel(locked.at)} “${L(locked.at.title)}”.`) : tr('继续推进后解锁。')]} actions={[[tr('确定'), () => setLocked(null)]]} onClose={() => setLocked(null)} />}
+        {locked && <Dialog top title={tr("「{title}」尚未解锁", {title: locked.title})} lines={[locked.at && locked.at.id === level?.id ? tr('通过这一关后解锁。') : locked.at ? tr("进行到 {value}「{value2}」时解锁。", {value: game.levelLabel(locked.at), value2: L(locked.at.title)}) : tr('继续推进后解锁。')]} actions={[[tr('确定'), () => setLocked(null)]]} onClose={() => setLocked(null)} />}
         {target && (game.isOpen(target, solved, progress.all)
-          ? <Dialog top title={tr(`前往 ${game.levelLabel(target)}「${L(target.title)}」？`, `Go to ${game.levelLabel(target)} “${L(target.title)}”?`)} lines={[atTarget ? tr('你正在这里。') : extension.progressText?.leave ?? tr('作品和进度都会保存，可以随时返回。', 'Your work and progress are saved. You can return anytime.')]} actions={atTarget ? [[tr('确定'), () => setGoTo(null)]] : [[tr('取消'), () => setGoTo(null)], [tr('前往'), go]]} onClose={() => setGoTo(null)} />
-          : <Dialog top title={tr(`${game.levelLabel(target)}「${L(target.title)}」尚未解锁`, `${game.levelLabel(target)} “${L(target.title)}” is still locked`)} lines={[tr('请先通过它的前置关卡。')]} actions={[[tr('确定'), () => setGoTo(null)]]} onClose={() => setGoTo(null)} />)}
+          ? <Dialog top title={tr("前往 {value}「{value2}」？", {value: game.levelLabel(target), value2: L(target.title)})} lines={[atTarget ? tr('你正在这里。') : extension.progressText?.leave ?? tr("作品和进度都会保存，可以随时返回。")]} actions={atTarget ? [[tr('确定'), () => setGoTo(null)]] : [[tr('取消'), () => setGoTo(null)], [tr('前往'), go]]} onClose={() => setGoTo(null)} />
+          : <Dialog top title={tr("{value}「{value2}」尚未解锁", {value: game.levelLabel(target), value2: L(target.title)})} lines={[tr('请先通过它的前置关卡。')]} actions={[[tr('确定'), () => setGoTo(null)]]} onClose={() => setGoTo(null)} />)}
         {game.power && !progress.seenPower && (
           <Dialog title={L(game.power.title)} lines={game.power.lines.map(L)} actions={[[tr('开始'), () => update((p) => ({ ...p, seenPower: true }))]]} intro />
         )}

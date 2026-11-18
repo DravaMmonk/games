@@ -147,7 +147,7 @@ function Sheet({ rows, colSchema, onRows, header = null, rowHeads = null, shaded
               {Array.from({ length: width }, (_, c) => (
                 <th key={c} scope="col">
                   <span>{header ? header[c] : c}</span>
-                  {removeCol && width > 1 && <button type="button" className="cell-x" onClick={() => { if (confirmDelete()) removeCol(c) }} aria-label={tr(`去掉第 ${c} 列`, `Remove column ${c}`)}><X size={10} /></button>}
+                  {removeCol && width > 1 && <button type="button" className="cell-x" onClick={() => { if (confirmDelete()) removeCol(c) }} aria-label={tr("去掉第 {c} 列", {c})}><X size={10} /></button>}
                 </th>
               ))}
             </tr>
@@ -159,7 +159,7 @@ function Sheet({ rows, colSchema, onRows, header = null, rowHeads = null, shaded
               {!one && (
                 <th scope="row">
                   <span>{rowHeads ? rowHeads[r] : r}</span>
-                  {removeRow && <button type="button" className="cell-x" onClick={() => { if (confirmDelete()) removeRow(r) }} aria-label={tr(`去掉第 ${r} 行`, `Remove row ${r}`)}><X size={10} /></button>}
+                  {removeRow && <button type="button" className="cell-x" onClick={() => { if (confirmDelete()) removeRow(r) }} aria-label={tr("去掉第 {r} 行", {r})}><X size={10} /></button>}
                 </th>
               )}
               {Array.from({ length: width }, (_, c) => (
@@ -173,8 +173,8 @@ function Sheet({ rows, colSchema, onRows, header = null, rowHeads = null, shaded
         </tbody>
       </table>
       <AddMenu options={[
-        ...(addRow ? [{ value: 'row', label: tr('一行', 'Row') }] : []),
-        ...(addCol ? [{ value: 'column', label: one ? tr('一项', 'Item') : tr('一列', 'Column') }] : []),
+        ...(addRow ? [{ value: 'row', label: tr("一行") }] : []),
+        ...(addCol ? [{ value: 'column', label: one ? tr("一项") : tr("一列") }] : []),
       ]} onPick={(choice) => (choice === 'row' ? addRow : addCol)()} />
     </div>
   )
@@ -303,7 +303,7 @@ function TickRow({ values, cell, onSet, head = null, onRemove = null, label }) {
         )))}
       </div>
       <span className="tick-len">
-        <AddMenu options={[{ value: 'tick', label: tr('一拍', 'Tick') }]} onPick={() => onSet([...values, values.at(-1) ?? 0])} />
+        <AddMenu options={[{ value: 'tick', label: tr("一拍") }]} onPick={() => onSet([...values, values.at(-1) ?? 0])} />
         <button type="button" className="cell-add" disabled={!values.length} onClick={() => { if (confirmDelete()) onSet(values.slice(0, -1)) }} aria-label={tr('少一拍')}><Minus size={11} /></button>
         <small>{values.length}</small>
       </span>

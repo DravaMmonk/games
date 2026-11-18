@@ -61,10 +61,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
   const tabsRow = <InspectorTabs tabs={tabs} active={active} content={content} onOpen={onOpenTab} onClose={onCloseTab} />
   const openCrumb = (path) => {
     const target = getAt(shown?.value, path)
-    if (!longConfig(target) || window.confirm(tr(
-      '这段配置较长，打开可能需要一些时间。是否继续？',
-      'This configuration is large and may take a while to open. Continue?',
-    ))) onNavigate(path, trail)
+    if (!longConfig(target) || window.confirm(tr("这段配置较长，打开可能需要一些时间。是否继续？"))) onNavigate(path, trail)
   }
   const tasked = Boolean(at?.level)
   const edit = (path, change, type) => {
@@ -116,7 +113,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
         {header}
         <div className="insp-body" ref={body}>
           {!shown
-            ? <p className="insp-about">{tr('这个字段没有 JSON 值。', 'This field has no JSON value.')}</p>
+            ? <p className="insp-about">{tr("这个字段没有 JSON 值。")}</p>
             : <SourceEditor key={JSON.stringify([content.id, at, path])} source={JSON.stringify(currentSource, null, 2) ?? ''} readOnly={readOnly}
               onApply={(value) => {
                 const ops = sourceOps(file, shown.value, path, value, vocabulary, content)
@@ -132,7 +129,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
     return (
       <div className="insp">
         {header}
-        <p className="insp-note">{field.missing ? tr(`「${field.missing}」不是这一关内容里的字段：它由领域生成，在「字段」里找它的来源。`, `“${field.missing}” is no field of the level’s content: the domain makes it; find where it comes from in the fields.`) : tr('这个字段已经不在了。')}</p>
+        <p className="insp-note">{field.missing ? tr("「{missing}」不是这一关内容里的字段：它由领域生成，在「字段」里找它的来源。", {missing: field.missing}) : tr('这个字段已经不在了。')}</p>
       </div>
     )
   }
@@ -156,7 +153,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
       {isTask && <TaskTools content={content} level={at.level} tasks={shown.value.tasks} k={last} ctx={ctx} onEdit={onEdit} onOps={onOps} onPick={onPick} onLevel={onLevel} />}
       {list && (
         <div className="insp-tools">
-          <span>{tr(`第 ${last + 1} 项，共 ${list.length} 项`, `Item ${last + 1} of ${list.length}`)}</span>
+          <span>{tr("第 {last} 项，共 {length} 项", {last: last + 1, length: list.length})}</span>
           <span className="kit-spacer" />
           <button type="button" disabled={last === 0} onClick={() => { edit(parent, { set: moved(list, last, last - 1) }, 'list'); onPick([...parent, last - 1]) }} title={tr('上移')}><ArrowUp size={13} /></button>
           <button type="button" disabled={last === list.length - 1} onClick={() => { edit(parent, { set: moved(list, last, last + 1) }, 'list'); onPick([...parent, last + 1]) }} title={tr('下移')}><ArrowDown size={13} /></button>
@@ -188,7 +185,7 @@ function TaskTools({ content, level, tasks, k, ctx, onEdit, onOps, onPick, onLev
   const only = tasks.length === 1
   const others = (ctx.levelOptions ?? []).filter((o) => o.value !== level)
   const into = (to) => {
-    if (only && !window.confirm(tr(`确定移走任务并删除关卡「${level}」吗？`, `Move the task and delete level “${level}”?`))) return
+    if (only && !window.confirm(tr("确定移走任务并删除关卡「{level}」吗？", {level}))) return
     const ops = [{ op: 'task.move', task: task.id, to: { level: to } }, ...(only ? [{ op: 'level.remove', level }] : [])]
     onOps(ops)
     const n = content.levels.find((l) => l.id === to)?.tasks?.length ?? 0
@@ -196,7 +193,7 @@ function TaskTools({ content, level, tasks, k, ctx, onEdit, onOps, onPick, onLev
   }
   return (
     <div className="insp-tools is-task">
-      <span>{tr(`任务 ${k + 1} / ${tasks.length}`, `Task ${k + 1} of ${tasks.length}`)}</span>
+      <span>{tr("任务 {k} / {length}", {k: k + 1, length: tasks.length})}</span>
       <span className="kit-spacer" />
       <button type="button" disabled={k === 0} onClick={() => { onEdit({ op: 'task.move', task: task.id, to: { level, ...place(k - 1) } }); onPick(['tasks', k - 1]) }} title={tr('上移')}><ArrowUp size={13} /></button>
       <button type="button" disabled={k === tasks.length - 1} onClick={() => { onEdit({ op: 'task.move', task: task.id, to: { level, after: tasks[k + 1].id } }); onPick(['tasks', k + 1]) }} title={tr('下移')}><ArrowDown size={13} /></button>
@@ -228,7 +225,7 @@ function RawFile({ content, at, tabsRow, onOps }) {
           <nav className="insp-path" aria-label={tr('字段的位置')}>
             <button type="button" className="insp-crumb" disabled aria-current="location">{name}</button>
           </nav>
-          <button type="button" className="insp-source" disabled aria-pressed="true" aria-label={tr('JSON 源码', 'JSON source')} title={tr('JSON 源码', 'JSON source')}><Braces size={13} aria-hidden="true" /></button>
+          <button type="button" className="insp-source" disabled aria-pressed="true" aria-label={tr("JSON 源码")} title={tr("JSON 源码")}><Braces size={13} aria-hidden="true" /></button>
         </header>
       </div>
       <div className="insp-body">
@@ -271,12 +268,12 @@ function Head({ content, path, trail, file, root, onPick, json, onToggleJson, ab
     : file.glossary ? glossaryFile(file.glossary, path) : content.packageTarget ? 'package.json' : 'game.json'
   const atRoot = path.length === base.length
   const canOpenRoot = name !== 'package.json'
-  const jsonLabel = tr('JSON 源码', 'JSON source')
-  const pinLabel = tr('固定配置标签页', 'Pin configuration tab')
+  const jsonLabel = tr("JSON 源码")
+  const pinLabel = tr("固定配置标签页")
   return (
     <header className="insp-head">
       <button type="button" className="insp-pin" onClick={onPin} disabled={!onPin} aria-pressed={pinned}
-        aria-label={pinLabel} title={pinned ? tr('取消固定', 'Unpin tab') : pinLabel}><Pin size={13} aria-hidden="true" /></button>
+        aria-label={pinLabel} title={pinned ? tr("取消固定") : pinLabel}><Pin size={13} aria-hidden="true" /></button>
       <nav className="insp-path" aria-label={tr('字段的位置')}>
         <button type="button" className="insp-crumb" onClick={() => onPick(base)} disabled={atRoot || !canOpenRoot}
           aria-current={atRoot ? 'location' : undefined} title={atRoot ? about : undefined}>{name}</button>
@@ -294,7 +291,7 @@ function Head({ content, path, trail, file, root, onPick, json, onToggleJson, ab
       </nav>
       <button type="button" className="insp-source" onClick={onToggleJson} disabled={!onToggleJson} aria-pressed={json} aria-label={jsonLabel} title={jsonLabel}><Braces size={13} aria-hidden="true" /></button>
       {onRemove && <button type="button" className="insp-delete" onClick={onRemove}
-        title={tr('删除', 'Delete')} aria-label={tr('删除', 'Delete')}>
+        title={tr("删除")} aria-label={tr("删除")}>
         <Trash2 size={13} aria-hidden="true" />
       </button>}
     </header>

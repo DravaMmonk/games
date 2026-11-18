@@ -24,13 +24,13 @@ function render() {
     return `<a class="game" href="${g.id}/index.html">
       <div class="game-art"${g.art ? ` data-art="${g.art}"` : ''}></div>
       <div class="game-body">
-        <p class="game-meta"><span class="game-no">${String(i + 1).padStart(2, '0')}</span>${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr('开发中', 'In development')}</em>` : ''}${g.author ? `<span class="game-author">${tr('作者', 'By')} <b>${g.author}</b></span>` : ''}</p>
+        <p class="game-meta"><span class="game-no">${String(i + 1).padStart(2, '0')}</span>${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr("开发中")}</em>` : ''}${g.author ? `<span class="game-author">${tr("作者")} <b>${g.author}</b></span>` : ''}</p>
         <h2 class="game-title">${pick(g.title)}<small lang="${en ? 'zh-CN' : 'en'}">${en ? g.title.zh : g.title.en}</small></h2>
         <p class="game-desc">${pick(g.lede)}</p>
         <div class="game-foot">
-          <span class="meter" aria-label="${tr(`已通过 ${done} / ${g.levels} 关`, `${done} of ${g.levels} levels cleared`)}"><i style="width:${(done / g.levels) * 100}%"></i></span>
-          <span class="game-count">${tr(`${done} / ${g.levels} 关`, `${done} / ${g.levels} levels`)}</span>
-          <b class="game-go">${started ? tr('继续', 'Continue') : tr('开始', 'Start')}<span aria-hidden="true">→</span></b>
+          <span class="meter" aria-label="${tr("已通过 {done} / {levels} 关", {done, levels: g.levels})}"><i style="width:${(done / g.levels) * 100}%"></i></span>
+          <span class="game-count">${tr("{done} / {levels} 关", {done, levels: g.levels})}</span>
+          <b class="game-go">${started ? tr("继续") : tr("开始")}<span aria-hidden="true">→</span></b>
         </div>
       </div></a>`;
   }).join('');
@@ -39,8 +39,8 @@ function render() {
 }
 
 function paintPage() {
-  document.title = tr('图灵模拟器 · Turing Simulator', 'Turing Simulator · 图灵模拟器');
-  document.querySelector('meta[name="description"]').content = tr('图灵模拟器：把所有知识地图变成图灵完备风格的游戏。视觉完备（计算机视觉）、状态之图（动态规划）、证明完毕（形式化证明）。', 'Turing Simulator: turn every knowledge map into a Turing Complete–style game. Vision Complete (computer vision), State Graph (dynamic programming) and Q.E.D. (formal proof).');
+  document.title = tr("图灵模拟器 · Turing Simulator");
+  document.querySelector('meta[name="description"]').content = tr("图灵模拟器：把所有知识地图变成图灵完备风格的游戏。视觉完备（计算机视觉）、状态之图（动态规划）、证明完毕（形式化证明）。");
 }
 
 mountHubBar(document.querySelector('#hub-bar'));

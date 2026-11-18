@@ -8,9 +8,9 @@ export default function SourceMark({ content, kind, full, own, overriding, pendi
   const chain = source ? [source.declaration, ...source.overrides] : []
   return (
     <>
-      {chain.length > 1 || !own ? <span className="source-mark" title={tr('声明 ← 覆盖', 'Declared ← overridden')}>{chain.join(' ← ')}</span> : null}
+      {chain.length > 1 || !own ? <span className="source-mark" title={tr("声明 ← 覆盖")}>{chain.join(' ← ')}</span> : null}
       {!own && !overriding && <button type="button" className="kit-btn is-label" disabled={pending} onClick={onOverride}>
-        <Layers size={13} aria-hidden="true" />{tr('在本包覆盖', 'Override in this package')}
+        <Layers size={13} aria-hidden="true" />{tr("在本包覆盖")}
       </button>}
     </>
   )

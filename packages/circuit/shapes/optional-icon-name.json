@@ -1,8 +1,5 @@
 {
   "type": "str",
-  "about": {
-    "zh": "内核图标表里的一个名字",
-    "en": "a name in the kernel’s icon table"
-  },
+  "about": "@shape.optional-icon-name.about",
   "view": "icon"
 }

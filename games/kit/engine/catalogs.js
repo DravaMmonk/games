@@ -14,9 +14,9 @@ function mapTree(value, visit) {
 }
 
 /** Source projection for configuration values and Studio's JSON inspector. */
-export const sourceValue = (value) => mapTree(value, (child) => {
+export const sourceValue = (value, namespace) => mapTree(value, (child) => {
   const key = textKey(child)
-  return key && isText(child) ? textReference(key) : child
+  return key && isText(child) ? textReference(namespace && key.startsWith(`${namespace}/`) ? key.slice(namespace.length + 1) : key) : child
 })
 
 export const resolveReferences = (value, resolveKey) => mapTree(value, (child) => {
@@ -36,6 +36,7 @@ export function catalogReader(catalogs, scope = 'i18n', { allowMissing = false }
       throw new Error(`${scope}/${lang}.json: expected a language file containing an object`)
     }
     for (const [key, text] of Object.entries(entries)) {
+      if (key === 'ui' && text && typeof text === 'object' && !Array.isArray(text)) continue
       if (!isTextKey(key) || typeof text !== 'string') throw new Error(`${scope}/${lang}.json: invalid text entry ${key}`)
       if (!byKey.has(key)) byKey.set(key, {})
       byKey.get(key)[lang] = text
@@ -58,4 +59,21 @@ export function catalogReader(catalogs, scope = 'i18n', { allowMissing = false }
     }
     return resolved
   }
+}
+
+
+/** Resolve nested annotations without treating the schema itself as content data. */
+export function declarationReader(catalogs, namespace = '') {
+  const qualified = namespace ? Object.fromEntries(Object.entries(catalogs).map(([lang, entries]) => [lang, {
+    ...entries, ...Object.fromEntries(Object.entries(entries).filter(([key]) => key !== 'ui' && !key.includes('/')).map(([key, text]) => [`${namespace}/${key}`, text])),
+  }])) : catalogs
+  const read = catalogReader(qualified)
+  const qualify = key => namespace && !key.includes('/') ? `${namespace}/${key}` : key
+  return value => mapTree(value, child => {
+    const key = textKey(child)
+    if (key) return withTextKey(child, qualify(key))
+    const ref = referenceKey(child)
+    if (!ref) return child
+    return read(textReference(qualify(ref)), 'declaration', null)
+  })
 }

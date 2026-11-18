@@ -1,7 +1,7 @@
 import { circuitBoard } from 'circuit'
 import { boardView, fitsCircuit, previousCircuitTask } from 'circuit'
 import { inheritedBoard } from 'circuit'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { startBoard } from './board.js'
 import { INPUT_LABELS } from '../words.js'
 
@@ -14,7 +14,7 @@ export function imageBoards(image) {
     const labels = input ? task.inputLabels ?? (names.length > 1 ? INPUT_LABELS : null) : task.outputLabels
     const start = input ? task.views?.in : task.views?.out
     return names.map((name) => ({
-      name, label: labels?.[name] ?? (names.length > 1 ? name : input ? T('输入', 'Input') : T('输出', 'Output')),
+      name, label: labels?.[name] ?? (names.length > 1 ? name : input ? T("输入") : T("输出")),
       ...(start && { view: start === 'terrain' ? 'surface' : start }),
     }))
   }
@@ -22,7 +22,7 @@ export function imageBoards(image) {
     { type: 'input', side: 'left', of: (task) => ports(task, 'input') },
     { type: 'output', side: 'right', of: (task) => ports(task, 'output') },
   ] })
-  const labels = { in: T('图', 'Image'), left: T('左', 'left'), right: T('右', 'right'), mu: 'μ', sigma: 'σ', eps: 'ε' }
+  const labels = { in: T("图"), left: T("左"), right: T("右"), mu: 'μ', sigma: 'σ', eps: 'ε' }
   const board = {
     ...fixed,
     startBoard,

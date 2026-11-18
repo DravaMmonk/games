@@ -9,10 +9,7 @@
     },
     "lede": {
       "type": "text",
-      "about": {
-        "zh": "这款游戏教什么、学完能亲手做成什么，不写关卡数",
-        "en": "what the game teaches and what the player ends up building, not how many levels"
-      }
+      "about": "@shape.game.fields.lede.about"
     },
     "chapters": {
       "type": "list",

@@ -17,10 +17,7 @@
         },
         "min": 3
       },
-      "about": {
-        "zh": "鼓包：cx, cy, 高",
-        "en": "bumps: cx, cy, height"
-      }
+      "about": "@shape.bumps-test.fields.bumps.about"
     }
   }
 }

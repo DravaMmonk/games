@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // A game's parts/<name>.json made into parts (games/design/README.md 6.8): what the shared engine runs (../circuit.js), what a new
 // part starts with, and every place the file does not hold together. The part definitions are content; the engine
 // resources they call (the domain's `op` items, run by its ops.js) are the domain's code.
@@ -220,7 +221,7 @@ export function compileParts(parts, ops, code = {}) {
         const read = ports.reads ? ports.reads(node, key) : ports.inputs
         if (def.nulls !== 'pass' && read.some((n) => ins[n] === null || (ins[n] === undefined && !optional.has(n)))) return null
         const tree = trees[def.outputNames ? key : '']
-        if (!tree) throw new OperationError({ zh: '这个元件的运算写错了', en: 'this part’s computation does not parse' })
+        if (!tree) throw new OperationError(catalogText("这个元件的运算写错了"))
         const card = { ...ctx, node, key, ins, region: (name) => runRegion(node, ctx, name) }
         const env = { ins, settings: settingsFor(def, node?.params), run: runner(ops, card), noCase }
         if (!ctx?.tape) return evaluate(tree, env)

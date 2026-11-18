@@ -2,17 +2,11 @@
   "name": "benchModel",
   "studio": {
     "order": 18,
-    "label": {
-      "zh": "实验模型",
-      "en": "Bench models"
-    }
+    "label": "@capability.benchModel.studio.label"
   },
   "items": {
     "obscura": {
-      "about": {
-        "zh": "暗箱：旋钮 Z（孔板到箭头）、s（屏幕到箭头）、D（孔径）；算出像高 height、模糊 blur、亮度 light",
-        "en": "the camera obscura: knobs Z (plate from the arrow), s (screen from the arrow), D (the hole); computes the image height, blur and light"
-      },
+      "about": "@capability.benchModel.items.obscura.about",
       "shape": "image/bench-obscura",
       "params": {
         "type": "obj",
@@ -33,10 +27,7 @@
       }
     },
     "wave": {
-      "about": {
-        "zh": "一道波：c + A·cos(2π·k·x/N + φ·π/4)，旋钮 c、A、k、phi；每一步把它调到和目标重合",
-        "en": "one wave, c + A·cos(2π·k·x/N + φ·π/4), knobs c, A, k, phi: each step lays it on the target"
-      },
+      "about": "@capability.benchModel.items.wave.about",
       "shape": "image/bench-wave",
       "params": {
         "type": "obj",

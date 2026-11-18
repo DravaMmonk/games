@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { qualifyItems } from 'kernel/view'
 import { iconOf as definedIcon } from 'circuit/view'
 import { ArrowRightFromLine, ArrowRightToLine, AudioWaveform, Box, Calculator, Grid3x3, Minimize2, Network, Package, Search, Sparkles } from 'lucide-react'
@@ -5,16 +6,16 @@ import { ArrowRightFromLine, ArrowRightToLine, AudioWaveform, Box, Calculator, G
 // How each part looks on the board and in the parts list: a family (colour and icon); families group parts by what they
 // look at, which is the idea the game is teaching. What a part does is ../words.js.
 export const FAMILIES = qualifyItems('image', {
-  io: { label: { zh: '输入与输出', en: 'Inputs and outputs' }, icon: ArrowRightFromLine },
-  pixel: { label: { zh: '逐像素', en: 'Per-pixel' }, icon: Calculator },
-  neighbour: { label: { zh: '看邻居', en: 'Neighbours' }, icon: Grid3x3 },
-  size: { label: { zh: '改尺寸', en: 'Resize' }, icon: Minimize2 },
-  search: { label: { zh: '搜索与比较', en: 'Search and compare' }, icon: Search },
-  frequency: { label: { zh: '频率', en: 'Frequency' }, icon: AudioWaveform },
-  global: { label: { zh: '看全局', en: 'Global' }, icon: Network },
-  learned: { label: { zh: '可学习', en: 'Learnable' }, icon: Sparkles },
-  own: { label: { zh: '你封装的', en: 'Your own' }, icon: Package },
-  other: { label: { zh: '元件', en: 'Parts' }, icon: Box },
+  io: { label: catalogText("输入与输出"), icon: ArrowRightFromLine },
+  pixel: { label: catalogText("逐像素"), icon: Calculator },
+  neighbour: { label: catalogText("看邻居"), icon: Grid3x3 },
+  size: { label: catalogText("改尺寸"), icon: Minimize2 },
+  search: { label: catalogText("搜索与比较"), icon: Search },
+  frequency: { label: catalogText("频率"), icon: AudioWaveform },
+  global: { label: catalogText("看全局"), icon: Network },
+  learned: { label: catalogText("可学习"), icon: Sparkles },
+  own: { label: catalogText("你封装的"), icon: Package },
+  other: { label: catalogText("元件"), icon: Box },
 })
 
 const FAMILY_OF = Object.fromEntries(Object.entries({

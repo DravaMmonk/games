@@ -1,6 +1,8 @@
+import { L } from 'kernel/view'
 import { useState } from 'react'
 import { Pencil } from 'lucide-react'
-import { tr, Area, useDraft } from 'kernel/view'
+import { Area, useDraft } from "kernel/view"
+import { tr } from 'kernel/words'
 import { boardSvg } from '../../core/board/svg.js'
 
 /** A board: its drawing (open it in the game's circuit editor, in place), and its blueprint text. */
@@ -13,12 +15,12 @@ export default function BoardField({ field, onSet, ctx, label }) {
   try {
     svg = boardSvg(lines)
   } catch (error) {
-    wrong = tr(error.zh, error.en) ?? error.message
+    wrong = L(error) ?? error.message
   }
   return (
     <div className="field-board">
       {svg && (
-        <button type="button" className="board-svg is-thumb" onClick={() => ctx.onBoard?.(field.path)} aria-label={tr(`在电路编辑器里改 ${label}`, `Edit ${label} in the circuit editor`)} disabled={!ctx.onBoard}>
+        <button type="button" className="board-svg is-thumb" onClick={() => ctx.onBoard?.(field.path)} aria-label={tr("在电路编辑器里改 {label}", {label})} disabled={!ctx.onBoard}>
           <span dangerouslySetInnerHTML={{ __html: svg }} />
           {ctx.onBoard && <span className="board-edit"><Pencil size={13} aria-hidden="true" /></span>}
         </button>

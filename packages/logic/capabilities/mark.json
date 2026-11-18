@@ -2,10 +2,7 @@
   "name": "mark",
   "studio": {
     "order": 11,
-    "label": {
-      "zh": "图记",
-      "en": "Marks"
-    }
+    "label": "@capability.mark.studio.label"
   },
   "items": {
     "formulaNot": {

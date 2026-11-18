@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { finiteExtent } from 'kernel/view'
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { mix, paintPixels, token } from 'kernel/view'
 import { useElementSize } from 'kernel/view'
 import { pointAlongLine, polarLine } from 'cvlib'

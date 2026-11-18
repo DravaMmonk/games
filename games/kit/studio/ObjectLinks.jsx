@@ -16,7 +16,7 @@ export default function ObjectLinks({ content, kind, full, namespace, onOpen }) 
   )
   if (!tags.length && !relations.length && !trays.length && !sections.length && chain.length < 2) return null
   return (
-    <nav className="object-links" aria-label={tr('关联', 'Linked objects')}>
+    <nav className="object-links" aria-label={tr("关联")}>
       {chain.length > 1 && <span className="source-mark"><Layers size={12} aria-hidden="true" /> {chain.join(' ← ')}</span>}
       {tags.map((name) => chip('tag', name, Tag))}
       {relations.map((name) => chip('relation', name, Spline))}

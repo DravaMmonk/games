@@ -23,5 +23,21 @@
   "part.const.settings.value.label": "数值",
   "part.reg.settings.reg.label": "名字",
   "part.reg.settings.start.label": "初值",
-  "section.line.title": "线"
+  "section.line.title": "线",
+  "capability.want.studio.label": "目标条件",
+  "kind.task.fields.stage.about": "这次升级留下的管线分段名称",
+  "kind.task.fields.intro.of.fields.show.about": "引言或通关文案旁显示的一个值",
+  "kind.task.fields.intro.about": "这个任务自己的引言：第一次做到它时读（第一个任务的接在这一关的后面）",
+  "kind.task.fields.talks.about": "板上有「说」元件：接到它的位每一拍说到线上",
+  "kind.task.fields.hidden.about": "隐藏测试：每次运行一并检查，通关后公开；只合上可见测试的板过不了它",
+  "kind.task.fields.want.about": "每个输出（和 say）每一拍应当是什么",
+  "kind.task.fields.naive.about": "直觉上的错解：看起来能做、其实过不了这个任务的板，必须失败",
+  "kind.task.fields.starter.about": "这个任务一打开就摆在板上的蓝图：一样要修的作品。它不能直接过关",
+  "kind.task.fields.results.of.fields.of.about": "显示哪一项：任务的一个口",
+  "kind.task.fields.results.about": "结果区的几行，按顺序；不写就是领域默认的几行",
+  "kind.task.fields.views.about": "这个任务里每种形状的显示方式（换掉游戏默认的那几种）",
+  "shape.inputs.of.fields.view.about": "这个口的值起初画成哪种显示方式（玩家在详情和结果区里换）",
+  "shape.test.fields.line.about": "一拍一个字符：0、1，或 . 表示什么也不说",
+  "shape.test.fields.inputs.about": "每个输入每一拍的值",
+  "shape.views.about": "能用的显示方式，第一种是起始；只有一种时玩家不能切换"
 }

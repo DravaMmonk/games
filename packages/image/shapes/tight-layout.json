@@ -1,8 +1,5 @@
 {
   "type": "bool",
-  "about": {
-    "zh": "只占所需的宽",
-    "en": "each only as wide as it needs"
-  },
+  "about": "@shape.tight-layout.about",
   "optional": true
 }

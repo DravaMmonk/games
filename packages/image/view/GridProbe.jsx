@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { pixelText, readCell } from 'kernel/view'
 import { GridView, GridPicture } from 'kernel/view'
 import { useMark } from 'kernel/view'
-import { L, keyOf, tr } from 'kernel/view'
+import { L, keyOf } from "kernel/view"
+import { tr } from 'kernel/words'
 import './grid-probe.css'
 
 /** Inspect the inputs and outputs of a black box, then identify its operation. */
@@ -46,12 +47,12 @@ export default function GridProbe({ resource, onSolve }) {
         ))}
       </div>
       <div className="probe-machine">
-        {figure(input, tr('输入', 'Input'), inputRead)}
+        {figure(input, tr("输入"), inputRead)}
         <div className="probe-box" aria-hidden="true">？？？</div>
-        {figure(output, tr('输出', 'Output'), outputRead)}
+        {figure(output, tr("输出"), outputRead)}
       </div>
       <p className="pixel-probe" aria-live="polite">
-        {point ? <>{tr(`第 ${point.x + 1} 列、第 ${point.y + 1} 行：`, `Column ${point.x + 1}, row ${point.y + 1}: `)}{tr('输入 ')}<b>{pixelText(inputRead.value, 3)}</b>{tr('，输出 ')}<b>{pixelText(outputRead.value, 3)}</b></>
+        {point ? <>{tr("第 {value} 列、第 {value2} 行：", {value: point.x + 1, value2: point.y + 1})}{tr('输入 ')}<b>{pixelText(inputRead.value, 3)}</b>{tr('，输出 ')}<b>{pixelText(outputRead.value, 3)}</b></>
           : tr('点击图中的格子（电脑上也可将鼠标悬停在格子上），读取它的数值。')}
       </p>
       <div className="probe-question">
@@ -61,7 +62,7 @@ export default function GridProbe({ resource, onSolve }) {
             <button key={keyOf(choice)} type="button" {...mark(`answers[${index}]`)} onClick={() => choose(choice)}>{L(choice)}</button>
           ))}
         </div>
-        <p className="probe-feedback" aria-live="polite">{rejected !== null && `${tr(`不是 ${L(rejected)}。`, `Not ${L(rejected)}. `)}${L(wrong)}`}</p>
+        <p className="probe-feedback" aria-live="polite">{rejected !== null && `${tr("不是 {value}。", {value: L(rejected)})}${L(wrong)}`}</p>
       </div>
     </div>
   )

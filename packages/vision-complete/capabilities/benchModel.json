@@ -2,10 +2,7 @@
   "extends": "benchModel",
   "items": {
     "racer": {
-      "about": {
-        "zh": "核速判：看输入和输出，限时选出是哪个 3×3 核；旋钮 untimed（不限时）；一局结束后 final 是答对的轮数",
-        "en": "the kernel sprint: from an input and its output, pick the 3×3 kernel against the clock; knob untimed; once a run ends, final is how many rounds were right"
-      },
+      "about": "@capability.benchModel.items.racer.about",
       "shape": "vision-complete/bench-racer",
       "params": {
         "type": "obj",
@@ -31,10 +28,7 @@
                 }
               }
             },
-            "about": {
-              "zh": "核按 3×3 核元件的读法：权重是 cells ÷ div",
-              "en": "kernels as the 3×3 kernel part reads them: the weights are cells ÷ div"
-            }
+            "about": "@capability.benchModel.items.racer.params.fields.kernels.about"
           },
           "inputs": {
             "type": "list",
@@ -63,19 +57,13 @@
                 "type": "num"
               }
             },
-            "about": {
-              "zh": "第 n 轮（从 0 数）的秒数：max(min, start − step·n)",
-              "en": "the seconds for round n (from 0): max(min, start − step·n)"
-            }
+            "about": "@capability.benchModel.items.racer.params.fields.time.about"
           }
         }
       }
     },
     "sum": {
-      "about": {
-        "zh": "叠加：频率 ks 各一道正弦波，振幅旋钮名为 k1、k2…，叠到目标上",
-        "en": "stacking waves: a sine wave for each frequency in ks, with amplitude knobs named k1, k2 …, stacked onto the target"
-      },
+      "about": "@capability.benchModel.items.sum.about",
       "shape": "vision-complete/bench-sum",
       "params": {
         "type": "obj",
@@ -105,10 +93,7 @@
       }
     },
     "probe": {
-      "about": {
-        "zh": "探针：曲线乘一道波再平均，读出一个频率；旋钮 j（探针频率）、m（读数乘以）、shift（输入错开）、pick（两个读数的合法：cos、sin、sum、mag）",
-        "en": "the probe: a curve times a wave, averaged, reads one frequency; knobs j (probe frequency), m (reading times), shift (input shift), pick (how two readings combine: cos, sin, sum, mag)"
-      },
+      "about": "@capability.benchModel.items.probe.about",
       "shape": "vision-complete/bench-probe",
       "params": {
         "type": "obj",
@@ -127,10 +112,7 @@
                 "type": "num"
               }
             },
-            "about": {
-              "zh": "可以错开的那道输入波（中线 0.5）",
-              "en": "the input wave that can be shifted (on a middle line of 0.5)"
-            }
+            "about": "@capability.benchModel.items.probe.params.fields.wave.about"
           }
         }
       },
@@ -145,10 +127,7 @@
               "blind",
               "combine"
             ],
-            "about": {
-              "zh": "find：转频率找到它；read：读出振幅；blind：错开到读不到；combine：合两个读数",
-              "en": "find: turn the frequency to find it; read: read its amplitude; blind: shift it out of sight; combine: put two readings together"
-            }
+            "about": "@capability.benchModel.items.probe.stage.fields.kind.about"
           },
           "input": {
             "type": "obj",
@@ -182,27 +161,18 @@
             "of": {
               "type": "num"
             },
-            "about": {
-              "zh": "合读数时试的几个错开角度",
-              "en": "the shifts a combination is tried at"
-            },
+            "about": "@capability.benchModel.items.probe.stage.fields.checks.about",
             "optional": true
           },
           "answers": {
             "type": "str",
-            "about": {
-              "zh": "这一步接受的全部答案，用逗号连起",
-              "en": "every answer the step accepts, joined by commas"
-            }
+            "about": "@capability.benchModel.items.probe.stage.fields.answers.about"
           }
         }
       }
     },
     "alias": {
-      "about": {
-        "zh": "采样台：连续的波变成一排点；每一步只开 k（冒名的频率）、M（采样点数）、K（采样前保留的最高频率）中的一个",
-        "en": "the sampling bench: a continuous wave turned into points; each step opens one of k (the impostor frequency), M (how many samples), K (the highest frequency kept before sampling)"
-      },
+      "about": "@capability.benchModel.items.alias.about",
       "shape": "vision-complete/bench-alias",
       "params": {
         "type": "obj",
@@ -220,10 +190,7 @@
               },
               "min": 3
             },
-            "about": {
-              "zh": "不滤就采时，频率 k 采 M 个点后折回到哪里：[k, M, 折回的频率]",
-              "en": "where a frequency k folds to when M points are sampled unfiltered: [k, M, the frequency it poses as]"
-            }
+            "about": "@capability.benchModel.items.alias.params.fields.folds.about"
           }
         }
       },
@@ -290,19 +257,13 @@
           },
           "answers": {
             "type": "str",
-            "about": {
-              "zh": "这一步能过的全部值，用逗号连起",
-              "en": "every value the step passes with, joined by commas"
-            }
+            "about": "@capability.benchModel.items.alias.stage.fields.answers.about"
           }
         }
       }
     },
     "stop": {
-      "about": {
-        "zh": "什么时候停：多项式拟合几个带噪声的样本；旋钮 step（训练到第几个检查点）、lambda（第几个惩罚）；ratio 是新样本误差和它的最低值之比",
-        "en": "when to stop: a polynomial fitted to a few noisy samples; knobs step (the checkpoint trained to) and lambda (which penalty); ratio is the new-sample error over its lowest"
-      },
+      "about": "@capability.benchModel.items.stop.about",
       "shape": "vision-complete/bench-stop",
       "params": {
         "type": "obj",
@@ -316,10 +277,7 @@
           },
           "wave": {
             "type": "num",
-            "about": {
-              "zh": "真实的曲线是 sin(wave·x)",
-              "en": "the true curve is sin(wave·x)"
-            }
+            "about": "@capability.benchModel.items.stop.params.fields.wave.about"
           },
           "train": {
             "type": "int",
@@ -339,10 +297,7 @@
       }
     },
     "contrast": {
-      "about": {
-        "zh": "拉近与推开：没有标签，训练编码器让每张图的两个变形版本互相认出；旋钮 push；算出 worst（认对搭档的最低概率）、negative（负对平均 sim）",
-        "en": "pull close, push apart: with no labels, train an encoder so two altered views of each picture find each other; knob push; computes worst (the lowest chance of picking the partner) and negative (the mean sim of negative pairs)"
-      },
+      "about": "@capability.benchModel.items.contrast.about",
       "shape": "vision-complete/bench-contrast",
       "params": {
         "type": "obj",
@@ -376,10 +331,7 @@
       }
     },
     "hough": {
-      "about": {
-        "zh": "投票：边缘点给经过它的每条直线投票；旋钮 bin 选分箱大小；每个情形是一张图，matched 是前两个峰对上的线数",
-        "en": "voting: edge points vote for every line through them; knob bin picks the bin size; each case is a picture, and matched counts the lines the top two peaks hit"
-      },
+      "about": "@capability.benchModel.items.hough.about",
       "shape": "vision-complete/bench-hough",
       "params": {
         "type": "obj",
@@ -438,10 +390,7 @@
       }
     },
     "ransac": {
-      "about": {
-        "zh": "共识：每轮随机抽两点连线、数支持它的点；旋钮 delta（门槛）和每个情形的 k（轮数）；每个情形是一种外点比例，算出几百次试验的成功率 rate 和超出预算的轮数 overBudget",
-        "en": "consensus: each round joins two random points and counts the support; knobs delta (the threshold) and k per case (the rounds); each case is an outlier ratio, with the success rate over hundreds of trials and overBudget, the rounds over budget"
-      },
+      "about": "@capability.benchModel.items.ransac.about",
       "shape": "vision-complete/bench-ransac",
       "params": {
         "type": "obj",
@@ -479,10 +428,7 @@
                 }
               }
             },
-            "about": {
-              "zh": "一组能过的设定：门槛 δ 和每一种外点比例的轮数",
-              "en": "settings that pass: the threshold δ and the rounds for each outlier ratio"
-            }
+            "about": "@capability.benchModel.items.ransac.params.fields.solution.about"
           }
         }
       },
@@ -499,10 +445,7 @@
       }
     },
     "cover": {
-      "about": {
-        "zh": "四个角：在封面和照片上连出对应点（旋钮 pairs），解出单应，把封面贴回照片；算出点对数 pairs 和误差 error",
-        "en": "four corners: pair points on the cover and in the photo (knob pairs), solve the homography, paste the cover back; computes how many pairs and the error"
-      },
+      "about": "@capability.benchModel.items.cover.about",
       "shape": "vision-complete/bench-cover",
       "params": {
         "type": "obj",
@@ -588,10 +531,7 @@
       }
     },
     "gan": {
-      "about": {
-        "zh": "骗过鉴定员：两支笔的生成器对一个鉴定员，按旋钮 dSteps、gSteps、gRate 定的节奏轮流训练；算出 left、right（两堆各占多少）、accuracy、streak（其余目标连续达到的回合数）",
-        "en": "fooling the judge: a two-pen generator against a discriminator, trained in turns at the rhythm of knobs dSteps, gSteps, gRate; computes left, right (each cluster’s share), accuracy, and streak (turns in a row the other limits held)"
-      },
+      "about": "@capability.benchModel.items.gan.about",
       "shape": "vision-complete/bench-gan",
       "params": {
         "type": "obj",
@@ -629,19 +569,13 @@
                 "type": "num"
               }
             },
-            "about": {
-              "zh": "一个能过关的节奏",
-              "en": "a rhythm that wins"
-            }
+            "about": "@capability.benchModel.items.gan.params.fields.good.about"
           }
         }
       }
     },
     "appleLight": {
-      "about": {
-        "zh": "白光下比较两个物体的 RGB 通道，调节光强并辨认红色物体",
-        "en": "compare two objects in RGB channels under neutral light, adjust its intensity and identify the red object"
-      },
+      "about": "@capability.benchModel.items.appleLight.about",
       "shape": "vision-complete/bench-appleLight",
       "params": {
         "type": "obj",
@@ -668,10 +602,7 @@
       }
     },
     "separable": {
-      "about": {
-        "zh": "比较普通卷积与单输入通道的深度可分离卷积",
-        "en": "compare ordinary and depthwise separable convolution for one input channel"
-      },
+      "about": "@capability.benchModel.items.separable.about",
       "shape": "vision-complete/bench-separable",
       "stage": {
         "type": "obj",
@@ -687,10 +618,7 @@
       }
     },
     "attentionRoles": {
-      "about": {
-        "zh": "观察查询、键和值对图块注意力的影响",
-        "en": "observe how queries, keys and values affect patch attention"
-      },
+      "about": "@capability.benchModel.items.attentionRoles.about",
       "shape": "vision-complete/bench-attentionRoles",
       "params": {
         "type": "obj",
@@ -707,10 +635,7 @@
       }
     },
     "attentionTraining": {
-      "about": {
-        "zh": "训练同一组图块产生 Q、K、V 的简化线性投影",
-        "en": "train simplified linear projections that produce Q, K and V from the same patches"
-      },
+      "about": "@capability.benchModel.items.attentionTraining.about",
       "shape": "vision-complete/bench-attentionTraining"
     }
   }

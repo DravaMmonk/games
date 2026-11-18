@@ -14,9 +14,6 @@
       "name": "circuit/card-view"
     }
   },
-  "about": {
-    "zh": "桌面卡片、手机格位、详情；不写用默认",
-    "en": "the desktop card, the phone tile, the detail; the defaults where left out"
-  },
+  "about": "@shape.part-views.about",
   "optional": true
 }

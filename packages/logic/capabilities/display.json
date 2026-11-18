@@ -2,31 +2,19 @@
   "extends": "display",
   "items": {
     "proof-screen": {
-      "about": {
-        "zh": "证明卡片、读数和面板",
-        "en": "Proof cards, readouts and panels"
-      },
+      "about": "@capability.display.items.proof-screen.about",
       "role": "circuit"
     },
     "gates-screen": {
-      "about": {
-        "zh": "真值电路卡片、读数和面板",
-        "en": "Truth circuit cards, readouts and panels"
-      },
+      "about": "@capability.display.items.gates-screen.about",
       "role": "circuit"
     },
     "machine-screen": {
-      "about": {
-        "zh": "证明助手卡片、读数和面板",
-        "en": "Proof assistant cards, readouts and panels"
-      },
+      "about": "@capability.display.items.machine-screen.about",
       "role": "circuit"
     },
     "passed": {
-      "about": {
-        "zh": "通关窗口中的已声明规则",
-        "en": "Declared rules in the pass dialog"
-      },
+      "about": "@capability.display.items.passed.about",
       "role": "passed"
     }
   }

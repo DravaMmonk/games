@@ -1,4 +1,5 @@
-import { L, T } from 'kernel'
+import { L } from "kernel"
+import { T } from 'kernel/words'
 import { passedWork } from 'circuit'
 import { AUDIT_CASE_LIMIT, blankCase, restoreAuditCases, runAudit } from './audit-cases.js'
 import { sentenceOf } from './iso.js'
@@ -16,7 +17,7 @@ export function audit(source, { game, progress, saved }) {
   const [board] = level.boards
   // The tabs are the level's cases and its letters (work.js caseViews): the same declaration and cases read in other
   // words; each runs the cases and says what it finds in its own.
-  const tabs = level.views?.map(({ label }) => ({ label })) ?? [{ label: T('这份声明', 'This declaration') }]
+  const tabs = level.views?.map(({ label }) => ({ label })) ?? [{ label: T("这份声明") }]
   const reports = new Map()
   const report = (work, k = 0) => {
     if (reports.get(k)?.work !== work) {
@@ -47,13 +48,13 @@ export function audit(source, { game, progress, saved }) {
       if (level.want === 'logic/agree') return T('每一条条例的预期都符合需求，这份声明的结果也都和预期相符。')
       if (level.want === 'logic/expose') return T('每一条条例的预期都符合需求，这份声明的结果都和预期不符。')
       const { caught } = report(work)
-      return T(`已找出错误：这份声明在第 ${caught[0] + 1} 条条例上得出错误结论。`, `Fault found: this declaration gets case ${caught[0] + 1} wrong.`)
+      return T("已找出错误：这份声明在第 {value} 条条例上得出错误结论。", {value: caught[0] + 1})
     },
     go: T('运行检验条例'),
     done: level.want === 'logic/agree' ? T('结果全部相符') : T('已找出错误'),
     checks: (k) => ({
-      cells: caseCells(inView(level, k)), resultLabel: T('实际结果', 'Actual'), blank: () => blankCase(level), max: AUDIT_CASE_LIMIT, addLabel: T('添加条例'),
-      formTitle: (n) => T(`第 ${n + 1} 条检验条例`, `Test case ${n + 1}`),
+      cells: caseCells(inView(level, k)), resultLabel: T("实际结果"), blank: () => blankCase(level), max: AUDIT_CASE_LIMIT, addLabel: T('添加条例'),
+      formTitle: (n) => T("第 {n} 条检验条例", {n: n + 1}),
       empty: T('还没有条例。'), fixed: Boolean(level.slots), tip: T('点按一条条例即可修改。'),
     }),
   }

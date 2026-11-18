@@ -1,3 +1,4 @@
+import { T } from '../shell/i18n.js'
 // The wiring board the studio's relation board (RelationBoard.jsx) and a chapter's links (ChapterBoard.jsx) share:
 // cards with their input on the top edge and their output on the bottom edge, wires from one card's output to
 // another's input. It wires as the circuit board does (packages/circuit/view/board/CanvasEditor.jsx): click a dot to
@@ -10,7 +11,7 @@
 // id alone or the name alone (the author's choice, kept), on one line, each card as wide as its words: never cut short.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
-import { tr } from '../shell/i18n.js'
+import { L, tr } from '../shell/i18n.js'
 import { usePref } from './prefs.js'
 import { useElementSize } from '../views/useElementSize.js'
 import { usePointerSession } from '../views/usePointerSession.js'
@@ -46,7 +47,7 @@ const typing = (target) => target?.matches?.('input, textarea, select, [contente
  * of the wire picked; `active`: the card picked. `onRemoveCard(id)`, when given, takes a card off the board
  * (`removeCardLabel` names it).
  */
-export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = () => '', badges = () => null, describe, portal: whereFrom = () => tr('外部关卡', 'External level'), active, wire, pending, isExternal, refuse = () => null, onLevel, onWire, onConnect, onDelete, onRemoveCard = null, removeCardLabel = '', onCancel }) {
+export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = () => '', badges = () => null, describe, portal: whereFrom = () => tr("外部关卡"), active, wire, pending, isExternal, refuse = () => null, onLevel, onWire, onConnect, onDelete, onRemoveCard = null, removeCardLabel = '', onCancel }) {
   const scroller = useRef(null)
   const canvas = useRef(null)
   const width = useElementSize(scroller)?.width ?? 520
@@ -102,7 +103,7 @@ export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = (
     if (!held) return onLevel(id)
     if (held.id === id) return take(null)
     // A card takes the wire on its own end of the other kind: an output in hand goes to its input, and so on.
-    if (held.side === 'out' && isExternal(id)) return say(tr('外部关卡不能接入。', 'An external level takes no wires.'))
+    if (held.side === 'out' && isExternal(id)) return say(tr("外部关卡不能接入。"))
     if (connect(...ends(held, id))) take(null)
   }
   const target = (id, side) => Boolean(held) && held.side !== side && held.id !== id && !(side === 'in' && isExternal(id)) && !refuse(...ends(held, id))
@@ -173,7 +174,7 @@ export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = (
         const over = document.elementFromPoint(release.clientX, release.clientY)
         const to = over?.closest('[data-course-input]')?.dataset.courseInput ?? over?.closest('[data-course-card]')?.dataset.courseCard
         if (to === undefined || to === id) return
-        if (isExternal(to)) say(tr('外部关卡不能接入。', 'An external level takes no wires.'))
+        if (isExternal(to)) say(tr("外部关卡不能接入。"))
         else connect(id, to)
       },
     })
@@ -187,12 +188,12 @@ export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = (
       : null
   return (
     <div className={`course-board-frame ${held ? 'is-picking' : ''}`}>
-      <span className="seg course-board-labels" role="radiogroup" aria-label={tr('卡片上写什么', 'What cards say')}>
-        {[['both', 'id · 名字', 'id · name'], ['id', 'id', 'id'], ['title', '名字', 'Name']].map(([value, zh, en]) => (
-          <button key={value} type="button" role="radio" aria-checked={shows === value} className={shows === value ? 'is-on' : ''} onClick={() => setShows(value)}>{tr(zh, en)}</button>
+      <span className="seg course-board-labels" role="radiogroup" aria-label={tr("卡片上写什么")}>
+        {[['both', T("id · 名字")], ['id', "id"], ['title', T("名字", {}, "arrangement-board")]].map(([value, label]) => (
+          <button key={value} type="button" role="radio" aria-checked={shows === value} className={shows === value ? 'is-on' : ''} onClick={() => setShows(value)}>{L(label)}</button>
         ))}
       </span>
-      <div ref={scroller} className="course-board" aria-label={tr('关卡接线板', 'Course wiring board')}
+      <div ref={scroller} className="course-board" aria-label={tr("关卡接线板")}
         onPointerMove={(event) => { if (held) setPointer(point(event)) }}
         onPointerDown={(event) => { if (event.target === scroller.current || event.target === canvas.current) skipClick.current = false }}
         onClick={(event) => {
@@ -235,11 +236,11 @@ export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = (
                 {face(id).id && <code>{face(id).id}</code>}{face(id).title && <span>{face(id).title}</span>}{badges(id)}
               </button>
               <button type="button" className={`course-port is-input ${wired.in.has(id) ? 'is-wired' : ''} ${held?.id === id && held.side === 'in' ? 'is-picked' : target(id, 'in') ? 'is-target' : ''}`}
-                data-course-input={isExternal(id) ? undefined : id} aria-label={`${tr('输入', 'Input')} ${describe(id)}`} aria-pressed={held?.id === id && held.side === 'in'}
-                title={tr('前置接到这里', 'Prerequisites come in here')} disabled={pending || isExternal(id)}
+                data-course-input={isExternal(id) ? undefined : id} aria-label={`${tr("输入")} ${describe(id)}`} aria-pressed={held?.id === id && held.side === 'in'}
+                title={tr("前置接到这里")} disabled={pending || isExternal(id)}
                 onClick={() => pickDot(id, 'in')} />
               <button type="button" className={`course-port is-output ${wired.out.has(id) ? 'is-wired' : ''} ${(held?.id === id && held.side === 'out') || drag?.from === id ? 'is-picked' : target(id, 'out') ? 'is-target' : ''}`}
-                aria-label={`${tr('输出', 'Output')} ${describe(id)}`} aria-pressed={held?.id === id && held.side === 'out'} title={tr('从这里接到后续', 'Wire to what comes after')}
+                aria-label={`${tr("输出")} ${describe(id)}`} aria-pressed={held?.id === id && held.side === 'out'} title={tr("从这里接到后续")}
                 disabled={pending} onPointerDown={(event) => pull(event, id)} onClick={(event) => click(event, () => pickDot(id, 'out'))} />
             </div>
           ))}
@@ -253,9 +254,9 @@ export default function ArrangementBoard({ board, idOf = (id) => id, titleOf = (
 /** A wire's delete button at its middle: a small round ×, in the board's SVG so it rides with the wire. */
 function WireDelete({ at, name, onDelete }) {
   return (
-    <g className="course-wire-x" transform={`translate(${at.x} ${at.y})`} role="button" tabIndex={-1} aria-label={`${tr('断开连线', 'Disconnect')} ${name}`}
+    <g className="course-wire-x" transform={`translate(${at.x} ${at.y})`} role="button" tabIndex={-1} aria-label={`${tr("断开连线")} ${name}`}
       onClick={(event) => { event.stopPropagation(); onDelete() }}>
-      <title>{tr('断开连线', 'Disconnect')}</title>
+      <title>{tr("断开连线")}</title>
       <circle r={12} className="course-wire-x-hit" />
       <circle r={8} className="course-wire-x-dot" />
       <path d="M-3 -3L3 3M3 -3L-3 3" />

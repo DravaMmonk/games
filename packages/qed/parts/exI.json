@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "a",
-      "label": "@part.exI.inputs.0.label"
+      "label": "P(t)"
     }
   ],
   "settings": {

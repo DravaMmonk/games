@@ -2,41 +2,23 @@
   "name": "view",
   "studio": {
     "order": 13,
-    "label": {
-      "zh": "视图",
-      "en": "Views"
-    }
+    "label": "@capability.view.studio.label"
   },
   "items": {
     "pixels": {
-      "about": {
-        "zh": "像素：亮度显示为灰度",
-        "en": "pixels: brightness as grey level"
-      }
+      "about": "@capability.view.items.pixels.about"
     },
     "terrain": {
-      "about": {
-        "zh": "地形：亮度显示为高度",
-        "en": "terrain: brightness as height"
-      }
+      "about": "@capability.view.items.terrain.about"
     },
     "slope": {
-      "about": {
-        "zh": "坡度：等高线和指向变亮最快方向的箭头",
-        "en": "slope: contours, and arrows pointing where it brightens fastest"
-      }
+      "about": "@capability.view.items.slope.about"
     },
     "profile": {
-      "about": {
-        "zh": "剖面：一行像素的亮度曲线",
-        "en": "profile: the brightness along one row of pixels"
-      }
+      "about": "@capability.view.items.profile.about"
     },
     "spectrum": {
-      "about": {
-        "zh": "频谱：各频率分量的强度",
-        "en": "spectrum: the strength of each frequency"
-      }
+      "about": "@capability.view.items.spectrum.about"
     }
   }
 }

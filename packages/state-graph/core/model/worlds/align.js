@@ -2,8 +2,8 @@
 
 import { ORDERS } from 'table';
 import { sceneEdge, W } from 'table';
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { world, look, cell, yes, num, DIR, THIS_CELL } from 'table';
 
 /* ---------- alignment table: one word on top, one on the left ---------- */
@@ -11,7 +11,7 @@ import { world, look, cell, yes, num, DIR, THIS_CELL } from 'table';
 const alignDef = {
   sensors: {
     ul: cell(...DIR.ul, [0, -1, -1]), up: cell(...DIR.up, [0, -1, 0]), left: cell(...DIR.left, [0, 0, -1]),
-    same: { ...yes(T('两字相同', 'letters match'), T('同', '='), 'eq'), heads: true }, start: yes(T('是起点', 'is start'), T('起', 'start'), 'flag'),
+    same: { ...yes(T("两字相同"), T("同"), 'eq'), heads: true }, start: yes(T("是起点"), T("起"), 'flag'),
   },
   facts: ['same', 'start'],
   outs: [['cell', THIS_CELL, [0, 0, 0]]],
@@ -31,10 +31,10 @@ const alignDef = {
     return cells;
   },
   keys: (t, x) => ({ cell: x.id }),
-  where: x => tr(`第 ${x.i} 行第 ${x.j} 列`, `row ${x.i}, column ${x.j}`),
+  where: x => tr("第 {i} 行第 {j} 列", {i: x.i, j: x.j}),
   answerKey: t => `${t.left.length},${t.top.length}`,
   answer(t, table) { return table.get(this.answerKey(t)); },
-  name: key => { const [i, j] = key.split(','); return tr(`第 ${i} 行第 ${j} 列`, `row ${i}, column ${j}`); },
+  name: key => { const [i, j] = key.split(','); return tr("第 {i} 行第 {j} 列", {i, j}); },
   label: t => `${t.top} / ${t.left}`,
   orderText: () => ORDERS.rowTL.l,
   sample: t => { const i = Math.min(2, t.left.length), j = Math.min(2, t.top.length); return { i, j, id: `${i},${j}` }; },
@@ -62,7 +62,7 @@ export const align = world(alignDef);
  */
 export const local = world({
   ...alignDef,
-  sensors: { ...alignDef.sensors, score: { ...num(T('本格得分', 'cell score'), T('分', 'pts'), 'star'), heads: true } },
+  sensors: { ...alignDef.sensors, score: { ...num(T("本格得分"), T("分"), 'star'), heads: true } },
   facts: ['same', 'score'],
   sense: (t, { i, j }, id) => { const same = !!(i && j && t.left[i - 1] === t.top[j - 1]); return id === 'same' ? same : same ? 2 : -1; },
   answerKeys: t => { const k = []; for (let i = 1; i <= t.left.length; i++) for (let j = 1; j <= t.top.length; j++) k.push(`${i},${j}`); return k; },

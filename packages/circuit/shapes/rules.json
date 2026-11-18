@@ -19,16 +19,10 @@
           "type": "shape",
           "name": "circuit/engine-expression"
         },
-        "about": {
-          "zh": "设置 → 新值的式子",
-          "en": "setting → the expression of its new value"
-        }
+        "about": "@shape.rules.of.fields.set.about"
       }
     }
   },
-  "about": {
-    "zh": "交互：一个设置改了，另几个跟着改",
-    "en": "interaction: when a setting changes, others follow"
-  },
+  "about": "@shape.rules.about",
   "optional": true
 }

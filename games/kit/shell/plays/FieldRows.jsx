@@ -65,7 +65,7 @@ export default function FieldRows({ screen, resource, play }) {
                   <b className="fr-keyword">{label}</b>
                   {name && <code className="fr-name">{name}</code>}
                   {slots.map((slot) => <Slot key={slot.key} slot={slot} write={(value) => put(i, slot.key, value)} />)}
-                  {!locked && <button type="button" className="fr-remove" aria-label={tr('删除这一行', 'Remove this row')} onClick={(event) => { event.stopPropagation(); remove(i) }}><X size={14} /></button>}
+                  {!locked && <button type="button" className="fr-remove" aria-label={tr("删除这一行", {}, "field-rows")} onClick={(event) => { event.stopPropagation(); remove(i) }}><X size={14} /></button>}
                 </div>
                 {why && <p className="fr-error">{L(why)}</p>}
               </li>

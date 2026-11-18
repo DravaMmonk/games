@@ -26,10 +26,7 @@
     },
     "noise": {
       "type": "int",
-      "about": {
-        "zh": "彩色噪点的种子",
-        "en": "the seed of colour noise"
-      },
+      "about": "@shape.colour-test.fields.noise.about",
       "optional": true
     }
   }

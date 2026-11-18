@@ -2,22 +2,13 @@
   "extends": "kind",
   "items": {
     "graph": {
-      "about": {
-        "zh": "图像电路",
-        "en": "Image circuit"
-      }
+      "about": "@capability.kind.items.graph.about"
     },
     "probe": {
-      "about": {
-        "zh": "探针",
-        "en": "Probe"
-      }
+      "about": "@capability.kind.items.probe.about"
     },
     "board": {
-      "about": {
-        "zh": "参数台",
-        "en": "Parameter bench"
-      }
+      "about": "@capability.kind.items.board.about"
     }
   }
 }

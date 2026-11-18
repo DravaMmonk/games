@@ -2,10 +2,7 @@
   "name": "board",
   "studio": {
     "order": 3,
-    "label": {
-      "zh": "板",
-      "en": "Boards"
-    }
+    "label": "@capability.board.studio.label"
   },
   "items": {
     "board": {

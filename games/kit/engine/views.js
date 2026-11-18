@@ -56,12 +56,12 @@ const CARD_VIEWS = {
 export const cardView = (name) => ({ cardWidth: DEFAULT_CARD_WIDTH, ...(CARD_VIEWS[name] ?? VIEWS[name]) })
 
 export const VIEWS = {
-  value: { shapes: ['scalar'], label: t('数值', 'Value') },
-  numbers: { shapes: ['grid'], label: t('数值', 'Numbers') },
+  value: { shapes: ['scalar'], label: t("数值") },
+  numbers: { shapes: ['grid'], label: t("数值", {}, "views") },
   pixels: { tileHeight: 112, shapes: ['grid'], label: t('图像') },
-  plane: { shapes: ['grid'], label: t('箭头', 'Arrows'), fits: (g) => planar(g) },
-  carried: { shapes: ['grid'], label: t('变换', 'Transformation'), fits: (g) => planar(g) && g.w === 2 },
-  chain: { shapes: ['grid'], label: t('首尾相接', 'Tip to tail'), fits: (g) => planar(g) && g.w >= 2 },
+  plane: { shapes: ['grid'], label: t("箭头"), fits: (g) => planar(g) },
+  carried: { shapes: ['grid'], label: t("变换"), fits: (g) => planar(g) && g.w === 2 },
+  chain: { shapes: ['grid'], label: t("首尾相接"), fits: (g) => planar(g) && g.w >= 2 },
   plot: { shapes: ['grid'], label: t('函数图像'), fits: (g) => grey(g) && g.h <= 2 && g.w >= 2 },
   profile: { shapes: ['grid'], label: t('剖面'), fits: (g) => grey(g) && g.h >= 2 && g.w >= 2 },
   surface: { shapes: ['grid'], label: t('地形'), fits: (g) => grey(g) && g.h >= 2 && g.w >= 2 },
@@ -69,7 +69,7 @@ export const VIEWS = {
   spectrum: { shapes: ['grid'], label: t('频谱'), fits: (g) => grey(g) && g.w >= 2 && g.w * g.h <= 128 * 128 },
   centredBins: { shapes: ['grid'], label: t('零频居中的幅度'), fits: (g) => grey(g) && g.w >= 2 },
   wave: { shapes: ['bits'], label: t('波形'), lane: 'wave' },
-  bands: { shapes: ['bits', 'ticks'], label: t('数值', 'Values'), lane: 'value' },
+  bands: { shapes: ['bits', 'ticks'], label: t("数值", {}, "views-2"), lane: 'value' },
   terms: { shapes: ['ticks'], label: t('逐项'), lane: 'terms' },
   dots: { shapes: ['ticks'], label: t('数列图'), lane: 'dots' },
   sequence: { cardWidth: 156, shapes: ['list'], label: t('序列') },
@@ -124,7 +124,7 @@ export const viewsProblems = (defaults) => Object.entries(defaults ?? {}).flatMa
 
 export const shapeOf = (value) => (isGrid(value) ? 'grid' : 'scalar')
 
-export const valueText = (v) => (v === null || v === undefined ? '—' : v === true ? t('是', 'yes') : v === false ? t('否', 'no') : typeof v === 'number' ? numberText(v) : String(v))
+export const valueText = (v) => (v === null || v === undefined ? '—' : v === true ? t("是") : v === false ? t("否") : typeof v === 'number' ? numberText(v) : String(v))
 
 /* ---------- a value content writes ---------- */
 

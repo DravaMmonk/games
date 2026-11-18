@@ -16,10 +16,7 @@
         "type": "shape",
         "name": "circuit/engine-expression"
       },
-      "about": {
-        "zh": "设置 → 按下后的新值",
-        "en": "setting → its value once pressed"
-      }
+      "about": "@shape.action-show.fields.set.about"
     },
     "when": {
       "type": "shape",
@@ -27,8 +24,5 @@
       "optional": true
     }
   },
-  "about": {
-    "zh": "按下把几个设置改成算出的值",
-    "en": "a button setting some settings to worked-out values"
-  }
+  "about": "@shape.action-show.about"
 }

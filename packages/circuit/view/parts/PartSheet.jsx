@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { iconOf } from "./icons.js"
 import { settingsOf } from "../../core/parts.js"

@@ -5,8 +5,5 @@
     "min": 0
   },
   "min": 2,
-  "about": {
-    "zh": "第几行、第几列的图块",
-    "en": "the row and column of its patch"
-  }
+  "about": "@shape.tile-position.about"
 }

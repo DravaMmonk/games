@@ -1,16 +1,8 @@
-// The table domain's text, in the shared shell's language (../../shell/i18n.js, the same choice as every other page),
-// plus bilingual values for data that is built once (a game's content, the parts).
-//
-// - tr('中文', 'English') picks a string now. Use it for text that is rebuilt on every render.
-// - T('中文', 'English') is a bilingual string: it turns into the current language's text wherever it is put in a
-//   template, joined or set as textContent (and the shell's L() reads it as a { zh, en } pair). Level data, parts
-//   and components use it, so switching language only needs a re-render.
-// - lazy(() => tr(...)) is text assembled from other localized parts (a cell name, a part name); it is assembled
-//   again each time it is shown. Messages that stay on screen (fail sheets, a mode's message box) use it.
-// - hydrate(content) turns resolved display text into a value that renders in the current language.
+// Table models use coercible text while the shared shell reads the same translations explicitly.
 
-import { getLang, sideOf, tr } from 'kernel';
+import { getLang, sideOf } from "kernel"
 import { isText } from 'kernel';
+import { tr, T as words } from 'kernel/words';
 
 export { tr };
 export const isEn = () => getLang() === 'en';
@@ -25,7 +17,8 @@ class Lazy {
   toString() { return String(this.fn()); }
   toJSON() { return this.toString(); }
 }
-export const T = (zh, en) => new Txt({ zh, en });
+export const asText = (text) => new Txt(text);
+export const T = (...args) => asText(words(...args));
 export const lazy = fn => new Lazy(fn);
 
 /** A copy of plain data with display text wrapped for interpolation. */

@@ -20,7 +20,7 @@ import { L, tr } from '../shell/i18n.js'
 
 export function Strip({ line, label, next = null, selected, flash = [], onSlot }) {
   return (
-    <div className="ks-strip" role="group" aria-label={L(label) ?? tr('句子', 'Sentence')}>
+    <div className="ks-strip" role="group" aria-label={L(label) ?? tr("句子", {}, "strip")}>
       <Segments parts={line} next={next} selected={selected} flash={flash} onSlot={onSlot} />
       {next === 'end' && <span className="ks-caret" aria-hidden="true" />}
     </div>
@@ -32,7 +32,7 @@ function Segments({ parts, owner = null, next, selected, flash, onSlot }) {
     if (typeof part === 'string') {
       if (!owner) return <span key={k} className="ks-plain">{part}</span>
       return (
-        <button key={k} type="button" className={`ks-word ${owner.dim ? 'is-dim' : ''} ${part.trim() ? '' : 'is-gap'}`} data-family={owner.family} data-part={owner.part} disabled={owner.fixed} onClick={() => onSlot(owner.part)} aria-label={owner.fixed ? part : tr(`${part.trim() || '空格'}：点击移除`, `${part.trim() || 'space'}: tap to remove`)}>
+        <button key={k} type="button" className={`ks-word ${owner.dim ? 'is-dim' : ''} ${part.trim() ? '' : 'is-gap'}`} data-family={owner.family} data-part={owner.part} disabled={owner.fixed} onClick={() => onSlot(owner.part)} aria-label={owner.fixed ? part : tr("{value}：点击移除", {value: { zh: String(part.trim() || '空格'), en: String(part.trim() || 'space') }})}>
           {part}
         </button>
       )
@@ -47,7 +47,7 @@ function Segments({ parts, owner = null, next, selected, flash, onSlot }) {
     if (part.hole) {
       const name = L(part.label)
       return (
-        <button key={part.hole} type="button" className={`ks-hole ${selected === part.hole ? 'is-selected' : ''} ${next === part.hole ? 'is-next' : ''} ${flash.includes(part.hole) ? 'is-refused' : ''}`} data-slot={part.hole} aria-pressed={selected === part.hole} onClick={() => onSlot(part.hole)} aria-label={tr(`${name}：空位，点击选中`, `${name}: empty; tap to select`)}>
+        <button key={part.hole} type="button" className={`ks-hole ${selected === part.hole ? 'is-selected' : ''} ${next === part.hole ? 'is-next' : ''} ${flash.includes(part.hole) ? 'is-refused' : ''}`} data-slot={part.hole} aria-pressed={selected === part.hole} onClick={() => onSlot(part.hole)} aria-label={tr("{name}：空位，点击选中", {name})}>
           {name}
         </button>
       )

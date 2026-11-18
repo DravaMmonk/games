@@ -16,10 +16,7 @@
       "of": {
         "type": "int"
       },
-      "about": {
-        "zh": "第二近紧跟在后的格子",
-        "en": "the cells where the second nearest is close behind"
-      }
+      "about": "@shape.distances-test.fields.ambiguous.about"
     }
   }
 }

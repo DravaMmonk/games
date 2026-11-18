@@ -11,11 +11,11 @@ const ICONS = { value: Hash, numbers: Grid3x3, pixels: Image, plane: MoveUpRight
 export default function ViewSwitch({ views, value, onChange, compact = false }) {
   const { controls } = useContext(ViewScope)
   if (controls && views.every((view) => view in controls.options)) {
-    return <span className="view-pick is-direct" role="group" aria-label={tr('显示方式', 'Display')}>
+    return <span className="view-pick is-direct" role="group" aria-label={tr("显示方式")}>
       {Object.entries(controls.options).filter(([view]) => views.includes(view)).map(([view, option]) => {
         const label = L(option.label ?? VIEWS[view].label)
         const fresh = controls.fresh.includes(view)
-        const name = fresh ? tr(`${label}（新）`, `${label} (new)`) : label
+        const name = fresh ? tr("{label}（新）", {label}) : label
         return <button key={view} type="button" className={fresh ? 'is-new' : undefined} aria-pressed={value === view} aria-label={name}
           title={`${name} · ${L(option.hint)}`} onPointerDown={(event) => event.stopPropagation()} onClick={() => onChange(view)}>
           {createElement(view === 'pixels' ? Grid3x3 : ICONS[view], { size: 12, strokeWidth: 1.8 })}
@@ -26,7 +26,7 @@ export default function ViewSwitch({ views, value, onChange, compact = false }) 
   }
   const next = views[(views.indexOf(value) + 1) % views.length]
   return <span className="view-pick">
-    <button type="button" aria-label={tr(`切换为${L(VIEWS[next].label)}`, `Switch to ${L(VIEWS[next].label)}`)} title={L(VIEWS[next].label)} onPointerDown={(e) => e.stopPropagation()} onClick={() => onChange(next)}>
+    <button type="button" aria-label={tr("切换为{value}", {value: L(VIEWS[next].label)})} title={L(VIEWS[next].label)} onPointerDown={(e) => e.stopPropagation()} onClick={() => onChange(next)}>
       {createElement(ICONS[value], { size: 12, strokeWidth: 1.8 })}
       {!compact && <span>{L(VIEWS[value].label)}</span>}
     </button>

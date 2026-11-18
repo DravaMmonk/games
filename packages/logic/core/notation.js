@@ -1,3 +1,5 @@
+import { T as catalogText } from 'kernel/words'
+import { sideOf } from 'kernel'
 // How a level writes its formulas for the player (《证明完毕》). A level may give its proposition letters everyday
 // sentences (`words`: { Rain: { zh: '下雨', en: 'it rains' } }), so early proofs are about rain and wet ground rather
 // than A and B; and a connective is written as its symbol only once the course has introduced it (`symbols`), in
@@ -12,14 +14,14 @@ import { arityIn, show, showTerm, termsOf } from './formula.js'
 
 const BIN = { '→': 1, '↔': 0, '∨': 2, '∧': 3 }
 const QUANT = {
-  '∀': { zh: (v, b) => `对所有 ${v}，${b}`, en: (v, b) => `for every ${v}, ${b}` },
-  '∃': { zh: (v, b) => `有一个 ${v}，${b}`, en: (v, b) => `there is some ${v} such that ${b}` },
+  '∀': (name, body) => catalogText('对所有 {name}，{body}', { name, body }),
+  '∃': (name, body) => catalogText('有一个 {name}，{body}', { name, body }),
 }
 // A term in words: a name by its words, a function by its template (mul: '{0}·{1}'), a variable as written.
 function termWords(t, notation, lang) {
   if (t.t !== 'fn') return showTerm(t)
   // A word with places is a function's: a bare name of the same letter (a thing a box took, c) is just itself.
-  const word = notation.words?.[t.f]?.[lang]
+  const word = sideOf(notation.words?.[t.f], lang)
   if (!word || (!t.args.length && /\{\d\}/.test(word))) return t.args.length ? `${t.f}(${t.args.map((a) => termWords(a, notation, lang)).join(', ')})` : t.f
   return t.args.length ? fill(word, t.args, notation, lang) : word
 }
@@ -31,10 +33,10 @@ function fill(word, args, notation, lang) {
   return word.replace(/\{(\d)\}/g, (_, k) => arg(args[Number(k)]))
 }
 const WORDS = {
-  '→': { zh: (a, b) => `若${a}，则${b}`, en: (a, b) => `if ${a} then ${b}` },
-  '∧': { zh: (a, b) => `${a}并且${b}`, en: (a, b) => `${a} and ${b}` },
-  '∨': { zh: (a, b) => `${a}或者${b}`, en: (a, b) => `${a} or ${b}` },
-  '↔': { zh: (a, b) => `${a}等价于${b}`, en: (a, b) => `${a} is equivalent to ${b}` },
+  '→': (left, right) => catalogText('若{left}，则{right}', { left, right }),
+  '∧': (left, right) => catalogText('{left}并且{right}', { left, right }),
+  '∨': (left, right) => catalogText('{left}或者{right}', { left, right }),
+  '↔': (left, right) => catalogText('{left}等价于{right}', { left, right }),
 }
 
 /** A formula in a level's notation, in one language ('zh' | 'en'). */
@@ -45,7 +47,7 @@ export function render(f, notation, lang, outer = -1) {
   const part = (g) => (g.op === 'atom' || g.op === '⊥' ? render(g, notation, lang) : `(${render(g, notation, lang)})`)
   switch (f.op) {
     case 'atom': {
-      const word = notation.words?.[f.pred]?.[lang]
+      const word = sideOf(notation.words?.[f.pred], lang)
       if (word && f.args.length) return fill(word, f.args, notation, lang)
       if (f.pred === '=') return `${termWords(f.args[0], notation, lang)} = ${termWords(f.args[1], notation, lang)}`
       // A predicate named on its own (a test case's P := Human) reads with its places left open.
@@ -54,19 +56,19 @@ export function render(f, notation, lang, outer = -1) {
       return f.args.length ? `${f.pred}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : show(f)
     }
     case 'meta': return f.args?.length ? `${f.name}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : f.name
-    case '⊥': return known('⊥') ? '⊥' : lang === 'zh' ? '矛盾' : 'contradiction'
-    case '¬': return known('¬') ? `¬${render(f.a, notation, lang, 9)}` : `${lang === 'zh' ? '并非' : 'not '}${part(f.a)}`
+    case '⊥': return known('⊥') ? '⊥' : sideOf(catalogText('矛盾', {}, 'notation'), lang)
+    case '¬': return known('¬') ? `¬${render(f.a, notation, lang, 9)}` : sideOf(catalogText('并非{formula}', { formula: part(f.a) }), lang)
     case '∀': case '∃': {
       const arity = f.prop ? arityIn(f.body, f.v) : -1
       if (notation.propertyWords && notation.words && (arity === 0 || arity === 1)) {
-        const meaning = arity === 0 ? { zh: '该命题', en: 'that proposition' } : { zh: '{0}具有该性质', en: '{0} has that property' }
+        const meaning = arity === 0 ? catalogText("该命题") : catalogText("{0}具有该性质")
         const body = render(f.body, { ...notation, words: { ...notation.words, [f.v]: meaning } }, lang, -1)
         const prefix = arity === 0
-          ? (f.op === '∀' ? { zh: '对于任意命题，', en: 'for every proposition, ' } : { zh: '存在一个命题，使得', en: 'there is a proposition such that ' })
-          : (f.op === '∀' ? { zh: '对于任意性质，', en: 'for every property, ' } : { zh: '存在一种性质，使得', en: 'there is a property such that ' })
+          ? (f.op === '∀' ? catalogText("对于任意命题，") : catalogText("存在一个命题，使得"))
+          : (f.op === '∀' ? catalogText("对于任意性质，") : catalogText("存在一种性质，使得"))
         return wrap(`${prefix[lang]}${body}`, -1)
       }
-      return known(f.op) ? wrap(`${f.op}${f.v}. ${render(f.body, notation, lang, -1)}`, -1) : wrap(QUANT[f.op][lang](f.v, render(f.body, notation, lang, -1)), -1)
+      return known(f.op) ? wrap(`${f.op}${f.v}. ${render(f.body, notation, lang, -1)}`, -1) : wrap(sideOf(QUANT[f.op](f.v, render(f.body, notation, lang, -1)), lang), -1)
     }
     default: {
       const p = BIN[f.op]
@@ -75,7 +77,7 @@ export function render(f, notation, lang, outer = -1) {
       const inner = (g) => g.op === '→' || g.op === '↔' || (notation.brackets && BIN[g.op] !== undefined)
       const side = (g, level) => (inner(g) ? `(${render(g, notation, lang)})` : render(g, notation, lang, level))
       if (known(f.op)) return wrap(`${side(f.a, f.op === '→' ? p + 1 : p)} ${f.op} ${side(f.b, f.op === '→' ? p : p + 1)}`, p)
-      return WORDS[f.op][lang](part(f.a), part(f.b))
+      return sideOf(WORDS[f.op](part(f.a), part(f.b)), lang)
     }
   }
 }

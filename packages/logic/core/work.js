@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { boardShape } from 'circuit'
 // A logic game's course, from its course configuration and content package ( vocabulary.js says what
 // may be in it): the play order and the tree from its eras (../../course.js layout), each level's number and the parts it
@@ -23,7 +24,7 @@ import { MACHINE_BOARD, RULE_DEFINITION, axiomPartsOf, builtMachine, inputsOfLev
 import { operationsOf } from 'circuit'
 import { compileParts } from 'circuit'
 import { presetCardIds, presetOf, withPreset } from 'circuit'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { render, say, sayTerm } from './notation.js'
 import { typeOf } from './iso.js'
 import { equations } from './define.js'
@@ -167,14 +168,14 @@ function expand(level, notation) {
     const fill = (text) => show(replaceAtoms(parse(text), subst))
     const parts = Object.values(subst).map((f) => say(f, notation))
     // A test with nothing to fill in (a level with no letters) is the level's one test.
-    const label = parts.length ? { zh: parts.map((p) => p.zh).join(' · '), en: parts.map((p) => p.en).join(' · ') } : { zh: '这一组', en: 'This one' }
+    const label = parts.length ? { zh: parts.map((p) => p.zh).join(' · '), en: parts.map((p) => p.en).join(' · ') } : catalogText("这一组")
     // A proof term the level asks for (chapter 7) names premises, not sentences: every case asks for the same.
     return { premises: Object.fromEntries(Object.entries(schema.premises ?? {}).map(([name, text]) => [name, fill(text)])), goal: fill(schema.goal), ...(schema.term ? { term: schema.term } : {}), subst, label }
   }
   // Last of the tests: the schema in its own letters (A := A …), the pattern bare.
   const letters = Object.fromEntries(Object.keys(level.cases[0] ?? {}).map((l) => [l, l]))
   const concrete = level.cases.length ? level.cases.map(test) : [test({})]
-  const symbolic = { ...test(letters), symbolic: true, label: { zh: '字母', en: 'Letters' } }
+  const symbolic = { ...test(letters), symbolic: true, label: catalogText("字母") }
   symbolic.caseBrief = proofBrief(symbolic, level, { ...notation, words: level.symbolicWords ?? null, propertyWords: false })
   return { schema, tests: [...concrete, symbolic] }
 }
@@ -193,7 +194,7 @@ function caseViews(level, notation) {
   }
   return [
     ...level.cases.map((c) => ({ label: label(c), notation: { ...notation, words: words(c) } })),
-    { label: { zh: '字母', en: 'Letters' }, notation: { ...notation, words: level.symbolicWords ?? null }, symbolic: true },
+    { label: catalogText("字母"), notation: { ...notation, words: level.symbolicWords ?? null }, symbolic: true },
   ]
 }
 
@@ -237,7 +238,7 @@ function proofBrief(schema, level, notation) {
   const goalZh = bot ? `矛盾${notation.symbols.includes('⊥') ? ' ⊥' : ''}` : zhQuote(write(schema.goal, 'zh'))
   const goalEn = bot ? `a contradiction${notation.symbols.includes('⊥') ? ' ⊥' : ''}` : enQuote(write(schema.goal, 'en'))
   const enList = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0])
-  const note = level.briefNote ?? (schema.term ? { zh: `证明项须为 ${schema.term}。`, en: `Its proof term must be ${schema.term}.` } : level.script ? { zh: '按照下方脚本连接证明。', en: 'Wire the proof shown in the script below.' } : { zh: '', en: '' })
+  const note = level.briefNote ?? (schema.term ? { zh: `证明项须为 ${schema.term}。`, en: `Its proof term must be ${schema.term}.` } : level.script ? catalogText("按照下方脚本连接证明。") : { zh: '', en: '' })
   return {
     zh: `${premises.length ? `已知${given('zh', zhQuote).join('')}，证明出${goalZh}` : `不需要任何已知，证明出${goalZh}`}。${note.zh}`,
     en: `${premises.length ? `Given ${enList(given('en', enQuote))}, prove ${goalEn}` : `Prove ${goalEn} from nothing`}.${note.en ? ` ${note.en}` : ''}`,
@@ -555,7 +556,7 @@ export function* prepareLogicWorks(content) {
   }
   const builtFaces = (task) => Object.fromEntries(Object.entries(task.built ?? {}).filter(([type, p]) => p && settingsOf(built.parts[type]).length).map(([type, p]) => {
     const { name, desc, settings } = built.parts[type]
-    return [type, { name, desc, icon: 'CircuitBoard', family: 'logic/built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic/machine-value', ...(port === 'rules' ? { label: T('规则', 'Rules') } : {}) })), settings, outputType: p.outputType ?? 'logic/machine-value', op: 'scalar/zero' }]
+    return [type, { name, desc, icon: 'CircuitBoard', family: 'logic/built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic/machine-value', ...(port === 'rules' ? { label: T("规则") } : {}) })), settings, outputType: p.outputType ?? 'logic/machine-value', op: 'scalar/zero' }]
   }))
   /** What a task's tray holds for a player with `flags`, as what it shows and what it folds away. */
   course.registerParts(Object.fromEntries(TASKS.filter(task => task.kind === 'logic/machine').flatMap(task => [...ruleTypes(task).keys()].map(type => [type, RULE_DEFINITION]))))

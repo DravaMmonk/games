@@ -1,3 +1,4 @@
+import { T } from '../shell/i18n.js'
 // The copy workspace (games/design/README.md 6.7): the writer's. It opens a package or a game and audits and edits every
 // text of that layer in every language — terms, references, and a game's own wording over its packages' texts. On the
 // left the texts by object (the whole layer, a level group or a chapter, the encyclopedia, the parts) or by file, and
@@ -37,7 +38,7 @@ import { MOD } from './Shortcuts.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
 const SETTLE = 700
-const LISTS = { games: [Gamepad2, '游戏', 'Games'], packages: [Package, '包', 'Packages'], objects: [ListTree, '按对象', 'By object'], files: [FileText, '按文件', 'By file'], search: [SearchIcon, '搜索', 'Search'] }
+const LISTS = { games: [Gamepad2, T("游戏")], packages: [Package, T("包")], objects: [ListTree, T("按对象")], files: [FileText, T("按文件")], search: [SearchIcon, T("搜索")] }
 
 /** Keep what the workspace opens and the scope or file shown in the address. */
 const remember = (opened, scope, file) => {
@@ -64,7 +65,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const [rawNames, setRawNames] = useState(null)
   const [list, setList] = usePref('copy-side', 'objects')
   const [scope, setScope] = useState(() => {
-    const asked = QUERY.get('scope')
+    const asked = opened.package === 'kernel' ? 'ui' : QUERY.get('scope')
     return asked === null ? 'all' : /^\d+$/.test(asked) ? Number(asked) : asked
   })
   const [file, setFile] = useState(() => QUERY.get('file'))
@@ -95,7 +96,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const loaded = Boolean(content)
   // Names for the links in the texts, as the changeset leaves the layer.
   const namesSeq = useRef(0)
-  const naming = useMemo(() => JSON.stringify(ops.filter((op) => !['text.set', 'text.override'].includes(op.op))), [ops])
+  const naming = useMemo(() => JSON.stringify(ops.filter((op) => !['text.set', 'text.override', 'ui.set'].includes(op.op))), [ops])
   useEffect(() => {
     if (!loaded) return undefined
     const no = ++namesSeq.current
@@ -136,18 +137,19 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const [pickedOpen, setPickedOpen] = useState(() => ({ games: opened.game ?? null, packages: opened.package ?? null }))
   const openOther = (kind, id) => {
     if ((opened[kind] === id) || saving) return
-    if (ops.length && !window.confirm(tr('换一个打开的对象会放弃待定操作，确定吗？', 'Opening something else discards the pending operations. Continue?'))) return
+    if (ops.length && !window.confirm(tr("换一个打开的对象会放弃待定操作，确定吗？"))) return
     showScope('all')
     onOpen({ [kind]: id })
   }
   const shownList = lists.includes(list) ? list : 'objects'
   const scopes = !content ? [] : [
-    ['all', side === 'game' ? tr('整款游戏') : tr('整个内容包', 'The whole package')],
+    ['all', side === 'game' ? tr('整款游戏') : tr("整个内容包")],
     ...(side === 'game'
       ? (content.eras ?? []).map((era, k) => [k, `${era.id} ${L(era.title ?? era.chapter?.title) ?? ''}`.trim()])
       : groupTree(content, order).sections.filter((s) => s.group !== null).map((s) => [`group:${s.group}`, L(content.tags?.[s.group]?.title) || s.group])),
     ['glossary', tr('百科')],
-    ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type] && Object.keys(content.registries?.[type] ?? {}).length).map(info => [listOfType(info.type), tr(...typeName(info))]),
+    ...(side === 'package' ? [['ui', tr('界面文案')]] : []),
+    ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type] && Object.keys(content.registries?.[type] ?? {}).length).map(info => [listOfType(info.type), L(typeName(info))]),
   ]
   const matches = sidebarSearch(query)
   const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
@@ -167,23 +169,23 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
         <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => setList(opened.game ? 'games' : 'packages')}
-          title={opened.game ? tr('在左栏选游戏', 'Pick a game in the left column') : L(pkg.desc)}>
+          title={opened.game ? tr("在左栏选游戏") : L(pkg.desc)}>
           {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
           {opened.game ? <span>{L(games.find((g) => g.id === opened.game)?.title) ?? opened.game}</span> : <PackageName info={pkg} />}
         </button>
         <button type="button" className={`studio-open-name studio-play-toggle ${playing ? 'is-on' : ''}`} aria-pressed={playing}
-          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame(pickedLevel))} title={`${playing ? tr('回到文案', 'Back to copy') : tr('试玩', 'Play')} (${MOD}+Enter)`}>
-          <Play size={13} aria-hidden="true" /><span>{tr('试玩', 'Play')}</span>
+          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame(pickedLevel))} title={`${playing ? tr("回到文案") : tr("试玩")} (${MOD}+Enter)`}>
+          <Play size={13} aria-hidden="true" /><span>{tr("试玩")}</span>
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-copy ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
           <aside className="studio-tree">
-            <div className="side-tabs" role="tablist" aria-label={tr('列表', 'Lists')}>
+            <div className="side-tabs" role="tablist" aria-label={tr("列表")}>
               {lists.map((id) => {
-                const [Icon, zh, en] = LISTS[id]
+                const [Icon, label] = LISTS[id]
                 return (
-                  <button key={id} type="button" role="tab" aria-selected={shownList === id} className={shownList === id ? 'is-on' : ''} aria-label={tr(zh, en)} title={tr(zh, en)} onClick={() => setList(id)}>
+                  <button key={id} type="button" role="tab" aria-selected={shownList === id} className={shownList === id ? 'is-on' : ''} aria-label={L(label)} title={L(label)} onClick={() => setList(id)}>
                     <Icon size={14} aria-hidden="true" />
                   </button>
                 )
@@ -197,7 +199,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
                 pick(level ? { at: { level }, path: keys } : kind === 'glossary' ? { at: { glossary: true }, path: keys } : kind === 'parts' ? { at: { parts: true, root: keys.slice(0, 2) }, path: keys } : { at: { game: true }, path: keys })
               }} />
               : (
-                <nav className="parts-list" aria-label={tr(...LISTS[shownList].slice(1))}>
+                <nav className="parts-list" aria-label={L(LISTS[shownList][1])}>
                   <SidebarListTools query={query} onQuery={setQuery} />
                   {shownList === 'objects'
                     ? scopes.filter(([, label]) => matches(label)).map(([id, label]) => (
@@ -221,9 +223,9 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
             {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
               onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
               tools={<>
-                <button type="button" className="kit-btn is-label" onClick={() => setPlayAt({ map: Date.now() })} title={tr('回到这款游戏的地图', 'Back to the game’s map')}><MapIcon size={14} aria-hidden="true" />{tr('地图', 'Map')}</button>
-                {pickedLevel && <button type="button" className="kit-btn is-label" onClick={() => playGame(pickedLevel)} title={tr('从选中文字所在的这一关开始', 'Start at the level of the text picked')}><RotateCcw size={14} aria-hidden="true" />{pickedLevel}</button>}
-                <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr('回到文案', 'Back to copy')}</button>
+                <button type="button" className="kit-btn is-label" onClick={() => setPlayAt({ map: Date.now() })} title={tr("回到这款游戏的地图")}><MapIcon size={14} aria-hidden="true" />{tr("地图")}</button>
+                {pickedLevel && <button type="button" className="kit-btn is-label" onClick={() => playGame(pickedLevel)} title={tr("从选中文字所在的这一关开始")}><RotateCcw size={14} aria-hidden="true" />{pickedLevel}</button>}
+                <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr("回到文案")}</button>
               </>} />}
             <div className="studio-scroll" hidden={playing}>
               {shownList === 'games' ? <GameMeta games={games} packages={packages} id={pickedOpen.games} open={opened.game} disabled={saving} onOpen={(id) => openOther('game', id)} />
@@ -236,8 +238,8 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={gameJson(games.find((g) => g.id === pickedOpen.games))} note={tr('在编排里编辑', 'Edited in Arrange')} />
-              : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packageJson(packages.find((p) => p.id === pickedOpen.packages))} note={tr('只读：手改文件', 'Read only: edited by hand')} />
+            {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={gameJson(games.find((g) => g.id === pickedOpen.games))} note={tr("在编排里编辑")} />
+              : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packageJson(packages.find((p) => p.id === pickedOpen.packages))} note={tr("只读：手改文件")} />
               : sideCtx && <Inspector content={content} vocab={vocab} at={sideField?.at ?? { game: true }} field={sideField ? { path: sideField.path } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
               onPick={(path) => pick({ at: sideField.at, path })} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setPicked(null)}
               tabs={[]} selection={sideField?.at ?? { game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}

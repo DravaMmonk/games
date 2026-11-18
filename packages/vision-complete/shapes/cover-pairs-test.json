@@ -18,10 +18,7 @@
     "wrong": {
       "type": "int",
       "min": 0,
-      "about": {
-        "zh": "错配几对",
-        "en": "how many wrong pairs"
-      }
+      "about": "@shape.cover-pairs-test.fields.wrong.about"
     }
   }
 }

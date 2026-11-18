@@ -39,7 +39,7 @@ export function importProblem(specifier, file, root, uses) {
     if (side === 'core' && !['.js', '.mjs', '.json'].includes(extname(target))) return 'core cannot import JSX, CSS or view assets'
     return null
   }
-  if (specifier === 'kernel' || side === 'view' && ['kernel/view', 'react', 'react/jsx-runtime', 'react-dom', 'lucide-react'].includes(specifier)) return null
+  if (['kernel', 'kernel/words'].includes(specifier) || side === 'view' && ['kernel/view', 'react', 'react/jsx-runtime', 'react-dom', 'lucide-react'].includes(specifier)) return null
   const [owner, suffix, ...rest] = specifier.split('/')
   if (uses.includes(owner) && !rest.length && (!suffix || suffix === 'view' && side === 'view') && exportPath(specifier, root)) return null
   return `${side}: undeclared or private import ${specifier}`

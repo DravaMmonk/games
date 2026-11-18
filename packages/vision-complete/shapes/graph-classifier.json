@@ -34,10 +34,7 @@
               "optional": true
             }
           },
-          "about": {
-            "zh": "遮挡用的块：亮度 v，r × r（默认黑的 3 × 3）",
-            "en": "the block covering: brightness v, r × r (black 3 × 3 at first)"
-          },
+          "about": "@shape.graph-classifier.fields.setup.fields.cover.about",
           "optional": true
         }
       }

@@ -140,7 +140,7 @@ export function useChangeset(target, scope) {
   }, [])
   const remove = (k) => { setOps((list) => list.filter((_, i) => i !== k)); setRedo([]) }
   const discard = () => {
-    if (!window.confirm(tr('确定放弃所有待定操作吗？', 'Discard all pending operations?'))) return
+    if (!window.confirm(tr("确定放弃所有待定操作吗？"))) return
     setOps([])
     setRedo([])
   }

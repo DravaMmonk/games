@@ -9,7 +9,7 @@ function HubBar() {
   useLang()
   const [theme, setTheme] = useState(currentTheme)
   return <TopBar theme={theme} onTheme={setTheme}>
-    <a className="kit-brand" href="./index.html"><i className="kit-chip" aria-hidden="true" /><span>{tr('图灵模拟器', 'Turing Simulator')}</span></a>
+    <a className="kit-brand" href="./index.html"><i className="kit-chip" aria-hidden="true" /><span>{tr("图灵模拟器")}</span></a>
   </TopBar>
 }
 

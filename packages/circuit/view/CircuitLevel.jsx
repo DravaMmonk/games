@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { settingsOf } from "../core/parts.js"
 import { defaultOf, shows } from "../core/parts/define.js"
 import { useElementSize } from 'kernel/view'
@@ -26,7 +27,8 @@ import Glyph from "./board/Glyph.jsx"
 import { InsideBoard, PackedDetail, insideOf } from "./board/Inside.jsx"
 import { WORDS } from './words.js'
 
-import { L, tr, T } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr, T } from 'kernel/words'
 
 import { PhonePage, Text } from 'kernel/view'
 
@@ -318,7 +320,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
       className={`cl-level ${className}`}
       brief={brief}
       taskNav={taskNav}
-      tools={(trayControl || trayItems.length > 0 || all.length > 0 || edit) && <>{(trayControl || trayItems.length > 0 || all.length > 0) && <Palette compact start={trayControl} items={trayItems} folded={display.folded} onAdd={add} />}<PickMark at="adds" scope="level" label={{ zh: '带来的元件', en: 'Parts it brings' }} /></>}
+      tools={(trayControl || trayItems.length > 0 || all.length > 0 || edit) && <>{(trayControl || trayItems.length > 0 || all.length > 0) && <Palette compact start={trayControl} items={trayItems} folded={display.folded} onAdd={add} />}<PickMark at="adds" scope="level" label={catalogText("带来的元件")} /></>}
       stage={
         <div className="cl-stage">
           <div className="cl-board">
@@ -431,7 +433,7 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
     if (width && cols > 1) {
       const next = width === cols ? 1 : width + 1
       resize = {
-        label: next === cols ? tr('展开到整行', 'Expand to full row') : tr(`改为占 ${next} 格`, `Use ${next} ${next === 1 ? 'slot' : 'slots'}`),
+        label: next === cols ? tr("展开到整行") : tr("改为占 {next} 格", {next, value: next === 1 ? 'slot' : 'slots'}),
         run: () => { editing.resizeFrame(node.id, next === cols ? undefined : next); close() },
       }
     }

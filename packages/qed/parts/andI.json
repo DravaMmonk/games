@@ -6,11 +6,11 @@
   "inputs": [
     {
       "name": "a",
-      "label": "@part.andI.inputs.0.label"
+      "label": "A"
     },
     {
       "name": "b",
-      "label": "@part.andI.inputs.1.label"
+      "label": "B"
     }
   ],
   "op": "logic/andI"

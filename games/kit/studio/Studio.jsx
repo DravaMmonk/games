@@ -5,7 +5,7 @@
 // game: every text of it, in every language.
 import './studio.css'
 import { useEffect, useState } from 'react'
-import { tr } from '../shell/i18n.js'
+import { T, tr } from '../shell/i18n.js'
 import { useLang } from '../shell/useLang.js'
 import { call } from './api.js'
 import PackageStudio from './PackageStudio.jsx'
@@ -24,7 +24,7 @@ export default function Studio() {
   const [packages, setPackages] = useState(null)
   const [pkg, setPkg] = useState(QUERY.get('package'))
   // What the copy workspace opens: a package or a game.
-  const [copyOpen, setCopyOpen] = useState(() => (space === 'copy' && QUERY.get('game') ? 'game' : 'package'))
+  const [copyOpen, setCopyOpen] = useState(() => (space === 'copy' && QUERY.get('game') ? 'game' : space === 'copy' && QUERY.get('package') === 'kernel' ? 'kernel' : 'package'))
   const reload = () => call('games', {}).then((list) => {
     setGames(list)
     setGame((id) => (list.some((g) => g.id === id) ? id : list[0]?.id ?? null))
@@ -42,12 +42,12 @@ export default function Studio() {
   // A package just made: listed, and opened unless the author keeps the one open (`stay`).
   const madePackage = (id, stay = false) => reloadPackages().then(() => { if (!stay) setPkg(id) })
   if (!games || !packages) return <div className="studio-loading">{tr('读取中……')}</div>
-  if (!packages.length || (space === 'arrange' && !games.length)) return <div className="studio-loading">{tr('没有内容', 'No content')}</div>
+  if (!packages.length || (space === 'arrange' && !games.length)) return <div className="studio-loading">{tr("没有内容")}</div>
   const switcher = { value: space, onChange: setSpace }
   if (space === 'copy') {
-    const opened = copyOpen === 'game' ? { game } : { package: pkg }
-    return <CopyStudio key={copyOpen === 'game' ? `game:${game}` : `package:${pkg}`} opened={opened} packages={packages} games={games} space={switcher}
-      onOpen={(next) => { if (next.game) { setGame(next.game); setCopyOpen('game') } else { setPkg(next.package); setCopyOpen('package') } }} />
+    const opened = copyOpen === 'game' ? { game } : { package: copyOpen === 'kernel' ? 'kernel' : pkg }
+    return <CopyStudio key={copyOpen === 'game' ? `game:${game}` : `package:${opened.package}`} opened={opened} packages={[...packages, { id: 'kernel', kind: 'lib', title: T('内核'), source: 'workspace' }]} games={games} space={switcher}
+      onOpen={(next) => { if (next.game) { setGame(next.game); setCopyOpen('game') } else if (next.package === 'kernel') setCopyOpen('kernel'); else { setPkg(next.package); setCopyOpen('package') } }} />
   }
   return space === 'arrange'
     ? <GameStudio game={game} games={games} onGame={setGame} onMade={(id) => reload().then(() => { if (id) setGame(id) })} packages={packages} onBuild={(id) => { setPkg(id); setSpace('build') }} space={switcher} />

@@ -8,17 +8,11 @@
   },
   "studio": {
     "order": 0,
-    "label": {
-      "zh": "运算",
-      "en": "Operations"
-    }
+    "label": "@capability.operation.studio.label"
   },
   "items": {
     "if": {
-      "about": {
-        "zh": "条件为真取第二个，否则取第三个（只算取到的那一个）",
-        "en": "the second where the condition is true, else the third (only the one taken is worked out)"
-      },
+      "about": "@capability.operation.items.if.about",
       "returns": "kernel/any",
       "params": {
         "type": "obj",
@@ -40,10 +34,7 @@
       ]
     },
     "held": {
-      "about": {
-        "zh": "寄存器 register 此刻存的值；还没存过时给 start",
-        "en": "what register `register` holds now; `start` until something is kept in it"
-      },
+      "about": "@capability.operation.items.held.about",
       "args": [],
       "returns": "kernel/any",
       "params": {

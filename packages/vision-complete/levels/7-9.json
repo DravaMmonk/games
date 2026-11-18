@@ -20,7 +20,7 @@
         "c1": "@level.7-9.tasks.7-9.inputLabels.c1",
         "c2": "@level.7-9.tasks.7-9.inputLabels.c2",
         "c3": "@level.7-9.tasks.7-9.inputLabels.c3",
-        "z": "@level.7-9.tasks.7-9.inputLabels.z"
+        "z": "(0, 0, 1)"
       },
       "scene": "vision-complete/epipole",
       "tests": [{ "label": "@level.7-9.tasks.7-9.tests.0.label", "columns": [0, 1, 2] }],

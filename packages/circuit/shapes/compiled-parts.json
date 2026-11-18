@@ -14,10 +14,7 @@
               },
               "desc": {
                 "type": "text",
-                "about": {
-                  "zh": "只写功能：读哪些口、给出什么、碰到「—」怎么办",
-                  "en": "what it does only: what it reads, what it gives, what 「—」 does"
-                }
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.desc.about"
               },
               "inputs": {
                 "type": "list",
@@ -43,10 +40,7 @@
                     },
                     "optional": {
                       "type": "bool",
-                      "about": {
-                        "zh": "可以不接：不接时运算在这里读到「—」",
-                        "en": "may be left unwired: the computation reads 「—」 there when it is"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.inputs.of.fields.optional.about",
                       "optional": true
                     }
                   }
@@ -77,10 +71,7 @@
                     },
                     "optional": {
                       "type": "bool",
-                      "about": {
-                        "zh": "可以不接：不接时运算在这里读到「—」",
-                        "en": "may be left unwired: the computation reads 「—」 there when it is"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.outputs.of.fields.optional.about",
                       "optional": true
                     }
                   }
@@ -118,35 +109,23 @@
                     },
                     "about": {
                       "type": "text",
-                      "about": {
-                        "zh": "悬停和详情里的一行说明",
-                        "en": "one line shown on hover and in the detail"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.about.about",
                       "optional": true
                     },
                     "default": {
                       "type": "any",
-                      "about": {
-                        "zh": "新元件的值",
-                        "en": "the value a new part starts with"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.default.about",
                       "optional": true
                     },
                     "when": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "式子：为真时才出现（只读设置）",
-                        "en": "an expression: shown only while it is true (reads settings only)"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.when.about",
                       "optional": true
                     },
                     "fixed": {
                       "type": "bool",
-                      "about": {
-                        "zh": "只显示，玩家不能改",
-                        "en": "shown, not changed by the player"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.fixed.about",
                       "optional": true
                     },
                     "options": {
@@ -157,10 +136,7 @@
                           "value": {
                             "type": "str",
                             "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                            "about": {
-                              "zh": "ASCII 值：写进蓝图文本",
-                              "en": "an ASCII value, as blueprint text writes it"
-                            }
+                            "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.options.of.fields.value.about"
                           },
                           "label": {
                             "type": "text",
@@ -169,18 +145,12 @@
                           "icon": {
                             "type": "str",
                             "view": "icon",
-                            "about": {
-                              "zh": "内核图标表里的一个名字",
-                              "en": "a name in the kernel’s icon table"
-                            },
+                            "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.options.of.fields.icon.about",
                             "optional": true
                           },
                           "about": {
                             "type": "text",
-                            "about": {
-                              "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
-                              "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
-                            },
+                            "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.options.of.fields.about.about",
                             "optional": true
                           }
                         }
@@ -191,18 +161,12 @@
                     "from": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "式子：由元件的输入算出选项",
-                        "en": "an expression: the options worked out of the part’s inputs"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.from.about",
                       "optional": true
                     },
                     "optional": {
                       "type": "bool",
-                      "about": {
-                        "zh": "没写时读到「—」（新元件仍从 default 起）",
-                        "en": "reads 「—」 when not written (a new part still starts from default)"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.optional.about",
                       "optional": true
                     },
                     "layout": {
@@ -213,10 +177,7 @@
                         "grid",
                         "pad"
                       ],
-                      "about": {
-                        "zh": "row 一行，column 一列，grid 两两一行，pad 上下左右四向（选项 up、left、right、down）",
-                        "en": "row, column, grid (two a row), pad (four ways: options up, left, right, down)"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.layout.about",
                       "optional": true
                     },
                     "min": {
@@ -242,10 +203,7 @@
                     },
                     "stepper": {
                       "type": "bool",
-                      "about": {
-                        "zh": "两边加 − / + 按钮",
-                        "en": "− / + buttons on either side"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.stepper.about",
                       "optional": true
                     },
                     "marks": {
@@ -277,10 +235,7 @@
                       "of": {
                         "type": "str",
                         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                        "about": {
-                          "zh": "ASCII 值：写进蓝图文本",
-                          "en": "an ASCII value, as blueprint text writes it"
-                        }
+                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.remove.of.about"
                       },
                       "optional": true
                     },
@@ -289,10 +244,7 @@
                       "of": {
                         "type": "str",
                         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                        "about": {
-                          "zh": "ASCII 值：写进蓝图文本",
-                          "en": "an ASCII value, as blueprint text writes it"
-                        }
+                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.add.of.about"
                       },
                       "optional": true
                     }
@@ -314,10 +266,7 @@
                     "when": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "一行式子：调用领域的引擎资源",
-                        "en": "one line calling the domain’s engine resources"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.rules.of.fields.when.about",
                       "optional": true
                     },
                     "set": {
@@ -325,22 +274,13 @@
                       "of": {
                         "type": "str",
                         "view": "expr",
-                        "about": {
-                          "zh": "一行式子：调用领域的引擎资源",
-                          "en": "one line calling the domain’s engine resources"
-                        }
+                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.rules.of.fields.set.of.about"
                       },
-                      "about": {
-                        "zh": "设置 → 新值的式子",
-                        "en": "setting → the expression of its new value"
-                      }
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.rules.of.fields.set.about"
                     }
                   }
                 },
-                "about": {
-                  "zh": "交互：一个设置改了，另几个跟着改",
-                  "en": "interaction: when a setting changes, others follow"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.rules.about",
                 "optional": true
               },
               "checks": {
@@ -351,20 +291,14 @@
                     "holds": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "一行式子：调用领域的引擎资源",
-                        "en": "one line calling the domain’s engine resources"
-                      }
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.checks.of.fields.holds.about"
                     },
                     "say": {
                       "type": "text"
                     }
                   }
                 },
-                "about": {
-                  "zh": "设置必须满足的条件：不满足时卡片上说出原因，元件不计算",
-                  "en": "conditions the settings must meet: else the card says why and the part computes nothing"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.checks.about",
                 "optional": true
               },
               "regions": {
@@ -404,10 +338,7 @@
                     "when": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "一行式子：调用领域的引擎资源",
-                        "en": "one line calling the domain’s engine resources"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.regions.of.fields.when.about",
                       "optional": true
                     }
                   }
@@ -417,10 +348,7 @@
               "icon": {
                 "type": "str",
                 "view": "icon",
-                "about": {
-                  "zh": "内核图标表里的一个名字",
-                  "en": "a name in the kernel’s icon table"
-                }
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.icon.about"
               },
               "family": {
                 "type": "ref",
@@ -492,10 +420,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "一个设置：控件，或此刻的值的字",
-                            "en": "one setting: its control, or the words for its value"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.setting.about"
                         },
                         "summary": {
                           "type": "obj",
@@ -508,10 +433,7 @@
                             },
                             "text": {
                               "type": "text",
-                              "about": {
-                                "zh": "带 {设置} 的一句话",
-                                "en": "words with {setting} in them"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.summary.fields.text.about",
                               "optional": true
                             }
                           }
@@ -531,10 +453,7 @@
                             "expr": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.readout.fields.expr.about"
                             },
                             "unit": {
                               "type": "text",
@@ -547,10 +466,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "由设置算出的读数",
-                            "en": "a reading worked out from the settings"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.readout.about"
                         },
                         "action": {
                           "type": "obj",
@@ -569,30 +485,18 @@
                               "of": {
                                 "type": "str",
                                 "view": "expr",
-                                "about": {
-                                  "zh": "一行式子：调用领域的引擎资源",
-                                  "en": "one line calling the domain’s engine resources"
-                                }
+                                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.action.fields.set.of.about"
                               },
-                              "about": {
-                                "zh": "设置 → 按下后的新值",
-                                "en": "setting → its value once pressed"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.action.fields.set.about"
                             },
                             "when": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.action.fields.when.about",
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "按下把几个设置改成算出的值",
-                            "en": "a button setting some settings to worked-out values"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.action.about"
                         },
                         "text": {
                           "type": "obj",
@@ -721,10 +625,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "一个设置：控件，或此刻的值的字",
-                                      "en": "one setting: its control, or the words for its value"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.setting.about"
                                   },
                                   "summary": {
                                     "type": "obj",
@@ -737,10 +638,7 @@
                                       },
                                       "text": {
                                         "type": "text",
-                                        "about": {
-                                          "zh": "带 {设置} 的一句话",
-                                          "en": "words with {setting} in them"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.summary.fields.text.about",
                                         "optional": true
                                       }
                                     }
@@ -760,10 +658,7 @@
                                       "expr": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.readout.fields.expr.about"
                                       },
                                       "unit": {
                                         "type": "text",
@@ -776,10 +671,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "由设置算出的读数",
-                                      "en": "a reading worked out from the settings"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.readout.about"
                                   },
                                   "action": {
                                     "type": "obj",
@@ -798,30 +690,18 @@
                                         "of": {
                                           "type": "str",
                                           "view": "expr",
-                                          "about": {
-                                            "zh": "一行式子：调用领域的引擎资源",
-                                            "en": "one line calling the domain’s engine resources"
-                                          }
+                                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.fields.set.of.about"
                                         },
-                                        "about": {
-                                          "zh": "设置 → 按下后的新值",
-                                          "en": "setting → its value once pressed"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.fields.set.about"
                                       },
                                       "when": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.fields.when.about",
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "按下把几个设置改成算出的值",
-                                      "en": "a button setting some settings to worked-out values"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.about"
                                   },
                                   "text": {
                                     "type": "obj",
@@ -951,10 +831,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "一个设置：控件，或此刻的值的字",
-                            "en": "one setting: its control, or the words for its value"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.setting.about"
                         },
                         "summary": {
                           "type": "obj",
@@ -967,10 +844,7 @@
                             },
                             "text": {
                               "type": "text",
-                              "about": {
-                                "zh": "带 {设置} 的一句话",
-                                "en": "words with {setting} in them"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.summary.fields.text.about",
                               "optional": true
                             }
                           }
@@ -990,10 +864,7 @@
                             "expr": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.readout.fields.expr.about"
                             },
                             "unit": {
                               "type": "text",
@@ -1006,10 +877,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "由设置算出的读数",
-                            "en": "a reading worked out from the settings"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.readout.about"
                         },
                         "action": {
                           "type": "obj",
@@ -1028,30 +896,18 @@
                               "of": {
                                 "type": "str",
                                 "view": "expr",
-                                "about": {
-                                  "zh": "一行式子：调用领域的引擎资源",
-                                  "en": "one line calling the domain’s engine resources"
-                                }
+                                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.action.fields.set.of.about"
                               },
-                              "about": {
-                                "zh": "设置 → 按下后的新值",
-                                "en": "setting → its value once pressed"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.action.fields.set.about"
                             },
                             "when": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.action.fields.when.about",
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "按下把几个设置改成算出的值",
-                            "en": "a button setting some settings to worked-out values"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.action.about"
                         },
                         "text": {
                           "type": "obj",
@@ -1180,10 +1036,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "一个设置：控件，或此刻的值的字",
-                                      "en": "one setting: its control, or the words for its value"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.setting.about"
                                   },
                                   "summary": {
                                     "type": "obj",
@@ -1196,10 +1049,7 @@
                                       },
                                       "text": {
                                         "type": "text",
-                                        "about": {
-                                          "zh": "带 {设置} 的一句话",
-                                          "en": "words with {setting} in them"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.summary.fields.text.about",
                                         "optional": true
                                       }
                                     }
@@ -1219,10 +1069,7 @@
                                       "expr": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.readout.fields.expr.about"
                                       },
                                       "unit": {
                                         "type": "text",
@@ -1235,10 +1082,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "由设置算出的读数",
-                                      "en": "a reading worked out from the settings"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.readout.about"
                                   },
                                   "action": {
                                     "type": "obj",
@@ -1257,30 +1101,18 @@
                                         "of": {
                                           "type": "str",
                                           "view": "expr",
-                                          "about": {
-                                            "zh": "一行式子：调用领域的引擎资源",
-                                            "en": "one line calling the domain’s engine resources"
-                                          }
+                                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.fields.set.of.about"
                                         },
-                                        "about": {
-                                          "zh": "设置 → 按下后的新值",
-                                          "en": "setting → its value once pressed"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.fields.set.about"
                                       },
                                       "when": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.fields.when.about",
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "按下把几个设置改成算出的值",
-                                      "en": "a button setting some settings to worked-out values"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.about"
                                   },
                                   "text": {
                                     "type": "obj",
@@ -1410,10 +1242,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "一个设置：控件，或此刻的值的字",
-                            "en": "one setting: its control, or the words for its value"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.setting.about"
                         },
                         "summary": {
                           "type": "obj",
@@ -1426,10 +1255,7 @@
                             },
                             "text": {
                               "type": "text",
-                              "about": {
-                                "zh": "带 {设置} 的一句话",
-                                "en": "words with {setting} in them"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.summary.fields.text.about",
                               "optional": true
                             }
                           }
@@ -1449,10 +1275,7 @@
                             "expr": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.readout.fields.expr.about"
                             },
                             "unit": {
                               "type": "text",
@@ -1465,10 +1288,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "由设置算出的读数",
-                            "en": "a reading worked out from the settings"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.readout.about"
                         },
                         "action": {
                           "type": "obj",
@@ -1487,30 +1307,18 @@
                               "of": {
                                 "type": "str",
                                 "view": "expr",
-                                "about": {
-                                  "zh": "一行式子：调用领域的引擎资源",
-                                  "en": "one line calling the domain’s engine resources"
-                                }
+                                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.action.fields.set.of.about"
                               },
-                              "about": {
-                                "zh": "设置 → 按下后的新值",
-                                "en": "setting → its value once pressed"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.action.fields.set.about"
                             },
                             "when": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.action.fields.when.about",
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "按下把几个设置改成算出的值",
-                            "en": "a button setting some settings to worked-out values"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.action.about"
                         },
                         "text": {
                           "type": "obj",
@@ -1639,10 +1447,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "一个设置：控件，或此刻的值的字",
-                                      "en": "one setting: its control, or the words for its value"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.setting.about"
                                   },
                                   "summary": {
                                     "type": "obj",
@@ -1655,10 +1460,7 @@
                                       },
                                       "text": {
                                         "type": "text",
-                                        "about": {
-                                          "zh": "带 {设置} 的一句话",
-                                          "en": "words with {setting} in them"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.summary.fields.text.about",
                                         "optional": true
                                       }
                                     }
@@ -1678,10 +1480,7 @@
                                       "expr": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.readout.fields.expr.about"
                                       },
                                       "unit": {
                                         "type": "text",
@@ -1694,10 +1493,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "由设置算出的读数",
-                                      "en": "a reading worked out from the settings"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.readout.about"
                                   },
                                   "action": {
                                     "type": "obj",
@@ -1716,30 +1512,18 @@
                                         "of": {
                                           "type": "str",
                                           "view": "expr",
-                                          "about": {
-                                            "zh": "一行式子：调用领域的引擎资源",
-                                            "en": "one line calling the domain’s engine resources"
-                                          }
+                                          "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.fields.set.of.about"
                                         },
-                                        "about": {
-                                          "zh": "设置 → 按下后的新值",
-                                          "en": "setting → its value once pressed"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.fields.set.about"
                                       },
                                       "when": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.fields.when.about",
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "按下把几个设置改成算出的值",
-                                      "en": "a button setting some settings to worked-out values"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.about"
                                   },
                                   "text": {
                                     "type": "obj",
@@ -1807,10 +1591,7 @@
                     "optional": true
                   }
                 },
-                "about": {
-                  "zh": "桌面卡片、手机格位、详情；不写用默认",
-                  "en": "the desktop card, the phone tile, the detail; the defaults where left out"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.about",
                 "optional": true
               },
               "keeps": {
@@ -1825,10 +1606,7 @@
                     "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
                   }
                 },
-                "about": {
-                  "zh": "把这个输入存进设置 register 说的寄存器，下一拍起读得到（held）；存的件不写 compute",
-                  "en": "keeps this input in the register its setting `register` names, readable from the next tick on (held); a keeping part writes no compute"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.keeps.about",
                 "optional": true
               },
               "op": {
@@ -1854,10 +1632,7 @@
                   "give",
                   "pass"
                 ],
-                "about": {
-                  "zh": "give：任何输入是「—」就给「—」（默认）；pass：交给运算",
-                  "en": "give: 「—」 at any input gives 「—」 (default); pass: the resources see it"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.nulls.about",
                 "optional": true
               }
             }
@@ -1870,10 +1645,7 @@
               },
               "desc": {
                 "type": "text",
-                "about": {
-                  "zh": "只写功能：读哪些口、给出什么、碰到「—」怎么办",
-                  "en": "what it does only: what it reads, what it gives, what 「—」 does"
-                }
+                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.desc.about"
               },
               "inputs": {
                 "type": "list",
@@ -1899,10 +1671,7 @@
                     },
                     "optional": {
                       "type": "bool",
-                      "about": {
-                        "zh": "可以不接：不接时运算在这里读到「—」",
-                        "en": "may be left unwired: the computation reads 「—」 there when it is"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.inputs.of.fields.optional.about",
                       "optional": true
                     }
                   }
@@ -1933,10 +1702,7 @@
                     },
                     "optional": {
                       "type": "bool",
-                      "about": {
-                        "zh": "可以不接：不接时运算在这里读到「—」",
-                        "en": "may be left unwired: the computation reads 「—」 there when it is"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.outputs.of.fields.optional.about",
                       "optional": true
                     }
                   }
@@ -1965,10 +1731,7 @@
                     },
                     "label": {
                       "type": "str",
-                      "about": {
-                        "zh": "这种形态在元件上叫什么",
-                        "en": "what this shape is called on the part"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.inside.of.fields.label.about",
                       "optional": true
                     },
                     "reference": {
@@ -2083,10 +1846,7 @@
                           "optional": true
                         }
                       },
-                      "about": {
-                        "zh": "可独立读取的参考作品和接口",
-                        "en": "A standalone reference work and its interface"
-                      }
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.inside.of.fields.reference.about"
                     }
                   }
                 },
@@ -2095,10 +1855,7 @@
               "card": {
                 "type": "ref",
                 "kind": "operation",
-                "about": {
-                  "zh": "不跑内部的作品，照这个引擎资源跑（它能做的比证出的更多）；内部仍说它是什么、在哪里得到",
-                  "en": "runs this engine resource instead of the work inside (it can do more than what was proved); the inside still says what the part is and where it is earned"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.card.about",
                 "optional": true
               },
               "settings": {
@@ -2126,35 +1883,23 @@
                     },
                     "about": {
                       "type": "text",
-                      "about": {
-                        "zh": "悬停和详情里的一行说明",
-                        "en": "one line shown on hover and in the detail"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.about.about",
                       "optional": true
                     },
                     "default": {
                       "type": "any",
-                      "about": {
-                        "zh": "新元件的值",
-                        "en": "the value a new part starts with"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.default.about",
                       "optional": true
                     },
                     "when": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "式子：为真时才出现（只读设置）",
-                        "en": "an expression: shown only while it is true (reads settings only)"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.when.about",
                       "optional": true
                     },
                     "fixed": {
                       "type": "bool",
-                      "about": {
-                        "zh": "只显示，玩家不能改",
-                        "en": "shown, not changed by the player"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.fixed.about",
                       "optional": true
                     },
                     "options": {
@@ -2165,10 +1910,7 @@
                           "value": {
                             "type": "str",
                             "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                            "about": {
-                              "zh": "ASCII 值：写进蓝图文本",
-                              "en": "an ASCII value, as blueprint text writes it"
-                            }
+                            "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.options.of.fields.value.about"
                           },
                           "label": {
                             "type": "text",
@@ -2177,18 +1919,12 @@
                           "icon": {
                             "type": "str",
                             "view": "icon",
-                            "about": {
-                              "zh": "内核图标表里的一个名字",
-                              "en": "a name in the kernel’s icon table"
-                            },
+                            "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.options.of.fields.icon.about",
                             "optional": true
                           },
                           "about": {
                             "type": "text",
-                            "about": {
-                              "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
-                              "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
-                            },
+                            "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.options.of.fields.about.about",
                             "optional": true
                           }
                         }
@@ -2199,18 +1935,12 @@
                     "from": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "式子：由元件的输入算出选项",
-                        "en": "an expression: the options worked out of the part’s inputs"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.from.about",
                       "optional": true
                     },
                     "optional": {
                       "type": "bool",
-                      "about": {
-                        "zh": "没写时读到「—」（新元件仍从 default 起）",
-                        "en": "reads 「—」 when not written (a new part still starts from default)"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.optional.about",
                       "optional": true
                     },
                     "layout": {
@@ -2221,10 +1951,7 @@
                         "grid",
                         "pad"
                       ],
-                      "about": {
-                        "zh": "row 一行，column 一列，grid 两两一行，pad 上下左右四向（选项 up、left、right、down）",
-                        "en": "row, column, grid (two a row), pad (four ways: options up, left, right, down)"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.layout.about",
                       "optional": true
                     },
                     "min": {
@@ -2250,10 +1977,7 @@
                     },
                     "stepper": {
                       "type": "bool",
-                      "about": {
-                        "zh": "两边加 − / + 按钮",
-                        "en": "− / + buttons on either side"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.stepper.about",
                       "optional": true
                     },
                     "marks": {
@@ -2285,10 +2009,7 @@
                       "of": {
                         "type": "str",
                         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                        "about": {
-                          "zh": "ASCII 值：写进蓝图文本",
-                          "en": "an ASCII value, as blueprint text writes it"
-                        }
+                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.remove.of.about"
                       },
                       "optional": true
                     },
@@ -2297,10 +2018,7 @@
                       "of": {
                         "type": "str",
                         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                        "about": {
-                          "zh": "ASCII 值：写进蓝图文本",
-                          "en": "an ASCII value, as blueprint text writes it"
-                        }
+                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.add.of.about"
                       },
                       "optional": true
                     }
@@ -2322,10 +2040,7 @@
                     "when": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "一行式子：调用领域的引擎资源",
-                        "en": "one line calling the domain’s engine resources"
-                      },
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.rules.of.fields.when.about",
                       "optional": true
                     },
                     "set": {
@@ -2333,22 +2048,13 @@
                       "of": {
                         "type": "str",
                         "view": "expr",
-                        "about": {
-                          "zh": "一行式子：调用领域的引擎资源",
-                          "en": "one line calling the domain’s engine resources"
-                        }
+                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.rules.of.fields.set.of.about"
                       },
-                      "about": {
-                        "zh": "设置 → 新值的式子",
-                        "en": "setting → the expression of its new value"
-                      }
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.rules.of.fields.set.about"
                     }
                   }
                 },
-                "about": {
-                  "zh": "交互：一个设置改了，另几个跟着改",
-                  "en": "interaction: when a setting changes, others follow"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.rules.about",
                 "optional": true
               },
               "checks": {
@@ -2359,29 +2065,20 @@
                     "holds": {
                       "type": "str",
                       "view": "expr",
-                      "about": {
-                        "zh": "一行式子：调用领域的引擎资源",
-                        "en": "one line calling the domain’s engine resources"
-                      }
+                      "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.checks.of.fields.holds.about"
                     },
                     "say": {
                       "type": "text"
                     }
                   }
                 },
-                "about": {
-                  "zh": "设置必须满足的条件：不满足时卡片上说出原因，元件不计算",
-                  "en": "conditions the settings must meet: else the card says why and the part computes nothing"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.checks.about",
                 "optional": true
               },
               "icon": {
                 "type": "str",
                 "view": "icon",
-                "about": {
-                  "zh": "内核图标表里的一个名字",
-                  "en": "a name in the kernel’s icon table"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.icon.about",
                 "optional": true
               },
               "family": {
@@ -2455,10 +2152,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "一个设置：控件，或此刻的值的字",
-                            "en": "one setting: its control, or the words for its value"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.setting.about"
                         },
                         "summary": {
                           "type": "obj",
@@ -2471,10 +2165,7 @@
                             },
                             "text": {
                               "type": "text",
-                              "about": {
-                                "zh": "带 {设置} 的一句话",
-                                "en": "words with {setting} in them"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.summary.fields.text.about",
                               "optional": true
                             }
                           }
@@ -2494,10 +2185,7 @@
                             "expr": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.readout.fields.expr.about"
                             },
                             "unit": {
                               "type": "text",
@@ -2510,10 +2198,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "由设置算出的读数",
-                            "en": "a reading worked out from the settings"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.readout.about"
                         },
                         "action": {
                           "type": "obj",
@@ -2532,30 +2217,18 @@
                               "of": {
                                 "type": "str",
                                 "view": "expr",
-                                "about": {
-                                  "zh": "一行式子：调用领域的引擎资源",
-                                  "en": "one line calling the domain’s engine resources"
-                                }
+                                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.action.fields.set.of.about"
                               },
-                              "about": {
-                                "zh": "设置 → 按下后的新值",
-                                "en": "setting → its value once pressed"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.action.fields.set.about"
                             },
                             "when": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.action.fields.when.about",
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "按下把几个设置改成算出的值",
-                            "en": "a button setting some settings to worked-out values"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.action.about"
                         },
                         "text": {
                           "type": "obj",
@@ -2684,10 +2357,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "一个设置：控件，或此刻的值的字",
-                                      "en": "one setting: its control, or the words for its value"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.setting.about"
                                   },
                                   "summary": {
                                     "type": "obj",
@@ -2700,10 +2370,7 @@
                                       },
                                       "text": {
                                         "type": "text",
-                                        "about": {
-                                          "zh": "带 {设置} 的一句话",
-                                          "en": "words with {setting} in them"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.summary.fields.text.about",
                                         "optional": true
                                       }
                                     }
@@ -2723,10 +2390,7 @@
                                       "expr": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.readout.fields.expr.about"
                                       },
                                       "unit": {
                                         "type": "text",
@@ -2739,10 +2403,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "由设置算出的读数",
-                                      "en": "a reading worked out from the settings"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.readout.about"
                                   },
                                   "action": {
                                     "type": "obj",
@@ -2761,30 +2422,18 @@
                                         "of": {
                                           "type": "str",
                                           "view": "expr",
-                                          "about": {
-                                            "zh": "一行式子：调用领域的引擎资源",
-                                            "en": "one line calling the domain’s engine resources"
-                                          }
+                                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.fields.set.of.about"
                                         },
-                                        "about": {
-                                          "zh": "设置 → 按下后的新值",
-                                          "en": "setting → its value once pressed"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.fields.set.about"
                                       },
                                       "when": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.fields.when.about",
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "按下把几个设置改成算出的值",
-                                      "en": "a button setting some settings to worked-out values"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.card.of.cases.row.fields.blocks.of.cases.action.about"
                                   },
                                   "text": {
                                     "type": "obj",
@@ -2914,10 +2563,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "一个设置：控件，或此刻的值的字",
-                            "en": "one setting: its control, or the words for its value"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.setting.about"
                         },
                         "summary": {
                           "type": "obj",
@@ -2930,10 +2576,7 @@
                             },
                             "text": {
                               "type": "text",
-                              "about": {
-                                "zh": "带 {设置} 的一句话",
-                                "en": "words with {setting} in them"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.summary.fields.text.about",
                               "optional": true
                             }
                           }
@@ -2953,10 +2596,7 @@
                             "expr": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.readout.fields.expr.about"
                             },
                             "unit": {
                               "type": "text",
@@ -2969,10 +2609,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "由设置算出的读数",
-                            "en": "a reading worked out from the settings"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.readout.about"
                         },
                         "action": {
                           "type": "obj",
@@ -2991,30 +2628,18 @@
                               "of": {
                                 "type": "str",
                                 "view": "expr",
-                                "about": {
-                                  "zh": "一行式子：调用领域的引擎资源",
-                                  "en": "one line calling the domain’s engine resources"
-                                }
+                                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.action.fields.set.of.about"
                               },
-                              "about": {
-                                "zh": "设置 → 按下后的新值",
-                                "en": "setting → its value once pressed"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.action.fields.set.about"
                             },
                             "when": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.action.fields.when.about",
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "按下把几个设置改成算出的值",
-                            "en": "a button setting some settings to worked-out values"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.action.about"
                         },
                         "text": {
                           "type": "obj",
@@ -3143,10 +2768,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "一个设置：控件，或此刻的值的字",
-                                      "en": "one setting: its control, or the words for its value"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.setting.about"
                                   },
                                   "summary": {
                                     "type": "obj",
@@ -3159,10 +2781,7 @@
                                       },
                                       "text": {
                                         "type": "text",
-                                        "about": {
-                                          "zh": "带 {设置} 的一句话",
-                                          "en": "words with {setting} in them"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.summary.fields.text.about",
                                         "optional": true
                                       }
                                     }
@@ -3182,10 +2801,7 @@
                                       "expr": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.readout.fields.expr.about"
                                       },
                                       "unit": {
                                         "type": "text",
@@ -3198,10 +2814,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "由设置算出的读数",
-                                      "en": "a reading worked out from the settings"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.readout.about"
                                   },
                                   "action": {
                                     "type": "obj",
@@ -3220,30 +2833,18 @@
                                         "of": {
                                           "type": "str",
                                           "view": "expr",
-                                          "about": {
-                                            "zh": "一行式子：调用领域的引擎资源",
-                                            "en": "one line calling the domain’s engine resources"
-                                          }
+                                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.fields.set.of.about"
                                         },
-                                        "about": {
-                                          "zh": "设置 → 按下后的新值",
-                                          "en": "setting → its value once pressed"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.fields.set.about"
                                       },
                                       "when": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.fields.when.about",
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "按下把几个设置改成算出的值",
-                                      "en": "a button setting some settings to worked-out values"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.tile.of.cases.row.fields.blocks.of.cases.action.about"
                                   },
                                   "text": {
                                     "type": "obj",
@@ -3373,10 +2974,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "一个设置：控件，或此刻的值的字",
-                            "en": "one setting: its control, or the words for its value"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.setting.about"
                         },
                         "summary": {
                           "type": "obj",
@@ -3389,10 +2987,7 @@
                             },
                             "text": {
                               "type": "text",
-                              "about": {
-                                "zh": "带 {设置} 的一句话",
-                                "en": "words with {setting} in them"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.summary.fields.text.about",
                               "optional": true
                             }
                           }
@@ -3412,10 +3007,7 @@
                             "expr": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.readout.fields.expr.about"
                             },
                             "unit": {
                               "type": "text",
@@ -3428,10 +3020,7 @@
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "由设置算出的读数",
-                            "en": "a reading worked out from the settings"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.readout.about"
                         },
                         "action": {
                           "type": "obj",
@@ -3450,30 +3039,18 @@
                               "of": {
                                 "type": "str",
                                 "view": "expr",
-                                "about": {
-                                  "zh": "一行式子：调用领域的引擎资源",
-                                  "en": "one line calling the domain’s engine resources"
-                                }
+                                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.action.fields.set.of.about"
                               },
-                              "about": {
-                                "zh": "设置 → 按下后的新值",
-                                "en": "setting → its value once pressed"
-                              }
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.action.fields.set.about"
                             },
                             "when": {
                               "type": "str",
                               "view": "expr",
-                              "about": {
-                                "zh": "一行式子：调用领域的引擎资源",
-                                "en": "one line calling the domain’s engine resources"
-                              },
+                              "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.action.fields.when.about",
                               "optional": true
                             }
                           },
-                          "about": {
-                            "zh": "按下把几个设置改成算出的值",
-                            "en": "a button setting some settings to worked-out values"
-                          }
+                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.action.about"
                         },
                         "text": {
                           "type": "obj",
@@ -3602,10 +3179,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "一个设置：控件，或此刻的值的字",
-                                      "en": "one setting: its control, or the words for its value"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.setting.about"
                                   },
                                   "summary": {
                                     "type": "obj",
@@ -3618,10 +3192,7 @@
                                       },
                                       "text": {
                                         "type": "text",
-                                        "about": {
-                                          "zh": "带 {设置} 的一句话",
-                                          "en": "words with {setting} in them"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.summary.fields.text.about",
                                         "optional": true
                                       }
                                     }
@@ -3641,10 +3212,7 @@
                                       "expr": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.readout.fields.expr.about"
                                       },
                                       "unit": {
                                         "type": "text",
@@ -3657,10 +3225,7 @@
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "由设置算出的读数",
-                                      "en": "a reading worked out from the settings"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.readout.about"
                                   },
                                   "action": {
                                     "type": "obj",
@@ -3679,30 +3244,18 @@
                                         "of": {
                                           "type": "str",
                                           "view": "expr",
-                                          "about": {
-                                            "zh": "一行式子：调用领域的引擎资源",
-                                            "en": "one line calling the domain’s engine resources"
-                                          }
+                                          "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.fields.set.of.about"
                                         },
-                                        "about": {
-                                          "zh": "设置 → 按下后的新值",
-                                          "en": "setting → its value once pressed"
-                                        }
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.fields.set.about"
                                       },
                                       "when": {
                                         "type": "str",
                                         "view": "expr",
-                                        "about": {
-                                          "zh": "一行式子：调用领域的引擎资源",
-                                          "en": "one line calling the domain’s engine resources"
-                                        },
+                                        "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.fields.when.about",
                                         "optional": true
                                       }
                                     },
-                                    "about": {
-                                      "zh": "按下把几个设置改成算出的值",
-                                      "en": "a button setting some settings to worked-out values"
-                                    }
+                                    "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.fields.detail.of.cases.row.fields.blocks.of.cases.action.about"
                                   },
                                   "text": {
                                     "type": "obj",
@@ -3770,10 +3323,7 @@
                     "optional": true
                   }
                 },
-                "about": {
-                  "zh": "桌面卡片、手机格位、详情；不写用默认",
-                  "en": "the desktop card, the phone tile, the detail; the defaults where left out"
-                },
+                "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.views.about",
                 "optional": true
               }
             }

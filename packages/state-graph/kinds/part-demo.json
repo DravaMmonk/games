@@ -5,10 +5,7 @@
       "type": "level",
       "optional": true,
       "section": "read",
-      "about": {
-        "zh": "元件箱演示借用哪一关的电路板",
-        "en": "The level whose board is used in the components box demo"
-      }
+      "about": "@kind.part-demo.fields.demoLevel.about"
     }
   },
   "declares": "package",

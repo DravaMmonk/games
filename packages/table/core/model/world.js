@@ -33,7 +33,7 @@
 
 import { tableAt } from 'circuit';
 import { E } from './scene.js';
-import { T } from '../lang.js';
+import { T, asText } from '../lang.js';
 import { signal } from './format.js';
 import { sensor } from 'circuit'
 
@@ -48,18 +48,18 @@ export const cat = (label, short, cats, icon) => ({ label, short, type: 'table/c
 const REACH = 2;
 /** Names of the cells around the robot: [label, short tag]; the tag, an output's name on a card, is an arrow. */
 export const DIR = {
-  ul: [T('左上', 'up-left'), '↖'], up: [T('上面', 'up'), '↑'], ur: [T('右上', 'up-right'), '↗'], left: [T('左边', 'left'), '←'],
-  right: [T('右边', 'right'), '→'], dl: [T('左下', 'down-left'), '↙'], down: [T('下面', 'down'), '↓'], dr: [T('右下', 'down-right'), '↘'],
+  ul: [T("左上"), '↖'], up: [T("上面"), '↑'], ur: [T("右上"), '↗'], left: [T("左边"), '←'],
+  right: [T("右边"), '→'], dl: [T("左下"), '↙'], down: [T("下面"), '↓'], dr: [T("右下"), '↘'],
 };
 /** The robot's own cell, as an output label. */
-export const THIS_CELL = T('本格', 'this cell');
+export const THIS_CELL = T("本格");
 const RING = { '-1,-1': DIR.ul, '-1,0': DIR.up, '-1,1': DIR.ur, '0,-1': DIR.left, '0,1': DIR.right, '1,-1': DIR.dl, '1,0': DIR.down, '1,1': DIR.dr, '0,0': [THIS_CELL, THIS_CELL] };
 function dirName(dr, dc) {
   if (RING[`${dr},${dc}`]) return RING[`${dr},${dc}`];
   const v = dr ? `${dr < 0 ? '上' : '下'}${Math.abs(dr)}` : '', h = dc ? `${dc < 0 ? '左' : '右'}${Math.abs(dc)}` : '';
   const ve = dr ? `${dr < 0 ? 'up' : 'down'} ${Math.abs(dr)}` : '', he = dc ? `${dc < 0 ? 'left' : 'right'} ${Math.abs(dc)}` : '';
   const arrows = `${dr ? `${dr < 0 ? '↑' : '↓'}${Math.abs(dr)}` : ''}${dc ? `${dc < 0 ? '←' : '→'}${Math.abs(dc)}` : ''}`;
-  return [T(v + h, [ve, he].filter(Boolean).join(' ')), arrows];
+  return [asText({ zh: v + h, en: [ve, he].filter(Boolean).join(' ') }), arrows];
 }
 
 /**

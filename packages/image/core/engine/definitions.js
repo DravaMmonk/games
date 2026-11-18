@@ -1,8 +1,12 @@
-import declarations from '../../capabilities/operation.json' with { type: 'json' }
+import declarationsSource from '../../capabilities/operation.json' with { type: 'json' }
 // Keep the image operations, scoring and course unlocks. Studio owns the parts' data and expressions.
 import { operationsOf } from 'circuit'
 import { applyRules, defineParts, shows } from 'circuit'
 import { NODE_TYPES } from './nodes.js'
+
+import { readCopy } from 'kernel/words'
+
+const declarations = readCopy(declarationsSource)
 
 const native = Object.entries(NODE_TYPES).filter(([, spec]) => !spec.fixed)
 const nativeForResource = new Map(native.flatMap(([type, spec]) => {

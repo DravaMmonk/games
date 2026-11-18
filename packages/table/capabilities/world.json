@@ -2,10 +2,7 @@
   "name": "table/world",
   "studio": {
     "order": 20,
-    "label": {
-      "zh": "世界",
-      "en": "Worlds"
-    }
+    "label": "@capability.world.studio.label"
   },
   "implementation": {
     "side": "core"

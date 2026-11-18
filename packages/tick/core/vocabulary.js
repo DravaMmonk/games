@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { circuitReports } from 'circuit'
 import { runLevel } from './run.js'
 
@@ -7,30 +8,18 @@ export const vocabulary = {
     "operation": {},
     "family": {
       "tick/value": {
-        "about": {
-          "zh": "算数的元件",
-          "en": "parts that work on numbers"
-        }
+        "about": catalogText("算数的元件")
       },
       "tick/memory": {
-        "about": {
-          "zh": "读写寄存器的元件",
-          "en": "parts that read and keep registers"
-        }
+        "about": catalogText("读写寄存器的元件")
       }
     },
     "tick/want": {
       "tick/line": {
-        "about": {
-          "zh": "这一拍线上的位",
-          "en": "the bit on the line this tick"
-        }
+        "about": catalogText("这一拍线上的位")
       },
       "tick/delayed": {
-        "about": {
-          "zh": "输入 input 上一拍的值；第一拍给 first",
-          "en": "what the input `input` was the tick before; first on the first tick"
-        },
+        "about": catalogText("输入 input 上一拍的值；第一拍给 first"),
         "params": {
           "type": "obj",
           "fields": {

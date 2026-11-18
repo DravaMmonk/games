@@ -2,17 +2,11 @@
   "name": "constraint",
   "studio": {
     "order": 17,
-    "label": {
-      "zh": "约束",
-      "en": "Constraints"
-    }
+    "label": "@capability.constraint.studio.label"
   },
   "items": {
     "cost": {
-      "about": {
-        "zh": "计算量不超过 max",
-        "en": "a cost of at most max"
-      },
+      "about": "@capability.constraint.items.cost.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -23,10 +17,7 @@
       }
     },
     "nodes": {
-      "about": {
-        "zh": "元件不超过 max 个",
-        "en": "at most max parts"
-      },
+      "about": "@capability.constraint.items.nodes.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -38,10 +29,7 @@
       }
     },
     "transforms": {
-      "about": {
-        "zh": "频域的元件（频域低通、频域相乘）一共不超过 max 个",
-        "en": "at most max frequency-domain parts (frequency low-pass, multiply in frequency) in all"
-      },
+      "about": "@capability.constraint.items.transforms.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -53,10 +41,7 @@
       }
     },
     "depth": {
-      "about": {
-        "zh": "最深的一条路上至少 min 个可训练的层",
-        "en": "at least min trainable layers on the deepest path"
-      },
+      "about": "@capability.constraint.items.depth.about",
       "params": {
         "type": "obj",
         "fields": {
@@ -68,10 +53,7 @@
       }
     },
     "bottleneck": {
-      "about": {
-        "zh": "图像要经过编码器，瓶颈不超过 max 个数",
-        "en": "the picture passes through the encoder, a bottleneck of at most max numbers"
-      },
+      "about": "@capability.constraint.items.bottleneck.about",
       "params": {
         "type": "obj",
         "fields": {

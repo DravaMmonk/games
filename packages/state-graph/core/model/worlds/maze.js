@@ -1,8 +1,9 @@
 // Mazes with keys and doors, as tables stacked in layers.
 
 import { rcName } from 'table';
-import { tr } from 'kernel';
-import { T, lazy } from 'table';
+import { tr } from 'kernel/words'
+import { lazy } from 'table'
+import { T } from '../../words.js'
 import { world, look, cell, yes, DIR } from 'table';
 import { inGrid } from './grid.js';
 
@@ -18,7 +19,7 @@ export function layerGrid(n, layerW, cellW, width) {
   return Math.ceil(n / rows);
 }
 
-export const KEY_COLORS = { red: { n: T('红', 'red'), cls: 'kred' }, blue: { n: T('蓝', 'blue'), cls: 'kblue' }, green: { n: T('绿', 'green'), cls: 'kgreen' } };
+export const KEY_COLORS = { red: { n: T("红"), cls: 'kred' }, blue: { n: T("蓝"), cls: 'kblue' }, green: { n: T("绿"), cls: 'kgreen' } };
 
 const keyAtCell = (t, r, c) => Object.keys(t.keys).find(k => t.keys[k][0] === r && t.keys[k][1] === c) || null;
 const doorAtCell = (t, r, c) => { const d = t.doors.find(x => x.at[0] === r && x.at[1] === c); return d ? d.color : null; };
@@ -32,7 +33,7 @@ export function keyLayers(remember = []) {
   for (let m = 0; m < 1 << cs.length; m++) sets.push(cs.filter((_, k) => (m >> k) & 1));
   return sets.sort((a, b) => a.length - b.length);
 }
-export const layerName = set => (set.length ? set.map(c => KEY_COLORS[c].n).join('·') : tr('无钥匙', 'no keys'));
+export const layerName = set => (set.length ? set.map(c => KEY_COLORS[c].n).join('·') : tr("无钥匙"));
 /** The layer a route on layer `set` came from when it picked up key `k`: the same keys, minus that one. */
 const fromLayer = (rem, set, k) => keyLayers(rem).findIndex(s => s.length === set.length - 1 && s.every(c => set.includes(c)) && !s.includes(k));
 
@@ -48,20 +49,20 @@ export const keysMaze = world({
   layered: true,
   sensors: {
     up: cell(...DIR.up, [-1, 0]), left: cell(...DIR.left, [0, -1]),
-    start: yes(T('是起点', 'is start'), T('起', 'start'), 'flag'), gain: yes(T('捡到钥匙', 'picks up key'), T('捡', 'pick'), 'keyget'), lose: yes(T('路线被带走', 'routes move on'), T('走', 'gone'), 'carry'), shut: yes(T('门关着', 'door shut'), T('关', 'shut'), 'door'),
-    upPrev: cell(T('那层·上面', 'that layer·up'), T('那↑', 'that↑')), leftPrev: cell(T('那层·左边', 'that layer·left'), T('那←', 'that←')),
+    start: yes(T("是起点"), T("起"), 'flag'), gain: yes(T("捡到钥匙"), T("捡"), 'keyget'), lose: yes(T("路线被带走"), T("走"), 'carry'), shut: yes(T("门关着"), T("关"), 'door'),
+    upPrev: cell(T("那层·上面"), T("那↑")), leftPrev: cell(T("那层·左边"), T("那←")),
   },
   facts: ['start', 'gain', 'lose', 'shut'],
   armSensors: ['upPrev', 'leftPrev'],
-  outs: [['cell', T('本层本格', 'this cell'), [0, 0, 0]]],
+  outs: [['cell', T("本层本格"), [0, 0, 0]]],
   here: (t, { r, c }) => [r, c],
   keyAt: (t, r, c, x) => (inGrid(t, r, c) ? `${x ? x.m : 0}:${r},${c}` : null),
-  winLabel: (t, x) => tr(`${layerName(x.set)}这一层`, `layer: ${layerName(x.set)}`),
+  winLabel: (t, x) => tr("{value}这一层", {value: layerName(x.set)}),
   mark(t, key) {
     t = asColored(t);
     const [r, c] = key.split(':')[1].split(',').map(Number), k = keyAtCell(t, r, c), d = doorAtCell(t, r, c);
-    if (k) return { cls: `key ${KEY_COLORS[k].cls}`, mark: 'key', label: lazy(() => tr(`${KEY_COLORS[k].n}钥匙`, `${KEY_COLORS[k].n} key`)) };
-    if (d) return { cls: `door ${KEY_COLORS[d].cls}`, mark: 'door', label: lazy(() => tr(`${KEY_COLORS[d].n}门`, `${KEY_COLORS[d].n} door`)) };
+    if (k) return { cls: `key ${KEY_COLORS[k].cls}`, mark: 'key', label: lazy(() => tr("{n}钥匙", {n: KEY_COLORS[k].n})) };
+    if (d) return { cls: `door ${KEY_COLORS[d].cls}`, mark: 'door', label: lazy(() => tr("{n}门", {n: KEY_COLORS[d].n})) };
     return { mark: r === 0 && c === 0 ? 'start' : r === t.R - 1 && c === t.C - 1 ? 'end' : null };
   },
   sense(t, x, id, get, o) {
@@ -81,7 +82,7 @@ export const keysMaze = world({
     t = asColored(t);
     const rem = o.remember || [], k = keyAtCell(t, x.r, x.c), on = k && rem.includes(k) && x.set.includes(k), from = on ? fromLayer(rem, x.set, k) : -1;
     const at = (r, c) => (on && inGrid(t, r, c) ? `${from}:${r},${c}` : null);
-    return { label: on ? tr(`少一把${KEY_COLORS[k].n}钥匙的那层`, `the layer with no ${KEY_COLORS[k].n} key`) : tr('只在捡钥匙的格子上才有', 'only on cells where a key is picked up'), cells: [{ sensor: 'upPrev', key: at(x.r - 1, x.c), label: tr('上面', 'up') }, { sensor: 'leftPrev', key: at(x.r, x.c - 1), label: tr('左边', 'left') }] };
+    return { label: on ? tr("少一把{n}钥匙的那层", {n: KEY_COLORS[k].n}) : tr("只在捡钥匙的格子上才有"), cells: [{ sensor: 'upPrev', key: at(x.r - 1, x.c), label: tr("上面") }, { sensor: 'leftPrev', key: at(x.r, x.c - 1), label: tr("左边") }] };
   },
   order(t, o) {
     const sets = keyLayers(o.remember), cells = [];
@@ -89,12 +90,12 @@ export const keysMaze = world({
     return cells;
   },
   keys: (t, x) => ({ cell: x.id }),
-  where: x => tr(`${layerName(x.set)}层的${rcName(`${x.r},${x.c}`)}`, `${rcName(`${x.r},${x.c}`)} on the ${layerName(x.set)} layer`),
+  where: x => tr("{value}层的{value2}", {value: layerName(x.set), value2: rcName(`${x.r},${x.c}`)}),
   answerKeys: (t, o) => keyLayers(o.remember).map((_, m) => `${m}:${t.R - 1},${t.C - 1}`),
   answer(t, table, o) { return this.answerKeys(t, o).reduce((s, k) => s + (table.get(k) ?? 0), 0); },
-  name: key => { const [m, rc] = key.split(':'); return tr(`第 ${+m + 1} 层的${rcName(rc)}`, `${rcName(rc)} on layer ${+m + 1}`); },
-  label: t => { t = asColored(t); return tr(`${t.R}×${t.C} · ${Object.keys(t.keys).length} 把钥匙 · ${t.doors.length} 扇门`, `${t.R}×${t.C} · ${Object.keys(t.keys).length} key${Object.keys(t.keys).length > 1 ? 's' : ''} · ${t.doors.length} door${t.doors.length > 1 ? 's' : ''}`); },
-  orderText: () => tr('逐行，每一格把每一层都算一遍', 'row by row, working out every layer of each cell'),
+  name: key => { const [m, rc] = key.split(':'); return tr("第 {value} 层的{value2}", {value: +m + 1, value2: rcName(rc)}); },
+  label: t => { t = asColored(t); return tr("{R}×{C} · {length} 把钥匙 · {length2} 扇门", {R: t.R, C: t.C, length: Object.keys(t.keys).length, length2: t.doors.length, value: Object.keys(t.keys).length > 1 ? 's' : '', value2: t.doors.length > 1 ? 's' : ''}); },
+  orderText: () => tr("逐行，每一格把每一层都算一遍"),
   sample: () => ({ r: 1, c: 1, m: 0, set: [], id: '0:1,1' }),
   cellOf(t, key, o) { return this.order(t, o).find(x => x.id === key) || null; },
   scene(t, view, o = {}) {

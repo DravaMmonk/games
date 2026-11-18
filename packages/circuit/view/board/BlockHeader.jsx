@@ -4,7 +4,8 @@ import { Sheet } from 'kernel/view'
 import { PHONE, useMedia } from 'kernel/view'
 
 import { EyeOff, GripVertical, LayoutGrid, Waypoints, X } from 'lucide-react'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { WORDS } from '../words.js'
 

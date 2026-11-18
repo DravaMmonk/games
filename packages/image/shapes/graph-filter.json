@@ -14,10 +14,7 @@
         "target": {
           "type": "call",
           "kind": "target",
-          "about": {
-            "zh": "输出怎样由测试的图算出（按关卡输入的顺序）",
-            "en": "how the output comes from the test’s pictures (in the order of the level’s inputs)"
-          }
+          "about": "@shape.graph-filter.fields.setup.fields.target.about"
         },
         "given": {
           "type": "map",
@@ -25,10 +22,7 @@
             "type": "call",
             "kind": "picture"
           },
-          "about": {
-            "zh": "每组测试都一样的输入（比如频率半径）",
-            "en": "inputs every test shares (the frequency radius, say)"
-          },
+          "about": "@shape.graph-filter.fields.setup.fields.given.about",
           "optional": true
         }
       }

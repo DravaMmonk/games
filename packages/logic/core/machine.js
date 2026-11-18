@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 // The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
 // clause sets instead of proved judgments. Its sources (`in` cards, one per input the level names) give the test's
@@ -49,7 +50,8 @@ import { rewrite, rewriteBookOf, rewriteText, simplify } from './rewrite.js'
 import { datatypesRules } from './datatype.js'
 import { clausesOfState, oracleRound, parseClause, refuted, replay, resolveRound, saturate } from './resolution.js'
 import { GEN_PARTS, anyValue, elimInputs, judgeElim, listValue } from './elimgen.js'
-import { L, T } from 'kernel'
+import { L } from "kernel"
+import { T } from 'kernel/words'
 import { circuitBoard } from 'circuit'
 import { say } from './notation.js'
 
@@ -266,8 +268,8 @@ const search = {
     const { found, stopped } = depthFirst(resultsOf(s), expand, { depth, limit: LIMIT, most: 60 })
     // A search that has not stopped gives what it found so far (the first is enough to prove a goal), and says it goes
     // on: asking for every answer then never ends.
-    const none = stopped ? T(`搜了 ${LIMIT} 步还没停下来：有一条路走不到头`, `Searched ${LIMIT} steps without stopping: one path never ends`)
-      : depth < Infinity ? T(`${depth} 层以内都搜遍了，也没有证完`, `Searched everything within ${depth} levels without finishing`) : T('都搜遍了，也没有证完')
+    const none = stopped ? T("搜了 {LIMIT} 步还没停下来：有一条路走不到头", {LIMIT})
+      : depth < Infinity ? T("{depth} 层以内都搜遍了，也没有证完", {depth}) : T('都搜遍了，也没有证完')
     const out = asValue(found, { ...firstOf(s), error: none })
     return stopped ? { ...out, endless: true } : out
   },
@@ -399,14 +401,14 @@ const BODIES = {
   rules: RULE_PART,
 }
 const ABOUT = {
-  anyR: T('任意结论', 'Any conclusion'), swapConcl: T('替换结论', 'Swap conclusion'), consFront: T('添加首项', 'Put first'), mkRule: T('构造规则', 'Make a rule'),
-  eachOf: T('逐项处理', 'For each'), keepBound: T('保留⋀', 'Keep ⋀'), repeat: T('重复框', 'Repeat frame'),
-  uDelete: T('删除', 'Delete'), uDecompose: T('分解', 'Decompose'), uConflict: T('冲突', 'Conflict'), uSwap: T('定向', 'Orient'),
-  uCheck: T('出现检查', 'Occurs check'), uEliminate: T('消元', 'Eliminate'), uPattern: T('模式合一', 'Pattern unification'),
-  rule: T('逆用规则', 'Rule'), assumption: T('由假设得证', 'Assumption'), defer: T('目标后移', 'Defer'), append: T('依次尝试', 'Alternatives'),
-  search: T('回溯搜索', 'Search'), each: T('逐个目标', 'Every goal'), rw: T('改写', 'Rewrite'), skolem: T('Skolem 化', 'Skolemise'),
-  toClauses: T('析出子句', 'Into clauses'), resolve: T('一轮归结', 'A round of resolution'), oracle: T('外部证明器', 'Someone else’s prover'),
-  replay: T('重放', 'Replay'), rules: T('规则元件：给出它的规则', 'A rule part: the rules it gives'),
+  anyR: T("任意结论"), swapConcl: T("替换结论"), consFront: T("添加首项"), mkRule: T("构造规则"),
+  eachOf: T("逐项处理"), keepBound: T("保留⋀"), repeat: T("重复框"),
+  uDelete: T("删除"), uDecompose: T("分解"), uConflict: T("冲突"), uSwap: T("定向"),
+  uCheck: T("出现检查"), uEliminate: T("消元"), uPattern: T("模式合一"),
+  rule: T("逆用规则"), assumption: T("由假设得证"), defer: T("目标后移"), append: T("依次尝试"),
+  search: T("回溯搜索"), each: T("逐个目标"), rw: T("改写"), skolem: T("Skolem 化"),
+  toClauses: T("析出子句"), resolve: T("一轮归结"), oracle: T("外部证明器"),
+  replay: T("重放"), rules: T("规则元件：给出它的规则"),
 }
 /**
  * The machine board's parts as engine resources (a game's parts.json makes each a part, games/design/README.md 6.8): a
@@ -500,14 +502,14 @@ export function inputsOf(test, level) {
 }
 const clauseSetOf = (texts) => [...new Map(texts.map((c) => parseClause(c, parseS)).map((c) => [c.key, c])).values()]
 /** The names and labels of a level's inputs. */
-export const inputsOfLevel = (level) => level.inputs ?? [{ name: 'in', label: { zh: '输入', en: 'Input' } }]
+export const inputsOfLevel = (level) => level.inputs ?? [{ name: 'in', label: catalogText("输入") }]
 
 /** A machine board: an `in` card for each of a level's inputs on the left, the result `out` on the right. */
 export const MACHINE_BOARD = circuitBoard({
   text: FORMULA_TEXT,
   cards: [
     { type: 'in', side: 'left', of: (task) => inputsOfLevel(task) },
-    { type: 'out', side: 'right', of: () => [{ name: 'out', label: T('结果', 'Result') }] },
+    { type: 'out', side: 'right', of: () => [{ name: 'out', label: T("结果") }] },
   ],
   right: 900,
   gap: 130,
@@ -518,7 +520,7 @@ export const startMachine = (level) => MACHINE_BOARD.startBoard(level)
 /* ---------- rule parts ---------- */
 
 // A sentence in the level's words, in each language, for names made of it.
-const inWords = (level, write) => T(write((f) => say(f, level.notation).zh), write((f) => say(f, level.notation).en))
+const inWords = (level, write) => ({ zh: write(f => say(f, level.notation).zh), en: write(f => say(f, level.notation).en) })
 // A definition as the level writes it, in the level's words: 'c ⟹ l = r'.
 function defText(d, text) {
   const [cond, eq] = d.includes('⟹') ? d.split('⟹') : [null, d]
@@ -529,22 +531,22 @@ const MATH_NAME = T('数理规则书')
 function rulePartName(level, type) {
   if (type === MATH) return MATH_NAME
   const r = rulePartsOf(level).get(type)[0].rule
-  if (r.part || level.lemmas?.[type]) return level.lemmas?.[type]?.name ?? level.partDefs?.[type]?.name ?? T(type, type)
+  if (r.part || level.lemmas?.[type]) return level.lemmas?.[type]?.name ?? level.partDefs?.[type]?.name ?? { zh: type, en: type }
   return r.group === 'def' ? inWords(level, (text) => defText(r.text, text)) : r.name
 }
 /** A rule of a rule part's, written out: an inference rule, or a rewrite rule (an equation given goes by its name). */
 export const ruleWritten = (e, text, term) => (e.book === 'rule' ? ruleText(e.rule, text) : rewriteText(e.rule, text, term) || L(e.rule.name))
 const AFTER = T('接入其他规则元件时，本元件的规则排在它们之后。')
-const joined = (a, b) => T(`${a.zh}${b.zh}`, `${a.en} ${b.en}`)
+const joined = (a, b) => T("{zh}{zh2}", {zh: { zh: String(a.zh), en: String(a.en) }, zh2: { zh: String(b.zh), en: String(b.en) }})
 /** A rule part as every one is (machine.js RULE_PART): the rules wired in before it, then those added on it. */
 export const RULE_DEFINITION = {
-  name: T('规则元件', 'Rule part'),
+  name: T("规则元件"),
   desc: joined(T('给出这个元件的规则。在元件上添加要给出的规则，按添加顺序排列。'), AFTER),
   icon: 'GitFork',
   family: 'logic/rule',
   outputType: 'logic/machine-value',
   inputs: [{ name: 'before', type: 'logic/machine-value', label: T('前面'), optional: true }],
-  settings: [{ key: 'use', control: 'list', label: T('给出的规则', 'Its rules'), from: 'logic/ruleChoices()' }],
+  settings: [{ key: 'use', control: 'list', label: T("给出的规则"), from: 'logic/ruleChoices()' }],
   bare: true,
   op: 'logic/rules',
 }
@@ -562,7 +564,7 @@ export function ruleParts(level) {
 }
 /** The rules a rule part offers to add, each written out in the test's words (ctx: the task, its text, the card). */
 export const RULE_CHOICES = {
-  about: T('规则元件能给出的规则', 'The rules a rule part can give'),
+  about: T("规则元件能给出的规则"),
   args: [],
   run: (_v, _n, ctx) => {
     const entries = rulePartsOf(ctx.task).get(ctx.node?.type) ?? []
@@ -596,7 +598,7 @@ export function judge(want, test, out, level = {}) {
   if (want === 'logic/proved') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
     if (out.error) return out.error
-    return out.goals.length ? T(`还剩 ${out.goals.length} 个目标没证完`, `${out.goals.length} goal${out.goals.length === 1 ? '' : 's'} still open`) : ''
+    return out.goals.length ? T("还剩 {length} 个目标没证完", {length: out.goals.length, value: out.goals.length === 1 ? '' : 's'}) : ''
   }
   if (want === 'logic/becomes') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
@@ -604,9 +606,9 @@ export function judge(want, test, out, level = {}) {
     if (out.error) return out.error
     const got = resultsOf(out).map((r) => canonical(r.goals))
     const wanted = test.becomes.map((r) => canonical(r.map(parseGoal)))
-    if (got.length !== wanted.length) return T(`要 ${wanted.length} 种结果，得到 ${got.length} 种`, `${wanted.length} result${wanted.length === 1 ? '' : 's'} wanted, ${got.length} made`)
+    if (got.length !== wanted.length) return T("要 {length} 种结果，得到 {length2} 种", {length: wanted.length, length2: got.length, value: wanted.length === 1 ? '' : 's'})
     const k = got.findIndex((g, i) => g !== wanted[i])
-    return k < 0 ? '' : T(wanted.length > 1 ? `第 ${k + 1} 种结果的目标和要的不一样` : '得到的目标和要的不一样', wanted.length > 1 ? `Result ${k + 1} has other goals than wanted` : 'The goals made are not the ones wanted')
+    return k < 0 ? '' : (wanted.length > 1 ? T('第 {n} 种结果的目标和要的不一样', { n: k + 1 }) : T('得到的目标和要的不一样'))
   }
   if (want === 'logic/fails') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
@@ -623,7 +625,7 @@ export function judge(want, test, out, level = {}) {
     if (got.join(';') === wanted.join(';')) return ''
     const list = (xs) => (xs.length ? xs.join('、') : '没有')
     const listEn = (xs) => (xs.length ? xs.join(', ') : 'none')
-    return T(`找到的答案是 ${list(got)}，应该是 ${list(wanted)}`, `The answers found are ${listEn(got)}; they should be ${listEn(wanted)}`)
+    return T("找到的答案是 {value}，应该是 {value2}", {value: { zh: String(list(got)), en: String(listEn(got)) }, value2: { zh: String(list(wanted)), en: String(listEn(wanted)) }})
   }
   if (want === 'logic/unify') {
     if (out.kind !== 'eqs') return T('结果要一组等式')
@@ -643,7 +645,7 @@ export function judge(want, test, out, level = {}) {
   const has = refuted(out.set)
   if (want === 'logic/refuted') {
     if (!has) return T('结果里还没有空子句 ⊥')
-    return test.budget && out.set.length > test.budget ? T(`推出 ⊥ 用了 ${out.set.length} 条子句，最多只能有 ${test.budget} 条`, `Reaching ⊥ took ${out.set.length} clauses; at most ${test.budget} are allowed`) : ''
+    return test.budget && out.set.length > test.budget ? T("推出 ⊥ 用了 {length} 条子句，最多只能有 {budget} 条", {length: out.set.length, budget: test.budget}) : ''
   }
   // decide: ⊥ when the clauses cannot all hold; when they can, saturated without it.
   const start = input.kind === 'clauses' ? input.set : clausify(input, ctxOf(level, { nodes: [], wires: [] })).set
@@ -725,7 +727,7 @@ export const MACHINE_TESTS = {
 /** Use the same case checks and card budget in play and authoring. */
 export function runMachine(level, board, options) {
   const constraint = ({ steps }) => level.budget !== undefined && steps > level.budget
-    ? T(`所有测试都正确，但用了 ${steps} 张卡，这一关最多允许 ${level.budget} 张。`, `Every test is correct, but the board uses ${steps} cards; this level allows ${level.budget}.`)
+    ? T("所有测试都正确，但用了 {steps} 张卡，这一关最多允许 {budget} 张。", {steps, budget: level.budget})
     : ''
   return runOutputTests(MACHINE_TESTS, { ...level, constraint }, board, options)
 }

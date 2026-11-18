@@ -1,3 +1,4 @@
+import { isLanguageNeutral, isText, textEntries, textKey } from './i18n.js'
 import { createHash } from 'node:crypto'
 
 // Stable, lossless projections of runtime data; arrays retain execution order.
@@ -168,6 +169,10 @@ export function differences(before, after) {
   const object = v => v !== null && typeof v === 'object'
   const same = (a, b) => {
     if (Object.is(a, b)) return true
+    // A catalog reference for a neutral label and the same plain label render identically in every language.
+    const neutralCopy = (words, text) => textKey(words) && isLanguageNeutral(text) && isText(words)
+      && textEntries(words).every(([, translation]) => translation === text)
+    if (neutralCopy(a, b) || neutralCopy(b, a)) return true
     if (!object(a) || !object(b) || Array.isArray(a) !== Array.isArray(b)) return false
     if (memo.get(a)?.has(b)) return memo.get(a).get(b)
     const keys = Object.keys(a)

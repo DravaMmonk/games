@@ -2,9 +2,6 @@
   "name": "condition",
   "studio": {
     "order": 23,
-    "label": {
-      "zh": "条件",
-      "en": "Conditions"
-    }
+    "label": "@capability.condition.studio.label"
   }
 }

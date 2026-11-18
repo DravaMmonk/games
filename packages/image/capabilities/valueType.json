@@ -2,10 +2,7 @@
   "extends": "valueType",
   "items": {
     "image": {
-      "about": {
-        "en": "An image or scalar image with named colour channels",
-        "zh": "带颜色通道的图像或标量图像"
-      }
+      "about": "@capability.valueType.items.image.about"
     }
   }
 }

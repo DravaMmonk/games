@@ -4,10 +4,10 @@ import { getLang, tr } from '../shell/i18n.js'
 export const NAME_ASC = 'alphabetic'
 
 export const sidebarSortOptions = () => [
-  { value: 'id-asc', label: tr('按 ID a–z', 'By ID a–z') },
-  { value: 'id-desc', label: tr('按 ID z–a', 'By ID z–a') },
-  { value: NAME_ASC, label: tr('按名称 a–z', 'By name a–z') },
-  { value: 'name-desc', label: tr('按名称 z–a', 'By name z–a') },
+  { value: 'id-asc', label: tr("按 ID a–z") },
+  { value: 'id-desc', label: tr("按 ID z–a") },
+  { value: NAME_ASC, label: tr("按名称 a–z") },
+  { value: 'name-desc', label: tr("按名称 z–a") },
 ]
 
 /** Match what is displayed in the sidebar, including the content ID. */

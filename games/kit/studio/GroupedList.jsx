@@ -1,10 +1,11 @@
+import { L, T } from '../shell/i18n.js'
 // A build list grouped (games/design/README.md 6.7): its objects under every group that names them (list-groups.js), each
 // group folding, its heading row opening the group's own object (a tag, a tray, a relation, a section) in the middle;
 // what no group names under the last heading. The tools above, in one row (SidebarListTools.jsx): a new object of the
 // list or a new group, a search, the grouping, and every group folded or unfolded.
 import { editorForType } from './editors.js'
 import { useState } from 'react'
-import { L, tr } from '../shell/i18n.js'
+import { tr } from '../shell/i18n.js'
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarSection, { useSidebarFolds } from './SidebarSection.jsx'
 import { groupsOf, ungrouped } from './list-groups.js'
@@ -30,7 +31,7 @@ export default function GroupedList({ kind, name = null, content, namespace, gam
   const keys = [...groups.map((group) => group.full), LEFT]
   const titleOf = (group) => L(content.registries?.[group.kind]?.[group.full]?.title) || shownName(namespace, group.full)
   return (
-    <nav className="parts-list" aria-label={tr(...(name ?? editorForType(kind)?.name ?? { level: ['关卡', 'Levels'], entry: ['词条', 'Entries'] }[kind] ?? [kind, kind]))}>
+    <nav className="parts-list" aria-label={L(name ?? editorForType(kind)?.name ?? { level: T('关卡', {}, 'grouped-list'), entry: T('词条', {}, 'grouped-list') }[kind] ?? kind)}>
       <SidebarListTools addOptions={addOptions} addLabel={addLabel} onAdd={onAdd} query={query} onQuery={setQuery}
         groupings={groupings} by={by} onBy={onBy} newOptions={newOptions} onNew={onNew}
         folded={keys.every((key) => folded.has(key))} onFoldAll={(fold) => setAll(keys, fold)} />
@@ -45,7 +46,7 @@ export default function GroupedList({ kind, name = null, content, namespace, gam
         )
       })}
       {shown(rest).length > 0 && (
-        <SidebarSection key={LEFT} title={tr('未分组', 'Ungrouped')} name="" collapsed={!filtering && folded.has(LEFT)} onToggle={() => toggle(LEFT)}>
+        <SidebarSection key={LEFT} title={tr("未分组")} name="" collapsed={!filtering && folded.has(LEFT)} onToggle={() => toggle(LEFT)}>
           {shown(rest).map(row)}
         </SidebarSection>
       )}

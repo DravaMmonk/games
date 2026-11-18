@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 export const vocabulary = {
   "module": "rows",
   "kinds": {
@@ -11,10 +12,7 @@ export const vocabulary = {
   },
   "languages": {
     "rows/sum": {
-      "about": {
-        "zh": "由整数和加号组成的等式右边",
-        "en": "The right side of an equation, built from integers and addition"
-      }
+      "about": catalogText("由整数和加号组成的等式右边")
     }
   }
 }

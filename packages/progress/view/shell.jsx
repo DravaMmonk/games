@@ -1,6 +1,7 @@
 import { createElement, useMemo, useState } from 'react'
 import { CircuitBoard } from 'lucide-react'
-import { tr, taskOpen, playedTask, taskContext, playId } from 'kernel/view'
+import { taskOpen, playedTask, taskContext, playId } from "kernel/view"
+import { tr } from 'kernel/words'
 import { trayMembers } from 'circuit'
 
 function workshopTrayNames(game) {
@@ -38,12 +39,12 @@ export function useWorkshopShell({ game, progress, level, author, solved, phone,
     close(url) { setBench(null); url.searchParams.delete('workshop') },
     taskProps: { workshop: !author && game.workshop },
     area: task && {
-      title: tr('元件工坊', 'Component workshop'), leaveLabel: tr('离开元件工坊', 'Leave the workshop'),
+      title: tr("元件工坊"), leaveLabel: tr("离开元件工坊"),
       content: createElement(workshop.kind.Screen, {
         ...task.screen, key: `${task.key}#${tray}`, phone, theme, workshop: game.workshop,
         workshopOnly: true, workshopTray: tray, workshopTrays: trays, onWorkshopTray: open,
       }),
     },
-    mapActions: workshop && <button className="kit-btn is-label" onClick={() => open()}><CircuitBoard size={15} /><span>{tr('元件工坊', 'Component workshop')}</span></button>,
+    mapActions: workshop && <button className="kit-btn is-label" onClick={() => open()}><CircuitBoard size={15} /><span>{tr("元件工坊")}</span></button>,
   }
 }

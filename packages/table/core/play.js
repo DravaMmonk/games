@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // The table domain's play hook for a blind session (../../engine/play/): a circuit task of 《状态之图》 as its screen
 // (../../shell/CircuitScreen.jsx) shows it, in words — what the robot can read on the task's two input cards, the parts the
 // task holds, each test's table — and an attempt judged as a run judges it (model/verdict.js): test by test, stopping
@@ -22,7 +23,7 @@ const str = (v) => (v === null || v === undefined ? '' : String(v))
 export const play = {
   open(ctx) {
     const s = ctx.level.source
-    if (playOf(s).editor !== 'circuit') return { covered: false, why: { zh: '手动玩法（在表上点格子），harness 只支持电路关', en: 'a hand play (tapping cells on the table); the harness covers circuit levels' } }
+    if (playOf(s).editor !== 'circuit') return { covered: false, why: catalogText("手动玩法（在表上点格子），harness 只支持电路关") }
     return circuit.open(ctx)
   },
   attempt: (ctx, text) => circuit.attempt(ctx, text),
@@ -46,16 +47,16 @@ const circuit = circuitPlay({
     const s = ctx.level.source
     const V = worldOf(s)
     const sensor = (id) => `${id} (${str(V.sensors[id]?.label)}, ${V.sensors[id]?.type})`
-    const card = (id, name) => (s.given.offers[id].length ? [`${id}: ${name} — ${tr('可以读', 'can read')}: ${s.given.offers[id].map(sensor).join(', ')}. ${tr(`在文本里写 ${id}[picks=[…]]() 选它读哪些，读到的每一个是 ${id}.名字 这个输出。`, `Write ${id}[picks=[…]]() to pick what it reads; each one picked is an output ${id}.NAME.`)}`] : [])
-    const ports = s.ports.filter((p) => p.input).map((p) => `${p.input}: ${tr('元件的输入口', 'an input port of the part')} “${str(p.label)}”`)
+    const card = (id, name) => (s.given.offers[id].length ? [`${id}: ${name} — ${tr("可以读")}: ${s.given.offers[id].map(sensor).join(', ')}. ${tr("在文本里写 {id}[picks=[…]]() 选它读哪些，读到的每一个是 {id}.名字 这个输出。", {id})}`] : [])
+    const ports = s.ports.filter((p) => p.input).map((p) => `${p.input}: ${tr("元件的输入口")} “${str(p.label)}”`)
     return [
-      ...card('view', tr('视野（机器人四周的格子）', 'View (the cells around the robot)')),
-      ...card('facts', tr('本格信息', 'This cell')),
+      ...card('view', tr("视野（机器人四周的格子）")),
+      ...card('facts', tr("本格信息")),
       ...ports,
-      ...V.outs.map(([id, label]) => `${id}: ${tr('输出', 'output')} “${str(label)}” — ${tr('机器人写进这一格的数', 'what the robot writes into the cell')}`),
-      `${tr('机器人的顺序', 'The robot’s order')}: ${str(V.orderText(s))}`,
-      ...(s.rounds ? [tr('机器人一轮一轮地扫整张表，直到一整轮没有格子变化。', 'The robot scans the whole table round after round until a whole round changes nothing.')] : []),
-      ...(s.ports.length ? [tr('这一关搭出一个元件：板只能读元件的这些口。', 'This level builds a part: the board may read only its ports.')] : []),
+      ...V.outs.map(([id, label]) => `${id}: ${tr("输出")} “${str(label)}” — ${tr("机器人写进这一格的数")}`),
+      `${tr("机器人的顺序")}: ${str(V.orderText(s))}`,
+      ...(s.rounds ? [tr("机器人一轮一轮地扫整张表，直到一整轮没有格子变化。")] : []),
+      ...(s.ports.length ? [tr("这一关搭出一个元件：板只能读元件的这些口。")] : []),
     ].join('\n')
   },
   tests: (ctx) => {
@@ -63,7 +64,7 @@ const circuit = circuitPlay({
     const V = worldOf(s)
     return s.tests.map((t, k) => {
       const key = V.answerKey?.(t, s) ?? null
-      return { label: str(robotTestName(s, t, k)), text: `${JSON.stringify(t)}${key !== null ? `\n${tr('答案读自', 'The answer is read at')} ${str(V.name(key))}` : ''}` }
+      return { label: str(robotTestName(s, t, k)), text: `${JSON.stringify(t)}${key !== null ? `\n${tr("答案读自")} ${str(V.name(key))}` : ''}` }
     })
   },
   run: ({ game, level: { source: task }, fails }, graph) => {
@@ -80,8 +81,8 @@ const circuit = circuitPlay({
       }
       const hint = robotHint(task, graph, fails)
       tests[k] = { ...tests[k], says: `${str(failure.head)}: ${str(failure.body)}` }
-      return { tests, says: hint ? [`${tr('提示', 'Hint')}: ${str(hint)}`] : [], pass: false }
+      return { tests, says: hint ? [`${tr("提示")}: ${str(hint)}`] : [], pass: false }
     }
-    return { tests, says: constraint ? [`${tr('还不能做成元件', 'Not a part yet')}: ${str(constraint)}`] : [], pass }
+    return { tests, says: constraint ? [`${tr("还不能做成元件")}: ${str(constraint)}`] : [], pass }
   },
 })

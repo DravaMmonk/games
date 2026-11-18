@@ -2,10 +2,7 @@
   "extends": "image/scene",
   "items": {
     "binaryScores": {
-      "about": {
-        "zh": "两个分数；期望是 Softmax 给出的两个权重",
-        "en": "two scores; the two weights produced by Softmax expected"
-      },
+      "about": "@capability.scene.items.binaryScores.about",
       "shape": "vision-complete/graph-binaryScores",
       "test": {
         "type": "obj",
@@ -22,10 +19,7 @@
       }
     },
     "blocks": {
-      "about": {
-        "zh": "暗底上的亮块（有一点噪声）；期望是周围 7×7 全亮的格子",
-        "en": "bright blocks on a dark ground with a little noise; the cells whose whole 7×7 is bright expected"
-      },
+      "about": "@capability.scene.items.blocks.about",
       "shape": "vision-complete/graph-blocks",
       "test": {
         "type": "obj",
@@ -38,10 +32,7 @@
                 "type": "int"
               },
               "min": 4,
-              "about": {
-                "zh": "一个矩形：x0, y0, 宽, 高",
-                "en": "a rectangle: x0, y0, width, height"
-              }
+              "about": "@capability.scene.items.blocks.test.fields.rects.of.about"
             }
           },
           "notches": {
@@ -53,10 +44,7 @@
               },
               "min": 2
             },
-            "about": {
-              "zh": "亮块上缺的格子",
-              "en": "cells missing from the blocks"
-            },
+            "about": "@capability.scene.items.blocks.test.fields.notches.about",
             "optional": true
           },
           "seed": {
@@ -66,10 +54,7 @@
       }
     },
     "boxPair": {
-      "about": {
-        "zh": "两个框的掩膜；期望是交并比（iou），或交并比是否大于 0.5（good）",
-        "en": "two boxes’ masks; their intersection over union (iou), or whether it is over 0.5 (good), expected"
-      },
+      "about": "@capability.scene.items.boxPair.about",
       "shape": "vision-complete/graph-boxPair",
       "params": {
         "type": "obj",
@@ -92,10 +77,7 @@
               "type": "int"
             },
             "min": 4,
-            "about": {
-              "zh": "一个框：x0, y0, x1, y1（不含 x1、y1）",
-              "en": "a box: x0, y0, x1, y1 (x1, y1 excluded)"
-            }
+            "about": "@capability.scene.items.boxPair.test.fields.a.about"
           },
           "b": {
             "type": "list",
@@ -103,19 +85,13 @@
               "type": "int"
             },
             "min": 4,
-            "about": {
-              "zh": "一个框：x0, y0, x1, y1（不含 x1、y1）",
-              "en": "a box: x0, y0, x1, y1 (x1, y1 excluded)"
-            }
+            "about": "@capability.scene.items.boxPair.test.fields.b.about"
           }
         }
       }
     },
     "brighter": {
-      "about": {
-        "zh": "关键点的窗口和三个候选：真搭档是同一块纹理调亮了 0.3，另两个是同样亮的平淡纹理；期望是搭档的编号",
-        "en": "a keypoint’s window and three candidates, its partner the same texture brightened by 0.3, the others flat textures as bright; the partner’s number expected"
-      },
+      "about": "@capability.scene.items.brighter.about",
       "shape": "vision-complete/graph-brighter",
       "test": {
         "type": "obj",
@@ -132,10 +108,7 @@
       }
     },
     "brightest": {
-      "about": {
-        "zh": "几个图案，各有各的亮度；期望是每个图块都变成最亮的那个图案",
-        "en": "a few patterns, each at its own brightness; every patch turned into the brightest pattern expected"
-      },
+      "about": "@capability.scene.items.brightest.about",
       "shape": "vision-complete/graph-brightest",
       "test": {
         "type": "obj",
@@ -163,10 +136,7 @@
                     "min": 0
                   },
                   "min": 2,
-                  "about": {
-                    "zh": "第几行、第几列的图块",
-                    "en": "the row and column of its patch"
-                  }
+                  "about": "@capability.scene.items.brightest.test.fields.items.of.fields.at.about"
                 },
                 "hi": {
                   "type": "num"
@@ -178,10 +148,7 @@
       }
     },
     "bumps": {
-      "about": {
-        "zh": "一张有几个平滑鼓包的响应图；期望是它的峰：比 3×3 邻居都不小、又大于 above 的格子",
-        "en": "a response map with smooth bumps; its peaks expected: cells no smaller than their 3×3 neighbours and above `above`"
-      },
+      "about": "@capability.scene.items.bumps.about",
       "shape": "vision-complete/graph-bumps",
       "params": {
         "type": "obj",
@@ -203,19 +170,13 @@
               },
               "min": 3
             },
-            "about": {
-              "zh": "鼓包：cx, cy, 高",
-              "en": "bumps: cx, cy, height"
-            }
+            "about": "@capability.scene.items.bumps.test.fields.bumps.about"
           }
         }
       }
     },
     "cells": {
-      "about": {
-        "zh": "显微镜下的细胞：亮的细胞、暗一些的底、颗粒，挨着的细胞之间留一格缝；期望是细胞的掩膜",
-        "en": "cells under a microscope, bright on a darker ground, with grain and one-pixel gaps between touching cells; the cells’ mask expected"
-      },
+      "about": "@capability.scene.items.cells.about",
       "shape": "vision-complete/graph-cells",
       "test": {
         "type": "obj",
@@ -228,10 +189,7 @@
                 "type": "int"
               },
               "min": 4,
-              "about": {
-                "zh": "细胞：x0, y0, x1, y1（不含 x1、y1）",
-                "en": "a cell: x0, y0, x1, y1 (x1, y1 excluded)"
-              }
+              "about": "@capability.scene.items.cells.test.fields.rects.of.about"
             }
           },
           "gapX": {
@@ -239,10 +197,7 @@
             "of": {
               "type": "int"
             },
-            "about": {
-              "zh": "竖缝所在的列",
-              "en": "the columns of upright gaps"
-            },
+            "about": "@capability.scene.items.cells.test.fields.gapX.about",
             "optional": true
           },
           "gapY": {
@@ -250,10 +205,7 @@
             "of": {
               "type": "int"
             },
-            "about": {
-              "zh": "横缝所在的行",
-              "en": "the rows of gaps across"
-            },
+            "about": "@capability.scene.items.cells.test.fields.gapY.about",
             "optional": true
           },
           "seed": {
@@ -275,10 +227,7 @@
       }
     },
     "classToken": {
-      "about": {
-        "zh": "一条街、ViT 类别 token 的查询和车所在的图块；期望是注意力落在车上的比例",
-        "en": "a street, a ViT class token’s query and the patches with the car; the share of attention on the car expected"
-      },
+      "about": "@capability.scene.items.classToken.about",
       "shape": "vision-complete/graph-classToken",
       "test": {
         "type": "obj",
@@ -288,17 +237,11 @@
             "fields": {
               "cx": {
                 "type": "int",
-                "about": {
-                  "zh": "车的左边在第几列",
-                  "en": "the column of the car’s left side"
-                }
+                "about": "@capability.scene.items.classToken.test.fields.street.fields.cx.about"
               },
               "house": {
                 "type": "int",
-                "about": {
-                  "zh": "房子的左边在第几列",
-                  "en": "the column of the house’s left side"
-                },
+                "about": "@capability.scene.items.classToken.test.fields.street.fields.house.about",
                 "optional": true
               }
             }
@@ -320,19 +263,13 @@
               },
               "min": 2
             },
-            "about": {
-              "zh": "车所在的图块 [列, 行]",
-              "en": "the patches with the car, [column, row]"
-            }
+            "about": "@capability.scene.items.classToken.test.fields.patches.about"
           }
         }
       }
     },
     "classifier": {
-      "about": {
-        "zh": "一条有车的街和一个线性分类器的权重（可以另给车的掩膜）；期望是每格的贡献、遮挡图、落在车上的分数比例、热图落在车上的比例，或体检的热图和判定",
-        "en": "a street with a car and a linear classifier’s weights (and the car’s mask, maybe); each cell’s contribution, the occlusion map, the share of the score on the car, the share of the heat map on it, or the check-up’s heat map and verdict, expected"
-      },
+      "about": "@capability.scene.items.classifier.about",
       "shape": "vision-complete/graph-classifier",
       "params": {
         "type": "obj",
@@ -360,10 +297,7 @@
                 "optional": true
               }
             },
-            "about": {
-              "zh": "遮挡用的块：亮度 v，r × r（默认黑的 3 × 3）",
-              "en": "the block covering: brightness v, r × r (black 3 × 3 at first)"
-            },
+            "about": "@capability.scene.items.classifier.params.fields.cover.about",
             "optional": true
           }
         }
@@ -376,17 +310,11 @@
             "fields": {
               "cx": {
                 "type": "int",
-                "about": {
-                  "zh": "车的左边在第几列",
-                  "en": "the column of the car’s left side"
-                }
+                "about": "@capability.scene.items.classifier.test.fields.street.fields.cx.about"
               },
               "house": {
                 "type": "int",
-                "about": {
-                  "zh": "房子的左边在第几列",
-                  "en": "the column of the house’s left side"
-                },
+                "about": "@capability.scene.items.classifier.test.fields.street.fields.house.about",
                 "optional": true
               }
             }
@@ -407,10 +335,7 @@
       }
     },
     "clutter": {
-      "about": {
-        "zh": "一条线和随机的杂点；期望是那条真线",
-        "en": "a line among random specks; the true line expected"
-      },
+      "about": "@capability.scene.items.clutter.about",
       "shape": "vision-complete/graph-clutter",
       "test": {
         "type": "obj",
@@ -421,10 +346,7 @@
               "type": "num"
             },
             "min": 4,
-            "about": {
-              "zh": "一条线经过的两点：x1, y1, x2, y2",
-              "en": "two points on a line: x1, y1, x2, y2"
-            }
+            "about": "@capability.scene.items.clutter.test.fields.line.about"
           },
           "seed": {
             "type": "int"
@@ -437,10 +359,7 @@
       }
     },
     "colour": {
-      "about": {
-        "zh": "一张彩色图的三个通道（各减 0.5）；期望是一种颜色对比（红对绿，或蓝对黄）的边",
-        "en": "a colour picture’s three channels (each less 0.5); the edges of one colour contrast (red against green, or blue against yellow) expected"
-      },
+      "about": "@capability.scene.items.colour.about",
       "shape": "vision-complete/graph-colour",
       "params": {
         "type": "obj",
@@ -475,20 +394,14 @@
           },
           "noise": {
             "type": "int",
-            "about": {
-              "zh": "彩色噪点的种子",
-              "en": "the seed of colour noise"
-            },
+            "about": "@capability.scene.items.colour.test.fields.noise.about",
             "optional": true
           }
         }
       }
     },
     "colourMix": {
-      "about": {
-        "zh": "一张彩色图；期望是模糊后的两种通道组合：R − G 和 R + G − 2B",
-        "en": "a colour picture; two mixes of its blurred channels expected: R − G and R + G − 2B"
-      },
+      "about": "@capability.scene.items.colourMix.about",
       "shape": "vision-complete/graph-colourMix",
       "test": {
         "type": "obj",
@@ -506,10 +419,7 @@
       }
     },
     "coverPairs": {
-      "about": {
-        "zh": "书的照片、封面和匹配的点对（有噪声，夹着错配）；期望是用对的点对解出的单应贴回封面",
-        "en": "a photo of the book, the cover and matched pairs (noisy, with wrong ones among them); the cover pasted back by the homography of the right pairs expected"
-      },
+      "about": "@capability.scene.items.coverPairs.about",
       "shape": "vision-complete/graph-coverPairs",
       "test": {
         "type": "obj",
@@ -524,10 +434,7 @@
               "min": 2
             },
             "min": 4,
-            "about": {
-              "zh": "书的四个角在照片里的位置",
-              "en": "where the book’s four corners are in the photo"
-            }
+            "about": "@capability.scene.items.coverPairs.test.fields.quad.about"
           },
           "seed": {
             "type": "int"
@@ -535,19 +442,13 @@
           "wrong": {
             "type": "int",
             "min": 0,
-            "about": {
-              "zh": "错配几对",
-              "en": "how many wrong pairs"
-            }
+            "about": "@capability.scene.items.coverPairs.test.fields.wrong.about"
           }
         }
       }
     },
     "depth": {
-      "about": {
-        "zh": "一张视差图（远墙视差 1）；期望是距离 f·b ÷ 视差。给了 f、b 时它们也是输入，否则 f·b = 3",
-        "en": "a disparity map (the far wall at 1); the distance f·b ÷ disparity expected, f and b inputs too when given, else f·b = 3"
-      },
+      "about": "@capability.scene.items.depth.about",
       "shape": "vision-complete/graph-depth",
       "test": {
         "type": "obj",
@@ -566,10 +467,7 @@
                     "type": "int"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "它占的矩形：x0, y0, x1, y1（不含 x1、y1）",
-                    "en": "the rectangle it fills: x0, y0, x1, y1 (x1, y1 excluded)"
-                  }
+                  "about": "@capability.scene.items.depth.test.fields.layers.of.fields.box.about"
                 },
                 "d": {
                   "type": "int",
@@ -577,10 +475,7 @@
                 }
               }
             },
-            "about": {
-              "zh": "远墙前面的几层，从后往前",
-              "en": "the layers before the far wall, back to front"
-            }
+            "about": "@capability.scene.items.depth.test.fields.layers.about"
           },
           "f": {
             "type": "num",
@@ -594,10 +489,7 @@
       }
     },
     "distances": {
-      "about": {
-        "zh": "每格一个关键点，三张图是它到三个候选的距离；期望是距离比检验配上的候选（1–3，没配上是 0）",
-        "en": "each cell a keypoint, three maps its distances to three candidates; the candidate the ratio test accepts (1–3, else 0) expected"
-      },
+      "about": "@capability.scene.items.distances.about",
       "shape": "vision-complete/graph-distances",
       "test": {
         "type": "obj",
@@ -610,19 +502,13 @@
             "of": {
               "type": "int"
             },
-            "about": {
-              "zh": "第二近紧跟在后的格子",
-              "en": "the cells where the second nearest is close behind"
-            }
+            "about": "@capability.scene.items.distances.test.fields.ambiguous.about"
           }
         }
       }
     },
     "dogs": {
-      "about": {
-        "zh": "几只狗，每只是一团亮的斑；期望是每只狗的中心",
-        "en": "a few dogs, each a solid bright blob; each dog’s centre expected"
-      },
+      "about": "@capability.scene.items.dogs.about",
       "shape": "vision-complete/graph-dogs",
       "test": {
         "type": "obj",
@@ -641,10 +527,7 @@
       }
     },
     "duplicate": {
-      "about": {
-        "zh": "两张照片；期望是它们是不是同一张（挪了、调了色或加了噪声也算）",
-        "en": "two photos; whether they are the same one (even shifted, recoloured or noisy) expected"
-      },
+      "about": "@capability.scene.items.duplicate.about",
       "shape": "vision-complete/graph-duplicate",
       "test": {
         "type": "obj",
@@ -664,10 +547,7 @@
       }
     },
     "epiline": {
-      "about": {
-        "zh": "一对相机的基础矩阵 F（按列）和左图的点 (x, y)；期望是右图里的极线 F·p",
-        "en": "a camera pair’s fundamental matrix F (by columns) and a left point (x, y); the epipolar line F·p in the right image expected"
-      },
+      "about": "@capability.scene.items.epiline.about",
       "shape": "vision-complete/graph-epiline",
       "test": {
         "type": "obj",
@@ -682,10 +562,7 @@
       }
     },
     "epipole": {
-      "about": {
-        "zh": "同样的 F 的三列（按给的顺序）和 (0, 0, 1)；期望是极点 e′",
-        "en": "the same F’s three columns (in the order given) and (0, 0, 1); the epipole e′ expected"
-      },
+      "about": "@capability.scene.items.epipole.about",
       "shape": "vision-complete/graph-epipole",
       "test": {
         "type": "obj",
@@ -703,10 +580,7 @@
       }
     },
     "grainy": {
-      "about": {
-        "zh": "蒙着细颗粒的照片（32 × 32，低于 10 周的成分都去掉的噪声）；期望是照片轻轻模糊（σ = 1，复制边缘）",
-        "en": "a photo under fine grain (32 × 32, noise with everything below 10 cycles removed); the photo gently blurred (σ = 1, the edge replicated) is expected"
-      },
+      "about": "@capability.scene.items.grainy.about",
       "shape": "vision-complete/graph-grainy",
       "test": {
         "type": "obj",
@@ -722,10 +596,7 @@
       }
     },
     "intruder": {
-      "about": {
-        "zh": "闯入者：现场比空场多一个 4×4 的东西，光照不均；期望是它的掩膜",
-        "en": "an intruder: the scene has one 4×4 thing more than the empty scene, lit unevenly; its mask is expected"
-      },
+      "about": "@capability.scene.items.intruder.about",
       "shape": "vision-complete/graph-intruder",
       "test": {
         "type": "obj",
@@ -743,10 +614,7 @@
       }
     },
     "kmeans": {
-      "about": {
-        "zh": "一张图和一个分界 m；期望是 k 均值的一步给出的新分界（step），或走三步后按分界分出的掩膜（segment）",
-        "en": "a picture and a boundary m; the new boundary one step of k-means gives (step), or the mask split at the boundary after three steps (segment), expected"
-      },
+      "about": "@capability.scene.items.kmeans.about",
       "shape": "vision-complete/graph-kmeans",
       "params": {
         "type": "obj",
@@ -774,10 +642,7 @@
       }
     },
     "latent": {
-      "about": {
-        "zh": "噪声 ε（两个数）；期望是潜码 μ + σ·ε 画出的斑点。given：μ 和 σ 也是输入",
-        "en": "noise ε (two numbers); the blob the latent code μ + σ·ε draws expected (given: μ and σ are inputs too)"
-      },
+      "about": "@capability.scene.items.latent.about",
       "shape": "vision-complete/graph-latent",
       "params": {
         "type": "obj",
@@ -788,10 +653,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.latent.params.fields.mu.about"
           },
           "sigma": {
             "type": "list",
@@ -799,10 +661,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.latent.params.fields.sigma.about"
           },
           "given": {
             "type": "bool",
@@ -819,19 +678,13 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.latent.test.fields.eps.about"
           }
         }
       }
     },
     "marks": {
-      "about": {
-        "zh": "16 × 16 的货架上的小记号：X 是要找的盒子，O 不要；期望是每个 X 的中心",
-        "en": "small marks on a 16 × 16 shelf, X for the boxes to find and O for the rest; each X’s centre expected"
-      },
+      "about": "@capability.scene.items.marks.about",
       "shape": "vision-complete/graph-marks",
       "test": {
         "type": "obj",
@@ -861,10 +714,7 @@
                     1,
                     2
                   ],
-                  "about": {
-                    "zh": "2 是大号",
-                    "en": "2 for a large one"
-                  },
+                  "about": "@capability.scene.items.marks.test.fields.marks.of.fields.scale.about",
                   "optional": true
                 }
               }
@@ -874,10 +724,7 @@
       }
     },
     "mend": {
-      "about": {
-        "zh": "一张图上几个图案，一对对角上的同一个图案被擦掉了几格；期望是补好的图",
-        "en": "a few patterns on a picture, a pair across the diagonal the same, one copy with a few pixels erased; the picture mended expected"
-      },
+      "about": "@capability.scene.items.mend.about",
       "shape": "vision-complete/graph-mend",
       "params": {
         "type": "obj",
@@ -888,10 +735,7 @@
               1,
               2
             ],
-            "about": {
-              "zh": "图案的一格画成几格（2：8 × 8 的图案）",
-              "en": "how many cells a pattern pixel takes (2: 8 × 8 patterns)"
-            },
+            "about": "@capability.scene.items.mend.params.fields.scale.about",
             "optional": true
           }
         }
@@ -922,10 +766,7 @@
                     "min": 0
                   },
                   "min": 2,
-                  "about": {
-                    "zh": "第几行、第几列的图块",
-                    "en": "the row and column of its patch"
-                  }
+                  "about": "@capability.scene.items.mend.test.fields.items.of.fields.at.about"
                 },
                 "erased": {
                   "type": "list",
@@ -936,10 +777,7 @@
                     },
                     "min": 2
                   },
-                  "about": {
-                    "zh": "擦掉的格子 [u, v]",
-                    "en": "the pixels erased, [u, v]"
-                  },
+                  "about": "@capability.scene.items.mend.test.fields.items.of.fields.erased.about",
                   "optional": true
                 }
               }
@@ -949,10 +787,7 @@
       }
     },
     "mendTwo": {
-      "about": {
-        "zh": "两张这样的图，孪生图案的位置各不相同；期望是补好的两张图",
-        "en": "two such pictures, their twins placed differently; both mended expected"
-      },
+      "about": "@capability.scene.items.mendTwo.about",
       "shape": "vision-complete/graph-mendTwo",
       "test": {
         "type": "obj",
@@ -980,10 +815,7 @@
                     "min": 0
                   },
                   "min": 2,
-                  "about": {
-                    "zh": "第几行、第几列的图块",
-                    "en": "the row and column of its patch"
-                  }
+                  "about": "@capability.scene.items.mendTwo.test.fields.shape.of.fields.at.about"
                 },
                 "erased": {
                   "type": "list",
@@ -994,10 +826,7 @@
                     },
                     "min": 2
                   },
-                  "about": {
-                    "zh": "擦掉的格子 [u, v]",
-                    "en": "the pixels erased, [u, v]"
-                  },
+                  "about": "@capability.scene.items.mendTwo.test.fields.shape.of.fields.erased.about",
                   "optional": true
                 }
               }
@@ -1026,10 +855,7 @@
                     "min": 0
                   },
                   "min": 2,
-                  "about": {
-                    "zh": "第几行、第几列的图块",
-                    "en": "the row and column of its patch"
-                  }
+                  "about": "@capability.scene.items.mendTwo.test.fields.mark.of.fields.at.about"
                 },
                 "erased": {
                   "type": "list",
@@ -1040,10 +866,7 @@
                     },
                     "min": 2
                   },
-                  "about": {
-                    "zh": "擦掉的格子 [u, v]",
-                    "en": "the pixels erased, [u, v]"
-                  },
+                  "about": "@capability.scene.items.mendTwo.test.fields.mark.of.fields.erased.about",
                   "optional": true
                 }
               }
@@ -1053,10 +876,7 @@
       }
     },
     "metamer": {
-      "about": {
-        "zh": "两块布（日光下一样）和一盏灯；期望是相机读出的两块布 R、G、B 之差",
-        "en": "two cloths that match in daylight, and a lamp; what the camera reads of their R, G and B differences is expected"
-      },
+      "about": "@capability.scene.items.metamer.about",
       "shape": "vision-complete/graph-metamer",
       "test": {
         "type": "obj",
@@ -1067,10 +887,7 @@
               "type": "num"
             },
             "min": 10,
-            "about": {
-              "zh": "十个波段（400–700 nm，每段 30 nm）的强度",
-              "en": "the strength in ten bands (400–700 nm, 30 nm each)"
-            }
+            "about": "@capability.scene.items.metamer.test.fields.cloth.about"
           },
           "lamp": {
             "type": "list",
@@ -1078,19 +895,13 @@
               "type": "num"
             },
             "min": 10,
-            "about": {
-              "zh": "十个波段（400–700 nm，每段 30 nm）的强度",
-              "en": "the strength in ten bands (400–700 nm, 30 nm each)"
-            }
+            "about": "@capability.scene.items.metamer.test.fields.lamp.about"
           }
         }
       }
     },
     "movedDots": {
-      "about": {
-        "zh": "几个亮点，从原位挪开一点；期望是原位的点做 2×2 最大池化",
-        "en": "a few bright dots, moved a little from home; the 2×2 max pool of the dots at home expected"
-      },
+      "about": "@capability.scene.items.movedDots.about",
       "shape": "vision-complete/graph-movedDots",
       "test": {
         "type": "obj",
@@ -1119,10 +930,7 @@
       }
     },
     "nearest": {
-      "about": {
-        "zh": "要找的照片和三张候选，其中一张是同一张照片（挪了、调了色或加了噪声）；期望是它那一路为 1",
-        "en": "a photo to find and three candidates, one of them the same photo shifted, recoloured or noisy; 1 on its line expected"
-      },
+      "about": "@capability.scene.items.nearest.about",
       "shape": "vision-complete/graph-nearest",
       "test": {
         "type": "obj",
@@ -1148,10 +956,7 @@
       }
     },
     "noising": {
-      "about": {
-        "zh": "一个字母 x₀、一张高斯噪声 ε 和剩下多少 ᾱ；期望是一步加到的 x_t = √ᾱ·x₀ + √(1 − ᾱ)·ε",
-        "en": "a letter x₀, Gaussian noise ε and how much is left, ᾱ; x_t = √ᾱ·x₀ + √(1 − ᾱ)·ε, noised in one step, expected"
-      },
+      "about": "@capability.scene.items.noising.about",
       "shape": "vision-complete/graph-noising",
       "test": {
         "type": "obj",
@@ -1168,10 +973,7 @@
           },
           "seed": {
             "type": "int",
-            "about": {
-              "zh": "噪声的种子",
-              "en": "the noise’s seed"
-            }
+            "about": "@capability.scene.items.noising.test.fields.seed.about"
           },
           "ab": {
             "type": "num"
@@ -1180,10 +982,7 @@
       }
     },
     "noisyBlob": {
-      "about": {
-        "zh": "带噪声的斑点；期望是干净的斑点",
-        "en": "a noisy blob; the clean blob expected"
-      },
+      "about": "@capability.scene.items.noisyBlob.about",
       "shape": "vision-complete/graph-noisyBlob",
       "test": {
         "type": "obj",
@@ -1194,10 +993,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "斑点的中心 (x, y)",
-              "en": "the blob’s centre (x, y)"
-            }
+            "about": "@capability.scene.items.noisyBlob.test.fields.at.about"
           },
           "seed": {
             "type": "int"
@@ -1206,10 +1002,7 @@
       }
     },
     "noisyStep": {
-      "about": {
-        "zh": "带噪声的台阶（左暗右亮）：期望是真正的台阶处为 1",
-        "en": "a noisy step, dark on the left and bright on the right: 1 where the real step is, expected"
-      },
+      "about": "@capability.scene.items.noisyStep.about",
       "shape": "vision-complete/graph-noisyStep",
       "test": {
         "type": "obj",
@@ -1224,10 +1017,7 @@
       }
     },
     "nudge": {
-      "about": {
-        "zh": "一排锚框 (cx, cy, w, h) 和网络给的修正 (tx, ty, tw, th)；期望是修正后的框",
-        "en": "a row of anchor boxes (cx, cy, w, h) and the network’s corrections (tx, ty, tw, th); the corrected boxes expected"
-      },
+      "about": "@capability.scene.items.nudge.about",
       "shape": "vision-complete/graph-nudge",
       "test": {
         "type": "obj",
@@ -1274,10 +1064,7 @@
       }
     },
     "oldPhoto": {
-      "about": {
-        "zh": "一张旧照片：一个字母在 ᾱ 下加了噪，噪声不知道；期望是还原的照片和字的笔画",
-        "en": "an old photo, a letter noised at ᾱ with the noise unknown; the restored photo and the letter’s strokes expected"
-      },
+      "about": "@capability.scene.items.oldPhoto.about",
       "shape": "vision-complete/graph-oldPhoto",
       "params": {
         "type": "obj",
@@ -1313,10 +1100,7 @@
       }
     },
     "onEpiline": {
-      "about": {
-        "zh": "同样的 F、左图的点和右图的点 q；期望是 q 在不在极线上（|q·l′| < 0.05）",
-        "en": "the same F, a left point and a right point q; whether q is on the epipolar line (|q·l′| < 0.05) expected"
-      },
+      "about": "@capability.scene.items.onEpiline.about",
       "shape": "vision-complete/graph-onEpiline",
       "test": {
         "type": "obj",
@@ -1333,19 +1117,13 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "右图的点 (x′, y′)",
-              "en": "the right point (x′, y′)"
-            }
+            "about": "@capability.scene.items.onEpiline.test.fields.q.about"
           }
         }
       }
     },
     "order": {
-      "about": {
-        "zh": "灰底上一块亮、一块暗，另给每格的图块编号；按阅读顺序亮块在前就整张图是 1",
-        "en": "one bright and one dark patch on grey, with each cell’s patch number given; 1 all over when the bright one comes first in reading order"
-      },
+      "about": "@capability.scene.items.order.about",
       "shape": "vision-complete/graph-order",
       "test": {
         "type": "obj",
@@ -1364,10 +1142,7 @@
       }
     },
     "orientations": {
-      "about": {
-        "zh": "一个小格：期望是梯度幅值按方向（→ ↑ ← ↓）分到四个数，各除以格数",
-        "en": "one cell: its gradient magnitude shared out to four directions (→ ↑ ← ↓), each divided by the cells, expected"
-      },
+      "about": "@capability.scene.items.orientations.about",
       "shape": "vision-complete/graph-orientations",
       "test": {
         "type": "obj",
@@ -1380,10 +1155,7 @@
       }
     },
     "outline": {
-      "about": {
-        "zh": "闯入者的外圈：任意形状的闯入者站在花砖地面上；期望是它挨着地面的那一圈格子（图外算地面）",
-        "en": "an intruder’s outer ring: an intruder of any shape on a tiled floor; the ring of its cells touching the floor is expected (outside the picture counts as floor)"
-      },
+      "about": "@capability.scene.items.outline.about",
       "shape": "vision-complete/graph-outline",
       "test": {
         "type": "obj",
@@ -1396,16 +1168,10 @@
                 "type": "int"
               },
               "min": 4,
-              "about": {
-                "zh": "一个矩形：x0, y0, 宽, 高",
-                "en": "a rectangle: x0, y0, width, height"
-              }
+              "about": "@capability.scene.items.outline.test.fields.shape.of.about"
             },
             "min": 1,
-            "about": {
-              "zh": "闯入者：几个矩形的并",
-              "en": "the intruder: a union of rectangles"
-            }
+            "about": "@capability.scene.items.outline.test.fields.shape.about"
           },
           "seed": {
             "type": "int"
@@ -1414,10 +1180,7 @@
       }
     },
     "paste": {
-      "about": {
-        "zh": "书的照片、清楚的封面和单应 H；期望是封面贴回照片上",
-        "en": "a photo of the book, the crisp cover and the homography H; the cover pasted back onto the photo expected"
-      },
+      "about": "@capability.scene.items.paste.about",
       "shape": "vision-complete/graph-paste",
       "test": {
         "type": "obj",
@@ -1432,19 +1195,13 @@
               "min": 2
             },
             "min": 4,
-            "about": {
-              "zh": "书的四个角在照片里的位置",
-              "en": "where the book’s four corners are in the photo"
-            }
+            "about": "@capability.scene.items.paste.test.fields.quad.about"
           }
         }
       }
     },
     "photometric": {
-      "about": {
-        "zh": "光度立体：一张有污渍的金属板，三盏已知方向的灯各拍一张；期望是它朝右倾的地方、它的反射率，或它陡的地方",
-        "en": "photometric stereo: a stained metal sheet photographed under three lamps of known direction; where it leans right, its reflectance, or where it is steep, is expected"
-      },
+      "about": "@capability.scene.items.photometric.about",
       "shape": "vision-complete/graph-photometric",
       "params": {
         "type": "obj",
@@ -1459,10 +1216,7 @@
           },
           "above": {
             "type": "num",
-            "about": {
-              "zh": "倾斜的门槛（lean：nx / nz；steep：坡度）",
-              "en": "the threshold of the tilt (lean: nx / nz; steep: the slope)"
-            },
+            "about": "@capability.scene.items.photometric.params.fields.above.about",
             "optional": true
           }
         }
@@ -1481,10 +1235,7 @@
                     "type": "num"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "鼓包：cx, cy, 半径, 高",
-                    "en": "a bump: cx, cy, radius, height"
-                  },
+                  "about": "@capability.scene.items.photometric.test.fields.height.of.fields.dome.about",
                   "optional": true
                 },
                 "bowl": {
@@ -1493,10 +1244,7 @@
                     "type": "num"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "坑：cx, cy, 半径, 深",
-                    "en": "a dent: cx, cy, radius, depth"
-                  },
+                  "about": "@capability.scene.items.photometric.test.fields.height.of.fields.bowl.about",
                   "optional": true
                 },
                 "ridge": {
@@ -1505,10 +1253,7 @@
                     "type": "num"
                   },
                   "min": 3,
-                  "about": {
-                    "zh": "横梁：y0, 半宽, 高",
-                    "en": "a ridge: y0, half width, height"
-                  },
+                  "about": "@capability.scene.items.photometric.test.fields.height.of.fields.ridge.about",
                   "optional": true
                 },
                 "tilt": {
@@ -1517,10 +1262,7 @@
                     "type": "num"
                   },
                   "min": 2,
-                  "about": {
-                    "zh": "斜面：x 方向和 y 方向的坡度",
-                    "en": "a slope: its gradient across and down"
-                  },
+                  "about": "@capability.scene.items.photometric.test.fields.height.of.fields.tilt.about",
                   "optional": true
                 },
                 "groove": {
@@ -1529,42 +1271,27 @@
                     "type": "num"
                   },
                   "min": 6,
-                  "about": {
-                    "zh": "沟：x0, y0, x1, y1, 半宽, 深",
-                    "en": "a groove: x0, y0, x1, y1, half width, depth"
-                  },
+                  "about": "@capability.scene.items.photometric.test.fields.height.of.fields.groove.about",
                   "optional": true
                 },
                 "bend": {
                   "type": "num",
-                  "about": {
-                    "zh": "马鞍形的弯：k·((x − 7.5)² − (y − 7.5)²)",
-                    "en": "a saddle bend: k·((x − 7.5)² − (y − 7.5)²)"
-                  },
+                  "about": "@capability.scene.items.photometric.test.fields.height.of.fields.bend.about",
                   "optional": true
                 }
               }
             },
-            "about": {
-              "zh": "高度场：几项相加（每项一个键），空表是平板",
-              "en": "a height field: terms added up (one key each); none is a flat sheet"
-            }
+            "about": "@capability.scene.items.photometric.test.fields.height.about"
           },
           "seed": {
             "type": "int",
-            "about": {
-              "zh": "污渍的种子",
-              "en": "the stains’ seed"
-            }
+            "about": "@capability.scene.items.photometric.test.fields.seed.about"
           }
         }
       }
     },
     "pooled": {
-      "about": {
-        "zh": "一张 16 × 16 的图和它 2 × 2 最大池化后的 8 × 8；期望是反池化：每个值放回它原来的那一格，其余为 0",
-        "en": "a 16 × 16 picture and its 8 × 8 after 2 × 2 max pooling; the unpooling expected: each value back in its own cell, the rest 0"
-      },
+      "about": "@capability.scene.items.pooled.about",
       "shape": "vision-complete/graph-pooled",
       "test": {
         "type": "obj",
@@ -1576,10 +1303,7 @@
       }
     },
     "ranking": {
-      "about": {
-        "zh": "按分数排好的检测对错、名次 1 … 16 和标注数 G；期望是 AP",
-        "en": "the detections right or wrong in score order, the ranks 1 … 16 and the number labelled G; the AP expected"
-      },
+      "about": "@capability.scene.items.ranking.about",
       "shape": "vision-complete/graph-ranking",
       "test": {
         "type": "obj",
@@ -1594,10 +1318,7 @@
               ]
             },
             "min": 16,
-            "about": {
-              "zh": "按分数排好的 16 个检测，对 1 错 0",
-              "en": "the 16 detections in score order, right 1 and wrong 0"
-            }
+            "about": "@capability.scene.items.ranking.test.fields.flags.about"
           },
           "g": {
             "type": "int",
@@ -1607,10 +1328,7 @@
       }
     },
     "redObjects": {
-      "about": {
-        "zh": "一个彩色场景（R、G、B 三张图），光照不均；期望是红色东西的掩膜（R 占三者之和一半以上）",
-        "en": "a coloured scene (R, G, B), lit unevenly; the mask of what is red (R over half of the three’s sum) is expected"
-      },
+      "about": "@capability.scene.items.redObjects.about",
       "shape": "vision-complete/graph-redObjects",
       "test": {
         "type": "obj",
@@ -1644,10 +1362,7 @@
       }
     },
     "relit": {
-      "about": {
-        "zh": "同一个物体换了灯光：亮度 × gain + offset；期望是它的边（梯度大于最大值一半的地方）",
-        "en": "one object under other light, brightness × gain + offset; its edges (where the gradient is over half its maximum) are expected"
-      },
+      "about": "@capability.scene.items.relit.about",
       "shape": "vision-complete/graph-relit",
       "test": {
         "type": "obj",
@@ -1666,10 +1381,7 @@
       }
     },
     "restoring": {
-      "about": {
-        "zh": "加了噪的 x_t、当初加的噪声 ε 和 ᾱ；期望是原来的字母 x₀",
-        "en": "the noisy x_t, the noise ε that was added and ᾱ; the letter x₀ as it was expected"
-      },
+      "about": "@capability.scene.items.restoring.about",
       "shape": "vision-complete/graph-restoring",
       "test": {
         "type": "obj",
@@ -1694,10 +1406,7 @@
       }
     },
     "rgbContrast": {
-      "about": {
-        "zh": "彩色图像；期望是一种颜色对比的边",
-        "en": "a colour image; edges of a colour contrast are expected"
-      },
+      "about": "@capability.scene.items.rgbContrast.about",
       "shape": "vision-complete/graph-rgbContrast",
       "params": {
         "type": "obj",
@@ -1732,20 +1441,14 @@
           },
           "noise": {
             "type": "int",
-            "about": {
-              "zh": "彩色噪点的种子",
-              "en": "the seed of colour noise"
-            },
+            "about": "@capability.scene.items.rgbContrast.test.fields.noise.about",
             "optional": true
           }
         }
       }
     },
     "rgbMix": {
-      "about": {
-        "zh": "彩色图像；期望是两种模糊通道组合",
-        "en": "a colour image; two mixes of blurred channels are expected"
-      },
+      "about": "@capability.scene.items.rgbMix.about",
       "shape": "vision-complete/graph-rgbMix",
       "test": {
         "type": "obj",
@@ -1763,10 +1466,7 @@
       }
     },
     "rgbStreet": {
-      "about": {
-        "zh": "彩色街景；期望是红灯的掩膜",
-        "en": "a colour street scene; the red lights’ mask is expected"
-      },
+      "about": "@capability.scene.items.rgbStreet.about",
       "shape": "vision-complete/graph-rgbStreet",
       "test": {
         "type": "obj",
@@ -1785,10 +1485,7 @@
       }
     },
     "road": {
-      "about": {
-        "zh": "暗路面上的车道线和几个亮斑；期望是投票累加器（× 1/8）里的峰",
-        "en": "lanes on a dark road with a few bright specks; the peaks of the vote accumulator (× 1/8) expected"
-      },
+      "about": "@capability.scene.items.road.about",
       "shape": "vision-complete/graph-road",
       "test": {
         "type": "obj",
@@ -1801,10 +1498,7 @@
                 "type": "num"
               },
               "min": 4,
-              "about": {
-                "zh": "一条线经过的两点：x1, y1, x2, y2",
-                "en": "two points on a line: x1, y1, x2, y2"
-              }
+              "about": "@capability.scene.items.road.test.fields.lanes.of.about"
             }
           },
           "specks": {
@@ -1821,10 +1515,7 @@
       }
     },
     "room": {
-      "about": {
-        "zh": "扫地机器人的双目：远墙、没有纹理的地面、障碍物，另给地面以上的区域；期望是区域里的距离，或 1.2 米内要停的地方",
-        "en": "a robot vacuum’s stereo pair, a far wall, a textureless floor and obstacles, with the region above the floor given; the distance in the region, or where to stop within 1.2 m, expected"
-      },
+      "about": "@capability.scene.items.room.about",
       "shape": "vision-complete/graph-room",
       "params": {
         "type": "obj",
@@ -1855,10 +1546,7 @@
                     "type": "int"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "它占的矩形：x0, y0, x1, y1（不含 x1、y1）",
-                    "en": "the rectangle it fills: x0, y0, x1, y1 (x1, y1 excluded)"
-                  }
+                  "about": "@capability.scene.items.room.test.fields.obstacles.of.fields.box.about"
                 },
                 "d": {
                   "type": "int",
@@ -1866,19 +1554,13 @@
                 }
               }
             },
-            "about": {
-              "zh": "远墙前面的几层，从后往前",
-              "en": "the layers before the far wall, back to front"
-            }
+            "about": "@capability.scene.items.room.test.fields.obstacles.about"
           }
         }
       }
     },
     "roomDepth": {
-      "about": {
-        "zh": "同样的房间，已经算好的距离（地面没有纹理，那里的距离是乱的）；期望是 1.2 米内要停的地方",
-        "en": "the same room as distances already found (the floor has no texture, so its distances are anything); where to stop within 1.2 m expected"
-      },
+      "about": "@capability.scene.items.roomDepth.about",
       "shape": "vision-complete/graph-roomDepth",
       "test": {
         "type": "obj",
@@ -1897,10 +1579,7 @@
                     "type": "int"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "它占的矩形：x0, y0, x1, y1（不含 x1、y1）",
-                    "en": "the rectangle it fills: x0, y0, x1, y1 (x1, y1 excluded)"
-                  }
+                  "about": "@capability.scene.items.roomDepth.test.fields.obstacles.of.fields.box.about"
                 },
                 "d": {
                   "type": "int",
@@ -1908,26 +1587,17 @@
                 }
               }
             },
-            "about": {
-              "zh": "远墙前面的几层，从后往前",
-              "en": "the layers before the far wall, back to front"
-            }
+            "about": "@capability.scene.items.roomDepth.test.fields.obstacles.about"
           },
           "floorSeed": {
             "type": "int",
-            "about": {
-              "zh": "地面上乱的距离的种子",
-              "en": "the seed of the floor’s stray distances"
-            }
+            "about": "@capability.scene.items.roomDepth.test.fields.floorSeed.about"
           }
         }
       }
     },
     "samples": {
-      "about": {
-        "zh": "一个数进、一个数出：期望是 scale·x + offset",
-        "en": "a number in, a number out: scale·x + offset expected"
-      },
+      "about": "@capability.scene.items.samples.about",
       "shape": "vision-complete/graph-samples",
       "params": {
         "type": "obj",
@@ -1951,10 +1621,7 @@
       }
     },
     "scan": {
-      "about": {
-        "zh": "扫描仪：深色桌面上的一张纸，纸上几行字，可能有噪声，纸可能超出扫描范围",
-        "en": "the scanner: a sheet of paper on a dark desk, a few lines of text, maybe noise, the paper maybe running off the scan"
-      },
+      "about": "@capability.scene.items.scan.about",
       "shape": "vision-complete/graph-scan",
       "params": {
         "type": "obj",
@@ -1966,10 +1633,7 @@
               "edges",
               "paper"
             ],
-            "about": {
-              "zh": "期望：去掉颗粒的扫描件（clean）、Sobel 平方和大于 0.04 处（edges）、纸的边（paper）",
-              "en": "expected: the scan without its grain (clean), where Sobel’s sum of squares is over 0.04 (edges), the paper’s edges (paper)"
-            }
+            "about": "@capability.scene.items.scan.params.fields.expect.about"
           }
         }
       },
@@ -1997,10 +1661,7 @@
               },
               "min": 3
             },
-            "about": {
-              "zh": "一行字：x, y, 长度",
-              "en": "a line of text: x, y, length"
-            },
+            "about": "@capability.scene.items.scan.test.fields.lines.about",
             "optional": true
           },
           "noise": {
@@ -2015,10 +1676,7 @@
       }
     },
     "scores": {
-      "about": {
-        "zh": "三类的分数；期望是 softmax 给的三个概率",
-        "en": "the scores of three classes; the three probabilities softmax gives expected"
-      },
+      "about": "@capability.scene.items.scores.about",
       "shape": "vision-complete/graph-scores",
       "test": {
         "type": "obj",
@@ -2034,10 +1692,7 @@
       }
     },
     "shadow": {
-      "about": {
-        "zh": "照片 = 油漆 × 光照，光照另给；期望是油漆本来的颜色",
-        "en": "a photo = paint × light, the light given too; the paint itself is expected"
-      },
+      "about": "@capability.scene.items.shadow.about",
       "shape": "vision-complete/graph-shadow",
       "test": {
         "type": "obj",
@@ -2062,10 +1717,7 @@
       }
     },
     "shadowColour": {
-      "about": {
-        "zh": "彩色照片与已知光照；期望是每个通道的表面反射率",
-        "en": "a colour photograph and known illumination; the surface reflectance in each channel is expected"
-      },
+      "about": "@capability.scene.items.shadowColour.about",
       "shape": "vision-complete/graph-shadowColour",
       "test": {
         "type": "obj",
@@ -2101,10 +1753,7 @@
       }
     },
     "shelf": {
-      "about": {
-        "zh": "24 × 24 的货架，小号和大号的记号，可能有颗粒、可能有点糊；期望是小号 X 的中心（small），或连大号 X 也标出（both，大号标成一个 2 × 2 块）",
-        "en": "a 24 × 24 shelf with small and large marks, maybe grainy, maybe a little blurred; the small Xs’ centres (small), or the large ones too, each a 2 × 2 block (both), expected"
-      },
+      "about": "@capability.scene.items.shelf.about",
       "shape": "vision-complete/graph-shelf",
       "params": {
         "type": "obj",
@@ -2118,18 +1767,12 @@
           },
           "grain": {
             "type": "num",
-            "about": {
-              "zh": "颗粒的大小",
-              "en": "how strong the grain is"
-            },
+            "about": "@capability.scene.items.shelf.params.fields.grain.about",
             "optional": true
           },
           "blur": {
             "type": "num",
-            "about": {
-              "zh": "先模糊（高斯的 σ，复制边缘）",
-              "en": "a blur first (the Gaussian’s σ, the edge replicated)"
-            },
+            "about": "@capability.scene.items.shelf.params.fields.blur.about",
             "optional": true
           }
         }
@@ -2162,10 +1805,7 @@
                     1,
                     2
                   ],
-                  "about": {
-                    "zh": "2 是大号",
-                    "en": "2 for a large one"
-                  },
+                  "about": "@capability.scene.items.shelf.test.fields.marks.of.fields.scale.about",
                   "optional": true
                 }
               }
@@ -2173,20 +1813,14 @@
           },
           "seed": {
             "type": "int",
-            "about": {
-              "zh": "颗粒的种子",
-              "en": "the grain’s seed"
-            },
+            "about": "@capability.scene.items.shelf.test.fields.seed.about",
             "optional": true
           }
         }
       }
     },
     "sides": {
-      "about": {
-        "zh": "噪声 ε 和画哪边 c（0 左，1 右），另给左右两个中心和 σ；期望是那一边 μ + σ·ε 画出的斑点",
-        "en": "noise ε and which side c (0 left, 1 right), with the two centres and σ given; the blob μ + σ·ε draws on that side expected"
-      },
+      "about": "@capability.scene.items.sides.about",
       "shape": "vision-complete/graph-sides",
       "params": {
         "type": "obj",
@@ -2197,10 +1831,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.sides.params.fields.left.about"
           },
           "right": {
             "type": "list",
@@ -2208,10 +1839,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.sides.params.fields.right.about"
           },
           "sigma": {
             "type": "list",
@@ -2219,10 +1847,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.sides.params.fields.sigma.about"
           }
         }
       },
@@ -2235,10 +1860,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "潜空间里的两个数",
-              "en": "two numbers in latent space"
-            }
+            "about": "@capability.scene.items.sides.test.fields.eps.about"
           },
           "c": {
             "type": "oneOf",
@@ -2251,10 +1873,7 @@
       }
     },
     "sorter": {
-      "about": {
-        "zh": "分拣带上的零件：X、O 或 +，位置、墨色、噪点各不同；期望是它属于哪一类",
-        "en": "a part on the sorting belt, an X, an O or a +, at some place, ink and noise; which class it is expected"
-      },
+      "about": "@capability.scene.items.sorter.about",
       "shape": "vision-complete/graph-sorter",
       "test": {
         "type": "obj",
@@ -2278,19 +1897,13 @@
           },
           "seed": {
             "type": "int",
-            "about": {
-              "zh": "噪点的种子，0 是没有噪点",
-              "en": "the noise’s seed, 0 for none"
-            }
+            "about": "@capability.scene.items.sorter.test.fields.seed.about"
           }
         }
       }
     },
     "spectrum": {
-      "about": {
-        "zh": "一条光谱和三种感光元件的灵敏度曲线；期望是 R、G、B 三个读数",
-        "en": "a spectrum and the sensitivity curves of three sensors; the R, G and B readings are expected"
-      },
+      "about": "@capability.scene.items.spectrum.about",
       "shape": "vision-complete/graph-spectrum",
       "test": {
         "type": "obj",
@@ -2301,19 +1914,13 @@
               "type": "num"
             },
             "min": 10,
-            "about": {
-              "zh": "十个波段（400–700 nm，每段 30 nm）的强度",
-              "en": "the strength in ten bands (400–700 nm, 30 nm each)"
-            }
+            "about": "@capability.scene.items.spectrum.test.fields.light.about"
           }
         }
       }
     },
     "spectrumColour": {
-      "about": {
-        "zh": "光谱和感光曲线：将三个传感器读数组成彩色像素",
-        "en": "a spectrum and sensitivity curves: combine the three sensor readings into a colour pixel"
-      },
+      "about": "@capability.scene.items.spectrumColour.about",
       "shape": "vision-complete/graph-spectrumColour",
       "test": {
         "type": "obj",
@@ -2324,19 +1931,13 @@
               "type": "num"
             },
             "min": 10,
-            "about": {
-              "zh": "十个波段（400–700 nm，每段 30 nm）的强度",
-              "en": "the strength in ten bands (400–700 nm, 30 nm each)"
-            }
+            "about": "@capability.scene.items.spectrumColour.test.fields.light.about"
           }
         }
       }
     },
     "station": {
-      "about": {
-        "zh": "质检台：标准件的照片和传送带上的实物，实物上有凹坑（偏暗）和划痕（偏亮），灯可能老了；期望是缺陷的掩膜",
-        "en": "the inspection station: a photo of the reference and the part on the belt, with dents (darker) and scratches (brighter), under a lamp that may have aged; the defects’ mask is expected"
-      },
+      "about": "@capability.scene.items.station.about",
       "shape": "vision-complete/graph-station",
       "test": {
         "type": "obj",
@@ -2359,10 +1960,7 @@
                 "type": "int"
               },
               "min": 4,
-              "about": {
-                "zh": "一个矩形：x0, y0, 宽, 高",
-                "en": "a rectangle: x0, y0, width, height"
-              }
+              "about": "@capability.scene.items.station.test.fields.dents.of.about"
             },
             "optional": true
           },
@@ -2374,29 +1972,20 @@
                 "type": "int"
               },
               "min": 4,
-              "about": {
-                "zh": "一个矩形：x0, y0, 宽, 高",
-                "en": "a rectangle: x0, y0, width, height"
-              }
+              "about": "@capability.scene.items.station.test.fields.scratches.of.about"
             },
             "optional": true
           },
           "lamp": {
             "type": "num",
-            "about": {
-              "zh": "灯还剩原来亮度的几成",
-              "en": "what the lamp has left of its brightness"
-            },
+            "about": "@capability.scene.items.station.test.fields.lamp.about",
             "optional": true
           }
         }
       }
     },
     "stereo": {
-      "about": {
-        "zh": "左右两台相机拍的一对图：远墙前有几层有纹理的东西；期望是视差图",
-        "en": "a pair from a left and a right camera, textured layers before a far wall; the disparity map expected"
-      },
+      "about": "@capability.scene.items.stereo.about",
       "shape": "vision-complete/graph-stereo",
       "test": {
         "type": "obj",
@@ -2415,10 +2004,7 @@
                     "type": "int"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "它占的矩形：x0, y0, x1, y1（不含 x1、y1）",
-                    "en": "the rectangle it fills: x0, y0, x1, y1 (x1, y1 excluded)"
-                  }
+                  "about": "@capability.scene.items.stereo.test.fields.layers.of.fields.box.about"
                 },
                 "d": {
                   "type": "int",
@@ -2426,10 +2012,7 @@
                 }
               }
             },
-            "about": {
-              "zh": "远墙前面的几层，从后往前",
-              "en": "the layers before the far wall, back to front"
-            }
+            "about": "@capability.scene.items.stereo.test.fields.layers.about"
           },
           "noise": {
             "type": "num",
@@ -2439,10 +2022,7 @@
       }
     },
     "street": {
-      "about": {
-        "zh": "街景的三个通道：红灯、阴影里的红车、白色路灯、绿灯；期望是红灯的掩膜",
-        "en": "a street in three channels, with red lights, red cars in shade, white lamps and green lights; the red lights’ mask expected"
-      },
+      "about": "@capability.scene.items.street.about",
       "shape": "vision-complete/graph-street",
       "test": {
         "type": "obj",
@@ -2461,10 +2041,7 @@
       }
     },
     "strokes": {
-      "about": {
-        "zh": "一个字母化成两个数：斜笔画多少、弯笔画多少；期望 X 是 1，O 是 0",
-        "en": "a letter as two numbers, how much diagonal stroke and how much curved; 1 for an X, 0 for an O expected"
-      },
+      "about": "@capability.scene.items.strokes.about",
       "shape": "vision-complete/graph-strokes",
       "test": {
         "type": "obj",
@@ -2486,10 +2063,7 @@
       }
     },
     "surface": {
-      "about": {
-        "zh": "一块表面：它的法线和反射率；期望是灯光下的样子（朗伯着色，可以再加一盏半亮的补光）",
-        "en": "a surface, its normals and its reflectance; how it looks under the lamp (Lambert shading, maybe with a half-strength fill light) is expected"
-      },
+      "about": "@capability.scene.items.surface.about",
       "shape": "vision-complete/graph-surface",
       "params": {
         "type": "obj",
@@ -2525,10 +2099,7 @@
                     "type": "num"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "鼓包：cx, cy, 半径, 高",
-                    "en": "a bump: cx, cy, radius, height"
-                  },
+                  "about": "@capability.scene.items.surface.test.fields.height.of.fields.dome.about",
                   "optional": true
                 },
                 "bowl": {
@@ -2537,10 +2108,7 @@
                     "type": "num"
                   },
                   "min": 4,
-                  "about": {
-                    "zh": "坑：cx, cy, 半径, 深",
-                    "en": "a dent: cx, cy, radius, depth"
-                  },
+                  "about": "@capability.scene.items.surface.test.fields.height.of.fields.bowl.about",
                   "optional": true
                 },
                 "ridge": {
@@ -2549,10 +2117,7 @@
                     "type": "num"
                   },
                   "min": 3,
-                  "about": {
-                    "zh": "横梁：y0, 半宽, 高",
-                    "en": "a ridge: y0, half width, height"
-                  },
+                  "about": "@capability.scene.items.surface.test.fields.height.of.fields.ridge.about",
                   "optional": true
                 },
                 "tilt": {
@@ -2561,10 +2126,7 @@
                     "type": "num"
                   },
                   "min": 2,
-                  "about": {
-                    "zh": "斜面：x 方向和 y 方向的坡度",
-                    "en": "a slope: its gradient across and down"
-                  },
+                  "about": "@capability.scene.items.surface.test.fields.height.of.fields.tilt.about",
                   "optional": true
                 },
                 "groove": {
@@ -2573,26 +2135,17 @@
                     "type": "num"
                   },
                   "min": 6,
-                  "about": {
-                    "zh": "沟：x0, y0, x1, y1, 半宽, 深",
-                    "en": "a groove: x0, y0, x1, y1, half width, depth"
-                  },
+                  "about": "@capability.scene.items.surface.test.fields.height.of.fields.groove.about",
                   "optional": true
                 },
                 "bend": {
                   "type": "num",
-                  "about": {
-                    "zh": "马鞍形的弯：k·((x − 7.5)² − (y − 7.5)²)",
-                    "en": "a saddle bend: k·((x − 7.5)² − (y − 7.5)²)"
-                  },
+                  "about": "@capability.scene.items.surface.test.fields.height.of.fields.bend.about",
                   "optional": true
                 }
               }
             },
-            "about": {
-              "zh": "高度场：几项相加（每项一个键），空表是平板",
-              "en": "a height field: terms added up (one key each); none is a flat sheet"
-            }
+            "about": "@capability.scene.items.surface.test.fields.height.about"
           },
           "paint": {
             "type": "call",
@@ -2602,10 +2155,7 @@
       }
     },
     "twoNoisings": {
-      "about": {
-        "zh": "同一个字母加两次噪声：两张噪声、两个 ᾱ；期望是加完两次的图",
-        "en": "one letter noised twice, two noises and two ᾱ; the picture after both expected"
-      },
+      "about": "@capability.scene.items.twoNoisings.about",
       "shape": "vision-complete/graph-twoNoisings",
       "test": {
         "type": "obj",
@@ -2638,10 +2188,7 @@
       }
     },
     "twoRankings": {
-      "about": {
-        "zh": "两类各自的排名表和标注数，另给名次；期望是两类 AP 的平均（mAP）",
-        "en": "two classes’ ranked lists and numbers labelled, with the ranks; the mean of their APs (mAP) expected"
-      },
+      "about": "@capability.scene.items.twoRankings.about",
       "shape": "vision-complete/graph-twoRankings",
       "test": {
         "type": "obj",
@@ -2659,10 +2206,7 @@
                   ]
                 },
                 "min": 16,
-                "about": {
-                  "zh": "按分数排好的 16 个检测，对 1 错 0",
-                  "en": "the 16 detections in score order, right 1 and wrong 0"
-                }
+                "about": "@capability.scene.items.twoRankings.test.fields.one.fields.flags.about"
               },
               "g": {
                 "type": "int",
@@ -2683,10 +2227,7 @@
                   ]
                 },
                 "min": 16,
-                "about": {
-                  "zh": "按分数排好的 16 个检测，对 1 错 0",
-                  "en": "the 16 detections in score order, right 1 and wrong 0"
-                }
+                "about": "@capability.scene.items.twoRankings.test.fields.two.fields.flags.about"
               },
               "g": {
                 "type": "int",
@@ -2698,10 +2239,7 @@
       }
     },
     "walk": {
-      "about": {
-        "zh": "两个斑点和走到哪 t；期望是潜空间里两点之间 t 处的斑点",
-        "en": "two blobs and how far t; the blob at t between them in latent space expected"
-      },
+      "about": "@capability.scene.items.walk.about",
       "shape": "vision-complete/graph-walk",
       "test": {
         "type": "obj",
@@ -2712,10 +2250,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "斑点的中心 (x, y)",
-              "en": "the blob’s centre (x, y)"
-            }
+            "about": "@capability.scene.items.walk.test.fields.a.about"
           },
           "b": {
             "type": "list",
@@ -2723,10 +2258,7 @@
               "type": "num"
             },
             "min": 2,
-            "about": {
-              "zh": "斑点的中心 (x, y)",
-              "en": "the blob’s centre (x, y)"
-            }
+            "about": "@capability.scene.items.walk.test.fields.b.about"
           },
           "t": {
             "type": "num"
@@ -2735,10 +2267,7 @@
       }
     },
     "washedOut": {
-      "about": {
-        "zh": "灰蒙蒙的照片：亮度挤进 0.25 … 0.75，期望是原来的照片",
-        "en": "a washed-out photo, its brightness squeezed into 0.25 … 0.75; the photo as it was is expected"
-      },
+      "about": "@capability.scene.items.washedOut.about",
       "shape": "vision-complete/graph-washedOut",
       "test": {
         "type": "obj",
@@ -2751,10 +2280,7 @@
       }
     },
     "waveform": {
-      "about": {
-        "zh": "一条 32 个点的波形：平均亮度 c 加几道波；期望是频率 k 那道波的振幅（没有就是 0）",
-        "en": "a waveform of 32 points, an average c plus a few waves; the amplitude of the wave of frequency k (0 if there is none) is expected"
-      },
+      "about": "@capability.scene.items.waveform.about",
       "shape": "vision-complete/graph-waveform",
       "params": {
         "type": "obj",
@@ -2785,10 +2311,7 @@
                 },
                 "phase": {
                   "type": "num",
-                  "about": {
-                    "zh": "错开多少度",
-                    "en": "how many degrees it is shifted"
-                  },
+                  "about": "@capability.scene.items.waveform.test.fields.waves.of.fields.phase.about",
                   "optional": true
                 }
               }
@@ -2798,10 +2321,7 @@
       }
     },
     "whiteBalance": {
-      "about": {
-        "zh": "暖黄的灯下拍的彩色场景，亮度为 strength；期望是每个通道除以它自己的最大值",
-        "en": "a coloured scene under a warm yellow lamp at brightness strength; each channel divided by its own maximum is expected"
-      },
+      "about": "@capability.scene.items.whiteBalance.about",
       "shape": "vision-complete/graph-whiteBalance",
       "test": {
         "type": "obj",
@@ -2828,10 +2348,7 @@
       }
     },
     "whiteBalanceColour": {
-      "about": {
-        "zh": "暖黄灯下的彩色照片；期望是各通道分别按最大值校正",
-        "en": "a colour photograph under a warm lamp; each channel is corrected by its own maximum"
-      },
+      "about": "@capability.scene.items.whiteBalanceColour.about",
       "shape": "vision-complete/graph-whiteBalanceColour",
       "test": {
         "type": "obj",
@@ -2858,10 +2375,7 @@
       }
     },
     "xo": {
-      "about": {
-        "zh": "一个 X 或 O，位置、墨色、噪点各不同；期望 X 是 1，O 是 0",
-        "en": "an X or an O at some place, ink and noise; 1 for an X, 0 for an O expected"
-      },
+      "about": "@capability.scene.items.xo.about",
       "shape": "vision-complete/graph-xo",
       "test": {
         "type": "obj",
@@ -2884,10 +2398,7 @@
           },
           "seed": {
             "type": "int",
-            "about": {
-              "zh": "噪点的种子，0 是没有噪点",
-              "en": "the noise’s seed, 0 for none"
-            }
+            "about": "@capability.scene.items.xo.test.fields.seed.about"
           }
         }
       }

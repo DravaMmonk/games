@@ -1,8 +1,5 @@
 {
   "type": "str",
-  "about": {
-    "zh": "模型可以按这个名字换按钮上的字",
-    "en": "the name the model may relabel the button by"
-  },
+  "about": "@shape.action-id.about",
   "optional": true
 }

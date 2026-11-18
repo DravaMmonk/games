@@ -114,10 +114,7 @@
           }
         ]
       },
-      "about": {
-        "zh": "空格表示空位；字符引用调色表；默认格子 id 为从零开始的「行,列」",
-        "en": "Spaces leave holes; characters use the palette. Cell IDs default to zero-based “row,column”."
-      }
+      "about": "@shape.scene-grid.fields.rows.about"
     }
   }
 }

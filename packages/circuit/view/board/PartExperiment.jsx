@@ -6,7 +6,8 @@ import DemoBench, { useExampleRun } from "./DemoBench.jsx"
 import Choice from "./Choice.jsx"
 import { InteractiveDrawing } from 'kernel/view'
 
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 
 const stop = (event) => event.stopPropagation()
@@ -15,7 +16,7 @@ const cannotLand = () => false
 
 function SignalControl({ kind, value, shown, change }) {
   if (kind === 'bool') return <span className="demo-yn" onPointerDown={stop}>
-    {[[true, tr('是', 'yes')], [false, tr('否', 'no')]].map(([v, label]) => (
+    {[[true, tr("是")], [false, tr("否")]].map(([v, label]) => (
       <button key={label} type="button" aria-pressed={value === v} onClick={() => change(v)}>{label}</button>
     ))}
   </span>
@@ -105,7 +106,7 @@ export default function PartExperiment({ spec, phone }) {
     <div className="demo-panel-head"><b>{L(view.parts.label(node))}</b><small>{L(shown.panelTag)}</small></div>
     <Controls controls={shown.controls} roomy />
     {shown.description && <p className="panel-note">{L(shown.description)}</p>}
-    {!shown.isInput && <p className="panel-note">{report ? tr(`上次运行：${shown.value || '—'}`, `Last run: ${shown.value || '—'}`) : tr('还没运行。')}</p>}
+    {!shown.isInput && <p className="panel-note">{report ? tr("上次运行：{value}", {value: shown.value || '—'}) : tr('还没运行。')}</p>}
     {shown.canOpen && <button type="button" className={spec.layout.open} onClick={() => open(node)}><Maximize2 size={14} />{tr('打开')}</button>}
   </> : <p className="panel-note">{L(spec.help)}</p>)
   const pickDrawing = (token) => {

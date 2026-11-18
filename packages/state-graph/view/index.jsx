@@ -1,6 +1,10 @@
 import { registerTableViews, tableDisplays } from 'table/view'
-import plays from '../capabilities/play.json' with { type: 'json' }
+import playsSource from '../capabilities/play.json' with { type: 'json' }
 import Hero from './hero.jsx'
+
+import { readCopy } from 'kernel/words'
+
+const plays = readCopy(playsSource)
 
 export function register(kernel) {
  kernel.implement('display', 'state-graph/hero', Hero)

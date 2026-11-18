@@ -11,7 +11,7 @@ import { boardDrawing } from '../scene.js'
 import { reduced } from 'kernel/view'
 import { buzz, useLater, useVerdict } from 'kernel/view'
 
-const LABEL = { gold: T('宝藏', 'treasure'), trap: T('陷阱', 'trap') }
+const LABEL = { gold: T("宝藏"), trap: T("陷阱") }
 
 export default function usePolicy({ level, solve, fail }) {
   const L = level.source
@@ -36,7 +36,7 @@ export default function usePolicy({ level, solve, fail }) {
     if (done || !near(here).includes(id)) return
     if (val(id) < best(here)) {
       const v = val(id), top = best(here)
-      setMsg({ cls: 'bad', body: () => tr(`${rcName(id)}的价值是 <b>${signal(v)}</b>，可旁边还有 <b>${signal(top)}</b> 的格子。走那一格离宝藏更近。`, `${rcName(id)} has a value of <b>${signal(v)}</b>, but there is a neighbour worth <b>${signal(top)}</b>. That cell is closer to the treasure.`) })
+      setMsg({ cls: 'bad', body: () => tr("{value}的价值是 <b>{value2}</b>，可旁边还有 <b>{value3}</b> 的格子。走那一格离宝藏更近。", {value: rcName(id), value2: signal(v), value3: signal(top)}) })
       buzz(20)
       return
     }
@@ -52,12 +52,12 @@ export default function usePolicy({ level, solve, fail }) {
     setWalks(completed)
     if (next < L.starts.length) {
       const n = path.length
-      setMsg({ cls: 'good', body: () => tr(`到了，走了 ${n} 步。换一个起点。`, `Made it in ${n} steps. On to another start.`) })
+      setMsg({ cls: 'good', body: () => tr("到了，走了 {n} 步。换一个起点。", {n}) })
       setPath([L.starts[next].join()])
       return
     }
     setPath(reached)
-    setMsg({ cls: 'good', body: () => tr('三个起点都走到了宝藏。', 'All three starts reached the treasure.') })
+    setMsg({ cls: 'good', body: () => tr("三个起点都走到了宝藏。") })
     later(() => verdict.pass({ walks: completed }), reduced() ? 0 : 1600)
   }
 
@@ -72,17 +72,17 @@ export default function usePolicy({ level, solve, fail }) {
   const scene = { cells, edges, robot: done ? null : here, look: robotOf('scout').look }
   const at = Math.min(k + 1, L.starts.length)
   return {
-    drawing: boardDrawing(scene, { label: tr('棋盘', 'Board'), minScale: 0.7, maxScale: 1.15 }, onCell),
-    note: done ? tr('每一格都长出了一根箭头：指向四个邻居里价值最大的那一格。从任何一格出发，顺着箭头走，都能到宝藏。', 'Every cell has grown an arrow pointing to its neighbour with the largest value. Start from any cell, follow the arrows, and you reach the treasure.') : tr(`起点 ${k + 1} / ${L.starts.length}：点一个虚线框的邻居，让机器人走过去。`, `Start ${k + 1} / ${L.starts.length}: click a neighbour in a dashed frame to move the robot there.`),
+    drawing: boardDrawing(scene, { label: tr("棋盘"), minScale: 0.7, maxScale: 1.15 }, onCell),
+    note: done ? tr("每一格都长出了一根箭头：指向四个邻居里价值最大的那一格。从任何一格出发，顺着箭头走，都能到宝藏。") : tr("起点 {k} / {length}：点一个虚线框的邻居，让机器人走过去。", {k: k + 1, length: L.starts.length}),
     cards: [{
-      title: tr('怎么走', 'Which way'),
-      badge: tr(`起点 ${at} / ${L.starts.length}`, `start ${at} / ${L.starts.length}`),
-      body: tr('每一格的数，是站在这里有多好：离宝藏越近越大，每远一步打个九折。机器人每一步都走到<b>四个邻居里数最大</b>的那一格。', 'Each cell’s number says how good it is to stand there: the closer to the treasure, the bigger, with 10% knocked off for every step further away. At every step the robot moves to <b>the neighbour with the biggest number</b>.'),
+      title: tr("怎么走"),
+      badge: tr("起点 {at} / {length}", {at, length: L.starts.length}),
+      body: tr("每一格的数，是站在这里有多好：离宝藏越近越大，每远一步打个九折。机器人每一步都走到<b>四个邻居里数最大</b>的那一格。"),
       feedback: msg,
     }],
     dock: {
-      meta: done ? tr('全部走到了', 'All the way there') : tr(`已经走了 <b>${path.length - 1}</b> 步`, `<b>${path.length - 1}</b> steps so far`),
-      secondary: done ? null : { label: tr('这个起点重走', 'Redo this start'), onClick: () => { setPath([L.starts[k].join()]); setMsg(null) } },
+      meta: done ? tr("全部走到了") : tr("已经走了 <b>{value}</b> 步", {value: path.length - 1}),
+      secondary: done ? null : { label: tr("这个起点重走"), onClick: () => { setPath([L.starts[k].join()]); setMsg(null) } },
     },
   }
 }

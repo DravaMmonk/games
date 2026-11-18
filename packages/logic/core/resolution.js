@@ -10,7 +10,7 @@
 //            its parents, `inst`: what each parent's variables became in it
 //   value    { kind: 'clauses', set: [clause], from?: state, endless? }   `from`: the state it was split from
 import { BOT, all, atom, fn, not, or, show, tvar } from './formula.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 
 /* ---------- literals and clauses ---------- */
@@ -92,7 +92,7 @@ function clausesOfHyp(f, why) {
   if (f.op === '¬' && f.a.op === '⊥') return []
   const strip = (g) => (g.op === '∀' ? strip(g.body) : g.op === '∨' ? or(strip(g.a), strip(g.b)) : g)
   const lits = literalsIn(strip(f))
-  if (!lits) throw why(T(`「${show(f)}」还不是子句：已知要先化成合取范式`, `“${show(f)}” is not a clause yet: bring the hypotheses to CNF first`))
+  if (!lits) throw why(T("「{value}」还不是子句：已知要先化成合取范式", {value: show(f)}))
   return [lits]
 }
 
@@ -257,7 +257,7 @@ export function replay(value) {
   for (const [n, i] of used.entries()) {
     const c = value.set[i]
     const parents = (c.from ?? []).map((k, j) => instLits(value.set[k], c.inst[j]))
-    const what = (zh, en) => T(`第 ${n + 1} 步：${zh}`, `Step ${n + 1}: ${en}`)
+    const what = (zh, en) => T("第 {n} 步：{zh}", {n: n + 1, zh: { zh: String(zh), en: String(en) }})
     const named = (c.from ?? []).map((k) => clauseText(value.set[k]))
     if (!c.from) {
       if (!inputs.has(c.key)) return { fail: what(`子句 ${clauseText(c)} 不在已知里`, `the clause ${clauseText(c)} is not among the hypotheses`) }

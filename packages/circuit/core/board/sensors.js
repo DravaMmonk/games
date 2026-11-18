@@ -10,11 +10,12 @@
 //   named   the level named it itself (its card's title is that name, so the caption says it is an input)
 //
 // A game describes its inputs as sensors once; source cards, their captions and the inputs pane read them there.
-import { L, tr } from 'kernel'
+import { L } from "kernel"
+import { tr } from 'kernel/words'
 
 
 
 export const sensor = (id, label, type, more = {}) => ({ id, label, type, ...more })
 
 /** A sensor card's caption: that it is an input (when its title is the level's own name) and what it carries. */
-export const sensorCaption = (s, kindName) => [s?.named ? tr('输入', 'input') : null, kindName ? L(kindName) : null].filter(Boolean).join(' · ')
+export const sensorCaption = (s, kindName) => [s?.named ? tr("输入") : null, kindName ? L(kindName) : null].filter(Boolean).join(' · ')

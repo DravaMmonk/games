@@ -2,46 +2,25 @@
   "extends": "family",
   "items": {
     "gate": {
-      "about": {
-        "zh": "逻辑门",
-        "en": "Logic gate"
-      }
+      "about": "@capability.family.items.gate.about"
     },
     "rule": {
-      "about": {
-        "zh": "推理规则",
-        "en": "Inference rule"
-      }
+      "about": "@capability.family.items.rule.about"
     },
     "box": {
-      "about": {
-        "zh": "带框的规则",
-        "en": "Rule with a box"
-      }
+      "about": "@capability.family.items.box.about"
     },
     "lemma": {
-      "about": {
-        "zh": "证出的引理",
-        "en": "Proved lemma"
-      }
+      "about": "@capability.family.items.lemma.about"
     },
     "tactic": {
-      "about": {
-        "zh": "证明助手的元件",
-        "en": "Proof assistant part"
-      }
+      "about": "@capability.family.items.tactic.about"
     },
     "loop": {
-      "about": {
-        "zh": "带框的证明助手元件",
-        "en": "Proof assistant part with a frame"
-      }
+      "about": "@capability.family.items.loop.about"
     },
     "built": {
-      "about": {
-        "zh": "搭出的元件",
-        "en": "Built part"
-      }
+      "about": "@capability.family.items.built.about"
     }
   }
 }

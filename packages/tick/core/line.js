@@ -1,4 +1,4 @@
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 /** The line, as the card that hears it and the results name it. */
 export const LINE = T('线')

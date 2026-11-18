@@ -38,7 +38,7 @@ export function useMark() {
       'data-edit': at,
       ...(same(edit, at, scope) && { 'data-picked': '' }),
       onClickCapture: pick,
-      title: tr(`改 ${at}`, `Edit ${at}`),
+      title: tr("改 {at}", {at}),
     }
   }
 }

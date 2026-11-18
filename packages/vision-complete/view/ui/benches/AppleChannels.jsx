@@ -1,4 +1,4 @@
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { grey } from 'image/view'
 import './apple-light.css'
 

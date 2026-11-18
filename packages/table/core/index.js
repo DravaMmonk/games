@@ -1,7 +1,11 @@
 import { qualifyItems, registeredValueTypes } from 'kernel'
-import valueTypes from '../capabilities/valueType.json' with { type: 'json' }
+import valueTypesSource from '../capabilities/valueType.json' with { type: 'json' }
 import { tableReports } from './baseline.js'
 import { modeImplementations } from './course.js'
+
+import { readCopy } from 'kernel/words'
+
+const valueTypes = readCopy(valueTypesSource)
 
 export function register(kernel) {
   for (const [name, implementation] of Object.entries(modeImplementations)) kernel.implement('mode', name, implementation)
@@ -17,7 +21,7 @@ export function register(kernel) {
 export { cell, num, yes, seg, DIR, THIS_CELL, world, visibleSensors, sensorsOf, look } from './model/world.js'
 
 /** Bilingual world labels that follow the active language when rendered or interpolated. */
-export { isEn, T, lazy } from './lang.js'
+export { isEn, asText, lazy } from './lang.js'
 /** Format signals and construct scene geometry for a world. */
 export { signal } from './model/format.js'
 export { E as sceneEdge } from './model/scene.js'

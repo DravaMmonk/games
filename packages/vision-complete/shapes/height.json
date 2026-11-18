@@ -9,10 +9,7 @@
           "type": "num"
         },
         "min": 4,
-        "about": {
-          "zh": "鼓包：cx, cy, 半径, 高",
-          "en": "a bump: cx, cy, radius, height"
-        },
+        "about": "@shape.height.of.fields.dome.about",
         "optional": true
       },
       "bowl": {
@@ -21,10 +18,7 @@
           "type": "num"
         },
         "min": 4,
-        "about": {
-          "zh": "坑：cx, cy, 半径, 深",
-          "en": "a dent: cx, cy, radius, depth"
-        },
+        "about": "@shape.height.of.fields.bowl.about",
         "optional": true
       },
       "ridge": {
@@ -33,10 +27,7 @@
           "type": "num"
         },
         "min": 3,
-        "about": {
-          "zh": "横梁：y0, 半宽, 高",
-          "en": "a ridge: y0, half width, height"
-        },
+        "about": "@shape.height.of.fields.ridge.about",
         "optional": true
       },
       "tilt": {
@@ -45,10 +36,7 @@
           "type": "num"
         },
         "min": 2,
-        "about": {
-          "zh": "斜面：x 方向和 y 方向的坡度",
-          "en": "a slope: its gradient across and down"
-        },
+        "about": "@shape.height.of.fields.tilt.about",
         "optional": true
       },
       "groove": {
@@ -57,24 +45,15 @@
           "type": "num"
         },
         "min": 6,
-        "about": {
-          "zh": "沟：x0, y0, x1, y1, 半宽, 深",
-          "en": "a groove: x0, y0, x1, y1, half width, depth"
-        },
+        "about": "@shape.height.of.fields.groove.about",
         "optional": true
       },
       "bend": {
         "type": "num",
-        "about": {
-          "zh": "马鞍形的弯：k·((x − 7.5)² − (y − 7.5)²)",
-          "en": "a saddle bend: k·((x − 7.5)² − (y − 7.5)²)"
-        },
+        "about": "@shape.height.of.fields.bend.about",
         "optional": true
       }
     }
   },
-  "about": {
-    "zh": "高度场：几项相加（每项一个键），空表是平板",
-    "en": "a height field: terms added up (one key each); none is a flat sheet"
-  }
+  "about": "@shape.height.about"
 }

@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // The circuit both games build, in one shape:
 //
 //   { nodes: [{ id, type, x, y, slot?, … }], wires: [{ from, to, port }] }
@@ -130,7 +131,7 @@ export function editNodeSettings(graph, parts, id, params) {
   if (sameJson(next.params, before.params)) return { graph }
   const nodes = graph.nodes.map((node) => node.id === id ? next : node)
   if (!regionsFit({ nodes }, parts)) {
-    return { reason: { zh: '请先移出要关闭的区域里的元件。', en: 'Move the parts out of the regions you want to close first.' } }
+    return { reason: catalogText("请先移出要关闭的区域里的元件。") }
   }
 
   const nodeAt = (key) => key === id ? next : byId(graph, key)
@@ -149,18 +150,18 @@ export function editNodeSettings(graph, parts, id, params) {
  * apart from its frame, so a frame may read back what was made from it.
  */
 function wireProblem(graph, parts, wire) {
-  if (!wire) return { zh: '两头都是输出口（或都是输入口）：一头接输出，一头接输入。', en: 'Both ends are outputs (or both inputs): connect an output to an input.' }
+  if (!wire) return catalogText("两头都是输出口（或都是输入口）：一头接输出，一头接输入。")
   const { from, to, port } = wire
   const unavailable = wirePortRefusal(parts, wire, (id) => byId(graph, id))
   if (unavailable) return unavailable
   const locked = lockedRefusal(graph, to, port)
   if (locked) return locked
   const { edges, from: start } = parts.frames ? frameEdges(graph, parts) : { edges: wireEdges(graph.wires), from: srcNode }
-  if (start(from) === to) return { zh: '一个元件不能读它自己。', en: 'A part cannot read itself.' }
+  if (start(from) === to) return catalogText("一个元件不能读它自己。")
   // A board run tick by tick may feed back (parts.loops), but only through a part that keeps what it is given for the
   // next tick (parts.holds): a loop of parts that each answer at once has no tick to wait on.
   const holds = parts.loops ? (id) => parts.holds?.(byId(graph, id) ?? {}) : undefined
-  if (wouldCycle(edges, start(from), to, holds)) return { zh: '这样会绕成一个圈：这个元件要等自己算完，才能算自己。', en: 'That would make a loop: this part would have to wait for itself to finish.' }
+  if (wouldCycle(edges, start(from), to, holds)) return catalogText("这样会绕成一个圈：这个元件要等自己算完，才能算自己。")
   const scope = parts.frames ? scopeRefusal(graph, parts, from, to, port) : null
   return scope
 }

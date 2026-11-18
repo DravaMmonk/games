@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "ab",
-      "label": "@part.orE.inputs.0.label"
+      "label": "A ∨ B"
     }
   ],
   "regions": [

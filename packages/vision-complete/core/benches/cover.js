@@ -4,7 +4,7 @@
 import { limitOf } from 'image'
 import { random } from 'imglib'
 import { affineFit, homographyDLT, invert3, project } from 'cvlib'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 const rectCorners = ([x0, y0, x1, y1]) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]
 

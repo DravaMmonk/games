@@ -2,10 +2,7 @@
   "name": "mode",
   "studio": {
     "order": 6,
-    "label": {
-      "zh": "模式",
-      "en": "Modes"
-    }
+    "label": "@capability.mode.studio.label"
   },
   "implementation": {
     "side": "core",
@@ -19,10 +16,7 @@
         "editor": "circuit",
         "judge": "simulation",
         "resources": "robot",
-        "label": {
-          "zh": "电路板",
-          "en": "Circuit board"
-        },
+        "label": "@capability.mode.items.robot-board.configuration.label",
         "layout": "sg-level is-circuit sg-shared-circuit"
       }
     },
@@ -31,15 +25,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "fill",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-fill.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-fill.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",
@@ -54,15 +42,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "trace",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-trace.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-trace.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",
@@ -77,15 +59,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "link",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-link.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-link.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",
@@ -100,15 +76,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "pack",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-pack.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-pack.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",
@@ -123,15 +93,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "breach",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-breach.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-breach.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",
@@ -146,15 +110,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "policy",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-policy.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-policy.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",
@@ -169,15 +127,9 @@
         "editor": "board",
         "judge": "hand",
         "resources": "seam",
-        "label": {
-          "zh": "棋盘",
-          "en": "Board"
-        },
+        "label": "@capability.mode.items.hand-seam.configuration.label",
         "layout": {
-          "boardLabel": {
-            "zh": "棋盘",
-            "en": "Board"
-          },
+          "boardLabel": "@capability.mode.items.hand-seam.configuration.layout.boardLabel",
           "cardClass": "bcard",
           "noteClass": "bnote",
           "afterClass": "sg-after",

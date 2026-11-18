@@ -17,7 +17,7 @@ import { definitionOfKind } from '../engine/plugin-kinds.js'
 import './studio.css'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { BookOpen, Cpu, FileBox, FileCode2, Flag, Layers, ListTree, Package, Search as SearchIcon } from 'lucide-react'
-import { L, T, getLang, tr } from '../shell/i18n.js'
+import { L, T, getLang, sideOf, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { find, shapeAt } from '../engine/schema.js'
 import { parsePath, showPath } from '../engine/ops/edit.js'
@@ -75,8 +75,8 @@ const SAVED_VIEW = window.history.state?.studio
 const OPENED = readOpen(QUERY)
 // The left column's switcher (left-lists.js PACKAGE_LISTS): each list's icon and name.
 const LISTS = {
-  packages: [Package, '包', 'Packages'], tree: [ListTree, '关卡', 'Levels'], entries: [BookOpen, '词条', 'Entries'],
-  kernel: [Cpu, '能力', 'Capabilities'], overrides: [Layers, '覆盖', 'Overrides'], search: [SearchIcon, '搜索', 'Search'],
+  packages: [Package, T("包")], tree: [ListTree, T("关卡")], entries: [BookOpen, T("词条")],
+  kernel: [Cpu, T("能力")], overrides: [Layers, T("覆盖")], search: [SearchIcon, T("搜索")],
 }
 // The kind of object each build list holds, and the relations a new group of it can be.
 const RELATION_KINDS = { level: [['requires', '先修', 'Requires']] }
@@ -322,7 +322,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     }
     const name = freeObjectName(ownNames(content, by, namespace), by === 'relation' ? `${option}` : `new-${by.split('/').at(-1)}`)
     const data = by === 'relation' ? { kind: option, edges: [] }
-      : editorForType(by)?.group?.initial?.() ?? { title: { [getLang()]: T('新的分组', 'New section') }, values: [] }
+      : editorForType(by)?.group?.initial?.() ?? { title: { [getLang()]: T("新的分组") }, values: [] }
     edit(content.objectKinds?.[by] ? { op: 'object.put', kind: by, name, data } : { op: `${by}.put`, [by]: name, data })
     return openHeading({ kind: by, full: `${namespace}/${name}` })
   }
@@ -334,13 +334,14 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const grouping = (kind, by, onBy) => ({
     groupings: groupingsFor(kind), by, onBy,
     newOptions: groupingsFor(kind).flatMap((g) => {
-      const [zh, en] = groupCategory(g)
+      const category = groupCategory(g)
+      const zh = sideOf(category, 'zh'), en = sideOf(category, 'en')
       const one = singular(en)
       const fresh = g === 'relation'
-        ? (editorForType(kind)?.relations ?? RELATION_KINDS[kind] ?? []).map(([option, kz, ke]) => ({ value: `new:${g}:${option}`, label: tr(`新建${kz}关系`, `New ${ke.toLowerCase()} relation`) }))
-        : [{ value: `new:${g}:`, label: tr(`新建${zh}`, `New ${one}`) }]
+        ? (editorForType(kind)?.relations ?? RELATION_KINDS[kind] ?? []).map(([option, kz, ke]) => ({ value: `new:${g}:${option}`, label: tr("新建{kz}关系", {kz: { zh: String(kz), en: String(ke.toLowerCase()) }}) }))
+        : [{ value: `new:${g}:`, label: tr("新建{zh}", {zh: { zh: String(zh), en: String(one) }}) }]
       const open = heading?.kind === g && (g !== 'tag' || content?.registries?.tag?.[heading.full]?.kind === kind)
-      return [...fresh, { value: `copy:${g}`, label: tr(`复制所选${zh}`, `Duplicate the ${one} open`), disabled: !open }].map((o) => ({ ...o, group: tr(zh, en) }))
+      return [...fresh, { value: `copy:${g}`, label: tr("复制所选{zh}", {zh: { zh: String(zh), en: String(one) }}), disabled: !open }].map((o) => ({ ...o, group: L(category) }))
     }),
     onNew: (value) => {
       const [act, g, option] = value.split(':')
@@ -433,7 +434,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     const seed = path ? await call('seed', { ...target, scope: SCOPE, level, path, changeset: { ops } }) : null
     if (playRequest.current !== request) return
     playRequest.current = null
-    setPlay({ level, seed: seed?.data !== undefined ? seed : null, take: take ? { path, label: tr(`用作 ${path}`, `Use as ${path}`) } : null })
+    setPlay({ level, seed: seed?.data !== undefined ? seed : null, take: take ? { path, label: tr("用作 {path}", {path}) } : null })
     if (seed?.task !== undefined) setPageTask(seed.task)
   }
   const referenceOf = (level) => {
@@ -557,10 +558,11 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   // A new object starts blank or as a copy of any object open, this package's or one it uses (games/MODULES.md 5.5).
   /** The add menu of a list of another type: a new one (blank), a copy of the one open (greyed when none is). */
   const addObjectOptions = (type) => {
-    const [zh, en] = typeName(types.find((info) => info.type === type)) ?? [type, type]
+    const name = typeName(types.find((info) => info.type === type)) || type
+    const zh = sideOf(name, 'zh'), en = sideOf(name, 'en')
     return [
-      { value: 'blank', label: tr(`新建${zh}`, `New ${singular(en)}`) },
-      { value: 'copy', label: tr(`复制所选${zh}`, `Duplicate the ${singular(en)} open`), disabled: heading?.kind !== type },
+      { value: 'blank', label: tr("新建{zh}", {zh: { zh: String(zh), en: String(singular(en)) }}) },
+      { value: 'copy', label: tr("复制所选{zh}", {zh: { zh: String(zh), en: String(singular(en)) }}), disabled: heading?.kind !== type },
     ]
   }
   /** A copy of any object of the package's own types, or of its tags, relations and sections, opened. */
@@ -591,7 +593,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     const make = levelChoices[action]?.make
     const draft = action === 'copy' ? source : {
       ...(firstTaskSchema ? { ...blank(vocab.vocabulary.level, newLevelContext), tasks: [make()] } : make()),
-      title: T('新关卡', 'New level'),
+      title: T("新关卡"),
     }
     edit({ op: 'level.add', level, data: copyLevelData(draft, level, content.levels) })
     openTreeItem({ level: `${namespace}/${level}` })
@@ -638,19 +640,19 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const level = at?.level && content?.levels.some((l) => l.id === at.level) ? at.level : null
   const ACTIONS = [
     ['search', tr('在整款游戏里搜索、替换'), `${MOD}+Shift+F`, openSearch],
-    ['compare', tr('比较', 'Compare'), '', () => openDrawer('compare')],
+    ['compare', tr("比较"), '', () => openDrawer('compare')],
     ['page', tr('画面：在游戏的页面上改'), '', () => { leaveObjects(); setPageEdit(true) }],
     ...(level ? [
       ['play-ref', tr('载入参考解试玩这一关'), `${level} · ${MOD}+Enter`, () => playFrom(level, true)],
       ['play', tr('试玩这一关（不显示编辑标记）'), level, () => { setPageEdit(false); playFrom(level, false) }],
-      ['duplicate', tr('复制这一关成新的一关……'), level, (id) => duplicate(level, id), { placeholder: tr(`${level} 的副本的 id`, `The id of ${level}’s copy`), value: `${level}-2` }],
+      ['duplicate', tr('复制这一关成新的一关……'), level, (id) => duplicate(level, id), { placeholder: tr("{level} 的副本的 id", {level}), value: `${level}-2` }],
       ['move', tr('移动这一关'), level, () => setMoving([level])],
     ] : []),
     ['next', tr('下一处检查结果'), 'F8', () => window.dispatchEvent(new CustomEvent('studio:finding', { detail: 1 }))],
     ['previous', tr('上一处检查结果'), 'Shift+F8', () => window.dispatchEvent(new CustomEvent('studio:finding', { detail: -1 }))],
     ...(ops.length ? [['drop', tr('去掉最后一个待定操作'), `${MOD}+Z`, () => back(ops.length - 1)]] : []),
     ...(redo.length ? [['redo', tr('放回去掉的操作'), `${MOD}+Shift+Z`, again]] : []),
-    ...(ops.length ? [['review', tr(`看 ${ops.length} 个待定操作`, `Review ${ops.length} pending`), '', () => openDrawer('changes')], ['discard', tr('全部放弃'), '', discard]] : []),
+    ...(ops.length ? [['review', tr("看 {length} 个待定操作", {length: ops.length}), '', () => openDrawer('changes')], ['discard', tr('全部放弃'), '', discard]] : []),
     ['tree', tr('收起或打开左栏'), 'Alt+[', () => togglePanel('tree')],
     ['audit', tr('收起或打开检查栏'), 'Alt+]', () => togglePanel('audit')],
     ['side', tr('收起或打开侧栏'), 'Alt+\\', () => togglePanel('side')],
@@ -710,20 +712,20 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
   // A new level: blank (of a kind, when the package has several), or a copy of the one picked (greyed when none is).
   const levelAdds = !content ? [] : [
-    ...(levelChoices.length ? [{ value: levelChoices.length === 1 ? levelChoices[0].value : 'blank', label: tr('新建关卡', 'New level'), ...(levelChoices.length > 1 && { children: levelChoices }) }] : []),
-    { value: 'copy', label: tr('复制所选关卡', 'Duplicate the level picked'), disabled: !(at?.level && content.levels.some((level) => level.id === at.level)) },
+    ...(levelChoices.length ? [{ value: levelChoices.length === 1 ? levelChoices[0].value : 'blank', label: tr("新建关卡"), ...(levelChoices.length > 1 && { children: levelChoices }) }] : []),
+    { value: 'copy', label: tr("复制所选关卡"), disabled: !(at?.level && content.levels.some((level) => level.id === at.level)) },
   ]
   // A new entry of the encyclopedia, or a copy of the one open (greyed when none is).
   const entryAt = at?.glossary && field?.path?.[0] === 'entries' ? content?.glossary?.entries?.[field.path[1]]?.id ?? null : null
   const entryAdds = [
-    { value: 'blank', label: tr('新建词条', 'New entry') },
-    { value: 'copy', label: tr('复制所选词条', 'Duplicate the entry open'), disabled: !entryAt },
+    { value: 'blank', label: tr("新建词条") },
+    { value: 'copy', label: tr("复制所选词条"), disabled: !entryAt },
   ]
   const addEntry = (action) => {
     if (saving) return
     const source = action === 'copy' ? entryAt : null
     const name = freeObjectName(ownNames(content, 'entry', namespace), source ? source.slice(source.indexOf('/') + 1) : 'entry')
-    const data = source ? copyWithoutTextKeys(ownObjectData(namespace, objectValue(content, 'entry', source))) : { title: T('新词条', 'New entry'), body: [] }
+    const data = source ? copyWithoutTextKeys(ownObjectData(namespace, objectValue(content, 'entry', source))) : { title: T("新词条"), body: [] }
     const { id: _, ...rest } = data
     edit({ op: 'entry.put', entry: name, data: rest })
     const k = (content.glossary?.entries ?? []).length
@@ -736,7 +738,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const [pickedPackage, setPickedPackage] = useState(pkg)
   const openPackage = (id) => {
     if (id === pkg || saving) return
-    if (ops.length && !window.confirm(tr('换一个包会放弃待定操作，确定吗？', 'Opening another package discards the pending operations. Continue?'))) return
+    if (ops.length && !window.confirm(tr("换一个包会放弃待定操作，确定吗？"))) return
     select(null); setPlay(null); setOpened({}); setHeading(null)
     onPackage(id)
   }
@@ -744,7 +746,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   // after asking; a refusal is said in the list's form.
   const makePackage = async (args) => {
     await call('create_package', args)
-    await onMadePackage(args.id, ops.length > 0 && !window.confirm(tr('新包已建好。打开它会放弃待定操作，现在打开吗？', 'The package is made. Opening it discards the pending operations. Open it now?')))
+    await onMadePackage(args.id, ops.length > 0 && !window.confirm(tr("新包已建好。打开它会放弃待定操作，现在打开吗？")))
   }
   // The type a list shows that is not one of the kernel's own (those have their own lists below).
   const otherType = typeOfList(side) && !BUILT_IN_LISTS[typeOfList(side)] ? typeOfList(side) : null
@@ -768,7 +770,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const compared = objectFile.object
   const openSource = (id, symbol) => {
     if (saving) return
-    if (ops.length && !window.confirm(tr('打开源码会放弃待定操作，确定吗？', 'Opening source discards pending operations. Continue?'))) return
+    if (ops.length && !window.confirm(tr("打开源码会放弃待定操作，确定吗？"))) return
     const params = new URLSearchParams({ space: 'build', package: id, source: '', ...(symbol && { symbol }) })
     window.location.assign(`?${params}`)
   }
@@ -786,19 +788,19 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
           <Package size={13} aria-hidden="true" /><PackageName info={packageInfo} />
         </button>
         <button type="button" className="kit-btn is-label" disabled={saving} onClick={() => openSource(pkg)}>
-          <FileCode2 size={14} aria-hidden="true" />{tr('源码', 'Source')}
+          <FileCode2 size={14} aria-hidden="true" />{tr("源码")}
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-${objectList ? 'objects' : middle} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
           <aside className="studio-tree">
-            <div className="side-tabs" role="tablist" aria-label={tr('列表', 'Lists')}>
+            <div className="side-tabs" role="tablist" aria-label={tr("列表")}>
               {lists.map((list) => {
                 const info = types.find(({ type }) => type === typeOfList(list))
-                const [Icon, zh, en] = LISTS[list] ?? [icons[info?.icon] ?? FileBox, ...typeName(info)]
+                const [Icon, label] = LISTS[list] ?? [icons[info?.icon] ?? FileBox, typeName(info)]
                 return (
-                  <button key={list} type="button" role="tab" aria-selected={side === list} className={side === list ? 'is-on' : ''} aria-label={tr(zh, en)}
-                    onClick={() => (list === 'search' ? openSearch() : showList(list))} title={list === 'search' ? `${tr(zh, en)} (${MOD}+Shift+F)` : tr(zh, en)}>
+                  <button key={list} type="button" role="tab" aria-selected={side === list} className={side === list ? 'is-on' : ''} aria-label={L(label)}
+                    onClick={() => (list === 'search' ? openSearch() : showList(list))} title={list === 'search' ? `${L(label)} (${MOD}+Shift+F)` : L(label)}>
                     <Icon size={14} aria-hidden="true" />
                   </button>
                 )
@@ -814,14 +816,14 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={earnedAt} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}
                 items={objectsOfType(content, otherType)} label={(id) => L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name) || ''}
                 heading={heading} onHeading={openHeading} {...grouping(otherType, partsBy, setPartsBy)}
-                addOptions={addObjectOptions(otherType)} addLabel={tr(...(typeName(types.find(({ type }) => type === otherType)) ?? [otherType, otherType]))} onAdd={(action) => addObject(otherType, action)}
+                addOptions={addObjectOptions(otherType)} addLabel={L(typeName(types.find(({ type }) => type === otherType)) || otherType)} onAdd={(action) => addObject(otherType, action)}
                 row={(id) => <ListRow key={id} icon={icons[types.find(({ type }) => type === otherType)?.icon] ?? FileBox} on={heading?.kind === otherType && heading.full === id} onClick={() => openHeading({ kind: otherType, full: id })}
                   title={L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name)} id={shownName(namespace, id)} />} />
               : side === 'search'
               ? <Search content={content} vocabulary={vocab.vocabulary} onAdd={addOps} onJump={(level, path, file) => jump(level, path, file)} />
               : levelsBy !== 'tag' ? <GroupedList kind="level" content={content} namespace={namespace} game={game} items={playOrder} label={(id) => L(content.registries?.level?.[id]?.title)}
                 heading={heading} onHeading={(next) => openHeading(next)} {...grouping('level', levelsBy, setLevelsBy)}
-                addOptions={levelAdds} addLabel={tr('关卡', 'Levels')} onAdd={addLevel}
+                addOptions={levelAdds} addLabel={tr("关卡")} onAdd={addLevel}
                 row={(id) => <ListRow key={id} icon={Flag} on={at?.level === id} onClick={() => openTreeItem({ level: id })} title={L(content.registries?.level?.[id]?.title)} id={shownName(namespace, id)} />} />
               : <Tree game={game} grouping={grouping('level', levelsBy, setLevelsBy)} namespace={namespace} content={content} order={playOrder} at={at} selectedTask={field?.path?.[0] === 'tasks' ? field.path[1] ?? null : null} picked={picked} setPicked={setPicked} onSelect={openTreeItem} moving={moving} setMoving={setMoving} onMove={move} labels={rawNames?.levels} onTask={(task) => onTaskGo({ task })} onTaskMove={moveTask}
                   addOptions={levelAdds} onAdd={addLevel} /> }
@@ -865,7 +867,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packageJson(packages.find((p) => p.id === pickedPackage))} note={tr('只读：没有改它的操作，手改文件', 'Read only: no operation edits it; the file is edited by hand')} />
+            {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packageJson(packages.find((p) => p.id === pickedPackage))} note={tr("只读：没有改它的操作，手改文件")} />
               : sideCtx && (objectList || heading
               ? <Inspector content={content} vocab={vocab} at={objectFile} field={objectFile.object || objectFile.capability || objectFile.override ? { path: objectPath } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickObjectField} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => {}}
                 tabs={inspectorTabs} selection={objectFile} onToggleTab={() => {}} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}

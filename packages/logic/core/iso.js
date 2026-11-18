@@ -8,7 +8,8 @@ import { asImp, fn, matchThings, meta, parse, same, showTerm, subst, substMany, 
 import { say, sayTerm } from './notation.js'
 import { datatypeRules, typeText } from './datatype.js'
 import { ruleOf, ruleText } from './schematic.js'
-import { L, T, tr } from 'kernel'
+import { L } from "kernel"
+import { T, tr } from 'kernel/words'
 import { cases, hidden, inOrder, sameAs } from 'kernel'
 
 /** A sentence of the level, its things read as names (not variables). */
@@ -122,7 +123,7 @@ export function derives(level, rules, test) {
 export const givenText = (test, words) => {
   const has = test.given.map(words)
   return has.length
-    ? T(`前提为${has.map((h) => `「${h.zh}」`).join('、')}`, `with the premises ${has.map((h) => `“${h.en}”`).join(', ')}`)
+    ? T("前提为{value}", {value: { zh: String(has.map((h) => `「${h.zh}」`).join('、')), en: String(has.map((h) => `“${h.en}”`).join(', ')) }})
     : T('没有前提')
 }
 
@@ -143,7 +144,7 @@ export function checkIso(level, words) {
     return unused.length ? {
       want: test.uses,
       got: [...taken],
-      why: T(`推导出了「${goal.zh}」，但用到的引入规则没有用上前提${unused.map((u) => `「${u.zh}」`).join('、')}。`, `“${goal.en}” is derived, but by an intro rule that does not take the premise ${unused.map((u) => `“${u.en}”`).join(', ')}.`),
+      why: T("推导出了「{zh}」，但用到的引入规则没有用上前提{value}。", {zh: { zh: String(goal.zh), en: String(goal.en) }, value: { zh: String(unused.map((u) => `「${u.zh}」`).join('、')), en: String(unused.map((u) => `“${u.en}”`).join(', ')) }}),
     } : null
   }))
   if (!level.ways) return examples
@@ -153,7 +154,7 @@ export function checkIso(level, words) {
   const ways = sameAs(level.ways, {
     got: (rules) => rules.map((w) => [...w.binds.map((b) => `⋀${b}`), ...w.needs]),
     same: (want, got) => key(want) === key(got),
-    why: (want) => T(`每条条例都正确，但引入规则与要求不符：${want.map((w) => `⟦${w.map((s) => said(s).zh).join('; ')}⟧ ⟹ 「${name.zh}」`).join('；')}`, `Every test case is right, but the intro rules are not the ones asked for: ${want.map((w) => `⟦${w.map((s) => said(s).en).join('; ')}⟧ ⟹ “${name.en}”`).join('; ')}`),
+    why: (want) => T("每条条例都正确，但引入规则与要求不符：{value}", {value: { zh: String(want.map((w) => `⟦${w.map((s) => said(s).zh).join('; ')}⟧ ⟹ 「${name.zh}」`).join('；')), en: String(want.map((w) => `⟦${w.map((s) => said(s).en).join('; ')}⟧ ⟹ “${name.en}”`).join('; ')) }}),
   })
   return inOrder(examples, ways)
 }
@@ -235,5 +236,5 @@ export function declaredLines(level) {
     }
   }
   const rules = declaredRules(level, level.solution)
-  return { label: T('声明给出的规则'), lines: [...rules.make.map((r, k) => `${tr(`引入规则 ${k + 1}：`, `Intro ${k + 1}: `)}${ruleText(r, text)}`), `${tr('消去规则：')}${ruleText(rules.take, text)}`] }
+  return { label: T('声明给出的规则'), lines: [...rules.make.map((r, k) => `${tr("引入规则 {k}：", {k: k + 1})}${ruleText(r, text)}`), `${tr('消去规则：')}${ruleText(rules.take, text)}`] }
 }

@@ -28,6 +28,7 @@ node --import games/kit/engine/package-imports.mjs --test packages/image/test/im
 # site/
 npm run check -- vision-complete
 GAME=vision-complete npm run build:game
+npm run words -- --check
 npm run test:zero
 ```
 
@@ -135,3 +136,5 @@ npm run op -- --package <包> adopt --why "…"                将外部迁移�
 
 ---
 
+
+界面译文可在 Studio 的文案工作区选择「界面文案」比较和编辑，也可用 `op … ui.set key=… lang=en value=…` 走同一变更集。玩家缺译会使 `words -- --check` 失败，开发者缺译单独计数。

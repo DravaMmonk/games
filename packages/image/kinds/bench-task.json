@@ -41,7 +41,7 @@
                   "every": { "type": "int", "min": 1, "optional": true },
                   "always": {
                     "type": "bool",
-                    "about": { "zh": "运行中也能按", "en": "can be pressed while a run goes on" },
+                    "about": "@kind.bench-task.fields.bench.fields.actions.of.of.0.fields.always.about",
                     "optional": true
                   }
                 }
@@ -69,10 +69,7 @@
         "check": {
           "type": "oneOf",
           "values": ["live", "submit"],
-          "about": {
-            "zh": "目标怎样判：live 随旋钮实时判（默认）；submit 只在玩家按「检查」时判，在那之前目标的读数和画面里的结果都不显示，玩家要先想好再试",
-            "en": "how the goal is judged: live as the knobs turn (the default); submit only when the player presses Check, the goal's readings and the result in the pictures hidden until then, so the player thinks before trying"
-          },
+          "about": "@kind.bench-task.fields.bench.fields.check.about",
           "optional": true
         },
         "win": { "type": "text", "optional": true },
@@ -114,10 +111,7 @@
             "split": {
               "type": "oneOf",
               "values": ["even", "narrow", "wide"],
-              "about": {
-                "zh": "主卡和旁栏的宽：各半，旁栏窄（300–340px），旁栏宽（340–430px）",
-                "en": "the main card against the side: half each, a narrow side (300–340px), a wide side (340–430px)"
-              },
+              "about": "@kind.bench-task.fields.bench.fields.layout.fields.split.about",
               "optional": true
             }
           }

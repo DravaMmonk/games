@@ -26,6 +26,6 @@ try {
   const source = new URLSearchParams({ source: '', package: query.get('package') ?? '' })
   root.render(<main className="studio-loading">
     <p role="alert">{error.message}</p>
-    <a href={`?${source}`}>{tr('打开包源码', 'Open package source')}</a>
+    <a href={`?${source}`}>{tr("打开包源码")}</a>
   </main>)
 }

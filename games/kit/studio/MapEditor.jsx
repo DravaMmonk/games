@@ -39,7 +39,7 @@ export default function MapEditor({ rows, members, edges, titleOf, pending, onRo
     if (next === rows || (to.off && !placeOf(rows, id))) { setArmed(null); return }
     const bad = layoutRefusal(rows, next, edges)
     if (bad) {
-      setNotice(tr(`${describe(bad.from)} 是 ${describe(bad.to)} 的前置，须排在它上面的行。`, `${describe(bad.from)} is a prerequisite of ${describe(bad.to)}: it must be in a row above it.`))
+      setNotice(tr("{value} 是 {value2} 的前置，须排在它上面的行。", {value: describe(bad.from), value2: describe(bad.to)}))
       return
     }
     setNotice('')
@@ -98,7 +98,7 @@ export default function MapEditor({ rows, members, edges, titleOf, pending, onRo
   )
   const reach = armed || dragging
   const gap = (row) => reach && !locked
-    ? <div className="map-gap is-armed" role="button" tabIndex={0} aria-label={tr('放进新的一行', 'Into a new row')} {...target(`gap:${row}`, { row, new: true })}
+    ? <div className="map-gap is-armed" role="button" tabIndex={0} aria-label={tr("放进新的一行")} {...target(`gap:${row}`, { row, new: true })}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); move(armed, { row, new: true }) } }} />
     : <div className="map-gap" />
   return (
@@ -108,12 +108,12 @@ export default function MapEditor({ rows, members, edges, titleOf, pending, onRo
         {armed && <>
           <strong>{describe(armed)}</strong>
           {placeOf(rows, armed) && <button type="button" className="kit-btn is-label" disabled={locked} onClick={() => move(armed, { off: true })}>
-            <X size={13} aria-hidden="true" />{tr('移出路线图', 'Take off the map')}
+            <X size={13} aria-hidden="true" />{tr("移出路线图")}
           </button>}
         </>}
         {notice && <p className="is-error" role="status">{notice}</p>}
       </div>
-      <div className="map-rows" aria-label={tr('路线图', 'Map')}>
+      <div className="map-rows" aria-label={tr("路线图")}>
         {gap(0)}
         {rows.map((row, r) => (
           <div key={r} className="map-row-wrap">
@@ -121,21 +121,21 @@ export default function MapEditor({ rows, members, edges, titleOf, pending, onRo
               {row.length < ROW_SLOTS && <div className="map-place is-end" aria-hidden="true" />}
               {row.map((id, slot) => id === null
                 ? <div key={`empty-${slot}`} className="map-place is-empty" {...target(`slot:${r}:${slot}`, { row: r, slot })}>
-                  {!locked && <button type="button" className="kit-btn editor-tool" title={tr('去掉这个空位', 'Take out this empty place')} aria-label={tr('去掉这个空位', 'Take out this empty place')} onClick={() => edit(removePlace(rows, r, slot))}><X size={12} aria-hidden="true" /></button>}
+                  {!locked && <button type="button" className="kit-btn editor-tool" title={tr("去掉这个空位")} aria-label={tr("去掉这个空位")} onClick={() => edit(removePlace(rows, r, slot))}><X size={12} aria-hidden="true" /></button>}
                 </div>
                 : level(id, { row: r, slot }))}
               {row.length < ROW_SLOTS && <div className="map-place is-end" {...target(`slot:${r}:${row.length}`, { row: r, slot: row.length })}>
-                {!locked && <button type="button" className="kit-btn editor-tool" title={tr('加一个空位', 'Add an empty place')} aria-label={tr('加一个空位', 'Add an empty place')} onClick={() => edit(addPlace(rows, r))}><Plus size={12} aria-hidden="true" /></button>}
+                {!locked && <button type="button" className="kit-btn editor-tool" title={tr("加一个空位")} aria-label={tr("加一个空位")} onClick={() => edit(addPlace(rows, r))}><Plus size={12} aria-hidden="true" /></button>}
               </div>}
             </div>
             {gap(r + 1)}
           </div>
         ))}
         {!locked && <div className="map-row">
-          <button type="button" className="kit-btn is-label" onClick={() => edit(addRow(rows))}><Plus size={13} aria-hidden="true" />{tr('加一行', 'Add a row')}</button>
+          <button type="button" className="kit-btn is-label" onClick={() => edit(addRow(rows))}><Plus size={13} aria-hidden="true" />{tr("加一行")}</button>
         </div>}
       </div>
-      {(loose.length > 0 || reach) && <div className="layout-unplaced" aria-label={tr('未排入', 'Not placed')} {...target('off', { off: true })}>
+      {(loose.length > 0 || reach) && <div className="layout-unplaced" aria-label={tr("未排入")} {...target('off', { off: true })}>
         {loose.map((id) => level(id, null))}
       </div>}
     </div>

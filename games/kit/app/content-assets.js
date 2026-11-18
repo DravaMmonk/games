@@ -18,7 +18,7 @@ export function contentAssets(content) {
   const manifests = {}
   for (const [scope, catalogs] of Object.entries({
     course: catalogsOf('course', game, blueprint, ...Object.values(contentObjects.chapter ?? {})),
-    package: catalogsOf('package', levels, ...packageObjects),
+    package: catalogsOf('package', levels, ...packageObjects, source.capabilityDeclarations),
   })) {
     manifests[scope] = Object.fromEntries(Object.entries(catalogs).map(([lang, entries]) => {
       const text = JSON.stringify(entries)

@@ -1,6 +1,6 @@
 import { useId, useMemo, useRef, useState } from 'react'
 import { goalOf, limitOf } from '../../../core/bench.js'
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { clientToSvg } from 'kernel/view'
 import { usePointerSession } from 'kernel/view'
 import { useTween } from 'kernel/view'

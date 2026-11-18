@@ -1,7 +1,9 @@
+import { T as catalogText } from 'kernel/words'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { pixelUrl } from 'kernel/view'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 import { clientToSvg, svgToClient } from 'kernel/view'
 import { useElementSize } from 'kernel/view'
 import { usePointerSession } from 'kernel/view'
@@ -67,7 +69,7 @@ export function CoverPairs({ ctx, children }) {
   const addPair = (cover, photo) => {
     const rest = pairs.filter((p) => p.cover !== cover && p.photo !== photo)
     if (rest.length >= 4) {
-      setMessage({ zh: '最多 4 对点，请先删除一对。', en: 'At most 4 pairs. Delete one first.' })
+      setMessage(catalogText("最多 4 对点，请先删除一对。"))
       return
     }
     setMessage('')
@@ -248,7 +250,7 @@ export function CoverPairList({ ctx }) {
               <li key={`${p.cover}-${p.photo}`}>
                 <i>{i + 1}</i>
                 <span>({x}, {y}) → ({u.toFixed(0)}, {v.toFixed(0)})</span>
-                <button aria-label={tr(`删除第 ${i + 1} 对`, `Delete pair ${i + 1}`)} onClick={() => ctx.set('pairs', pairs.filter((_, j) => j !== i))}><X size={15} /></button>
+                <button aria-label={tr("删除第 {i} 对", {i: i + 1})} onClick={() => ctx.set('pairs', pairs.filter((_, j) => j !== i))}><X size={15} /></button>
               </li>
             )
           })}

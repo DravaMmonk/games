@@ -1,3 +1,4 @@
+import { T } from '../shell/i18n.js'
 // The object types the build workspace's left column lists (games/MODULES.md 5.3, 5.4): the kernel's own (levels,
 // entries) and every type a package declares in kinds/. Which
 // are listed by default comes from the tag `kernel/studio-left` (members: object types), which packages add to; each author can choose
@@ -11,7 +12,7 @@ export const BUILT_IN_LISTS = { level: 'tree' }
 /** The lists that are not one object type's, after the type lists; search always last. */
 export const TOOL_LISTS = ['kernel', 'overrides', 'search']
 
-const BUILT_IN_NAMES = { level: ['关卡', 'Levels'] }
+const BUILT_IN_NAMES = { level: T('关卡', {}, 'object-types') }
 
 /** The list an object type is shown in, and back. */
 export const listOfType = (type) => BUILT_IN_LISTS[type] ?? editorForType(type)?.listKey ?? `type:${type}`
@@ -25,7 +26,7 @@ const declared = (content, type) => {
 }
 
 /**
- * Every object type the content can list: { type, name: [zh, en] | text, icon? } — the kernel's own first, then the
+ * Every object type the content can list: { type, name: text, icon? } — the kernel's own first, then the
  * declared ones by full name.
  */
 export function objectTypes(content) {
@@ -34,7 +35,7 @@ export function objectTypes(content) {
     .map((name) => {
       const definition = declared(content, name)
       const type = definition.objectKind ?? name
-      return { type, name: editorForType(type)?.name ?? definition.studio?.name ?? [type, type], icon: definition.studio?.icon }
+      return { type, name: editorForType(type)?.name ?? definition.studio?.name ?? type, icon: definition.studio?.icon }
     })
   return [...own, ...packages]
 }

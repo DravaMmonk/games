@@ -40,7 +40,8 @@ import { PlaneExtent } from 'kernel/view'
 
 import { extentOf } from 'kernel/view'
 
-import { L, T } from 'kernel/view'
+import { L } from "kernel/view"
+import { T } from 'kernel/words'
 
 import { WORDS } from './words.js'
 

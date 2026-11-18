@@ -2,10 +2,7 @@
   "extends": "primitive",
   "items": {
     "msum": {
-      "about": {
-        "zh": "汇合器 · 加起来",
-        "en": "Merger · sum"
-      },
+      "about": "@capability.primitive.items.msum.about",
       "inputs": [
         {
           "name": "0",
@@ -23,10 +20,7 @@
       "outputType": "kernel/number"
     },
     "mmin": {
-      "about": {
-        "zh": "汇合器 · 取较小",
-        "en": "Merger · min"
-      },
+      "about": "@capability.primitive.items.mmin.about",
       "inputs": [
         {
           "name": "0",
@@ -44,10 +38,7 @@
       "outputType": "kernel/number"
     },
     "mmax": {
-      "about": {
-        "zh": "汇合器 · 取较大",
-        "en": "Merger · max"
-      },
+      "about": "@capability.primitive.items.mmax.about",
       "inputs": [
         {
           "name": "0",
@@ -65,10 +56,7 @@
       "outputType": "kernel/number"
     },
     "many": {
-      "about": {
-        "zh": "汇合器 · 任一是",
-        "en": "Merger · any yes"
-      },
+      "about": "@capability.primitive.items.many.about",
       "inputs": [
         {
           "name": "0",
@@ -86,10 +74,7 @@
       "outputType": "kernel/boolean"
     },
     "not": {
-      "about": {
-        "zh": "取反",
-        "en": "Not"
-      },
+      "about": "@capability.primitive.items.not.about",
       "inputs": [
         {
           "name": "0",
@@ -99,10 +84,7 @@
       "outputType": "kernel/boolean"
     },
     "add": {
-      "about": {
-        "zh": "加法器",
-        "en": "Adder"
-      },
+      "about": "@capability.primitive.items.add.about",
       "inputs": [
         {
           "name": "0",
@@ -117,10 +99,7 @@
       "outputRule": "lift"
     },
     "mul": {
-      "about": {
-        "zh": "乘法器",
-        "en": "Multiplier"
-      },
+      "about": "@capability.primitive.items.mul.about",
       "inputs": [
         {
           "name": "0",
@@ -135,10 +114,7 @@
       "outputRule": "lift"
     },
     "const": {
-      "about": {
-        "zh": "常数",
-        "en": "Constant"
-      },
+      "about": "@capability.primitive.items.const.about",
       "inputs": [],
       "outputType": "kernel/number",
       "params": {
@@ -153,10 +129,7 @@
       }
     },
     "pass": {
-      "about": {
-        "zh": "放行闸",
-        "en": "Pass gate"
-      },
+      "about": "@capability.primitive.items.pass.about",
       "inputs": [
         {
           "name": "0",
@@ -173,10 +146,7 @@
       }
     },
     "block": {
-      "about": {
-        "zh": "拦截闸",
-        "en": "Block gate"
-      },
+      "about": "@capability.primitive.items.block.about",
       "inputs": [
         {
           "name": "0",

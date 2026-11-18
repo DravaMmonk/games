@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
@@ -63,7 +64,7 @@ export function SentenceRow({ texts, end }) {
  * ones stay as they are; `end` closes the row (a function of how many there are); `blank` is what a box not yet
  * written says.
  */
-export function TreeList({ value, onChange, build, title, addLabel, scope, kept = [], end = null, blank = { zh: '未写完', en: 'Unfinished' } }) {
+export function TreeList({ value, onChange, build, title, addLabel, scope, kept = [], end = null, blank = catalogText("未写完") }) {
   const [open, setOpen] = useState(null) // { at, anchor, cleared }: the sentence being built (its index, or value.length for a new one)
   const boxes = useRef({})
   // A sentence being added gets its editor once its blank box is there to point at.

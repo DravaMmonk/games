@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // Sections are authored objects; the glossary is their ordered display projection.
 
 export function encyclopedia(entries, sections, resolve, ordered = []) {
@@ -9,6 +10,6 @@ export function encyclopedia(entries, sections, resolve, ordered = []) {
     ...entry, group: groups.find(group => group.values.includes(entry.id))?.id ?? '',
   }))
   const ungrouped = grouped.filter(entry => !entry.group).map(entry => entry.id)
-  if (ungrouped.length) groups.push({ id: '', title: { zh: '其它', en: 'Other' }, values: ungrouped })
+  if (ungrouped.length) groups.push({ id: '', title: catalogText("其它"), values: ungrouped })
   return { groups, entries: grouped }
 }

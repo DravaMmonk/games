@@ -1,6 +1,6 @@
 import { sameJson } from 'kernel'
 import { reportRuns } from 'kernel'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { derives, givenText } from './iso.js'
 
 /** Judge the written cases once and record where each declaration's replay stops. */
@@ -16,17 +16,17 @@ export function runAudit(level, cases, words) {
   const caught = boards.map((_, b) => rows.findIndex((r) => r.right && r.derived[b] !== r.wants))
   const bad = rows.findIndex((r) => !r.right)
   const goal = (c) => (c.goal ? words(c.goal) : name)
-  const may = (yes) => (yes ? T('可推导', 'derivable') : T('不可推导', 'not derivable'))
+  const may = (yes) => (yes ? T("可推导") : T("不可推导"))
   // A case whose expectation is fixed: the cells the player fills in are what has to change.
   const reconsider = (k) => {
     const c = cases[k]
-    if (c.goal === '') return T(`第 ${k + 1} 条条例还没有选结论。`, `Case ${k + 1} has no conclusion yet.`)
-    if (c.make === null) return T(`第 ${k + 1} 条条例还没有选预期结果。`, `Case ${k + 1} has no expected result yet.`)
+    if (c.goal === '') return T("第 {k} 条条例还没有选结论。", {k: k + 1})
+    if (c.make === null) return T("第 {k} 条条例还没有选预期结果。", {k: k + 1})
     const at = givenText(c, words)
-    if (c.fixed?.includes('make')) return T(`第 ${k + 1} 条条例：按需求，${at.zh}时「${goal(c).zh}」${may(rows[k].wants).zh}，和这一条的预期不同。请改写这一条空着的部分。`, `Case ${k + 1}: according to the requirement, ${at.en}, “${goal(c).en}” is ${may(rows[k].wants).en}, unlike this case’s expectation. Rewrite the part of it left for you.`)
-    return T(`第 ${k + 1} 条条例的预期与需求不符。请重新考虑：${at.zh}时，按需求「${goal(c).zh}」是否可推导？`, `The expectation of case ${k + 1} does not agree with the requirement. Reconsider: ${at.en}, is “${goal(c).en}” derivable according to the requirement?`)
+    if (c.fixed?.includes('make')) return T("第 {k} 条条例：按需求，{zh}时「{zh2}」{zh3}，和这一条的预期不同。请改写这一条空着的部分。", {k: k + 1, zh: { zh: String(at.zh), en: String(at.en) }, zh2: { zh: String(goal(c).zh), en: String(goal(c).en) }, zh3: { zh: String(may(rows[k].wants).zh), en: String(may(rows[k].wants).en) }})
+    return T("第 {k} 条条例的预期与需求不符。请重新考虑：{zh}时，按需求「{zh2}」是否可推导？", {k: k + 1, zh: { zh: String(at.zh), en: String(at.en) }, zh2: { zh: String(goal(c).zh), en: String(goal(c).en) }})
   }
-  const wrong = !cases.length ? T('还没有条例。请添加一条，写明情形、结论，以及结论是否应当可推导。', 'No cases yet. Add one: its premises, a conclusion, and whether it should be derivable.')
+  const wrong = !cases.length ? T("还没有条例。请添加一条，写明情形、结论，以及结论是否应当可推导。")
     : bad >= 0 ? reconsider(bad)
     : null
   const mismatch = (board, agrees) => rows.findIndex((r) => (r.derived[board] === r.wants) === agrees)
@@ -35,11 +35,11 @@ export function runAudit(level, cases, words) {
     if (wrong) return bad < 0 ? { why: wrong } : atRow(bad, wrong)
     if (level.want === 'logic/agree') {
       const k = mismatch(board, false)
-      return k < 0 ? null : atRow(k, T(`第 ${k + 1} 条条例上，这份声明的结果与预期不符。`, `On case ${k + 1}, this declaration’s result disagrees with the expectation.`))
+      return k < 0 ? null : atRow(k, T("第 {k} 条条例上，这份声明的结果与预期不符。", {k: k + 1}))
     }
     if (level.want === 'logic/expose') {
       const k = mismatch(board, true)
-      return k < 0 ? null : atRow(k, T(`第 ${k + 1} 条条例上，这份声明的结果与预期相符，没有暴露它的错误。`, `On case ${k + 1}, this declaration’s result agrees with the expectation and does not reveal its fault.`))
+      return k < 0 ? null : atRow(k, T("第 {k} 条条例上，这份声明的结果与预期相符，没有暴露它的错误。", {k: k + 1}))
     }
     return caught[board] >= 0 ? null : { why: T('各条条例的预期都正确，但这份声明在每一条上都得出了正确结论，还没有暴露它的错误。') }
   }

@@ -5,10 +5,7 @@
   },
   "studio": {
     "order": 8,
-    "label": {
-      "zh": "显示",
-      "en": "Displays"
-    }
+    "label": "@capability.display.studio.label"
   },
   "items": {
     "screen": {

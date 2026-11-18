@@ -4,10 +4,7 @@
     "line": {
       "type": "str",
       "pattern": "^[01.]*$",
-      "about": {
-        "zh": "一拍一个字符：0、1，或 . 表示什么也不说",
-        "en": "one character a tick: 0, 1, or . for nothing said"
-      }
+      "about": "@shape.test.fields.line.about"
     },
     "inputs": {
       "type": "map",
@@ -17,10 +14,7 @@
           "type": "int"
         }
       },
-      "about": {
-        "zh": "每个输入每一拍的值",
-        "en": "each input’s value tick by tick"
-      },
+      "about": "@shape.test.fields.inputs.about",
       "optional": true
     }
   }

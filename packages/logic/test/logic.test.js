@@ -19,7 +19,6 @@ import { PROOF_BOARD, RULES, lemmaGives, runProof } from '../core/proof.js'
 import { partsOf } from '../core/ops.js'
 import { printTerm } from '../core/pterm.js'
 import { validate } from '../core/validate.js'
-import { T } from '../../../games/kit/shell/i18n.js'
 
 // A proof runs on the parts the starter defines (its parts.json) and the level's lemmas.
 const STARTER = starterParts(new URL('../../logic/test/', import.meta.url).pathname)
@@ -471,8 +470,8 @@ test('a rewrite changes the first place its left side fits, under quantifiers to
   const { startState } = await import('../core/tactics.js')
   const { parseS } = await import('../core/schematic.js')
   const lemmas = {
-    dneg: { name: T('', ''), metas: ['A'], forms: [{ key: 'elim', label: '', statement: 'A', premises: ['¬¬A'] }, { key: 'intro', label: '', statement: '¬¬A', premises: ['A'] }] },
-    dm: { name: T('', ''), metas: ['A', 'B', 'P'], forms: [
+    dneg: { name: { zh: '', en: '' }, metas: ['A'], forms: [{ key: 'elim', label: '', statement: 'A', premises: ['¬¬A'] }, { key: 'intro', label: '', statement: '¬¬A', premises: ['A'] }] },
+    dm: { name: { zh: '', en: '' }, metas: ['A', 'B', 'P'], forms: [
       { key: 'notOr', label: '', statement: '¬A ∧ ¬B', premises: ['¬(A ∨ B)'] }, { key: 'andNot', label: '', statement: '¬(A ∨ B)', premises: ['¬A ∧ ¬B'] },
       { key: 'notEx', label: '', statement: '∀x. ¬P', premises: ['¬∃x. P'] }, { key: 'allNot', label: '', statement: '¬∃x. P', premises: ['∀x. ¬P'] },
       { key: 'exNot', label: '', statement: '¬∀x. P', premises: ['∃x. ¬P'] },
@@ -499,7 +498,7 @@ test('rule and equation displays keep complete term wording', async () => {
   const { typeText } = await import('../core/datatype.js')
   const { equationText, sideText } = await import('../core/schematic.js')
   const { rewriteText } = await import('../core/rewrite.js')
-  const wording = (value) => sayTerm(value, { words: { zero: T('零 = 0', 'zero = 0') } }).en
+  const wording = (value) => sayTerm(value, { words: { zero: { zh: '零 = 0', en: 'zero = 0' } } }).en
   const zero = fn('zero')
   const y = tvar('y')
 
@@ -589,7 +588,7 @@ test('definitions check completion, then hidden examples, then decreasing recurs
 
 test('declarations check incomplete premises before hidden derivability cases', () => {
   const judge = checkDeclaration({
-    target: 'A ∧ B', sentences: ['A', 'B'], declare: T('并且', 'and'),
+    target: 'A ∧ B', sentences: ['A', 'B'], declare: { zh: '并且', en: 'and' },
     tests: [{ given: [], make: false }, { given: ['A', 'B'], make: true }],
   })
   assert.deepEqual(judge.checks, [])
@@ -599,7 +598,7 @@ test('declarations check incomplete premises before hidden derivability cases', 
 })
 
 test('a declaration may have no derivable situation: nothing introduces it, and its elim rule gives anything (⊥)', () => {
-  const bot = { target: '⊥', sentences: ['A'], declare: T('矛盾', 'contradiction'), tests: [{ given: [], make: false }, { given: ['A'], make: false }] }
+  const bot = { target: '⊥', sentences: ['A'], declare: { zh: '矛盾', en: 'contradiction' }, tests: [{ given: [], make: false }, { given: ['A'], make: false }] }
   assert.deepEqual(problemsOf(bot, []), [])
   assert.equal(checkDeclaration(bot)([]), null)
   const { make, take } = declaredRules(bot, [])
@@ -610,10 +609,10 @@ test('an audit stops at an unfinished case before grading the supplied declarati
   const complete = { given: ['A', 'B'], make: true }
   const unfinished = { given: [], goal: '', make: null }
   const level = {
-    target: 'A ∧ B', sentences: ['A', 'B'], declare: T('并且', 'and'), want: 'logic/agree',
+    target: 'A ∧ B', sentences: ['A', 'B'], declare: { zh: '并且', en: 'and' }, want: 'logic/agree',
     solution: declaration(['A', 'B']), boards: [{ rules: declaration() }],
   }
-  const words = (text) => T(text, text)
+  const words = text => ({ zh: text, en: text })
   const blocked = runAudit(level, [complete, unfinished], words)
   assert.deepEqual(blocked.fail.at, { row: 1 })
   assert.match(blocked.fail.why.en, /Case 2 has no conclusion/)

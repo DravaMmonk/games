@@ -36,10 +36,7 @@
     },
     "lamp": {
       "type": "num",
-      "about": {
-        "zh": "灯还剩原来亮度的几成",
-        "en": "what the lamp has left of its brightness"
-      },
+      "about": "@shape.station-test.fields.lamp.about",
       "optional": true
     }
   }

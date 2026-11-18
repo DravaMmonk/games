@@ -1,8 +1,5 @@
 {
   "type": "bool",
-  "about": {
-    "zh": "每个情形一个值",
-    "en": "one value per case"
-  },
+  "about": "@shape.per-case-knob.about",
   "optional": true
 }

@@ -62,40 +62,36 @@ export function robotConstraint(task, board) {
  */
 function whyFailed(task, world, k, test, res, mm) {
   const name = () => testLabel(task, world, test);
-  const failed = lazy(() => tr(`测试 ${k + 1} 没通过`, `Test ${k + 1} failed`))
+  const failed = lazy(() => tr("测试 {k} 没通过", {k: k + 1}))
   if (res.error && res.error.diverge) {
     return {
-      head: lazy(() => tr('表一直停不下来', 'The table never settles')),
-      body: lazy(() => tr(`测试 ${k + 1} 中，机器扫了 ${MAX_ROUNDS} 轮，表还在变。照这块电路板，有些格子会越算越大（或越算越小），永远不会稳定下来。`,
-        `In test ${k + 1}, the machine scanned ${MAX_ROUNDS} rounds and the table was still changing. With this circuit board, some cells keep growing (or shrinking) and will never settle down.`)),
+      head: lazy(() => tr("表一直停不下来")),
+      body: lazy(() => tr("测试 {k} 中，机器扫了 {MAX_ROUNDS} 轮，表还在变。照这块电路板，有些格子会越算越大（或越算越小），永远不会稳定下来。", {k: k + 1, MAX_ROUNDS})),
     }
   }
   if (res.error) {
     return {
-      head: lazy(() => tr('读到了空格子', 'Read an empty cell')),
-      body: lazy(() => tr(`测试 ${k + 1} 中，机器算到<b>${world.where(res.error.cell)}</b>时，电路要读<b>${world.name(res.error.key)}</b>，可那里还空着。机器是按「${world.orderText(task)}」的顺序算的，读之前，那个格子必须已经算好。`,
-        `In test ${k + 1}, when the machine reached <b>${world.where(res.error.cell)}</b>, the circuit tried to read <b>${world.name(res.error.key)}</b>, but that cell was still empty. The machine works in the order “${world.orderText(task)}”, so a cell must already be computed before anything reads it.`)),
+      head: lazy(() => tr("读到了空格子")),
+      body: lazy(() => tr("测试 {k} 中，机器算到<b>{value}</b>时，电路要读<b>{value2}</b>，可那里还空着。机器是按「{value3}」的顺序算的，读之前，那个格子必须已经算好。", {k: k + 1, value: world.where(res.error.cell), value2: world.name(res.error.key), value3: world.orderText(task)})),
     }
   }
   if (mm && mm.key !== undefined) {
     return {
       head: failed,
-      body: lazy(() => tr(`${name()}：表稳定下来以后，<b>${world.name(mm.key)}</b>应该是 <b>${signal(mm.want)}</b>，你的电路板算出了 <b>${signal(mm.got)}</b>。棋盘上标红的就是这一格。`,
-        `${name()}: once the table settles, <b>${world.name(mm.key)}</b> should be <b>${signal(mm.want)}</b>, but your circuit board computed <b>${signal(mm.got)}</b>. It is the cell marked in red on the board.`)),
+      body: lazy(() => tr("{value}：表稳定下来以后，<b>{value2}</b>应该是 <b>{value3}</b>，你的电路板算出了 <b>{value4}</b>。棋盘上标红的就是这一格。", {value: name(), value2: world.name(mm.key), value3: signal(mm.want), value4: signal(mm.got)})),
     }
   }
   if (mm) {
     const at = res.steps[mm.q]
     return {
       head: failed,
-      body: lazy(() => tr(`${name()}：机器在<b>${world.where(at.cell)}</b>出了错。「${world.outs[mm.z][1]}」应该是 <b>${signal(mm.want)}</b>，你的电路算出了 <b>${signal(mm.got)}</b>。棋盘停在了这一格；电路板上的小数字，是机器在这一格算出的值。`,
-        `${name()}: the machine went wrong at <b>${world.where(at.cell)}</b>. “${world.outs[mm.z][1]}” should be <b>${signal(mm.want)}</b>, but your circuit computed <b>${signal(mm.got)}</b>. The board has stopped on this cell; the small numbers on the circuit board are the values the machine computed here.`)),
+      body: lazy(() => tr("{value}：机器在<b>{value2}</b>出了错。「{value3}」应该是 <b>{value4}</b>，你的电路算出了 <b>{value5}</b>。棋盘停在了这一格；电路板上的小数字，是机器在这一格算出的值。", {value: name(), value2: world.where(at.cell), value3: world.outs[mm.z][1], value4: signal(mm.want), value5: signal(mm.got)})),
     }
   }
   const why = () => (task.explain ? explain(task.explain, test, res, task) : '')
   return {
     head: failed,
-    body: lazy(() => tr(`${name()}：答案应该是 <b>${signal(task.expected[k])}</b>，机器算出了 <b>${signal(res.value)}</b>。${why()}`, `${name()}: the answer should be <b>${signal(task.expected[k])}</b>, but the machine computed <b>${signal(res.value)}</b>. ${why()}`)),
+    body: lazy(() => tr("{value}：答案应该是 <b>{value2}</b>，机器算出了 <b>{value3}</b>。{value4}", {value: name(), value2: signal(task.expected[k]), value3: signal(res.value), value4: why()})),
   }
 }
 
@@ -111,11 +107,11 @@ export function robotReport(runCircuit, task, board, { traced = false, traceCoun
   return reportRuns(runs, { constraint: robotConstraint(task, board) });
 }
 
-export const robotTestName = (task, test, k) => lazy(() => `${tr('测试', 'Test')} ${k + 1} · ${testLabel(task, worldOf(task), test)}`);
+export const robotTestName = (task, test, k) => lazy(() => `${tr("测试")} ${k + 1} · ${testLabel(task, worldOf(task), test)}`);
 
 export function missingRobotOutput(task, board) {
   const missing = worldOf(task).outs.find(([id]) => !board.wires.some((wire) => wire.to === id));
-  return missing ? tr(`输出口「${missing[1]}」还没接线`, `The output “${missing[1]}” is not wired yet`) : null;
+  return missing ? tr("输出口「{value}」还没接线", {value: missing[1]}) : null;
 }
 
 export function tutorialFailure(task, k, result) {

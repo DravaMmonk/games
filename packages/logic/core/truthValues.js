@@ -1,5 +1,5 @@
 import { cases, property } from 'kernel'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { atom, parse } from './formula.js'
 import { say } from './notation.js'
 import { lettersOf, rowsOf, tautology, valueOn } from './truth.js'
@@ -37,9 +37,9 @@ export function truth(level) {
     mode: level.ask === 'fill' ? 'fill' : level.ask === 'valid' ? 'classify' : 'try',
     hit: (f, k) => level.ask !== 'fill' && level.ask !== 'valid' && tables[f].rows[k].value === (level.ask === 'sat'),
     accepted: level.ask === 'counter' ? T('已找到反例：命题在这一行为假。') : level.ask === 'sat' ? T('已找到满足赋值：命题在这一行为真。') : T('全部正确。'),
-    wrong: (count) => T(`还有 ${count} 处错误，已用红色标出。`, `${count} still wrong, marked in red.`),
+    wrong: (count) => T("还有 {count} 处错误，已用红色标出。", {count}),
     labels: {
-      values: [T('假', 'F'), T('真', 'T')],
+      values: [T("假"), T("真")],
       classify: [T('不恒成立'), T('恒成立')],
       inspect: T('展开真值表'),
     },

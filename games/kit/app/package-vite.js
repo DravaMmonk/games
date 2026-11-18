@@ -1,3 +1,5 @@
+import { uiCatalogDirectory, uiCatalogModule } from '../engine/ui-catalog-source.js'
+import { catalogFiles } from '../engine/resolver.js'
 // Both browser entry points use this public export map and topological registration source.
 import { resolve } from 'node:path'
 import { exportPath } from '../engine/plugin-boundaries.js'
@@ -6,6 +8,7 @@ import { layerVocabulary, contentRoot, gameCatalog, packageIds, resolveLayers } 
 
 const KIT = resolve(import.meta.dirname, '..')
 const q = JSON.stringify
+const UI = '\0ui-catalog:'
 export function pluginSource(layers, root = contentRoot()) {
   const entries = packageEntries(layers, root)
   const schemas = layerVocabulary(layers)
@@ -21,12 +24,18 @@ export function pluginSource(layers, root = contentRoot()) {
 export function packageApp(root = contentRoot()) {
   return { name: 'package-code',
     resolveId(id, importer) {
+      if (id === 'kernel/words') return UI + uiCatalogDirectory(importer)
       if (id === 'virtual:game-catalog') return '\0virtual:game-catalog'
       if (id === 'virtual:package-displays') return '\0virtual:package-displays'
       const index = importer?.lastIndexOf('/packages/') ?? -1
       return exportPath(id, index >= 0 ? importer.slice(0, index) : root)
     },
     async load(id) {
+      if (id.startsWith(UI)) {
+        const dir = id.slice(UI.length)
+        for (const [, file] of catalogFiles(dir)) this.addWatchFile(file)
+        return uiCatalogModule(dir, resolve(KIT, 'shell/ui-words.js'))
+      }
       if (id === '\0virtual:game-catalog') return `export const GAMES = ${q(gameCatalog(root))}`
       if (id !== '\0virtual:package-displays') return null
       const layers = [...new Map(packageIds(root).flatMap(id => resolveLayers({ package: id, closure: true, root, unlocked: true }).layers).map(layer => [layer.id, layer])).values()]

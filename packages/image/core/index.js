@@ -1,7 +1,7 @@
 import { PICTURES } from './items/pictures.js'
 import { TARGETS } from './items/targets.js'
 import { CONSTRAINTS } from './items/constraints.js'
-import valueTypes from '../capabilities/valueType.json' with { type: 'json' }
+import valueTypesSource from '../capabilities/valueType.json' with { type: 'json' }
 import { SCENES } from './items/scenes/index.js'
 import { BENCH_MODELS } from './items/benches.js'
 import { startValues, benchRun } from './bench.js'
@@ -17,6 +17,10 @@ import { imageContext } from './context.js'
 import { imageBoards } from './engine/board-view.js'
 import { startBoard } from './engine/board.js'
 import { play } from './play.js'
+
+import { readCopy } from 'kernel/words'
+
+const valueTypes = readCopy(valueTypesSource)
 
 const graphPlay = {
   initial(context) { return startBoard(imageContext(context).task) },

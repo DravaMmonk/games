@@ -1,7 +1,8 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { EditableCanvas } from "./CanvasEditor.jsx"
 import SlotBoard from "./SlotBoard.jsx"
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { circuitBoard, primitivesOnly } from "../../core/board-cards.js"
 import { definitionPorts, evalSettings } from "../../core/parts/define.js"
@@ -57,7 +58,7 @@ function Face({ part, game, scene, edit, state }) {
   const graph = { nodes: [node], wires: [] }
   const set = (patch, changed) => setParams((p) => nextParams(def, { params: p ?? defined.defaults(type) }, patch, changed, defined.ops))
   const ctx = { view: NONE, board: { circuit: graph, parts }, path: [], readOnly: false }
-  const value = () => <span className="pp-value">{tr('值', 'value')}</span>
+  const value = () => <span className="pp-value">{tr("值")}</span>
   const shown = { ...defined, value }
   const { mark } = marker(edit)
   const face = (name, extra = {}) => <PartFace def={def} face={name} node={node} ctx={ctx} set={set} defined={shown} mark={mark} {...extra} />

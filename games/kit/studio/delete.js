@@ -2,8 +2,8 @@ import { tr } from '../shell/i18n.js'
 
 export function confirmDelete(name) {
   return window.confirm(name
-    ? tr(`确定删除「${name}」吗？`, `Delete “${name}”?`)
-    : tr('确定删除所选内容吗？', 'Delete the selected content?'))
+    ? tr("确定删除「{name}」吗？", {name})
+    : tr("确定删除所选内容吗？"))
 }
 
 /** Detect structural deletions made by a source edit or bulk replacement. */

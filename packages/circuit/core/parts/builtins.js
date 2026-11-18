@@ -1,5 +1,9 @@
 import { qualifyItems } from 'kernel'
-import declarations from '../../capabilities/operation.json' with { type: 'json' }
+import declarationsSource from '../../capabilities/operation.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const declarations = readCopy(declarationsSource)
 
 export const BUILTIN_ITEMS = qualifyItems('circuit', declarations.items)
 

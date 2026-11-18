@@ -8,7 +8,7 @@
 
 import { limitOf, picture } from 'image'
 import { correlate, downsample, gaussianKernel, map, random, shift } from 'imglib'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 /**
  * The bench's model. names, base: the base images and their names; tau: the temperature; rate: the step size; goal:
@@ -187,13 +187,13 @@ export const contrast = {
         return {
           worst: report.worst,
           negative: report.negative,
-          steps: t(`第 ${state.t} 步`, `Step ${state.t}`),
+          steps: t("第 {t} 步", {t: state.t}),
           angles: us.map((u) => Math.atan2(u[1], u[0])),
           rows: us.map((_, a) => m.choice(us, a)),
           losses: state.losses,
-          lossNote: state.losses.length < 2 ? [t('训练后在此显示损失曲线'), ...tail] : [t('损失'), ' ', { b: state.losses.at(-1).toFixed(2) }, ' · ', t(`最近 ${state.losses.length} 步`, `last ${state.losses.length} steps`), ...tail],
+          lossNote: state.losses.length < 2 ? [t('训练后在此显示损失曲线'), ...tail] : [t('损失'), ' ', { b: state.losses.at(-1).toFixed(2) }, ' · ', t("最近 {length} 步", {length: state.losses.length}), ...tail],
           formula: ['ℓ = ', '−sim(a, a⁺)/τ', ' ', { off: !v.push, text: ['+ log Σ', { sub: 'k≠a' }, ' exp(sim(a, k)/τ)'] }],
-          matrixTitle: [t(`每行在其余 ${us.length - 1} 个视图里选搭档`, `Each row picks a partner from the other ${us.length - 1} views`), ` · τ = ${m.TAU}`],
+          matrixTitle: [t("每行在其余 {value} 个视图里选搭档", {value: us.length - 1}), ` · τ = ${m.TAU}`],
           say: report.collapsed
             ? { tone: 'fail', text: t('坍缩：所有视图都挤向同一方向，彼此无法区分。') }
             : report.pass

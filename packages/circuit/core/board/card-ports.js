@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { regionsOf } from "./regions.js"
 import { sourceOf } from "../wire-source.js"
 import { ends, feeding, inPort, outPort, outputsOf, parsePort, wireRefusal } from "./model.js"
@@ -20,7 +21,7 @@ export function cardPorts(parts, node) {
   }
 }
 
-export const NO_CARD_PORT = { zh: '这个元件没有能接这根线的口', en: 'This part has no port this wire can go to' }
+export const NO_CARD_PORT = catalogText("这个元件没有能接这根线的口")
 
 /** Choose the first compatible public output or prefer a free compatible input. */
 export function portOnCard(graph, parts, picked, node) {

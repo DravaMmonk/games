@@ -1,5 +1,6 @@
 import { Package } from 'lucide-react'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 import PartsBook, { levelOf, useParts } from './PartsBook.jsx'
 
 /** Circuit-owned panels and references mounted in the generic game shell. */
@@ -9,7 +10,7 @@ export function useCircuitShell(context) {
   const part = id => game.parts?.all.find(part => part.key === id)
   return {
     mapActions: <>
-      {game.parts && <button className="kit-btn is-label wiki-button" onClick={() => setSheet('circuit/parts')}><Package size={15} /><span>{tr('元件箱')}</span><b>{box.unread.length > 0 ? tr(`新增 ${box.unread.length} 个`, `${box.unread.length} new`) : `${game.parts.earned(progress).length}/${game.parts.all.length}`}</b></button>}
+      {game.parts && <button className="kit-btn is-label wiki-button" onClick={() => setSheet('circuit/parts')}><Package size={15} /><span>{tr('元件箱')}</span><b>{box.unread.length > 0 ? tr("新增 {length} 个", {length: box.unread.length}) : `${game.parts.earned(progress).length}/${game.parts.all.length}`}</b></button>}
     </>,
     reference(kind, id) {
       if (kind !== 'part') return null

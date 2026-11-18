@@ -31,10 +31,7 @@
               }
             }
           },
-          "about": {
-            "zh": "核按 3×3 核元件的读法：权重是 cells ÷ div",
-            "en": "kernels as the 3×3 kernel part reads them: the weights are cells ÷ div"
-          }
+          "about": "@shape.bench-racer.fields.setup.fields.kernels.about"
         },
         "inputs": {
           "type": "list",
@@ -63,10 +60,7 @@
               "type": "num"
             }
           },
-          "about": {
-            "zh": "第 n 轮（从 0 数）的秒数：max(min, start − step·n)",
-            "en": "the seconds for round n (from 0): max(min, start − step·n)"
-          }
+          "about": "@shape.bench-racer.fields.setup.fields.time.about"
         }
       }
     },

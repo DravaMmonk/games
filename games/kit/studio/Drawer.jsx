@@ -1,11 +1,12 @@
+import { T } from '../shell/i18n.js'
 // The fold bar under the middle (games/design/README.md 6.7): what helps rather than what is edited. On the bar how the check
 // stands and the tabs — the audit (the check's findings, Audit.jsx), a file compared with its history (Compare.jsx),
 // the change log (the pending changeset, applying it, undoing, the log: Review.jsx), and what the last preview said
 // (debug); a tab clicked opens the bar on it, clicked again folds it.
 import { ChevronUp } from 'lucide-react'
-import { tr } from '../shell/i18n.js'
+import { L, tr } from '../shell/i18n.js'
 
-export const DRAWER_TABS = [['audit', '审计', 'Audit'], ['compare', '文件对比', 'Compare'], ['changes', '修改日志', 'Change log'], ['debug', '调试', 'Debug']]
+export const DRAWER_TABS = [['audit', T("审计")], ['compare', T("文件对比")], ['changes', T("修改日志")], ['debug', T("调试")]]
 
 /**
  * `sum`: { fail, label } (Audit.jsx auditSum); `audit`: the audit, always mounted (its keys work folded); `panel`: what
@@ -21,10 +22,10 @@ export default function Drawer({ open, tab, onTab, onToggle, sum, fresh, ops, au
           <b>{sum.label}</b>
           {!fresh && <i className="audit-wait" title={tr('检查中')} />}
         </button>
-        <nav className="drawer-tabs" role="tablist" aria-label={tr('辅助', 'Helpers')}>
-          {DRAWER_TABS.filter(([id]) => tabs.includes(id)).map(([id, zh, en]) => (
+        <nav className="drawer-tabs" role="tablist" aria-label={tr("辅助")}>
+          {DRAWER_TABS.filter(([id]) => tabs.includes(id)).map(([id, label]) => (
             <button key={id} type="button" role="tab" aria-selected={open && tab === id} className={`studio-tab ${open && tab === id ? 'is-on' : ''}`} onClick={() => pick(id)}>
-              {tr(zh, en)}{id === 'changes' && ops.length > 0 && <b className="studio-count">{ops.length}</b>}
+              {L(label)}{id === 'changes' && ops.length > 0 && <b className="studio-count">{ops.length}</b>}
             </button>
           ))}
         </nav>

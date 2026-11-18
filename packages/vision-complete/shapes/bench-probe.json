@@ -24,10 +24,7 @@
               "type": "num"
             }
           },
-          "about": {
-            "zh": "可以错开的那道输入波（中线 0.5）",
-            "en": "the input wave that can be shifted (on a middle line of 0.5)"
-          }
+          "about": "@shape.bench-probe.fields.setup.fields.wave.about"
         }
       }
     },
@@ -86,10 +83,7 @@
               "blind",
               "combine"
             ],
-            "about": {
-              "zh": "find：转频率找到它；read：读出振幅；blind：错开到读不到；combine：合两个读数",
-              "en": "find: turn the frequency to find it; read: read its amplitude; blind: shift it out of sight; combine: put two readings together"
-            }
+            "about": "@shape.bench-probe.fields.stages.of.fields.kind.about"
           },
           "input": {
             "type": "obj",
@@ -123,10 +117,7 @@
             "of": {
               "type": "num"
             },
-            "about": {
-              "zh": "合读数时试的几个错开角度",
-              "en": "the shifts a combination is tried at"
-            },
+            "about": "@shape.bench-probe.fields.stages.of.fields.checks.about",
             "optional": true
           },
           "answers": {

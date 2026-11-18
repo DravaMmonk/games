@@ -1,4 +1,7 @@
 {
   "package.desc": "Provides algorithms for feature detection, geometric matching, stereo vision, and imaging.",
-  "package.title": "Computer vision library"
+  "package.title": "Computer vision library",
+  "ui": {
+    "token": "tokens"
+  }
 }

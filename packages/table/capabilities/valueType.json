@@ -14,10 +14,7 @@
       ]
     },
     "category": {
-      "about": {
-        "zh": "类标识带显示名称。",
-        "en": "Category identifiers carry display labels."
-      }
+      "about": "@capability.valueType.items.category.about"
     },
     "numbers": {},
     "booleans": {}

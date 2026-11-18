@@ -8,10 +8,7 @@
     "includeUnlisted": {
       "type": "bool",
       "optional": true,
-      "about": {
-        "zh": "托盘之后继续显示本关其余已持有的元件",
-        "en": "after this tray, show the other parts held in this level"
-      }
+      "about": "@kind.tray.fields.includeUnlisted.about"
     }
   },
   "declares": "package",

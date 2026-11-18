@@ -2,10 +2,7 @@
   "extends": "primitive",
   "items": {
     "hyp": {
-      "about": {
-        "zh": "已知里的等式",
-        "en": "An equation given"
-      },
+      "about": "@capability.primitive.items.hyp.about",
       "inputs": [
         {
           "name": "before",

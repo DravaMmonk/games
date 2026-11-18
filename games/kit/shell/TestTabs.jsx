@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { Check, Circle, Image, X } from 'lucide-react'
 import { L, keyOf, tr } from './i18n.js'
 import { useEdit, useMark } from './edit.js'
@@ -30,7 +31,7 @@ export default function TestTabs({ tests, states, index, onSelect, phone = false
       </button>
     )
   })
-  const add = authored && edit && <AddMark at="tests" label={{ zh: '测试', en: 'a test' }} />
+  const add = authored && edit && <AddMark at="tests" label={catalogText("测试", {}, "test-tabs")} />
   if (phone) return <nav className={inline ? 'pb-tests tests-inline' : 'pb-tests'} aria-label={tr('测试')}>{tabs}{add}</nav>
   return <ol className={inline ? 'test-list tests-inline' : 'test-list'}>{tabs.map((tab) => <li key={tab.key}>{tab}</li>)}{add && <li>{add}</li>}</ol>
 }

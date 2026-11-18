@@ -67,7 +67,7 @@ export default function Search({ content, vocabulary, onAdd, onJump }) {
   const toReplace = hits.filter((h) => h.kind !== 'id' && !left.has(hitKey(h)))
   const add = () => {
     const { ops } = replaceOps(content, vocabulary, query, replacement, toReplace.map(hitKey))
-    if (ops.length) onAdd(ops, tr(`把「${find}」换成「${replacement}」`, `Replace “${find}” with “${replacement}”`))
+    if (ops.length) onAdd(ops, tr("把「{find}」换成「{replacement}」", {find, replacement}))
     setLeft(new Set())
   }
   const among = (v) => setOpts((o) => ({ ...o, in: o.in.includes(v) ? (o.in.length > 1 ? o.in.filter((x) => x !== v) : o.in) : [...o.in, v] }))
@@ -78,9 +78,9 @@ export default function Search({ content, vocabulary, onAdd, onJump }) {
           it looks and the replace are in the view menu. */}
       <SidebarListTools query={find} onQuery={(v) => { setFind(v); setLeft(new Set()) }} invalid={bad} autoFocus
         toggles={[
-          ...[['caseSensitive', tr('区分大小写')], ['word', tr('整词')], ['regex', tr('正则表达式')]].map(([value, label]) => ({ value, label, on: opts[value], group: tr('怎么匹配', 'Match') })),
-          ...[['text', tr('文字')], ['board', tr('板')], ['id', 'id']].map(([v, label]) => ({ value: `in:${v}`, label, on: opts.in.includes(v), group: tr('在哪里搜', 'Search in') })),
-          { value: 'replace', label: tr('替换为…', 'Replace with…'), on: replacing, group: tr('替换', 'Replace') },
+          ...[['caseSensitive', tr('区分大小写')], ['word', tr('整词')], ['regex', tr('正则表达式')]].map(([value, label]) => ({ value, label, on: opts[value], group: tr("怎么匹配") })),
+          ...[['text', tr('文字')], ['board', tr('板')], ['id', 'id']].map(([v, label]) => ({ value: `in:${v}`, label, on: opts.in.includes(v), group: tr("在哪里搜") })),
+          { value: 'replace', label: tr("替换为…"), on: replacing, group: tr("替换") },
         ]}
         onToggle={(v) => (v === 'replace' ? setReplacing(!replacing) : v.startsWith('in:') ? among(v.slice(3)) : setOpts((o) => ({ ...o, [v]: !o[v] })))} />
       {replacing && (
@@ -89,7 +89,7 @@ export default function Search({ content, vocabulary, onAdd, onJump }) {
           <button type="button" className="search-go" onClick={add} disabled={!toReplace.length} title={tr('替换：加入待定的变更集')}><ReplaceAll size={14} aria-hidden="true" />{toReplace.length}</button>
         </div>
       )}
-      {find && !bad && <p className="search-sum">{tr(`${hits.length} 处 · ${new Set(hits.map((h) => h.file)).size} 个文件`, `${hits.length} hits · ${new Set(hits.map((h) => h.file)).size} files`)}</p>}
+      {find && !bad && <p className="search-sum">{tr("{length} 处 · {size} 个文件", {length: hits.length, size: new Set(hits.map((h) => h.file)).size})}</p>}
       <div className="search-hits">
         {groups.map((g) => (
           <section key={g.name} className="hit-group">
@@ -109,7 +109,7 @@ export default function Search({ content, vocabulary, onAdd, onJump }) {
             })}
           </section>
         ))}
-        {hits.length > SHOWN && <p className="search-sum">{tr(`还有 ${hits.length - SHOWN} 处`, `${hits.length - SHOWN} more`)}</p>}
+        {hits.length > SHOWN && <p className="search-sum">{tr("还有 {value} 处", {value: hits.length - SHOWN})}</p>}
       </div>
     </div>
   )

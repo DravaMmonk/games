@@ -1,4 +1,5 @@
-import { S, shapeAt, T as t, getAt, parsePath, showPath, setAt, unsetAt } from 'kernel'
+import { S, shapeAt, getAt, parsePath, showPath, setAt, unsetAt } from "kernel"
+import { T as t } from 'kernel/words'
 import { NAME as PART_NAME, partFileSchema } from './parts/schema.js'
 import { ITEM_REFERENCE } from './task-fields.js'
 import { parse } from './board/text.js'
@@ -54,7 +55,7 @@ export const circuitOperations = {
     },
   },
 'part.add': {
-    about: t('加一个件，写入 parts/<件>.json', 'Add a part in parts/<part>.json'),
+    about: t("加一个件，写入 parts/<件>.json"),
     params: S.obj({ part: PART_NAME, data: S.map(S.any()), after: S.opt(PART_NAME) }),
     apply(ws, { part: part, data, after }, { vocabulary }) {
       partsOf(ws)
@@ -67,7 +68,7 @@ export const circuitOperations = {
     },
   },
 'part.remove': {
-    about: t('删除没有被课程、关卡、板或文字引用的件', 'Delete a part with no course, level, board or text references'),
+    about: t("删除没有被课程、关卡、板或文字引用的件"),
     params: S.obj({ part: PART_NAME }),
     apply(ws, { part: part }, { vocabulary }) {
       partsOf(ws)
@@ -81,7 +82,7 @@ export const circuitOperations = {
     },
   },
 'parts.set': {
-    about: t('修改件的字段，路径为 parts.<件>.<字段>', 'Edit a part field at parts.<part>.<field>'),
+    about: t("修改件的字段，路径为 parts.<件>.<字段>"),
     params: S.obj({ path: PATH, value: S.any() }),
     apply(ws, { path, value }, { vocabulary }) {
       partsOf(ws)
@@ -101,7 +102,7 @@ export const circuitOperations = {
     },
   },
 'parts.unset': {
-    about: t('去掉件的一个字段或列表项', 'Remove a part field or list item'),
+    about: t("去掉件的一个字段或列表项"),
     params: S.obj({ path: PATH }),
     apply(ws, { path }, { vocabulary }) {
       partsOf(ws)

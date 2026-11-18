@@ -74,7 +74,7 @@ export function vocabularyProblems(name, v) {
   if (!v.kinds || !Object.keys(v.kinds).length) say('it has no kinds')
   const schemas = [['game', v.game], ['level', v.level], ...Object.entries(v.shapes ?? {})]
   const about = (value, at) => {
-    if (value?.about !== undefined && !validAbout(value.about)) say(`${at}: about needs Chinese and English text`)
+    if (value?.about !== undefined && !validAbout(value.about)) say(`${at}: about needs Chinese text and valid markup`)
   }
   for (const [kind, items] of Object.entries(v.kinds ?? {})) {
     // A module may use only capabilities registered by its dependencies.
@@ -156,7 +156,7 @@ export function moduleProblems(module, registry, runtime = null) {
   for (const [kind, table] of Object.entries(registry.tables)) for (const [name, item] of Object.entries(table)) {
     if (!name.startsWith(prefix)) continue
     count++
-    if (item.about !== undefined && !validAbout(item.about)) out.push(`${name}: about needs Chinese and English text`)
+    if (item.about !== undefined && !validAbout(item.about)) out.push(`${name}: about needs Chinese text and valid markup`)
     if (!sameJson(JSON.parse(JSON.stringify(item)), item)) out.push(`${name}: capability is not printable data`)
     if (kind === 'valueType') for (const type of item.accepts ?? []) if (!declaredType(type)) out.push(`${name}: accepts unknown value type ${type}`)
     if (kind === 'board') for (const type of item.valueTypes ?? []) if (!declaredType(type)) out.push(`${name}: board uses unknown value type ${type}`)

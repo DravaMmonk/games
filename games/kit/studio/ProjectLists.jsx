@@ -1,3 +1,4 @@
+import { T } from '../shell/i18n.js'
 // What the studio's workspaces open, listed in their left columns (games/design/README.md 6.7): the packages (Build, Copy)
 // and the games (Arrange, Copy), each its own list with a search. A click picks one, its meta goes in the middle
 // (PackageMeta, GameMeta, read only) and its file in the right column (package.json, game.json: JsonFile, or the
@@ -28,11 +29,11 @@ function Row({ id, icon: Icon, open, picked, disabled, title, name, children, on
     <button type="button" className={`parts-row project-pick ${picked ? 'is-on' : ''} ${open ? 'is-open' : ''}`} aria-current={open ? 'true' : undefined} aria-pressed={picked}
       onClick={() => onPick(id)} onDoubleClick={() => !disabled && onOpen(id)}
       onKeyDown={(event) => { if (event.key === 'Enter' && !disabled) { event.preventDefault(); onOpen(id) } }}
-      title={`${title}${open ? '' : ` — ${tr('双击打开', 'double-click to open')}`}`}>
+      title={`${title}${open ? '' : ` — ${tr("双击打开")}`}`}>
       <i className="family-chip"><Icon size={12} aria-hidden="true" /></i>
       <span>{name}</span>
       {children}
-      {open && <b className="project-pick-open">{tr('打开中', 'Open')}</b>}
+      {open && <b className="project-pick-open">{tr("打开中")}</b>}
     </button>
   )
 }
@@ -59,8 +60,8 @@ function NewForm({ heading, fields, problem, onMake, onCancel }) {
       ))}
       {problem && <small className="is-error" role="status">{problem}</small>}
       <span className="project-new-actions">
-        <button type="submit" className="kit-btn is-label is-solid" disabled={busy}>{busy ? tr('建立中……', 'Making…') : tr('建立', 'Make')}</button>
-        <button type="button" className="kit-btn is-label" disabled={busy} onClick={onCancel}>{tr('取消', 'Cancel')}</button>
+        <button type="submit" className="kit-btn is-label is-solid" disabled={busy}>{busy ? tr("建立中……") : tr("建立")}</button>
+        <button type="button" className="kit-btn is-label" disabled={busy} onClick={onCancel}>{tr("取消")}</button>
       </span>
     </form>
   )
@@ -76,7 +77,7 @@ export function PackageList({ packages, current, picked, disabled, onPick, onOpe
   const listed = [...packages].sort((a, b) => a.id.localeCompare(b.id)).filter(({ id, title, uses }) => found(query, words(id, title, Object.keys(uses ?? {}))))
   const make = async ({ id, kind: chosen }) => {
     const name = id.trim()
-    if (!ID.test(name)) return setMaking({ ...making, problem: tr('包 id 用小写字母、数字和连字符，字母开头', 'A package id is lowercase letters, digits and dashes, a letter first') })
+    if (!ID.test(name)) return setMaking({ ...making, problem: tr("包 id 用小写字母、数字和连字符，字母开头") })
     try {
       // An empty package is of the kind chosen; a copy is of its source's kind.
       await onCreate({ id: name, ...(making.empty ? { empty: true, kind: chosen } : { from: making.from }) })
@@ -86,22 +87,22 @@ export function PackageList({ packages, current, picked, disabled, onPick, onOpe
     }
   }
   const addOptions = onCreate ? [
-    { value: 'empty', label: tr('空白包', 'Empty package') },
-    ...(picked ? [{ value: 'copy', label: tr(`复制 ${picked}`, `Copy of ${picked}`) }] : []),
+    { value: 'empty', label: tr("空白包") },
+    ...(picked ? [{ value: 'copy', label: tr("复制 {picked}", {picked}) }] : []),
   ] : []
   return (
-    <nav className="project-list" aria-label={tr('包', 'Packages')}>
+    <nav className="project-list" aria-label={tr("包")}>
       <SidebarGrouping scope="package-projects" groupsOf={by => packageSidebarGroups(listed, by)} tools={{
-        query, onQuery: setQuery, addOptions: disabled ? [] : addOptions, addLabel: tr('包', 'Packages'),
+        query, onQuery: setQuery, addOptions: disabled ? [] : addOptions, addLabel: tr("包"),
         onAdd: value => setMaking(value === 'empty' ? { empty: true } : { from: picked }),
       }} row={({ id, title, desc }) => (
         <Row key={id} id={id} icon={Package} name={L(title)} title={L(desc)} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen}><code>{id}</code></Row>
       )}>
-        {making && <NewForm heading={making.empty ? tr('新建空白包', 'New empty package') : tr(`复制 ${making.from} 为新包`, `New package, a copy of ${making.from}`)}
-          fields={[['id', tr('包 id', 'Package id')], ...(making.empty ? [['kind', tr('包种类', 'Package kind'), PACKAGE_KINDS.map((k) => ({ value: k, label: `${kindName(k)} (${k})` }))]] : [])]}
+        {making && <NewForm heading={making.empty ? tr("新建空白包") : tr("复制 {from} 为新包", {from: making.from})}
+          fields={[['id', tr("包 id")], ...(making.empty ? [['kind', tr("包种类"), PACKAGE_KINDS.map((k) => ({ value: k, label: `${kindName(k)} (${k})` }))]] : [])]}
           problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
       </SidebarGrouping>
-      {!listed.length && <p className="project-none">{tr('没有符合的包', 'No package matches')}</p>}
+      {!listed.length && <p className="project-none">{tr("没有符合的包")}</p>}
     </nav>
   )
 }
@@ -117,7 +118,7 @@ export function GameList({ games, current, picked, disabled, onPick, onOpen, onC
   const from = games.find((g) => g.id === (picked ?? current))
   const make = async ({ id, zh, en }) => {
     const name = id.trim()
-    if (!ID.test(name)) return setMaking({ ...making, problem: tr('游戏 id 用小写字母、数字和连字符，字母开头', 'A game id is lowercase letters, digits and dashes, a letter first') })
+    if (!ID.test(name)) return setMaking({ ...making, problem: tr("游戏 id 用小写字母、数字和连字符，字母开头") })
     try {
       await onCreate({ id: name, from: making.from, title: { zh: zh.trim() || name, en: en.trim() || name } })
       setMaking(null)
@@ -125,19 +126,19 @@ export function GameList({ games, current, picked, disabled, onPick, onOpen, onC
       setMaking({ ...making, problem: error.message })
     }
   }
-  const addOptions = onCreate && from ? [{ value: 'new', label: tr(`在 ${from.package} 上新建游戏`, `New game on ${from.package}`) }] : []
+  const addOptions = onCreate && from ? [{ value: 'new', label: tr("在 {package} 上新建游戏", {package: from.package}) }] : []
   return (
-    <nav className="project-list" aria-label={tr('游戏', 'Games')}>
-      <SidebarListTools query={query} onQuery={setQuery} addOptions={disabled ? [] : addOptions} addLabel={tr('新建游戏', 'New game')} onAdd={() => setMaking({ from: from.id })} />
-      {making && <NewForm heading={tr(`在 ${from?.package} 上新建游戏（课程设置照 ${making.from}）`, `New game on ${from?.package} (course settings as ${making.from})`)}
-        fields={[['id', tr('游戏 id', 'Game id')], ['zh', '中文名'], ['en', 'English name']]} problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
+    <nav className="project-list" aria-label={tr("游戏")}>
+      <SidebarListTools query={query} onQuery={setQuery} addOptions={disabled ? [] : addOptions} addLabel={tr("新建游戏")} onAdd={() => setMaking({ from: from.id })} />
+      {making && <NewForm heading={tr("在 {package} 上新建游戏（课程设置照 {from}）", {package: from?.package, from: making.from})}
+        fields={[['id', tr("游戏 id")], ['zh', '中文名'], ['en', 'English name']]} problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
       {listed.map((g) => (
         <Row key={g.id} id={g.id} icon={Gamepad2} name={L(g.title) ?? g.id} open={g.id === current} picked={g.id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen}
           title={`${L(g.title) ?? g.id} · ${g.id} · ${g.package}`}>
           <code>{g.id}</code>
         </Row>
       ))}
-      {!listed.length && <p className="project-none">{tr('没有符合的游戏', 'No game matches')}</p>}
+      {!listed.length && <p className="project-none">{tr("没有符合的游戏")}</p>}
     </nav>
   )
 }
@@ -150,7 +151,7 @@ function MetaHead({ icon: Icon, id, info, children, open, disabled, onOpen, open
       {info ? <PackageName info={info} /> : <code>{id}</code>}
       {children}
       <span className="kit-spacer" />
-      {open ? <span className="object-kind">{tr('打开中', 'Open')}</span>
+      {open ? <span className="object-kind">{tr("打开中")}</span>
         : <button type="button" className="kit-btn is-label" disabled={disabled} onClick={() => onOpen(id)}>{openLabel}</button>}
     </header>
   )
@@ -159,7 +160,7 @@ function MetaHead({ icon: Icon, id, info, children, open, disabled, onOpen, open
 /** A package kind's name (play, extension, course, library), or the kind itself when it is not one of those. */
 const kindName = (kind) => { try { return packageKindLabel(kind) } catch { return kind } }
 const short = (hash) => (hash ? String(hash).slice(0, 8) : '—')
-const none = <span className="package-meta-none">{tr('无', 'None')}</span>
+const none = <span className="package-meta-none">{tr("无")}</span>
 
 /** A game as a package is shown (PackageGroups.jsx PackageName): its title, its id small. */
 export function GameName({ info }) {
@@ -181,10 +182,10 @@ function Lock({ lock, status, packages }) {
   const ok = status?.valid !== false
   return (
     <>
-      <h3 className="package-meta-file">{tr('依赖锁定', 'Dependency lock')}</h3>
+      <h3 className="package-meta-file">{tr("依赖锁定")}</h3>
       <dl className="package-facts">
-        <dt>{tr('状态', 'State')}</dt>
-        <dd className={ok ? 'is-ok' : 'is-error'}>{ok ? tr('与依赖现状一致', 'Matches the dependencies as they are') : (status?.problems ?? []).join('; ') || tr('不一致', 'Out of date')}</dd>
+        <dt>{tr("状态")}</dt>
+        <dd className={ok ? 'is-ok' : 'is-error'}>{ok ? tr("与依赖现状一致") : (status?.problems ?? []).join('; ') || tr("不一致")}</dd>
         {Object.entries(lock?.dependencies ?? {}).map(([dep, at]) => <Fragment key={dep}><dt><PackageRef packages={packages} id={dep} /></dt><dd><code>{at.version}</code><code className="package-meta-hash" title={at.hash}>{short(at.hash)}</code></dd></Fragment>)}
       </dl>
     </>
@@ -193,13 +194,13 @@ function Lock({ lock, status, packages }) {
 
 // The kinds of a package's public surface, as the meta names them (any other by its own name).
 const SURFACE = {
-  level: ['关卡', 'Levels'], task: ['任务', 'Tasks'], entry: ['词条', 'Entries'], tag: ['标签', 'Tags'], relation: ['关系', 'Relations'],
-  section: ['百科分组', 'Encyclopedia sections'], kind: ['类型声明', 'Kind declarations'], menu: ['菜单', 'Menus'], i18n: ['文案键', 'Text keys'],
-  export: ['代码导出', 'Code exports'], display: ['显示', 'Displays'],
-  play: ['玩法', 'Plays'], playView: ['玩法界面', 'Play views'], agent: ['盲玩代理', 'Blind-play agents'], check: ['检查', 'Checks'],
-  kindMeaning: ['类型含义', 'Kind meanings'], shape: ['命名形状', 'Named shapes'], editor: ['编辑器', 'Editors'],
-  editorExtension: ['编辑器扩展', 'Editor extensions'], gameHook: ['游戏钩子', 'Game hooks'], unlocks: ['通关解锁项', 'Unlocks on passing'],
-  valueType: ['值类型', 'Value types'], language: ['语言', 'Languages'],
+  level: T("关卡"), task: T("任务", {}, "project-lists"), entry: T("词条"), tag: T("标签"), relation: T("关系"),
+  section: T("百科分组"), kind: T("类型声明"), menu: T("菜单"), i18n: T("文案键"),
+  export: T("代码导出"), display: T("显示", {}, "project-lists"),
+  play: T("玩法"), playView: T("玩法界面"), agent: T("盲玩代理"), check: T("检查", {}, "project-lists"),
+  kindMeaning: T("类型含义"), shape: T("命名形状"), editor: T("编辑器", {}, "project-lists"),
+  editorExtension: T("编辑器扩展"), gameHook: T("游戏钩子"), unlocks: T("通关解锁项"),
+  valueType: T("值类型"), language: T("语言", {}, "project-lists"),
 }
 
 /** What a package's public surface holds, kind by kind ([kind, count], text keys last). */
@@ -214,13 +215,13 @@ export function surfaceCounts(info) {
  */
 export function surfaceLabels(content, vocabulary) {
   const labels = {}
-  for (const info of objectTypes(content)) labels[info.type] = tr(...typeName(info))
+  for (const info of objectTypes(content)) labels[info.type] = L(typeName(info))
   for (const [kind, definition] of Object.entries(vocabulary?.capabilityKinds ?? {})) if (definition?.studio?.label) labels[kind] = L(definition.studio.label)
   return labels
 }
 
 /** The name of a kind of public content: the kernel's (SURFACE), else the one its package declares (`labels`), else its id. */
-export const surfaceName = (kind, labels = {}) => (SURFACE[kind] ? tr(...SURFACE[kind]) : labels[kind] ?? <code>{kind}</code>)
+export const surfaceName = (kind, labels = {}) => (SURFACE[kind] ? L(SURFACE[kind]) : labels[kind] ?? <code>{kind}</code>)
 
 /**
  * The packages and games that use a package, each by title and id.
@@ -230,8 +231,8 @@ export function PackageUsers({ packages, games, id }) {
   const playedBy = games.filter((g) => Object.hasOwn(g.packages ?? {}, id)).map((g) => g.id)
   return (
     <>
-      <dt>{tr('被哪些包用到', 'Used by packages')}</dt><dd>{usedBy.length ? usedBy.map((u) => <PackageRef key={u} packages={packages} id={u} />) : none}</dd>
-      <dt>{tr('被哪些游戏选用', 'Played by games')}</dt><dd>{playedBy.length ? playedBy.map((g) => <GameRef key={g} games={games} id={g} />) : none}</dd>
+      <dt>{tr("被哪些包用到")}</dt><dd>{usedBy.length ? usedBy.map((u) => <PackageRef key={u} packages={packages} id={u} />) : none}</dd>
+      <dt>{tr("被哪些游戏选用")}</dt><dd>{playedBy.length ? playedBy.map((g) => <GameRef key={g} games={games} id={g} />) : none}</dd>
     </>
   )
 }
@@ -249,30 +250,30 @@ export function PackageMeta({ packages, games = [], id, open, disabled, onOpen, 
   const exportsOf = Object.entries(info.manifest?.exports ?? {})
   return (
     <article className="package-meta">
-      <MetaHead icon={Package} id={id} info={info} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr('打开这个包', 'Open this package')} />
+      <MetaHead icon={Package} id={id} info={info} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr("打开这个包")} />
       <p className="package-description">{L(info.desc)}</p>
       <h3 className="package-meta-file">package.json</h3>
       <dl className="package-facts">
-        <dt>{tr('种类', 'Kind')}</dt><dd>{info.kind ? <>{kindName(info.kind)} <code>{info.kind}</code></> : none}</dd>
-        <dt>{tr('版本', 'Version')}</dt><dd><code>{info.version ?? '—'}</code></dd>
-        <dt>{tr('内核', 'Kernel')}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
-        <dt>{tr('依赖', 'Uses')}</dt><dd>{uses.length ? uses.map(([dep, range]) => <PackageRef key={dep} packages={packages} id={dep} range={range} />) : none}</dd>
+        <dt>{tr("种类")}</dt><dd>{info.kind ? <>{kindName(info.kind)} <code>{info.kind}</code></> : none}</dd>
+        <dt>{tr("版本")}</dt><dd><code>{info.version ?? '—'}</code></dd>
+        <dt>{tr("内核")}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
+        <dt>{tr("依赖")}</dt><dd>{uses.length ? uses.map(([dep, range]) => <PackageRef key={dep} packages={packages} id={dep} range={range} />) : none}</dd>
         <PackageUsers packages={packages} games={games} id={id} />
       </dl>
       <Lock lock={info.lock} status={info.lockStatus} packages={packages} />
       {exportsOf.length > 0 && <>
-        <h3 className="package-meta-file">{tr('代码', 'Code')}</h3>
+        <h3 className="package-meta-file">{tr("代码")}</h3>
         <dl className="package-facts">
           {exportsOf.map(([side, names]) => <Fragment key={side}><dt>{side}</dt><dd>{names.length > 8
-            ? <details className="package-meta-more"><summary>{tr(`${names.length} 个导出`, `${names.length} exports`)}</summary>{names.map((n) => <code key={n}>{n}</code>)}</details>
+            ? <details className="package-meta-more"><summary>{tr("{length} 个导出", {length: names.length})}</summary>{names.map((n) => <code key={n}>{n}</code>)}</details>
             : names.map((n) => <code key={n}>{n}</code>)}</dd></Fragment>)}
         </dl>
       </>}
-      <h3 className="package-meta-file">{tr('公开内容', 'Public surface')}</h3>
+      <h3 className="package-meta-file">{tr("公开内容")}</h3>
       <dl className="package-facts">
         {kinds.map(([kind, n]) => <Fragment key={kind}><dt>{surfaceName(kind, labels)}</dt><dd>{n}</dd></Fragment>)}
-        <dt>{tr('文件', 'Files')}</dt><dd>{Object.keys(info.manifest?.files ?? {}).length}</dd>
-        <dt>{tr('内容哈希', 'Content hash')}</dt><dd><code className="package-meta-hash" title={info.manifest?.hash}>{short(info.manifest?.hash)}</code></dd>
+        <dt>{tr("文件")}</dt><dd>{Object.keys(info.manifest?.files ?? {}).length}</dd>
+        <dt>{tr("内容哈希")}</dt><dd><code className="package-meta-hash" title={info.manifest?.hash}>{short(info.manifest?.hash)}</code></dd>
       </dl>
     </article>
   )
@@ -286,13 +287,13 @@ export function GameMeta({ games, packages, id, open, disabled, onOpen }) {
   const plays = Object.entries(info.packages ?? {})
   return (
     <article className="package-meta">
-      <MetaHead icon={Gamepad2} id={id} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr('打开这款游戏', 'Open this game')} />
+      <MetaHead icon={Gamepad2} id={id} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr("打开这款游戏")} />
       <h3 className="package-meta-file">game.json</h3>
       <dl className="package-facts">
-        <dt>{tr('名字', 'Title')}</dt><dd>{L(info.title) ?? '—'}</dd>
-        <dt>{tr('主包', 'Main package')}</dt><dd><PackageRef packages={packages} id={info.package} /></dd>
-        <dt>{tr('内核', 'Kernel')}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
-        <dt>{tr('选用的包', 'Packages played')}</dt><dd>{plays.length ? plays.map(([p, range]) => <PackageRef key={p} packages={packages} id={p} range={range} />) : none}</dd>
+        <dt>{tr("名字")}</dt><dd>{L(info.title) ?? '—'}</dd>
+        <dt>{tr("主包")}</dt><dd><PackageRef packages={packages} id={info.package} /></dd>
+        <dt>{tr("内核")}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
+        <dt>{tr("选用的包")}</dt><dd>{plays.length ? plays.map(([p, range]) => <PackageRef key={p} packages={packages} id={p} range={range} />) : none}</dd>
       </dl>
       <Lock lock={info.lock} status={info.lockStatus} packages={packages} />
     </article>

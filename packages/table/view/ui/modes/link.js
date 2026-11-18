@@ -38,7 +38,7 @@ export default function useLink({ level, saved, save, solve, fail, toast }) {
     const at = mine.findIndex((l) => (side === 'a' ? l[0] : l[1]) === idx)
     if (!sel && at >= 0) {
       keep(withLinks(mine.filter((_, k) => k !== at)))
-      toast(tr('拆掉了一根线', 'Removed a line'))
+      toast(tr("拆掉了一根线"))
       return
     }
     if (!sel || sel.side === side) {
@@ -49,12 +49,12 @@ export default function useLink({ level, saved, save, solve, fail, toast }) {
     const i = side === 'a' ? idx : sel.idx, j = side === 'b' ? idx : sel.idx
     setSel(null)
     if (t.a[i] !== t.b[j]) {
-      toast(tr(`「${t.a[i]}」和「${t.b[j]}」不一样，不能连`, `“${t.a[i]}” and “${t.b[j]}” are different, so they can’t be linked`))
+      toast(tr("「{value}」和「{value2}」不一样，不能连", {value: t.a[i], value2: t.b[j]}))
       buzz(20)
       return
     }
     if (mine.some((l) => l[0] === i || l[1] === j)) {
-      toast(tr('每个字最多连一根线。先点它，拆掉原来的线', 'Each letter takes at most one line. Click it first to remove its line'))
+      toast(tr("每个字最多连一根线。先点它，拆掉原来的线"))
       buzz(20)
       return
     }
@@ -62,7 +62,7 @@ export default function useLink({ level, saved, save, solve, fail, toast }) {
     if (cross.length) {
       const shown = { links: cross, try: [i, j] }
       setFlash(shown)
-      toast(tr('线不能交叉', 'Lines can’t cross'))
+      toast(tr("线不能交叉"))
       buzz([20, 40, 20])
       later(() => setFlash((f) => (f === shown ? null : f)), 1200)
       return
@@ -75,7 +75,7 @@ export default function useLink({ level, saved, save, solve, fail, toast }) {
       later(() => verdict.pass({ links: all }), reduced() ? 0 : 500)
       return
     }
-    toast(tr(`第 ${ti + 1} 题完成`, `Puzzle ${ti + 1} done`))
+    toast(tr("第 {ti} 题完成", {ti: ti + 1}))
     const nx = L.tests.findIndex((_, k) => !solvedIn(all, k))
     later(() => selectTest(nx), 900)
   }
@@ -93,36 +93,33 @@ export default function useLink({ level, saved, save, solve, fail, toast }) {
   if (flash) edges.push(E(`a${flash.try[0]}`, `b${flash.try[1]}`, 'linkbad'))
   const scene = {
     cells: [
-      ...[...a].map((ch, i) => ({ id: `a${i}`, x: oa + i * sp, y: 0, w: sz, h: sz, value: ch, cls: cls('a', i), tap: true, aria: tr(`上面第 ${i + 1} 个字 ${ch}`, `Top letter ${i + 1}: ${ch}`) })),
-      ...[...b].map((ch, j) => ({ id: `b${j}`, x: ob + j * sp, y: 150, w: sz, h: sz, value: ch, cls: cls('b', j), tap: true, aria: tr(`下面第 ${j + 1} 个字 ${ch}`, `Bottom letter ${j + 1}: ${ch}`) })),
+      ...[...a].map((ch, i) => ({ id: `a${i}`, x: oa + i * sp, y: 0, w: sz, h: sz, value: ch, cls: cls('a', i), tap: true, aria: tr("上面第 {i} 个字 {ch}", {i: i + 1, ch}) })),
+      ...[...b].map((ch, j) => ({ id: `b${j}`, x: ob + j * sp, y: 150, w: sz, h: sz, value: ch, cls: cls('b', j), tap: true, aria: tr("下面第 {j} 个字 {ch}", {j: j + 1, ch}) })),
     ],
     edges,
   }
   return {
-    tests: L.tests.map((x, k) => ({ label: `${tr(`第 ${k + 1} 题`, `Puzzle ${k + 1}`)} · ${x.a} / ${x.b}` })),
+    tests: L.tests.map((x, k) => ({ label: `${tr("第 {k} 题", {k: k + 1})} · ${x.a} / ${x.b}` })),
     states: L.tests.map((_, k) => solvedIn(links, k) ? 'pass' : null),
     ti,
     onTest: selectTest,
-    drawing: boardDrawing(scene, { label: tr('棋盘', 'Board'), maxScale: 1.3 }, onCell),
-    note: sel ? tr(`已选中${sel.side === 'a' ? '上面' : '下面'}的「${t[sel.side][sel.idx]}」，再点另一行里相同的字。`, `Selected “${t[sel.side][sel.idx]}” in the ${sel.side === 'a' ? 'top' : 'bottom'} row. Now click the same letter in the other row.`) : tr('连上的字从左往右读，就是两串字共有的一串。', 'Read left to right, the linked letters are a sequence the two strings share.'),
+    drawing: boardDrawing(scene, { label: tr("棋盘"), maxScale: 1.3 }, onCell),
+    note: sel ? tr("已选中{value2}的「{value}」，再点另一行里相同的字。", {value: t[sel.side][sel.idx], value2: sel.side === 'a' ? '上面' : '下面', value3: sel.side === 'a' ? 'top' : 'bottom'}) : tr("连上的字从左往右读，就是两串字共有的一串。"),
     cards: [{
-      title: tr('三条规则', 'Three rules'),
-      body: tr(
-        ['1. 只能连<b>相同</b>的字', '2. 每个字最多连<b>一根</b>线', '3. 线<b>不能交叉</b>'],
-        ['1. Only link <b>equal</b> letters', '2. Each letter takes at most <b>one</b> line', '3. Lines <b>can’t cross</b>'],
-      ),
+      title: tr("三条规则"),
+      body: [tr("1. 只能连<b>相同</b>的字"), tr("2. 每个字最多连<b>一根</b>线"), tr("3. 线<b>不能交叉</b>")],
     }, {
-      title: tr('连出的公共子序列', 'Common subsequence so far'),
-      badge: `${mine.length} / ${target(ti)}${tr(' 个字', ' letters')}`,
-      tokens: { items: mine.map(([i]) => a[i]), empty: tr('还没有连线', 'No lines yet') },
+      title: tr("连出的公共子序列"),
+      badge: `${mine.length} / ${target(ti)}${tr(" 个字")}`,
+      tokens: { items: mine.map(([i]) => a[i]), empty: tr("还没有连线") },
     }, {
-      title: tr('卡住了？', 'Stuck?'),
+      title: tr("卡住了？"),
       body: hint ? L.hints[ti] : null,
-      action: hint ? null : { label: tr('看提示', 'Show a hint'), run: () => setHint(true) },
+      action: hint ? null : { label: tr("看提示"), run: () => setHint(true) },
     }],
     dock: {
-      meta: tr(`已连 <b>${mine.length}</b> 根 · 目标 <b>${target(ti)}</b> 根`, `<b>${mine.length}</b> lines · target <b>${target(ti)}</b>`),
-      secondary: mine.length ? { label: tr('清空这题', 'Clear this puzzle'), icon: 'trash', onClick: () => { keep(withLinks([])); setSel(null) } } : null,
+      meta: tr("已连 <b>{length}</b> 根 · 目标 <b>{value}</b> 根", {length: mine.length, value: target(ti)}),
+      secondary: mine.length ? { label: tr("清空这题"), icon: 'trash', onClick: () => { keep(withLinks([])); setSel(null) } } : null,
     },
   }
 }

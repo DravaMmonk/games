@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { CODE_NAME, fullName } from './object-name.js'
 import { mapSchemaChildren } from './schema-shapes.js'
 
@@ -5,9 +6,9 @@ const PRIMITIVE_VALUE_TYPES = Object.fromEntries(
   ['number', 'boolean', 'string', 'list', 'any'].map(name => [`kernel/${name}`, {}]),
 )
 export const builtinCapabilityKinds = {
-  valueType: { studio: { order: 2, label: { zh: '值类型', en: 'Value types' } } },
-  play: { studio: { order: 5, label: { zh: '玩法', en: 'Plays' } }, implementation: { side: 'core' } },
-  language: { studio: { order: 9, label: { zh: '语言', en: 'Languages' } } },
+  valueType: { studio: { order: 2, label: catalogText("值类型") } },
+  play: { studio: { order: 5, label: catalogText("玩法") }, implementation: { side: 'core' } },
+  language: { studio: { order: 9, label: catalogText("语言", {}, "capabilities") } },
 }
 
 export function qualifyItems(id, items) {
@@ -90,7 +91,7 @@ export function withCapabilityDeclarations(vocabulary, layers, { checkImplementa
     const { name, studio, implementation, items = {} } = declaration
     if (!/^[A-Za-z][\w-]*$/.test(file) || (name !== file && name !== `${id}/${file}`)) throw new Error(`${id}/capabilities/${file}: invalid capability kind ${name}`)
     if (Object.hasOwn(definitions, name)) throw new Error(`duplicate capability kind ${name}`)
-    if (!studio?.label?.en || !studio.label.zh || (studio.order !== undefined && !Number.isFinite(studio.order))) throw new Error(`${name}: capability kind needs Studio labels`)
+    if (!studio?.label?.zh || (studio.order !== undefined && !Number.isFinite(studio.order))) throw new Error(`${name}: capability kind needs Studio labels`)
     if (implementation && (!['core', 'view'].includes(implementation.side) || (implementation.methods !== undefined && (!Array.isArray(implementation.methods) || !implementation.methods.every(method => typeof method === 'string'))))) throw new Error(`${name}: invalid capability implementation contract`)
     definitions[name] = { ...declaration, items: qualifyItems(id, items), owner: id }
   }

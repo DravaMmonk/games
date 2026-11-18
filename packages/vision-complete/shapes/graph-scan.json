@@ -18,10 +18,7 @@
             "edges",
             "paper"
           ],
-          "about": {
-            "zh": "期望：去掉颗粒的扫描件（clean）、Sobel 平方和大于 0.04 处（edges）、纸的边（paper）",
-            "en": "expected: the scan without its grain (clean), where Sobel’s sum of squares is over 0.04 (edges), the paper’s edges (paper)"
-          }
+          "about": "@shape.graph-scan.fields.setup.fields.expect.about"
         }
       }
     },

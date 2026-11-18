@@ -8,8 +8,5 @@
     ]
   },
   "min": 16,
-  "about": {
-    "zh": "按分数排好的 16 个检测，对 1 错 0",
-    "en": "the 16 detections in score order, right 1 and wrong 0"
-  }
+  "about": "@shape.flags.about"
 }

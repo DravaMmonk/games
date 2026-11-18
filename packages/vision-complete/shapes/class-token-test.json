@@ -29,10 +29,7 @@
         },
         "min": 2
       },
-      "about": {
-        "zh": "车所在的图块 [列, 行]",
-        "en": "the patches with the car, [column, row]"
-      }
+      "about": "@shape.class-token-test.fields.patches.about"
     }
   }
 }

@@ -1,8 +1,5 @@
 {
   "type": "any",
-  "about": {
-    "zh": "起始值（阶段的 start 优先）",
-    "en": "the starting value (a stage’s start comes first)"
-  },
+  "about": "@shape.knob-start.about",
   "optional": true
 }

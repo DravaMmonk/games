@@ -8,7 +8,7 @@ export default function SourceEditor({ source, onApply, readOnly = false }) {
   const changed = draft !== null && draft.text !== source
   const apply = () => {
     if (draft.base !== source) {
-      setError(tr('配置已更新。请重置源码后再编辑。', 'The configuration changed. Reset the source before editing again.'))
+      setError(tr("配置已更新。请重置源码后再编辑。"))
       return
     }
     try {
@@ -16,17 +16,17 @@ export default function SourceEditor({ source, onApply, readOnly = false }) {
       setDraft(null)
       setError('')
     } catch (error) {
-      setError(error instanceof SyntaxError ? tr('JSON 格式无效。', 'Invalid JSON.') : error.message)
+      setError(error instanceof SyntaxError ? tr("JSON 格式无效。") : error.message)
     }
   }
   return (
     <div className="insp-source-editor">
       <textarea className="field-area is-code" value={draft?.text ?? source} rows={Math.min(28, Math.max(6, source.split('\n').length + 1))}
-        aria-label={tr('JSON 源码', 'JSON source')} spellCheck={false} readOnly={readOnly}
+        aria-label={tr("JSON 源码")} spellCheck={false} readOnly={readOnly}
         onChange={(event) => { setDraft({ base: draft?.base ?? source, text: event.target.value }); setError('') }} />
       {!readOnly && <div className="insp-source-actions">
-        <button type="button" className="kit-btn is-label" disabled={draft === null} onClick={() => { setDraft(null); setError('') }}>{tr('重置', 'Reset')}</button>
-        <button type="button" className="kit-btn is-label is-solid" onClick={apply} disabled={!changed}>{tr('加入变更集', 'Add to changeset')}</button>
+        <button type="button" className="kit-btn is-label" disabled={draft === null} onClick={() => { setDraft(null); setError('') }}>{tr("重置")}</button>
+        <button type="button" className="kit-btn is-label is-solid" onClick={apply} disabled={!changed}>{tr("加入变更集")}</button>
       </div>}
       {error && <p className="field-bad" role="alert">{error}</p>}
     </div>

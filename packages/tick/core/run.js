@@ -2,7 +2,7 @@ import { boardNode, runTicks } from './ticks.js'
 import { tickJudge, tickReport } from './tick-report.js'
 import { runTests } from 'kernel'
 import { LINE, lineOf, sayer } from './line.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 const SAY = { name: 'say', label: T('说') }
 

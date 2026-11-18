@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { ArrowRight, Check, Timer, X } from 'lucide-react'
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { GridPicture } from 'kernel/view'
 import { rangeOf } from 'image/view'
 import './kernels.css'
@@ -41,15 +41,15 @@ export function KernelRound({ ctx }) {
       <div className="racer-pair">
         <figure>
           <GridPicture value={round.input} scale={184 / round.input.w} />
-          <figcaption className="bk-caption">{tr('输入', 'Input')}</figcaption>
+          <figcaption className="bk-caption">{tr("输入", {}, "kernels")}</figcaption>
         </figure>
         <ArrowRight className="racer-arrow" size={20} strokeWidth={1.5} />
         <figure>
           <GridPicture value={round.output} range={range} scale={184 / round.output.w} />
-          <figcaption className="bk-caption">{tr('输出', 'Output')}{range.lo < 0 ? tr('（灰 = 0）') : ''}</figcaption>
+          <figcaption className="bk-caption">{tr("输出")}{range.lo < 0 ? tr('（灰 = 0）') : ''}</figcaption>
         </figure>
       </div>
-      <p className="bk-caption racer-time">{timed ? <><Timer size={13} /> {tr(`第 ${p.index + 1} 轮 · ${seconds.toFixed(1)} 秒`, `Round ${p.index + 1} · ${seconds.toFixed(1)} s`)}</> : tr(`第 ${p.index + 1} 轮 · 不限时`, `Round ${p.index + 1} · no time limit`)}</p>
+      <p className="bk-caption racer-time">{timed ? <><Timer size={13} /> {tr("第 {value} 轮 · {value2} 秒", {value: p.index + 1, value2: seconds.toFixed(1)})}</> : tr("第 {value} 轮 · 不限时", {value: p.index + 1})}</p>
     </div>
   )
 }
@@ -76,7 +76,7 @@ export function KernelChoices({ ctx }) {
       {round.choices.map((k, i) => {
         const state = p.feedback ? (i === round.answer ? 'is-right' : i === p.feedback.chosen ? 'is-wrong' : 'is-dim') : ''
         return (
-          <button key={`${p.index}-${i}`} className={`racer-choice ${state}`} onClick={() => answer(i)} disabled={Boolean(p.feedback)} aria-label={tr(`选项 ${i + 1}`, `Option ${i + 1}`)}>
+          <button key={`${p.index}-${i}`} className={`racer-choice ${state}`} onClick={() => answer(i)} disabled={Boolean(p.feedback)} aria-label={tr("选项 {i}", {i: i + 1})}>
             <span className="racer-key">{i + 1}</span>
             <KernelCard kernel={ctx.model.kernels[k]} />
             {state === 'is-right' && <Check className="racer-mark" size={16} />}

@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { MISSING } from 'circuit'
 import { OperationError } from 'kernel'
 import { boxBlur3, correlate, downsample, fromFn, gaussianKernel, gradientMagnitude, horizontalDifference, image, map, maxPool, shift, sobelX, sobelY, zeroUp, zip } from 'imglib'
@@ -25,10 +26,10 @@ const DIRS = {
   up: [0, -1, '↑'],
 }
 
-const borderParam = { key: 'border', label: { zh: '边界', en: 'Border' }, kind: 'select', options: [['zero', { zh: '补 0', en: 'Pad with 0' }], ['edge', { zh: '复制边缘', en: 'Replicate edge' }]], default: 'zero' }
+const borderParam = { key: 'border', label: catalogText("边界"), kind: 'select', options: [['zero', catalogText("补 0")], ['edge', catalogText("复制边缘")]], default: 'zero' }
 const borderOf = (params) => params.border ?? 'zero'
 // Shift alone may also wrap round: what leaves one edge comes back in at the other.
-const shiftBorder = { ...borderParam, options: [...borderParam.options, ['wrap', { zh: '循环', en: 'Wrap round' }]] }
+const shiftBorder = { ...borderParam, options: [...borderParam.options, ['wrap', catalogText("循环")]] }
 
 const ARITH = {
   add: ['+', (x, y) => x + y],
@@ -38,37 +39,37 @@ const ARITH = {
 }
 
 const NATIVE_TYPES = {
-  input: { label: { zh: '输入', en: 'Input' }, inputs: [], fixed: true, eval: () => null, cost: 0 },
-  output: { label: { zh: '输出', en: 'Output' }, inputs: ['in', 'r', 'g', 'b'], optional: ['in', 'r', 'g', 'b'], outputs: [], fixed: true, eval: () => null, cost: 0 },
+  input: { label: catalogText("输入"), inputs: [], fixed: true, eval: () => null, cost: 0 },
+  output: { label: catalogText("输出"), inputs: ['in', 'r', 'g', 'b'], optional: ['in', 'r', 'g', 'b'], outputs: [], fixed: true, eval: () => null, cost: 0 },
 
   // ---- primitives (chapter 0) ----
   mystery: { label: '？？？', inputs: ['in'], eval: ({ in: a }) => shift(a, 1, 0), cost: 0 },
   // The probe level's second black box: a threshold whose t the player reads off.
   mysteryGate: { label: '？？？', inputs: ['in'], eval: ({ in: a }) => map(a, (v) => (v > 0.6 ? 1 : 0)), cost: 0 },
   shift: {
-    label: { zh: '平移', en: 'Shift' },
+    label: catalogText("平移"),
     inputs: ['in'],
     params: [
-      { key: 'dir', label: { zh: '方向', en: 'Direction' }, kind: 'select', buttons: 'pad', options: Object.entries(DIRS).map(([d, [, , arrow]]) => [d, arrow]), default: 'right' },
-      { key: 'n', label: { zh: '格数', en: 'Steps' }, kind: 'number', min: 1, max: 16, step: 1, default: 1 },
+      { key: 'dir', label: catalogText("方向"), kind: 'select', buttons: 'pad', options: Object.entries(DIRS).map(([d, [, , arrow]]) => [d, arrow]), default: 'right' },
+      { key: 'n', label: catalogText("格数"), kind: 'number', min: 1, max: 16, step: 1, default: 1 },
       shiftBorder,
     ],
     eval: ({ in: a }, p) => shift(a, DIRS[p.dir ?? 'right'][0] * (p.n ?? 1), DIRS[p.dir ?? 'right'][1] * (p.n ?? 1), borderOf(p)),
     cost: 0,
     unlock: 'shift',
   },
-  add: { label: { zh: '相加', en: 'Add' }, inputs: ['a', 'b'], eval: ({ a, b }) => zip(a, b, (x, y) => x + y), cost: 1 },
-  sub: { label: { zh: '相减', en: 'Subtract' }, inputs: ['a', 'b'], eval: ({ a, b }) => zip(a, b, (x, y) => x - y), cost: 1 },
-  mul: { label: { zh: '相乘', en: 'Multiply' }, inputs: ['a', 'b'], eval: ({ a, b }) => zip(a, b, (x, y) => x * y), cost: 1 },
+  add: { label: catalogText("相加"), inputs: ['a', 'b'], eval: ({ a, b }) => zip(a, b, (x, y) => x + y), cost: 1 },
+  sub: { label: catalogText("相减"), inputs: ['a', 'b'], eval: ({ a, b }) => zip(a, b, (x, y) => x - y), cost: 1 },
+  mul: { label: catalogText("相乘"), inputs: ['a', 'b'], eval: ({ a, b }) => zip(a, b, (x, y) => x * y), cost: 1 },
   // From chapter 1 the four kinds of arithmetic are one part with a choice of operation.
   arith: {
-    label: { zh: '四则运算', en: 'Arithmetic' },
+    label: catalogText("四则运算"),
     inputs: ['a', 'b'],
     optional: ['a', 'b'],
     params: [
-      { key: 'op', label: { zh: '运算', en: 'Operation' }, kind: 'select', buttons: 'grid', options: Object.keys(ARITH).map((op) => [op, ARITH[op][0]]), default: 'add' },
-      { key: 'constantSide', label: { zh: '常数位置', en: 'Constant side' }, kind: 'select', options: [['none', { zh: '关闭', en: 'Off' }], ['a', { zh: '左 a', en: 'Left' }], ['b', { zh: '右 b', en: 'Right' }]], default: 'none' },
-      { key: 'constant', label: { zh: '常数', en: 'Constant' }, kind: 'number', min: -100, max: 100, step: 0.01, default: 1, pi: true },
+      { key: 'op', label: catalogText("运算"), kind: 'select', buttons: 'grid', options: Object.keys(ARITH).map((op) => [op, ARITH[op][0]]), default: 'add' },
+      { key: 'constantSide', label: catalogText("常数位置"), kind: 'select', options: [['none', catalogText("关闭")], ['a', catalogText("左 a")], ['b', catalogText("右 b")]], default: 'none' },
+      { key: 'constant', label: catalogText("常数"), kind: 'number', min: -100, max: 100, step: 0.01, default: 1, pi: true },
     ],
     eval: ({ a, b }, p) => {
       const op = ARITH[p.op ?? 'add'][1]
@@ -100,7 +101,7 @@ const NATIVE_TYPES = {
   },
   // Adds whatever is wired into its three inputs; an empty input is skipped.
   merge: {
-    label: { zh: '汇合器', en: 'Merger' },
+    label: catalogText("汇合器"),
     inputs: ['a', 'b', 'c'],
     optional: ['a', 'b', 'c'],
     eval: (ins) => Object.values(ins).reduce((sum, img) => zip(sum, img, (x, y) => x + y)),
@@ -108,37 +109,37 @@ const NATIVE_TYPES = {
   },
   // A single number: added to or multiplied with a picture, it applies to every cell (the engine spreads a 1×1 value).
   const: {
-    label: { zh: '常数', en: 'Constant' },
+    label: catalogText("常数"),
     inputs: [],
     params: [{ key: 'c', label: '=', kind: 'number', min: -100, max: 100, step: 0.01, default: 1, pi: true }],
     eval: (_, p) => image(1, 1, p.c ?? 1),
     cost: 0,
   },
   threshold: {
-    label: { zh: '阈值', en: 'Threshold' },
+    label: catalogText("阈值"),
     inputs: ['in'],
     params: [{ key: 't', label: '>', kind: 'number', min: -10, max: 10, step: 0.01, default: 0.5 }],
     eval: ({ in: a }, p) => map(a, (v) => (v > (p.t ?? 0.5) ? 1 : 0)),
     cost: 1,
     unlock: 'threshold',
   },
-  invert: { label: { zh: '反相', en: 'Invert' }, inputs: ['in'], eval: ({ in: a }) => map(a, (v) => 1 - v), cost: 1, unlock: 'invert' },
+  invert: { label: catalogText("反相"), inputs: ['in'], eval: ({ in: a }) => map(a, (v) => 1 - v), cost: 1, unlock: 'invert' },
   // Comes with the Wave part, from the bench where the player tunes a cosine wave (2-1).
   cos: { label: 'cos', inputs: ['in'], eval: ({ in: a }) => map(a, Math.cos), cost: 1, unlock: 'wave' },
   exp: { label: 'exp', inputs: ['in'], eval: ({ in: a }) => map(a, Math.exp), cost: 1 },
-  square: { label: { zh: '平方', en: 'Square' }, inputs: ['in'], eval: ({ in: a }) => map(a, (v) => v * v), cost: 1, unlock: 'square' },
-  sqrt: { label: { zh: '开方', en: 'Square root' }, inputs: ['in'], eval: ({ in: a }) => map(a, (v) => Math.sqrt(Math.max(0, v))), cost: 1, unlock: 'square' },
+  square: { label: catalogText("平方"), inputs: ['in'], eval: ({ in: a }) => map(a, (v) => v * v), cost: 1, unlock: 'square' },
+  sqrt: { label: catalogText("开方"), inputs: ['in'], eval: ({ in: a }) => map(a, (v) => Math.sqrt(Math.max(0, v))), cost: 1, unlock: 'square' },
   relu: { label: 'ReLU', inputs: ['in'], eval: ({ in: a }) => map(a, relu), cost: 1, unlock: 'relu' },
   // Each pixel becomes a 2×2 block with the pixel in its top left and 0 elsewhere: twice the size, nothing invented.
   zeroUp: {
-    label: { zh: '补零放大', en: 'Zero upsample' },
+    label: catalogText("补零放大"),
     inputs: ['in'],
     eval: ({ in: a }) => zeroUp(a),
     cost: 0,
   },
   fqMean: {
-    label: { zh: '求平均', en: 'Average' },
-    description: { zh: '把一列数平均成一个数', en: 'Averages a row of numbers into a single number' },
+    label: catalogText("求平均"),
+    description: catalogText("把一列数平均成一个数"),
     inputs: ['in'],
     eval: ({ in: a }) => image(1, 1, a.data.reduce((sum, v) => sum + v, 0) / a.data.length),
     cost: 1,
@@ -146,20 +147,20 @@ const NATIVE_TYPES = {
     unlock: 'mean',
   },
   globalMax: {
-    label: { zh: '全图最大值', en: 'Global max' },
+    label: catalogText("全图最大值"),
     inputs: ['in'],
     eval: ({ in: a }) => image(a.w, a.h, Math.max(...a.data)),
     cost: 1,
   },
 
   // ---- components earned by solving levels ----
-  blur3h: { label: { zh: '横向三点平均', en: '3-point horizontal average' }, inputs: ['in'], params: [borderParam], eval: ({ in: a }, p) => correlate(a, [0, 0, 0, 1 / 3, 1 / 3, 1 / 3, 0, 0, 0], borderOf(p)), cost: 3, unlock: 'blur3h' },
+  blur3h: { label: catalogText("横向三点平均"), inputs: ['in'], params: [borderParam], eval: ({ in: a }, p) => correlate(a, [0, 0, 0, 1 / 3, 1 / 3, 1 / 3, 0, 0, 0], borderOf(p)), cost: 3, unlock: 'blur3h' },
   // A 1D kernel of three weights, across or down: a kernel that is one row (or one column) of a 3×3.
   line3: {
-    label: { zh: '一维三点核', en: '1D 3-point kernel' },
+    label: catalogText("一维三点核"),
     inputs: ['in'],
     params: [
-      { key: 'axis', label: { zh: '方向', en: 'Direction' }, kind: 'select', options: [['x', { zh: '横', en: 'Across' }], ['y', { zh: '竖', en: 'Down' }]], default: 'x' },
+      { key: 'axis', label: catalogText("方向"), kind: 'select', options: [['x', catalogText("横")], ['y', catalogText("竖")]], default: 'x' },
       ...['a', 'b', 'c'].map((key, k) => ({ key, label: key, kind: 'number', min: -4, max: 4, step: 1, default: k === 1 ? 1 : 0 })),
       borderParam,
     ],
@@ -171,9 +172,9 @@ const NATIVE_TYPES = {
     cost: 3,
     unlock: 'line3',
   },
-  box3: { label: { zh: '3×3 平均', en: '3×3 average' }, inputs: ['in'], params: [borderParam], eval: ({ in: a }, p) => boxBlur3(a, borderOf(p)), cost: 6, unlock: 'box3' },
+  box3: { label: catalogText("3×3 平均"), inputs: ['in'], params: [borderParam], eval: ({ in: a }, p) => boxBlur3(a, borderOf(p)), cost: 6, unlock: 'box3' },
   gauss: {
-    label: { zh: '高斯模糊', en: 'Gaussian blur' },
+    label: catalogText("高斯模糊"),
     inputs: ['in'],
     params: [{ key: 'sigma', label: 'σ', kind: 'number', min: 0.5, max: 2.5, step: 0.1, default: 1 }, borderParam],
     eval: ({ in: a }, p) => correlate(a, gaussianKernel(p.sigma ?? 1), borderOf(p)),
@@ -181,29 +182,29 @@ const NATIVE_TYPES = {
     cost: (p) => 2 * (2 * Math.ceil(2.5 * (p.sigma ?? 1)) + 1),
     unlock: 'gauss',
   },
-  diffx: { label: { zh: '横向差分', en: 'Horizontal difference' }, inputs: ['in'], eval: ({ in: a }) => horizontalDifference(a), cost: 1, unlock: 'diffx' },
+  diffx: { label: catalogText("横向差分"), inputs: ['in'], eval: ({ in: a }) => horizontalDifference(a), cost: 1, unlock: 'diffx' },
   sobelx: { label: 'Sobel x', inputs: ['in'], params: [borderParam], eval: ({ in: a }, p) => sobelX(a, borderOf(p)), cost: 6, unlock: 'sobel' },
   sobely: { label: 'Sobel y', inputs: ['in'], params: [borderParam], eval: ({ in: a }, p) => sobelY(a, borderOf(p)), cost: 6, unlock: 'sobel' },
   kernel3: {
-    label: { zh: '3×3 核', en: '3×3 kernel' },
+    label: catalogText("3×3 核"),
     inputs: ['in'],
-    params: [{ key: 'w', label: { zh: '权重', en: 'Weights' }, kind: 'kernel', default: [0, 0, 0, 0, 1, 0, 0, 0, 0] }, borderParam],
+    params: [{ key: 'w', label: catalogText("权重"), kind: 'kernel', default: [0, 0, 0, 0, 1, 0, 0, 0, 0] }, borderParam],
     eval: ({ in: a }, p) => correlate(a, p.w ?? [0, 0, 0, 0, 1, 0, 0, 0, 0], borderOf(p)),
     cost: 9,
     unlock: 'kernel3',
   },
   learn3: {
-    label: { zh: '可学习 3×3 核', en: 'Learnable 3×3 kernel' },
+    label: catalogText("可学习 3×3 核"),
     inputs: ['in'],
-    params: [{ key: 'w', label: { zh: '权重', en: 'Weights' }, kind: 'kernel', learnable: true, hidden: true, default: [0, 0, 0, 0, 0, 0, 0, 0, 0] }],
+    params: [{ key: 'w', label: catalogText("权重"), kind: 'kernel', learnable: true, hidden: true, default: [0, 0, 0, 0, 0, 0, 0, 0, 0] }],
     eval: ({ in: a }, p) => correlate(a, p.w ?? Array(9).fill(0)),
     cost: 9,
     unlock: 'learn3',
   },
-  downsample: { label: { zh: '隔点取样', en: 'Downsample' }, inputs: ['in'], eval: ({ in: a }) => downsample(a, 2), cost: 0, unlock: 'downsample' },
-  maxpool: { label: { zh: '2×2 最大池化', en: '2×2 max pool' }, inputs: ['in'], eval: ({ in: a }) => maxPool(a, 2), cost: 3, unlock: 'maxpool' },
+  downsample: { label: catalogText("隔点取样"), inputs: ['in'], eval: ({ in: a }) => downsample(a, 2), cost: 0, unlock: 'downsample' },
+  maxpool: { label: catalogText("2×2 最大池化"), inputs: ['in'], eval: ({ in: a }) => maxPool(a, 2), cost: 3, unlock: 'maxpool' },
   gradmag: {
-    label: { zh: '梯度幅值', en: 'Gradient magnitude' },
+    label: catalogText("梯度幅值"),
     inputs: ['in'],
     params: [borderParam],
     eval: ({ in: a }, p) => gradientMagnitude(a, borderOf(p)),
@@ -211,7 +212,7 @@ const NATIVE_TYPES = {
     unlock: 'gradmag',
   },
   harris: {
-    label: { zh: 'Harris 响应', en: 'Harris response' },
+    label: catalogText("Harris 响应"),
     inputs: ['in'],
     params: [{ key: 'k', label: 'k', kind: 'number', min: 0.01, max: 0.2, step: 0.01, default: 0.05 }],
     eval: ({ in: a }, p) => harrisResponse(a, p.k ?? 0.05),
@@ -219,7 +220,7 @@ const NATIVE_TYPES = {
     unlock: 'harris',
   },
   argmin4: {
-    label: { zh: '取最小者编号', en: 'Index of minimum' },
+    label: catalogText("取最小者编号"),
     inputs: ['c0', 'c1', 'c2', 'c3'],
     eval: (ins) =>
       fromFn(ins.c0.w, ins.c0.h, (x, y) => {
@@ -235,9 +236,9 @@ const NATIVE_TYPES = {
     optional: ['c2', 'c3'],
   },
   disparity: {
-    label: { zh: '视差搜索', en: 'Disparity search' },
+    label: catalogText("视差搜索"),
     inputs: ['left', 'right'],
-    params: [{ key: 'window', label: { zh: '窗口', en: 'Window' }, kind: 'select', options: [[1, '1×1'], [3, '3×3'], [5, '5×5'], [7, '7×7']], default: 3 }],
+    params: [{ key: 'window', label: catalogText("窗口", {}, "nodes"), kind: 'select', options: [[1, '1×1'], [3, '3×3'], [5, '5×5'], [7, '7×7']], default: 3 }],
     eval: ({ left, right }, p) => disparityMap(left, right, Number(p.window ?? 3)),
     cost: 40,
     unlock: 'disparity',

@@ -23,7 +23,7 @@ export default function SidebarSection({ title, name, active, collapsed, onSelec
     <section className={`sidebar-section ${collapsed ? 'is-folded' : ''}`}>
       <div className={`sidebar-section-head ${active ? 'is-on' : ''}`} {...headProps}>
         <button type="button" className="sidebar-section-fold" onClick={onToggle} aria-expanded={!collapsed}
-          aria-label={collapsed ? tr('展开', 'Expand') : tr('折叠', 'Fold')}>
+          aria-label={collapsed ? tr("展开") : tr("折叠")}>
           <ChevronRight size={12} aria-hidden="true" />
         </button>
         <button type="button" className="sidebar-section-name" onClick={onSelect} title={name}>

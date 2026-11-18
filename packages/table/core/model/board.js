@@ -85,7 +85,7 @@ export function portsProblem(board, ports) {
   for (const w of board.wires) if (board.nodes.find(n => n.id === w.from)?.type === 'port') read.add(w.from);
   const extra = [...read].filter(x => !want.has(x)), missing = [...want].filter(x => !read.has(x));
   const name = id => String(ports.find(p => (p.sensor ?? p.input) === id)?.label ?? id);
-  if (extra.length) return tr(`这块电路板要做成元件，它的输入只能是元件的口；它还读了：${extra.join('、')}。`, `This board becomes a part, so it may read only the part’s ports; it also reads: ${extra.join(', ')}.`);
-  if (missing.length) return tr(`这块电路板要做成元件，元件的每个口都要接进电路；还没接的：${missing.map(name).join('、')}。`, `This board becomes a part, so every port of the part must be wired in; not yet: ${missing.map(name).join(', ')}.`);
+  if (extra.length) return tr("这块电路板要做成元件，它的输入只能是元件的口；它还读了：{value}。", {value: { zh: String(extra.join('、')), en: String(extra.join(', ')) }});
+  if (missing.length) return tr("这块电路板要做成元件，元件的每个口都要接进电路；还没接的：{value}。", {value: { zh: String(missing.map(name).join('、')), en: String(missing.map(name).join(', ')) }});
   return null;
 }

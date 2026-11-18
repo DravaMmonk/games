@@ -4,7 +4,7 @@
 // A card holds the schema's letters and shows them as the test's
 // sentences: its sentences are built in the language of the level's own (choices.js), its choices worked out by the
 // domain's resources on the test on view.
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { parse, replaceAtoms } from '../../core/formula.js'
 import { choicesOf } from '../../core/choices.js'
 import { vocabulary } from '../../core/fol.js'
@@ -19,7 +19,7 @@ function language(task, test) {
   const consts = task.consts ?? []
   const text = textOf(task, test)
   const arity = new Map(vocabulary(offer.formula).preds)
-  const lettered = Object.entries(test?.subst ?? {}).map(([letter, to]) => [letter, arity.get(letter) > 0 && to.op === 'atom' && task.notation.words?.[to.pred] ? task.notation.words[to.pred] : T(text(to), text(to))])
+  const lettered = Object.entries(test?.subst ?? {}).map(([letter, to]) => [letter, arity.get(letter) > 0 && to.op === 'atom' && task.notation.words?.[to.pred] ? task.notation.words[to.pred] : text(to)])
   const notation = { ...task.notation, words: { ...task.notation.words, ...Object.fromEntries(lettered) } }
   const read = (value) => parse(value, { consts })
   return sentencePicker(offer.formula, { read, consts, notation, text: (value) => text(replaceAtoms(read(value), test?.subst ?? {})) })

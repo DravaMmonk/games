@@ -1,4 +1,5 @@
-import { L, T, tr, SettingsContext } from 'kernel/view'
+import { L, SettingsContext } from "kernel/view"
+import { T, tr } from 'kernel/words'
 import { useEffect, useState } from 'react'
 import { Monitor, PanelRight, Plus, Smartphone } from 'lucide-react'
 

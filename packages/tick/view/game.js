@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { displays as ui } from './displays.js'
 // A tick game on the circuit base's game (../../shell/circuit-game.js), its levels played tick by tick on the
 // domain's screen (ui/screen.js).
@@ -20,4 +21,4 @@ import { tickBusWorks } from '../core/work.js'
 
 
 /** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary }. */
-export default (content, works = tickBusWorks(content)) => definedGame(content, works, { ops: {}, kind: { id: 'tick', icon: Activity, label: { zh: '逐拍', en: 'Tick by tick' } }, screen: ui['tick/screen'], cards: ui['tick/catalog'] })
+export default (content, works = tickBusWorks(content)) => definedGame(content, works, { ops: {}, kind: { id: 'tick', icon: Activity, label: catalogText("逐拍") }, screen: ui['tick/screen'], cards: ui['tick/catalog'] })

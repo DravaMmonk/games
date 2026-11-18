@@ -16,10 +16,7 @@
           "type": "int"
         },
         "min": 4,
-        "about": {
-          "zh": "细胞：x0, y0, x1, y1（不含 x1、y1）",
-          "en": "a cell: x0, y0, x1, y1 (x1, y1 excluded)"
-        }
+        "about": "@shape.cells-test.fields.rects.of.about"
       }
     },
     "gapX": {
@@ -27,10 +24,7 @@
       "of": {
         "type": "int"
       },
-      "about": {
-        "zh": "竖缝所在的列",
-        "en": "the columns of upright gaps"
-      },
+      "about": "@shape.cells-test.fields.gapX.about",
       "optional": true
     },
     "gapY": {
@@ -38,10 +32,7 @@
       "of": {
         "type": "int"
       },
-      "about": {
-        "zh": "横缝所在的行",
-        "en": "the rows of gaps across"
-      },
+      "about": "@shape.cells-test.fields.gapY.about",
       "optional": true
     },
     "seed": {

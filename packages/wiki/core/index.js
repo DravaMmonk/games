@@ -1,4 +1,5 @@
-import { S, assertStableIds, mergePatch, refsIn, sideOf, T } from 'kernel'
+import { S, assertStableIds, mergePatch, refsIn, sideOf } from "kernel"
+import { T } from 'kernel/words'
 import { encyclopedia } from './glossary.js'
 import { GLOSSARY } from './schema.js'
 import { termRegistry, termUsage } from './terminology.js'

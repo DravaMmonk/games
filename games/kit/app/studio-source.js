@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { execFile } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import { linkSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
@@ -48,7 +49,7 @@ function sourceFiles(dir, path) {
 export function sourceTools(root, onSave = () => {}) {
   return {
     source_packages: {
-      about: { zh: '列出本地源码包。', en: 'List local source packages.' },
+      about: catalogText("列出本地源码包。"),
       params: {},
       run() {
         const dir = packageDirectory('', root)
@@ -63,7 +64,7 @@ export function sourceTools(root, onSave = () => {}) {
       },
     },
     source_list: {
-      about: { zh: '列出包的 JavaScript 源文件。', en: 'List a package’s JavaScript files.' },
+      about: catalogText("列出包的 JavaScript 源文件。"),
       params: { package: 'string', symbol: 'string?' },
       run({ package: id, symbol }) {
         const dir = packageSourceDirectory(root, id)
@@ -81,7 +82,7 @@ export function sourceTools(root, onSave = () => {}) {
       },
     },
     source_read: {
-      about: { zh: '读取源码和文件版本。', en: 'Read source and its revision.' },
+      about: catalogText("读取源码和文件版本。"),
       params: { package: 'string', path: 'string' },
       run({ package: id, path }) {
         const text = readFileSync(sourceFile(packageSourceDirectory(root, id), path), 'utf8')
@@ -89,7 +90,7 @@ export function sourceTools(root, onSave = () => {}) {
       },
     },
     source_save: {
-      about: { zh: '校验并保存包源码。', en: 'Validate and save package source.' },
+      about: catalogText("校验并保存包源码。"),
       params: { package: 'string', path: 'string', text: 'string', base: 'string or null' },
       async run({ package: id, path, text, base }) {
         const file = sourceFile(packageSourceDirectory(root, id), path)
@@ -115,7 +116,7 @@ export function sourceTools(root, onSave = () => {}) {
       },
     },
     source_check: {
-      about: { zh: '用新进程检查包并运行包测试。', en: 'Check a package and run its tests in fresh processes.' },
+      about: catalogText("用新进程检查包并运行包测试。"),
       params: { package: 'string' },
       async run({ package: id }) {
         const dir = packageSourceDirectory(root, id)

@@ -6,7 +6,7 @@ import { T, tr } from '../../../core/lang.js'
 import { reduced } from 'kernel/view'
 import { buzz, useLater, useVerdict } from 'kernel/view'
 
-const GREEDY = { val: T('最贵的先放', 'Priciest first'), ratio: T('最划算的先放', 'Best value first') }
+const GREEDY = { val: T("最贵的先放"), ratio: T("最划算的先放") }
 
 export default function usePack({ level, saved, save, solve, fail, toast }) {
   const L = level.source
@@ -39,7 +39,7 @@ export default function usePack({ level, saved, save, solve, fail, toast }) {
       later(() => verdict.pass(work), reduced() ? 0 : 600)
       return
     }
-    toast(tr(`第 ${ti + 1} 题完成，达到了目标价值`, `Puzzle ${ti + 1} done: you reached the target value`))
+    toast(tr("第 {ti} 题完成，达到了目标价值", {ti: ti + 1}))
     const nx = L.tests.findIndex((_, k) => !solvedIn(all, k))
     later(() => pick(nx), 1000)
   }
@@ -52,7 +52,7 @@ export default function usePack({ level, saved, save, solve, fail, toast }) {
     }
     const left = t.W - used
     if (t.items[k].w > left) {
-      toast(tr(`装不下：${text(t.items[k].n)}重 ${t.items[k].w} kg，背包只剩 ${left} kg`, `It won’t fit: ${text(t.items[k].n)} (${t.items[k].w} kg), with only ${left} kg of room left`))
+      toast(tr("装不下：{value}重 {w} kg，背包只剩 {left} kg", {value: text(t.items[k].n), w: t.items[k].w, left}))
       buzz([20, 40, 20])
       return
     }
@@ -71,10 +71,7 @@ export default function usePack({ level, saved, save, solve, fail, toast }) {
     const names = (ks) => ks.map((k) => text(t.items[k].n))
     setMsg({
       cls: v >= tg ? 'good' : 'bad',
-      body: () => tr(
-        `按「${text(GREEDY[g])}」依次看 ${names(order).join('、')}，装得下就装。结果装了${names(nb).join('、')}，价值 <b>${v}</b>。${v >= tg ? '正好达到目标。' : `比目标少 <b>${tg - v}</b>。`}`,
-        `“${text(GREEDY[g])}” looks at ${names(order).join(', ')} in that order and packs whatever fits. It packed ${names(nb).join(', ')}, for a value of <b>${v}</b>. ${v >= tg ? 'That hits the target exactly.' : `That is <b>${tg - v}</b> short of the target.`}`,
-      ),
+      body: () => tr("按「{value}」依次看 {value2}，装得下就装。结果装了{value3}，价值 <b>{v}</b>。{value4}", {value: text(GREEDY[g]), v, value2: { zh: String(names(order).join('、')), en: String(names(order).join(', ')) }, value3: { zh: String(names(nb).join('、')), en: String(names(nb).join(', ')) }, value4: { zh: String(v >= tg ? '正好达到目标。' : `比目标少 <b>${tg - v}</b>。`), en: String(v >= tg ? 'That hits the target exactly.' : `That is <b>${tg - v}</b> short of the target.`) }}),
     })
     buzz(10)
     settle(nb)
@@ -84,16 +81,16 @@ export default function usePack({ level, saved, save, solve, fail, toast }) {
   return {
     capacity: {
       totals: [
-        { label: tr(`背包 <b>${used}</b> / ${t.W} kg`, `Backpack <b>${used}</b> / ${t.W} kg`) },
-        { label: tr(`价值 <b>${value}</b> · 目标 ${goal}`, `Value <b>${value}</b> · target ${goal}`), hit: value >= goal },
+        { label: tr("背包 <b>{used}</b> / {W} kg", {used, W: t.W}) },
+        { label: tr("价值 <b>{value}</b> · 目标 {goal}", {value, goal}), hit: value >= goal },
       ],
-      capacityLabel: tr(`背包装了 ${used} 千克，上限 ${t.W} 千克`, `The backpack holds ${used} kg of ${t.W} kg`),
+      capacityLabel: tr("背包装了 {used} 千克，上限 {W} 千克", {used, W: t.W}),
       choices: t.items.map((it, k) => ({
         id: k,
         label: text(it.n),
-        score: tr(`价值 ${it.v}`, `value ${it.v}`),
+        score: tr("价值 {v}", {v: it.v}),
         size: it.w,
-        sizeLabel: `${it.w} ${tr('千克', 'kg')}`,
+        sizeLabel: `${it.w} ${tr("千克")}`,
         sizeHint: `${it.w} kg`,
         color: `var(--t${k % 6})`,
         selected: bag.includes(k),
@@ -101,24 +98,24 @@ export default function usePack({ level, saved, save, solve, fail, toast }) {
       remaining: t.W - used,
       onToggle: toggle,
     },
-    tests: L.tests.map((x, k) => ({ label: tr(`第 ${k + 1} 题 · ${x.W} kg 背包`, `Puzzle ${k + 1} · ${x.W} kg backpack`) })),
+    tests: L.tests.map((x, k) => ({ label: tr("第 {k} 题 · {W} kg 背包", {k: k + 1, W: x.W}) })),
     states: L.tests.map((_, k) => solvedIn(bags, k) ? 'pass' : null),
     ti,
     onTest: pick,
     cards: [{
-      title: tr('自动装包', 'Auto-pack'),
-      body: tr('两种常见的捷径：按某种顺序挨个看，装得下就装。', 'Two popular shortcuts: go through the items in some order and pack each one that still fits.'),
+      title: tr("自动装包"),
+      body: tr("两种常见的捷径：按某种顺序挨个看，装得下就装。"),
       choices: { items: ['val', 'ratio'].map((g) => ({ label: text(GREEDY[g]), select: () => greedy(g) })) },
       feedback: msg,
-      footnote: tr('「最划算」指每千克的价值最高。', '“Best value” means the highest value per kilogram.'),
+      footnote: tr("「最划算」指每千克的价值最高。"),
     }, {
-      title: tr('试过的装法', 'Packings tried'),
+      title: tr("试过的装法"),
       badge: `${tried[ti].size} / ${2 ** n}`,
-      body: tr(`${n} 件物品，每件都有带和不带两种选择，一共 <b>${2 ** n}</b> 种装法。物品每多一件，装法就翻一倍。`, `${n} items, each either taken or left behind: <b>${2 ** n}</b> packings in all. Every extra item doubles the number of packings.`),
+      body: tr("{n} 件物品，每件都有带和不带两种选择，一共 <b>{value}</b> 种装法。物品每多一件，装法就翻一倍。", {n, value: 2 ** n}),
     }],
     dock: {
-      meta: tr(`价值 <b>${value}</b> · 目标 <b>${goal}</b>`, `Value <b>${value}</b> · target <b>${goal}</b>`),
-      secondary: bag.length ? { label: tr('倒空背包', 'Empty the backpack'), onClick: () => { const all = bags.map((b, k) => (k === ti ? [] : b)); setBags(all); setMsg(null); save({ bags: all }) } } : null,
+      meta: tr("价值 <b>{value}</b> · 目标 <b>{goal}</b>", {value, goal}),
+      secondary: bag.length ? { label: tr("倒空背包"), onClick: () => { const all = bags.map((b, k) => (k === ti ? [] : b)); setBags(all); setMsg(null); save({ bags: all }) } } : null,
     },
   }
 }

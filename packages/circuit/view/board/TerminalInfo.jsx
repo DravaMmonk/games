@@ -1,5 +1,6 @@
 import { cardPorts } from "../../core/board/card-ports.js"
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 
 /** What a level's input or output card is: its side, and its ports where they are named apart from the card. */
@@ -12,7 +13,7 @@ export default function TerminalInfo({ node, parts }) {
   const named = names.length > 1 || (names.length === 1 && names[0] !== title)
   return (
     <div className="cl-terminal-info" data-side={role} data-family={parts.family?.(node)}>
-      <span className="cl-terminal-kind">{role === 'source' ? tr('输入', 'Input') : tr('输出', 'Output')}</span>
+      <span className="cl-terminal-kind">{role === 'source' ? tr("输入", {}, "terminal-info") : tr("输出", {}, "terminal-info")}</span>
       {named && <ul>{names.map((name, index) => <li key={index}><i />{name}</li>)}</ul>}
     </div>
   )

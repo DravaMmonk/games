@@ -2,40 +2,28 @@
   "extends": "condition",
   "items": {
     "reads": {
-      "about": {
-        "zh": "输入元件上点了这个传感器",
-        "en": "an input card reads this sensor"
-      },
+      "about": "@capability.condition.items.reads.about",
       "params": {
         "type": "shape",
         "name": "state-graph/sensor-name"
       }
     },
     "uses": {
-      "about": {
-        "zh": "这个传感器读了，还接出了线",
-        "en": "this sensor is read and wired on"
-      },
+      "about": "@capability.condition.items.uses.about",
       "params": {
         "type": "shape",
         "name": "state-graph/sensor-name"
       }
     },
     "has": {
-      "about": {
-        "zh": "板上有这种元件（可以再说它的数值）",
-        "en": "the board has a part of this type (and this value)"
-      },
+      "about": "@capability.condition.items.has.about",
       "params": {
         "type": "shape",
         "name": "state-graph/condition-has"
       }
     },
     "feeds": {
-      "about": {
-        "zh": "一种元件直接接进另一种元件",
-        "en": "a part of one type wired straight into a part of another"
-      },
+      "about": "@capability.condition.items.feeds.about",
       "params": {
         "type": "shape",
         "name": "state-graph/condition-feeds"

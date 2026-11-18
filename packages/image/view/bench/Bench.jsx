@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { createElement, use, useEffect, useMemo, useRef, useState } from 'react'
 import { callOf } from 'kernel/view'
 import { benchRun, openKnobs, startValues } from './../../core/bench.js'
@@ -111,8 +112,8 @@ export default function Bench({ resource: { bench, model, displays }, onSolve, t
   const card = <section className="bk-stage bk-stack bench-main">{render(main)}</section>
   return (
     <>
-      {bench.setup && <PickMark at="bench.setup" label={{ zh: '实验设置', en: 'Experiment setup' }} />}
-      <PickMark at="bench.layout" label={{ zh: '实验布局', en: 'Experiment layout' }} />
+      {bench.setup && <PickMark at="bench.setup" label={catalogText("实验设置")} />}
+      <PickMark at="bench.layout" label={catalogText("实验布局")} />
       <div className="bk bench">
         {head?.some(shown) && <div className="bench-head">{render(head)}</div>}
         {hasSide ? (

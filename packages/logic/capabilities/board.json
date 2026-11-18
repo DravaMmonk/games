@@ -2,28 +2,19 @@
   "extends": "board",
   "items": {
     "proof": {
-      "about": {
-        "en": "An inference circuit with scoped assumption frames",
-        "zh": "带作用域假设框的推理电路"
-      },
+      "about": "@capability.board.items.proof.about",
       "valueTypes": [
         "logic/judgment"
       ]
     },
     "machine": {
-      "about": {
-        "en": "A circuit over proof assistant values",
-        "zh": "处理证明助手值的电路"
-      },
+      "about": "@capability.board.items.machine.about",
       "valueTypes": [
         "logic/machine-value"
       ]
     },
     "gates": {
-      "about": {
-        "en": "A truth-value circuit",
-        "zh": "真值电路"
-      },
+      "about": "@capability.board.items.gates.about",
       "valueTypes": [
         "kernel/boolean"
       ]

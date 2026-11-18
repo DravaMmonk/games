@@ -1,16 +1,17 @@
+import { T as catalogText } from 'kernel/words'
 import { createElement } from 'react'
 import { createFigureHost } from 'kernel/view'
 import { figureTask, figureTest, partFigure } from '../../core/intros.js'
 import { WORDS } from 'kernel/view'
 import { IntroFigure, FigureHost } from 'kernel/view'
 
-const INPUT = { zh: '输入', en: 'Input' }
-const OUTPUT = { zh: '输出', en: 'Output' }
+const INPUT = catalogText("输入")
+const OUTPUT = catalogText("输出")
 const INPUT_NAMES = {
-  left: { zh: '左图', en: 'Left image' },
-  right: { zh: '右图', en: 'Right image' },
-  scene: { zh: '现场', en: 'Scene' },
-  empty: { zh: '空场', en: 'Empty scene' },
+  left: catalogText("左图"),
+  right: catalogText("右图"),
+  scene: catalogText("现场"),
+  empty: catalogText("空场"),
 }
 
 const item = (label, image, view) => image.w * image.h === 1 && (image.c ?? 1) === 1

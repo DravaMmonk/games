@@ -8,30 +8,21 @@
       }
     },
     "grid": {
-      "about": {
-        "zh": "棋盘：R 行 C 列，箭头往右往下（或按 moves），个别格子另写",
-        "en": "a grid of R × C with arrows right and down (or by moves), some cells written apart"
-      },
+      "about": "@capability.figure.items.grid.about",
       "params": {
         "type": "shape",
         "name": "state-graph/figure-grid"
       }
     },
     "circuit": {
-      "about": {
-        "zh": "一小块示意电路：上面是输入，中间是元件，下面是输出",
-        "en": "a little circuit: inputs on top, parts in rows, outputs at the bottom"
-      },
+      "about": "@capability.figure.items.circuit.about",
       "params": {
         "type": "shape",
         "name": "state-graph/figure-circuit"
       }
     },
     "window": {
-      "about": {
-        "zh": "机器人 3×3 的视野：每格的值，亮起的是读的格子",
-        "en": "the robot’s 3×3 view: what each cell holds, the ones read lit"
-      },
+      "about": "@capability.figure.items.window.about",
       "params": {
         "type": "shape",
         "name": "state-graph/figure-window"

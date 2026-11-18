@@ -41,7 +41,7 @@ import { MOD } from './Shortcuts.jsx'
 const QUERY = new URLSearchParams(window.location.search)
 const SCOPE = 'game'
 const OPENED = readOpen(QUERY, GAME_LISTS)
-const LISTS = { games: [Gamepad2, '游戏', 'Games'], packages: [Package, '用到的包', 'Packages it plays'], chapters: [ListTree, '章节', 'Chapters'], overrides: [Layers, '覆盖', 'Overrides'] }
+const LISTS = { games: [Gamepad2, T("游戏")], packages: [Package, T("用到的包")], chapters: [ListTree, T("章节")], overrides: [Layers, T("覆盖")] }
 const SETTLE = 700
 
 const remember = (game, at, opened) => {
@@ -172,14 +172,14 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   // Another game opened from the games list (the pending operations given up, after asking).
   const openGame = (id) => {
     if (id === game || saving) return
-    if (ops.length && !window.confirm(tr('换一款游戏会放弃待定操作，确定吗？', 'Opening another game discards the pending operations. Continue?'))) return
+    if (ops.length && !window.confirm(tr("换一款游戏会放弃待定操作，确定吗？"))) return
     onGame(id)
     select({ era: 0 })
   }
   // A new game on the picked game's package (create_game keeps its course settings), then opened.
   const makeGame = async (args) => {
     await call('create_game', args)
-    if (ops.length && !window.confirm(tr('新游戏已建好。打开它会放弃待定操作，现在打开吗？', 'The game is made. Opening it discards the pending operations. Open it now?'))) return onMade(null)
+    if (ops.length && !window.confirm(tr("新游戏已建好。打开它会放弃待定操作，现在打开吗？"))) return onMade(null)
     setPickedGame(args.id)
     return onMade(args.id)
   }
@@ -206,22 +206,22 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
-        <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => setSide('games')} title={tr('在左栏选游戏', 'Pick a game in the left column')}>
+        <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => setSide('games')} title={tr("在左栏选游戏")}>
           <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
         </button>
         <button type="button" className={`studio-open-name studio-play-toggle ${playing ? 'is-on' : ''}`} aria-pressed={playing}
-          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame())} title={`${playing ? tr('回到编排', 'Back to arranging') : tr('试玩这款游戏', 'Play the game')} (${MOD}+Enter)`}>
-          <Play size={13} aria-hidden="true" /><span>{tr('试玩', 'Play')}</span>
+          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame())} title={`${playing ? tr("回到编排") : tr("试玩这款游戏")} (${MOD}+Enter)`}>
+          <Play size={13} aria-hidden="true" /><span>{tr("试玩")}</span>
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
         <div className={`studio-body is-${overridesShown || packagesShown ? 'objects' : 'arrange'} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
           <aside className="studio-tree">
-            <div className="side-tabs" role="tablist" aria-label={tr('列表', 'Lists')}>
+            <div className="side-tabs" role="tablist" aria-label={tr("列表")}>
               {GAME_LISTS.map((list) => {
-                const [Icon, zh, en] = LISTS[list]
+                const [Icon, label] = LISTS[list]
                 return (
-                  <button key={list} type="button" role="tab" aria-selected={side === list} className={side === list ? 'is-on' : ''} aria-label={tr(zh, en)} title={tr(zh, en)} onClick={() => setSide(list)}>
+                  <button key={list} type="button" role="tab" aria-selected={side === list} className={side === list ? 'is-on' : ''} aria-label={L(label)} title={L(label)} onClick={() => setSide(list)}>
                     <Icon size={14} aria-hidden="true" />
                   </button>
                 )
@@ -230,16 +230,16 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             {gamesShown ? <GameList games={games} current={game} picked={pickedGame} disabled={saving} onPick={setPickedGame} onOpen={openGame} onCreate={makeGame} />
               : packagesShown ? <UsedPackages packages={packages} used={used} current={packageShown} onOpen={setPackageAt} />
               : overridesShown ? <OverrideList events={events} layer={layer} current={openEvent && overrideKey(openEvent)} onOpen={setOpenOverride} /> : (
-            <nav className="tree chapters" aria-label={tr('章节', 'Chapters')}>
-              <SidebarListTools addOptions={busyEditing ? [] : [{ value: 'chapter', label: tr('新的一章', 'New chapter') }]} addLabel={tr('新的一章', 'New chapter')} onAdd={newChapter}
+            <nav className="tree chapters" aria-label={tr("章节")}>
+              <SidebarListTools addOptions={busyEditing ? [] : [{ value: 'chapter', label: tr("新的一章") }]} addLabel={tr("新的一章")} onAdd={newChapter}
                 query={chapterQuery} onQuery={setChapterQuery} />
               {eras.map((chapter, k) => !chapterMatches(chapter) ? null : (
                 <div key={k} className={`chapter-item ${e === k && !at?.game ? 'is-on' : ''}`}>
                   <ListRow icon={BookMarked} on={e === k && !at?.game} onClick={() => select({ era: k })} title={L(chapter.title ?? chapter.chapter?.title)} id={chapterName(chapter.id)} />
                   <span className="chapter-tools">
-                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === 0} onClick={() => shift(k, -1)} title={tr('上移', 'Move up')}><ArrowUp size={12} /></button>
-                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === eras.length - 1} onClick={() => shift(k, 1)} title={tr('下移', 'Move down')}><ArrowDown size={12} /></button>
-                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || chapter.levels.length > 0 || eras.length === 1} onClick={() => removeChapter(k)} title={tr('删掉这一章（章里没有关卡时）', 'Remove the chapter (when it is empty)')}><Trash2 size={12} /></button>
+                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === 0} onClick={() => shift(k, -1)} title={tr("上移")}><ArrowUp size={12} /></button>
+                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === eras.length - 1} onClick={() => shift(k, 1)} title={tr("下移")}><ArrowDown size={12} /></button>
+                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || chapter.levels.length > 0 || eras.length === 1} onClick={() => removeChapter(k)} title={tr("删掉这一章（章里没有关卡时）")}><Trash2 size={12} /></button>
                   </span>
                 </div>
               ))}
@@ -250,9 +250,9 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
               onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
               tools={<>
-                <button type="button" className="kit-btn is-label" onClick={() => setPlayAt({ map: Date.now() })} title={tr('回到这款游戏的地图', 'Back to the game’s map')}><MapIcon size={14} aria-hidden="true" />{tr('地图', 'Map')}</button>
-                {at?.level && <button type="button" className="kit-btn is-label" onClick={() => playGame(at.level)} title={tr('从编排里选中的这一关开始', 'Start at the level picked in arranging')}><RotateCcw size={14} aria-hidden="true" />{at.level}</button>}
-                <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr('回到编排', 'Back to arranging')}</button>
+                <button type="button" className="kit-btn is-label" onClick={() => setPlayAt({ map: Date.now() })} title={tr("回到这款游戏的地图")}><MapIcon size={14} aria-hidden="true" />{tr("地图")}</button>
+                {at?.level && <button type="button" className="kit-btn is-label" onClick={() => playGame(at.level)} title={tr("从编排里选中的这一关开始")}><RotateCcw size={14} aria-hidden="true" />{at.level}</button>}
+                <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr("回到编排")}</button>
               </>} />}
             <div className="studio-scroll" hidden={playing}>
               {packagesShown && <PackageCard key={packageShown} id={packageShown} packages={packages} games={games} used={used} labels={surfaceLabels(content, vocab?.vocabulary)} pending={busyEditing} onBuild={onBuild} onOps={tryOps} />}
@@ -271,7 +271,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
             {/* The right column is the file: the open game's game.json edited here, another game's read as JSON. */}
-            {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={gameJson(games.find((g) => g.id === pickedGame))} note={tr('打开这款游戏后在这里编辑', 'Open the game to edit it here')} />
+            {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={gameJson(games.find((g) => g.id === pickedGame))} note={tr("打开这款游戏后在这里编辑")} />
               : gamesShown ? sideCtx && <Inspector content={course} vocab={vocab} at={{ game: true }} field={at?.game && field ? field : { path: [] }} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
                 onPick={(path) => { if (!at?.game) setAt({ game: true }); pickField(path) }} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setField(null)}
                 tabs={[]} selection={{ game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}
@@ -300,7 +300,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
 /** A chapter's own fields copied for a new one: its title "New chapter", its other texts empty, the rest as they were. */
 function retitled(value, key = null) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return value
-  if (isText(value)) return key === 'title' ? T('新的一章', 'New chapter') : Object.fromEntries(textEntries(value).map(([lang]) => [lang, '']))
+  if (isText(value)) return key === 'title' ? T("新的一章") : Object.fromEntries(textEntries(value).map(([lang]) => [lang, '']))
   return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, retitled(v, k)]))
 }
 
@@ -311,11 +311,11 @@ function UsedPackages({ packages, used, current, onOpen }) {
   const listed = [...packages].sort((a, b) => Number(used.includes(b.id)) - Number(used.includes(a.id)) || a.id.localeCompare(b.id))
     .filter(({ id, title, uses }) => words.every((word) => `${id} ${Object.values(title).join(' ')} ${Object.keys(uses ?? {}).join(' ')}`.toLowerCase().includes(word)))
   return (
-    <nav className="parts-list" aria-label={tr('包', 'Packages')}>
+    <nav className="parts-list" aria-label={tr("包")}>
       <SidebarGrouping scope="arrange-packages" groupsOf={by => packageSidebarGroups(listed, by)} tools={{ query, onQuery: setQuery }} row={({ id, title, desc }) => (
         <ListRow key={id} icon={Package} title={L(title)} id={id} tooltip={L(desc)} on={id === current}
           className={`is-object ${used.includes(id) ? '' : 'is-unused'}`} onClick={() => onOpen(id)}>
-          {used.includes(id) && <i className="project-pick-open">{tr('在用', 'In use')}</i>}
+          {used.includes(id) && <i className="project-pick-open">{tr("在用")}</i>}
         </ListRow>
       )} />
     </nav>
@@ -339,25 +339,25 @@ function PackageCard({ id, packages, games, used, labels, pending, onBuild, onOp
     <article className="editor">
       <header className="editor-head">
         <PackageName info={info} />
-        <span className="object-kind">{used.includes(id) ? tr('在用', 'In use') : tr('未用', 'Not used')}</span>
+        <span className="object-kind">{used.includes(id) ? tr("在用") : tr("未用")}</span>
         <span className="kit-spacer" />
         {used.includes(id)
-          ? <button type="button" className="kit-btn is-label" disabled={pending} onClick={() => run(packageRemoveOps(id))}><Minus size={13} aria-hidden="true" />{tr('不再选用', 'Remove from the game')}</button>
+          ? <button type="button" className="kit-btn is-label" disabled={pending} onClick={() => run(packageRemoveOps(id))}><Minus size={13} aria-hidden="true" />{tr("不再选用")}</button>
           : <button type="button" className="kit-btn is-label" disabled={pending} onClick={() => run(packageAddOps(packages, used, id))}>
-            <Plus size={13} aria-hidden="true" />{missing.length ? tr(`连同 ${missingNames.join('、')} 一起选用`, `Add with ${missingNames.join(', ')}`) : tr('选用', 'Add to the game')}
+            <Plus size={13} aria-hidden="true" />{missing.length ? tr("连同 {value} 一起选用", { value: { zh: missingNames.join('、'), en: missingNames.join(', ') } }) : tr("选用")}
           </button>}
-        {onBuild && <button type="button" className="kit-btn is-label" onClick={() => onBuild(id)}><Hammer size={13} aria-hidden="true" />{tr('构建', 'Build')}</button>}
+        {onBuild && <button type="button" className="kit-btn is-label" onClick={() => onBuild(id)}><Hammer size={13} aria-hidden="true" />{tr("构建")}</button>}
       </header>
       <p className="package-description">{L(info.desc)}</p>
       {refusal && <p className="is-error package-refusal" role="alert">{refusal}</p>}
       <dl className="package-facts">
-        <dt>{tr('种类', 'Kind')}</dt><dd>{info.kind ? <>{packageKindLabel(info.kind)} <code>{info.kind}</code></> : '—'}</dd>
-        <dt>{tr('版本', 'Version')}</dt><dd><code>{info.version ?? '—'}</code></dd>
-        {uses.length > 0 && <><dt>{tr('依赖', 'Uses')}</dt><dd><PackageDependencies key={id} packages={uses} /></dd></>}
+        <dt>{tr("种类")}</dt><dd>{info.kind ? <>{packageKindLabel(info.kind)} <code>{info.kind}</code></> : '—'}</dd>
+        <dt>{tr("版本")}</dt><dd><code>{info.version ?? '—'}</code></dd>
+        {uses.length > 0 && <><dt>{tr("依赖")}</dt><dd><PackageDependencies key={id} packages={uses} /></dd></>}
         <PackageUsers packages={packages} games={games} id={id} />
       </dl>
       {surface.length > 0 && <>
-        <h3 className="package-meta-file">{tr('公开内容', 'Public surface')}</h3>
+        <h3 className="package-meta-file">{tr("公开内容")}</h3>
         <dl className="package-facts">
           {surface.map(([kind, n]) => <Fragment key={kind}><dt>{surfaceName(kind, labels)}</dt><dd>{n}</dd></Fragment>)}
         </dl>

@@ -79,7 +79,7 @@ export default function GameFrame({ visible, content, play, object, stage = null
     <section className={`studio-play ${visible ? '' : 'is-hidden'}`}>
       <div className="studio-play-bar">
         {editable && <span className="play-mode" role="radiogroup" aria-label={tr('模式')}>
-          <button type="button" role="radio" aria-checked={edit} className={edit ? 'is-on' : ''} onClick={() => onEdit(true)} title={tr('点画面上的字段在侧栏里改')}><MousePointerClick size={13} aria-hidden="true" />{tr('编辑', 'Edit')}</button>
+          <button type="button" role="radio" aria-checked={edit} className={edit ? 'is-on' : ''} onClick={() => onEdit(true)} title={tr('点画面上的字段在侧栏里改')}><MousePointerClick size={13} aria-hidden="true" />{tr("编辑", {}, "game-frame")}</button>
           <button type="button" role="radio" aria-checked={!edit} className={!edit ? 'is-on' : ''} onClick={() => onEdit(false)}><Play size={13} aria-hidden="true" />{tr('试玩')}</button>
         </span>}
         <button type="button" className="play-root" disabled={!edit} onClick={onRoot} title={editable ? tr('全部字段') : undefined}>{object !== undefined ? object.full : play?.level ?? content?.id}</button>
@@ -93,7 +93,7 @@ export default function GameFrame({ visible, content, play, object, stage = null
         {play?.take && <button type="button" className="kit-btn is-label" onClick={onCancelTake}><X size={14} aria-hidden="true" />{tr('不用这块板')}</button>}
         {tools}
       </div>
-      <iframe ref={frame} title={tr('游戏', 'Game')} src="/studio.html?play" />
+      <iframe ref={frame} title={tr("游戏", {}, "game-frame")} src="/studio.html?play" />
       {footer}
     </section>
   )

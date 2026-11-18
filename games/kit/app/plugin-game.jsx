@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // The shell owns saving, checking and progress; packages only render and edit work. A plugin's main area sits in the
 // same frame as every play (shell/plays/PlayLayout.jsx): the task card, the stage, the verdict and the run bar.
 import { createElement, useState } from 'react'
@@ -28,15 +29,15 @@ export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
         const result = evaluatePlay(kernel, task, work, context)
         setResult(result.verdict)
         if (result.verdict.pass) solve(result.verdict.score, result.work)
-        else fail?.({ body: tr('再试一次', 'Try again') })
+        else fail?.({ body: tr("再试一次") })
       }
       const pass = Boolean(result?.pass)
       const stage = <div className="plugin-stage">{createElement(view.component, { task, work, onChange: change, onSubmit: check, state: kernel.state(context), context, phone })}</div>
-      const results = result && <Verdict pass={pass} compact>{pass ? tr('通过', 'Passed') : tr('还不对，再试一次', 'Not yet. Try again')}</Verdict>
+      const results = result && <Verdict pass={pass} compact>{pass ? tr("通过") : tr("还不对，再试一次")}</Verdict>
       return <Level phone={phone} brief={<Brief game={game} level={level} hint={task.hint} />} taskNav={<TaskNavigation level={level} />}
         stage={stage} results={results} dock={<RunDock go={checkAction(check, pass)} />} />
     }
-    return [name, { Screen, label: { zh: '作答', en: 'Answer' } }]
+    return [name, { Screen, label: catalogText("作答") }]
   }))
   const define = (content, works = runtime.spec(content)) => {
     kernel.pair(content.levels.flatMap(level => level.tasks), view)

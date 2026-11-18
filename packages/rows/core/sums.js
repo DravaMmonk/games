@@ -1,5 +1,5 @@
 import { cases } from 'kernel'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { holeTree } from 'kernel'
 
 export const tree = holeTree({
@@ -16,7 +16,7 @@ export function readSum(value) {
 }
 
 export const judgeSums = (rows) => cases(rows, (work, row, k) => {
-  if (!tree.complete(work[k])) return { at: { row: k, slot: 0 }, why: T('还有一行没写完。', 'A row is still unfinished.') }
+  if (!tree.complete(work[k])) return { at: { row: k, slot: 0 }, why: T("还有一行没写完。") }
   const got = total(work[k])
   return got === row.total ? null : { at: { row: k, slot: 0 }, want: row.total, got, why: { relation: 'evaluates', subject: text(work[k]), show: String } }
 })

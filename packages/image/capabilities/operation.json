@@ -28,10 +28,7 @@
       }
     },
     "shift": {
-      "about": {
-        "zh": "平移",
-        "en": "Shift"
-      },
+      "about": "@capability.operation.items.shift.about",
       "args": [
         {
           "name": "in",
@@ -79,10 +76,7 @@
       }
     },
     "add": {
-      "about": {
-        "zh": "相加",
-        "en": "Add"
-      },
+      "about": "@capability.operation.items.add.about",
       "args": [
         {
           "name": "a",
@@ -100,10 +94,7 @@
       }
     },
     "sub": {
-      "about": {
-        "zh": "相减",
-        "en": "Subtract"
-      },
+      "about": "@capability.operation.items.sub.about",
       "args": [
         {
           "name": "a",
@@ -121,10 +112,7 @@
       }
     },
     "mul": {
-      "about": {
-        "zh": "相乘",
-        "en": "Multiply"
-      },
+      "about": "@capability.operation.items.mul.about",
       "args": [
         {
           "name": "a",
@@ -142,10 +130,7 @@
       }
     },
     "arith": {
-      "about": {
-        "zh": "四则运算",
-        "en": "Arithmetic"
-      },
+      "about": "@capability.operation.items.arith.about",
       "args": [
         {
           "name": "a",
@@ -199,10 +184,7 @@
       }
     },
     "softmax-p1": {
-      "about": {
-        "zh": "Softmax",
-        "en": "Softmax"
-      },
+      "about": "@capability.operation.items.softmax-p1.about",
       "args": [
         {
           "name": "s1",
@@ -225,10 +207,7 @@
       }
     },
     "softmax-p2": {
-      "about": {
-        "zh": "Softmax",
-        "en": "Softmax"
-      },
+      "about": "@capability.operation.items.softmax-p2.about",
       "args": [
         {
           "name": "s1",
@@ -251,10 +230,7 @@
       }
     },
     "softmax-p3": {
-      "about": {
-        "zh": "Softmax",
-        "en": "Softmax"
-      },
+      "about": "@capability.operation.items.softmax-p3.about",
       "args": [
         {
           "name": "s1",
@@ -277,10 +253,7 @@
       }
     },
     "merge": {
-      "about": {
-        "zh": "汇合器",
-        "en": "Merger"
-      },
+      "about": "@capability.operation.items.merge.about",
       "args": [
         {
           "name": "a",
@@ -305,10 +278,7 @@
       }
     },
     "const": {
-      "about": {
-        "zh": "常数",
-        "en": "Constant"
-      },
+      "about": "@capability.operation.items.const.about",
       "args": [],
       "returns": "image/image",
       "params": {
@@ -327,10 +297,7 @@
       }
     },
     "threshold": {
-      "about": {
-        "zh": "阈值",
-        "en": "Threshold"
-      },
+      "about": "@capability.operation.items.threshold.about",
       "args": [
         {
           "name": "in",
@@ -354,10 +321,7 @@
       }
     },
     "invert": {
-      "about": {
-        "zh": "反相",
-        "en": "Invert"
-      },
+      "about": "@capability.operation.items.invert.about",
       "args": [
         {
           "name": "in",
@@ -397,10 +361,7 @@
       }
     },
     "square": {
-      "about": {
-        "zh": "平方",
-        "en": "Square"
-      },
+      "about": "@capability.operation.items.square.about",
       "args": [
         {
           "name": "in",
@@ -414,10 +375,7 @@
       }
     },
     "sqrt": {
-      "about": {
-        "zh": "开方",
-        "en": "Square root"
-      },
+      "about": "@capability.operation.items.sqrt.about",
       "args": [
         {
           "name": "in",
@@ -444,10 +402,7 @@
       }
     },
     "zeroUp": {
-      "about": {
-        "zh": "补零放大",
-        "en": "Zero upsample"
-      },
+      "about": "@capability.operation.items.zeroUp.about",
       "args": [
         {
           "name": "in",
@@ -461,10 +416,7 @@
       }
     },
     "fqMean": {
-      "about": {
-        "zh": "求平均",
-        "en": "Average"
-      },
+      "about": "@capability.operation.items.fqMean.about",
       "args": [
         {
           "name": "in",
@@ -478,10 +430,7 @@
       }
     },
     "globalMax": {
-      "about": {
-        "zh": "全图最大值",
-        "en": "Global max"
-      },
+      "about": "@capability.operation.items.globalMax.about",
       "args": [
         {
           "name": "in",
@@ -495,10 +444,7 @@
       }
     },
     "blur3h": {
-      "about": {
-        "zh": "横向三点平均",
-        "en": "3-point horizontal average"
-      },
+      "about": "@capability.operation.items.blur3h.about",
       "args": [
         {
           "name": "in",
@@ -523,10 +469,7 @@
       }
     },
     "line3": {
-      "about": {
-        "zh": "一维三点核",
-        "en": "1D 3-point kernel"
-      },
+      "about": "@capability.operation.items.line3.about",
       "args": [
         {
           "name": "in",
@@ -588,10 +531,7 @@
       }
     },
     "box3": {
-      "about": {
-        "zh": "3×3 平均",
-        "en": "3×3 average"
-      },
+      "about": "@capability.operation.items.box3.about",
       "args": [
         {
           "name": "in",
@@ -616,10 +556,7 @@
       }
     },
     "gauss": {
-      "about": {
-        "zh": "高斯模糊",
-        "en": "Gaussian blur"
-      },
+      "about": "@capability.operation.items.gauss.about",
       "args": [
         {
           "name": "in",
@@ -653,10 +590,7 @@
       }
     },
     "diffx": {
-      "about": {
-        "zh": "横向差分",
-        "en": "Horizontal difference"
-      },
+      "about": "@capability.operation.items.diffx.about",
       "args": [
         {
           "name": "in",
@@ -670,10 +604,7 @@
       }
     },
     "sobelx": {
-      "about": {
-        "zh": "Sobel x",
-        "en": "Sobel x"
-      },
+      "about": "@capability.operation.items.sobelx.about",
       "args": [
         {
           "name": "in",
@@ -698,10 +629,7 @@
       }
     },
     "sobely": {
-      "about": {
-        "zh": "Sobel y",
-        "en": "Sobel y"
-      },
+      "about": "@capability.operation.items.sobely.about",
       "args": [
         {
           "name": "in",
@@ -726,10 +654,7 @@
       }
     },
     "kernel3": {
-      "about": {
-        "zh": "3×3 核",
-        "en": "3×3 kernel"
-      },
+      "about": "@capability.operation.items.kernel3.about",
       "args": [
         {
           "name": "in",
@@ -774,10 +699,7 @@
       }
     },
     "learn3": {
-      "about": {
-        "zh": "可学习 3×3 核",
-        "en": "Learnable 3×3 kernel"
-      },
+      "about": "@capability.operation.items.learn3.about",
       "args": [
         {
           "name": "in",
@@ -812,10 +734,7 @@
       }
     },
     "downsample": {
-      "about": {
-        "zh": "隔点取样",
-        "en": "Downsample"
-      },
+      "about": "@capability.operation.items.downsample.about",
       "args": [
         {
           "name": "in",
@@ -829,10 +748,7 @@
       }
     },
     "maxpool": {
-      "about": {
-        "zh": "2×2 最大池化",
-        "en": "2×2 max pool"
-      },
+      "about": "@capability.operation.items.maxpool.about",
       "args": [
         {
           "name": "in",
@@ -846,10 +762,7 @@
       }
     },
     "gradmag": {
-      "about": {
-        "zh": "梯度幅值",
-        "en": "Gradient magnitude"
-      },
+      "about": "@capability.operation.items.gradmag.about",
       "args": [
         {
           "name": "in",
@@ -874,10 +787,7 @@
       }
     },
     "harris": {
-      "about": {
-        "zh": "Harris 响应",
-        "en": "Harris response"
-      },
+      "about": "@capability.operation.items.harris.about",
       "args": [
         {
           "name": "in",
@@ -901,10 +811,7 @@
       }
     },
     "argmin4": {
-      "about": {
-        "zh": "取最小者编号",
-        "en": "Index of minimum"
-      },
+      "about": "@capability.operation.items.argmin4.about",
       "args": [
         {
           "name": "c0",
@@ -932,10 +839,7 @@
       }
     },
     "disparity": {
-      "about": {
-        "zh": "视差搜索",
-        "en": "Disparity search"
-      },
+      "about": "@capability.operation.items.disparity.about",
       "args": [
         {
           "name": "left",
@@ -966,10 +870,7 @@
       }
     },
     "fqWave": {
-      "about": {
-        "zh": "波",
-        "en": "Wave"
-      },
+      "about": "@capability.operation.items.fqWave.about",
       "args": [],
       "returns": "image/image",
       "params": {
@@ -998,10 +899,7 @@
       }
     },
     "fqSpectrum": {
-      "about": {
-        "zh": "频谱",
-        "en": "Spectrum"
-      },
+      "about": "@capability.operation.items.fqSpectrum.about",
       "args": [
         {
           "name": "in",
@@ -1015,10 +913,7 @@
       }
     },
     "fqLowpass": {
-      "about": {
-        "zh": "频域低通",
-        "en": "Frequency low-pass"
-      },
+      "about": "@capability.operation.items.fqLowpass.about",
       "args": [
         {
           "name": "in",
@@ -1052,10 +947,7 @@
       }
     },
     "fqApply": {
-      "about": {
-        "zh": "频域相乘",
-        "en": "Multiply in frequency"
-      },
+      "about": "@capability.operation.items.fqApply.about",
       "args": [
         {
           "name": "in",
@@ -1073,10 +965,7 @@
       }
     },
     "shade": {
-      "about": {
-        "zh": "朗伯着色",
-        "en": "Lambert shading"
-      },
+      "about": "@capability.operation.items.shade.about",
       "args": [
         {
           "name": "nx",
@@ -1130,10 +1019,7 @@
       }
     },
     "sense": {
-      "about": {
-        "zh": "感光",
-        "en": "Sensor"
-      },
+      "about": "@capability.operation.items.sense.about",
       "args": [
         {
           "name": "in",
@@ -1159,10 +1045,7 @@
       }
     },
     "lrnConv": {
-      "about": {
-        "zh": "卷积层",
-        "en": "Conv layer"
-      },
+      "about": "@capability.operation.items.lrnConv.about",
       "args": [
         {
           "name": "in",
@@ -1197,10 +1080,7 @@
       }
     },
     "lrnDense": {
-      "about": {
-        "zh": "全连接 w·x + b",
-        "en": "Dense w·x + b"
-      },
+      "about": "@capability.operation.items.lrnDense.about",
       "args": [
         {
           "name": "in",
@@ -1228,10 +1108,7 @@
       }
     },
     "lrnSigmoid": {
-      "about": {
-        "zh": "Sigmoid",
-        "en": "Sigmoid"
-      },
+      "about": "@capability.operation.items.lrnSigmoid.about",
       "args": [
         {
           "name": "in",
@@ -1245,10 +1122,7 @@
       }
     },
     "lrnConst": {
-      "about": {
-        "zh": "可学习常数",
-        "en": "Learnable constant"
-      },
+      "about": "@capability.operation.items.lrnConst.about",
       "args": [],
       "returns": "image/image",
       "params": {
@@ -1270,10 +1144,7 @@
       }
     },
     "max": {
-      "about": {
-        "zh": "取较大",
-        "en": "Larger"
-      },
+      "about": "@capability.operation.items.max.about",
       "args": [
         {
           "name": "a",
@@ -1291,10 +1162,7 @@
       }
     },
     "lrnRgb": {
-      "about": {
-        "zh": "多通道 3×3 核",
-        "en": "Multichannel 3×3 kernel"
-      },
+      "about": "@capability.operation.items.lrnRgb.about",
       "args": [
         {
           "name": "r",
@@ -1355,10 +1223,7 @@
       }
     },
     "lrnRes": {
-      "about": {
-        "zh": "残差块",
-        "en": "Residual block"
-      },
+      "about": "@capability.operation.items.lrnRes.about",
       "args": [
         {
           "name": "in",
@@ -1393,10 +1258,7 @@
       }
     },
     "attention": {
-      "about": {
-        "zh": "注意力",
-        "en": "Attention"
-      },
+      "about": "@capability.operation.items.attention.about",
       "args": [
         {
           "name": "Q",
@@ -1441,10 +1303,7 @@
       }
     },
     "embed": {
-      "about": {
-        "zh": "对比编码器",
-        "en": "Contrastive encoder"
-      },
+      "about": "@capability.operation.items.embed.about",
       "args": [
         {
           "name": "in",
@@ -1458,10 +1317,7 @@
       }
     },
     "hough": {
-      "about": {
-        "zh": "Hough 累加器",
-        "en": "Hough accumulator"
-      },
+      "about": "@capability.operation.items.hough.about",
       "args": [
         {
           "name": "in",
@@ -1475,10 +1331,7 @@
       }
     },
     "ransac": {
-      "about": {
-        "zh": "RANSAC 找直线",
-        "en": "RANSAC line"
-      },
+      "about": "@capability.operation.items.ransac.about",
       "args": [
         {
           "name": "in",
@@ -1511,10 +1364,7 @@
       }
     },
     "homography": {
-      "about": {
-        "zh": "求单应",
-        "en": "Solve homography"
-      },
+      "about": "@capability.operation.items.homography.about",
       "args": [
         {
           "name": "pairs",
@@ -1538,10 +1388,7 @@
       }
     },
     "warp": {
-      "about": {
-        "zh": "单应变形",
-        "en": "Homography warp"
-      },
+      "about": "@capability.operation.items.warp.about",
       "args": [
         {
           "name": "in",
@@ -1563,10 +1410,7 @@
       }
     },
     "dg-encode": {
-      "about": {
-        "zh": "编码器",
-        "en": "Encoder"
-      },
+      "about": "@capability.operation.items.dg-encode.about",
       "args": [
         {
           "name": "in",
@@ -1651,10 +1495,7 @@
       }
     },
     "dg-decode": {
-      "about": {
-        "zh": "解码器",
-        "en": "Decoder"
-      },
+      "about": "@capability.operation.items.dg-decode.about",
       "args": [
         {
           "name": "in",
@@ -1688,10 +1529,7 @@
       }
     },
     "dg-encoder": {
-      "about": {
-        "zh": "编码器（已训练）",
-        "en": "Encoder (trained)"
-      },
+      "about": "@capability.operation.items.dg-encoder.about",
       "args": [
         {
           "name": "in",
@@ -1705,10 +1543,7 @@
       }
     },
     "dg-decoder": {
-      "about": {
-        "zh": "解码器（已训练）",
-        "en": "Decoder (trained)"
-      },
+      "about": "@capability.operation.items.dg-decoder.about",
       "args": [
         {
           "name": "in",
@@ -1722,10 +1557,7 @@
       }
     },
     "dg-mu": {
-      "about": {
-        "zh": "μ",
-        "en": "μ"
-      },
+      "about": "μ",
       "args": [],
       "returns": "image/image",
       "params": {
@@ -1748,10 +1580,7 @@
       }
     },
     "dg-sigma": {
-      "about": {
-        "zh": "σ",
-        "en": "σ"
-      },
+      "about": "σ",
       "args": [],
       "returns": "image/image",
       "params": {
@@ -1774,10 +1603,7 @@
       }
     },
     "dg-sample": {
-      "about": {
-        "zh": "采样 z ~ N(μ, σ²)",
-        "en": "Sample z ~ N(μ, σ²)"
-      },
+      "about": "@capability.operation.items.dg-sample.about",
       "args": [
         {
           "name": "mu",
@@ -1795,10 +1621,7 @@
       }
     },
     "dg-reparam": {
-      "about": {
-        "zh": "重参数化 μ + σ·ε",
-        "en": "Reparameterization μ + σ·ε"
-      },
+      "about": "@capability.operation.items.dg-reparam.about",
       "args": [
         {
           "name": "mu",
@@ -1820,10 +1643,7 @@
       }
     },
     "tconv": {
-      "about": {
-        "zh": "转置卷积（步幅 2）",
-        "en": "Transposed convolution (stride 2)"
-      },
+      "about": "@capability.operation.items.tconv.about",
       "args": [
         {
           "name": "in",

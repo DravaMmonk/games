@@ -43,7 +43,7 @@ export function robotDrawing({ sensors, avail, lit, win }, part, onPick) {
     const cls = ['vcell', ...String(x.cls || '').split(' ').filter(Boolean).map((c) => `v-${c}`), x.key === null && 'off', on && 'on', x.out && 'self', x.state && `v-${x.state}`, can && onPick && 'can'].filter(Boolean).join(' ')
     const icon = x.key === null ? '' : markOf(x)
     const corner = icon && !x.mark ? '' : x.corner
-    const value = esc(x.key === null ? tr('界外', 'out') : x.value)
+    const value = esc(x.key === null ? tr("界外") : x.value)
     const body = [
       mark(icon),
       x.key !== null && corner !== undefined && corner !== '' && `<span class="vc">${esc(corner)}</span>`,
@@ -65,11 +65,11 @@ export function robotDrawing({ sensors, avail, lit, win }, part, onPick) {
   const sweep = (sw) => {
     const cells = sw.cells.map((x) => `<span class="vcell sm${x.out ? ' v-out' : ''}${x.state ? ` v-${esc(x.state)}` : ''}">${mark(x.mark)}${x.label === undefined ? '' : `<span class="vc">${esc(x.label)}</span>`}<span class="vv">${esc(x.value)}</span></span>`).join('')
     const on = lit.includes(sw.sensor)
-    const body = `<span class="vsl">${esc(sw.label)}</span><span class="vstrip">${cells || `<em class="vnone">${esc(tr('一格也没有', 'no cells at all'))}</em>`}</span>${on ? tag(sw.sensor) : ''}`
+    const body = `<span class="vsl">${esc(sw.label)}</span><span class="vstrip">${cells || `<em class="vnone">${esc(tr("一格也没有"))}</em>`}</span>${on ? tag(sw.sensor) : ''}`
     return press(`vsweep${on ? ' on' : ''}`, body, avail.includes(sw.sensor) ? sw.sensor : null)
   }
   const extra = arm ? `<div class="vpart vextra">${arm.sweeps
-    ? `<div class="varm sweeps">${armWords(tr('扫描臂', 'Sweep arm'))}${arm.sweeps.map(sweep).join('')}</div>`
+    ? `<div class="varm sweeps">${armWords(tr("扫描臂"))}${arm.sweeps.map(sweep).join('')}</div>`
     : `<div class="varm">${armWords(win.robot.armName)}<div class="varm-row">${arm.cells.map((x) => cell(x)).join('')}</div></div>`}</div>` : ''
   const facts = win.facts.map(({ id, value }) => {
     const on = lit.includes(id)
@@ -80,6 +80,6 @@ export function robotDrawing({ sensors, avail, lit, win }, part, onPick) {
   const factList = (title = '') => `<div class="vpart vfacts">${title ? `<span class="vsub">${esc(title)}</span>` : ''}${facts}</div>`
   const main = `<div class="vpart vmain"><div class="vwins">${windows}</div></div>`
   const markup = part === 'view' ? main + extra : part === 'facts' ? factList()
-    : `<div class="vtop${facts ? ' has-facts' : ''}">${main}${facts ? factList(tr('本格信息', 'This cell')) : ''}</div>${extra}`
+    : `<div class="vtop${facts ? ' has-facts' : ''}">${main}${facts ? factList(tr("本格信息")) : ''}</div>${extra}`
   return { markup, target: 'sensor', onPick, variant: part, className: part ? 'sg-cardview' : 'cview' }
 }

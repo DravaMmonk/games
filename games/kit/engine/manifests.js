@@ -18,7 +18,7 @@ export function packageWords({ id, config, catalogs }) {
     const value = config[field]
     if (!referenceKey(value)) throw new Error(`${file}: ${field} must be an @key catalog reference`)
     const text = read(value, file)
-    for (const lang of ['zh', 'en']) if (!text[lang]?.trim()) throw new Error(`${file}: ${field} needs a ${lang} translation`)
+    for (const lang of field === 'desc' ? ['zh'] : ['zh', 'en']) if (!text[lang]?.trim()) throw new Error(`${file}: ${field} needs a ${lang} translation`)
     return [field, text]
   }))
 }
@@ -83,6 +83,7 @@ export function layerManifest(layer, layers, schemas, dir) {
     for (const meaning of meaningsOf(schemas)) for (const entry of meaning.identities?.(object) ?? []) values.set(`${entry.kind}:${entry.name}`, entry.value)
   }
   for (const [lang, entries] of Object.entries(layer.catalogs ?? {})) for (const [name, value] of Object.entries(entries)) {
+    if (name === 'ui') continue
     const key = `i18n:${name.includes('/') ? name : `${layer.id}/${name}`}`
     values.set(key, { ...values.get(key), [lang]: value })
   }

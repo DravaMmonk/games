@@ -3,7 +3,7 @@
 // entries. A board replays it by showing, after each step, only what had been computed by then.
 import { sourceOf } from './wire-source.js'
 import { MISSING } from './circuit.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 /** The values and errors a board shows once the first `upTo + 1` entries of a trace have run. */
 export function viewAt(trace, upTo) {
@@ -16,8 +16,8 @@ export function viewAt(trace, upTo) {
   return { values, errors }
 }
 
-const join = (a, b, mark = '·') => T(`${a.zh} ${mark} ${b.zh}`, `${a.en} ${mark} ${b.en}`)
-const words = (x) => (typeof x === 'string' ? T(x, x) : x)
+const join = (a, b, mark = '·') => T("{zh} {mark} {zh2}", {mark, zh: { zh: String(a.zh), en: String(a.en) }, zh2: { zh: String(b.zh), en: String(b.en) }})
+const words = (x) => (typeof x === 'string' ? { zh: x, en: x } : x)
 
 /**
  * A run's steps as its step log reads them (../shell/StepLog.jsx), one for every trace entry, in the order they ran:
@@ -31,9 +31,9 @@ export function traceSteps(trace, { nameAt, partName }) {
     const path = e.path ?? []
     const own = words(nameAt(path, e.id) ?? e.id)
     const what = e.inner && (e.label ?? (e.sub ? partName(e.sub) : null))
-    const step = what ? join(own, words(what)) : e.round ? join(own, T(`第 ${e.round} 轮`, `round ${e.round}`)) : own
+    const step = what ? join(own, words(what)) : e.round ? join(own, T("第 {round} 轮", {round: e.round})) : own
     const label = path.reduceRight((inner, _, k) => join(words(nameAt(path.slice(0, k), path[k]) ?? path[k]), inner, '›'), step)
-    const failed = e.error === undefined ? null : e.error === MISSING ? T(`「${own.zh}」缺少输入`, `“${own.en}” is missing an input`) : words(e.error)
+    const failed = e.error === undefined ? null : e.error === MISSING ? T("「{zh}」缺少输入", {zh: { zh: String(own.zh), en: String(own.en) }}) : words(e.error)
     return { label, value: e.value, failed }
   })
 }

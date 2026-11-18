@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { withReadCache } from '../read-cache.js'
 import { BUILTIN_POLICIES } from '../kind-policy.js'
 import { tagName } from '../tag-identity.js'
@@ -47,7 +48,7 @@ const git = (...args) => execFileSync('git', ['-C', ROOT, ...args], { encoding: 
 const dataGames = () => contentTargets([], ROOT, { game: true }).map(target => target.id)
 const known = (game) => {
   if (typeof game === 'object' && game.package) {
-    if (!packageIds(ROOT).includes(game.package)) throw new Error(`no package ${game.package}`)
+    if (game.package !== 'kernel' && !packageIds(ROOT).includes(game.package)) throw new Error(`no package ${game.package}`)
     return game
   }
   if (!isDataGame(game, ROOT)) throw new Error(`no game ${game}; the games are ${dataGames().join(', ')}`)
@@ -94,7 +95,7 @@ const open = (game, scope, layer) => {
   if (selected === 'game') throw new Error('a package target uses the package workspace')
   return openPackage(game.package, ROOT, { layer })
 }
-const readTarget = (game) => typeof known(game) === 'object' ? readPackage(game.package, ROOT) : readContent(game, ROOT)
+const readTarget = (game) => typeof known(game) === 'object' ? (game.package === 'kernel' ? openPackage('kernel', ROOT).content() : readPackage(game.package, ROOT)) : readContent(game, ROOT)
 const readAs = (game, scope) => scoped(scope) === 'package' ? open(game, scope).content() : readTarget(game)
 
 /** A game's content as a changeset would leave it (nothing written; an operation that fails throws its problem). */
@@ -124,7 +125,7 @@ async function boardsOf(content, level) {
 
 const tools = {
   packages: {
-    about: { zh: '列出已安装的包和直接依赖，包括没有游戏的库。', en: 'List installed packages and their direct dependencies, including libraries without games.' },
+    about: catalogText("列出已安装的包和直接依赖，包括没有游戏的库。"),
     params: {},
     async run() {
       return Promise.all(packageIds(ROOT).map(async (id) => {
@@ -135,7 +136,7 @@ const tools = {
     },
   },
   package_compatibility: {
-    about: { zh: '比较包与上次发布的公开面、候选版本及受影响的下游包和游戏。一次检查一个包。', en: 'Compare a package with its last release: what changed in its public surface, the version it would get, and the packages and games it affects. Slow: asked for one package, not with the list.' },
+    about: catalogText("比较包与上次发布的公开面、候选版本及受影响的下游包和游戏。一次检查一个包。"),
     params: { package: 'string' },
     async run({ package: id }) {
       const { packageCompatibility } = await import('../releases.js')
@@ -143,7 +144,7 @@ const tools = {
     },
   },
   overrides: {
-    about: { zh: '列出这一层可见的覆盖、对象类型、全名、作者和前后值。可预览待应用的变更集。', en: 'List every override visible at a layer, with object kind, full name, author and before/after values, optionally after a pending changeset.' },
+    about: catalogText("列出这一层可见的覆盖、对象类型、全名、作者和前后值。可预览待应用的变更集。"),
     params: { game: 'string', layer: 'string?', changeset: 'object?' },
     async run({ game, layer, changeset = null }) {
       const content = await contentAfter(game, changeset, null, layer)
@@ -151,7 +152,7 @@ const tools = {
     },
   },
   objects: {
-    about: { zh: '读取登记的标签、关系或分组和展开后的课程路线。可预览待应用的变更集。', en: 'Read registered tags, relations or sections and the expanded course route, optionally after a pending changeset.' },
+    about: catalogText("读取登记的标签、关系或分组和展开后的课程路线。可预览待应用的变更集。"),
     params: { game: 'string', kind: 'string?', name: 'string?', member: 'string?', changeset: 'object?', scope: 'string?' },
     async run({ game, kind, name, member, changeset = null, scope }) {
       const content = await contentAfter(game, changeset, scope)
@@ -160,7 +161,7 @@ const tools = {
     },
   },
   games: {
-    about: { zh: '列出数据游戏的 id、标题和所用的内容包。多个游戏可以共用一个包。', en: 'The data games: each one’s id, title and the content package it plays (several may play one package).' },
+    about: catalogText("列出数据游戏的 id、标题和所用的内容包。多个游戏可以共用一个包。"),
     params: {},
     async run() {
       return dataGames().map((id) => {
@@ -171,7 +172,7 @@ const tools = {
     },
   },
   create_game: {
-    about: { zh: '沿用 `from` 所用内容包和课程设置，创建独立的游戏目录，并按第一章建立一个空章。新游戏在首页标记为开发中且隐藏。', en: 'Make a new game on the package an existing game (`from`) plays: games/<id>/ with its own course, keeping from’s course settings and starting with one empty chapter shaped like its first, registered on the hub as hidden and in development.' },
+    about: catalogText("沿用 `from` 所用内容包和课程设置，创建独立的游戏目录，并按第一章建立一个空章。新游戏在首页标记为开发中且隐藏。"),
     params: { id: 'string', from: 'string', title: 'object' },
     async run({ id, from, title }) {
       gameOnPackage({ root: ROOT, id, from: known(from), title })
@@ -179,7 +180,7 @@ const tools = {
     },
   },
   create_package: {
-    about: { zh: '从已装包复制文件并重写本包名字，或用 `empty` 创建空包。写入依赖锁。kind 省略时沿用来源的类别。', en: 'Make a new package: packages/<id>/ copied from an installed package (`from`: its files, its own names turned into the new id) or empty (`empty`: a package.json alone), its dependency lock written; `kind` (play, ext, course, lib) goes in its package.json, a copy taking its source\'s when none is given. The same as npm run new -- package.' },
+    about: catalogText("从已装包复制文件并重写本包名字，或用 `empty` 创建空包。写入依赖锁。kind 省略时沿用来源的类别。"),
     params: { id: 'string', kind: 'string?', from: 'string?', empty: 'boolean?' },
     async run({ id, kind, from, empty = false }) {
       const sourceKind = !kind && from && existsSync(resolve(packageDirectory(from, ROOT), 'package.json')) ? JSON.parse(readFileSync(resolve(packageDirectory(from, ROOT), 'package.json'), 'utf8')).kind : undefined
@@ -188,7 +189,7 @@ const tools = {
     },
   },
   audit: {
-    about: { zh: '运行 npm run check 的内容、课程、文案和玩法检查。mutants 可请求已支持的玩法报告参考解变异覆盖。', en: 'Check a game as npm run check does: content against its vocabulary, the course audit, copy, and its domain’s checks (reference answers pass, naive ones fail). mutants: ask supported checks to report reference-work mutation coverage.' },
+    about: catalogText("运行 npm run check 的内容、课程、文案和玩法检查。mutants 可请求已支持的玩法报告参考解变异覆盖。"),
     params: { game: 'string', mutants: 'boolean?' },
     async run({ game, mutants = false }) {
       const content = readTarget(game)
@@ -197,7 +198,7 @@ const tools = {
     },
   },
   modify: {
-    about: { zh: '逐项执行变更集并检查整个目标。全部通过才写入，dryRun 只预览。base 是调用者看到的最后日志序号，过期时拒绝。by 会写进日志，操作和参数见 vocabulary。', en: 'Apply a changeset { why?, by?, ops: [{ op, …args }] } to a game (by: who makes it, e.g. agent:<step>:<model>; the change log keeps it): every op checked and run, the whole game checked; written only when nothing fails (dryRun: preview only). base: the seq of the log’s last entry the caller saw (preview and log give it as head): refused when the game has changed since. The operations and their arguments: the vocabulary tool.' },
+    about: catalogText("逐项执行变更集并检查整个目标。全部通过才写入，dryRun 只预览。base 是调用者看到的最后日志序号，过期时拒绝。by 会写进日志，操作和参数见 vocabulary。"),
     params: { game: 'string', changeset: 'object', dryRun: 'boolean?', base: 'number?', scope: 'string?', layer: 'string?' },
     async run({ game, changeset, dryRun = false, base = null, scope, layer }) {
       const r = await runChangeset(open(game, scope, layer), changeset, { write: !dryRun, base, cache: kept(game) })
@@ -205,7 +206,7 @@ const tools = {
     },
   },
   run_reference: {
-    about: { zh: '用玩法检查跑参考解和直觉错解，返回该关的检查输出和通过状态。', en: 'Run a level’s reference and naive answers against its tests through its domain’s checks; the lines that name the level, and whether any fails.' },
+    about: catalogText("用玩法检查跑参考解和直觉错解，返回该关的检查输出和通过状态。"),
     params: { game: 'string', level: 'string' },
     async run({ game, level }) {
       const source = readTarget(game)
@@ -218,7 +219,7 @@ const tools = {
     },
   },
   blueprint: {
-    about: { zh: '以蓝图文本读取关卡的作品。给 text 时，通过 level.blueprint 写入 path 指定的作品，默认是 solution。dryRun 只预览。', en: 'Read a level’s boards (its reference answer, naive answer, presets…) as blueprint text; with text, write the board at path (default solution) through the level.blueprint operation (dryRun: preview only).' },
+    about: catalogText("以蓝图文本读取关卡的作品。给 text 时，通过 level.blueprint 写入 path 指定的作品，默认是 solution。dryRun 只预览。"),
     params: { game: 'string', level: 'string', path: 'string?', text: 'string?', dryRun: 'boolean?' },
     async run({ game, level, path, text, dryRun = false }) {
       if (text === undefined) {
@@ -229,7 +230,7 @@ const tools = {
     },
   },
   render: {
-    about: { zh: '以文本呈现关卡给出的材料、任务和作品蓝图。format 为 svg 时调用已登记的作品绘制器。changeset 用于预览。', en: 'A level (or one board of it) as text: what the player is given and asked, and its boards as blueprint text; format svg: works drawn by their registered renderer, changeset: as a changeset would leave it. PNG is not drawn.' },
+    about: catalogText("以文本呈现关卡给出的材料、任务和作品蓝图。format 为 svg 时调用已登记的作品绘制器。changeset 用于预览。"),
     params: { game: 'string', level: 'string', path: 'string?', format: 'string?', changeset: 'object?' },
     async run({ game, level, path, format = 'text', changeset = null }) {
       if (format !== 'text' && format !== 'svg') return { rendered: false, note: `${format}: only text and svg are drawn headlessly; for a picture of the level as played, build the game (npm run build:games) and open it.` }
@@ -265,7 +266,7 @@ const tools = {
     },
   },
   deps: {
-    about: { zh: '由已加载的对象类型提供依赖图，输出 Mermaid 或 DOT。', en: 'A dependency graph supplied by the loaded object kinds, drawn as Mermaid or DOT.' },
+    about: catalogText("由已加载的对象类型提供依赖图，输出 Mermaid 或 DOT。"),
     params: { game: 'string', dot: 'boolean?', levels: 'boolean?' },
     async run({ game, dot = false, levels = false }) {
       const content = readTarget(game)
@@ -274,7 +275,7 @@ const tools = {
     },
   },
   play_level: {
-    about: { zh: '独立打开包的一关，返回 GameFrame 所用的运行内容，跳过章、先修和进度。', en: 'Open one package level without chapters, prerequisites or progress. Returns runtime shell content for GameFrame; never checked as a course.' },
+    about: catalogText("独立打开包的一关，返回 GameFrame 所用的运行内容，跳过章、先修和进度。"),
     params: { package: 'string', level: 'string', changeset: 'object?' },
     async run({ package: id, level, changeset = null }) {
       const source = await contentAfter({ package: id }, changeset)
@@ -282,7 +283,7 @@ const tools = {
     },
   },
   preview: {
-    about: { zh: '预览变更后的内容、检查输出、文件前后文本、失败的操作及日志。check 为 false 时只做词汇表检查。omit 可省略 changes、log、drift 或 content。', en: 'A game as a changeset would leave it, nothing written: its content, every line of the check with the levels it is about, each file changed (its text before and after), the operation that failed if one did, and the change log (check false: the content checked against its vocabulary only, which is quick; the whole check runs the domain’s; omit: answer keys left out, e.g. ["changes", "log", "drift"], or "content" too). The studio shows a game through it.' },
+    about: catalogText("预览变更后的内容、检查输出、文件前后文本、失败的操作及日志。check 为 false 时只做词汇表检查。omit 可省略 changes、log、drift 或 content。"),
     params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?' },
     async run({ game, changeset = { ops: [] }, check = true, scope, layer, omit = [] }) {
       const ws = open(game, scope, layer)
@@ -302,7 +303,7 @@ const tools = {
     },
   },
   names: {
-    about: { zh: '读取游戏引用和已登记对象类型的显示名称、标题和标签，供文案引用。', en: 'The labels, titles and names shown by a game’s references and registered object kinds.' },
+    about: catalogText("读取游戏引用和已登记对象类型的显示名称、标题和标签，供文案引用。"),
     params: { game: 'string', changeset: 'object?', scope: 'string?' },
     async run({ game, changeset = null, scope }) {
       const content = await contentAfter(game, changeset, scope)
@@ -323,7 +324,7 @@ const tools = {
     },
   },
   run_tests: {
-    about: { zh: '按玩法界面实际运行方式，用可见和隐藏测试跑作品。path 默认选第一个任务的参考解。返回每组的输入、预期、通过状态和反馈。', en: 'Run one of a level’s boards (path, default its first task’s reference) on its visible and hidden tests as the level’s screen runs them, through its domain’s play hook (as a changeset would leave it): each test as the screen shows it (what it gives and expects), whether it passes and what the screen says. A level whose play the hook does not cover says why.' },
+    about: catalogText("按玩法界面实际运行方式，用可见和隐藏测试跑作品。path 默认选第一个任务的参考解。返回每组的输入、预期、通过状态和反馈。"),
     params: { game: 'string', level: 'string', path: 'string?', changeset: 'object?', scope: 'string?' },
     async run({ game, level, path = 'tasks[0].solution', changeset = null, scope }) {
       const source = await contentAfter(game, changeset, scope)
@@ -355,7 +356,7 @@ const tools = {
     },
   },
   seed: {
-    about: { zh: '取得一件作品在当前界面中的存档表示。写入 progress.data 的对应任务 id 可从该作品打开关卡。task 是任务索引。', en: 'What a level’s screen keeps of one of its boards (path, default its first task’s solution), as a changeset would leave it: put data in a save’s progress.data under that task’s id (task: its index in the level) and the level opens on that board.' },
+    about: catalogText("取得一件作品在当前界面中的存档表示。写入 progress.data 的对应任务 id 可从该作品打开关卡。task 是任务索引。"),
     params: { game: 'string', level: 'string', path: 'string?', changeset: 'object?', scope: 'string?' },
     async run({ game, level, path = 'tasks[0].solution', changeset = null, scope }) {
       const source = await contentAfter(game, changeset, scope)
@@ -374,7 +375,7 @@ const tools = {
     },
   },
   search: {
-    about: { zh: '按游玩顺序搜索文案、蓝图和关卡或词条 id。返回文件、关卡、路径和匹配区间。可预览变更集。', en: 'Find text across a game (as a changeset would leave it): every language’s text outside link tags, every board line, and the ids of levels and entries. query: { find, regex?, caseSensitive?, word?, kinds?: [text, board, id] }. The hits in play order, each with its file, level, path and the spans matched.' },
+    about: catalogText("按游玩顺序搜索文案、蓝图和关卡或词条 id。返回文件、关卡、路径和匹配区间。可预览变更集。"),
     params: { game: 'string', query: 'object', changeset: 'object?', scope: 'string?' },
     async run({ game, query, changeset = null, scope }) {
       const content = await contentAfter(game, changeset, scope)
@@ -383,7 +384,7 @@ const tools = {
     },
   },
   replace: {
-    about: { zh: '为匹配生成 text.set 或 level.blueprint 操作和前后文本。正则分组用 $1 等，pick 可限定命中。返回涉及的 id。用 modify 预览或写入。', en: 'Replace across a game as operations, nothing written: the changeset ({ why, ops }: text.set for each text, level.blueprint for each board) that replaces the query’s matches with `with` ($1… for a regex’s groups), each change before and after, and the ids found and left alone (ids cannot change; create a new object, then delete the old one). Run it with modify (dryRun first). pick: only these hits (file|path|side or line).' },
+    about: catalogText("为匹配生成 text.set 或 level.blueprint 操作和前后文本。正则分组用 $1 等，pick 可限定命中。返回涉及的 id。用 modify 预览或写入。"),
     params: { game: 'string', query: 'object', with: 'string', pick: 'array?', changeset: 'object?', scope: 'string?' },
     async run({ game, query, with: replacement, pick = null, changeset = null, scope }) {
       const content = await contentAfter(game, changeset, scope)
@@ -392,7 +393,7 @@ const tools = {
     },
   },
   history: {
-    about: { zh: '读取 Git 中指定版本的课程或包文件。版本默认 HEAD，路径可用关卡 id 或相对文件名。', en: 'Read a course or package file from git at a revision (default HEAD). Pass a level ID or a file name relative to the course or its package.' },
+    about: catalogText("读取 Git 中指定版本的课程或包文件。版本默认 HEAD，路径可用关卡 id 或相对文件名。"),
     params: { game: 'string', level: 'string?', file: 'string?', rev: 'string?' },
     async run({ game, level, file, rev = 'HEAD' }) {
       const ws = open(game)
@@ -419,14 +420,14 @@ const tools = {
     },
   },
   log: {
-    about: { zh: '按时间从早到晚读取日志，并给出下一次 undo 将撤销的变更。', en: 'A game’s change log (changes.jsonl), oldest first, and the change undo would undo next.' },
+    about: catalogText("按时间从早到晚读取日志，并给出下一次 undo 将撤销的变更。"),
     params: { game: 'string' },
     async run({ game }) {
       return logOf(game)
     },
   },
   adopt: {
-    about: { zh: '把在操作集之外修改的文件纳入日志并更新漂移记录。此条记录成为撤销边界。', en: 'Take a game’s files as they are now into its change log, after they were changed outside the operation set (by hand, by git): the log stops reporting them as drift, and an undo goes back no further than this.' },
+    about: catalogText("把在操作集之外修改的文件纳入日志并更新漂移记录。此条记录成为撤销边界。"),
     params: { game: 'string', why: 'string' },
     async run({ game, why }) {
       const ws = open(game)
@@ -434,7 +435,7 @@ const tools = {
     },
   },
   undo: {
-    about: { zh: '逆向执行最后一条仍可撤销的变更并登记日志。dryRun 只预览。seq 已过期时拒绝。', en: 'Undo the last change of a game’s log not undone yet: its inverse run as a changeset, checked, and logged as an undo (dryRun: preview only). seq: the change the caller means (log gives it as undoable): refused when that is no longer the one undo would undo.' },
+    about: catalogText("逆向执行最后一条仍可撤销的变更并登记日志。dryRun 只预览。seq 已过期时拒绝。"),
     params: { game: 'string', dryRun: 'boolean?', seq: 'number?' },
     async run({ game, dryRun = false, seq = null }) {
       const r = await undo(open(game), { write: !dryRun, seq })
@@ -442,7 +443,7 @@ const tools = {
     },
   },
   vocabulary: {
-    about: { zh: '读取内容词汇表、命名形状、玩法字段和操作参数。', en: 'What content may be made of: a game’s domain vocabulary as data (kinds, items, schemas of game.json and a level), and the operations with their arguments.' },
+    about: catalogText("读取内容词汇表、命名形状、玩法字段和操作参数。"),
     params: { game: 'string' },
     async run({ game }) {
       const content = readTarget(game)
@@ -467,7 +468,7 @@ const tools = {
 
 // Headless plugin play never loads a view or discloses authored reference/wrong answers.
 tools.play_task = {
-  about: { zh: '通过已登记的盲玩代理观察任务或提交作品。', en: 'Observe a game or package plugin task, or submit work through its registered blind-play agent.' },
+  about: catalogText("通过已登记的盲玩代理观察任务或提交作品。"),
   params: { game: 'string', level: 'string', task: 'string?', work: 'any?' },
   async run({ game, level: name, task: key, work }) {
     const content = await contentAfter(game)

@@ -1,7 +1,11 @@
 import { circuitPlaySchema } from 'circuit'
 import { definePlays, playFor } from 'kernel'
 
-import declaration from '../capabilities/play.json' with { type: 'json' }
+import declarationSource from '../capabilities/play.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const declaration = readCopy(declarationSource)
 
 export const plays = definePlays(Object.fromEntries(Object.entries(declaration.items).map(([id, { configuration }]) => [`logic/${id}`, configuration])), circuitPlaySchema)
 

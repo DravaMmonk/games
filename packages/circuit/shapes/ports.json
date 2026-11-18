@@ -20,10 +20,7 @@
     },
     "optional": {
       "type": "bool",
-      "about": {
-        "zh": "可以不接：不接时运算在这里读到「—」",
-        "en": "may be left unwired: the computation reads 「—」 there when it is"
-      },
+      "about": "@shape.ports.fields.optional.about",
       "optional": true
     }
   }

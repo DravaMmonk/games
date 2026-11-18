@@ -694,10 +694,7 @@
       },
       "ask": {
         "type": "text",
-        "about": {
-          "zh": "这个任务问什么（写在一关的说明下面）",
-          "en": "what this task asks (under the level’s brief)"
-        },
+        "about": "@kind.circuit-task.schema.fields.ask.about",
         "optional": true
       },
       "tip": {
@@ -706,18 +703,12 @@
       },
       "carries": {
         "type": "bool",
-        "about": {
-          "zh": "从上一个任务的电路板开始",
-          "en": "start from the task before’s board"
-        },
+        "about": "@kind.circuit-task.schema.fields.carries.about",
         "optional": true
       },
       "unlockToast": {
         "type": "text",
-        "about": {
-          "zh": "第一次打开这个任务时说的一句",
-          "en": "a line said the first time the task opens"
-        },
+        "about": "@kind.circuit-task.schema.fields.unlockToast.about",
         "optional": true
       },
       "ports": {
@@ -727,10 +718,7 @@
           "kind": "port"
         },
         "section": "course",
-        "about": {
-          "zh": "这块板给出的口：parts.json 里引用这个任务的件是一个元件，口就是这些",
-          "en": "the ports this board gives: the parts.json part referring to this task is a part, and these are its ports"
-        },
+        "about": "@kind.circuit-task.schema.fields.ports.about",
         "optional": true
       },
       "noArm": {
@@ -756,10 +744,7 @@
             }
           }
         },
-        "about": {
-          "zh": "一步步的引导：显示第一条 until 还不成立的",
-          "en": "step-by-step guidance: the first whose until does not hold yet"
-        },
+        "about": "@kind.circuit-task.schema.fields.guide.about",
         "optional": true
       },
       "diagnose": {
@@ -776,18 +761,12 @@
             }
           }
         },
-        "about": {
-          "zh": "失败时：第一条 when 成立的说法",
-          "en": "on a failure: the first whose when holds"
-        },
+        "about": "@kind.circuit-task.schema.fields.diagnose.about",
         "optional": true
       },
       "testLabel": {
         "type": "text",
-        "about": {
-          "zh": "测试的名字：{字段}、{字段.length}、{列表|分隔符}",
-          "en": "a test’s name: {field}, {field.length}, {list|separator}"
-        },
+        "about": "@kind.circuit-task.schema.fields.testLabel.about",
         "optional": true
       },
       "trace": {
@@ -814,18 +793,12 @@
       },
       "checkAll": {
         "type": "bool",
-        "about": {
-          "zh": "逐格判对错，不只看答案",
-          "en": "grade every cell, not just the answer"
-        },
+        "about": "@kind.circuit-task.schema.fields.checkAll.about",
         "optional": true
       },
       "noTrace": {
         "type": "bool",
-        "about": {
-          "zh": "失败时不指出第一处算错的格子",
-          "en": "on a failure, do not point at the first cell gone wrong"
-        },
+        "about": "@kind.circuit-task.schema.fields.noTrace.about",
         "optional": true
       },
       "consts": {
@@ -833,10 +806,7 @@
         "of": {
           "type": "num"
         },
-        "about": {
-          "zh": "常数能选的值",
-          "en": "the values a constant offers"
-        },
+        "about": "@kind.circuit-task.schema.fields.consts.about",
         "optional": true
       },
       "onFail": {
@@ -847,10 +817,7 @@
           },
           "body": {
             "type": "text",
-            "about": {
-              "zh": "{test}、{want}、{got} 换成失败的测试",
-              "en": "{test}, {want}, {got} filled in from the failed test"
-            }
+            "about": "@kind.circuit-task.schema.fields.onFail.fields.body.about"
           },
           "show": {
             "type": "call",
@@ -860,10 +827,7 @@
             "type": "text"
           }
         },
-        "about": {
-          "zh": "这个任务的失败是要讲的道理：说完进下一个任务",
-          "en": "failing this task is its lesson: then on to the next"
-        },
+        "about": "@kind.circuit-task.schema.fields.onFail.about",
         "optional": true
       },
       "done": {
@@ -881,10 +845,7 @@
             "optional": true
           }
         },
-        "about": {
-          "zh": "通过后、进下一个任务之前说的话",
-          "en": "what passing it says, before the next task"
-        },
+        "about": "@kind.circuit-task.schema.fields.done.about",
         "optional": true
       },
       "facts": {
@@ -915,10 +876,7 @@
         },
         "min": 1,
         "section": "tests",
-        "about": {
-          "zh": "每个测试的正确答案，按测试的顺序（没有答案写 null）",
-          "en": "each test’s right answer, in the tests’ order (null where there is none)"
-        }
+        "about": "@kind.circuit-task.schema.fields.expected.about"
       },
       "solution": {
         "type": "board",

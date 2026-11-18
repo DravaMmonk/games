@@ -1,3 +1,4 @@
+import { punctuation } from './i18n.js'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { ArrowLeft, Lock, Search, X } from 'lucide-react'
 import { L, tr } from './i18n.js'
@@ -106,9 +107,9 @@ export default function Library({ title, subtitle, label, groups, initial, lastK
                     {item.unread && <i className="wiki-dot" aria-label={tr('未读')} />}
                   </button>
                 ) : (
-                  <span className="wiki-item is-locked" title={item.lock ? tr(`进行到第 ${item.lock} 关时解锁`, `Unlocks at level ${item.lock}`) : undefined}>
+                  <span className="wiki-item is-locked" title={item.lock ? tr("进行到第 {lock} 关时解锁", {lock: item.lock}) : undefined}>
                     <Lock size={12} aria-hidden="true" />
-                    <span>{tr('？？？')}</span>
+                    <span>{punctuation("？？？")}</span>
                     {item.lock && <small>{item.lock}</small>}
                   </span>
                 )}

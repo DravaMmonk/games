@@ -17,35 +17,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.select.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.select.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.select.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.select.fields.fixed.about",
           "optional": true
         },
         "options": {
@@ -56,10 +44,7 @@
               "value": {
                 "type": "str",
                 "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                "about": {
-                  "zh": "ASCII 值：写进蓝图文本",
-                  "en": "an ASCII value, as blueprint text writes it"
-                }
+                "about": "@shape.resolved-setting.cases.select.fields.options.of.fields.value.about"
               },
               "label": {
                 "type": "text",
@@ -68,18 +53,12 @@
               "icon": {
                 "type": "str",
                 "view": "icon",
-                "about": {
-                  "zh": "内核图标表里的一个名字",
-                  "en": "a name in the kernel’s icon table"
-                },
+                "about": "@shape.resolved-setting.cases.select.fields.options.of.fields.icon.about",
                 "optional": true
               },
               "about": {
                 "type": "text",
-                "about": {
-                  "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
-                  "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
-                },
+                "about": "@shape.resolved-setting.cases.select.fields.options.of.fields.about.about",
                 "optional": true
               }
             }
@@ -90,10 +69,7 @@
         "from": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：由元件的输入算出选项",
-            "en": "an expression: the options worked out of the part’s inputs"
-          },
+          "about": "@shape.resolved-setting.cases.select.fields.from.about",
           "optional": true
         }
       }
@@ -113,35 +89,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.list.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.list.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.list.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.list.fields.fixed.about",
           "optional": true
         },
         "options": {
@@ -152,10 +116,7 @@
               "value": {
                 "type": "str",
                 "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                "about": {
-                  "zh": "ASCII 值：写进蓝图文本",
-                  "en": "an ASCII value, as blueprint text writes it"
-                }
+                "about": "@shape.resolved-setting.cases.list.fields.options.of.fields.value.about"
               },
               "label": {
                 "type": "text",
@@ -164,18 +125,12 @@
               "icon": {
                 "type": "str",
                 "view": "icon",
-                "about": {
-                  "zh": "内核图标表里的一个名字",
-                  "en": "a name in the kernel’s icon table"
-                },
+                "about": "@shape.resolved-setting.cases.list.fields.options.of.fields.icon.about",
                 "optional": true
               },
               "about": {
                 "type": "text",
-                "about": {
-                  "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
-                  "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
-                },
+                "about": "@shape.resolved-setting.cases.list.fields.options.of.fields.about.about",
                 "optional": true
               }
             }
@@ -186,10 +141,7 @@
         "from": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：由元件的输入算出选项",
-            "en": "an expression: the options worked out of the part’s inputs"
-          },
+          "about": "@shape.resolved-setting.cases.list.fields.from.about",
           "optional": true
         }
       }
@@ -209,43 +161,28 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.tree.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.tree.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.tree.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.tree.fields.fixed.about",
           "optional": true
         },
         "optional": {
           "type": "bool",
-          "about": {
-            "zh": "可以不填",
-            "en": "may be left empty"
-          },
+          "about": "@shape.resolved-setting.cases.tree.fields.optional.about",
           "optional": true
         }
       }
@@ -265,35 +202,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.buttons.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.buttons.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.buttons.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.buttons.fields.fixed.about",
           "optional": true
         },
         "options": {
@@ -304,10 +229,7 @@
               "value": {
                 "type": "str",
                 "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-                "about": {
-                  "zh": "ASCII 值：写进蓝图文本",
-                  "en": "an ASCII value, as blueprint text writes it"
-                }
+                "about": "@shape.resolved-setting.cases.buttons.fields.options.of.fields.value.about"
               },
               "label": {
                 "type": "text",
@@ -316,18 +238,12 @@
               "icon": {
                 "type": "str",
                 "view": "icon",
-                "about": {
-                  "zh": "内核图标表里的一个名字",
-                  "en": "a name in the kernel’s icon table"
-                },
+                "about": "@shape.resolved-setting.cases.buttons.fields.options.of.fields.icon.about",
                 "optional": true
               },
               "about": {
                 "type": "text",
-                "about": {
-                  "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
-                  "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
-                },
+                "about": "@shape.resolved-setting.cases.buttons.fields.options.of.fields.about.about",
                 "optional": true
               }
             }
@@ -338,10 +254,7 @@
         "from": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：由元件的输入算出选项",
-            "en": "an expression: the options worked out of the part’s inputs"
-          },
+          "about": "@shape.resolved-setting.cases.buttons.fields.from.about",
           "optional": true
         },
         "layout": {
@@ -352,10 +265,7 @@
             "grid",
             "pad"
           ],
-          "about": {
-            "zh": "row 一行，column 一列，grid 两两一行，pad 上下左右四向（选项 up、left、right、down）",
-            "en": "row, column, grid (two a row), pad (four ways: options up, left, right, down)"
-          },
+          "about": "@shape.resolved-setting.cases.buttons.fields.layout.about",
           "optional": true
         }
       }
@@ -375,35 +285,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.number.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.number.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.number.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.number.fields.fixed.about",
           "optional": true
         },
         "min": {
@@ -429,18 +327,12 @@
         },
         "stepper": {
           "type": "bool",
-          "about": {
-            "zh": "两边加 − / + 按钮",
-            "en": "− / + buttons on either side"
-          },
+          "about": "@shape.resolved-setting.cases.number.fields.stepper.about",
           "optional": true
         },
         "optional": {
           "type": "bool",
-          "about": {
-            "zh": "没写时读到「—」（新元件仍从 default 起）",
-            "en": "reads 「—」 when not written (a new part still starts from default)"
-          },
+          "about": "@shape.resolved-setting.cases.number.fields.optional.about",
           "optional": true
         }
       }
@@ -460,35 +352,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.slider.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.slider.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.slider.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.slider.fields.fixed.about",
           "optional": true
         },
         "min": {
@@ -530,35 +410,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.toggle.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.toggle.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.toggle.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.toggle.fields.fixed.about",
           "optional": true
         },
         "on": {
@@ -586,35 +454,23 @@
         },
         "about": {
           "type": "text",
-          "about": {
-            "zh": "悬停和详情里的一行说明",
-            "en": "one line shown on hover and in the detail"
-          },
+          "about": "@shape.resolved-setting.cases.custom.fields.about.about",
           "optional": true
         },
         "default": {
           "type": "any",
-          "about": {
-            "zh": "新元件的值",
-            "en": "the value a new part starts with"
-          },
+          "about": "@shape.resolved-setting.cases.custom.fields.default.about",
           "optional": true
         },
         "when": {
           "type": "str",
           "view": "expr",
-          "about": {
-            "zh": "式子：为真时才出现（只读设置）",
-            "en": "an expression: shown only while it is true (reads settings only)"
-          },
+          "about": "@shape.resolved-setting.cases.custom.fields.when.about",
           "optional": true
         },
         "fixed": {
           "type": "bool",
-          "about": {
-            "zh": "只显示，玩家不能改",
-            "en": "shown, not changed by the player"
-          },
+          "about": "@shape.resolved-setting.cases.custom.fields.fixed.about",
           "optional": true
         },
         "widget": {

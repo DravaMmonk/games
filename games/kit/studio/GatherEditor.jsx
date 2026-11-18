@@ -44,8 +44,8 @@ export function Members({ refs, titleOf, namespace, locked, onChange }) {
           <code>{shownName(namespace, ref)}</code><span>{titleOf(ref)}</span>
           {!locked && <span className="member-move">
             {refs.length > 1 && <>
-              <button type="button" className="kit-btn editor-tool" disabled={k === 0} aria-label={tr('上移', 'Move up')} title={tr('上移', 'Move up') + ' (Alt+↑)'} onClick={() => move(ref, { before: refs[k - 1] })}><ArrowUp size={12} aria-hidden="true" /></button>
-              <button type="button" className="kit-btn editor-tool" disabled={k === refs.length - 1} aria-label={tr('下移', 'Move down')} title={tr('下移', 'Move down') + ' (Alt+↓)'} onClick={() => move(ref, { after: refs[k + 1] })}><ArrowDown size={12} aria-hidden="true" /></button>
+              <button type="button" className="kit-btn editor-tool" disabled={k === 0} aria-label={tr("上移")} title={tr("上移") + ' (Alt+↑)'} onClick={() => move(ref, { before: refs[k - 1] })}><ArrowUp size={12} aria-hidden="true" /></button>
+              <button type="button" className="kit-btn editor-tool" disabled={k === refs.length - 1} aria-label={tr("下移")} title={tr("下移") + ' (Alt+↓)'} onClick={() => move(ref, { after: refs[k + 1] })}><ArrowDown size={12} aria-hidden="true" /></button>
             </>}
             <button type="button" className="kit-btn editor-tool" aria-label={tr('去掉')} title={tr('去掉')} onClick={() => onChange(refs.filter((r) => r !== ref))}><X size={12} aria-hidden="true" /></button>
           </span>}
@@ -65,11 +65,11 @@ export function GatherHead({ kind, full, value, own, overriding, setOverriding, 
         <SourceMark content={content} kind={kind} full={full} own={own} overriding={overriding} pending={pending} onOverride={() => setOverriding(true)} />
         {children}
         <span className="kit-spacer" />
-        {own && onRemove && <button type="button" className="kit-btn editor-tool" disabled={pending} title={tr('删除', 'Delete')} aria-label={tr('删除', 'Delete')} onClick={onRemove}><Trash2 size={14} aria-hidden="true" /></button>}
+        {own && onRemove && <button type="button" className="kit-btn editor-tool" disabled={pending} title={tr("删除")} aria-label={tr("删除")} onClick={onRemove}><Trash2 size={14} aria-hidden="true" /></button>}
       </div>
       <div className="object-title" onClick={() => onPick?.(['title'])}>
         {own || overriding
-          ? <TextField key={lang} lang={lang} value={value.title} label={tr('标题', 'Title')} placeholder={tr('标题', 'Title')} compact
+          ? <TextField key={lang} lang={lang} value={value.title} label={tr("标题")} placeholder={tr("标题")} compact
             onSet={(text) => { if (!pending) write.set('title', textWith(namespace, value.title, lang, text)) }} />
           : <span>{L(value.title)}</span>}
       </div>

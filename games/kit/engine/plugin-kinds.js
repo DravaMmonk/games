@@ -1,6 +1,6 @@
 import { BUILTIN_POLICIES } from './kind-policy.js'
 import { CHAPTER } from './course-schema.js'
-import { catalogReader, sourceValue } from './catalogs.js'
+import { declarationReader } from './catalogs.js'
 // Data declarations extend an assembly, never process-wide content registries.
 import { mapSchemaChildren, shapeCompiler, schemaOwner, usesNamedShapes } from './schema-shapes.js'
 import { CODE_NAME } from './object-name.js'
@@ -36,7 +36,7 @@ const extend = (schema, fields) => {
 const SCHEMA_TYPES = new Set(Object.keys(S).filter(type => !['opt', 'shape'].includes(type)))
 function inspect(schema, name) {
   if (!SCHEMA_TYPES.has(schema.type)) throw new Error(`${name}: invalid field schema ${schema.type}`)
-  if (Object.hasOwn(schema, 'about') && !validAbout(schema.about)) throw new Error(`${name}: about needs Chinese and English text`)
+  if (Object.hasOwn(schema, 'about') && !validAbout(schema.about)) throw new Error(`${name}: about needs Chinese text and valid markup`)
   for (const key of ['fields', 'cases']) for (const [field, child] of Object.entries(schema[key] ?? {})) inspect(child, `${name}.${field}`)
   if (schema.of) (Array.isArray(schema.of) ? schema.of : [schema.of]).forEach(child => inspect(child, name))
   if (schema.key) inspect(schema.key, name)
@@ -56,11 +56,8 @@ function declarationSchema(source) {
 export function withKindDeclarations(vocabulary, layers, plugin = false, { checked = false, preserveLevelFields = false } = {}) {
   const definitions = { ...vocabulary.objectKinds }, raw = {}
   for (const layer of layers) {
-    const catalogs = Object.fromEntries(Object.entries(layer.catalogs ?? {}).map(([lang, entries]) => [lang, {
-      ...Object.fromEntries(Object.entries(entries).map(([key, text]) => [key.includes('/') ? key : `${layer.id}/${key}`, text])), ...entries,
-    }]))
-    const reader = catalogReader(catalogs)
-    const read = object => layer.resolved ? object.value : reader(sourceValue(object.value), `kinds/${object.name}.json`, KIND_DECLARATION, vocabulary)
+    const reader = declarationReader(layer.catalogs ?? {}, layer.id)
+    const read = object => layer.resolved ? object.value : reader(object.value)
     for (const object of layer.objects.filter(o => o.kind === 'kind')) raw[object.name.includes('/') ? object.name : `${layer.id}/${object.name}`] = read(object)
     for (const object of (layer.overrides ?? []).filter(o => o.kind === 'kind')) {
       if (!raw[object.name]) continue
@@ -72,7 +69,7 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
   for (const layer of layers) for (const object of layer.objects.filter(object => object.kind === 'shape')) {
     const name = object.name.includes('/') ? object.name : `${layer.id}/${object.name}`
     if (!CODE_NAME.test(name) || schemaOwner(name) !== layer.id || Object.hasOwn(shapeDeclarations, name)) throw new Error(`invalid or duplicate schema shape ${name}`)
-    shapeDeclarations[name] = object.value
+    shapeDeclarations[name] = layer.resolved ? object.value : declarationReader(layer.catalogs ?? {}, layer.id)(object.value)
   }
   const compiler = shapeCompiler(shapeDeclarations, vocabulary, (owner, name) => {
     if (!checked && owner !== schemaOwner(name) && !owners.get(owner)?.[schemaOwner(name)]) throw new Error(`${owner}: schema shape ${name} requires a declared package dependency`)

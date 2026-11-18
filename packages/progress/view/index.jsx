@@ -1,6 +1,6 @@
 import { installStageViews } from './game-stages.js'
 import './studio/stages.css'
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { loadWorkshop } from '../core/workshop.js'
 import { courseWorkshop } from '../core/workshop-view.js'
 import { partAtStage } from '../core/studio-stages.js'
@@ -13,7 +13,7 @@ function WorkshopSwitch({ value, locked, write }) {
   return <label className="object-flag">
     <input type="checkbox" className="field-check" checked={value.workshop ?? true} disabled={locked}
       onChange={event => write.set('workshop', event.target.checked)} />
-    {tr('工坊', 'Workshop')}
+    {tr("工坊")}
   </label>
 }
 

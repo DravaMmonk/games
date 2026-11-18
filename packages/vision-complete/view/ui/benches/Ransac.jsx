@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Check, X } from 'lucide-react'
-import { L, keyOf, tr } from 'kernel/view'
+import { L, keyOf } from "kernel/view"
+import { tr } from 'kernel/words'
 import { Knob } from 'image/view'
 import { distanceToLine, pointAlongLine } from 'cvlib'
 import { linePath } from './matchDraw.js'
@@ -26,7 +27,7 @@ export function RansacTrial({ ctx }) {
   const sample = trial.result ? trial.result.sampleIndex.map((i) => trial.points[i]) : []
   return (
     <figure className="mb mb-ransac-stage">
-      <span className="bk-label">{L(stage.label)} · {tr(`第 ${index + 1} 次试验`, `Trial ${index + 1}`)} · {tr('最佳一轮')}</span>
+      <span className="bk-label">{L(stage.label)} · {tr("第 {index} 次试验", {index: index + 1})} · {tr('最佳一轮')}</span>
       <svg className="mb-svg" viewBox="-25 -25 50 50" role="img" aria-label={tr('一次试验：点、抽中的两点和找到的直线')}>
         <defs>
           <clipPath id="mb-ransac-clip"><rect x={-24} y={-24} width={48} height={48} /></clipPath>
@@ -73,11 +74,11 @@ export function RansacCases({ ctx }) {
               <span className={run.rate >= 0.99 ? 'is-ok' : ''} style={{ transform: `scaleX(${run.rate})` }} />
               <i />
             </div>
-            <p className={`mb-card-foot ${over ? 'mb-bad' : ''}`}>{over ? tr(`k 超出预算 ${s.budget} 轮`, `k is over the budget of ${s.budget} rounds`) : tr(`预算 k ≤ ${s.budget} · 目标 ≥ 99%`, `Budget k ≤ ${s.budget} · goal ≥ 99%`)}</p>
+            <p className={`mb-card-foot ${over ? 'mb-bad' : ''}`}>{over ? tr("k 超出预算 {budget} 轮", {budget: s.budget}) : tr("预算 k ≤ {budget} · 目标 ≥ 99%", {budget: s.budget})}</p>
             {(!phone || active) && (
-              <div className="mb-strip" role="group" aria-label={tr(`${model.trials} 次试验`, `${model.trials} trials`)}>
+              <div className="mb-strip" role="group" aria-label={tr("{trials} 次试验", {trials: model.trials})}>
                 {run.outcomes.map((ok, t) => (
-                  <button key={t} className={`${ok ? '' : 'is-fail'} ${active && t === (ctx.ui.trial ?? 0) ? 'is-active' : ''}`} aria-label={tr(`第 ${t + 1} 次${ok ? '成功' : '失败'}`, `Trial ${t + 1}: ${ok ? 'success' : 'failure'}`)} onClick={() => pick(i, t)} />
+                  <button key={t} className={`${ok ? '' : 'is-fail'} ${active && t === (ctx.ui.trial ?? 0) ? 'is-active' : ''}`} aria-label={tr("第 {t} 次{value}", {t: t + 1, value: { zh: String(ok ? '成功' : '失败'), en: String(ok ? 'success' : 'failure') }})} onClick={() => pick(i, t)} />
                 ))}
               </div>
             )}

@@ -35,7 +35,7 @@ export default function ValueTables({ screen, resource, play }) {
                 {given.map((item, j) => <td key={j} className={item ? 'is-t' : 'is-f'}>{tf(item)}</td>)}
                 <td className="is-value">
                   {fill ? (
-                    <button type="button" className={`vt-cell ${guess === undefined ? '' : guess ? 'is-t' : 'is-f'}`} onClick={() => update({ fill: { ...state.fill, [k]: guess === undefined ? true : guess ? false : undefined } })} aria-label={tr(`第 ${k + 1} 行`, `Row ${k + 1}`)}>{guess === undefined ? '?' : tf(guess)}</button>
+                    <button type="button" className={`vt-cell ${guess === undefined ? '' : guess ? 'is-t' : 'is-f'}`} onClick={() => update({ fill: { ...state.fill, [k]: guess === undefined ? true : guess ? false : undefined } })} aria-label={tr("第 {k} 行", {k: k + 1})}>{guess === undefined ? '?' : tf(guess)}</button>
                   ) : tried ? (
                     <span className={`vt-cell is-shown ${value ? 'is-t' : 'is-f'}`}>{tf(value)}</span>
                   ) : (

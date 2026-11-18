@@ -9,7 +9,7 @@
 //                                                    types (a type of the level, or any name for the things inside)
 import { fn, showTerm, tvar } from './formula.js'
 import { ruleOf, withBinders } from './schematic.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 const VARS = ['x', 'y', 'z', 'u', 'v', 'w']
 
@@ -41,15 +41,15 @@ export function datatypeRules(type, text) {
     if (a === b) continue
     const left = applied(a, namesFor(a, 0, true))
     const right = applied(b, namesFor(b, a.args.length, true))
-    rules.push(ruleOf(`${type}.distinct${++n}`, T(`${type}：${a.f} 不等于 ${b.f}`, `${type}: ${a.f} is not ${b.f}`), [`${left} = ${right}`], '?C'))
+    rules.push(ruleOf(`${type}.distinct${++n}`, T("{type}：{f} 不等于 {f2}", {type, f: a.f, f2: b.f}), [`${left} = ${right}`], '?C'))
   }
-  rules.push(ruleOf(`${type}.exhaust`, T(`${type} 按情况分`, `${type} by cases`), cs.map((c) => withBinders(namesFor(c), `⟦?t = ${applied(c, namesFor(c))}⟧ ⟹ ?C`)), '?C'))
+  rules.push(ruleOf(`${type}.exhaust`, T("{type} 按情况分", {type}), cs.map((c) => withBinders(namesFor(c), `⟦?t = ${applied(c, namesFor(c))}⟧ ⟹ ?C`)), '?C'))
   const step = (c) => {
     const own = namesFor(c).filter((_, k) => c.args[k] === type)
     const body = `?P(${applied(c, namesFor(c))})`
     return withBinders(namesFor(c), own.length ? `⟦${own.map((x) => `?P(${x})`).join('; ')}⟧ ⟹ ${body}` : body)
   }
-  rules.push(ruleOf(`${type}.induct`, T(`${type} 的归纳`, `${type} induction`), cs.map(step), '∀x. ?P(x)'))
+  rules.push(ruleOf(`${type}.induct`, T("{type} 的归纳", {type}), cs.map(step), '∀x. ?P(x)'))
   return rules.map((r) => ({ ...r, datatype: type }))
 }
 

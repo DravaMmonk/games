@@ -22,7 +22,7 @@ export default function useTrace({ level, saved, save, solve, fail, toast }) {
     setFlash(null)
     if (!route.length) {
       if (id !== L.start) {
-        toast(tr(`路线要从「${name(L.start)}」出发`, `A route has to start at “${name(L.start)}”`))
+        toast(tr("路线要从「{value}」出发", {value: name(L.start)}))
         buzz(20)
         return
       }
@@ -36,7 +36,7 @@ export default function useTrace({ level, saved, save, solve, fail, toast }) {
       return
     }
     if (!has(last, id)) {
-      toast(tr(`没有从「${name(last)}」通往「${name(id)}」的单行道`, `There is no one-way street from “${name(last)}” to “${name(id)}”`))
+      toast(tr("没有从「{value}」通往「{value2}」的单行道", {value: name(last), value2: name(id)}))
       buzz(20)
       return
     }
@@ -48,11 +48,11 @@ export default function useTrace({ level, saved, save, solve, fail, toast }) {
     }
     const key = next.join('>')
     let all = found
-    if (found.some((r) => r.join('>') === key)) toast(tr('这条路线已经找过了', 'You already found this route'))
+    if (found.some((r) => r.join('>') === key)) toast(tr("这条路线已经找过了"))
     else {
       all = [...found, next]
       setFound(all)
-      toast(tr(`找到第 ${all.length} 条路线`, `Found route ${all.length}`))
+      toast(tr("找到第 {length} 条路线", {length: all.length}))
       buzz(15)
     }
     setFlash(next)
@@ -77,22 +77,22 @@ export default function useTrace({ level, saved, save, solve, fail, toast }) {
   }
   const walk = (r) => r.map(name).join(' → ')
   return {
-    drawing: boardDrawing(scene, { label: tr('棋盘', 'Board'), maxScale: 1.25 }, onCell),
-    note: route.length ? `${tr('当前路线：', 'Current route: ')}${walk(route)}` : tr(`从「${name(L.start)}」开始点。`, `Start by clicking “${name(L.start)}”.`),
+    drawing: boardDrawing(scene, { label: tr("棋盘"), maxScale: 1.25 }, onCell),
+    note: route.length ? `${tr("当前路线：")}${walk(route)}` : tr("从「{value}」开始点。", {value: name(L.start)}),
     cards: [{
-      title: tr('已找到的路线', 'Routes found'),
+      title: tr("已找到的路线"),
       badge: `${found.length} / ${total}`,
       list: [
-        ...(found.length ? found.map((r, k) => ({ text: `${k + 1}. ${walk(r)}` })) : [{ text: tr('还没有', 'None yet'), tone: 'empty' }]),
-        ...(route.length ? [{ text: `${tr('正在走：', 'Walking: ')}${walk(route)}`, tone: 'now' }] : []),
+        ...(found.length ? found.map((r, k) => ({ text: `${k + 1}. ${walk(r)}` })) : [{ text: tr("还没有"), tone: 'empty' }]),
+        ...(route.length ? [{ text: `${tr("正在走：")}${walk(route)}`, tone: 'now' }] : []),
       ],
     }, {
-      title: tr('规则', 'Rule'),
-      body: tr(`只能顺着箭头走。点到「${name(L.end)}」就记下一条路线；同一条路线只算一次。`, `You can only follow the arrows. Reaching “${name(L.end)}” records a route; each route counts only once.`),
+      title: tr("规则"),
+      body: tr("只能顺着箭头走。点到「{value}」就记下一条路线；同一条路线只算一次。", {value: name(L.end)}),
     }],
     dock: {
-      meta: tr(`已找到 <b>${found.length}</b> / ${total} 条`, `Found <b>${found.length}</b> / ${total}`),
-      secondary: route.length ? { label: tr('撤销一步', 'Undo a step'), onClick: () => setRoute(route.slice(0, -1)) } : null,
+      meta: tr("已找到 <b>{length}</b> / {total} 条", {length: found.length, total}),
+      secondary: route.length ? { label: tr("撤销一步"), onClick: () => setRoute(route.slice(0, -1)) } : null,
     },
   }
 }

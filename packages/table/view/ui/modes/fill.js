@@ -24,7 +24,7 @@ export default function useFill({ level, saved, save, solve, fail, toast }) {
   }), [L])
   const order = truth.order
   const preds = (id) => L.edges.filter((e) => e[1] === id).map((e) => e[0])
-  const name = (id) => (by[id].grid ? tr(`第 ${+id.split(',')[0] + 1} 行第 ${+id.split(',')[1] + 1} 列的路口`, `the crossing at row ${+id.split(',')[0] + 1}, column ${+id.split(',')[1] + 1}`) : tr(`「${by[id].label}」`, `“${by[id].label}”`))
+  const name = (id) => (by[id].grid ? tr("第 {value} 行第 {value2} 列的路口", {value: +id.split(',')[0] + 1, value2: +id.split(',')[1] + 1}) : tr("「{label}」", {label: by[id].label}))
   const valIn = (vs, id) => (id === L.start ? 1 : vs[id] ?? null)
   const valOf = (id) => valIn(vals, id)
   const empties = L.cells.filter((c) => c.id !== L.start && valOf(c.id) === null).length
@@ -32,7 +32,7 @@ export default function useFill({ level, saved, save, solve, fail, toast }) {
 
   const onCell = (id) => {
     if (id === L.start) {
-      toast(tr('起点已经填好了：到这里的路线算 1 条', 'The start is already filled in: it counts as 1 route'))
+      toast(tr("起点已经填好了：到这里的路线算 1 条"))
       return
     }
     const next = sel === id ? null : id
@@ -60,7 +60,7 @@ export default function useFill({ level, saved, save, solve, fail, toast }) {
 
   const check = () => {
     if (empties) {
-      toast(tr(`还有 ${empties} 个${L.grid ? '路口' : '地点'}没填`, `${empties} ${L.grid ? 'crossing' : 'place'}${empties === 1 ? ' is' : 's are'} still empty`))
+      toast(tr("还有 {empties} 个{value}没填", {empties, value: L.grid ? '路口' : '地点', value2: L.grid ? 'crossing' : 'place', value3: empties === 1 ? ' is' : 's are'}))
       buzz(20)
       return
     }
@@ -72,12 +72,12 @@ export default function useFill({ level, saved, save, solve, fail, toast }) {
     }
     const w = wrong[0], ps = preds(w), pv = ps.map(valOf), right = truth.val[w], mine = valOf(w), n = wrong.length
     const body = () => {
-      const from = ps.map(name).join(tr('和', ' and '))
+      const from = ps.map(name).join(tr("和"))
       return ps.length === 1
-        ? tr(`指向${name(w)}的箭头只来自${from}，所以它和${from}一样，是 <b>${pv[0]}</b>。你填的是 <b>${mine}</b>。`, `The only arrow into ${name(w)} comes from ${from}, so it is the same as ${from}: <b>${pv[0]}</b>. You wrote <b>${mine}</b>.`)
-        : tr(`指向${name(w)}的箭头来自${from}，它们的数是 ${pv.join(' 和 ')}，所以应该是 <b>${pv.join(' + ')} = ${right}</b>。你填的是 <b>${mine}</b>。`, `The arrows into ${name(w)} come from ${from}, whose numbers are ${pv.join(' and ')}, so it should be <b>${pv.join(' + ')} = ${right}</b>. You wrote <b>${mine}</b>.`)
+        ? tr("指向{value}的箭头只来自{from}，所以它和{from}一样，是 <b>{value2}</b>。你填的是 <b>{mine}</b>。", {value: name(w), from, value2: pv[0], mine})
+        : tr("指向{value}的箭头来自{from}，它们的数是 {value3}，所以应该是 <b>{value2} = {right}</b>。你填的是 <b>{mine}</b>。", {value: name(w), from, value2: pv.join(' + '), right, mine, value3: { zh: String(pv.join(' 和 ')), en: String(pv.join(' and ')) }})
     }
-    verdict.fail({ head: lazy(() => tr(`${n} 处填得不对`, `${n} cell${n === 1 ? ' is' : 's are'} wrong`)), body: lazy(() => tr(`红框是填错的格子。先看第一个：${body()}`, `The red frames mark the wrong cells. Look at the first one: ${body()}`)) })
+    verdict.fail({ head: lazy(() => tr("{n} 处填得不对", {n, value: n === 1 ? ' is' : 's are'})), body: lazy(() => tr("红框是填错的格子。先看第一个：{value}", {value: body()})) })
   }
 
   const pr = sel ? preds(sel) : []
@@ -92,15 +92,15 @@ export default function useFill({ level, saved, save, solve, fail, toast }) {
   }
   const filled = total - empties
   return {
-    drawing: boardDrawing(scene, { label: tr('棋盘', 'Board'), maxScale: 1.25 }, onCell),
-    note: sel ? tr(`指向${name(sel)}的箭头来自：${pr.map(name).join('、')}`, `The arrows into ${name(sel)} come from: ${pr.map(name).join(', ')}`) : tr(`已填 ${filled} / ${total}`, `Filled ${filled} / ${total}`),
+    drawing: boardDrawing(scene, { label: tr("棋盘"), maxScale: 1.25 }, onCell),
+    note: sel ? tr("指向{value}的箭头来自：{value2}", {value: name(sel), value2: { zh: String(pr.map(name).join('、')), en: String(pr.map(name).join(', ')) }}) : tr("已填 {filled} / {total}", {filled, total}),
     cards: [{
-      title: tr('规则', 'Rule'),
-      rule: tr(['到一个地点的路线数', '= 所有指向它的地点的路线数之和'], ['Routes to a place', '= the sum of the routes to every place that points to it']),
-      body: tr(`起点算 <b>1</b>。选中一个${L.grid ? '路口' : '地点'}后，它的「上一站」会亮起黄色虚框，指向它的箭头会变成黄色。`, `The start counts as <b>1</b>. When you select a ${L.grid ? 'crossing' : 'place'}, its “previous stops” get a dashed yellow frame and the arrows into it turn yellow.`),
+      title: tr("规则"),
+      rule: [tr("到一个地点的路线数"), tr("= 所有指向它的地点的路线数之和")],
+      body: tr("起点算 <b>1</b>。选中一个{value}后，它的「上一站」会亮起黄色虚框，指向它的箭头会变成黄色。", {value: { zh: String(L.grid ? '路口' : '地点'), en: String(L.grid ? 'crossing' : 'place') }}),
     }],
     dock: sel
-      ? { pad: { title: tr(`到${name(sel)}的路线数`, `Routes to ${name(sel)}`), value: input, onKey: key } }
-      : { meta: tr(`已填 <b>${filled}</b> / ${total}`, `Filled <b>${filled}</b> / ${total}`), go: { label: text(WORDS.check), icon: 'check', onClick: check } },
+      ? { pad: { title: tr("到{value}的路线数", {value: name(sel)}), value: input, onKey: key } }
+      : { meta: tr("已填 <b>{filled}</b> / {total}", {filled, total}), go: { label: text(WORDS.check), icon: 'check', onClick: check } },
   }
 }

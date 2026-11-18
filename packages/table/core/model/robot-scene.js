@@ -3,8 +3,8 @@ import { T } from '../lang.js'
 export { N, E, gridScene, circuitFig, windowFig } from './scene.js'
 /** Words drawn on boards by several figures and worlds. */
 export const W = {
-  key: T('钥匙', 'key'), door: T('门', 'door'), start: T('起', 'S'), end: T('终', 'E'), empty: T('空', '∅'),
-  capacity: T('容量', 'capacity'),
+  key: T("钥匙"), door: T("门"), start: T("起"), end: T("终"), empty: T("空"),
+  capacity: T("容量"),
 };
 
 /** Expand a regular grid in drawing order, after any freely positioned cells. */

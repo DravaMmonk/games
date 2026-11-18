@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { OperationError } from 'kernel'
 // Evaluating a circuit, the same in every game. A circuit is the editor's shape (../circuit/model.js):
 //
@@ -40,8 +41,8 @@ export class Halt extends Error {
   }
 }
 
-export const MISSING = { zh: '缺少输入', en: 'Missing input' }
-export const BROKEN = { zh: '无法计算', en: 'Cannot compute' }
+export const MISSING = catalogText("缺少输入")
+export const BROKEN = catalogText("无法计算")
 
 /** A part's input ports for a node. */
 export const portsOf = (part, node) => (typeof part.inputs === 'function' ? part.inputs(node) : part.inputs ?? [])

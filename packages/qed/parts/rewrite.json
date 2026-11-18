@@ -6,11 +6,11 @@
   "inputs": [
     {
       "name": "eq",
-      "label": "@part.rewrite.inputs.0.label"
+      "label": "s = t"
     },
     {
       "name": "p",
-      "label": "@part.rewrite.inputs.1.label"
+      "label": "φ(s)"
     }
   ],
   "settings": {

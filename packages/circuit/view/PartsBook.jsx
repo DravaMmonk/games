@@ -1,5 +1,8 @@
+import { T as catalogText } from 'kernel/words'
+import { punctuation } from 'kernel'
 import { createElement, useEffect, useState } from 'react'
-import { L, sideOf, tr } from 'kernel/view'
+import { L, sideOf } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { Lock } from 'lucide-react'
 import { Library, libraryStore as store, useSeen } from 'kernel/view'
@@ -79,18 +82,18 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
     return (
       <article className="wiki-article parts-article" key={key} data-family={part.family}>
         {back}
-        {level && <span className="panel-label">{tr(`第 ${game.levelLabel(level)} 关 · ${L(level.title)}`, `Level ${game.levelLabel(level)} · ${L(level.title)}`)}</span>}
+        {level && <span className="panel-label">{tr("第 {value} 关 · {value2}", {value: game.levelLabel(level), value2: L(level.title)})}</span>}
         <h2>{chip(part, 18)}{L(part.name)}</h2>
         {part.desc && <p>{String(L(part.desc))}</p>}
         {rules.length > 0 && (
           <section className="parts-rules">
-            <h3>{tr('给出的规则', 'Rules it gives')}</h3>
+            <h3>{tr("给出的规则")}</h3>
             <table><tbody>{rules.map((r) => <tr key={r.text}><td><code>{r.text}</code></td></tr>)}</tbody></table>
           </section>
         )}
         {settings.length > 0 && (
           <section className="parts-rules">
-            <h3>{tr('已解锁的设置', 'Unlocked settings')}</h3>
+            <h3>{tr("已解锁的设置")}</h3>
             <table><tbody>{settings.map(({ key, label, values }) => (
               <tr key={key}><td>{L(label)}</td><td>{values.map(({ value, label }) => <span className="parts-setting" key={value}>{L(label)}</span>)}</td></tr>
             ))}</tbody></table>
@@ -104,8 +107,8 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
   return (
     <Library
       title={tr('元件箱')}
-      subtitle={tr(`${all.filter((part) => earned.has(part.key)).length} / ${all.length} 个元件`, `${all.filter((part) => earned.has(part.key)).length} of ${all.length} components`)}
-      label={tr('元件', 'Components')}
+      subtitle={tr("{length} / {length2} 个元件", {length: all.filter((part) => earned.has(part.key)).length, length2: all.length})}
+      label={tr("元件")}
       searchLabel={tr('查找元件')}
       filters={filters.length > 0 && <Filters filters={filters} current={filter} onPick={pickFilter} />}
       groups={groups}
@@ -124,15 +127,15 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
 function Filters({ filters, current, onPick }) {
   const chip = (key, name, icon, lock) => (
     <button key={key ?? 'all'} type="button" className="parts-filter" aria-pressed={current === key} disabled={Boolean(lock)} onClick={() => onPick(key)}
-      title={lock ? tr(`进行到第 ${lock} 关时解锁`, `Unlocks at level ${lock}`) : undefined}>
+      title={lock ? tr("进行到第 {lock} 关时解锁", {lock}) : undefined}>
       {lock ? <Lock size={12} aria-hidden="true" /> : icon && <svg className="parts-filter-icon" viewBox="0 0 32 32" aria-hidden="true" dangerouslySetInnerHTML={{ __html: icon }} />}
-      <span>{lock ? tr('？？？') : L(name)}</span>
+      <span>{lock ? punctuation("？？？") : L(name)}</span>
       {lock && <small>{lock}</small>}
     </button>
   )
   return (
     <div className="parts-filters" role="group" aria-label={tr('筛选元件')}>
-      {chip(null, { zh: '全部', en: 'All' })}
+      {chip(null, catalogText("全部"))}
       {filters.map((f) => chip(f.key, f.name, f.icon, f.lock))}
     </div>
   )

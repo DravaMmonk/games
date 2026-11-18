@@ -5,7 +5,7 @@
 
 import { benchRun, startValues } from 'image'
 import { stopBench } from 'mllib'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 // Losses span 0.005 … 2, so they are plotted as log10.
 const logLoss = (v) => Math.log10(Math.max(1e-6, v))
@@ -32,19 +32,19 @@ export const stop = {
           valid: current.valid,
           ratio: current.valid / best,
           curve: {
-            lines: [{ curve: (u) => fit.predict(current.w, x(u)), kind: 'yours', label: t('模型', 'model') }, { curve: (u) => fit.data.truth(x(u)), kind: 'faint', label: t('真实规律') }],
+            lines: [{ curve: (u) => fit.predict(current.w, x(u)), kind: 'yours', label: t("模型") }, { curve: (u) => fit.data.truth(x(u)), kind: 'faint', label: t('真实规律') }],
             dots: [
-              ...fit.data.tx.map((tx, i) => ({ u: (tx + 1) / 2, v: fit.data.ty[i], kind: 'point', label: t('训练样本', 'training sample') })),
-              ...fit.data.vx.filter((_, i) => i % 3 === 0).map((vx, i) => ({ u: (vx + 1) / 2, v: fit.data.vy[i * 3], kind: 'ring', label: t('新样本', 'new sample') })),
+              ...fit.data.tx.map((tx, i) => ({ u: (tx + 1) / 2, v: fit.data.ty[i], kind: 'point', label: t("训练样本") })),
+              ...fit.data.vx.filter((_, i) => i % 3 === 0).map((vx, i) => ({ u: (vx + 1) / 2, v: fit.data.vy[i * 3], kind: 'ring', label: t("新样本") })),
             ],
-            legend: [{ kind: 'yours', label: t('模型', 'Model') }, { kind: 'faint', label: t('真实规律（模型不可见）') }, { kind: 'ring', label: t('新样本', 'New samples') }, { kind: 'point', label: t('训练样本', 'Training samples') }],
+            legend: [{ kind: 'yours', label: t("模型", {}, "fitting") }, { kind: 'faint', label: t('真实规律（模型不可见）') }, { kind: 'ring', label: t("新样本", {}, "fitting") }, { kind: 'point', label: t("训练样本", {}, "fitting") }],
           },
           errors: {
             lines: [
-              { curve: history.map((h, i) => (i <= upTo ? logLoss(h.train) : NaN)), kind: 'yours', label: t('训练误差', 'training error') },
-              { curve: history.map((h, i) => (i <= upTo ? logLoss(h.valid) : NaN)), kind: 'error', label: t('新样本误差', 'new-sample error') },
+              { curve: history.map((h, i) => (i <= upTo ? logLoss(h.train) : NaN)), kind: 'yours', label: t("训练误差") },
+              { curve: history.map((h, i) => (i <= upTo ? logLoss(h.valid) : NaN)), kind: 'error', label: t("新样本误差") },
             ],
-            legend: [{ kind: 'yours', label: t('训练误差', 'Training error') }, { kind: 'error', label: t('新样本误差', 'New-sample error') }],
+            legend: [{ kind: 'yours', label: t("训练误差", {}, "fitting") }, { kind: 'error', label: t("新样本误差", {}, "fitting") }],
           },
           errorsTitle: byStep ? t('误差随训练步数（对数刻度）') : t('误差随 λ（对数刻度）'),
           now: (at + 0.5) / history.length,

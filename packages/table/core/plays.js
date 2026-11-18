@@ -1,6 +1,10 @@
 import { circuitPlaySchema } from 'circuit'
 import { definePlays } from 'kernel'
-import modes from '../capabilities/mode.json' with { type: 'json' }
+import modesSource from '../capabilities/mode.json' with { type: 'json' }
+
+import { readCopy } from 'kernel/words'
+
+const modes = readCopy(modesSource)
 
 export const modeNames = Object.keys(modes.items)
 const modeName = play => {

@@ -43,10 +43,7 @@
               }
             }
           },
-          "about": {
-            "zh": "一组能过的设定：门槛 δ 和每一种外点比例的轮数",
-            "en": "settings that pass: the threshold δ and the rounds for each outlier ratio"
-          }
+          "about": "@shape.bench-ransac.fields.setup.fields.solution.about"
         }
       }
     },

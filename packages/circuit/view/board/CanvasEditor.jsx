@@ -29,7 +29,8 @@ import { enableDrag } from '../drag.js'
 import { curve as kitCurve } from '../../core/wires.js'
 import { pointIn } from '../coordinates.js'
 
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import Glyph from "./Glyph.jsx"
 import { cardPorts, namesPorts, NO_CARD_PORT, portOnCard } from "../../core/board/card-ports.js"
@@ -631,11 +632,11 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         data-node={node.id}
         data-part={node.id}
         data-family={parts.family(node)}
-        data-io={role === 'source' ? tr('输入', 'IN') : role === 'sink' ? tr('输出', 'OUT') : undefined}
+        data-io={role === 'source' ? tr("输入", {}, "canvas-editor") : role === 'sink' ? tr("输出") : undefined}
         className={`node is-${role} ${parts.packed?.(node) ? 'is-packed' : ''} ${regions.length ? 'is-frame' : ''} ${node.fold ? 'is-folded' : ''} ${folded ? 'is-body-folded' : ''} ${selected?.node === node.id ? 'is-selected' : ''} ${cardClass?.(node) ?? ''}`}
         role={openDetail ? 'button' : undefined}
         tabIndex={openDetail ? 0 : undefined}
-        aria-label={openDetail ? tr(`查看 ${L(parts.label(node))} 的详情`, `Inspect ${L(parts.label(node))}`) : undefined}
+        aria-label={openDetail ? tr("查看 {value} 的详情", {value: L(parts.label(node))}) : undefined}
         onKeyDown={openDetail && ((event) => {
           if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) return
           event.preventDefault()
@@ -652,7 +653,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         <div className="node-head" data-drag onPointerDown={() => choose(node)}>
           <div className="node-heading">
             {regions.length > 0 && (
-              <button className="frame-fold" aria-label={node.fold ? tr('展开') : tr('折叠', 'Collapse')} aria-expanded={!node.fold} onPointerDown={(e) => e.stopPropagation()} onClick={() => onChange({ ...graph, nodes: graph.nodes.map((n) => (n.id === node.id ? { ...n, fold: !n.fold } : n)) }, { keep: true })}>
+              <button className="frame-fold" aria-label={node.fold ? tr('展开') : tr("折叠")} aria-expanded={!node.fold} onPointerDown={(e) => e.stopPropagation()} onClick={() => onChange({ ...graph, nodes: graph.nodes.map((n) => (n.id === node.id ? { ...n, fold: !n.fold } : n)) }, { keep: true })}>
                 {node.fold ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
               </button>
             )}
@@ -754,7 +755,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const name = sourceLabel(wire, graph, parts)
     const length = Math.min(220, Math.max(76, [...name].reduce((n, c) => n + (c.charCodeAt(0) > 255 ? 11 : 6.5), 20)))
     return <g key={wireKey(wire)} className={`wire-tags ${linkedSource === wire.from ? 'is-linked' : ''}`}>
-      {[...(graph.wires.find((w) => w.from === wire.from && labels.has(wireKey(w))) === wire ? [[a, 'to', 12]] : []), [b, 'from', -length - 12]].map(([p, toward, dx]) => <g key={toward} role="button" tabIndex={0} aria-label={tr(`沿 ${name} 跳转`, `Follow ${name}`)} data-wire-tag={wireKey(wire)} onPointerDown={(e) => e.stopPropagation()} onClick={() => jump(wire, toward)} onKeyDown={(e) => e.key === 'Enter' && jump(wire, toward)}>
+      {[...(graph.wires.find((w) => w.from === wire.from && labels.has(wireKey(w))) === wire ? [[a, 'to', 12]] : []), [b, 'from', -length - 12]].map(([p, toward, dx]) => <g key={toward} role="button" tabIndex={0} aria-label={tr("沿 {name} 跳转", {name})} data-wire-tag={wireKey(wire)} onPointerDown={(e) => e.stopPropagation()} onClick={() => jump(wire, toward)} onKeyDown={(e) => e.key === 'Enter' && jump(wire, toward)}>
         <path d={`M${p[0]},${p[1]}h${toward === 'to' ? 12 : -12}`} /><rect x={p[0] + dx} y={p[1] - 10} width={length} height={20} rx={4} /><text x={p[0] + dx + 6} y={p[1] + 4}>{name}</text><title>{name}</title>
       </g>)}
     </g>

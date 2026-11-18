@@ -19,9 +19,9 @@ import { pendingValue, writtenBy } from './pending-view.js'
 import { declaredEdges, endpointKind, endpointsOf, withEdge, withRequired, withoutEdge, withoutEndpoint, writeEdges } from './relation-edit.js'
 
 const refusal = (reason) => ({
-  self: tr('不能接到自己。', 'An endpoint cannot link to itself.'),
-  duplicate: tr('这条连线已存在。', 'This wire already exists.'),
-  cycle: tr('这条连线会形成循环。', 'This wire would create a cycle.'),
+  self: tr("不能接到自己。"),
+  duplicate: tr("这条连线已存在。"),
+  cycle: tr("这条连线会形成循环。"),
 })[reason]
 
 // What each operation a board wrote holds (pending-view.js writtenBy).
@@ -115,17 +115,17 @@ function OneRelation({ full, name, relation, own, content, namespace, ops, previ
       <div className="arrange-group">
         <code className="editor-id">{shownName(namespace, full)}</code>
         <SourceMark content={content} kind="relation" full={full} own={own} overriding={overriding} pending={pending} onOverride={() => setOverriding(true)} />
-        {editable && candidates.length > 0 && <Picker options={candidates} icon={Plus} label={tr('放上板', 'Place on the board')} placeholder={tr('放上板', 'Place on the board')}
+        {editable && candidates.length > 0 && <Picker options={candidates} icon={Plus} label={tr("放上板")} placeholder={tr("放上板")}
           onPick={(id) => setPlaced([...placed, id])} />}
-        {own && <button type="button" className="kit-btn editor-tool" disabled={pending} onClick={remove} title={tr('删掉这份关系', 'Remove the relation')}><Trash2 size={14} /></button>}
+        {own && <button type="button" className="kit-btn editor-tool" disabled={pending} onClick={remove} title={tr("删掉这份关系")}><Trash2 size={14} /></button>}
       </div>
       {/* What is picked, in a row of a fixed height; taking it off is the board's (its × buttons, Delete). */}
       <div className="arrange-actions">
         {wire ? <>
           <strong title={`${describe(wire.from)} → ${describe(wire.to)}`}><code>{shownName(namespace, wire.from)}</code> → <code>{shownName(namespace, wire.to)}</code></strong>
-          {relation.kind === 'requires' && <label title={tr('须通过这个前置', 'Require a pass on this prerequisite')}>
+          {relation.kind === 'requires' && <label title={tr("须通过这个前置")}>
             <input type="checkbox" checked={wire.required ?? false} disabled={locked} onChange={(e) => write(withRequired(edges, highlight, e.target.checked))} />
-            {tr('须通过', 'Must pass')}
+            {tr("须通过")}
           </label>}
         </> : active ? <strong title={describe(active)}>{describe(active)}</strong> : null}
       </div>
@@ -137,7 +137,7 @@ function OneRelation({ full, name, relation, own, content, namespace, ops, previ
           onPick?.(k < 0 ? ['sequence'] : ['edges', k])
         }}
         onConnect={connect} onDelete={removeWire} onRemoveCard={editable ? removeEnd : null}
-        removeCardLabel={tr('从板上拿掉', 'Take off the board')} onCancel={() => { reset(); setActive(null) }} />
+        removeCardLabel={tr("从板上拿掉")} onCancel={() => { reset(); setActive(null) }} />
     </article>
   )
 }

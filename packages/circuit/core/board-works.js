@@ -46,7 +46,7 @@ import { holds as holding, offer } from './course.js'
 import { courseLayout } from 'kernel'
 
 
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 
 import { inheritedBoard } from './progress.js'

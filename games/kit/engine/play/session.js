@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 // A blind session (games/design/README.md 6.6): one player playing one game from its first level, in course order, keeping
 // its own progress like a save. Its record is data, part of the game's content: games/<game>/playtests/<session>.json,
 // whose shape is PLAYTEST below. It holds everything the audit panel (./stats.js) reads, and the progress to go on from.
@@ -16,14 +17,14 @@ const OUTCOME = S.obj({
   level: S.str(),
   task: S.int({ min: 0 }),
   outcome: S.oneOf(OUTCOMES),
-  required: S.bool({ about: { zh: '是否属于主路线。专题和挑战属于其他路线。', en: 'whether the level is on the main path (not a topic or a challenge)' } }),
+  required: S.bool({ about: catalogText("是否属于主路线。专题和挑战属于其他路线。") }),
   attempts: S.int({ min: 0 }),
-  hints: S.int({ min: 0, about: { zh: '玩家主动请求的提示。', en: 'hints the player asked for' } }),
-  usage: S.map(S.any(), { about: { zh: '由玩法提供的观察记录。', en: 'opaque observations supplied by the play' } }),
-  seconds: S.opt(S.num({ about: { zh: '从第一次看到关卡到结果出现所花的时间。', en: 'from first seeing the level to its outcome' } })),
-  why: S.opt(S.str({ about: { zh: '跳关原因。', en: 'why a level was skipped' } })),
-  seen: S.opt(S.num({ about: { zh: '打开时记录首次看到关卡的时间，单位是 Unix 毫秒。', en: 'while open: when the level was first seen (ms since 1970)' } })),
-  learned: S.opt(S.str({ about: { zh: '解出后由玩家用自己的话总结发现。', en: 'once solved: what the player says they worked out, in their own words' } })),
+  hints: S.int({ min: 0, about: catalogText("玩家主动请求的提示。") }),
+  usage: S.map(S.any(), { about: catalogText("由玩法提供的观察记录。") }),
+  seconds: S.opt(S.num({ about: catalogText("从第一次看到关卡到结果出现所花的时间。") })),
+  why: S.opt(S.str({ about: catalogText("跳关原因。") })),
+  seen: S.opt(S.num({ about: catalogText("打开时记录首次看到关卡的时间，单位是 Unix 毫秒。") })),
+  learned: S.opt(S.str({ about: catalogText("解出后由玩家用自己的话总结发现。") })),
 })
 
 const ATTEMPT = S.obj({
@@ -32,7 +33,7 @@ const ATTEMPT = S.obj({
   at: S.str(),
   text: S.str(),
   pass: S.bool(),
-  says: S.str({ about: { zh: '玩家实际读到的游戏反馈。', en: 'the feedback the game gave, as the player read it' } }),
+  says: S.str({ about: catalogText("玩家实际读到的游戏反馈。") }),
 })
 
 /** The schema of a session's record. */
@@ -46,9 +47,9 @@ export const PLAYTEST = S.obj({
   }),
   lang: S.oneOf(['zh', 'en']),
   started: S.str(),
-  limits: S.obj({ attempts: S.int({ min: 1, about: { zh: '达到此尝试次数时会话放弃该关。', en: 'attempts a level gets before the session gives it up' } }), levels: S.opt(S.int({ min: 1 })) }),
-  usage: S.opt(S.obj({ tokens: S.opt(S.int()), seconds: S.opt(S.num()), cost: S.opt(S.num()) }, { about: { zh: '运行器有完整会话时附上。', en: 'the whole session, when the runner knows it' } })),
-  progress: S.any({ about: { zh: '会话继续时所用的外壳存档。', en: 'the shell save the session goes on from' } }),
+  limits: S.obj({ attempts: S.int({ min: 1, about: catalogText("达到此尝试次数时会话放弃该关。") }), levels: S.opt(S.int({ min: 1 })) }),
+  usage: S.opt(S.obj({ tokens: S.opt(S.int()), seconds: S.opt(S.num()), cost: S.opt(S.num()) }, { about: catalogText("运行器有完整会话时附上。") })),
+  progress: S.any({ about: catalogText("会话继续时所用的外壳存档。") }),
   levels: S.list(OUTCOME),
   attempts: S.list(ATTEMPT),
 })

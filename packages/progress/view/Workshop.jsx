@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { useMemo, useState } from 'react'
 import { ArrowDownFromLine, ArrowUpFromLine, Check, CircuitBoard, Layers, Pin, Plus, Trash2, X } from 'lucide-react'
 import { CircuitEditor as CircuitLevel, Glyph } from 'circuit/view'
@@ -8,7 +9,8 @@ import { Popover } from 'kernel/view'
 import { Sheet } from 'kernel/view'
 
 import { boardFits } from 'circuit'
-import { isPair, L, sideOf, tr } from 'kernel/view'
+import { isPair, L, sideOf } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import {
   draftWorkshop, featureWorkshop, publishWorkshop, removeWorkshopPart, trayKey, trayTypes, workshopEntries, workshopInTray,
@@ -24,8 +26,8 @@ const silent = { tests: [], states: [] }
 
 function TrayPicker({ tray, trays, choices, onPick }) {
   const [anchor, setAnchor] = useState(null)
-  const nameOf = (id) => id ? L(trays[id].name) : tr('元件托盘', 'Parts tray')
-  const label = tr('切换托盘', 'Switch tray')
+  const nameOf = (id) => id ? L(trays[id].name) : tr("元件托盘")
+  const label = tr("切换托盘")
   const close = () => {
     setAnchor(null)
     anchor.focus({ preventScroll: true })
@@ -95,8 +97,8 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
   const remove = (part) => {
     const saved = update((current) => removeWorkshopPart(current, part.id))
     setNotice(saved
-      ? { text: tr(`已删除「${part.name}」。`, `Deleted “${part.name}”.`) }
-      : { fail: true, text: tr('未能删除，浏览器存储不可用。', 'Could not delete: browser storage is unavailable.') })
+      ? { text: tr("已删除「{name}」。", {name: part.name}) }
+      : { fail: true, text: tr("未能删除，浏览器存储不可用。") })
   }
 
   const normal = (name) => String(L(name) ?? '').normalize('NFKC').trim().toLowerCase()
@@ -111,7 +113,7 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
   const beginPack = () => {
     const { graph, names, order, missing } = flattenWorkshopTerminals(draft, parts, (text) => String(L(text)).trim())
     if (!Object.keys(names.outputs).length || missing.length) {
-      setNotice({ fail: true, text: tr('请至少放置一个输出，并接上所有输出端口。', 'Add at least one output and wire every output port.') })
+      setNotice({ fail: true, text: tr("请至少放置一个输出，并接上所有输出端口。") })
       return
     }
     const wired = new Set(graph.wires.map(({ from }) => from))
@@ -119,33 +121,33 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
     const outputs = Object.values(names.outputs)
     const valid = (labels) => labels.every((label) => label.trim()) && new Set(labels.map(normal)).size === labels.length
     if (!valid(inputs) || !valid(outputs)) {
-      setNotice({ fail: true, text: tr('同一侧的端口标签必须非空且互不重复。', 'Port labels on each side must be nonempty and unique.') })
+      setNotice({ fail: true, text: tr("同一侧的端口标签必须非空且互不重复。") })
       return
     }
     if ([...inputs, ...outputs].some((label) => label.includes('|') || label.startsWith('__'))) {
-      setNotice({ fail: true, text: tr('端口标签不能包含 | 或以 __ 开头。', 'Port labels cannot contain | or start with __.') })
+      setNotice({ fail: true, text: tr("端口标签不能包含 | 或以 __ 开头。") })
       return
     }
     setNotice(null)
     setConfirm({ graph, names, order })
   }
   const pack = (name, description) => {
-    if (!name) return tr('请输入元件名称。', 'Enter a part name.')
-    const duplicate = tr('同一托盘已有这个名称的元件。', 'A part in this tray already has this name.')
+    if (!name) return tr("请输入元件名称。")
+    const duplicate = tr("同一托盘已有这个名称的元件。")
     if (nameTaken(name, library)) return duplicate
     const part = capture(confirm.graph, {
       name, description, tray: slot, names: confirm.names, order: confirm.order, parts: drawn,
     })
-    if (!part) return tr('板上有不能封装的元件。', 'A part on this board cannot be packaged.')
+    if (!part) return tr("板上有不能封装的元件。")
     let taken = false
     const saved = update((current) => {
       taken = nameTaken(name, current)
       return taken ? current : publishWorkshop(current, part, { id: part.id })
     })
     if (taken) return duplicate
-    if (!saved) return tr('未能保存，浏览器存储不可用。', 'Could not save: browser storage is unavailable.')
+    if (!saved) return tr("未能保存，浏览器存储不可用。")
     setConfirm(false)
-    setNotice({ text: tr(`「${part.name}」已放入托盘。`, `“${part.name}” is in the tray.`) })
+    setNotice({ text: tr("「{name}」已放入托盘。", {name: part.name}) })
     return null
   }
   const addTerminal = (role, label) => {
@@ -158,7 +160,7 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
   ]
   const shelf = made.length > 0 && (
     <section className="ws-shelf">
-      <header><h2>{tr('我的元件', 'My parts')}</h2></header>
+      <header><h2>{tr("我的元件")}</h2></header>
       <ul>
         {made.map((part) => {
           const on = featured.has(part.id)
@@ -167,8 +169,8 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
               <i className="family-chip"><Glyph icon={CircuitBoard} size={12} /></i>
               <span title={part.description || undefined}>{part.name}</span>
               <small>{part.inputs.length} → {part.outputs.length}</small>
-              <button type="button" className={`ws-tool ${on ? 'is-on' : ''}`} aria-pressed={on} aria-label={tr(`把 ${part.name} 固定在托盘主区`, `Pin ${part.name} to the tray`)} title={tr('固定在托盘主区', 'Pin to the tray')} onClick={() => update((current) => featureWorkshop(current, slot, part.id, !on))}><Pin size={13} /></button>
-              <button type="button" className="ws-tool ws-remove" aria-label={tr(`删除元件 ${part.name}`, `Delete part ${part.name}`)} title={tr('删除元件', 'Delete part')} onClick={() => remove(part)}><Trash2 size={13} /></button>
+              <button type="button" className={`ws-tool ${on ? 'is-on' : ''}`} aria-pressed={on} aria-label={tr("把 {name} 固定在托盘主区", {name: part.name})} title={tr("固定在托盘主区")} onClick={() => update((current) => featureWorkshop(current, slot, part.id, !on))}><Pin size={13} /></button>
+              <button type="button" className="ws-tool ws-remove" aria-label={tr("删除元件 {name}", {name: part.name})} title={tr("删除元件")} onClick={() => remove(part)}><Trash2 size={13} /></button>
             </li>
           )
         })}
@@ -176,7 +178,7 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
     </section>
   )
   const dock = <RunDock meta={notice && <p role="status" className={`ws-notice ${notice.fail ? 'is-fail' : ''}`}>{notice.text}</p>}
-    go={{ label: tr('封装为元件', 'Package as a part'), icon: <CircuitBoard size={16} />, attrs: { onClick: beginPack } }} />
+    go={{ label: tr("封装为元件"), icon: <CircuitBoard size={16} />, attrs: { onClick: beginPack } }} />
 
   return (
     <>
@@ -201,8 +203,8 @@ export default function Workshop({ screen, tray = '', board, parts, packed, card
   )
 }
 
-const INPUT_LABEL = { zh: '输入', en: 'Input' }
-const OUTPUT_LABEL = { zh: '输出', en: 'Output' }
+const INPUT_LABEL = catalogText("输入")
+const OUTPUT_LABEL = catalogText("输出")
 
 function unlockDraft(graph, parts, names) {
   return {
@@ -239,20 +241,20 @@ function TerminalFields({ node, parts, graph, title, family, change, remove }) {
   const enter = (event) => { if (event.key === 'Enter') event.currentTarget.blur() }
   return (
     <div className="ws-term" data-side={role} data-family={family}>
-      <input className="ws-term-name" maxLength={named ? 80 : 24} value={text(title)} placeholder={tr('名称', 'Name')} aria-label={tr('名称', 'Name')}
+      <input className="ws-term-name" maxLength={named ? 80 : 24} value={text(title)} placeholder={tr("名称")} aria-label={tr("名称")}
         aria-invalid={(!named && bad(ports[0])) || undefined} onKeyDown={enter}
         onChange={(event) => write(named ? { text: event.target.value } : { text: event.target.value, ports: [{ ...ports[0], label: event.target.value }] })} />
       {named && <ul className="ws-term-ports">
         {ports.map((port, index) => <li key={port.key ?? ''}>
           <i className="ws-dot" />
-          <input maxLength={24} value={text(port.label)} spellCheck={false} aria-label={tr(`端口 ${index + 1}`, `Port ${index + 1}`)} aria-invalid={bad(port) || undefined} onKeyDown={enter}
+          <input maxLength={24} value={text(port.label)} spellCheck={false} aria-label={tr("端口 {index}", {index: index + 1})} aria-invalid={bad(port) || undefined} onKeyDown={enter}
             onChange={(event) => write({ ports: ports.map((item) => item === port ? { ...item, label: event.target.value } : item) })} />
-          {ports.length > 1 && <button type="button" className="ws-tool ws-remove" aria-label={tr(`移除端口 ${text(port.label)}`, `Remove port ${text(port.label)}`)} onClick={() => write({ ports: ports.filter((item) => item !== port) })}><X size={14} /></button>}
+          {ports.length > 1 && <button type="button" className="ws-tool ws-remove" aria-label={tr("移除端口 {value}", {value: text(port.label)})} onClick={() => write({ ports: ports.filter((item) => item !== port) })}><X size={14} /></button>}
         </li>)}
       </ul>}
       <div className="ws-term-foot">
-        <button type="button" className="kit-btn is-label" disabled={ports.length >= MAX_TERMINAL_PORTS} onClick={add}><Plus size={15} />{tr('端口', 'Port')}</button>
-        <button type="button" className="kit-btn is-label ws-remove" onClick={remove}><Trash2 size={15} />{tr('删除', 'Delete')}</button>
+        <button type="button" className="kit-btn is-label" disabled={ports.length >= MAX_TERMINAL_PORTS} onClick={add}><Plus size={15} />{tr("端口")}</button>
+        <button type="button" className="kit-btn is-label ws-remove" onClick={remove}><Trash2 size={15} />{tr("删除")}</button>
       </div>
     </div>
   )
@@ -266,12 +268,12 @@ function PackagePrompt({ onClose, onPack }) {
     setError(onPack(fields.get('partTitle').trim(), fields.get('description').trim()))
   }
   return (
-    <Sheet title={tr('封装为元件', 'Package as a part')} onClose={onClose} initialFocus='[name="partTitle"]'>
+    <Sheet title={tr("封装为元件")} onClose={onClose} initialFocus='[name="partTitle"]'>
       <form className="ws-fields" autoComplete="off" onSubmit={submit} onChange={() => setError(null)}>
-        <label>{tr('元件名称', 'Part name')}<input name="partTitle" autoComplete="off" required maxLength={80} /></label>
-        <label>{tr('描述', 'Description')}<textarea name="description" rows={3} maxLength={320} /></label>
+        <label>{tr("元件名称")}<input name="partTitle" autoComplete="off" required maxLength={80} /></label>
+        <label>{tr("描述")}<textarea name="description" rows={3} maxLength={320} /></label>
         {error && <p role="alert" className="ws-notice is-fail">{error}</p>}
-        <button type="submit" className="run-go">{tr('确认封装', 'Confirm packaging')}</button>
+        <button type="submit" className="run-go">{tr("确认封装")}</button>
       </form>
     </Sheet>
   )

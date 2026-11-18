@@ -1,19 +1,20 @@
-import { T, treeKey } from 'kernel/view'
+import { treeKey } from "kernel/view"
+import { T } from 'kernel/words'
 import { tree, text, judgeSums } from '../core/sums.js'
 
 function segment(node, path = []) {
   const key = treeKey(path)
-  if (node === null) return { hole: key, label: T('加数', 'Addend') }
+  if (node === null) return { hole: key, label: T("加数") }
   const parts = typeof node === 'number' ? [String(node)] : [segment(node[0], [...path, 0]), ' + ', segment(node[1], [...path, 1])]
   return { part: key, family: 'sum', parts }
 }
 
 const language = {
   ...tree,
-  label: T('加法式', 'Sum'),
+  label: T("加法式"),
   line: (node) => [segment(node)],
   joinsOnto: (node) => tree.trailing(node, 'sum'),
-  groups: [['sum', T('加法', 'Addition')]],
+  groups: [['sum', T("加法")]],
 }
 
 export function sums(level) {
@@ -36,7 +37,7 @@ export function sums(level) {
       },
       blank: T('未写完'),
     }),
-    passed: T('两边的值都相等。', 'Both sides have the same value in every row.'),
+    passed: T("两边的值都相等。"),
     score: () => null,
   }
 }

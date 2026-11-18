@@ -1,6 +1,7 @@
 import { GridPicture } from 'kernel/view'
 import { useTween } from 'kernel/view'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 import './contrast.css'
 
 // The pull-and-push bench's pictures (bench model `contrast`): the embedding plane, where a linear encoder puts every
@@ -69,7 +70,7 @@ export function ChoiceMatrix({ ctx }) {
                   key={k}
                   className={k === a ? 'is-self' : k === (a ^ 1) ? 'is-partner' : ''}
                   style={k === a ? undefined : { background: `color-mix(in srgb, var(--accent) ${Math.round(p * 100)}%, var(--paper))` }}
-                  aria-label={k === a ? undefined : tr(`${tagOf(m, a)} 选 ${tagOf(m, k)}：${pct(p)}`, `${tagOf(m, a)} picks ${tagOf(m, k)}: ${pct(p)}`)}
+                  aria-label={k === a ? undefined : tr("{value} 选 {value2}：{value3}", {value: tagOf(m, a), value2: tagOf(m, k), value3: pct(p)})}
                 >
                   {k === a ? '' : p >= 0.095 ? Math.round(p * 100) : ''}
                 </td>

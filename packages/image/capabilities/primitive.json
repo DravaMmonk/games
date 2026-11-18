@@ -20,10 +20,7 @@
       "outputType": "image/image"
     },
     "shift": {
-      "about": {
-        "zh": "平移",
-        "en": "Shift"
-      },
+      "about": "@capability.primitive.items.shift.about",
       "inputs": [
         {
           "name": "in",
@@ -33,10 +30,7 @@
       "outputType": "image/image"
     },
     "add": {
-      "about": {
-        "zh": "相加",
-        "en": "Add"
-      },
+      "about": "@capability.primitive.items.add.about",
       "inputs": [
         {
           "name": "a",
@@ -50,10 +44,7 @@
       "outputType": "image/image"
     },
     "sub": {
-      "about": {
-        "zh": "相减",
-        "en": "Subtract"
-      },
+      "about": "@capability.primitive.items.sub.about",
       "inputs": [
         {
           "name": "a",
@@ -67,10 +58,7 @@
       "outputType": "image/image"
     },
     "mul": {
-      "about": {
-        "zh": "相乘",
-        "en": "Multiply"
-      },
+      "about": "@capability.primitive.items.mul.about",
       "inputs": [
         {
           "name": "a",
@@ -84,10 +72,7 @@
       "outputType": "image/image"
     },
     "arith": {
-      "about": {
-        "zh": "四则运算",
-        "en": "Arithmetic"
-      },
+      "about": "@capability.primitive.items.arith.about",
       "inputs": [
         {
           "name": "a",
@@ -118,10 +103,7 @@
       "outputType": "image/image"
     },
     "merge": {
-      "about": {
-        "zh": "汇合器",
-        "en": "Merger"
-      },
+      "about": "@capability.primitive.items.merge.about",
       "inputs": [
         {
           "name": "a",
@@ -139,18 +121,12 @@
       "outputType": "image/image"
     },
     "const": {
-      "about": {
-        "zh": "常数",
-        "en": "Constant"
-      },
+      "about": "@capability.primitive.items.const.about",
       "inputs": [],
       "outputType": "image/image"
     },
     "threshold": {
-      "about": {
-        "zh": "阈值",
-        "en": "Threshold"
-      },
+      "about": "@capability.primitive.items.threshold.about",
       "inputs": [
         {
           "name": "in",
@@ -160,10 +136,7 @@
       "outputType": "image/image"
     },
     "invert": {
-      "about": {
-        "zh": "反相",
-        "en": "Invert"
-      },
+      "about": "@capability.primitive.items.invert.about",
       "inputs": [
         {
           "name": "in",
@@ -191,10 +164,7 @@
       "outputType": "image/image"
     },
     "square": {
-      "about": {
-        "zh": "平方",
-        "en": "Square"
-      },
+      "about": "@capability.primitive.items.square.about",
       "inputs": [
         {
           "name": "in",
@@ -204,10 +174,7 @@
       "outputType": "image/image"
     },
     "sqrt": {
-      "about": {
-        "zh": "开方",
-        "en": "Square root"
-      },
+      "about": "@capability.primitive.items.sqrt.about",
       "inputs": [
         {
           "name": "in",
@@ -226,10 +193,7 @@
       "outputType": "image/image"
     },
     "zeroUp": {
-      "about": {
-        "zh": "补零放大",
-        "en": "Zero upsample"
-      },
+      "about": "@capability.primitive.items.zeroUp.about",
       "inputs": [
         {
           "name": "in",
@@ -239,10 +203,7 @@
       "outputType": "image/image"
     },
     "fqMean": {
-      "about": {
-        "zh": "求平均",
-        "en": "Average"
-      },
+      "about": "@capability.primitive.items.fqMean.about",
       "inputs": [
         {
           "name": "in",
@@ -252,10 +213,7 @@
       "outputType": "image/image"
     },
     "globalMax": {
-      "about": {
-        "zh": "全图最大值",
-        "en": "Global max"
-      },
+      "about": "@capability.primitive.items.globalMax.about",
       "inputs": [
         {
           "name": "in",
@@ -265,10 +223,7 @@
       "outputType": "image/image"
     },
     "blur3h": {
-      "about": {
-        "zh": "横向三点平均",
-        "en": "3-point horizontal average"
-      },
+      "about": "@capability.primitive.items.blur3h.about",
       "inputs": [
         {
           "name": "in",
@@ -278,10 +233,7 @@
       "outputType": "image/image"
     },
     "line3": {
-      "about": {
-        "zh": "一维三点核",
-        "en": "1D 3-point kernel"
-      },
+      "about": "@capability.primitive.items.line3.about",
       "inputs": [
         {
           "name": "in",
@@ -291,10 +243,7 @@
       "outputType": "image/image"
     },
     "box3": {
-      "about": {
-        "zh": "3×3 平均",
-        "en": "3×3 average"
-      },
+      "about": "@capability.primitive.items.box3.about",
       "inputs": [
         {
           "name": "in",
@@ -304,10 +253,7 @@
       "outputType": "image/image"
     },
     "gauss": {
-      "about": {
-        "zh": "高斯模糊",
-        "en": "Gaussian blur"
-      },
+      "about": "@capability.primitive.items.gauss.about",
       "inputs": [
         {
           "name": "in",
@@ -317,10 +263,7 @@
       "outputType": "image/image"
     },
     "diffx": {
-      "about": {
-        "zh": "横向差分",
-        "en": "Horizontal difference"
-      },
+      "about": "@capability.primitive.items.diffx.about",
       "inputs": [
         {
           "name": "in",
@@ -330,10 +273,7 @@
       "outputType": "image/image"
     },
     "sobelx": {
-      "about": {
-        "zh": "Sobel x",
-        "en": "Sobel x"
-      },
+      "about": "@capability.primitive.items.sobelx.about",
       "inputs": [
         {
           "name": "in",
@@ -343,10 +283,7 @@
       "outputType": "image/image"
     },
     "sobely": {
-      "about": {
-        "zh": "Sobel y",
-        "en": "Sobel y"
-      },
+      "about": "@capability.primitive.items.sobely.about",
       "inputs": [
         {
           "name": "in",
@@ -356,10 +293,7 @@
       "outputType": "image/image"
     },
     "kernel3": {
-      "about": {
-        "zh": "3×3 核",
-        "en": "3×3 kernel"
-      },
+      "about": "@capability.primitive.items.kernel3.about",
       "inputs": [
         {
           "name": "in",
@@ -369,10 +303,7 @@
       "outputType": "image/image"
     },
     "learn3": {
-      "about": {
-        "zh": "可学习 3×3 核",
-        "en": "Learnable 3×3 kernel"
-      },
+      "about": "@capability.primitive.items.learn3.about",
       "inputs": [
         {
           "name": "in",
@@ -382,10 +313,7 @@
       "outputType": "image/image"
     },
     "downsample": {
-      "about": {
-        "zh": "隔点取样",
-        "en": "Downsample"
-      },
+      "about": "@capability.primitive.items.downsample.about",
       "inputs": [
         {
           "name": "in",
@@ -395,10 +323,7 @@
       "outputType": "image/image"
     },
     "maxpool": {
-      "about": {
-        "zh": "2×2 最大池化",
-        "en": "2×2 max pool"
-      },
+      "about": "@capability.primitive.items.maxpool.about",
       "inputs": [
         {
           "name": "in",
@@ -408,10 +333,7 @@
       "outputType": "image/image"
     },
     "gradmag": {
-      "about": {
-        "zh": "梯度幅值",
-        "en": "Gradient magnitude"
-      },
+      "about": "@capability.primitive.items.gradmag.about",
       "inputs": [
         {
           "name": "in",
@@ -421,10 +343,7 @@
       "outputType": "image/image"
     },
     "harris": {
-      "about": {
-        "zh": "Harris 响应",
-        "en": "Harris response"
-      },
+      "about": "@capability.primitive.items.harris.about",
       "inputs": [
         {
           "name": "in",
@@ -434,10 +353,7 @@
       "outputType": "image/image"
     },
     "argmin4": {
-      "about": {
-        "zh": "取最小者编号",
-        "en": "Index of minimum"
-      },
+      "about": "@capability.primitive.items.argmin4.about",
       "inputs": [
         {
           "name": "c0",
@@ -459,10 +375,7 @@
       "outputType": "image/image"
     },
     "disparity": {
-      "about": {
-        "zh": "视差搜索",
-        "en": "Disparity search"
-      },
+      "about": "@capability.primitive.items.disparity.about",
       "inputs": [
         {
           "name": "left",
@@ -476,18 +389,12 @@
       "outputType": "image/image"
     },
     "fqWave": {
-      "about": {
-        "zh": "波",
-        "en": "Wave"
-      },
+      "about": "@capability.primitive.items.fqWave.about",
       "inputs": [],
       "outputType": "image/image"
     },
     "fqSpectrum": {
-      "about": {
-        "zh": "频谱",
-        "en": "Spectrum"
-      },
+      "about": "@capability.primitive.items.fqSpectrum.about",
       "inputs": [
         {
           "name": "in",
@@ -497,10 +404,7 @@
       "outputType": "image/image"
     },
     "fqLowpass": {
-      "about": {
-        "zh": "频域低通",
-        "en": "Frequency low-pass"
-      },
+      "about": "@capability.primitive.items.fqLowpass.about",
       "inputs": [
         {
           "name": "in",
@@ -510,10 +414,7 @@
       "outputType": "image/image"
     },
     "fqApply": {
-      "about": {
-        "zh": "频域相乘",
-        "en": "Multiply in frequency"
-      },
+      "about": "@capability.primitive.items.fqApply.about",
       "inputs": [
         {
           "name": "in",
@@ -527,10 +428,7 @@
       "outputType": "image/image"
     },
     "shade": {
-      "about": {
-        "zh": "朗伯着色",
-        "en": "Lambert shading"
-      },
+      "about": "@capability.primitive.items.shade.about",
       "inputs": [
         {
           "name": "nx",
@@ -552,10 +450,7 @@
       "outputType": "image/image"
     },
     "sense": {
-      "about": {
-        "zh": "感光",
-        "en": "Sensor"
-      },
+      "about": "@capability.primitive.items.sense.about",
       "inputs": [
         {
           "name": "in",
@@ -565,10 +460,7 @@
       "outputType": "image/image"
     },
     "lrnConv": {
-      "about": {
-        "zh": "卷积层",
-        "en": "Conv layer"
-      },
+      "about": "@capability.primitive.items.lrnConv.about",
       "inputs": [
         {
           "name": "in",
@@ -578,10 +470,7 @@
       "outputType": "image/image"
     },
     "lrnDense": {
-      "about": {
-        "zh": "全连接 w·x + b",
-        "en": "Dense w·x + b"
-      },
+      "about": "@capability.primitive.items.lrnDense.about",
       "inputs": [
         {
           "name": "in",
@@ -591,10 +480,7 @@
       "outputType": "image/image"
     },
     "lrnSigmoid": {
-      "about": {
-        "zh": "Sigmoid",
-        "en": "Sigmoid"
-      },
+      "about": "@capability.primitive.items.lrnSigmoid.about",
       "inputs": [
         {
           "name": "in",
@@ -604,18 +490,12 @@
       "outputType": "image/image"
     },
     "lrnConst": {
-      "about": {
-        "zh": "可学习常数",
-        "en": "Learnable constant"
-      },
+      "about": "@capability.primitive.items.lrnConst.about",
       "inputs": [],
       "outputType": "image/image"
     },
     "max": {
-      "about": {
-        "zh": "取较大",
-        "en": "Larger"
-      },
+      "about": "@capability.primitive.items.max.about",
       "inputs": [
         {
           "name": "a",
@@ -629,10 +509,7 @@
       "outputType": "image/image"
     },
     "lrnRgb": {
-      "about": {
-        "zh": "多通道 3×3 核",
-        "en": "Multichannel 3×3 kernel"
-      },
+      "about": "@capability.primitive.items.lrnRgb.about",
       "inputs": [
         {
           "name": "r",
@@ -650,10 +527,7 @@
       "outputType": "image/image"
     },
     "lrnRes": {
-      "about": {
-        "zh": "残差块",
-        "en": "Residual block"
-      },
+      "about": "@capability.primitive.items.lrnRes.about",
       "inputs": [
         {
           "name": "in",
@@ -663,10 +537,7 @@
       "outputType": "image/image"
     },
     "attention": {
-      "about": {
-        "zh": "注意力",
-        "en": "Attention"
-      },
+      "about": "@capability.primitive.items.attention.about",
       "inputs": [
         {
           "name": "Q",
@@ -684,10 +555,7 @@
       "outputType": "image/image"
     },
     "embed": {
-      "about": {
-        "zh": "对比编码器",
-        "en": "Contrastive encoder"
-      },
+      "about": "@capability.primitive.items.embed.about",
       "inputs": [
         {
           "name": "in",
@@ -697,10 +565,7 @@
       "outputType": "image/image"
     },
     "hough": {
-      "about": {
-        "zh": "Hough 累加器",
-        "en": "Hough accumulator"
-      },
+      "about": "@capability.primitive.items.hough.about",
       "inputs": [
         {
           "name": "in",
@@ -710,10 +575,7 @@
       "outputType": "image/image"
     },
     "ransac": {
-      "about": {
-        "zh": "RANSAC 找直线",
-        "en": "RANSAC line"
-      },
+      "about": "@capability.primitive.items.ransac.about",
       "inputs": [
         {
           "name": "in",
@@ -723,10 +585,7 @@
       "outputType": "image/image"
     },
     "homography": {
-      "about": {
-        "zh": "求单应",
-        "en": "Solve homography"
-      },
+      "about": "@capability.primitive.items.homography.about",
       "inputs": [
         {
           "name": "pairs",
@@ -736,10 +595,7 @@
       "outputType": "image/image"
     },
     "warp": {
-      "about": {
-        "zh": "单应变形",
-        "en": "Homography warp"
-      },
+      "about": "@capability.primitive.items.warp.about",
       "inputs": [
         {
           "name": "in",
@@ -757,10 +613,7 @@
       "outputType": "image/image"
     },
     "dg-encode": {
-      "about": {
-        "zh": "编码器",
-        "en": "Encoder"
-      },
+      "about": "@capability.primitive.items.dg-encode.about",
       "inputs": [
         {
           "name": "in",
@@ -770,10 +623,7 @@
       "outputType": "image/image"
     },
     "dg-decode": {
-      "about": {
-        "zh": "解码器",
-        "en": "Decoder"
-      },
+      "about": "@capability.primitive.items.dg-decode.about",
       "inputs": [
         {
           "name": "in",
@@ -783,10 +633,7 @@
       "outputType": "image/image"
     },
     "dg-encoder": {
-      "about": {
-        "zh": "编码器（已训练）",
-        "en": "Encoder (trained)"
-      },
+      "about": "@capability.primitive.items.dg-encoder.about",
       "inputs": [
         {
           "name": "in",
@@ -796,10 +643,7 @@
       "outputType": "image/image"
     },
     "dg-decoder": {
-      "about": {
-        "zh": "解码器（已训练）",
-        "en": "Decoder (trained)"
-      },
+      "about": "@capability.primitive.items.dg-decoder.about",
       "inputs": [
         {
           "name": "in",
@@ -809,26 +653,17 @@
       "outputType": "image/image"
     },
     "dg-mu": {
-      "about": {
-        "zh": "μ",
-        "en": "μ"
-      },
+      "about": "μ",
       "inputs": [],
       "outputType": "image/image"
     },
     "dg-sigma": {
-      "about": {
-        "zh": "σ",
-        "en": "σ"
-      },
+      "about": "σ",
       "inputs": [],
       "outputType": "image/image"
     },
     "dg-sample": {
-      "about": {
-        "zh": "采样 z ~ N(μ, σ²)",
-        "en": "Sample z ~ N(μ, σ²)"
-      },
+      "about": "@capability.primitive.items.dg-sample.about",
       "inputs": [
         {
           "name": "mu",
@@ -842,10 +677,7 @@
       "outputType": "image/image"
     },
     "dg-reparam": {
-      "about": {
-        "zh": "重参数化 μ + σ·ε",
-        "en": "Reparameterization μ + σ·ε"
-      },
+      "about": "@capability.primitive.items.dg-reparam.about",
       "inputs": [
         {
           "name": "mu",
@@ -863,10 +695,7 @@
       "outputType": "image/image"
     },
     "tconv": {
-      "about": {
-        "zh": "转置卷积（步幅 2）",
-        "en": "Transposed convolution (stride 2)"
-      },
+      "about": "@capability.primitive.items.tconv.about",
       "inputs": [
         {
           "name": "in",

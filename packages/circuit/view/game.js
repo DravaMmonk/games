@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { displays } from './mechanism/displays.js'
 
 // A circuit game on the circuit base's game (../../shell/circuit-game.js), its levels played on the domain's circuit
@@ -19,4 +20,4 @@ import { circuitWorks } from "../core/mechanism/work.js"
 const ui = displays
 
 /** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary, partDefs }. */
-export default (content, works = circuitWorks(content)) => definedGame(content, works, { kind: { id: 'circuit', icon: Binary, label: { zh: '电路', en: 'Circuit' } }, screen: ui['circuit/screen'] })
+export default (content, works = circuitWorks(content)) => definedGame(content, works, { kind: { id: 'circuit', icon: Binary, label: catalogText("电路") }, screen: ui['circuit/screen'] })

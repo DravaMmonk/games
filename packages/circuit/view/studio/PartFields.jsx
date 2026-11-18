@@ -1,4 +1,5 @@
-import { L, tr, validate, usePickerPopup, useDraft } from 'kernel/view'
+import { L, validate, usePickerPopup, useDraft } from "kernel/view"
+import { tr } from 'kernel/words'
 // The studio's controls for a part definition's own fields (games/design/README.md 6.7, 6.8): an expression — what a part
 // computes, a rule's or a check's logic, a readout — and an icon of the kernel's table. An expression is code over the
 // engine's resources and nothing else: it is read and checked as it is typed (where it is wrong, the resources, inputs
@@ -79,7 +80,7 @@ export function IconField({ field, onSet, label }) {
   const anchor = useRef(null)
   const icon = field.value
   const Selected = ICONS[icon]
-  const name = label || tr('图标', 'Icon')
+  const name = label || tr("图标")
   const close = () => {
     setOpen(false)
     anchor.current?.querySelector('button')?.focus()
@@ -106,7 +107,7 @@ function IconOptions({ anchor, icon, label, onClose, onOutside, onPick }) {
   const shown = ICON_NAMES.filter((name) => name.toLowerCase().includes(query.toLowerCase()))
   return (
     <div className="pick-pop is-floating field-icon" ref={overlay} role="dialog" aria-label={label}>
-      <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={icon ?? ''} aria-label={tr('搜索', 'Search')} spellCheck={false} />
+      <input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={icon ?? ''} aria-label={tr("搜索")} spellCheck={false} />
       <div className="icon-grid" role="radiogroup" aria-label={label}>
         {shown.map((name) => {
           const Icon = ICONS[name]

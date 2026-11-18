@@ -20,7 +20,7 @@ const CopyRow = memo(function CopyRow({ row, first, found, names, side, wording,
   return (
     <div role="row" className={`copy-row ${first ? 'is-first' : ''}`} data-path={row.file.game ? path : undefined}>
       <div className="copy-field-name" role="rowheader">
-        <button type="button" className="copy-where" onClick={() => onJump(row)} title={label}>
+        <button type="button" className="copy-where" disabled={row.file.ui !== undefined} onClick={() => onJump(row)} title={label}>
           {first && <b>{row.name}</b>}
           <code>{showPath(row.file.game && row.path[0] === 'eras' ? row.path.slice(2) : row.path)}</code>
         </button>
@@ -29,9 +29,9 @@ const CopyRow = memo(function CopyRow({ row, first, found, names, side, wording,
         const was = wording[column]
         return (
           <div role="cell" aria-colspan={shared ? 2 : undefined} className={`${shared ? 'copy-shared' : ''} ${was !== undefined ? 'is-own' : ''}`} key={`${column}:${lang}`} title={was !== undefined ? was : undefined}>
-            {fixed ? <span className="copy-fixed">{row.value}</span> : <TextField lang={lang} value={row.value} onSet={(text) => onEdit(copyEdit(row, lang, text, side))}
-              label={`${label} · ${shared ? tr('共享文本', 'Shared text') : lang}`} names={names} findings={found} compact />}
-            {was !== undefined && <button type="button" className="kit-btn editor-tool copy-restore" title={tr('恢复包里的原文', 'Back to the package’s wording')}
+            {fixed || row.file.ui !== undefined && lang === 'zh' ? <span className="copy-fixed">{textIn(row.value, lang)}</span> : <TextField lang={lang} value={row.value} onSet={(text) => onEdit(copyEdit(row, lang, text, side))}
+              label={`${label} · ${shared ? tr("共享文本") : lang}`} names={names} findings={found} compact />}
+            {was !== undefined && <button type="button" className="kit-btn editor-tool copy-restore" title={tr("恢复包里的原文")}
               onClick={() => onEdit(copyEdit(row, lang, null, side))}><RotateCcw size={12} /></button>}
           </div>
         )
@@ -52,7 +52,7 @@ export default function CopyTable({ side = 'package', content, vocabulary, scope
   const [missingOnly, setMissingOnly] = useState(false)
   const [query, setQuery] = useState('')
   const all = useMemo(() => allCopyRows(content, vocabulary, order, side), [content, vocabulary, order, side])
-  const scoped = useMemo(() => file !== null ? all.filter((row) => copyFileOf(row) === file) : scope === 'all' ? all : copyRows(content, vocabulary, scope, order, side), [all, content, vocabulary, scope, file, order, side])
+  const scoped = useMemo(() => file !== null ? all.filter((row) => copyFileOf(row) === file) : scope === 'all' ? all.filter(row => row.file.ui === undefined) : copyRows(content, vocabulary, scope, order, side), [all, content, vocabulary, scope, file, order, side])
   const options = useMemo(() => {
     const names = new Intl.DisplayNames([uiLang], { type: 'language' })
     return [...new Set([...copyLanguages(all), ...languages.added, left, right])].sort()
@@ -87,7 +87,7 @@ export default function CopyTable({ side = 'package', content, vocabulary, scope
     return { rows, missing }
   }, [scoped, selectedField, query, only, missingOnly, foundOf, names, left, right])
   return (
-    <section className="copy-table" role="table" aria-label={tr('文案', 'Copy')}>
+    <section className="copy-table" role="table" aria-label={tr("文案")}>
       <div className="copy-head">
         <div className="copy-bar">
           {file !== null ? <code className="copy-file">{file}</code> : <select value={String(scope)} onChange={(event) => {
@@ -98,23 +98,24 @@ export default function CopyTable({ side = 'package', content, vocabulary, scope
             {side === 'game'
               ? (content.eras ?? []).map((era, index) => <option key={index} value={index}>{era.id} {L(era.title ?? era.chapter?.title) ?? ''}</option>)
               : Object.entries(content.tags ?? {}).filter(([, tag]) => tag.kind === 'level').map(([id, group]) => <option key={id} value={`group:${id}`}>{L(group.title) || id}</option>)}
-            <option value="all">{side === 'game' ? tr('整款游戏') : tr('整个内容包', 'The whole package')}</option>
+            <option value="all">{side === 'game' ? tr('整款游戏') : tr("整个内容包")}</option>
             <option value="glossary">{tr('百科')}</option>
-            {content.partDefs && <option value="parts">{tr('元件', 'Parts')}</option>}
+            {side === 'package' && <option value="ui">{tr('界面文案')}</option>}
+            {content.partDefs && <option value="parts">{tr("元件")}</option>}
           </select>}
           <select value={selectedField} onChange={(event) => setField(event.target.value)} aria-label={tr('字段')}>
             <option value="">{tr('全部字段')}</option>
             {fields.map((name) => <option key={name} value={name}>{name}</option>)}
           </select>
-          <button type="button" className={`kit-btn is-label ${only ? 'is-on' : ''}`} aria-pressed={only} aria-label={tr('只看有问题的字段', 'Fields with findings')} onClick={() => setOnly(!only)}><i className="mk-fail">!</i></button>
-          <button type="button" className={`kit-btn is-label ${missingOnly ? 'is-on' : ''}`} aria-pressed={missingOnly} onClick={() => setMissingOnly(!missingOnly)}>{tr('缺少文本', 'Missing text')} {missing}</button>
+          <button type="button" className={`kit-btn is-label ${only ? 'is-on' : ''}`} aria-pressed={only} aria-label={tr("只看有问题的字段")} onClick={() => setOnly(!only)}><i className="mk-fail">!</i></button>
+          <button type="button" className={`kit-btn is-label ${missingOnly ? 'is-on' : ''}`} aria-pressed={missingOnly} onClick={() => setMissingOnly(!missingOnly)}>{tr("缺少文本")} {missing}</button>
           <input className="field-input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={tr('筛选')} aria-label={tr('筛选')} />
           <small>{rows.length}/{scoped.length}</small>
         </div>
         <div className="copy-columns" role="row">
-          <span className="copy-field-name" role="columnheader">{tr('字段名', 'Field name')}</span>
-          <LanguagePicker label={tr('语言 1', 'Language 1')} value={left} options={options} onChange={(lang) => choose('left', lang)} onAdd={(lang) => choose('left', lang, true)} />
-          <LanguagePicker label={tr('语言 2', 'Language 2')} value={right} options={options} onChange={(lang) => choose('right', lang)} onAdd={(lang) => choose('right', lang, true)} />
+          <span className="copy-field-name" role="columnheader">{tr("字段名")}</span>
+          <LanguagePicker label={tr("语言 1")} value={left} options={options} onChange={(lang) => choose('left', lang)} onAdd={(lang) => choose('left', lang, true)} />
+          <LanguagePicker label={tr("语言 2")} value={right} options={options} onChange={(lang) => choose('right', lang)} onAdd={(lang) => choose('right', lang, true)} />
         </div>
       </div>
       <div className="copy-rows" role="rowgroup">

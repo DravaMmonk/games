@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 // Proofs as circuits (《证明完毕》). A wire carries a proved judgment:
 //
@@ -24,7 +25,7 @@ import { say, sayTerm } from './notation.js'
 import { choicesOf } from './choices.js'
 import { cancelOne, disjunction, literalsIn } from './resolution.js'
 import { absurd, alphaEq, cases, fst, inl, inr, lam, obj, open as unpack, pair, papp, parseTerm, pconst, printTerm, psubst, pvar, raa, rfl, snd } from './pterm.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 // The variables a quantifier binds; a particular thing is named a, b or c (choices.js).
 const BOUND = ['x', 'y', 'z', 'u', 'v', 'w']
@@ -270,22 +271,22 @@ const BODIES = {
 }
 
 const ABOUT = {
-  mp: T('套用：由 A → B 和 A 得到 B', 'Apply: from A → B and A, B'),
-  impI: T('假设框：框里假设 A 证出 B，得到 A → B', 'Assumption box: assume A inside, prove B, get A → B'),
-  andI: T('拼接：由 A 和 B 得到 A ∧ B', 'Join: from A and B, A ∧ B'),
-  andE: T('拆解：由 A ∧ B 得到 A、B', 'Split: from A ∧ B, A and B'),
-  orI: T('补充：由 A 得到 A ∨ B', 'Add alternative: from A, A ∨ B'),
-  orE: T('分类讨论：由 A ∨ B 和两个框得到 C', 'Case analysis: from A ∨ B and two boxes, C'),
-  botE: T('爆炸：由 ⊥ 得到任意一句', 'Explosion: from ⊥, anything'),
-  raa: T('反证法：由 ¬¬A 得到 A', 'By contradiction: from ¬¬A, A'),
-  res: T('归结：两条子句消去一对文字', 'Resolution: cancel one pair of literals'),
-  allI: T('任取框：框里证 P(a)，得到 ∀x. P(x)', 'For-any box: prove P(a) inside, get ∀x. P(x)'),
-  allE: T('选定一例：由 ∀x. P(x) 得到 P(t)', 'Choose an instance: from ∀x. P(x), P(t)'),
-  exI: T('概括：由 P(t) 得到 ∃x. P(x)', 'Generalise: from P(t), ∃x. P(x)'),
-  exE: T('实例框：由 ∃x. P(x) 和框得到 C', 'Witness box: from ∃x. P(x) and a box, C'),
-  natInd: T('数学归纳法', 'Induction'),
-  refl: T('自反律：t = t', 'Reflexivity: t = t'),
-  rewrite: T('等量代换：由 s = t 和 φ(s) 得到 φ(t)', 'Rewrite: from s = t and φ(s), φ(t)'),
+  mp: T("套用：由 A → B 和 A 得到 B"),
+  impI: T("假设框：框里假设 A 证出 B，得到 A → B"),
+  andI: T("拼接：由 A 和 B 得到 A ∧ B"),
+  andE: T("拆解：由 A ∧ B 得到 A、B"),
+  orI: T("补充：由 A 得到 A ∨ B"),
+  orE: T("分类讨论：由 A ∨ B 和两个框得到 C"),
+  botE: T("爆炸：由 ⊥ 得到任意一句"),
+  raa: T("反证法：由 ¬¬A 得到 A"),
+  res: T("归结：两条子句消去一对文字"),
+  allI: T("任取框：框里证 P(a)，得到 ∀x. P(x)"),
+  allE: T("选定一例：由 ∀x. P(x) 得到 P(t)"),
+  exI: T("概括：由 P(t) 得到 ∃x. P(x)"),
+  exE: T("实例框：由 ∃x. P(x) 和框得到 C"),
+  natInd: T("数学归纳法"),
+  refl: T("自反律：t = t"),
+  rewrite: T("等量代换：由 s = t 和 φ(s) 得到 φ(t)"),
 }
 /**
  * The proof rules as engine resources (a game's parts.json makes each a part, games/design/README.md 6.8): a resource's
@@ -383,7 +384,7 @@ function lemmaForm({ name, statement, premises = [], metas }, key, suffix = '') 
         return j
       })
       for (const m of open) bind[m] = param(node, m, ctx)
-      const use = { type: node.type, key, name: name ?? T(node.type, node.type), bind, binders }
+      const use = { type: node.type, key, name: name ?? { zh: node.type, en: node.type }, bind, binders }
       const derived = byProof(use, given.map((j) => j.formula), instantiate(conclusion, bind), ctx)
       return proved(derived, union(...given), given.reduce((t, j) => papp(t, j.term), pconst(`${node.type}${suffix}`)))
     },
@@ -450,7 +451,7 @@ export function lemmaGives(l, givens, goal, forms = null) {
  * the level's notation.
  */
 export function closes(judgment, goal, premiseIds, notation = null) {
-  if (!judgment) return { zh: '没有证到终点', en: 'Nothing reaches the goal' }
+  if (!judgment) return catalogText("没有证到终点")
   if (!same(judgment.formula, goal)) { const [got, want] = [say(judgment.formula, notation), say(goal, notation)]; return { zh: `证出的是「${got.zh}」，要的是「${want.zh}」`, en: `It proves “${got.en}”; the goal is “${want.en}”` } }
   const open = [...judgment.hyps].filter(([id]) => !premiseIds.includes(id)).map(([, f]) => say(f, notation))
   if (open.length) return { zh: `还开着假设「${open.map((f) => f.zh).join('」「')}」`, en: `Hypotheses still open: ${open.map((f) => `“${f.en}”`).join(', ')}` }
@@ -461,8 +462,8 @@ export function closes(judgment, goal, premiseIds, notation = null) {
 export const PROOF_BOARD = circuitBoard({
   text: FORMULA_TEXT,
   cards: [
-    { type: 'premise', side: 'left', of: (task) => Object.keys(task.tests[0].premises ?? {}).map((name, k, all) => ({ name, label: all.length > 1 ? T(`已知 ${k + 1}`, `Given ${k + 1}`) : T('已知', 'Given') })) },
-    { type: 'goal', side: 'right', of: () => [{ name: 'goal', label: T('目标', 'Goal') }] },
+    { type: 'premise', side: 'left', of: (task) => Object.keys(task.tests[0].premises ?? {}).map((name, k, all) => ({ name, label: all.length > 1 ? T("已知 {k}", {k: k + 1}) : T("已知") })) },
+    { type: 'goal', side: 'right', of: () => [{ name: 'goal', label: T("目标") }] },
   ],
   right: 900,
   gap: 130,
@@ -484,7 +485,7 @@ export function lemmaReference(node, lemmas, proofs) {
 
 /** The resource a lemma's card runs (lemmaParts): the proof that proved the shape it is in, on the card's inputs. */
 export const LEMMA = {
-  about: T('引理：照证出它的那段证明来推', 'A lemma: runs the proof that proved it'),
+  about: T("引理：照证出它的那段证明来推"),
   args: [],
   run: (_values, _named, ctx) => lemmaPart(ctx.lemmas[ctx.node.type]).eval(ctx.ins, ctx.node, ctx),
 }
@@ -499,7 +500,7 @@ export const OPTIONS = {
   names: { args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).name.map((value) => ({ value, label: value })) },
   things: { args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).term.map((value) => ({ value, label: thingText(value, ctx) })) },
   instances: {
-    about: T('能代入的东西或句子', 'Things or sentences to put in'),
+    about: T("能代入的东西或句子"),
     args: [],
     run: (_v, _n, ctx) => {
       const offer = choicesOf(ctx.task)
@@ -507,7 +508,7 @@ export const OPTIONS = {
     },
   },
   occurrences: {
-    about: T('φ 里 s 出现的每一处', 'Each place s stands in φ'),
+    about: T("φ 里 s 出现的每一处"),
     args: [{ name: 'eq' }, { name: 'p' }],
     run: ([e, p]) => {
       const f = e?.formula
@@ -535,7 +536,7 @@ export function lemmaParts(lemmas = {}) {
       inputs,
       outputType: 'logic/judgment',
       settings: [
-        ...(l.forms ? [{ key: 'form', control: 'select', label: T('形状', 'Shape'), options: l.forms.map((f) => ({ value: f.key, label: { zh: f.label, en: f.label } })) }] : []),
+        ...(l.forms ? [{ key: 'form', control: 'select', label: T("形状"), options: l.forms.map((f) => ({ value: f.key, label: { zh: f.label, en: f.label } })) }] : []),
         ...open.map((m) => ({ key: m, control: 'tree', label: l.params?.[m] ?? { zh: m, en: m } })),
       ],
       op: l.card ?? 'logic/lemma',

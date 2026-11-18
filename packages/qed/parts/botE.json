@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "bot",
-      "label": "@part.botE.inputs.0.label"
+      "label": "⊥"
     }
   ],
   "settings": {

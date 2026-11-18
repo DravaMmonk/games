@@ -2,9 +2,6 @@
   "name": "explain",
   "studio": {
     "order": 26,
-    "label": {
-      "zh": "讲解",
-      "en": "Explanations"
-    }
+    "label": "@capability.explain.studio.label"
   }
 }

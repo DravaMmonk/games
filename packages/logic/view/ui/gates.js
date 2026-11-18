@@ -3,13 +3,13 @@
 // sentence's truth table, picked in the table itself, its target column as the play says (../plays.js), and a run goes
 // down the table a row at a time, stopping on the first row it gets wrong; a blind puzzle hides the sentence. A gate
 // the player built opens to show the board it runs.
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 import { parse } from '../../core/formula.js'
 import { say } from '../../core/notation.js'
 import { runGates } from '../../core/gates.js'
 import { gatesPlayFor } from '../../core/plays.js'
 
-const TF = (v) => (v === undefined || v === null ? '—' : v ? T('真', 'T') : T('假', 'F'))
+const TF = (v) => (v === undefined || v === null ? '—' : v ? T("真") : T("假"))
 
 export const gatesScreen = {
   course: (game) => game.logic.truthCircuits,

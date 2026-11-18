@@ -1,1 +1,2 @@
 {"seq":1,"at":"2026-11-18T08:41:18.100Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/imglib/package.json","after":"843a08b2b13cd85f"},{"file":"packages/imglib/i18n/en.json","after":"fcb89cfc858fdeaa"},{"file":"packages/imglib/i18n/zh.json","after":"fc07109803f9614f"}]}
+{"seq":2,"at":"2026-11-18T09:16:13.118Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[{"file":"packages/imglib/i18n/en.json","after":"ce5c2fa0233c7fb4"}]}

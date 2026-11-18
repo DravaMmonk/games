@@ -56,6 +56,7 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
     const operations = operationsFor(domain.vocabulary)
     const op = operations[name]
     const where = `op ${k + 1} (${name})`
+    if (ws.copyOnly && name !== 'ui.set') return fail([`${where}: only interface copy is editable here`], k)
     if (!op) return fail([`${where}: no such operation; the operations are ${Object.keys(operations).join(', ')}`], k)
     let args
     try {
@@ -76,9 +77,10 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
         domain = await runtimeOf(ws.content(), ws.root)
         ws.schemas = domain.vocabulary
       }
-      if (name.startsWith('kind.') || name.startsWith('object.') && args.kind === 'shape') {
+      ws.normalize(meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, domain.vocabulary), previous)
+      if (name.startsWith('kind.') || name.startsWith('capability.') || name.startsWith('object.') && args.kind === 'shape') {
         const declarations = ['kind', 'shape']
-        const layers = ws.packageLayers.map(layer => layer.id !== ws.packageId ? layer : { ...layer, objects: [
+        const layers = ws.packageLayers.map(layer => layer.id !== ws.packageId ? layer : { ...layer, capabilityDeclarations: Object.fromEntries(ws.capabilities), objects: [
           ...layer.objects.filter(o => !declarations.includes(o.kind)),
           ...declarations.flatMap(kind => [...ws.contentObjects[kind]].map(([name, value]) => ({ kind, name, value }))),
         ] })
@@ -96,7 +98,6 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
           ws.contentObjects[kind] ??= new Map()
         }
       }
-      ws.normalize(meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, domain.vocabulary), previous)
       says.push(done.says)
       inverse.unshift(...done.inverse)
     } catch (error) {

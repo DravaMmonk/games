@@ -1,3 +1,4 @@
+import { uiBase } from '../shell/ui-words.js'
 import { contentSchemas } from '../engine/content.js'
 import { kindSchemas } from '../engine/plugin-kinds.js'
 import { objectTypes, listOfType } from './object-types.js'
@@ -21,6 +22,7 @@ const NOT_GAME = ['id', 'levels', 'glossary', 'vocabulary', 'open', 'blueprint',
  * path, value, own }].
  */
 export function copyRows(content, vocabulary, scope, order, side = 'package') {
+  if (scope === 'ui') return uiCopyRows(content)
   const rows = []
   const add = (file, name) => ({ path, value }) => {
     const own = file.game ? 'game' : 'package'
@@ -64,7 +66,15 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
 }
 
 
-export const allCopyRows = (content, vocabulary, order, side = 'package') => ['all', 'glossary', ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type]).map(({ type }) => listOfType(type))]
+function uiCopyRows({ uiCatalogs = {} }) {
+  const keys = [...new Set(Object.values(uiCatalogs).flatMap(Object.keys))].sort()
+  return keys.map(key => ({
+    key: `ui:${key}`, file: { ui: key }, name: key, path: ['ui', key], field: 'ui', own: 'package',
+    value: { zh: uiBase(key), ...Object.fromEntries(Object.entries(uiCatalogs).filter(([, entries]) => Object.hasOwn(entries, key)).map(([lang, entries]) => [lang, entries[key]])) },
+  }))
+}
+
+export const allCopyRows = (content, vocabulary, order, side = 'package') => ['all', 'glossary', 'ui', ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type]).map(({ type }) => listOfType(type))]
   .flatMap((scope) => copyRows(content, vocabulary, scope, order, side))
 
 export const copyLanguages = (rows) => [...new Set(['en', 'zh', ...languagesOf(rows.map((row) => row.value))])].sort()
@@ -73,6 +83,7 @@ const fileOf = (row) => row.file.object ? { kind: row.file.object.kind, name: ro
 
 /** The edit of a row's text in `lang`: in the game workspace, a package text gets the game's own wording (text.override). */
 export function copyEdit(row, lang, value, side = 'package') {
+  if (row.file.ui !== undefined) return { op: 'ui.set', key: row.file.ui, lang, value }
   if (side === 'game' && row.own === 'package') return { op: 'text.override', ...fileOf(row), path: row.file.target?.path ?? row.path, lang, value }
   return { op: 'text.set', ...fileOf(row), path: row.file.target?.path ?? row.path, ...(typeof row.value === 'string' ? {} : { lang }), value }
 }
@@ -88,6 +99,7 @@ const shortName = (full) => String(full).slice(String(full).indexOf('/') + 1)
 
 /** The file a row's text is written in, as the layer keeps it (the copy workspace lists texts by file). */
 export function copyFileOf(row) {
+  if (row.file.ui !== undefined) return 'i18n/* · ui'
   if (row.file.object) return `${row.file.object.folder}/${shortName(row.file.object.name)}.json`
   if (row.file.level !== undefined) return `levels/${shortName(row.file.level)}.json`
   if (row.file.glossary) {

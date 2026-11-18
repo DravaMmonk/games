@@ -4,8 +4,5 @@
     "type": "num"
   },
   "min": 2,
-  "about": {
-    "zh": "斑点的中心 (x, y)",
-    "en": "the blob’s centre (x, y)"
-  }
+  "about": "@shape.blob-centre.about"
 }

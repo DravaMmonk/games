@@ -33,7 +33,7 @@ export const taskLevel = (once, task) => {
   const keys = OWN
   return S.obj({
     ...once,
-    requires: S.opt(S.list(S.level(), { section: 'course', about: t('这关固有的知识前置', 'Knowledge prerequisites for this level') })),
+    requires: S.opt(S.list(S.level(), { section: 'course', about: t("这关固有的知识前置") })),
     tasks: S.list(task.type === 'by' ? owned(task, keys) : S.obj({ ...keys, ...task }), { min: 1, section: 'tasks', about: t('依次做的任务，最后一个通过就通过这一关') }),
   })
 }

@@ -1,6 +1,6 @@
 import { NumberField } from 'kernel/view'
 
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 
 import "./weight-grid.css"
 
@@ -11,6 +11,6 @@ export default function WeightGrid({ value = [], params, onChange, readOnly, pho
   return <div className={`pf-weights ${roomy ? 'is-roomy' : ''} ${readOnly ? 'is-fixed' : ''}`} style={{ '--weight-cols': cols }} role="group">
     {value.map((weight, k) => readOnly
       ? <output key={k} style={{ '--weight': Math.max(-1, Math.min(1, weight)) }}>{Number(weight).toFixed(2)}</output>
-      : <NumberField key={k} label={T(`权重 ${Math.floor(k / cols) + 1} 行 ${k % cols + 1} 列`, `Weight, row ${Math.floor(k / cols) + 1}, column ${k % cols + 1}`)} value={weight} onChange={(next) => change(k, next)} phone={phone} />)}
+      : <NumberField key={k} label={T("权重 {value} 行 {value2} 列", {value: Math.floor(k / cols) + 1, value2: k % cols + 1})} value={weight} onChange={(next) => change(k, next)} phone={phone} />)}
   </div>
 }

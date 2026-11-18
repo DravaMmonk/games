@@ -2,9 +2,6 @@
   "name": "tick/want",
   "studio": {
     "order": 7,
-    "label": {
-      "zh": "目标条件",
-      "en": "Goals"
-    }
+    "label": "@capability.want.studio.label"
   }
 }

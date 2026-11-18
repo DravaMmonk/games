@@ -3,17 +3,11 @@
   "fields": {
     "cx": {
       "type": "int",
-      "about": {
-        "zh": "车的左边在第几列",
-        "en": "the column of the car’s left side"
-      }
+      "about": "@shape.street.fields.cx.about"
     },
     "house": {
       "type": "int",
-      "about": {
-        "zh": "房子的左边在第几列",
-        "en": "the column of the house’s left side"
-      },
+      "about": "@shape.street.fields.house.about",
       "optional": true
     }
   }

@@ -34,10 +34,10 @@ const fits = (sink, src) => src === 'kernel/any' || sink === 'workshop-any' || A
 
 /** Why a wire from a source of type `src` cannot go into a sink of type `sink`. */
 function misfit(sink, src) {
-  if (src.endsWith('s')) return tr('一整段只能接进汇合器、加法器或乘法器。', 'A whole segment can only go into a Merger, an Adder or a Multiplier.');
-  if (src === 'table/category' || sink === 'table/category') return tr('「颜色」这类信号只能接进闸门的数口。', 'A kind (a colour, say) can only go into a gate’s value input.');
-  if (src === 'kernel/boolean') return tr('「是 / 否」信号只能接到闸门的条件口、「任一是」或「取反」。', 'A “yes / no” signal can only go into a gate’s condition input, “any yes” or “Not”.');
-  return sink.startsWith('kernel/boolean') ? tr('这个口只接「是 / 否」信号，比如「是起点」。', 'This input only takes a “yes / no” signal, such as “is start”.') : tr('这两个口的信号对不上。', 'The signals at these two ends do not match.');
+  if (src.endsWith('s')) return tr("一整段只能接进汇合器、加法器或乘法器。");
+  if (src === 'table/category' || sink === 'table/category') return tr("「颜色」这类信号只能接进闸门的数口。");
+  if (src === 'kernel/boolean') return tr("「是 / 否」信号只能接到闸门的条件口、「任一是」或「取反」。");
+  return sink.startsWith('kernel/boolean') ? tr("这个口只接「是 / 否」信号，比如「是起点」。") : tr("这两个口的信号对不上。");
 }
 
 /**

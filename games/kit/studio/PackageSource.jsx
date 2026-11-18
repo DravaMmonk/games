@@ -24,10 +24,10 @@ export default function PackageSource() {
   return (
     <div className="studio package-source">
       <header className="kit-bar studio-bar">
-        <a className="kit-btn is-label" href={`?space=build&package=${encodeURIComponent(pkg ?? '')}`}>{tr('返回构建', 'Back to Build')}</a>
+        <a className="kit-btn is-label" href={`?space=build&package=${encodeURIComponent(pkg ?? '')}`}>{tr("返回构建")}</a>
         <label className="package-source-picker">
-          <span>{tr('包源码', 'Package source')}</span>
-          <select className="studio-game" aria-label={tr('源码包', 'Source package')} title={L(info?.desc)} value={pkg ?? ''} onChange={event => window.location.assign(sourceAddress(event.target.value))}>
+          <span>{tr("包源码")}</span>
+          <select className="studio-game" aria-label={tr("源码包")} title={L(info?.desc)} value={pkg ?? ''} onChange={event => window.location.assign(sourceAddress(event.target.value))}>
             {pkg && !info && <option value={pkg}>{pkg}</option>}
             {packages.map(item => <option key={item.id} value={item.id} title={L(item.desc)}>{L(item.title)} · {item.id}</option>)}
           </select>
@@ -80,7 +80,7 @@ function SourceWorkspace({ pkg }) {
     return () => window.removeEventListener('beforeunload', leave)
   }, [dirty, busy])
 
-  const canLeave = () => !dirty || window.confirm(tr('放弃未保存的源码修改？', 'Discard unsaved source changes?'))
+  const canLeave = () => !dirty || window.confirm(tr("放弃未保存的源码修改？"))
   const selectPath = next => {
     setPath(next)
     const url = new URL(window.location.href)
@@ -100,11 +100,11 @@ function SourceWorkspace({ pkg }) {
     if (busy || !canLeave()) return
     const next = newPath.trim()
     if (!/^(?:core|view|test)(?:\/[\w-][\w.-]*)*\/[\w-][\w.-]*\.(?:js|jsx|mjs)$/.test(next)) {
-      setError(tr('请输入 core/、view/ 或 test/ 下的 JS、JSX 或 MJS 文件路径。', 'Enter a JS, JSX or MJS file path under core/, view/ or test/.'))
+      setError(tr("请输入 core/、view/ 或 test/ 下的 JS、JSX 或 MJS 文件路径。"))
       return
     }
     if (listing.files.includes(next)) {
-      setError(tr('文件已存在。', 'This file already exists.'))
+      setError(tr("文件已存在。"))
       return
     }
     setError('')
@@ -124,7 +124,7 @@ function SourceWorkspace({ pkg }) {
       const data = await call('source_save', { ...target, path, text: file.text, base: file.revision })
       setFile({ ...data, original: data.text, path })
       if (file.revision === null) setListing(current => ({ ...current, files: [...current.files, path].sort() }))
-      setStatus(tr('已保存到工作区', 'Saved to workspace'))
+      setStatus(tr("已保存到工作区"))
     } catch (error) {
       setError(error.message)
     } finally {
@@ -149,35 +149,35 @@ function SourceWorkspace({ pkg }) {
 
   return (
     <div className="package-source-body">
-      <aside className="studio-tree package-source-files" aria-label={tr('源码文件', 'Source files')}>
+      <aside className="studio-tree package-source-files" aria-label={tr("源码文件")}>
         <div className="insp-source-actions">
-          <input className="field-input" type="search" aria-label={tr('筛选文件', 'Filter files')} placeholder={tr('筛选文件', 'Filter files')} value={filter} onChange={event => setFilter(event.target.value)} />
-          <button className="kit-btn is-label" type="button" disabled={busy || !listing} onClick={() => setNewPath('core/')}>{tr('新建', 'New')}</button>
+          <input className="field-input" type="search" aria-label={tr("筛选文件")} placeholder={tr("筛选文件")} value={filter} onChange={event => setFilter(event.target.value)} />
+          <button className="kit-btn is-label" type="button" disabled={busy || !listing} onClick={() => setNewPath('core/')}>{tr("新建")}</button>
         </div>
-        {symbol && listing && <p className="package-source-hint">{tr('符号匹配', 'Symbol matches')} <code>{symbol}</code> · {listing.matches.length}</p>}
+        {symbol && listing && <p className="package-source-hint">{tr("符号匹配")} <code>{symbol}</code> · {listing.matches.length}</p>}
         <ul>
           {visible?.map(name => (
             <li key={name}><ListRow icon={FileCode2} on={path === name} onClick={() => open(name)} title={name} /></li>
           ))}
         </ul>
-        {listing?.files.length === 0 && <p className="package-source-hint">{tr('此包没有 JS 源文件', 'This package has no JS source files')}</p>}
+        {listing?.files.length === 0 && <p className="package-source-hint">{tr("此包没有 JS 源文件")}</p>}
       </aside>
       <main className="package-source-editor">
         {newPath !== null && <form className="insp-source-actions" onSubmit={create}>
-          <input className="field-input" aria-label={tr('新文件路径', 'New file path')} value={newPath} onChange={event => setNewPath(event.target.value)} />
-          <button className="kit-btn is-label" type="submit">{tr('创建草稿', 'Create draft')}</button>
-          <button className="kit-btn is-label" type="button" onClick={() => setNewPath(null)}>{tr('取消', 'Cancel')}</button>
+          <input className="field-input" aria-label={tr("新文件路径")} value={newPath} onChange={event => setNewPath(event.target.value)} />
+          <button className="kit-btn is-label" type="submit">{tr("创建草稿")}</button>
+          <button className="kit-btn is-label" type="button" onClick={() => setNewPath(null)}>{tr("取消")}</button>
         </form>}
         {listing && <div className="insp-source-actions package-source-actions">
           {path && <code>{path}{dirty && ' *'}</code>}
-          {existing && <button className="kit-btn is-label" type="button" disabled={busy} onClick={() => open(path)}>{tr('重新读取', 'Reload file')}</button>}
-          <button className="kit-btn is-label is-solid" type="button" disabled={!dirty || busy} onClick={save}>{tr('保存源码', 'Save source')}</button>
-          <button className="kit-btn is-label" type="button" disabled={busy || dirty} onClick={check}>{tr('检查包', 'Check package')}</button>
+          {existing && <button className="kit-btn is-label" type="button" disabled={busy} onClick={() => open(path)}>{tr("重新读取")}</button>}
+          <button className="kit-btn is-label is-solid" type="button" disabled={!dirty || busy} onClick={save}>{tr("保存源码")}</button>
+          <button className="kit-btn is-label" type="button" disabled={busy || dirty} onClick={check}>{tr("检查包")}</button>
         </div>}
-        {busy && <p role="status">{tr('处理中……', 'Working…')}</p>}
+        {busy && <p role="status">{tr("处理中……")}</p>}
         {status && <p role="status">{status}</p>}
         {error && <pre className="field-bad package-source-report" role="alert">{error}</pre>}
-        {editor && <textarea className="field-area is-code" aria-label={tr('JavaScript 源码', 'JavaScript source')} spellCheck={false} autoCapitalize="off" autoComplete="off"
+        {editor && <textarea className="field-area is-code" aria-label={tr("JavaScript 源码")} spellCheck={false} autoCapitalize="off" autoComplete="off"
           wrap="off" readOnly={busy} value={editor.text} onChange={event => setFile({ ...editor, text: event.target.value })}
           onKeyDown={event => {
             if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
@@ -186,7 +186,7 @@ function SourceWorkspace({ pkg }) {
             }
           }} />}
         {report && <section>
-          <h2>{report.ok ? tr('包检查通过', 'Package checks passed') : tr('包检查失败', 'Package checks failed')}</h2>
+          <h2>{report.ok ? tr("包检查通过") : tr("包检查失败")}</h2>
           <pre className="package-source-report">{report.output}</pre>
         </section>}
       </main>

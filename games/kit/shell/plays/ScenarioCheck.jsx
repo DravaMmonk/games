@@ -37,7 +37,7 @@ export default function ScenarioCheck({ screen, resource, play }) {
           <Fragment key={k}>
             {separator && <hr className="ck-scenario-line" />}
             <div className={`ck-scenario-row ${shown.at === step ? 'is-step' : ''}`}>
-              <Strip line={strip} label={T('句子', 'sentence')} />
+              <Strip line={strip} label={T("句子")} />
               {shown.list.length > step && <span className={right ? 'ck-right' : 'ck-wrong'}>{L(text)}</span>}
             </div>
           </Fragment>

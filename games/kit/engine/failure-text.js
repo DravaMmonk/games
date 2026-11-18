@@ -7,27 +7,20 @@ export const reportedFailure = (run) => run.error ?? (run.final ? null : failure
 export function failureText(failure) {
   if (!failure) return null
   const { why, want, got, at } = failure
-  if (why?.relation === 'evaluates') return T(
-    `${sideOf(why.subject, 'zh')} 应当算出 ${sideOf(why.show(want), 'zh')}，现在算出 ${sideOf(why.show(got), 'zh')}`,
-    `${sideOf(why.subject, 'en')} should work out to ${sideOf(why.show(want), 'en')}, but works out to ${sideOf(why.show(got), 'en')}`,
-  )
+  if (why?.relation === 'evaluates') return T("{value} 应当算出 {value2}，现在算出 {value3}", {value: { zh: String(sideOf(why.subject, 'zh')), en: String(sideOf(why.subject, 'en')) }, value2: { zh: String(sideOf(why.show(want), 'zh')), en: String(sideOf(why.show(want), 'en')) }, value3: { zh: String(sideOf(why.show(got), 'zh')), en: String(sideOf(why.show(got), 'en')) }})
   if (why?.relation === 'derives') {
     const { given, subject } = why
     const start = given.en.charAt(0).toUpperCase() + given.en.slice(1)
     return want
-      ? T(`${given.zh}时，「${subject.zh}」应当可推导，这份声明却推导不出。`, `${start}, “${subject.en}” should be derivable, but this declaration does not derive it.`)
-      : T(`${given.zh}时，「${subject.zh}」不应当可推导，这份声明却推导出了它。`, `${start}, “${subject.en}” should not be derivable, but this declaration derives it.`)
+      ? T("{zh}时，「{zh2}」应当可推导，这份声明却推导不出。", {zh: { zh: String(given.zh), en: String(start) }, zh2: { zh: String(subject.zh), en: String(subject.en) }})
+      : T("{zh}时，「{zh2}」不应当可推导，这份声明却推导出了它。", {zh: { zh: String(given.zh), en: String(start) }, zh2: { zh: String(subject.zh), en: String(subject.en) }})
   }
-  if (why?.relation === 'order') return T(
-    `「${sideOf(why.subject, 'zh')}」：${why.words.zh}应当是 ${why.show(want, 'zh')}，这块板给出 ${why.show(got, 'zh')}。`,
-    `“${sideOf(why.subject, 'en')}”: ${why.words.en} should be ${why.show(want, 'en')}; the board gives ${why.show(got, 'en')}.`,
-  )
+  if (why?.relation === 'order') return T("「{value}」：{zh}应当是 {value2}，这块板给出 {value3}。", {value: { zh: String(sideOf(why.subject, 'zh')), en: String(sideOf(why.subject, 'en')) }, zh: { zh: String(why.words.zh), en: String(why.words.en) }, value2: { zh: String(why.show(want, 'zh')), en: String(why.show(want, 'en')) }, value3: { zh: String(why.show(got, 'zh')), en: String(why.show(got, 'en')) }})
   if (why?.relation === 'output') {
     const given = why.show(want)
     const actual = why.show(got)
-    const zh = `「${sideOf(why.subject, 'zh')}」应当是 ${sideOf(given, 'zh')}，这块板给出 ${sideOf(actual, 'zh')}。`
-    const en = `“${sideOf(why.subject, 'en')}” should be ${sideOf(given, 'en')}; the board gives ${sideOf(actual, 'en')}.`
-    return at?.tick === undefined ? T(zh, en) : T(`第 ${at.tick} 拍，${zh}`, `At tick ${at.tick}, ${en}`)
+    const sentence = T('「{subject}」应当是 {want}，这块板给出 {got}。', { subject: why.subject, want: given, got: actual })
+    return at?.tick === undefined ? sentence : T("第 {tick} 拍，{zh}", { tick: at.tick, zh: sentence })
   }
   return why
 }

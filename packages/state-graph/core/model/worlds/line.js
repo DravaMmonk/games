@@ -1,8 +1,8 @@
 // Tables laid out in one row: a staircase, a pile of stones, an amount paid in coins, the letters of a word.
 // Cell i of the row is the small problem of size i; cell 0 is where every count starts.
 
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { world, look, cell, yes, seg, THIS_CELL } from 'table';
 
 /**
@@ -35,7 +35,7 @@ function line(spec) {
     answer: (t, table) => table.get(at(size(t))),
     name: key => spec.noun(+key),
     label: spec.label,
-    orderText: () => spec.orderText || tr('从第 0 格往右', 'from cell 0 rightward'),
+    orderText: () => spec.orderText || tr("从第 0 格往右"),
     sample: t => ({ i: Math.min(3, size(t)), id: at(Math.min(3, size(t))) }),
     scene(t, view, o = {}) {
       const g = look(view, [at(size(t))], [], o.bench), sp = 58;
@@ -52,23 +52,23 @@ function line(spec) {
 /** Stairs: step 0 is the ground; a step is reached from one or two steps below. A broken step (t.broken) can't be
  *  stood on. */
 export const strip = line({
-  more: { broken: [T('是坏台阶', 'is broken'), T('坏', 'broken'), 'brokenstep', (t, i) => (t.broken || []).includes(i)] },
-  noun: i => tr(`第 ${i} 级`, `step ${i}`), out: T('本级', 'this step'), ground: [T('是地面', 'is ground'), T('地', 'gnd'), 'ground'], label: t => tr(`第 ${t.n} 级`, `step ${t.n}`), orderText: T('从第 0 级往上', 'from step 0 upward'),
-  near: { m2: [T('前 2 级', '2 steps down'), '−2'], m1: [T('前 1 级', '1 step down'), '−1'], p1: [T('后 1 级', '1 step up'), '+1'] },
+  more: { broken: [T("是坏台阶"), T("坏"), 'brokenstep', (t, i) => (t.broken || []).includes(i)] },
+  noun: i => tr("第 {i} 级", {i}), out: T("本级"), ground: [T("是地面"), T("地"), 'ground'], label: t => tr("第 {n} 级", {n: t.n}), orderText: T("从第 0 级往上"),
+  near: { m2: [T("前 2 级"), '−2'], m1: [T("前 1 级"), '−1'], p1: [T("后 1 级"), '+1'] },
 });
 
 /** A pile of n stones; cell i holds whether the player to move, with i stones left, wins. */
 export const pile = line({
-  cellType: 'kernel/boolean', noun: i => tr(`剩 ${i} 颗`, `${i} left`), out: T('轮到的人赢吗', 'does the mover win'), ground: [T('一颗不剩', 'none left'), T('空', '0'), 'empty'], label: t => tr(`${t.n} 颗石子`, `${t.n} stones`), orderText: T('从一颗不剩开始，一颗一颗往上', 'from none left, one stone at a time upward'),
-  near: { m2: [T('拿走 2 颗后', 'after taking 2'), '−2'], m1: [T('拿走 1 颗后', 'after taking 1'), '−1'], p1: [T('多 1 颗', 'one more'), '+1'] },
+  cellType: 'kernel/boolean', noun: i => tr("剩 {i} 颗", {i}), out: T("轮到的人赢吗"), ground: [T("一颗不剩"), T("空", {}, "line"), 'empty'], label: t => tr("{n} 颗石子", {n: t.n}), orderText: T("从一颗不剩开始，一颗一颗往上"),
+  near: { m2: [T("拿走 2 颗后"), '−2'], m1: [T("拿走 1 颗后"), '−1'], p1: [T("多 1 颗"), '+1'] },
 });
 
 /** Paying i yuan: the arm steps back by every coin at once. */
 export const coins = line({
-  noun: i => tr(`${i} 元`, `${i} yuan`), out: THIS_CELL, ground: [T('是 0 元', 'is 0 yuan'), T('零', '0'), 'zero'], label: t => tr(`${t.n} 元 · 硬币 ${t.coins.join('、')}`, `${t.n} yuan · coins ${t.coins.join(', ')}`), orderText: T('从 0 元往上', 'from 0 yuan upward'),
-  near: { m2: [T('少 2 元', '2 yuan less'), '−2'], m1: [T('少 1 元', '1 yuan less'), '−1'], p1: [T('多 1 元', '1 yuan more'), '+1'] },
-  armSensor: [T('退一枚硬币之后', 'one coin back'), T('退', 'back')],
-  arm: (t, { i }) => ({ label: tr('每种硬币各退一枚', 'one coin of each kind back'), sweeps: [{ sensor: 'seg', label: tr('付掉一枚硬币之前', 'before paying one coin'), cells: t.coins.map(c => ({ key: i - c >= 0 ? String(i - c) : null, label: `−${c}` })) }] }),
+  noun: i => tr("{i} 元", {i}), out: THIS_CELL, ground: [T("是 0 元"), T("零"), 'zero'], label: t => tr("{n} 元 · 硬币 {value}", {n: t.n, value: { zh: String(t.coins.join('、')), en: String(t.coins.join(', ')) }}), orderText: T("从 0 元往上"),
+  near: { m2: [T("少 2 元"), '−2'], m1: [T("少 1 元"), '−1'], p1: [T("多 1 元"), '+1'] },
+  armSensor: [T("退一枚硬币之后"), T("退")],
+  arm: (t, { i }) => ({ label: tr("每种硬币各退一枚"), sweeps: [{ sensor: 'seg', label: tr("付掉一枚硬币之前"), cells: t.coins.map(c => ({ key: i - c >= 0 ? String(i - c) : null, label: `−${c}` })) }] }),
   segment: (t, { i }, get) => t.coins.map(c => (i - c >= 0 ? get(String(i - c)) : null)),
 });
 
@@ -81,16 +81,16 @@ const partCost = (t, w) => {
 /** Cutting a string into parts at the least cost: position i is "the first i letters". The arm sweeps every earlier
  *  cut point j and brings two segments of the same length: the table there, and what the part from j to here costs. */
 export const parts = line({
-  size: t => t.s.length, noun: i => tr(`前 ${i} 个字母`, `first ${i} letter${i === 1 ? '' : 's'}`), out: T('切到这里最省', 'cheapest cut so far'), ground: [T('是开头', 'is start'), T('头', 'start'), 'flag'], label: t => t.s, orderText: T('从开头往右', 'from the start rightward'), top: t => t.s,
-  near: { m2: [T('少 2 个字母', '2 letters fewer'), '−2'], m1: [T('少 1 个字母', '1 letter fewer'), '−1'], p1: [T('多 1 个字母', '1 letter more'), '+1'] },
-  arms: { seg: [T('前面每个切点', 'every earlier cut'), T('切点', 'cuts')], cost: [T('切下的那一块', 'the part cut off'), T('代价', 'cost')] },
+  size: t => t.s.length, noun: i => tr("前 {i} 个字母", {i, value: i === 1 ? '' : 's'}), out: T("切到这里最省"), ground: [T("是开头"), T("头"), 'flag'], label: t => t.s, orderText: T("从开头往右"), top: t => t.s,
+  near: { m2: [T("少 2 个字母"), '−2'], m1: [T("少 1 个字母"), '−1'], p1: [T("多 1 个字母"), '+1'] },
+  arms: { seg: [T("前面每个切点"), T("切点")], cost: [T("切下的那一块"), T("代价")] },
   arm(t, { i }) {
     const js = Array.from({ length: i }, (_, j) => j);
-    return { label: tr('扫过前面每个切点', 'sweeps every earlier cut'), sweeps: [
-      { sensor: 'seg', label: tr('切在那里', 'cut there'), cells: js.map(j => ({ key: String(j), label: String(j) })) },
+    return { label: tr("扫过前面每个切点"), sweeps: [
+      { sensor: 'seg', label: tr("切在那里"), cells: js.map(j => ({ key: String(j), label: String(j) })) },
       {
         sensor: 'cost',
-        label: tr('那里到这里的一块', 'the part from there to here'),
+        label: tr("那里到这里的一块"),
         cells: js.map(j => {
           const label = t.s.slice(j, i), v = partCost(t, label);
           return { key: null, label, v, out: v === null };

@@ -2,8 +2,8 @@
 // no long jump lands here); the telescopic arm reaches that stone. With t.p, each stone also has a chance of holding
 // the frog (the bank always holds).
 
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { world, look, cell, yes, num, THIS_CELL } from 'table';
 
 const last = t => t.k.length - 1;
@@ -12,10 +12,10 @@ const from = (t, i) => (i > 0 && t.k[i] && i - t.k[i] >= 0 ? i - t.k[i] : null);
 
 export const river = world({
   sensors: {
-    m1: cell(T('前一块', 'the stone before'), '−1', [0, 0, -1]),
-    bank: yes(T('是岸边', 'is the bank'), T('岸', 'bank'), 'bank'),
-    hold: num(T('站稳的可能', 'chance it holds'), T('稳', 'hold'), 'hold'),
-    back: num(T('跳来的那块', 'the stone it jumps from'), T('跳', 'jump')),
+    m1: cell(T("前一块"), '−1', [0, 0, -1]),
+    bank: yes(T("是岸边"), T("岸"), 'bank'),
+    hold: num(T("站稳的可能"), T("稳"), 'hold'),
+    back: num(T("跳来的那块"), T("跳")),
   },
   facts: ['bank'],
   armSensors: ['back'],
@@ -32,15 +32,15 @@ export const river = world({
   /** The arm reaches back to the stone a long jump onto this one starts from. */
   arm: (t, { i }) => {
     const j = from(t, i);
-    return { label: j === null ? tr('没有长跳落在这里', 'no long jump lands here') : tr(`往回 ${t.k[i]} 块`, `${t.k[i]} back`), cells: [{ sensor: 'back', key: j === null ? null : String(j), label: tr('跳来处', 'from') }] };
+    return { label: j === null ? tr("没有长跳落在这里") : tr("往回 {value} 块", {value: t.k[i]}), cells: [{ sensor: 'back', key: j === null ? null : String(j), label: tr("跳来处") }] };
   },
   order: t => Array.from({ length: last(t) + 1 }, (_, i) => ({ i, id: String(i) })),
   keys: (t, x) => ({ cell: x.id }),
-  where: x => (x.i ? tr(`第 ${x.i} 块石头`, `stone ${x.i}`) : tr('岸边', 'the bank')),
+  where: x => (x.i ? tr("第 {i} 块石头", {i: x.i}) : tr("岸边")),
   answer: (t, table) => table.get(String(last(t))),
-  name: key => (+key ? tr(`第 ${key} 块石头`, `stone ${key}`) : tr('岸边', 'the bank')),
-  label: t => tr(`${last(t)} 块石头`, `${last(t)} stones`),
-  orderText: () => tr('从岸边往前，一块一块', 'from the bank onward, stone by stone'),
+  name: key => (+key ? tr("第 {key} 块石头", {key}) : tr("岸边")),
+  label: t => tr("{value} 块石头", {value: last(t)}),
+  orderText: () => tr("从岸边往前，一块一块"),
   sample: t => ({ i: Math.min(3, last(t)), id: String(Math.min(3, last(t))) }),
   scene(t, view, o = {}) {
     const g = look(view, [String(last(t))], [], o.bench), sp = 58;

@@ -11,7 +11,8 @@ import { say } from './notation.js'
 import { runProof } from './proof.js'
 import { runMachine } from './machine.js'
 import { machineReadout, proofReadout } from './circuit-readouts.js'
-import { L, T } from 'kernel'
+import { L } from "kernel"
+import { T } from 'kernel/words'
 
 const TF = (v, lang) => (v === undefined ? '—' : v ? (lang === 'en' ? 'T' : '真') : (lang === 'en' ? 'F' : '假'))
 const pick = (v, lang) => (v && typeof v === 'object' ? v[lang] : v)
@@ -19,7 +20,7 @@ const pick = (v, lang) => (v && typeof v === 'object' ? v[lang] : v)
 /** A truth table's visible cases, in the same order as the gate runner. */
 function rowLabel(letters, row, k) {
   const values = (lang) => letters.map((letter) => `${letter}=${TF(row[letter], lang)}`).join(', ')
-  return T(`第 ${k + 1} 行（${values('zh')}）`, `Row ${k + 1} (${values('en')})`)
+  return T("第 {k} 行（{value}）", {k: k + 1, value: { zh: String(values('zh')), en: String(values('en')) }})
 }
 
 function visibleRows(level) {
@@ -30,7 +31,7 @@ function visibleRows(level) {
     if (showTarget) inputs.push(`${lang === 'en' ? 'Target' : '目标真值'}: ${TF(want, lang)}`)
     return inputs.join(' | ')
   }
-  return rows.map((row, k) => ({ label: rowLabel(letters, row.row, k), text: T(text(row, 'zh'), text(row, 'en')) }))
+  return rows.map((row, k) => ({ label: rowLabel(letters, row.row, k), text: { zh: text(row, 'zh'), en: text(row, 'en') } }))
 }
 
 const gates = circuitPlay({
@@ -40,7 +41,7 @@ const gates = circuitPlay({
     const words = (lang) => letters.map((l) => `${l}: ${lang === 'en' ? 'input' : '输入'} “${pick(say(parse(l), L.notation), lang)}”`).join('\n')
     const sentence = (lang) => (L.blind ? '' : `\nout: ${lang === 'en' ? 'the sentence' : '这句话'} ${pick(say(parse(L.target), L.notation), lang)}`)
     const budget = (lang) => (L.budget !== undefined ? `\n${lang === 'en' ? `At most ${L.budget} gates.` : `最多 ${L.budget} 个门。`}` : '')
-    return T(words('zh') + sentence('zh') + budget('zh'), words('en') + sentence('en') + budget('en'))
+    return Object.fromEntries(['zh', 'en'].map(lang => [lang, words(lang) + sentence(lang) + budget(lang)]))
   },
   tests: ({ level: { source: L } }) => visibleRows(L),
   run: ({ level: { source: L } }, graph) => {
@@ -50,7 +51,7 @@ const gates = circuitPlay({
     const tests = untilFail(checked.runs.map((r, k) => ({
       label: rowLabel(letters, r.row, k),
       pass: r.pass,
-      says: r.pass ? null : T(`这一行的结果错误：电路输出 ${TF(r.got, 'zh')}${showTarget ? `，应当是 ${TF(r.want, 'zh')}` : ''}。`, `This row is wrong: the circuit outputs ${TF(r.got, 'en')}${showTarget ? `; it should be ${TF(r.want, 'en')}` : ''}.`),
+      says: r.pass ? null : T("这一行的结果错误：电路输出 {value}{value2}。", {value: { zh: String(TF(r.got, 'zh')), en: String(TF(r.got, 'en')) }, value2: { zh: String(showTarget ? `，应当是 ${TF(r.want, 'zh')}` : ''), en: String(showTarget ? `; it should be ${TF(r.want, 'en')}` : '') }}),
     })))
     const over = checked.runs.every((r) => r.pass) && checked.constraint
     return {
@@ -98,7 +99,7 @@ function derivationPlay(readout, run) {
 const circuits = { 'logic/gates': gates, 'logic/proof': derivationPlay(proofReadout, runProof), 'logic/machine': derivationPlay(machineReadout, runMachine) }
 const notCovered = (kind) => ({
   covered: false,
-  why: kind === 'logic/truth' ? T('真值表（逐行手填或勾选），harness 还不支持') : T(`「${kind}」玩法，harness 还不支持`, `a “${kind}” play; the harness does not cover it yet`),
+  why: kind === 'logic/truth' ? T('真值表（逐行手填或勾选），harness 还不支持') : T("「{kind}」玩法，harness 还不支持", {kind}),
 })
 
 export const play = {

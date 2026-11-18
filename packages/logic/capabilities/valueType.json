@@ -2,22 +2,13 @@
   "extends": "valueType",
   "items": {
     "judgment": {
-      "about": {
-        "en": "A proved formula with its open hypotheses and proof term",
-        "zh": "带开放假设与证明项的已证公式"
-      }
+      "about": "@capability.valueType.items.judgment.about"
     },
     "machine-value": {
-      "about": {
-        "en": "An equation set, proof state, rule, sentence or clause set",
-        "zh": "等式组、证明状态、规则、句子或子句集"
-      }
+      "about": "@capability.valueType.items.machine-value.about"
     },
     "options": {
-      "about": {
-        "en": "Labelled choices for a card parameter",
-        "zh": "元件参数的带标签选项"
-      }
+      "about": "@capability.valueType.items.options.about"
     }
   }
 }

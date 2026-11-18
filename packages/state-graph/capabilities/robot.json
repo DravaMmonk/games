@@ -2,40 +2,22 @@
   "extends": "robot",
   "items": {
     "scout": {
-      "about": {
-        "zh": "小方：视野 3×3",
-        "en": "Boxy: a 3×3 view"
-      }
+      "about": "@capability.robot.items.scout.about"
     },
     "ranger": {
-      "about": {
-        "zh": "远望：视野 5×5，看得见表头，会换方向扫",
-        "en": "Farsight: a 5×5 view, the table’s headings, other scan orders"
-      }
+      "about": "@capability.robot.items.ranger.about"
     },
     "reach": {
-      "about": {
-        "zh": "长臂：视野 5×5，伸缩臂够到任意远",
-        "en": "Longarm: a 5×5 view, a telescopic arm"
-      }
+      "about": "@capability.robot.items.reach.about"
     },
     "broom": {
-      "about": {
-        "zh": "扫帚：扫描臂一次扫过一整段",
-        "en": "Broom: a sweep arm over a whole run"
-      }
+      "about": "@capability.robot.items.broom.about"
     },
     "stack": {
-      "about": {
-        "zh": "千层：同时站在很多层上，探针探到另一层",
-        "en": "Layercake: many layers at once, a probe to another"
-      }
+      "about": "@capability.robot.items.stack.about"
     },
     "loop": {
-      "about": {
-        "zh": "回环：一轮一轮扫到不再变",
-        "en": "Loop: scans in rounds until nothing changes"
-      }
+      "about": "@capability.robot.items.loop.about"
     }
   }
 }

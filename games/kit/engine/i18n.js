@@ -43,3 +43,19 @@ export const firstText = (value) => isText(value) ? textEntries(value).find(([, 
 export function languagesOf(values) {
   return [...new Set(values.flatMap((value) => isText(value) ? textEntries(value).map(([lang]) => lang) : []))].sort()
 }
+
+/** Declaration metadata and package descriptions are read in Studio. */
+export const isDeveloperTextKey = key => /(?:^package\.desc$|^kind\.|\.about$|\.studio\.label$)/.test(key?.split('/').at(-1) ?? '')
+
+/** Shared display text made of numbers, punctuation, or individual variable names. */
+export const isLanguageNeutral = text => typeof text === 'string' && (
+  !/\p{L}/u.test(text) || /^(?:(?:[\p{N}\p{P}\p{S}\s]+)|(?:[A-Za-zα-ωΑ-Ω](?!\p{L})))*$/u.test(text)
+)
+
+/** Join localized lines without resolving them in the current reading language. */
+export function joinCopy(values, separator = '') {
+  const languages = new Set(['zh', 'en', ...languagesOf(values)])
+  return Object.fromEntries([...languages].map(lang => [lang, values.map(value =>
+    typeof value === 'string' ? value : textIn(value, lang) || textIn(value, 'zh'),
+  ).join(separator)]))
+}

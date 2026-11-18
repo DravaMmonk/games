@@ -35,7 +35,7 @@ import { tagName } from './tag-identity.js'
 //   view: 'board'   a list of blueprint lines that is a board (a naive answer, a work): operations find it as one
 //   step            how far a number goes up or down at a time
 //   section         where a field of a level goes in its form (SECTIONS); without it the studio reads it off the shape
-import { isText, textEntries } from './i18n.js'
+import { isLanguageNeutral, isText, textEntries } from './i18n.js'
 import { markupOf } from './markup.js'
 
 export const SECTIONS = ['read', 'puzzle', 'tests', 'answers', 'course', 'tasks']
@@ -69,7 +69,7 @@ export const S = {
   name: (kind, extra = {}) => ({ type: 'name', kind, ...extra }),
 }
 
-export const validAbout = value => isText(value) && ['zh', 'en'].every(lang => value[lang]?.trim() && !markupOf(value[lang]).problems.length)
+export const validAbout = value => isLanguageNeutral(value) || isText(value) && Boolean(value.zh?.trim()) && Object.entries(value).every(([lang, text]) => lang === '$key' || !markupOf(text).problems.length)
 
 /** Resolve references passed directly to a schema reader. Assembly already expands authored declarations. */
 export function resolveShape(schema, vocabulary) {

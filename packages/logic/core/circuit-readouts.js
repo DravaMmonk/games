@@ -1,5 +1,7 @@
+import { punctuation } from 'kernel'
 // Case inputs and values as the circuit screen and text play show them.
-import { L, T, tr } from 'kernel'
+import { L } from "kernel"
+import { T, tr } from 'kernel/words'
 import { parse } from './formula.js'
 import { inputsOf, inputsOfLevel, parseGoal, ruleWritten } from './machine.js'
 import { say, sayTerm } from './notation.js'
@@ -20,23 +22,23 @@ function showProof(v, { task, test }) {
   const f = say(v.formula ?? v, wordsOf(task, test))
   if (!task.terms || !v.term) return f
   const term = printTerm(v.term)
-  return T(`${f.zh} · ${term}`, `${f.en} · ${term}`)
+  return T("{zh} · {term}", {term, zh: { zh: String(f.zh), en: String(f.en) }})
 }
 
 /** A test's premises and the goal for its output card. */
 const proofEntries = ({ task, test, run }) => {
   const consts = task.consts ?? []
   return [
-    ...Object.entries(test?.premises ?? {}).map(([name, text], k, all) => ({ of: name, label: all.length > 1 ? T(`已知 ${k + 1}`, `Given ${k + 1}`) : T('已知', 'Given'), shape: 'scalar', given: parse(text, { consts }) })),
-    ...(test ? [{ of: 'goal', label: T('目标', 'Goal'), shape: 'scalar', want: parse(test.goal, { consts }), got: run?.outputs?.goal?.formula }] : []),
+    ...Object.entries(test?.premises ?? {}).map(([name, text], k, all) => ({ of: name, label: all.length > 1 ? T("已知 {k}", {k: k + 1}) : T("已知"), shape: 'scalar', given: parse(text, { consts }) })),
+    ...(test ? [{ of: 'goal', label: T("目标"), shape: 'scalar', want: parse(test.goal, { consts }), got: run?.outputs?.goal?.formula }] : []),
   ]
 }
 
 export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
-const goalText = (g, text) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(tr('；'))} ⊢ ${text(g.goal)}` : text(g.goal))
+const goalText = (g, text) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(punctuation("；"))} ⊢ ${text(g.goal)}` : text(g.goal))
 // A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
-const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(tr('；')))
+const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))
 const lines = (head, list) => [...head.filter(Boolean), ...list].join('\n')
 
 /**
@@ -54,14 +56,14 @@ function showMachine(v, { task }) {
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0
     return lines([
-      v.error && `${tr('这一步失败', 'Step failed')}：${L(v.error)}`,
+      v.error && `${tr("这一步失败")}：${L(v.error)}`,
       !v.goals.length && tr('证明完毕'),
-      others > 0 && tr(`第 1 种结果，共 ${others + 1} 种`, `result 1 of ${others + 1}`),
+      others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1}),
     ], v.goals.map((g) => goalText(g, text)))
   }
   if (v.kind === 'eqs') return lines([v.fail && `${tr('合一失败')}：${L(v.fail)}`, !v.eqs.length && tr('没有等式了')], v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))
   const shown = certificate(v.set) ?? v.set.map((_, i) => i)
-  return lines([refuted(v.set) && tr('推出了空子句 ⊥'), v.endless && tr('仍在增加', 'still growing')], shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(tr('、'))}` : ''}`))
+  return lines([refuted(v.set) && tr('推出了空子句 ⊥'), v.endless && tr("仍在增加")], shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(punctuation("、"))}` : ''}`))
 }
 
 const WANT = {
@@ -77,7 +79,7 @@ const WANT = {
 /** What a test wants of the result, in words: the results a step makes, the elimination rule, or the level's want. */
 function wantOf(task, test) {
   const text = machineTextOf(task)
-  if (test.becomes) return test.becomes.length ? `${tr('变成 ')}${test.becomes.map((r) => (r.length ? r.map((g) => goalText(parseGoal(g), text)).join(' | ') : tr('证完'))).join(tr('，或者 '))}` : tr('这一步失败', 'the step to fail')
+  if (test.becomes) return test.becomes.length ? `${tr('变成 ')}${test.becomes.map((r) => (r.length ? r.map((g) => goalText(parseGoal(g), text)).join(' | ') : tr('证完'))).join(tr('，或者 '))}` : tr("这一步失败", {}, "circuit-readouts")
   if (test.elim) return `${tr('消去规则 ')}${ruleText(elimOf(test), text)}`
   return L(WANT[test.want ?? task.want])
 }
@@ -88,10 +90,10 @@ const machineEntries = ({ task, test, run }) => {
   const term = machineTermOf(task)
   const labels = new Map(inputsOfLevel(task).map((i) => [i.name, i.label]))
   return [
-    ...(task.datatypes ? [{ of: 'types', label: T('类型'), shape: 'scalar', given: Object.entries(task.datatypes).map(([type, d]) => typeText(type, d, term)).join(tr('；')) }] : []),
-    ...Object.entries(inputsOf(test, task)).map(([name, v]) => ({ of: name, label: labels.get(name) ?? T('输入', 'Input'), shape: 'scalar', given: v })),
-    { of: 'want', label: T('要', 'Want'), shape: 'scalar', given: wantOf(task, test) },
-    { of: 'out', label: T('结果', 'Result'), shape: 'scalar', got: run?.outputs?.out },
+    ...(task.datatypes ? [{ of: 'types', label: T('类型'), shape: 'scalar', given: Object.entries(task.datatypes).map(([type, d]) => typeText(type, d, term)).join(punctuation("；")) }] : []),
+    ...Object.entries(inputsOf(test, task)).map(([name, v]) => ({ of: name, label: labels.get(name) ?? T("输入"), shape: 'scalar', given: v })),
+    { of: 'want', label: T("要"), shape: 'scalar', given: wantOf(task, test) },
+    { of: 'out', label: T("结果"), shape: 'scalar', got: run?.outputs?.out },
   ]
 }
 

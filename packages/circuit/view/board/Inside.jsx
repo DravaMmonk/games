@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChevronRight, Pencil } from 'lucide-react'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { Sheet } from 'kernel/view'
 
@@ -62,7 +63,7 @@ export function PackedBoard(opts) {
 const ctxOf = (at, path) => ({ view: at.view, board: at, path, readOnly: true })
 
 /** Edit (go to the level that builds the part) beside a read-only detail window's close button. */
-const EditAction = ({ onEdit }) => <button type="button" className="ph-head-action" onClick={onEdit} title={tr('在搭出它的关卡中编辑')}><Pencil size={13} />{tr('编辑', 'Edit')}</button>
+const EditAction = ({ onEdit }) => <button type="button" className="ph-head-action" onClick={onEdit} title={tr('在搭出它的关卡中编辑')}><Pencil size={13} />{tr("编辑")}</button>
 
 /** On a desktop: a packed part's detail window, its description and body and the board it runs; edit beside close. */
 export function PackedDetail({ inside, node, at, path, onClose, children }) {
@@ -89,7 +90,7 @@ export function InsideBoard({ inside, path, folded = false }) {
   if (folded) {
     return (
       <details className="cl-inside-fold">
-        <summary><ChevronRight size={14} aria-hidden="true" />{tr('电路结构', 'Circuit inside')}</summary>
+        <summary><ChevronRight size={14} aria-hidden="true" />{tr("电路结构")}</summary>
         <InsideSchematic inside={inside} path={path} nested />
       </details>
     )

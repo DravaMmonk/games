@@ -1,8 +1,13 @@
 import { S } from 'kernel'
 import { expandIntroScenes, registerTablePlays } from 'table'
-import plays from '../capabilities/play.json' with { type: 'json' }
-import levelSchema from '../shapes/level.json' with { type: 'json' }
+import playsSource from '../capabilities/play.json' with { type: 'json' }
+import levelSchemaSource from '../shapes/level.json' with { type: 'json' }
 import { WORLDS } from './model/worlds.js'
+
+import { readCopy } from 'kernel/words'
+
+const plays = readCopy(playsSource)
+const levelSchema = readCopy(levelSchemaSource)
 
 const meaning = {
  type: 'level', read: value => value,

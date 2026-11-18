@@ -1,9 +1,10 @@
+import { L } from 'kernel/view'
 import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, Copy, Download, FileUp } from 'lucide-react'
 import { useOverlay } from 'kernel/view'
 
-import { tr } from 'kernel/view'
+import { tr } from 'kernel/words'
 
 import { headOf, print, read } from "../../core/board/text.js"
 
@@ -96,13 +97,13 @@ export default function BlueprintDialog({ board, head, mode, onClose }) {
         />
         {errors.length > 0 && (
           <ul className="blueprint-errors" role="alert">
-            {errors.slice(0, 6).map((e, k) => <li key={k}>{tr(e.zh, e.en)}</li>)}
-            {errors.length > 6 && <li>{tr(`另有 ${errors.length - 6} 处`, `${errors.length - 6} more`)}</li>}
+            {errors.slice(0, 6).map((e, k) => <li key={k}>{L(e)}</li>)}
+            {errors.length > 6 && <li>{tr("另有 {value} 处", {value: errors.length - 6})}</li>}
           </ul>
         )}
         <input ref={file} type="file" accept=".txt,text/plain" hidden onChange={open} />
         <div className="blueprint-tools">
-          <button type="button" onClick={copy}>{copied ? <Check size={14} /> : <Copy size={14} />}{copied ? tr('已复制') : tr('复制', 'Copy')}</button>
+          <button type="button" onClick={copy}>{copied ? <Check size={14} /> : <Copy size={14} />}{copied ? tr('已复制') : tr("复制")}</button>
           <button type="button" onClick={save}><Download size={14} />{tr('存为文件')}</button>
           <button type="button" onClick={() => file.current?.click()}><FileUp size={14} />{tr('打开文件')}</button>
         </div>

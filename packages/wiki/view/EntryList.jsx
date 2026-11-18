@@ -1,5 +1,6 @@
 import { BookOpen } from 'lucide-react'
-import { L, tr, shownName, GroupedList } from 'kernel/view'
+import { L, shownName, GroupedList } from "kernel/view"
+import { tr } from 'kernel/words'
 
 export const groupings = ['tag', 'section', 'relation']
 
@@ -21,7 +22,7 @@ export function EntryList({ content, namespace, game, current, by, onBy, heading
   return (
     <GroupedList kind="entry" content={content} namespace={namespace} game={game} items={entries.map((entry) => entry.id)} label={(id) => L(entries[at.get(id)]?.title)}
       groupings={groupings} by={by} onBy={onBy} heading={heading} onHeading={onHeading} newOptions={newOptions} onNew={onNew}
-      addOptions={addOptions} addLabel={tr('词条', 'Entries')} onAdd={onAdd}
+      addOptions={addOptions} addLabel={tr("词条")} onAdd={onAdd}
       row={(id) => <Row key={id} icon={BookOpen} on={at.get(id) === current} title={L(entries[at.get(id)]?.title)} name={shownName(namespace, id)} onClick={() => onOpen(at.get(id))} />} />
   )
 }

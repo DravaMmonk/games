@@ -3,7 +3,7 @@
 
 import { benchRun } from 'image'
 import { houghBench, houghScene } from 'cvlib'
-import { T as t } from 'kernel'
+import { T as t } from 'kernel/words'
 
 const NAMES = ['A', 'B']
 
@@ -35,7 +35,7 @@ export const hough = {
               return { dim: i >= 2, cells: [String(i + 1), `${p.theta.toFixed(1)}°`, p.rho.toFixed(1), String(p.votes), i < 2 ? { text: hit >= 0 ? NAMES[hit] : '—', tone: hit >= 0 ? 'pass' : 'fail' } : ''] }
             }),
           },
-          tolerance: t(`容差 ${tol.theta}°、${tol.rho} px。`, `Tolerance ${tol.theta}°, ${tol.rho} px.`),
+          tolerance: t("容差 {theta}°、{rho} px。", {theta: tol.theta, rho: tol.rho}),
         }
       },
     }

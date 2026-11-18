@@ -83,7 +83,7 @@ export default function GridInspector({ value, label, view, showSize = true, exp
       : grid}
     {(label || meta) && <figcaption>
       {label && <strong>{label}</strong>}
-      {meta && <span className="gv-inspect-meta" title={range ? tr(`数值范围 ${cellNumber(range.lo)} … ${cellNumber(range.hi)}`, `Value range ${cellNumber(range.lo)} … ${cellNumber(range.hi)}`) : undefined}>{meta}</span>}
+      {meta && <span className="gv-inspect-meta" title={range ? tr("数值范围 {value} … {value2}", {value: cellNumber(range.lo), value2: cellNumber(range.hi)}) : undefined}>{meta}</span>}
     </figcaption>}
     {!inspection && active && <div className="gv-reading" role="status">
       <span>({active.x}, {active.y}) <b>{pixelText(pixel(value, active.x, active.y))}</b></span>

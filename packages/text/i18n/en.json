@@ -10,5 +10,9 @@
   "level.regex.tasks.regex-answer.brief": "Write A followed by three digits.",
   "level.regex.title": "Write an identifier",
   "package.desc": "Supports text and numeric answers.",
-  "package.title": "Text answers"
+  "package.title": "Text answers",
+  "ui": {
+    "在这里作答": "Type your answer",
+    "答案": "Answer"
+  }
 }

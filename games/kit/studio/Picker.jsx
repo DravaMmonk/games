@@ -128,13 +128,13 @@ export function Picker({ options, value, checked = null, onPick, label = '', pla
 }
 
 /** The shared creation button, with the same overlay for its available actions. */
-export function AddMenu({ label = tr('新增', 'Add'), options, onPick, icon, searchable }) {
+export function AddMenu({ label = tr("新增"), options, onPick, icon, searchable }) {
   if (!options.length) return null
   return <Picker add icon={icon} searchable={searchable} options={options} onPick={onPick} label={label} placeholder={label} />
 }
 
 /** Add a key with a name entered by the author. */
-export function AddKey({ taken, onAdd, label = tr('新键', 'New key'), options = [{ value: 0, label }] }) {
+export function AddKey({ taken, onAdd, label = tr("新键"), options = [{ value: 0, label }] }) {
   const [type, setType] = useState(null)
   const cancel = () => setType(null)
   if (type === null) return <AddMenu options={options} onPick={setType} />
@@ -149,8 +149,8 @@ export function AddKey({ taken, onAdd, label = tr('新键', 'New key'), options 
       <input className="field-input is-key" name="key" autoFocus required aria-label={label} placeholder={label} onKeyDown={(event) => {
         if (event.key === 'Escape') { event.stopPropagation(); cancel() }
       }} />
-      <button type="submit" className="kit-btn is-label">{tr('添加', 'Add')}</button>
-      <button type="button" className="kit-btn is-label" onClick={cancel}>{tr('取消', 'Cancel')}</button>
+      <button type="submit" className="kit-btn is-label">{tr("添加")}</button>
+      <button type="button" className="kit-btn is-label" onClick={cancel}>{tr("取消")}</button>
     </form>
   )
 }
@@ -166,7 +166,7 @@ export function Chips({ options, values, onSet, label }) {
           <button type="button" onClick={() => { if (confirmDelete(byValue.get(v)?.label ?? String(v))) onSet(values.filter((_, i) => i !== k)) }} aria-label={tr('去掉')}><X size={11} /></button>
         </span>
       ))}
-      <AddMenu label={label ? `${tr('新增', 'Add')} · ${label}` : undefined} options={options.filter((o) => !values.includes(o.value))} onPick={(v) => onSet([...values, v])} />
+      <AddMenu label={label ? `${tr("新增")} · ${label}` : undefined} options={options.filter((o) => !values.includes(o.value))} onPick={(v) => onSet([...values, v])} />
     </div>
   )
 }

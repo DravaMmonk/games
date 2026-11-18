@@ -5,7 +5,8 @@ import { TreeButton } from 'kernel/view'
 
 import { NumberField } from 'kernel/view'
 
-import { L, T, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { T, tr } from 'kernel/words'
 
 import { iconOf } from "./icons.js"
 import { numberText } from 'kernel/view'
@@ -34,7 +35,7 @@ function ListControl({ options, value, onChange, readOnly, label }) {
       {kept.map((v) => (
         <span key={v} className="pf-list-item">
           <code>{labelOf(v)}</code>
-          {!readOnly && <button type="button" aria-label={tr(`去掉「${labelOf(v)}」`, `Take off “${labelOf(v)}”`)} onClick={() => onChange(kept.filter((x) => x !== v))}><X size={12} /></button>}
+          {!readOnly && <button type="button" aria-label={tr("去掉「{value}」", {value: labelOf(v)})} onClick={() => onChange(kept.filter((x) => x !== v))}><X size={12} /></button>}
         </span>
       ))}
       {rest.length > 0 && !readOnly && (

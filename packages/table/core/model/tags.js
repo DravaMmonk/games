@@ -1,6 +1,6 @@
 import { T } from '../lang.js'
 export const TAGS = ['N', 'V', 'A'];
-export const TAG = { N: { n: T('名词', 'noun'), s: T('名', 'N') }, V: { n: T('动词', 'verb'), s: T('动', 'V') }, A: { n: T('形容词', 'adjective'), s: T('形', 'A') } };
+export const TAG = { N: { n: T("名词"), s: T("名") }, V: { n: T("动词"), s: T("动") }, A: { n: T("形容词"), s: T("形") } };
 export function bestTags(t) {
   let best = null;
   (function go(k, prev, acc, cost) {

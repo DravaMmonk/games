@@ -2,7 +2,7 @@ import { meaningsOf } from './kind-meanings.js'
 // Allocate catalog keys at the authoring boundary. Display text is identified by schema so language-like data keys
 // (for example a level placement's "id") remain ordinary configuration.
 import { find } from './schema.js'
-import { isText, textEntries, textKey, withTextKey } from './i18n.js'
+import { isLanguageNeutral, isText, textEntries, textKey, withTextKey } from './i18n.js'
 import { referenceKey } from './catalogs.js'
 import { getAt, setAt, showPath } from './ops/edit.js'
 
@@ -20,14 +20,22 @@ function keyPath(value, prefix, path, vocabulary) {
 }
 
 /** Add stable keys to newly authored locale maps, retaining existing keys and language-neutral literals. */
-export function normalizeText(value, schema, prefix, { vocabulary, reserved = new Set(), previous } = {}) {
+export function normalizeText(value, schema, prefix, { vocabulary, reserved = new Set(), previous, annotations = false } = {}) {
   if (value === undefined || value === previous) return value
-  const fields = find(schema, value, 'text', { vocabulary })
+  const fields = [...(schema ? find(schema, value, 'text', { vocabulary }) : []), ...(annotations ? declarationFields(value) : [])]
+  const paths = new Set()
   const used = new Set(fields.map((field) => textKey(field.value)).filter(Boolean))
   for (const key of used) reserved.add(key)
   let result = value
   for (const field of fields) {
-    if (!isText(field.value) || textKey(field.value)) continue
+    const at = showPath(field.path)
+    if (paths.has(at) || !isText(field.value) || textKey(field.value)) continue
+    paths.add(at)
+    const translations = textEntries(field.value).map(([, text]) => text)
+    if (translations.length > 1 && isLanguageNeutral(translations[0]) && translations.every(text => text === translations[0])) {
+      result = setAt(result, field.path, translations[0])
+      continue
+    }
     const oldKey = textKey(getAt(previous, field.path))
     let key = oldKey && !used.has(oldKey) ? oldKey : undefined
     if (!key) {
@@ -40,6 +48,16 @@ export function normalizeText(value, schema, prefix, { vocabulary, reserved = ne
     result = setAt(result, field.path, withTextKey(field.value, key))
   }
   return result
+}
+
+// Schema annotations are nested inside kind, shape and capability declarations.
+function declarationFields(value, path = []) {
+  if (isText(value)) return [{ path, value }]
+  if (!value || typeof value !== 'object') {
+    const annotation = path.at(-1) === 'about' || path.at(-1) === 'label' && path.at(-2) === 'studio'
+    return annotation && typeof value === 'string' && !referenceKey(value) && !isLanguageNeutral(value) ? [{ path, value: { zh: value } }] : []
+  }
+  return Object.entries(value).flatMap(([key, child]) => declarationFields(child, [...path, key]))
 }
 
 /** Check that each localized field in this catalog scope has its own reference. */

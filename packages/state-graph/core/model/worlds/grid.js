@@ -1,11 +1,15 @@
 // Street-map grids: right/down routes, the same board holding 是 / 否, and two piles of stones laid out as a grid.
 
 import { ORDERS, rcName } from 'table';
-import worlds from '../../../capabilities/world.json' with { type: 'json' };
+import worldsSource from '../../../capabilities/world.json' with { type: 'json' };
 import { W } from 'table';
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { world, look, cell, num, yes, DIR, THIS_CELL } from 'table';
+
+import { readCopy } from 'kernel/words'
+
+const worlds = readCopy(worldsSource)
 
 export const inGrid = (t, r, c) => r >= 0 && r < t.R && c >= 0 && c < t.C;
 const isRock = (t, r, c) => (t.rocks || []).some(p => p[0] === r && p[1] === c);
@@ -18,8 +22,8 @@ export const gridDef = {
   sensors: {
     ul: cell(...DIR.ul, [0, -1, -1]), up: cell(...DIR.up, [0, -1, 0]), ur: cell(...DIR.ur, [0, -1, 1]), left: cell(...DIR.left, [0, 0, -1]),
     right: cell(...DIR.right, [0, 0, 1]), dl: cell(...DIR.dl, [0, 1, -1]), down: cell(...DIR.down, [0, 1, 0]), dr: cell(...DIR.dr, [0, 1, 1]),
-    start: yes(T('是起点', 'is start'), T('起', 'start'), 'flag'), end: yes(T('是终点', 'is end'), T('终', 'end'), 'goal'), rock: yes(T('是石头', 'is rock'), T('石', 'rock'), 'rock'),
-    cost: num(T('本格体力', 'cell energy'), T('体', 'nrg'), 'bolt'), coin: num(T('本格金币', 'cell coins'), T('币', 'coin'), 'coin'),
+    start: yes(T("是起点"), T("起"), 'flag'), end: yes(T("是终点"), T("终"), 'goal'), rock: yes(T("是石头"), T("石"), 'rock'),
+    cost: num(T("本格体力"), T("体"), 'bolt'), coin: num(T("本格金币"), T("币"), 'coin'),
   },
   facts: ['start', 'end', 'rock', 'cost', 'coin'],
   outs: [['cell', THIS_CELL, [0, 0, 0]]],
@@ -50,7 +54,7 @@ export const gridDef = {
   answerKey: (t, o) => (o.answerAt === 'start' ? '0,0' : `${t.R - 1},${t.C - 1}`),
   answer(t, table, o) { return table.get(this.answerKey(t, o)); },
   name: key => rcName(key),
-  label: t => `${t.R}×${t.C}${t.rocks ? tr(` · ${t.rocks.length} 块石头`, ` · ${t.rocks.length} rock${t.rocks.length > 1 ? 's' : ''}`) : ''}`,
+  label: t => `${t.R}×${t.C}${t.rocks ? tr(" · {length} 块石头", {length: t.rocks.length, value: t.rocks.length > 1 ? 's' : ''}) : ''}`,
   orderText: o => ORDERS[o.scan || 'rowTL'].l,
   sample: t => { const r = Math.min(1, t.R - 1), c = Math.min(1, t.C - 1); return { r, c, id: `${r},${c}` }; },
   scene(t, view, o) {
@@ -75,16 +79,16 @@ export const gridYes = world({ ...gridDef, ...worlds.items.gridYes.variant });
 export const piles = world({
   ...gridDef,
   cellType: 'kernel/boolean',
-  sensors: { up: cell(T('A 堆少 1 颗', 'one fewer in A'), 'A−1', [0, -1, 0]), left: cell(T('B 堆少 1 颗', 'one fewer in B'), 'B−1', [0, 0, -1]), ul: cell(T('两堆各少 1 颗', 'one fewer in each'), T('各−1', 'AB−1'), [0, -1, -1]) },
+  sensors: { up: cell(T("A 堆少 1 颗"), 'A−1', [0, -1, 0]), left: cell(T("B 堆少 1 颗"), 'B−1', [0, 0, -1]), ul: cell(T("两堆各少 1 颗"), T("各−1"), [0, -1, -1]) },
   facts: [],
   mark: () => ({ corner: '' }),
-  where: x => tr(`A 堆 ${x.r} 颗、B 堆 ${x.c} 颗`, `${x.r} in pile A, ${x.c} in pile B`),
-  name: key => { const [a, b] = key.split(','); return tr(`A 堆 ${a} 颗、B 堆 ${b} 颗`, `${a} in pile A, ${b} in pile B`); },
-  label: t => tr(`${t.R - 1} 颗和 ${t.C - 1} 颗`, `${t.R - 1} and ${t.C - 1} stones`),
-  orderText: () => tr('逐行，从两堆都空开始', 'row by row, starting with both piles empty'),
+  where: x => tr("A 堆 {r} 颗、B 堆 {c} 颗", {r: x.r, c: x.c}),
+  name: key => { const [a, b] = key.split(','); return tr("A 堆 {a} 颗、B 堆 {b} 颗", {a, b}); },
+  label: t => tr("{value} 颗和 {value2} 颗", {value: t.R - 1, value2: t.C - 1}),
+  orderText: () => tr("逐行，从两堆都空开始"),
   scene(t, view, o) {
     const g = look(view, [this.answerKey(t, o)], [], o.bench), sp = 54, sz = 46, cells = [];
-    const texts = [{ x: -sp - 12, y: -sp + 19, t: tr('B 堆', 'pile B'), anchor: 'end' }, { x: -sp - 12, y: 5, t: tr('A 堆', 'pile A'), anchor: 'end' }];
+    const texts = [{ x: -sp - 12, y: -sp + 19, t: tr("B 堆"), anchor: 'end' }, { x: -sp - 12, y: 5, t: tr("A 堆"), anchor: 'end' }];
     for (let c = 0; c < t.C; c++) cells.push({ id: `bx${c}`, x: c * sp, y: -sp + 14, w: sz, h: 26, value: c, cls: 'axis' });
     for (let r = 0; r < t.R; r++) {
       cells.push({ id: `ax${r}`, x: -sp + 8, y: r * sp, w: 30, h: sz, value: r, cls: 'axis' });
@@ -104,7 +108,7 @@ export const piles = world({
  */
 export const tri = world({
   ...gridDef,
-  sensors: { up: cell(...DIR.up, [-1, 0]), ul: cell(...DIR.ul, [-1, -1]), start: yes(T('是顶上那块', 'is the top brick'), T('顶', 'top'), 'apex') },
+  sensors: { up: cell(...DIR.up, [-1, 0]), ul: cell(...DIR.ul, [-1, -1]), start: yes(T("是顶上那块"), T("顶"), 'apex') },
   facts: ['start'],
   keyAt: (t, r, c) => (r >= 0 && r < t.R && c >= 0 && c <= r ? `${r},${c}` : null),
   mark: () => ({ corner: '' }),
@@ -113,10 +117,10 @@ export const tri = world({
   order: t => { const cells = []; for (let r = 0; r < t.R; r++) for (let c = 0; c <= r; c++) cells.push({ r, c, id: `${r},${c}` }); return cells; },
   answerKey: t => `${t.R - 1},${t.k}`,
   answer(t, table) { return table.get(this.answerKey(t)); },
-  where: x => tr(`第 ${x.r + 1} 层第 ${x.c + 1} 块`, `brick ${x.c + 1} of row ${x.r + 1}`),
-  name: key => { const [r, c] = key.split(',').map(Number); return tr(`第 ${r + 1} 层第 ${c + 1} 块`, `brick ${c + 1} of row ${r + 1}`); },
-  label: t => tr(`${t.R} 层 · 第 ${t.k + 1} 块`, `${t.R} rows · brick ${t.k + 1}`),
-  orderText: () => tr('一层一层，从左往右', 'row by row, left to right'),
+  where: x => tr("第 {value} 层第 {value2} 块", {value: x.r + 1, value2: x.c + 1}),
+  name: key => { const [r, c] = key.split(',').map(Number); return tr("第 {r} 层第 {c} 块", {r: r + 1, c: c + 1}); },
+  label: t => tr("{R} 层 · 第 {value} 块", {R: t.R, value: t.k + 1}),
+  orderText: () => tr("一层一层，从左往右"),
   sample: t => { const r = Math.min(2, t.R - 1); return { r, c: 1, id: `${r},1` }; },
   scene(t, view, o) {
     const g = look(view, [this.answerKey(t)], [], o.bench), cells = [];
@@ -135,7 +139,7 @@ export const tri = world({
  */
 export const lawn = world({
   ...gridDef,
-  sensors: { ul: cell(...DIR.ul, [-1, -1]), up: cell(...DIR.up, [-1, 0]), left: cell(...DIR.left, [0, -1]), open: yes(T('是空地', 'is open ground'), T('空', 'open'), 'grass') },
+  sensors: { ul: cell(...DIR.ul, [-1, -1]), up: cell(...DIR.up, [-1, 0]), left: cell(...DIR.left, [0, -1]), open: yes(T("是空地"), T("空"), 'grass') },
   facts: ['open'],
   keyAt: (t, r, c) => (r >= 0 && r <= t.R && c >= 0 && c <= t.C ? `${r},${c}` : null),
   mark: (t, key) => { const [r, c] = key.split(',').map(Number); return { corner: '', cls: (t.trees || []).some(p => p[0] === r && p[1] === c) ? 'rock' : '' }; },
@@ -145,10 +149,10 @@ export const lawn = world({
   answerKey: () => null,
   answerKeys: () => [],
   answer(t, table) { let best = null; for (let r = 1; r <= t.R; r++) for (let c = 1; c <= t.C; c++) { const v = table.get(`${r},${c}`); if (typeof v === 'number' && (best === null || v > best)) best = v; } return best; },
-  where: x => tr(`第 ${x.r} 行第 ${x.c} 列`, `row ${x.r}, column ${x.c}`),
-  name: key => { const [r, c] = key.split(',').map(Number); return r && c ? tr(`第 ${r} 行第 ${c} 列`, `row ${r}, column ${c}`) : tr('地外', 'outside the field'); },
-  label: t => tr(`${t.R}×${t.C} · ${(t.trees || []).length} 棵树`, `${t.R}×${t.C} · ${(t.trees || []).length} trees`),
-  orderText: () => tr('逐行，从左上开始', 'row by row, from the top left'),
+  where: x => tr("第 {r} 行第 {c} 列", {r: x.r, c: x.c}),
+  name: key => { const [r, c] = key.split(',').map(Number); return r && c ? tr("第 {r} 行第 {c} 列", {r, c}) : tr("地外"); },
+  label: t => tr("{R}×{C} · {length} 棵树", {R: t.R, C: t.C, length: (t.trees || []).length}),
+  orderText: () => tr("逐行，从左上开始"),
   sample: () => ({ r: 2, c: 2, id: '2,2' }),
   scene(t, view, o) {
     const g = look(view, [], this.base(t), o.bench), cells = [];

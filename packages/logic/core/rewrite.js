@@ -11,7 +11,7 @@
 // an equation or an equivalence and fits somewhere, its ∀ variables standing for anything).
 import { atom, bin, fn, show, showTerm, subst, tvar } from './formula.js'
 import { instantiate, isMetaName, lemmaRules, metasIn, parseS, sameSide, sideText } from './schematic.js'
-import { T } from 'kernel'
+import { T } from 'kernel/words'
 
 const isTerm = (x) => 't' in x
 const NO_GOALS = T('已经没有目标了')
@@ -181,7 +181,7 @@ export function rewrite(s, rule, at = 'goal') {
       const done = rewriteOnce(h, rule)
       if (done) return after({ ...g, hyps: g.hyps.map((x, i) => (i === k ? done.to : x)) }, rule, done)
     }
-    return { fail: T(`「${rule.name.zh}」的左边在第一个目标的已知里哪一处都对不上`, `The left side of “${rule.name.en}” fits nowhere in the first goal’s hypotheses`) }
+    return { fail: T("「{zh}」的左边在第一个目标的已知里哪一处都对不上", {zh: { zh: String(rule.name.zh), en: String(rule.name.en) }}) }
   }
   const rules = rule.group === 'hyp' ? g.hyps.map(hypRule).filter(Boolean).map((r) => ({ ...rule, ...r, conditions: [] })) : [rule]
   for (const r of rules) {
@@ -189,7 +189,7 @@ export function rewrite(s, rule, at = 'goal') {
     if (done) return after({ ...g, goal: done.to }, r, done)
   }
   if (rule.group === 'hyp') return { fail: T('目标的已知里，没有一条等式或等价对得上第一个目标的哪一处') }
-  return { fail: T(`「${rule.name.zh}」的左边在第一个目标里哪一处都对不上`, `The left side of “${rule.name.en}” fits nowhere in the first goal`) }
+  return { fail: T("「{zh}」的左边在第一个目标里哪一处都对不上", {zh: { zh: String(rule.name.zh), en: String(rule.name.en) }}) }
 }
 
 /**
@@ -203,7 +203,7 @@ export function simplify(s, rules, at = 'goal', limit = 60) {
     if (!next) return { results: [cur] }
     cur = next.results[0]
   }
-  return { fail: T(`改了 ${limit} 次还没停下来：有几条规则把句子改来改去`, `Still changing after ${limit} rewrites: some rules turn the sentence back and forth`) }
+  return { fail: T("改了 {limit} 次还没停下来：有几条规则把句子改来改去", {limit}) }
 }
 
 /* ---------- the rule book ---------- */
@@ -215,7 +215,7 @@ function defRule(text, k) {
   const free = (f) => [...freeIn(f)].reduce((g, v) => subst(g, v, tvar(`?${v}`)), f)
   const eq = free(parseS(m[2].trim()))
   const conditions = m[1] ? m[1].split(';').map((c) => free(parseS(c.trim()))) : []
-  return { key: `def.${k}`, name: T(text, text), lhs: eq.args[0], rhs: eq.args[1], conditions, group: 'def', text }
+  return { key: `def.${k}`, name: { zh: text, en: text }, lhs: eq.args[0], rhs: eq.args[1], conditions, group: 'def', text }
 }
 
 const books = new WeakMap()

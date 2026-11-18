@@ -1,4 +1,9 @@
 {
   "package.desc": "Provides pixel representations, filtering, resampling, and frequency-domain operations.",
-  "package.title": "Image processing library"
+  "package.title": "Image processing library",
+  "ui": {
+    "输出未连接": "Output not connected",
+    "需要 RGB 彩色图及有效的通道": "An RGB image and a valid channel are required",
+    "需要三张大小相同的单通道图": "Three single-channel images of the same size are required"
+  }
 }

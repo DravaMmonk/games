@@ -15,10 +15,7 @@
         "name": "vision-complete/origin-size-rectangle"
       },
       "min": 1,
-      "about": {
-        "zh": "闯入者：几个矩形的并",
-        "en": "the intruder: a union of rectangles"
-      }
+      "about": "@shape.outline-test.fields.shape.about"
     },
     "seed": {
       "type": "int"

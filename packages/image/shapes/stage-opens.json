@@ -3,9 +3,6 @@
   "of": {
     "type": "str"
   },
-  "about": {
-    "zh": "这一步能动的旋钮（不写：全部）",
-    "en": "the knobs this step opens (none given: all)"
-  },
+  "about": "@shape.stage-opens.about",
   "optional": true
 }

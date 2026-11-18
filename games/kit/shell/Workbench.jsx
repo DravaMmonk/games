@@ -28,7 +28,7 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
     <div ref={rootRef} className={`level ${className}`}>
       <aside className="brief">{taskNav}{brief}</aside>
       <div className={`stage-pane ${scroll ? 'is-scroll' : 'is-board'}`}>
-        {tools && <div className="wb-toolbar" aria-label={tr('工具', 'Tools')}>{tools}</div>}
+        {tools && <div className="wb-toolbar" aria-label={tr("工具")}>{tools}</div>}
         <div className="wb-stage">{stage}</div>
       </div>
       {(pane || dock || tests || status) && (
@@ -64,13 +64,13 @@ export function TestStatus({ states, hidden }) {
   const passed = states.filter((s) => s === 'pass').length
   const ran = states.some((s) => s === 'pass' || s === 'fail')
   return (
-    <div className={`wb-status ${ran && passed === states.length ? 'is-pass' : ''}`} aria-label={tr(`${passed} / ${states.length} 通过`, `${passed} / ${states.length} passed`)}>
+    <div className={`wb-status ${ran && passed === states.length ? 'is-pass' : ''}`} aria-label={tr("{passed} / {length} 通过", {passed, length: states.length})}>
       <span className="wb-dots" aria-hidden="true">{states.map((s, k) => <i key={k} className={s ? `is-${s}` : ''} />)}</span>
       <b>{ran ? passed : '–'}/{states.length}</b>
       {hidden?.count > 0 && (
         <span className={`wb-hidden ${hidden.failed ? 'is-fail' : ''}`} title={L(hidden.note)}>
           <EyeOff size={13} aria-hidden="true" />
-          {hidden.failed ? tr(`${hidden.failed} 个未通过`, `${hidden.failed} failed`) : `+${hidden.count}`}
+          {hidden.failed ? tr("{failed} 个未通过", {failed: hidden.failed}) : `+${hidden.count}`}
         </span>
       )}
     </div>

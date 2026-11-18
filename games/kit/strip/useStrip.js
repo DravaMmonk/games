@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { useEffect, useState } from 'react'
 
 const buzz = (pattern = 8) => navigator.vibrate?.(pattern)
@@ -35,7 +36,7 @@ export function useStrip({ put, take, target, filled, fixed }) {
   }
   const onSlot = (slot) => {
     if (filled(slot)) {
-      if (fixed(slot)) return setNote({ text: { zh: '这一格是这一关给定的。', en: 'This one is given by the level.' } })
+      if (fixed(slot)) return setNote({ text: catalogText("这一格是这一关给定的。") })
       buzz([6, 30, 6])
       take(slot)
       setNote(null)
@@ -45,8 +46,8 @@ export function useStrip({ put, take, target, filled, fixed }) {
   }
   const onChip = (chip) => {
     const slot = selected ?? target(chip)
-    if (!slot) return setNote({ text: { zh: '没有空位能放它。先点一个位置，或拿掉占着的那一块。', en: 'No empty place takes it. Tap a place first, or take out the one in the way.' }, bad: true })
-    if (filled(slot) && fixed(slot)) return refuse(slot, { zh: '这一格是这一关给定的。', en: 'This one is given by the level.' })
+    if (!slot) return setNote({ text: catalogText("没有空位能放它。先点一个位置，或拿掉占着的那一块。"), bad: true })
+    if (filled(slot) && fixed(slot)) return refuse(slot, catalogText("这一格是这一关给定的。"))
     const why = put(slot, chip)
     if (why) return refuse(slot, why)
     buzz()

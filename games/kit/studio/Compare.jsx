@@ -79,7 +79,7 @@ function FileCompare({ target, file, onPath }) {
         <code>{file.name}</code>
       </div>
       {right.kind === 'rev' && held && !held.found && <p className="review-said is-fail">{held.why}</p>}
-      {right.kind === 'base' && !theirs && file.now && <p className="review-empty">{tr('这个文件是待定变更集新加的。', 'The pending changeset adds this file.')}</p>}
+      {right.kind === 'base' && !theirs && file.now && <p className="review-empty">{tr("这个文件是待定变更集新加的。")}</p>}
       {file.now && theirs && !rows.length && <p className="review-empty">{tr('一样。')}</p>}
       <DiffFields rows={rows} onPath={onPath} />
     </article>

@@ -37,12 +37,12 @@ export function TaskDoneDialog({ game, level, task, index, next, revisit, onStay
     <div ref={overlay} className="dialog-scrim">
       <div className="dialog is-solved" role="dialog" aria-modal="true" aria-label={tr('任务完成')}>
         <div className="solved-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><path d="M12 20.5l5.5 5.5L28.5 14" /></svg></div>
-        <h2>{game.levelLabel(level)} {L(level.title)} · {tr(`任务 ${index + 1} 完成`, `Task ${index + 1} complete`)}</h2>
+        <h2>{game.levelLabel(level)} {L(level.title)} · {tr("任务 {index} 完成", {index: index + 1})}</h2>
         <Paragraphs text={task.after} />
         {revisit && <p>{tr('本关还有未完成的必做任务，完成后才能通过整关。')}</p>}
         <div className="dialog-actions">
           <button onClick={onStay}>{tr('留在这里')}</button>
-          <button className="is-primary" onClick={onNext} autoFocus>{!next ? tr('返回关卡地图') : revisit ? (next.step ? tr(`返回未完成任务：${L(next.step)}`, `Return to unfinished task: ${L(next.step)}`) : tr('返回未完成任务')) : (next.step ? tr(`下一个任务：${L(next.step)}`, `Next task: ${L(next.step)}`) : tr('下一个任务'))}</button>
+          <button className="is-primary" onClick={onNext} autoFocus>{!next ? tr('返回关卡地图') : revisit ? (next.step ? tr("返回未完成任务：{value}", {value: L(next.step)}) : tr('返回未完成任务')) : (next.step ? tr("下一个任务：{value}", {value: L(next.step)}) : tr('下一个任务'))}</button>
         </div>
       </div>
     </div>
@@ -61,9 +61,9 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
   ]
   return (
     <div ref={overlay} className="dialog-scrim">
-      <div className="dialog is-solved" role="dialog" aria-modal="true" aria-label={tr('通过', 'Passed')}>
+      <div className="dialog is-solved" role="dialog" aria-modal="true" aria-label={tr("通过")}>
         <div className="solved-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><path d="M12 20.5l5.5 5.5L28.5 14" /></svg></div>
-        <h2>{tr('通过', 'Passed')} · {game.levelLabel(level)} {L(level.title)}</h2>
+        <h2>{tr("通过")} · {game.levelLabel(level)} {L(level.title)}</h2>
         {level.afterTitle && <h3 className="dialog-title"><Markup text={level.afterTitle} /></h3>}
         <Paragraphs text={level.after} />
         {level.afterShow && <Show {...readShow(level.afterShow)} scene="figure" />}
@@ -76,7 +76,7 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
         )}
         {opened.length > 0 && (
           <div className="unlocked">
-            <span className="panel-label">{tr('解锁', 'Unlocked')}</span>
+            <span className="panel-label">{tr("解锁")}</span>
             <ul className="unlocked-list">
               {opened.map(({ key, kind, label, chip, family, icon, caption }) => (
                 <li key={key} className="unlocked-item" data-kind={kind} data-family={family}>
@@ -104,8 +104,8 @@ export function FailDialog({ fail, fails, onClose }) {
   const hint = fail.hint
   return (
     <div ref={overlay} className="dialog-scrim">
-      <div className="dialog is-failed" role="dialog" aria-modal="true" aria-label={tr('未通过', 'Not passed')}>
-        <h2>{tr('未通过', 'Not passed')}</h2>
+      <div className="dialog is-failed" role="dialog" aria-modal="true" aria-label={tr("未通过")}>
+        <h2>{tr("未通过")}</h2>
         {fail.head && <h3 className="dialog-title"><Markup text={fail.head} /></h3>}
         <Paragraphs text={fail.body} />
         {fail.extra && (isValidElement(fail.extra) ? <div className="dialog-extra">{fail.extra}</div> : <div className="dialog-extra"><Markup text={fail.extra} /></div>)}

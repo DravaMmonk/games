@@ -236,7 +236,7 @@ export function creationChoices(schema, ctx) {
           make: () => spec.params ? { [item]: blank(spec.params, ctx) } : item,
         }))
       default:
-        return [{ label: labels.join(' · ') || tr('空白项', 'Blank item'), make: () => blank(shape, ctx) }]
+        return [{ label: labels.join(' · ') || tr("空白项"), make: () => blank(shape, ctx) }]
     }
   }
   return walk(schema).map((choice, index) => ({ ...choice, value: index }))

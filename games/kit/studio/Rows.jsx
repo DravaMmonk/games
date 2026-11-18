@@ -56,7 +56,7 @@ export default function Rows({ form, ctx, keys = null, picked = null, findings, 
           {f.field.items.map((task, k) => (
             <section key={k} className="rows-task">
               <button type="button" className={`row is-head ${picked === showPath(task.path) ? 'is-on' : ''}`} onClick={() => onPick(task.path)}>
-                <span className="row-key">{tr(`任务 ${k + 1}`, `Task ${k + 1}`)}</span>
+                <span className="row-key">{tr("任务 {k}", {k: k + 1})}</span>
                 <span className="row-sum">{[task.value.id, task.value.step && L(task.value.step)].filter(Boolean).join(' · ')}</span>
                 {foundUnder(findings, task.path) > 0 && <b className="row-found">{foundUnder(findings, task.path)}</b>}
               </button>

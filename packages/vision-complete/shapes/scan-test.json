@@ -29,10 +29,7 @@
         },
         "min": 3
       },
-      "about": {
-        "zh": "一行字：x, y, 长度",
-        "en": "a line of text: x, y, length"
-      },
+      "about": "@shape.scan-test.fields.lines.about",
       "optional": true
     },
     "noise": {

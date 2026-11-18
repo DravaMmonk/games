@@ -2,52 +2,28 @@
   "extends": "family",
   "items": {
     "pixel": {
-      "about": {
-        "zh": "逐像素",
-        "en": "Per-pixel"
-      }
+      "about": "@capability.family.items.pixel.about"
     },
     "neighbour": {
-      "about": {
-        "zh": "看邻居",
-        "en": "Neighbours"
-      }
+      "about": "@capability.family.items.neighbour.about"
     },
     "size": {
-      "about": {
-        "zh": "改尺寸",
-        "en": "Resize"
-      }
+      "about": "@capability.family.items.size.about"
     },
     "search": {
-      "about": {
-        "zh": "搜索与比较",
-        "en": "Search and compare"
-      }
+      "about": "@capability.family.items.search.about"
     },
     "frequency": {
-      "about": {
-        "zh": "频率",
-        "en": "Frequency"
-      }
+      "about": "@capability.family.items.frequency.about"
     },
     "global": {
-      "about": {
-        "zh": "看全局",
-        "en": "Global"
-      }
+      "about": "@capability.family.items.global.about"
     },
     "learned": {
-      "about": {
-        "zh": "可学习",
-        "en": "Learnable"
-      }
+      "about": "@capability.family.items.learned.about"
     },
     "other": {
-      "about": {
-        "zh": "元件",
-        "en": "Parts"
-      }
+      "about": "@capability.family.items.other.about"
     }
   }
 }

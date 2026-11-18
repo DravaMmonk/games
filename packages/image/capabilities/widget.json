@@ -2,17 +2,11 @@
   "name": "widget",
   "studio": {
     "order": 12,
-    "label": {
-      "zh": "控件",
-      "en": "Widgets"
-    }
+    "label": "@capability.widget.studio.label"
   },
   "items": {
     "imageKernel": {
-      "about": {
-        "zh": "图像运算的权重表",
-        "en": "Weight grid for image operations"
-      }
+      "about": "@capability.widget.items.imageKernel.about"
     }
   }
 }

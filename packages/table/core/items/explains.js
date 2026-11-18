@@ -14,8 +14,8 @@ const EXPLAINS = {
       touched.add(x.cell.w);
       return hit;
     });
-    if (t.kind === '01' && s) { const it = t.items[s.cell.item]; return tr(`处理「${it.n}」（${it.w} kg）时，改 dp[${s.cell.w}] 要读 dp[${s.cell.src}]，可 dp[${s.cell.src}] 在这一轮已经改过，里面已经放了一个${it.n}。于是${it.n}又被放了一次。`, `While handling the ${it.n} (${it.w} kg), rewriting dp[${s.cell.w}] reads dp[${s.cell.src}], but dp[${s.cell.src}] was already rewritten this round and already holds one ${it.n}. So the ${it.n} got packed a second time.`); }
-    if (t.kind === 'inf' && o.dirs.inf === 'desc') return tr('这一题每种东西可以拿很多件。从右往左改写时，dp[w − 重量] 总是旧值，每种东西都只被拿了一次。', 'In this test, each kind of thing can be taken many times. Rewriting from right to left, dp[w − weight] is always an old value, so each thing gets taken only once.');
+    if (t.kind === '01' && s) { const it = t.items[s.cell.item]; return tr("处理「{n}」（{w} kg）时，改 dp[{w2}] 要读 dp[{src}]，可 dp[{src}] 在这一轮已经改过，里面已经放了一个{n}。于是{n}又被放了一次。", {n: it.n, w: it.w, w2: s.cell.w, src: s.cell.src}); }
+    if (t.kind === 'inf' && o.dirs.inf === 'desc') return tr("这一题每种东西可以拿很多件。从右往左改写时，dp[w − 重量] 总是旧值，每种东西都只被拿了一次。");
     return '';
   },
 }

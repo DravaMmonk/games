@@ -17,10 +17,10 @@ import { overridesIt, tagOverrideOps } from './override-edit.js'
 import { memberKnown, memberTitle, tagValuesOp, textWith, withMember, withoutMember } from './tag-edit.js'
 
 const refusal = (reason) => ({
-  duplicate: tr('标签里已经有它了。', 'The tag already holds it.'),
-  self: tr('标签不能装自己。', 'A tag cannot hold itself.'),
-  kind: tr('只能装同一种对象的标签。', 'Only a tag of the same kind can go in.'),
-  cycle: tr('这样嵌套会形成循环。', 'This nesting would create a cycle.'),
+  duplicate: tr("标签里已经有它了。"),
+  self: tr("标签不能装自己。"),
+  kind: tr("只能装同一种对象的标签。"),
+  cycle: tr("这样嵌套会形成循环。"),
 })[reason] ?? ''
 
 /** The tag `full` (a tag group picked in a build list); `onSelect(full)` opens another, `onPick(path)` shows a field of its file on the right. */
@@ -72,33 +72,33 @@ function OneTag({ full, tag, own, content, namespace, pending, onSelect, onEdit,
   // give, then names. Nothing here writes an order.
   const ordered = [...tag.values.filter((v) => v.startsWith('#')).sort(), ...orderedMembers(content, tag.values.filter((v) => !v.startsWith('#')), tag.kind)]
   const options = tagCandidates(content, tag.kind, full).filter((v) => !tag.values.includes(v)).map((v) => ({
-    value: v, label: shownName(namespace, v), title: titleOf(v) ?? undefined, group: v.startsWith('#') ? tr('标签', 'Tags') : tagKindWord(tag.kind),
+    value: v, label: shownName(namespace, v), title: titleOf(v) ?? undefined, group: v.startsWith('#') ? tr("标签") : tagKindWord(tag.kind),
   }))
   return (
     <div className="tag-editor">
       <div className="object-head">
         <code className="editor-id is-static">{shownName(namespace, full)}</code>
         <span className="object-kind">{tagKindWord(tag.kind)}</span>
-        <span className="object-count" title={tr('展开后的成员数', 'Members once expanded')}>{count}</span>
+        <span className="object-count" title={tr("展开后的成员数")}>{count}</span>
         <SourceMark content={content} kind="tag" full={full} own={own} overriding={overriding} pending={pending} onOverride={() => setOverriding(true)} />
         <span className="kit-spacer" />
-        {onRemove && <button type="button" className="kit-btn editor-tool" disabled={pending} title={tr('删除标签', 'Delete the tag')} aria-label={tr('删除标签', 'Delete the tag')} onClick={onRemove}><Trash2 size={14} aria-hidden="true" /></button>}
+        {onRemove && <button type="button" className="kit-btn editor-tool" disabled={pending} title={tr("删除标签")} aria-label={tr("删除标签")} onClick={onRemove}><Trash2 size={14} aria-hidden="true" /></button>}
       </div>
       <div className="object-title" onFocus={() => onPick?.(['title'])} onClick={() => onPick?.(['title'])}>
         {own
-          ? <TextField key={lang} lang={lang} value={tag.title} label={tr('标题', 'Title')} placeholder={tr('标题', 'Title')} compact
+          ? <TextField key={lang} lang={lang} value={tag.title} label={tr("标题")} placeholder={tr("标题")} compact
             onSet={(text) => { if (!pending) onEdit({ op: 'tag.set', ...tagTarget(namespace, full), path: 'title', value: textWith(namespace, tag.title, lang, text) }) }} />
           : <span>{L(tag.title)}</span>}
       </div>
       <div className="arrange-actions">
-        {editable && options.length > 0 && <Picker options={options} add label={tr('加入成员', 'Add a member')} placeholder={tr('加入成员', 'Add a member')} onPick={add} />}
+        {editable && options.length > 0 && <Picker options={options} add label={tr("加入成员")} placeholder={tr("加入成员")} onPick={add} />}
         {notice && <p className="is-error" role="status">{notice}</p>}
       </div>
-      <ul className="tag-members" aria-label={tr('成员', 'Members')}>
+      <ul className="tag-members" aria-label={tr("成员")}>
         {ordered.map((member) => [member, tag.values.indexOf(member)]).map(([member, k]) => member.startsWith('#')
           ? <li key={member}>
             <div className={`tag-member is-tag ${known(member) ? '' : 'is-unknown'}`}>
-              <button type="button" className="kit-btn editor-tool" aria-expanded={open.has(member)} aria-label={tr('展开', 'Expand')} onClick={() => toggle(member)}>
+              <button type="button" className="kit-btn editor-tool" aria-expanded={open.has(member)} aria-label={tr("展开")} onClick={() => toggle(member)}>
                 {open.has(member) ? <ChevronDown size={13} aria-hidden="true" /> : <ChevronRight size={13} aria-hidden="true" />}
               </button>
               <button type="button" className="tag-link" onClick={() => { onPick?.(['values', k]); onSelect(tagKey(tag.kind, member.slice(1))) }}>

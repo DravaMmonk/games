@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { qualifyItems } from 'kernel'
 // The budgets a level may set on a circuit (vocabulary.js constraint): a circuit that passes every test can still
 // fail one. Each item is check(params) → (score, graph) → '' or what is over, as the shared level runs take a level's
@@ -50,7 +51,7 @@ export const CONSTRAINTS = qualifyItems('image', {
   },
   bottleneck: {
     check: ({ max }, types) => (_, graph) => {
-      if (bypassesBottleneck(graph, types)) return { zh: '图像没有经过编码器', en: 'The image does not pass through the encoder' }
+      if (bypassesBottleneck(graph, types)) return catalogText("图像没有经过编码器")
       const widest = Math.max(0, ...graph.nodes.filter((n) => (types[n.type]?.resource ?? n.type) === 'image/dg-encode').map((n) => Number(n.params.k ?? 1)))
       return widest > max ? { zh: `瓶颈有 ${widest} 个数，最多 ${max} 个`, en: `The bottleneck has ${widest} numbers; at most ${max} allowed` } : ''
     },

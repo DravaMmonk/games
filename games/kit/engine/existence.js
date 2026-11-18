@@ -40,7 +40,7 @@ export function publicSurfaces(layers, schemas) {
     if (layer.id.startsWith('@')) add(layer.id, 'game', `${layer.id}/config`)
     for (const object of [...layer.objects, ...(layer.codeObjects ?? [])]) add(layer.id, object.kind, object.name, object.value)
     for (const reader of layer.tagReaders ?? []) add(layer.id, 'tag', reader.name, { kind: reader.member })
-    for (const entries of Object.values(layer.catalogs ?? {})) for (const key of Object.keys(entries)) add(layer.id, 'i18n', key.includes('/') ? key : `${layer.id}/${key}`)
+    for (const entries of Object.values(layer.catalogs ?? {})) for (const key of Object.keys(entries).filter(key => key !== 'ui')) add(layer.id, 'i18n', key.includes('/') ? key : `${layer.id}/${key}`)
   }
   return surfaces
 }

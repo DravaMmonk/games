@@ -1,5 +1,7 @@
+import { punctuation } from 'kernel'
 import { useMemo } from 'react'
-import { L, T, tr, isPair, Library, useSeen, Markup, fileMark } from 'kernel/view'
+import { L, isPair, Library, useSeen, Markup, fileMark } from "kernel/view"
+import { T, tr } from 'kernel/words'
 
 // The encyclopedia (百科), the same in every game, after the one in Turing Complete: not one level's walkthrough but
 // the game's big ideas, grouped: how the game is played, then the terms of the subject it teaches. A game brings
@@ -14,7 +16,7 @@ export function glossaryLayout(game) {
   const chapters = (game.chapters ?? []).map(({ id, number, title }) => ({
     chapter: id,
     id: `chapter:${id}`,
-    title: T(`第 ${number ?? id} 章 · ${isPair(title) ? title.zh : title}`, `Chapter ${number ?? id} · ${isPair(title) ? title.en ?? title.zh : title}`),
+    title: T("第 {value} 章 · {value2}", {value: number ?? id, value2: { zh: String(isPair(title) ? title.zh : title), en: String(isPair(title) ? title.en ?? title.zh : title) }}),
   }))
   const groupOf = new Map(chapters.map(({ chapter, id }) => [chapter, id]))
   const grouped = entries.map(entry => ({
@@ -94,7 +96,7 @@ export default function Encyclopedia({ game, wiki, level, phone, start, edit = n
               {entry.see.map((other) => entries.find((e) => e.id === other)).filter(Boolean).map((e) =>
                 isOpen(e)
                   ? <button key={e.id} type="button" className="wiki-chip" onClick={() => pick(e.id)}><span>{L(titleOf(e))}</span></button>
-                  : <span key={e.id} className="wiki-chip is-locked">{tr('？？？')}</span>,
+                  : <span key={e.id} className="wiki-chip is-locked">{punctuation("？？？")}</span>,
               )}
             </div>
           </footer>

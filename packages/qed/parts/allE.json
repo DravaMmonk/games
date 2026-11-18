@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "all",
-      "label": "@part.allE.inputs.0.label"
+      "label": "∀x. P(x)"
     }
   ],
   "settings": {

@@ -17,7 +17,7 @@ import { missingRobotOutput, robotHint, tutorialFailure } from '../../core/model
 import { probeValues, wireStateOf } from './circuitRun.js'
 import { buzz, typing, useToast, useVerdict } from 'kernel/view'
 import { useWorkspaceKeys } from 'kernel/view'
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 
 const empty = { typed: {}, robot: null, selected: null, input: '', focus: null, bench: false }
 
@@ -59,14 +59,14 @@ function noteOf(task, world, view, k) {
   if (!view) return ''
   const step = view.res.steps[view.focus ?? view.k - 1]
   const where = world.where(step.cell)
-  if (!view.end) return tr(`${step.round ? `第 ${step.round} 轮 · ` : ''}正在算${where}`, `${step.round ? `Round ${step.round} · ` : ''}Computing ${where}`)
-  if (view.focus != null) return tr(`正在看${where}，再点一次取消。`, `Looking at ${where}. Click again to leave.`)
-  if (view.halt) return tr(`机器在${where}出了错。`, `The machine went wrong at ${where}.`)
+  if (!view.end) return tr("{value}正在算{where}", {where, value: { zh: String(step.round ? `第 ${step.round} 轮 · ` : ''), en: String(step.round ? `Round ${step.round} · ` : '') }})
+  if (view.focus != null) return tr("正在看{where}，再点一次取消。", {where})
+  if (view.halt) return tr("机器在{where}出了错。", {where})
   const { rounds, value } = view.res
-  const scans = rounds ? tr(`扫了 ${rounds} 轮，最后一轮一格也没变。`, `Scanned ${rounds} round${rounds === 1 ? '' : 's'}; the last round changed nothing. `) : ''
+  const scans = rounds ? tr("扫了 {rounds} 轮，最后一轮一格也没变。", {rounds, value: rounds === 1 ? '' : 's'}) : ''
   return scans + (view.pass
-    ? tr(`答案 ${signal(value)}，正确。`, `Answer ${signal(value)}: correct.`)
-    : tr(`机器算出 ${signal(value)}，应该是 ${signal(task.expected[k])}。`, `The machine computed ${signal(value)}; it should be ${signal(task.expected[k])}.`))
+    ? tr("答案 {value}，正确。", {value: signal(value)})
+    : tr("机器算出 {value}，应该是 {value2}。", {value: signal(value), value2: signal(task.expected[k])}))
 }
 
 /** The robot's world, drawing and card controls. Editing, tests and playback belong to the circuit screen. */
@@ -144,10 +144,10 @@ export function useRobotWorld({ screen, task, test, run, report, at, ended, circ
     return family.filter((name) => name === type || held.has(name)).map((name) => [name, model.def(name).tag])
   }
   const pad = !live && state.selected ? {
-    title: tr(`${world.name(state.selected)}：填一个数（不填 = 清空这一格）`, `${world.name(state.selected)}: type a number (leave blank to clear the cell)`),
+    title: tr("{value}：填一个数（不填 = 清空这一格）", {value: world.name(state.selected)}),
     value: state.input,
     onKey: key,
-    extra: world.cellOf(test, state.selected, task) && !box?.at.includes(state.selected) ? { key: 'bot', label: tr('让机器人站到这一格', 'Put the robot on this cell') } : null,
+    extra: world.cellOf(test, state.selected, task) && !box?.at.includes(state.selected) ? { key: 'bot', label: tr("让机器人站到这一格") } : null,
   } : null
   const scene = { ...world.scene(test, view, { ...task, ...(view?.end && view.pass && task.trace ? trace(task.trace, test) : {}), bench: box }), look: robot.look }
   const after = task.panel ? panelData(task.panel, test, view, run.states) : null
@@ -161,10 +161,10 @@ export function useRobotWorld({ screen, task, test, run, report, at, ended, circ
     hint: task.hints ?? null,
     tip: guideAt(task.guide, circuit) ?? ([task.ask, task.tip].filter(Boolean).join(' ') || null),
     value: { values, errors: new Map() },
-    drawing: boardDrawing(scene, { label: tr('棋盘', 'Board'), ...(task.boardOpt || { minScale: 0.7, maxScale: 1.25 }) }, onCell),
+    drawing: boardDrawing(scene, { label: tr("棋盘"), ...(task.boardOpt || { minScale: 0.7, maxScale: 1.25 }) }, onCell),
     note: noteOf(task, world, view, run.at),
     after,
-    returnAction: view?.end && !live ? { label: T('回到棋盘测试', 'Back to the test board'), onClick: () => put({ bench: true, focus: null }) } : null,
+    returnAction: view?.end && !live ? { label: T("回到棋盘测试"), onClick: () => put({ bench: true, focus: null }) } : null,
     cardDrawing: (node, readOnly) => isCard(node.type) ? robotDrawing(ui, node.type, readOnly ? null : toggle) : null,
     portValue: (node, port) => isCard(node.type) ? signal(read(port, cell, shown, 'self')) : undefined,
     wireState: wireStateOf(values),
@@ -183,7 +183,7 @@ export function useRobotWorld({ screen, task, test, run, report, at, ended, circ
     },
     fail: (last, runs) => {
       if (last.final) {
-        verdict.fail({ head: T('还不能做成元件', 'Not a part yet'), body: last.final, hint: null })
+        verdict.fail({ head: T("还不能做成元件"), body: last.final, hint: null })
         return
       }
       const bad = runs[last.test]

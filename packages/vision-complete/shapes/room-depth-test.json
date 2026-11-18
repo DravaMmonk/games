@@ -17,10 +17,7 @@
     },
     "floorSeed": {
       "type": "int",
-      "about": {
-        "zh": "地面上乱的距离的种子",
-        "en": "the seed of the floor’s stray distances"
-      }
+      "about": "@shape.room-depth-test.fields.floorSeed.about"
     }
   }
 }

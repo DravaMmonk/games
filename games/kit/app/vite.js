@@ -38,10 +38,10 @@ export function gameApp({ game = null } = {}) {
   const packages = packageApp()
   return {
     name: 'game-app',
-    resolveId: (id) => (id === 'virtual:game' || id.startsWith(PREFIX) ? `\0${id}` : packages.resolveId(id)),
+    resolveId: (id, importer) => (id === 'virtual:game' || id.startsWith(PREFIX) ? `\0${id}` : packages.resolveId(id, importer)),
     async load(id) {
       if (id.startsWith(`\0${PREFIX}`)) return gameModule(id.slice(PREFIX.length + 1))
-      if (id !== '\0virtual:game') return packages.load(id)
+      if (id !== '\0virtual:game') return packages.load.call(this, id)
       if (game) return `export const loadDomain = async () => (await import(${q(PREFIX + game)})).default`
       const games = contentTargets([], undefined, { game: true })
       const first = hubOrder().find(id => games.some(game => game.id === id)) ?? games[0]?.id ?? null

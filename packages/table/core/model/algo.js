@@ -27,11 +27,11 @@ export function allRoutes(start, end, edges) {
 
 /** Scan orders for a grid: each returns [[row, col], ...]. */
 export const ORDERS = {
-  rowTL: { l: T('逐行，从左上开始', 'row by row, from the top left'), list: (R, C) => { const o = []; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) o.push([r, c]); return o; } },
-  rowBR: { l: T('逐行，从右下开始', 'row by row, from the bottom right'), list: (R, C) => ORDERS.rowTL.list(R, C).reverse() },
-  colL: { l: T('逐列，从左往右', 'column by column, left to right'), list: (R, C) => { const o = []; for (let c = 0; c < C; c++) for (let r = 0; r < R; r++) o.push([r, c]); return o; } },
-  colR: { l: T('逐列，从右往左', 'column by column, right to left'), list: (R, C) => { const o = []; for (let c = C - 1; c >= 0; c--) for (let r = 0; r < R; r++) o.push([r, c]); return o; } },
-  colRB: { l: T('逐列，从右下往上', 'column by column, from the bottom right upwards'), list: (R, C) => ORDERS.colL.list(R, C).reverse() },
+  rowTL: { l: T("逐行，从左上开始"), list: (R, C) => { const o = []; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) o.push([r, c]); return o; } },
+  rowBR: { l: T("逐行，从右下开始"), list: (R, C) => ORDERS.rowTL.list(R, C).reverse() },
+  colL: { l: T("逐列，从左往右"), list: (R, C) => { const o = []; for (let c = 0; c < C; c++) for (let r = 0; r < R; r++) o.push([r, c]); return o; } },
+  colR: { l: T("逐列，从右往左"), list: (R, C) => { const o = []; for (let c = C - 1; c >= 0; c--) for (let r = 0; r < R; r++) o.push([r, c]); return o; } },
+  colRB: { l: T("逐列，从右下往上"), list: (R, C) => ORDERS.colL.list(R, C).reverse() },
 };
 
 /** LCS table f[row over left][col over top]. */
@@ -100,7 +100,7 @@ export function editTrace(left, top, f) {
   return { ops: ops.reverse(), cells };
 }
 
-export const rcName = id => { const [r, c] = id.split(',').map(Number); return tr(`第 ${r + 1} 行第 ${c + 1} 列`, `row ${r + 1}, column ${c + 1}`); };
+export const rcName = id => { const [r, c] = id.split(',').map(Number); return tr("第 {r} 行第 {c} 列", {r: r + 1, c: c + 1}); };
 
 /** The cells a local alignment walks back through, from the best cell to where the score started from 0. */
 export function localTrace(t) {

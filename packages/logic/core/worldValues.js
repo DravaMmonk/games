@@ -1,4 +1,6 @@
-import { T, sideOf } from 'kernel'
+import { punctuation } from 'kernel'
+import { sideOf } from "kernel"
+import { T } from 'kernel/words'
 import { say } from './notation.js'
 import { cases, inOrder, property } from 'kernel'
 import { builtWorld, claimIn, MAX_WORLD } from './fol.js'
@@ -13,7 +15,6 @@ export const thingName = (notation, world, lang) => (k) => world ? sideOf(notati
 /** A world in words: how many things, and every atom true in it, as sentences. */
 function describe(model, notation, preds, world, spell, lang) {
   const L = (value) => sideOf(value, lang)
-  const tr = (zh, en) => L(T(zh, en))
   const name = thingName(notation, world, lang)
   const sayAtom = (p, args) => (notation.words?.[p] ? L(notation.words[p]) : `${p}({0})`).replace(/\{(\d)\}/g, (_, k) => name(args[Number(k)]))
   const atoms = preds.flatMap(([p, n]) => {
@@ -27,12 +28,12 @@ function describe(model, notation, preds, world, spell, lang) {
     ? (model.preds[p] ? [] : [L(say({ op: 'atom', pred: p, args: [] }, notation))])
     : tuples(n).filter((args) => !model.preds[p]?.has(args.join(','))).map((args) => sayAtom(p, args)))) : []
   // A named world's things are their own names: only other names need saying.
-  const consts = Object.entries(model.fns).filter(([c, m]) => m.has('') && !world?.things.includes(c)).map(([c, m]) => `${L(notation.words?.[c] ?? T(c, c))} = ${name(m.get(''))}`)
+  const consts = Object.entries(model.fns).filter(([c, m]) => m.has('') && !world?.things.includes(c)).map(([c, m]) => `${L(notation.words?.[c] ?? c)} = ${name(m.get(''))}`)
   return [
-    { text: tr(`这个世界有 ${model.domain.length} 样东西：`, `This world has ${model.domain.length} thing${model.domain.length === 1 ? '' : 's'}: `), strong: model.domain.map(name).join(tr('、')) },
-    ...(consts.length ? [{ text: consts.join(tr('；')) }] : []),
-    { text: atoms.length ? atoms.join(tr('；')) : tr('什么都不成立。') },
-    ...(missing.length && atoms.length ? [{ text: tr('不成立：') + missing.join(tr('；')), muted: true }] : []),
+    { text: L(T("这个世界有 {length} 样东西：", {length: model.domain.length, value: model.domain.length === 1 ? '' : 's'})), strong: model.domain.map(name).join(punctuation("、", lang)) },
+    ...(consts.length ? [{ text: consts.join(punctuation("；", lang)) }] : []),
+    { text: atoms.length ? atoms.join(punctuation("；", lang)) : L(T('什么都不成立。')) },
+    ...(missing.length && atoms.length ? [{ text: L(T('不成立：')) + missing.join(punctuation("；", lang)), muted: true }] : []),
   ]
 }
 
@@ -40,17 +41,17 @@ export function worldDescription(model, notation, preds, { world = null, spell =
   const zh = describe(model, notation, preds, world, spell, 'zh')
   const en = describe(model, notation, preds, world, spell, 'en')
   return zh.map(({ text, strong, muted }, k) => ({
-    text: T(text, en[k].text),
-    strong: strong === undefined ? null : T(strong, en[k].strong),
+    text: { zh: text, en: en[k].text },
+    strong: strong === undefined ? null : { zh: strong, en: en[k].strong },
     muted,
   }))
 }
 
-const truth = (value) => value ? T('真', 'true') : T('假', 'false')
+const truth = (value) => value ? T("真", {}, "world-values") : T("假", {}, "world-values")
 const isWorld = (work) => work !== null && typeof work === 'object' && !Array.isArray(work) && Number.isInteger(work.size) && work.size >= 1
 const worldShape = inOrder(
-  property(isWorld, () => ({ why: T('这不是一个世界。', 'This is not a world.') })),
-  property((work) => work.size <= MAX_WORLD, () => ({ why: T('这个世界里的东西太多。', 'This world has too many things.') })),
+  property(isWorld, () => ({ why: T("这不是一个世界。") })),
+  property((work) => work.size <= MAX_WORLD, () => ({ why: T("这个世界里的东西太多。") })),
 )
 
 export function worldCheck(level) {
@@ -61,12 +62,12 @@ export function worldCheck(level) {
   const reason = (row) => {
     if (level.meant) {
       const value = truth(row.value)
-      return T(`在这个世界里，两份译文都为${value.zh}：真假一致。`, `In this world both translations are ${value.en}: they agree.`)
+      return T("在这个世界里，两份译文都为{zh}：真假一致。", {zh: { zh: String(value.zh), en: String(value.en) }})
     }
     const sentence = words(row.f)
     return row.premise
-      ? T(`前提「${sentence.zh}」在这个世界里不成立。`, `The premise “${sentence.en}” does not hold in this world.`)
-      : T(`结论「${sentence.zh}」在这个世界里也成立，这个世界不是反例。`, `The goal “${sentence.en}” holds in this world too: it is no counterexample.`)
+      ? T("前提「{zh}」在这个世界里不成立。", {zh: { zh: String(sentence.zh), en: String(sentence.en) }})
+      : T("结论「{zh}」在这个世界里也成立，这个世界不是反例。", {zh: { zh: String(sentence.zh), en: String(sentence.en) }})
   }
   const judgeClaims = (world, { rows }) => cases(rows, (_, row) => row.right
     ? null
@@ -102,7 +103,7 @@ export function worldCheck(level) {
       const wordOf = (p, args) => {
         const fallback = `${p}(${args.join(', ')})`
         const describe = (lang) => (sideOf(notation.words?.[p], lang) ?? fallback).replace(/\{(\d)\}/g, (_, k) => args[Number(k)])
-        return T(describe('zh'), describe('en'))
+        return { zh: describe('zh'), en: describe('en') }
       }
       const relation = (p, ...args) => {
         const key = args.join(',')
@@ -116,9 +117,9 @@ export function worldCheck(level) {
       return [
         sizes,
         ...vocab.consts.map((c) => {
-          const name = notation.words?.[c] ?? T(c, c)
+          const name = notation.words?.[c] ?? { zh: c, en: c }
           return {
-            key: `constant:${c}`, before: T(`${name.zh} =`, `${name.en ?? name.zh} =`),
+            key: `constant:${c}`, before: T("{zh} =", {zh: { zh: String(name.zh), en: String(name.en ?? name.zh) }}),
             cells: model.domain.map((k) => ({ key: k, on: model.fns[c].get('') === k, text: MARKS[k], change: () => put('consts', { ...world.consts, [c]: k }) })),
           }
         }),

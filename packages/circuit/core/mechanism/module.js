@@ -7,9 +7,14 @@ import { BUILTINS, BUILTIN_ITEMS } from "../parts/builtins.js"
 
 
 
-import board from '../../capabilities/board.json' with { type: 'json' }
-import display from '../../capabilities/display.json' with { type: 'json' }
+import boardSource from '../../capabilities/board.json' with { type: 'json' }
+import displaySource from '../../capabilities/display.json' with { type: 'json' }
 import { vocabulary } from "./vocabulary.js"
+
+import { readCopy } from 'kernel/words'
+
+const board = readCopy(boardSource)
+const display = readCopy(displaySource)
 
 export default {
   id: 'circuit',

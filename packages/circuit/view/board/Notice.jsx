@@ -1,4 +1,5 @@
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 
 // The phone board's one line of feedback, the same in every game: while a dot is picked, what to tap next (with

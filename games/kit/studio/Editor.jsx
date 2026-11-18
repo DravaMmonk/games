@@ -1,3 +1,4 @@
+import { T } from '../shell/i18n.js'
 // The fields of what the studio edits, as rows (Rows.jsx), each opening its control in the side panel
 // (Inspector.jsx): a level (its file), in sections — what the player reads, the puzzle, its tests, its answers, its
 // place in the course, its tasks (form.js sectionOf), Alt+1… to jump, each folding away (remembered per viewer); several
@@ -24,7 +25,7 @@ import { confirmDelete } from './delete.js'
 import { MOD } from './Shortcuts.jsx'
 
 const SECTION = {
-  read: ['文案', 'Copy'], puzzle: ['谜题', 'Puzzle'], tests: ['测试', 'Tests'], answers: ['答案', 'Answers'], course: ['课程', 'Course'], tasks: ['任务', 'Tasks'],
+  read: [T("文案")], puzzle: [T("谜题")], tests: [T("测试")], answers: [T("答案")], course: [T("课程")], tasks: [T("任务", {}, "editor")],
 }
 export default function Editor({ side, content, base, vocab, at, picked, field, places, names, levelOptions, playOrder, onEdit, onOps, onSelect, onPick, onPlay, onMove, onRemoveLevel, onCopy }) {
   const { vocabulary } = vocab
@@ -95,19 +96,19 @@ function LevelEditor({ content, base, vocabulary, order, names, levelOptions, id
         <h1>{L(value.title)}</h1>
         {form.tags && <FieldTags tags={form.tags} />}
         {sections && (
-          <nav className="editor-sections" aria-label={tr('分区', 'Sections')}>
+          <nav className="editor-sections" aria-label={tr("分区")}>
             {sections.map((s, k) => (
-              <a key={s.section} href={`#section-${s.section}`} title={`Alt+${k + 1}`} className={folded.includes(s.section) ? 'is-folded' : ''} onClick={(e) => { e.preventDefault(); jump(s.section) }}>{tr(...SECTION[s.section])}</a>
+              <a key={s.section} href={`#section-${s.section}`} title={`Alt+${k + 1}`} className={folded.includes(s.section) ? 'is-folded' : ''} onClick={(e) => { e.preventDefault(); jump(s.section) }}>{L(SECTION[s.section])}</a>
             ))}
           </nav>
         )}
         <span className="kit-spacer" />
         <span className="editor-tools">
           <button type="button" className="kit-btn" onClick={() => onPlay(id, false)} title={tr('试玩')} aria-label={tr('试玩')}><Play size={14} aria-hidden="true" /></button>
-          <button type="button" className="kit-btn" onClick={() => onPlay(id, true)} title={tr(`载入参考解试玩（${MOD}+Enter）`, `Play with the reference (${MOD}+Enter)`)} aria-label={tr('载入参考解试玩')}><CirclePlay size={14} aria-hidden="true" /></button>
+          <button type="button" className="kit-btn" onClick={() => onPlay(id, true)} title={tr("载入参考解试玩（{MOD}+Enter）", {MOD})} aria-label={tr('载入参考解试玩')}><CirclePlay size={14} aria-hidden="true" /></button>
           <button type="button" className="kit-btn" onClick={() => onMove([id])} title={tr('移动')} aria-label={tr('移动')}><ArrowRightLeft size={14} aria-hidden="true" /></button>
-          <button type="button" className="kit-btn" onClick={copy} title={tr('复制成新的一关')} aria-label={tr('复制', 'Duplicate')}><Copy size={14} aria-hidden="true" /></button>
-          <button type="button" className="kit-btn" onClick={() => onRemoveLevel(id)} title={tr('删除', 'Remove')} aria-label={tr('删除', 'Remove')}><Trash2 size={14} aria-hidden="true" /></button>
+          <button type="button" className="kit-btn" onClick={copy} title={tr('复制成新的一关')} aria-label={tr("复制")}><Copy size={14} aria-hidden="true" /></button>
+          <button type="button" className="kit-btn" onClick={() => onRemoveLevel(id)} title={tr("删除", {}, "editor")} aria-label={tr("删除", {}, "editor")}><Trash2 size={14} aria-hidden="true" /></button>
         </span>
       </header>
       {rest.length > 0 && <ul className="field-findings is-level">{rest.map((f) => <li key={f}>{f}</li>)}</ul>}
@@ -116,7 +117,7 @@ function LevelEditor({ content, base, vocabulary, order, names, levelOptions, id
         return (
           <section key={s.section} id={`section-${s.section}`} className={`editor-section is-${s.section} ${shut ? 'is-folded' : ''}`}>
             <button type="button" className="editor-fold" onClick={() => fold(s.section)} aria-expanded={!shut}>
-              <ChevronRight size={11} aria-hidden="true" />{tr(...SECTION[s.section])}
+              <ChevronRight size={11} aria-hidden="true" />{L(SECTION[s.section])}
               {shut && <small>{s.fields.filter((f) => f.field).map((f) => f.key).join(' · ')}</small>}
             </button>
             {!shut && <Rows form={form} ctx={ctx} keys={s.fields.map((f) => f.key)} picked={field} findings={findings} before={before} onPick={onPick} onAdd={addIn({ level: id }, onEdit, onPick)} />}

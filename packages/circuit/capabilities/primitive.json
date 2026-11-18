@@ -2,9 +2,6 @@
   "name": "primitive",
   "studio": {
     "order": 1,
-    "label": {
-      "zh": "原始元件",
-      "en": "Primitive parts"
-    }
+    "label": "@capability.primitive.studio.label"
   }
 }

@@ -99,7 +99,7 @@ export const OPERATIONS = {
 
 
   'level.add': {
-    about: t('加一关：它的内容，和它在哪一组里的位置', 'Add a level: its content, and its place in a level group'),
+    about: t("加一关：它的内容，和它在哪一组里的位置"),
     params: S.obj({ level: NEW_ID, data: S.map(S.any()) }),
     apply(ws, { level, data }) {
       if (ws.levels.has(level)) fail(`there is a level ${level} already`)
@@ -179,7 +179,7 @@ export const OPERATIONS = {
     },
   },
   'game.package.add': {
-    about: t('游戏选用一个包（须先选全它的依赖）', 'Select a package for the game; select its dependencies first'),
+    about: t("游戏选用一个包（须先选全它的依赖）"),
     params: S.obj({ package: S.str({ pattern: '^[a-z][a-z0-9-]*$' }), range: S.str(), at: S.opt(S.int({ min: 0 })) }),
     apply(ws, { package: id, range, at = ws.packageIds.length }) {
       if (ws.packageIds.includes(id)) fail(`package ${id} is already selected`)
@@ -189,7 +189,7 @@ export const OPERATIONS = {
     },
   },
   'game.package.remove': {
-    about: t('游戏去掉一个包；课程还有它的关或别的包依赖它时拒绝', 'Remove a package unless the course uses its levels or another selected package depends on it'),
+    about: t("游戏去掉一个包；课程还有它的关或别的包依赖它时拒绝"),
     params: S.obj({ package: S.str({ pattern: '^[a-z][a-z0-9-]*$' }) }),
     apply(ws, { package: id }) {
       const at = ws.packageIds.indexOf(id)
@@ -220,6 +220,22 @@ export const OPERATIONS = {
       const back = typeof keys.at(-1) === 'number' ? { op: 'game.set', path: keys.slice(0, -1), value: getAt(ws.game, keys.slice(0, -1)) } : { op: 'game.set', path: keys, value: getAt(ws.game, keys) }
       ws.game = unsetAt(ws.game, keys)
       return { says: `game.json: removed ${showPath(keys)}`, inverse: [back] }
+    },
+  },
+  'ui.set': {
+    about: t('修改界面译文'),
+    params: S.obj({ key: S.str(), lang: S.str({ pattern: LANGUAGE_CODE }), value: S.any() }),
+    apply(ws, { key, lang, value }) {
+      if (!ws.packaged || ws.archived) fail('UI catalogs belong to an editable package')
+      if (lang === 'zh' || !isLanguageCode(lang)) fail('choose a translation language')
+      if (!key.trim()) fail('a UI catalog key is required')
+      if (value !== null && typeof value !== 'string') fail('UI translations must be strings')
+      const entries = { ...ws.uiCatalogs[lang] }
+      const old = Object.hasOwn(entries, key) ? entries[key] : null
+      if (value === null) delete entries[key]
+      else Object.defineProperty(entries, key, { value, enumerable: true, configurable: true, writable: true })
+      ws.uiCatalogs = { ...ws.uiCatalogs, [lang]: entries }
+      return { says: `i18n/${lang}.json: ${key}`, inverse: [{ op: 'ui.set', key, lang, value: old }] }
     },
   },
   'text.set': {
@@ -307,10 +323,10 @@ function packageText(ws, args, keys, vocabulary) {
 
 Object.assign(OPERATIONS, {
   'text.override': {
-    about: t('这款游戏在包的一处文案上写它自己的（不改包里的原文）；value 为 null 时恢复原文', 'The game\'s own wording over a text of its package (the package is left as it is); value null: back to the package\'s'),
+    about: t("这款游戏在包的一处文案上写它自己的（不改包里的原文）；value 为 null 时恢复原文"),
     params: S.obj({
       level: S.opt(S.level()), entry: S.opt(S.str()), tag: S.opt(S.str()), member: S.opt(S.str()), section: S.opt(S.str()), in: S.opt(S.str()), path: PATH,
-      lang: S.str({ pattern: LANGUAGE_CODE }), value: S.either(S.str(), S.oneOf([null])),
+      lang: S.str({ pattern: LANGUAGE_CODE }), value: S.any(),
     }),
     apply(ws, args, { vocabulary }) {
       const { path, lang, value } = args
@@ -397,7 +413,7 @@ const overrideFile = (ws, { layer, kind, name, member }) => {
 }
 Object.assign(OPERATIONS, {
   'override.put': {
-    about: t('在本层覆盖对象或文案', 'Override an object or catalog in this layer'),
+    about: t("在本层覆盖对象或文案"),
     params: S.obj({ ...overrideParams, data: S.opt(S.map(S.any())) }),
     apply(ws, args, { vocabulary }) {
       const file = overrideFile(ws, args)
@@ -424,7 +440,7 @@ Object.assign(OPERATIONS, {
     },
   },
   'override.remove': {
-    about: t('删除本层的覆盖文件', 'Remove this layer’s override file'),
+    about: t("删除本层的覆盖文件"),
     params: S.obj(overrideParams),
     apply(ws, args) {
       const file = overrideFile(ws, args), old = ws.overrideFiles.get(file)
@@ -434,6 +450,18 @@ Object.assign(OPERATIONS, {
     },
   },
 })
+
+for (const action of ['put', 'set', 'remove']) OPERATIONS[`capability.${action}`] = {
+  params: S.obj({ name: S.str({ pattern: '^[A-Za-z][A-Za-z0-9-]*$' }),
+    ...(action === 'put' ? { data: S.any() } : action === 'set' ? { path: PATH, value: S.any() } : {}) }),
+  apply(ws, { name, data, path, value }) {
+    const old = ws.capabilities.get(name)
+    if (action !== 'put' && old === undefined) fail(`no capability declaration ${name}`)
+    if (action === 'remove') ws.capabilities.delete(name)
+    else ws.capabilities.set(name, action === 'put' ? data : setAt(old, path, value))
+    return { says: `capability ${name}: ${action}`, inverse: [old === undefined ? { op: 'capability.remove', name } : { op: 'capability.put', name, data: old }] }
+  },
+}
 
 // Declared kinds use one operation family instead of generating commands at import time.
 for (const action of ['put', 'set', 'remove']) OPERATIONS[`object.${action}`] = {

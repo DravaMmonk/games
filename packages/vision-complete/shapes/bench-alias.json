@@ -23,10 +23,7 @@
             },
             "min": 3
           },
-          "about": {
-            "zh": "不滤就采时，频率 k 采 M 个点后折回到哪里：[k, M, 折回的频率]",
-            "en": "where a frequency k folds to when M points are sampled unfiltered: [k, M, the frequency it poses as]"
-          }
+          "about": "@shape.bench-alias.fields.setup.fields.folds.about"
         }
       }
     },

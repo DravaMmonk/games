@@ -1,13 +1,14 @@
+import { T } from '../shell/i18n.js'
 // The command palette (Ctrl/⌘+K): one box to go anywhere in the game and run any studio action (palette.js ranks
 // the items). ↑↓ to choose, Enter to go, Escape to leave. An action that needs a word more (a new level's id) asks for
 // it in the same box.
 import { useMemo, useState } from 'react'
-import { tr } from '../shell/i18n.js'
+import { L, tr } from '../shell/i18n.js'
 import { useOverlay } from '../shell/useOverlay.js'
 import { rankPalette } from './palette.js'
 import { useListCursor } from './useListCursor.js'
 
-const KIND = { recent: ['最近', 'Recent'], action: ['操作', 'Actions'], level: ['关卡', 'Levels'], era: ['章', 'Eras'], field: ['字段', 'Fields'], entry: ['百科', 'Encyclopedia'], finding: ['检查', 'Findings'] }
+const KIND = { recent: [T("最近")], action: [T("操作")], level: [T("关卡")], era: [T("章")], field: [T("字段", {}, "palette")], entry: [T("百科")], finding: [T("检查", {}, "palette")] }
 const SHOWN = 80
 
 export default function Palette({ items, onRun, onClose }) {
@@ -48,7 +49,7 @@ export default function Palette({ items, onRun, onClose }) {
         />
         {asking ? <p className="palette-ask">{asking.label}</p> : <ul className="palette-list" ref={list} role="listbox">
           {shown.map((item, k) => {
-            const heading = item.kind !== group ? <li key={`g ${item.kind}`} className="palette-group">{tr(...KIND[item.kind])}</li> : null
+            const heading = item.kind !== group ? <li key={`g ${item.kind}`} className="palette-group">{L(KIND[item.kind])}</li> : null
             group = item.kind
             return [heading, (
               <li key={item.key} role="option" aria-selected={k === at} className={`palette-item is-${item.kind} ${k === at ? 'is-at' : ''}`} onPointerDown={(e) => { e.preventDefault(); run(item) }} onPointerEnter={() => setAt(k)}>

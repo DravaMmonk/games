@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import Glyph from "./Glyph.jsx"
 import { ChevronRight, Plus } from 'lucide-react'
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
 
@@ -43,7 +44,7 @@ export default function Palette({ items, folded = [], onAdd, compact = false, st
       {more && folded.map((item) => entry(item, true))}
       {folded.length > 0 && (
         <button type="button" className={`palette-more ${more ? 'is-open' : ''}`} onClick={() => setMore(!more)} aria-expanded={more} title={tr('这一关不必用到、但可以使用的元件')}>
-          <span>{more ? tr('收起', 'Show fewer') : tr(`更多 ${count}`, `${count} more`)}</span>
+          <span>{more ? tr("收起") : tr("更多 {count}", {count})}</span>
           <ChevronRight size={14} />
         </button>
       )}

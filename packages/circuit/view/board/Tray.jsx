@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import Glyph from "./Glyph.jsx"
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
 
@@ -56,7 +57,7 @@ export default function Tray({ items, folded = [], onPick, start }) {
           {more && folded.map((item) => entry(item, true))}
           {folded.length > 0 && (
             <button type="button" className={`pb-part pb-more ${more ? 'is-open' : ''}`} onClick={() => setMore(!more)} aria-expanded={more}>
-              <b>{more ? tr('收起', 'Show fewer') : tr(`更多 ${count}`, `${count} more`)}</b>
+              <b>{more ? tr("收起") : tr("更多 {count}", {count})}</b>
               <ChevronRight size={14} />
             </button>
           )}

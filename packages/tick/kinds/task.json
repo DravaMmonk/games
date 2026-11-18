@@ -4,10 +4,7 @@
     "stage": {
       "type": "text",
       "section": "read",
-      "about": {
-        "zh": "这次升级留下的管线分段名称",
-        "en": "the pipeline stage this upgrade contributes"
-      },
+      "about": "@kind.task.fields.stage.about",
       "optional": true
     },
     "hint": {
@@ -170,19 +167,13 @@
                 }
               }
             },
-            "about": {
-              "zh": "引言或通关文案旁显示的一个值",
-              "en": "a value shown beside an introduction page or a pass text"
-            },
+            "about": "@kind.task.fields.intro.of.fields.show.about",
             "optional": true
           }
         }
       },
       "section": "read",
-      "about": {
-        "zh": "这个任务自己的引言：第一次做到它时读（第一个任务的接在这一关的后面）",
-        "en": "the task’s own intro: read the first time it is played (the first task’s after the level’s)"
-      },
+      "about": "@kind.task.fields.intro.about",
       "optional": true
     },
     "listens": {
@@ -191,10 +182,7 @@
     },
     "talks": {
       "type": "bool",
-      "about": {
-        "zh": "板上有「说」元件：接到它的位每一拍说到线上",
-        "en": "the board has the say card: the bit wired to it goes on the line every tick"
-      },
+      "about": "@kind.task.fields.talks.about",
       "optional": true
     },
     "inputs": {
@@ -221,10 +209,7 @@
         "name": "tick/test"
       },
       "section": "tests",
-      "about": {
-        "zh": "隐藏测试：每次运行一并检查，通关后公开；只合上可见测试的板过不了它",
-        "en": "hidden tests: checked with every run and shown once passed; a board that only fits the visible tests fails them"
-      },
+      "about": "@kind.task.fields.hidden.about",
       "optional": true
     },
     "want": {
@@ -233,10 +218,7 @@
         "type": "call",
         "kind": "tick/want"
       },
-      "about": {
-        "zh": "每个输出（和 say）每一拍应当是什么",
-        "en": "what each output (and say) must be, tick by tick"
-      }
+      "about": "@kind.task.fields.want.about"
     },
     "solution": {
       "type": "board"
@@ -247,10 +229,7 @@
         "type": "str"
       },
       "view": "board",
-      "about": {
-        "zh": "直觉上的错解：看起来能做、其实过不了这个任务的板，必须失败",
-        "en": "the naive answer: a board that looks right and is not, which must fail"
-      },
+      "about": "@kind.task.fields.naive.about",
       "optional": true
     },
     "starter": {
@@ -259,10 +238,7 @@
         "type": "str"
       },
       "view": "board",
-      "about": {
-        "zh": "这个任务一打开就摆在板上的蓝图：一样要修的作品。它不能直接过关",
-        "en": "The blueprint on the board when the task opens: a work to mend. It may not pass as it stands"
-      },
+      "about": "@kind.task.fields.starter.about",
       "optional": true
     },
     "results": {
@@ -272,10 +248,7 @@
         "fields": {
           "of": {
             "type": "str",
-            "about": {
-              "zh": "显示哪一项：任务的一个口",
-              "en": "what the row shows: one of the task’s ports"
-            }
+            "about": "@kind.task.fields.results.of.fields.of.about"
           },
           "views": {
             "type": "shape",
@@ -289,10 +262,7 @@
       },
       "min": 1,
       "section": "read",
-      "about": {
-        "zh": "结果区的几行，按顺序；不写就是领域默认的几行",
-        "en": "the results area’s rows, in order; without them the domain’s default rows"
-      },
+      "about": "@kind.task.fields.results.about",
       "optional": true
     },
     "views": {
@@ -319,10 +289,7 @@
           "name": "tick/views"
         }
       },
-      "about": {
-        "zh": "这个任务里每种形状的显示方式（换掉游戏默认的那几种）",
-        "en": "the views each shape is drawn in in this task (in place of the game’s)"
-      },
+      "about": "@kind.task.fields.views.about",
       "section": "read",
       "optional": true
     }

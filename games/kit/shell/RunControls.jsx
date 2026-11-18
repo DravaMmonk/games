@@ -12,9 +12,9 @@ export function Keypad({ title, value, extra, onKey }) {
       <div className="pad-top"><span><b>{title}</b></span><div className="pad-val" aria-live="polite">{value || '_'}</div></div>
       <div className="keys">
         {DIGITS.map((k) => key(k))}
-        {key('del', 'wide', tr('删除', 'Delete'))}
-        {key('close', '', tr('收起', 'Hide'), tr('收起键盘', 'Hide keypad'))}
-        {key('ok', 'wide ok', tr('确定', 'OK'))}
+        {key('del', 'wide', tr("删除"))}
+        {key('close', '', tr("收起"), tr("收起键盘"))}
+        {key('ok', 'wide ok', tr("确定"))}
         {extra && key(extra.key, 'full', extra.label)}
       </div>
     </div>

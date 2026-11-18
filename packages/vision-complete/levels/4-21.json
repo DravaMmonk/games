@@ -36,7 +36,7 @@
       "scene": "vision-complete/sorter",
       "tests": [
         {
-          "label": "@level.4-21.tasks.4-21.tests.0.label",
+          "label": "X 1",
           "part": "X",
           "ox": 1,
           "oy": 2,
@@ -44,7 +44,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.1.label",
+          "label": "X 2",
           "part": "X",
           "ox": 4,
           "oy": 3,
@@ -52,7 +52,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.2.label",
+          "label": "X 3",
           "part": "X",
           "ox": 2,
           "oy": 5,
@@ -60,7 +60,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.3.label",
+          "label": "X 4",
           "part": "X",
           "ox": 3,
           "oy": 1,
@@ -68,7 +68,7 @@
           "seed": 10
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.4.label",
+          "label": "O 1",
           "part": "O",
           "ox": 2,
           "oy": 4,
@@ -76,7 +76,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.5.label",
+          "label": "O 2",
           "part": "O",
           "ox": 5,
           "oy": 5,
@@ -84,7 +84,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.6.label",
+          "label": "O 3",
           "part": "O",
           "ox": 3,
           "oy": 1,
@@ -92,7 +92,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.7.label",
+          "label": "O 4",
           "part": "O",
           "ox": 4,
           "oy": 3,
@@ -100,7 +100,7 @@
           "seed": 11
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.8.label",
+          "label": "+ 1",
           "part": "P",
           "ox": 3,
           "oy": 0,
@@ -108,7 +108,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.9.label",
+          "label": "+ 2",
           "part": "P",
           "ox": 0,
           "oy": 1,
@@ -116,7 +116,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.10.label",
+          "label": "+ 3",
           "part": "P",
           "ox": 4,
           "oy": 3,
@@ -124,7 +124,7 @@
           "seed": 0
         },
         {
-          "label": "@level.4-21.tasks.4-21.tests.11.label",
+          "label": "+ 4",
           "part": "P",
           "ox": 5,
           "oy": 5,

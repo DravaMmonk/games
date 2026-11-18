@@ -23,10 +23,7 @@
           1,
           2
         ],
-        "about": {
-          "zh": "2 是大号",
-          "en": "2 for a large one"
-        },
+        "about": "@shape.marks.of.fields.scale.about",
         "optional": true
       }
     }

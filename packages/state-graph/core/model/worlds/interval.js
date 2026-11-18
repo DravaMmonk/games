@@ -3,19 +3,19 @@
 // whole row's answer is in the top-right corner. A level may fill the diagonal (single items, o.diag) and the empty
 // segments just under it (o.empty0) before the robot starts.
 
-import { tr } from 'kernel';
-import { T } from 'table';
+import { tr } from 'kernel/words'
+import { T } from '../../words.js'
 import { world, look, cell, yes, num, seg, DIR, THIS_CELL } from 'table';
 
 const items = t => [...(t.s || t.w || t.words)];
 const ORDERS = {
-  rowTL: { l: T('逐行，从上往下', 'row by row, top to bottom'), list: n => { const o = []; for (let i = 0; i < n; i++) for (let j = i; j < n; j++) o.push([i, j]); return o; } },
-  rowBR: { l: T('逐行，从下往上', 'row by row, bottom to top'), list: n => { const o = []; for (let i = n - 1; i >= 0; i--) for (let j = i; j < n; j++) o.push([i, j]); return o; } },
-  colL: { l: T('逐列，每列从上往下', 'column by column, each from the top down'), list: n => { const o = []; for (let j = 0; j < n; j++) for (let i = 0; i <= j; i++) o.push([i, j]); return o; } },
-  colLB: { l: T('逐列，每列从下往上', 'column by column, each from the bottom up'), list: n => { const o = []; for (let j = 0; j < n; j++) for (let i = j; i >= 0; i--) o.push([i, j]); return o; } },
-  len: { l: T('按长度，从短到长', 'by length, shortest first'), list: n => { const o = []; for (let d = 0; d < n; d++) for (let i = 0; i + d < n; i++) o.push([i, i + d]); return o; } },
+  rowTL: { l: T("逐行，从上往下"), list: n => { const o = []; for (let i = 0; i < n; i++) for (let j = i; j < n; j++) o.push([i, j]); return o; } },
+  rowBR: { l: T("逐行，从下往上"), list: n => { const o = []; for (let i = n - 1; i >= 0; i--) for (let j = i; j < n; j++) o.push([i, j]); return o; } },
+  colL: { l: T("逐列，每列从上往下"), list: n => { const o = []; for (let j = 0; j < n; j++) for (let i = 0; i <= j; i++) o.push([i, j]); return o; } },
+  colLB: { l: T("逐列，每列从下往上"), list: n => { const o = []; for (let j = 0; j < n; j++) for (let i = j; i >= 0; i--) o.push([i, j]); return o; } },
+  len: { l: T("按长度，从短到长"), list: n => { const o = []; for (let d = 0; d < n; d++) for (let i = 0; i + d < n; i++) o.push([i, i + d]); return o; } },
 };
-const span = (i, j) => (i === j ? tr(`第 ${i + 1} 个`, `item ${i + 1}`) : tr(`第 ${i + 1}–${j + 1} 个`, `items ${i + 1}–${j + 1}`));
+const span = (i, j) => (i === j ? tr("第 {i} 个", {i: i + 1}) : tr("第 {i}–{j} 个", {i: i + 1, j: j + 1}));
 /** A run's tag on the arm: 「3」 or 「2–4」. */
 const short = (i, j) => (i === j ? `${i + 1}` : `${i + 1}–${j + 1}`);
 
@@ -23,8 +23,8 @@ export const interval = world({
   customOrder: true,
   sensors: {
     left: cell(...DIR.left, [0, 0, -1]), down: cell(...DIR.down, [0, 1, 0]), dl: cell(...DIR.dl, [0, 1, -1]),
-    same: { ...yes(T('两端相同', 'ends match'), T('同', '='), 'ends'), heads: true }, weight: num(T('这段总重', 'run weight'), T('重', 'wt'), 'weight'),
-    segL: seg(T('左段们', 'left parts'), T('左', 'L')), segR: seg(T('右段们', 'right parts'), T('右', 'R')),
+    same: { ...yes(T("两端相同"), T("同"), 'ends'), heads: true }, weight: num(T("这段总重"), T("重"), 'weight'),
+    segL: seg(T("左段们"), T("左")), segR: seg(T("右段们"), T("右")),
   },
   facts: ['same', 'weight'],
   armSensors: ['segL', 'segR'],
@@ -47,10 +47,10 @@ export const interval = world({
   arm(t, { i, j }) {
     const ks = Array.from({ length: j - i }, (_, d) => i + d);
     return {
-      label: tr(`按切分点，一共 ${ks.length} 个`, `${ks.length} split point${ks.length === 1 ? '' : 's'}`),
+      label: tr("按切分点，一共 {length} 个", {length: ks.length, value: ks.length === 1 ? '' : 's'}),
       sweeps: [
-        { sensor: 'segL', label: tr('左段', 'left part'), cells: ks.map(k => ({ key: `${i},${k}`, label: short(i, k) })) },
-        { sensor: 'segR', label: tr('右段', 'right part'), cells: ks.map(k => ({ key: `${k + 1},${j}`, label: short(k + 1, j) })) },
+        { sensor: 'segL', label: tr("左段"), cells: ks.map(k => ({ key: `${i},${k}`, label: short(i, k) })) },
+        { sensor: 'segR', label: tr("右段"), cells: ks.map(k => ({ key: `${k + 1},${j}`, label: short(k + 1, j) })) },
       ],
     };
   },
@@ -65,8 +65,8 @@ export const interval = world({
   where: x => span(x.i, x.j),
   answerKey: t => `0,${items(t).length - 1}`,
   answer(t, table) { return table.get(this.answerKey(t)); },
-  name: key => { const [i, j] = key.split(',').map(Number); return i > j ? tr('空段', 'empty run') : tr(`${span(i, j)}这一段`, `the run of ${span(i, j)}`); },
-  label: t => (t.s ? t.s : t.w ? tr(`${t.w.length} 堆 · ${t.w.join(' ')}`, `${t.w.length} piles · ${t.w.join(' ')}`) : t.words.join(' ')),
+  name: key => { const [i, j] = key.split(',').map(Number); return i > j ? tr("空段") : tr("{value}这一段", {value: span(i, j)}); },
+  label: t => (t.s ? t.s : t.w ? tr("{length} 堆 · {value}", {length: t.w.length, value: t.w.join(' ')}) : t.words.join(' ')),
   orderText: o => ORDERS[o.scan || 'len'].l,
   sample: t => { const j = Math.min(2, items(t).length - 1); return { i: 0, j, id: `0,${j}` }; },
   cellOf: (t, key, o) => { const [i, j] = key.split(',').map(Number); return i < j || (i === j && o.diag === undefined) ? { i, j, id: key } : null; },

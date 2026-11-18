@@ -1,3 +1,5 @@
+import { L } from '../shell/i18n.js'
+import { T } from '../shell/i18n.js'
 // The route map's preview (games/design/README.md 2.6, 6.7): one chapter of the game's map as the player sees it, drawn by
 // the shell itself (../shell/LevelMap.jsx MapChapter) in the play page (studio.html?play, play.jsx) with every level
 // open. It is handed the content as the preview has it and, apart, the chapter's rows as the map editor leaves them,
@@ -46,19 +48,19 @@ export default function MapPreview({ content, stamp, chapter, rows }) {
     if (ready) send({ type: 'look', theme, lang })
   }, [ready, theme, lang]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <section className={`map-preview is-${device}`} aria-label={tr('玩家看到的路线图', 'The map as the player sees it')}>
+    <section className={`map-preview is-${device}`} aria-label={tr("玩家看到的路线图")}>
       <div className="map-preview-head">
-        <h3>{tr('玩家看到的样子', 'As the player sees it')}</h3>
-        <span className="seg" role="radiogroup" aria-label={tr('设备', 'Device')}>
-          {[['desktop', Monitor, '桌面', 'Desktop'], ['phone', Smartphone, '手机', 'Phone']].map(([id, Icon, zh, en]) => (
-            <button key={id} type="button" role="radio" aria-checked={device === id} className={device === id ? 'is-on' : ''} onClick={() => setDevice(id)} title={tr(zh, en)} aria-label={tr(zh, en)}>
+        <h3>{tr("玩家看到的样子")}</h3>
+        <span className="seg" role="radiogroup" aria-label={tr("设备")}>
+          {[['desktop', Monitor, T("桌面")], ['phone', Smartphone, T("手机")]].map(([id, Icon, label]) => (
+            <button key={id} type="button" role="radio" aria-checked={device === id} className={device === id ? 'is-on' : ''} onClick={() => setDevice(id)} title={L(label)} aria-label={L(label)}>
               <Icon size={13} aria-hidden="true" />
             </button>
           ))}
         </span>
       </div>
       <div className="map-preview-stage">
-        <iframe ref={frame} title={tr('路线图预览', 'Map preview')} src="/studio.html?play" />
+        <iframe ref={frame} title={tr("路线图预览")} src="/studio.html?play" />
       </div>
     </section>
   )

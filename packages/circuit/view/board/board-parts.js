@@ -1,13 +1,13 @@
 import { ArrowRightFromLine, CircuitBoard } from 'lucide-react'
 import { holesOf, outletsOf, regionsOf } from "../../core/parts.js"
-import { T } from 'kernel/view'
+import { T } from 'kernel/words'
 
 import { iconOf } from "../parts/icons.js"
 import { openRef } from 'kernel/view'
 
 import { packedBoards } from "../../core/board/packed-boards.js"
 
-const GIVES = T('得出', 'Result')
+const GIVES = T("得出")
 /** Add labels and icons to a circuit view without changing its ports or active regions. */
 export function withPartLabels(base, of) {
   const defOf = (node) => base.role(node) === 'part' ? of(node.type) : null

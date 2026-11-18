@@ -1,3 +1,4 @@
+import { T as catalogText } from 'kernel/words'
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
@@ -7,7 +8,7 @@ import { displays as ui } from './ui/displays.js'
 import { CircuitBoard, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
 import { defineGame } from 'circuit/view'
 import { fresh, introductions, isCore } from 'circuit'
-import { tr } from 'kernel'
+import { tr } from 'kernel/words'
 import { worldCheck } from '../core/worldValues.js'
 import { query, translation } from '../core/formulaWork.js'
 import { script } from '../core/scriptValues.js'
@@ -104,16 +105,16 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
       declaration, definition, audit, truth, translation, query, script, worldCheck,
       proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
     }, {
-      'logic/proof': { icon: Workflow, label: { zh: '证明', en: 'Proof' } },
-      'logic/machine': { icon: Cog, label: { zh: '证明助手', en: 'Proof assistant' } },
-      'logic/truth': { icon: Grid2x2Check, label: { zh: '真值表', en: 'Truth table' } },
-      'logic/gates': { icon: Cpu, label: { zh: '真值电路', en: 'Truth circuit' } },
-      'logic/iso': { icon: FileSignature, label: { zh: '规则板', en: 'Rule board' } },
-      'logic/define': { icon: SquareFunction, label: { zh: '定义', en: 'Definition' } },
-      'logic/translate': { icon: Languages, label: { zh: '翻译', en: 'Translate' } },
-      'logic/query': { icon: Search, label: { zh: '查询', en: 'Query' } },
-      'logic/model': { icon: FileSignature, label: { zh: '造世界', en: 'Build a world' } },
-      'logic/script': { icon: ScrollText, label: { zh: '写脚本', en: 'Write a script' } },
+      'logic/proof': { icon: Workflow, label: catalogText("证明") },
+      'logic/machine': { icon: Cog, label: catalogText("证明助手") },
+      'logic/truth': { icon: Grid2x2Check, label: catalogText("真值表") },
+      'logic/gates': { icon: Cpu, label: catalogText("真值电路") },
+      'logic/iso': { icon: FileSignature, label: catalogText("规则板") },
+      'logic/define': { icon: SquareFunction, label: catalogText("定义", {}, "game") },
+      'logic/translate': { icon: Languages, label: catalogText("翻译") },
+      'logic/query': { icon: Search, label: catalogText("查询") },
+      'logic/model': { icon: FileSignature, label: catalogText("造世界") },
+      'logic/script': { icon: ScrollText, label: catalogText("写脚本") },
     }, { circuit: circuitScreen }),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its
     // rules, from here on).
@@ -143,13 +144,13 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     },
     // Fewer steps (proof steps, or gates) is better; fewer cases, where the player writes them (audit-cases.js).
     better: (score, best) => Boolean(score) && (!best || score.steps < best.steps),
-    bestLabel: (best) => (best.unit === 'cases' ? tr(`${best.steps} 条`, `${best.steps} cases`) : tr(`${best.steps} 步`, `${best.steps} steps`)),
+    bestLabel: (best) => (best.unit === 'cases' ? tr("{steps} 条", {steps: best.steps}) : tr("{steps} 步", {steps: best.steps})),
   })
   game.symbolUnlocks = (level, before, after) => {
     const open = (symbol, progress) => game.byId[symbol.at] && game.isOpen(game.byId[symbol.at], new Set(progress.solved))
     const items = Object.values(logic.symbols).filter(symbol =>
       symbol.at && open(symbol, after) && !open(symbol, before))
-      .map(symbol => ({ key: symbol.type, kind: 'symbol', label: symbol.name, chip: symbolFor[symbol.mark], caption: { zh: '符号', en: 'Symbol' } }))
+      .map(symbol => ({ key: symbol.type, kind: 'symbol', label: symbol.name, chip: symbolFor[symbol.mark], caption: catalogText("符号") }))
     return items
   }
   game.logic = logic

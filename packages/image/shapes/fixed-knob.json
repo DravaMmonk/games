@@ -1,8 +1,5 @@
 {
   "type": "bool",
-  "about": {
-    "zh": "只显示，不能动",
-    "en": "shown, not turned"
-  },
+  "about": "@shape.fixed-knob.about",
   "optional": true
 }

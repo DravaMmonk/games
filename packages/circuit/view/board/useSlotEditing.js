@@ -1,9 +1,11 @@
+import { T as catalogText } from 'kernel/words'
 import { srcNode } from "../../core/wire-source.js"
 import { slotPortAt } from "../../core/board/slot-ports.js"
 import { useEffect, useRef, useState } from 'react'
 import { enableDrag } from '../drag.js'
 
-import { L, tr } from 'kernel/view'
+import { L } from "kernel/view"
+import { tr } from 'kernel/words'
 
 import { NO_CARD_PORT, portOnCard } from "../../core/board/card-ports.js"
 import { byId, canRemoveCard, connectWire, ends, isPart, layout, parsePort, placement, removeNode, unplugWire, wireRefusal } from "../../core/board/model.js"
@@ -35,8 +37,8 @@ export const NUMBERS = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱�
  * @param history                                  the editing session's undo and redo
  * @returns state and handlers for SlotBoard (`history`: its undo and redo), Tray and Notice
  */
-const NO_VISIBLE_SLOT = { zh: '眼前没有能放这个元件的空格位。', en: 'There is no visible slot for this part.' }
-const DOES_NOT_FIT = { zh: '这个元件放不进这一格。', en: 'This part does not fit in this slot.' }
+const NO_VISIBLE_SLOT = catalogText("眼前没有能放这个元件的空格位。")
+const DOES_NOT_FIT = catalogText("这个元件放不进这一格。")
 
 export function useSlotEditing({ graph, onChange, parts, create, label, openNode, openSlot, root, scroller, history, canMove = () => true }) {
   const [picking, setPicking] = usePickedPort(graph, parts)
@@ -113,7 +115,7 @@ export function useSlotEditing({ graph, onChange, parts, create, label, openNode
         }
         if (next.from !== null) {
           buzz([6, 30, 6])
-          edit(next.graph, { zh: '拆掉了一根线', en: 'Unplugged a wire' })
+          edit(next.graph, catalogText("拆掉了一根线"))
           return
         }
       }
@@ -280,13 +282,13 @@ export function useSlotEditing({ graph, onChange, parts, create, label, openNode
   }, [])
 
   // While a dot is picked, or a part is moving, the banner says what to tap next.
-  const pickNote = moving ? tr(`把「${nameOf(byId(graph, moving))}」移到哪一格？请点击目标格子`, `Where should "${nameOf(byId(graph, moving))}" go? Tap a slot`) : picking && (() => {
+  const pickNote = moving ? tr("把「{value}」移到哪一格？请点击目标格子", {value: nameOf(byId(graph, moving))}) : picking && (() => {
     const p = parsePort(picking)
     const node = byId(graph, srcNode(p.id))
     const many = parts.inputs(node).length > 1
     return p.side === 'out'
-      ? tr(`「${nameOf(node)}」要接到哪里？请点击一个输入口（元件顶部的圆点）或目标元件`, `Where should "${nameOf(node)}" connect? Tap an input (a dot on top of a part) or the part itself`)
-      : tr(`「${nameOf(node)}」${many ? `的 ${L(parts.portLabel?.(node, p.port) ?? p.port)} ` : ''}读哪个结果？点一个输出口（元件底下的圆点），或点那个元件`, `Which result does "${nameOf(node)}"${many ? ` ${L(parts.portLabel?.(node, p.port) ?? p.port)}` : ''} read? Tap an output (a dot under a part), or the part itself`)
+      ? tr("「{value}」要接到哪里？请点击一个输入口（元件顶部的圆点）或目标元件", {value: nameOf(node)})
+      : tr("「{value}」{value2}读哪个结果？点一个输出口（元件底下的圆点），或点那个元件", {value: nameOf(node), value2: { zh: String(many ? `的 ${L(parts.portLabel?.(node, p.port) ?? p.port)} ` : ''), en: String(many ? ` ${L(parts.portLabel?.(node, p.port) ?? p.port)}` : '') }})
   })()
 
   return {

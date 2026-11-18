@@ -8,7 +8,7 @@ import { boardSvg } from './board/svg.js'
 import { specProblems, validateProblems } from './contracts.js'
 import { circuitOperations } from './author-operations.js'
 import { S, parsePath } from 'kernel'
-import { firstText } from 'kernel'
+import { firstText, isLanguageNeutral } from 'kernel'
 import { readWorkSet } from './course-model.js'
 import { implementationProblems } from './parts/dependencies.js'
 import { taskIdsOf } from 'kernel'
@@ -167,7 +167,10 @@ export const partMeaning = {
   stamp({ content, plain }) {
     const vocabulary = contentSchemas.get(content)
     const file = content.partDefs ? { parts: puzzleParts(content.partDefs.parts, vocabulary) } : null
-    return plain(file, partFileSchema(vocabulary))
+    return plain(file, partFileSchema(vocabulary), ({ path, value }) =>
+      (path.length === 3 && path[2] === 'name' && /^[A-Z]$/.test(value))
+      || (path.length === 5 && ['inputs', 'outputs'].includes(path[2]) && path[4] === 'label'
+        && isLanguageNeutral(value) && (/[A-Z⊥¬∀∃φ]/u.test(value) || value === 's = t') && !/^[SP]\d$/u.test(value)))
   },
 }
 

@@ -19,10 +19,7 @@
         },
         "wave": {
           "type": "num",
-          "about": {
-            "zh": "真实的曲线是 sin(wave·x)",
-            "en": "the true curve is sin(wave·x)"
-          }
+          "about": "@shape.bench-stop.fields.setup.fields.wave.about"
         },
         "train": {
           "type": "int",

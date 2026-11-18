@@ -14,6 +14,7 @@ import { KIND_DECLARATION, kindSchemas, objectKindNames } from '../plugin-kinds.
 // development a save made on other puzzles is not read (../stamp.js).
 import { S, shapeAt } from '../schema.js'
 import { getAt, parsePath, showPath } from './edit.js'
+import { levelOf, orderOf, restore, setLevel } from './operation-edits.js'
 import { assertStableIds, mergePatch, setAt, unsetAt } from './identity.js'
 import { levelRefs } from './refs.js'
 import { TASK_ID, findTask, newTaskId } from '../tasks.js'
@@ -27,19 +28,6 @@ import { OBJECT_NAME, OBJECT_SCHEMAS } from '../objects.js'
 const PATH = { ...S.either(S.str(), S.list(S.either(S.str(), S.int({ min: 0 })))), about: t('字段的路径：tests[0].goal') }
 const NEW_ID = S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9-]*$', about: t('新的关卡 id（也是文件名）') })
 const fail = (message) => { throw new Error(message) }
-const levelOf = (ws, id) => ws.levels.get(id) ?? fail(`no level ${id}`)
-const orderOf = (schema, value, vocabulary) => (path) => {
-  const s = shapeAt(schema, value, path, { vocabulary })
-  return s?.type === 'obj' ? Object.keys(s.fields) : null
-}
-const setLevel = (ws, id, path, value, vocabulary) => ws.levels.set(id, setAt(levelOf(ws, id), path, value, orderOf(vocabulary.level, levelOf(ws, id), vocabulary)))
-/** The operation that puts back what is at `path` now (a value set over, or nothing there). */
-const restore = (op, base, path, args) => {
-  const keys = parsePath(path)
-  const old = getAt(base, keys)
-  if (old !== undefined) return { op: `${op}.set`, ...args, path: keys, value: old }
-  return { op: `${op}.unset`, ...args, path: keys }
-}
 // Tasks by id (../tasks.js): the levels as a list, a task found, where a task goes in a level.
 const TASK = S.str({ pattern: TASK_ID })
 const TASK_PLACE = S.obj({ level: S.level(), after: S.opt(TASK), first: S.opt(S.bool()) }, { about: t('一关里的一个位置：after 那个任务后面，first 时最前，都不给就在最后') })

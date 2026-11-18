@@ -65,6 +65,7 @@ export { taskIdsOf } from './tasks.js'
 
 export { workspaceFiles } from './ops/refs.js'
 export { getAt, parsePath, showPath } from './ops/edit.js'
+export { levelOf, orderOf, restore, setLevel } from './ops/operation-edits.js'
 export { assertStableIds, setAt, unsetAt } from './ops/identity.js'
 export { taskModule } from './runtime-model.js'
 export { TASK_BOARD_SECTIONS } from './plays.js'

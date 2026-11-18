@@ -1,4 +1,4 @@
-import { S, shapeAt, getAt, parsePath, showPath, setAt, unsetAt } from "kernel"
+import { S, shapeAt, getAt, parsePath, showPath, setAt, unsetAt, levelOf, orderOf, restore, setLevel } from "kernel"
 import { T as t } from 'kernel/words'
 import { NAME as PART_NAME, partFileSchema } from './parts/schema.js'
 import { ITEM_REFERENCE } from './task-fields.js'
@@ -6,16 +6,6 @@ import { parse } from './board/text.js'
 import { partRefs } from './author-references.js'
 const PATH = S.either(S.str(), S.list(S.either(S.str(), S.int({ min: 0 }))))
 const fail = message => { throw new Error(message) }
-const levelOf = (ws, id) => ws.levels.get(id) ?? fail(`no level ${id}`)
-const orderOf = (schema, value, vocabulary) => path => {
-  const shape = shapeAt(schema, value, path, { vocabulary })
-  return shape?.type === 'obj' ? Object.keys(shape.fields) : null
-}
-const setLevel = (ws, id, path, value, vocabulary) => ws.levels.set(id, setAt(levelOf(ws, id), path, value, orderOf(vocabulary.level, levelOf(ws, id), vocabulary)))
-const restore = (op, base, path, args) => {
-  const keys = parsePath(path), value = getAt(base, keys)
-  return value === undefined ? { op: `${op}.unset`, ...args, path: keys } : { op: `${op}.set`, ...args, path: keys, value }
-}
 const partsOf = ws => (ws.partDefs ??= { parts: {} })
 const blueprintLines = text => {
   const lines = text.replace(/\n$/, '').split('\n')

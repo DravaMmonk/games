@@ -8,7 +8,8 @@ import { Fragment, useState } from 'react'
 import { Gamepad2, Package } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
 import SidebarListTools from './SidebarListTools.jsx'
-import { packageGroups, packageKindLabel } from './PackageGroups.jsx'
+import SidebarGrouping from './SidebarGrouping.jsx'
+import { packageSidebarGroups, packageKindLabel } from './PackageGroups.jsx'
 import { PACKAGE_KINDS } from '../engine/package-kinds.js'
 
 const ID = /^[a-z][a-z0-9-]*$/
@@ -68,7 +69,6 @@ function NewForm({ heading, fields, problem, onMake, onCancel }) {
  */
 export function PackageList({ packages, current, picked, disabled, onPick, onOpen, onCreate = null }) {
   const [query, setQuery] = useState('')
-  const [kind, setKind] = useState('') // the kind of package shown (package.json kind), or every kind
   const [making, setMaking] = useState(null) // { from } or { empty: true }, and the last refusal
   const listed = [...packages].sort((a, b) => a.id.localeCompare(b.id)).filter(({ id, uses }) => found(query, words(id, Object.keys(uses ?? {}))))
   const make = async ({ id, kind: chosen }) => {
@@ -88,27 +88,16 @@ export function PackageList({ packages, current, picked, disabled, onPick, onOpe
   ] : []
   return (
     <nav className="project-list" aria-label={tr('包', 'Packages')}>
-      <SidebarListTools query={query} onQuery={setQuery} addOptions={disabled ? [] : addOptions} addLabel={tr('包', 'Packages')}
-        onAdd={(value) => setMaking(value === 'empty' ? { empty: true } : { from: picked })}
-        choices={[{ label: tr('包种类', 'Package kind'), value: kind, onPick: setKind, options: [{ value: '', label: tr('全部种类', 'All kinds') }, ...packageGroups(packages).map((g) => ({ value: g.kind, label: packageKindLabel(g.kind) }))] }]} />
-      {making && <NewForm heading={making.empty ? tr('新建空白包', 'New empty package') : tr(`复制 ${making.from} 为新包`, `New package, a copy of ${making.from}`)}
-        fields={[['id', tr('包 id', 'Package id')], ...(making.empty ? [['kind', tr('包种类', 'Package kind'), PACKAGE_KINDS.map((k) => ({ value: k, label: `${kindName(k)} (${k})` }))]] : [])]}
-        problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
-      {/* Grouped by their kind (play, extension, course, library: PackageGroups.jsx); one without a kind last. */}
-      {[...packageGroups(listed, kind), ...(kind ? [] : [{ kind: null, items: listed.filter((p) => !packageGroups(listed).some((g) => g.items.includes(p))) }].filter((g) => g.items.length))].map((group) => (
-        <section key={group.kind ?? 'none'}>
-          <h3 className="package-group-title">{group.kind ? packageKindLabel(group.kind) : tr('未分种类', 'No kind')}</h3>
-          {group.items.map(({ id, uses }) => {
-            const deps = Object.keys(uses ?? {})
-            return (
-              <Row key={id} id={id} icon={Package} name={id} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen}
-                title={deps.length ? `${id} · ${tr('用到', 'Uses')} ${deps.join(', ')}` : id}>
-                {deps.length > 0 && <small>{deps.join(' · ')}</small>}
-              </Row>
-            )
-          })}
-        </section>
-      ))}
+      <SidebarGrouping scope="package-projects" groupsOf={by => packageSidebarGroups(listed, by)} tools={{
+        query, onQuery: setQuery, addOptions: disabled ? [] : addOptions, addLabel: tr('包', 'Packages'),
+        onAdd: value => setMaking(value === 'empty' ? { empty: true } : { from: picked }),
+      }} row={({ id }) => (
+        <Row key={id} id={id} icon={Package} name={id} title={id} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen} />
+      )}>
+        {making && <NewForm heading={making.empty ? tr('新建空白包', 'New empty package') : tr(`复制 ${making.from} 为新包`, `New package, a copy of ${making.from}`)}
+          fields={[['id', tr('包 id', 'Package id')], ...(making.empty ? [['kind', tr('包种类', 'Package kind'), PACKAGE_KINDS.map((k) => ({ value: k, label: `${kindName(k)} (${k})` }))]] : [])]}
+          problem={making.problem} onMake={make} onCancel={() => setMaking(null)} />}
+      </SidebarGrouping>
       {!listed.length && <p className="project-none">{tr('没有符合的包', 'No package matches')}</p>}
     </nav>
   )

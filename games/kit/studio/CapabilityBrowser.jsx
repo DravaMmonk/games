@@ -1,20 +1,20 @@
 // The kernel's capabilities, read only (games/design/README.md 6.2, 6.7): what a package can pick and combine — value types,
 // operations, primitive parts, boards, task kinds, content items, displays, languages, content kinds — each by its
-// `<package>/<name>`, listed in the left column narrowed by kind, module and a search; the one picked in the middle, with
+// `<package>/<name>`, grouped in the left column by kind or source; the one picked in the middle, with
 // what it says and what it takes; its description as JSON on the right.
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { L, tr } from '../shell/i18n.js'
 import { sidebarSearch } from './sidebar-list.js'
-import { capabilityOf } from './left-lists.js'
-import SidebarListTools from './SidebarListTools.jsx'
+import { capabilityKey, capabilityOf } from './left-lists.js'
+import { localName, namespaceOf } from './objects-edit.js'
+import SidebarGrouping from './SidebarGrouping.jsx'
 import ListRow from './ListRow.jsx'
 import { Cpu } from 'lucide-react'
 
-const ALL = ''
 const kindsOf = (capabilities, definitions) => Object.keys(capabilities ?? {}).sort((a, b) =>
   (definitions?.[a]?.studio.order ?? Infinity) - (definitions?.[b]?.studio.order ?? Infinity) || a.localeCompare(b),
 )
-export const moduleOf = (name) => name.split('/')[0]
+const kindLabel = (definitions, kind) => (definitions?.[kind]?.studio.label ? L(definitions[kind].studio.label) : kind)
 
 /** The capability `key` names (left-lists.js capabilityKey), else the first listed: { kind, name, it }, or null. */
 export function currentCapability(capabilities, key, definitions) {
@@ -28,33 +28,32 @@ export function currentCapability(capabilities, key, definitions) {
 
 /**
  * The left list of capabilities (`capabilities`: { kind: { '<package>/<name>': description } }, the vocabulary's index),
- * narrowed by kind, module and a search. `current`: { kind, name } open; `onOpen(kind, name)` opens one.
+ * grouped by kind or source. `current`: { kind, name } open; `onOpen(kind, name)` opens one.
  */
-export function CapabilityList({ capabilities, definitions, current, onOpen }) {
-  const kinds = kindsOf(capabilities, definitions).filter(kind => Object.keys(capabilities?.[kind] ?? {}).length)
-  const [kind, setKind] = useState(current?.kind ?? kinds[0] ?? ALL)
-  const [module, setModule] = useState(ALL)
+export function CapabilityList({ capabilities, definitions, namespace, current, onOpen }) {
   const [query, setQuery] = useState('')
-  const entries = useMemo(() => Object.entries(capabilities?.[kind] ?? {}), [capabilities, kind])
-  const modules = useMemo(() => [...new Set(Object.values(capabilities ?? {}).flatMap((of) => Object.keys(of).map(moduleOf)))].sort(), [capabilities])
   const matches = sidebarSearch(query)
-  const shown = entries.filter(([name, it]) => (module === ALL || moduleOf(name) === module) && matches(name, L(it.about)))
+  const groupsOf = by => {
+    const groups = new Map()
+    for (const kind of kindsOf(capabilities, definitions)) {
+      for (const [name, it] of Object.entries(capabilities?.[kind] ?? {})) {
+        if (!matches(name, L(it.about))) continue
+        const source = namespaceOf(name) ?? 'kernel'
+        const id = by === 'kind' ? kind : source
+        if (!groups.has(id)) groups.set(id, { id, title: by === 'kind' ? kindLabel(definitions, kind) : source, items: [] })
+        groups.get(id).items.push({ kind, name, title: localName(source, name) ?? name })
+      }
+    }
+    const ordered = [...groups.values()]
+    return by === 'source' ? ordered.sort((a, b) => a.id.localeCompare(b.id)) : ordered
+  }
   return (
     <nav className="parts-list capabilities" aria-label={tr('能力', 'Capabilities')}>
-      <SidebarListTools query={query} onQuery={setQuery} choices={[
-        { label: tr('能力的种类', 'Kind of capability'), value: kind, onPick: setKind, options: kinds.map(id => ({ value: id, label: `${L(definitions?.[id]?.studio.label) ?? id} · ${Object.keys(capabilities[id]).length}` })) },
-        { label: tr('模块', 'Module'), value: module, onPick: setModule, options: [{ value: ALL, label: tr('全部模块', 'All modules') }, ...modules.map((m) => ({ value: m, label: m }))] },
-      ]} />
-      <ul className="capabilities-list">
-        {shown.map(([name, it]) => {
-          const on = current?.kind === kind && current?.name === name
-          return (
-            <li key={name}>
-              <ListRow icon={Cpu} on={on} onClick={() => onOpen(kind, name)} title={it.about ? L(it.about) : name} id={it.about ? name : undefined} />
-            </li>
-          )
-        })}
-      </ul>
+      <SidebarGrouping scope={namespace} foldKey="folded-capabilities" groupsOf={groupsOf} tools={{ query, onQuery: setQuery }}
+        row={({ kind, name, title }) => (
+          <ListRow key={capabilityKey(kind, name)} icon={Cpu} title={title} id={name}
+            on={current?.kind === kind && current?.name === name} onClick={() => onOpen(kind, name)} />
+        )} />
     </nav>
   )
 }

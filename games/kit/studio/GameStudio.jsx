@@ -1,4 +1,4 @@
-import { PackageDependencies, packageGroups, packageKindLabel } from './PackageGroups.jsx'
+import { PackageDependencies, packageSidebarGroups } from './PackageGroups.jsx'
 import { objectTypes } from './object-types.js'
 import { typeName } from './LeftTypes.jsx'
 // The game workspace of the studio (games/design/README.md 6.7): where a course designer makes a game on a package and
@@ -35,6 +35,7 @@ import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
 import { GameList, GameMeta, JsonFile, gameJson } from './ProjectLists.jsx'
 import SidebarListTools from './SidebarListTools.jsx'
+import SidebarGrouping from './SidebarGrouping.jsx'
 import ListRow from './ListRow.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
@@ -276,29 +277,21 @@ function retitled(value, key = null) {
   return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, retitled(v, k)]))
 }
 
-/** The packages, those the game plays first, grouped by their kind (PackageGroups.jsx), with a search and a filter by
- *  kind in the list's tools; one picked shows in the middle (PackageCard). */
+/** The packages, those the game plays first, grouped by kind or source, with search; one picked shows in the middle (PackageCard). */
 function UsedPackages({ packages, used, current, onOpen }) {
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState('')
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
   const listed = [...packages].sort((a, b) => Number(used.includes(b.id)) - Number(used.includes(a.id)) || a.id.localeCompare(b.id))
     .filter(({ id, uses }) => words.every((word) => `${id} ${Object.keys(uses ?? {}).join(' ')}`.toLowerCase().includes(word)))
   return (
     <nav className="parts-list" aria-label={tr('包', 'Packages')}>
-      <SidebarListTools query={query} onQuery={setQuery} choices={[{ label: tr('包种类', 'Package kind'), value: filter, onPick: setFilter, options: [{ value: '', label: tr('全部种类', 'All kinds') }, ...packageGroups(packages).map(({ kind }) => ({ value: kind, label: packageKindLabel(kind) }))] }]} />
-      {packageGroups(listed, filter).map(({ kind, items }) => (
-        <section key={kind}>
-          <h3 className="package-group-title">{packageKindLabel(kind)}</h3>
-          {items.map(({ id }) => (
-            <button key={id} type="button" className={`parts-row is-object ${id === current ? 'is-on' : ''} ${used.includes(id) ? '' : 'is-unused'}`} aria-current={id === current ? 'true' : undefined} onClick={() => onOpen(id)}>
-              <i className="family-chip"><Package size={12} aria-hidden="true" /></i>
-              <span>{id}</span>
-              {used.includes(id) ? <code>{tr('在用', 'In use')}</code> : <i />}
-            </button>
-          ))}
-        </section>
-      ))}
+      <SidebarGrouping scope="arrange-packages" groupsOf={by => packageSidebarGroups(listed, by)} tools={{ query, onQuery: setQuery }} row={({ id }) => (
+        <button key={id} type="button" className={`parts-row is-object ${id === current ? 'is-on' : ''} ${used.includes(id) ? '' : 'is-unused'}`} aria-current={id === current ? 'true' : undefined} onClick={() => onOpen(id)}>
+          <i className="family-chip"><Package size={12} aria-hidden="true" /></i>
+          <span>{id}</span>
+          {used.includes(id) ? <code>{tr('在用', 'In use')}</code> : <i />}
+        </button>
+      )} />
     </nav>
   )
 }

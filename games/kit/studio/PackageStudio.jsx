@@ -807,7 +807,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               <LeftTypes types={types} shown={lists.filter((list) => list !== 'packages' && !TOOL_LISTS.includes(list)).map(typeOfList)} chosen={chosenTypes !== null} onChoose={setChosenTypes} />
             </div>
             {side === 'packages' ? <PackageList packages={packages} current={pkg} picked={pickedPackage} disabled={saving} onPick={setPickedPackage} onOpen={openPackage} onCreate={makePackage} />
-              : side === 'kernel' ? <CapabilityList capabilities={capabilities} definitions={capabilityKinds} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
+              : side === 'kernel' ? <CapabilityList capabilities={capabilities} definitions={capabilityKinds} namespace={namespace} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
               : side === 'overrides' ? <OverrideList events={events} layer={namespace} current={openKey} onOpen={(key) => openIn('overrides', key)} />
               : side === 'entries' ? <EntryList content={content} namespace={namespace} game={game} current={at?.glossary && field?.path?.[0] === 'entries' ? field.path[1] : null}
                 heading={heading} onHeading={(next) => openHeading(next)} {...grouping('entry', entriesBy, setEntriesBy)} onOpen={(k) => jump(null, `entries[${k}]`, 'glossary')}

@@ -8,7 +8,7 @@ import { tr } from '../shell/i18n.js'
 import { editorForType } from './editors.js'
 import { Picker } from './Picker.jsx'
 
-export const GROUP_WORDS = { tag: ['标签', 'Tags'], relation: ['关系', 'Relations'], section: ['分组', 'Sections'] }
+export const GROUP_WORDS = { tag: ['标签', 'Tags'], relation: ['关系', 'Relations'], section: ['分组', 'Sections'], kind: ['类型', 'Kind'], source: ['来源', 'Source'] }
 const NEW_WORDS = { tag: ['新的标签', 'New tag'], relation: ['新的关系', 'New relation'], section: ['新的分组', 'New section'] }
 /** A grouping's category, as the menus name it: [zh, en] (标签, 托盘, 关系, 分组). */
 export const groupCategory = (id) => editorForType(id)?.group?.name ?? GROUP_WORDS[id] ?? [id, id]

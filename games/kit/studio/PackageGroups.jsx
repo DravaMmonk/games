@@ -19,6 +19,23 @@ export function packageGroups(packages, filter = '') {
   })
 }
 
+const SOURCE_LABELS = {
+  workspace: ['工作区', 'Workspace'],
+  archive: ['发布归档', 'Release archive'],
+  unknown: ['未知来源', 'Unknown source'],
+}
+
+export function packageSidebarGroups(packages, by) {
+  if (by === 'source') return Object.entries(SOURCE_LABELS).map(([id, words]) => ({
+    id, title: tr(...words),
+    items: packages.filter(pkg => (Object.hasOwn(SOURCE_LABELS, pkg.source) ? pkg.source : 'unknown') === id),
+  }))
+  return [
+    ...packageGroups(packages).map(({ kind, items }) => ({ id: kind, title: packageKindLabel(kind), items })),
+    { id: 'unknown', title: tr('未分种类', 'No kind'), items: packages.filter(pkg => !PACKAGE_KINDS.includes(pkg.kind)) },
+  ]
+}
+
 export function PackageKindFilter({ value, onChange, packages }) {
   return (
     <select className="studio-game package-kind-filter" aria-label={tr('包种类', 'Package kind')} value={value} onChange={event => onChange(event.target.value)}>

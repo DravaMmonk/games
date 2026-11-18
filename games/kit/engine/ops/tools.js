@@ -129,7 +129,7 @@ const tools = {
       return Promise.all(packageIds(ROOT).map(async (id) => {
         const resolved = resolveLayers({ package: id, closure: true, root: ROOT })
         const layer = resolved.layers.find(layer => layer.id === id)
-        return { id, ...layer.config, manifest: layer.manifest, lock: resolved.lock, lockStatus: resolved.lockStatus }
+        return { id, ...layer.config, source: layer.source, manifest: layer.manifest, lock: resolved.lock, lockStatus: resolved.lockStatus }
       }))
     },
   },

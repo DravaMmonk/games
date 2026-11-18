@@ -1,8 +1,7 @@
 // The image domain's checks for `npm run check` (../../engine/checks.js), over a game's spec (domain.js): every level
 // checks its authored intro figures, every bench proves its lesson (its item's verify, items/benches.js), and every
 // circuit task keeps hidden tests, cannot be met by a constant, passes with its reference circuit and fails with its
-// naive ones; a task a built part runs is passed by that part alone, wired to the task's inputs. The parts'
-// own text has English too.
+// naive ones; a task a built part runs is passed by that part alone, wired to the task's inputs.
 import { checkWorks } from 'kernel'
 import { keyOf } from 'kernel'
 import { withHidden } from 'kernel'

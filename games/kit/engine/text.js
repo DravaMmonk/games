@@ -19,18 +19,6 @@ export function refsIn(v, kind) {
   return out
 }
 
-/** The references (as kind:id) `other` holds more often than `text`: what one side of a pair still lacks. */
-export function lacking(other, text) {
-  const count = new Map()
-  for (const m of String(text).matchAll(REF)) count.set(`${m[1]}:${m[2]}`, (count.get(`${m[1]}:${m[2]}`) ?? 0) + 1)
-  const out = []
-  for (const m of String(other).matchAll(REF)) {
-    const v = `${m[1]}:${m[2]}`
-    if (count.get(v)) count.set(v, count.get(v) - 1)
-    else if (!out.includes(v)) out.push(v)
-  }
-  return out
-}
 /** Validate explicit links in translatable text against the registered targets. */
 export function refProblems(value, path, names) {
   const out = []

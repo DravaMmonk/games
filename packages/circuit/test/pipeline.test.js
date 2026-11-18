@@ -121,7 +121,7 @@ test('the eras a blueprint lays out: routes and optional levels', () => {
   assert.deepEqual(era.levels.filter(({ optional }) => optional), [{ id: 'N1', optional: true }])
 })
 
-test('the pedagogy lint: the same board twice whatever its ids, a bench that slides to green, a quiz', () => {
+test('the pedagogy lint: the same board twice whatever its ids', () => {
   const board = (id, value) => ({
     nodes: [{ id: 'a', type: 'in', params: { name: 'a' } }, { id, type: 'const', params: { value } }, { id: `${id}s`, type: 'add', params: {} }, { id: 'out', type: 'out', params: { name: 'out' } }],
     wires: [{ from: 'a', to: `${id}s`, port: 'a' }, { from: id, to: `${id}s`, port: 'b' }, { from: `${id}s`, to: 'out', port: 'in' }],
@@ -130,11 +130,10 @@ test('the pedagogy lint: the same board twice whatever its ids, a bench that sli
   assert.notEqual(boardShape(board('one', '1')), boardShape(board('one', '2')))
   const text = (s) => ({ en: s })
   const level = (id, more) => ({ id, title: text(id), tasks: [{ id, brief: text(`brief of ${id}, long enough`), ...more }], intro: [{ t: text('The pipeline needs new numbers now.') }] })
-  const bench = { knobs: { Z: { min: 1, max: 8, step: 1 }, f: { min: 1, max: 4, step: 1, fixed: true } }, layout: { main: ['goals'] } }
-  const content = { levels: [level('1'), level('2'), level('3', { bench }), { id: '4', tasks: [{ id: '4', bench: { ...bench, check: 'submit' } }, { id: '4_2', kind: 'choice' }] }] }
+  const content = { levels: [level('1'), level('2'), level('3')] }
   const spec = { blueprints: [{ level: '1', board: board('one', '1'), fingerprint: () => boardShape(board('one', '1')) }, { level: '2', board: board('k', '1'), fingerprint: () => boardShape(board('k', '1')) }, { level: '3', board: board('k', '1'), fingerprint: () => boardShape(board('k', '1')), naive: true }] }
   const found = lintPedagogy(content, spec).map((f) => `${f.rule} ${f.at}${f.report ? ' (report)' : ''}`)
-  assert.deepEqual(found, ['pd-repeat-board 2', 'pd-quiz 4 task 4_2 (report)', 'pd-slide 3 (report)'])
+  assert.deepEqual(found, ['pd-repeat-board 2'])
 })
 
 test('conformance: a knowledge point needs an entry with the correct opening level', () => {

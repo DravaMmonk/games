@@ -126,7 +126,7 @@ npm run op -- --package <包> adopt --why "…"                将外部迁移�
 
 **关卡合蓝图**（`conformance`）：每个 slot 恰好一关、内部 `eras` 投影和 `circuit/primitives` 的成员与蓝图一致、每关的 `adds`、`builds` 是它的 slot 的、参考解用到 slot 的 `uses` 里的每一个元件、slot 有 naive 解的关也有（某个任务有）；`bp-entry` 每个知识点有同 id 的百科词条，在带来它的那一关打开。
 
-**教学 lint**（`lintPedagogy`，`kit/pipeline/pedagogy.js`，第 4.1 节里能机械看出的几种）：`pd-repeat-board` 比较包提供的作品指纹；电路包按元件、设置和接法生成指纹；只报告的 `pd-slide`：实验台的一步只开一个旋钮、目标读数实时显示，拖到变绿就能过；`pd-quiz`：一个任务只是点选答案（选择题）。它们看得见形式，看不见意思：是不是工具关、判断题是不是不看材料就能答、思维链有没有落在屏幕上，由评审逐关读。
+**教学 lint**（`lintPedagogy`，`kit/pipeline/pedagogy.js`，第 4.1 节里能机械看出的几种）：`pd-repeat-board` 比较包提供的作品指纹；电路包按元件、设置和接法生成指纹；只报告的 `pd-serial-chapter`：一章的主线全是串行。它们看得见形式，看不见意思：是不是工具关、判断题是不是不看材料就能答、思维链有没有落在屏幕上，由评审逐关读。
 
 **文案评审**按第 4 节检查措辞、篇幅、重复、剧透和链接的选择。自动检查验证已写入链接的目标及其可用性。
 

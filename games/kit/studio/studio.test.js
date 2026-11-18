@@ -15,7 +15,6 @@ import {
 import { groupOf, groupTree, stays } from './groups.js'
 import { blankChapter, chapterOrderRefusal, importLevels, moveChapter } from './course-edit.js'
 import { fieldDiff } from './diff.js'
-import { lacking } from '../engine/text.js'
 import { taskIdsOf } from '../engine/tasks.js'
 
 
@@ -291,13 +290,6 @@ test('each control on content written here: a grid, ticks, a wave, a table read 
   const t = tableOf(field('cases'))
   assert.deepEqual(tableValue(field('cases'), t, t.rows), value.cases)
   for (const v of Object.values(field('inputs').value).flat()) assert.deepEqual(cellValue(field('inputs').cell, cellText(v)), v)
-})
-
-test('the link picker offers first the links the other language has more of than this one', () => {
-  const l = (id) => `<level-ref to="${id}"></level-ref>`
-  const w = (id) => `<wiki-ref to="${id}"></wiki-ref>`
-  assert.deepEqual(lacking(`${l('a')} ${w('x')} ${w('x')}`, `${w('x')}`), ['level:a', 'wiki:x'])
-  assert.deepEqual(lacking(`${l('a')}`, `${l('a')} ${w('x')}`), [])
 })
 
 test('a mark on the game page is the field it shows: the task’s, else the level’s; a + adds to that list', async () => {

@@ -4,6 +4,7 @@
   "package.desc": "Provides circuit building, wiring, simulation, and checking.",
   "package.title": "Circuits",
   "ui": {
+    "「{subject}」应当是 {want}，这块板给出 {got}。": "“{subject}” should be {want}; the board gives {got}.",
     "请用列表中的新增或删除按钮管理件和设置。": "Use the list controls to add or delete parts and settings.",
     " 行：": ": ",
     "ASCII 值：写进蓝图文本": "an ASCII value, as blueprint text writes it",

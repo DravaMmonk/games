@@ -5,7 +5,8 @@ import assert from 'node:assert/strict'
 import { sink, source } from '../../circuit/core/index.js'
 import { boardNode, drive, hearing, runTicks } from '../core/ticks.js'
 import { defineParts } from '../../circuit/core/index.js'
-import { judgeTicks } from '../core/tick-report.js'
+import { judgeTicks, tickJudge } from '../core/tick-report.js'
+import { failureText } from '../../../games/kit/engine/failure-text.js'
 import { operations, packRegisters } from '../core/registers.js'
 
 // The registers as parts defined as data: reg reads one (0 until kept), bit too (1), set keeps one.
@@ -146,4 +147,11 @@ test('ticks skip unconstrained values and report the first wrong port in tick or
   assert.deepEqual(judge([first, { tick: 1, outputs: { x: 4, y: 5 } }]), {
     at: { tick: 1, id: 'x' }, want: 2, got: 4, why: 'x',
   })
+})
+
+test('tick owns the failure message without changing its structured output', () => {
+  const judge = tickJudge({ checked: [{ name: 'x', label: 'X' }], want: () => [undefined, 1], show: String })
+  const fail = judge([{ tick: 1, outputs: { x: 0 } }])
+  assert.equal(failureText(fail).en, 'At tick 1, “X” should be 1; the board gives 0.')
+  assert.deepEqual(JSON.parse(JSON.stringify(fail.why)), { relation: 'output', subject: 'X' })
 })

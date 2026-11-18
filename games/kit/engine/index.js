@@ -56,7 +56,7 @@ export { checkWorks } from './authoring.js'
 export { scoreWorks } from './authoring.js'
 export { isGrid } from './grid.js'
 export { dependencyCycle } from '../course.js'
-export { failureText } from './failure-text.js'
+export { failureReason, failureText } from './failure-text.js'
 export { layout } from '../course.js'
 export { createProgress, current, fresh, taskKey, completedTask, taskPassed } from '../shell/progress.js'
 

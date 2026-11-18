@@ -9,11 +9,13 @@
 // definitions it uses (by name, course.js) }; terms are written
 // as everywhere (u … z, xs, ys, zs variables; schematic.js). The equations (`equations`) are what later levels get by
 // the function's name (course.js).
-import { cases, hidden, inOrder, property, sameAs } from 'kernel'
+import { cases, failureReason, hidden, inOrder, property, sameAs, sideOf } from 'kernel'
 import { sameTerm } from './formula.js'
 import { sayTerm } from './notation.js'
 import { parseS, parseSide } from './schematic.js'
 import { T } from 'kernel/words'
+
+const shown = value => ({ zh: String(sideOf(value, 'zh')), en: String(sideOf(value, 'en')) })
 
 /** Most rewrites one test may take before it counts as never stopping. */
 export const BUDGET = 200
@@ -97,7 +99,10 @@ export function checkDefine(level) {
     }
     return sameAs(parseSide(test.value), {
       same: sameTerm,
-      why: () => ({ subject: term, relation: 'evaluates', show: say }),
+      why: () => failureReason({ subject: term, relation: 'evaluates', show: say }, ({ want, got }) =>
+        T('{value} 应当算出 {value2}，现在算出 {value3}', {
+          value: shown(term), value2: shown(say(want)), value3: shown(say(got)),
+        })),
     })(got.value)
   }))
   const termination = property((row) => row < 0, (row) => ({

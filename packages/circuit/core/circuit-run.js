@@ -1,27 +1,25 @@
 // Connect the shared judges to circuit evaluation, replay and the result rows.
-import { runBoard } from "./boards.js"
-import { isGrid } from 'kernel'
-
-
-import { inOrder, sameAs } from 'kernel'
-
-
-import { runTests } from 'kernel'
-
-
-import { valueText } from 'kernel'
-
-
+import { failureReason, inOrder, isGrid, runTests, sameAs, valueText } from 'kernel'
+import { T } from 'kernel/words'
+import { runBoard } from './boards.js'
 
 const output = (run, name) => run.outputs[name] ?? null
 const shape = (value) => isGrid(value) ? 'grid' : 'scalar'
+
+/** Describe a failed output, optionally with the run position supplied by a circuit extension. */
+export function outputReason(subject, show, wrap = message => message) {
+  return failureReason({ relation: 'output', subject, show }, ({ want, got, at }) => {
+    const message = T('「{subject}」应当是 {want}，这块板给出 {got}。', { subject, want: show(want), got: show(got) })
+    return wrap(message, at)
+  })
+}
 
 export function outputJudge(ports, expect, { same, show = valueText, says = () => null } = {}) {
   return inOrder(...ports.map((port) => sameAs(expect[port.name], {
     got: (run) => output(run, port.name),
     same,
     at: port.name,
-    why: (want, got) => says(port, want, got) ?? { relation: 'output', subject: port.label, show },
+    why: (want, got) => says(port, want, got) ?? outputReason(port.label, show),
   })))
 }
 

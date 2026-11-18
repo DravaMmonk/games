@@ -1,4 +1,6 @@
 import { valueText } from 'kernel'
+import { T } from 'kernel/words'
+import { outputReason } from 'circuit'
 
 export function judgeTicks({ checked, want, got = (tick, id) => tick.outputs[id] ?? null, same = (want, got) => want === got, why }) {
   return (steps) => {
@@ -19,7 +21,7 @@ export function judgeTicks({ checked, want, got = (tick, id) => tick.outputs[id]
 export function tickJudge({ show = valueText, ...options }) {
   return judgeTicks({
     ...options,
-    why: (port) => ({ relation: 'output', subject: port.label, show }),
+    why: port => outputReason(port.label, show, (message, { tick }) => T('第 {tick} 拍，{zh}', { tick, zh: message })),
   })
 }
 

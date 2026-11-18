@@ -25,6 +25,7 @@
   "part.reg.settings.start.label": "Start",
   "section.line.title": "The line",
   "ui": {
+    "第 {tick} 拍，{zh}": "At tick {tick}, {zh}",
     "line：这一拍线上的位": "line: the bit on the line this tick",
     "say：接到这里的位这一拍说到线上，每一拍检查": "say: the bit wired here goes on the line this tick, checked every tick",
     "{name}：输入「{label}」": "{name}: input “{label}”",

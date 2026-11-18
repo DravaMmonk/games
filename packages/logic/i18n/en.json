@@ -10,6 +10,9 @@
   "package.desc": "Provides logical symbols, proof circuits, and proof checking.",
   "package.title": "Logic and proofs",
   "ui": {
+    "{value} 应当算出 {value2}，现在算出 {value3}": "{value} should work out to {value2}, but works out to {value3}",
+    "{zh}时，「{zh2}」应当可推导，这份声明却推导不出。": "{zh}, “{zh2}” should be derivable, but this declaration does not derive it.",
+    "{zh}时，「{zh2}」不应当可推导，这份声明却推导出了它。": "{zh}, “{zh2}” should not be derivable, but this declaration derives it.",
     "Skolem 化": "Skolemise",
     "assume 只能假设要证的「若…则…」的前一半": "assume can only assume the “if” part of what is to be proved",
     "fix 只能用在要证「对所有」的时候": "fix only works when “for all” is to be proved",

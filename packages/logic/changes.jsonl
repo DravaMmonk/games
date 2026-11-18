@@ -14,3 +14,4 @@
 {"seq":14,"at":"2026-11-18T10:11:25.161Z","why":"Classify packages by functional responsibility","adopt":true,"files":[{"file":"packages/logic/package.json","after":"e155c558477691e6"}]}
 {"seq":15,"at":"2026-11-18T10:22:06.580Z","why":"Rename the scalar operation library to scalarlib","adopt":true,"files":[{"file":"packages/logic/package.json","after":"47de350579a2f0f8"}]}
 {"seq":16,"at":"2026-11-18T12:33:54.862Z","why":"Shorten the numeric operation library ID to numlib","adopt":true,"files":[{"file":"packages/logic/package.json","after":"7dd78c7f81a2602a"}]}
+{"seq":17,"at":"2026-11-18T13:59:16.288Z","why":"Move failure wording to the judging packages","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"b39c02d2d58ead09"}]}

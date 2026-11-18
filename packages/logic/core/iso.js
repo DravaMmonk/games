@@ -10,7 +10,7 @@ import { datatypeRules, typeText } from './datatype.js'
 import { ruleOf, ruleText } from './schematic.js'
 import { L } from "kernel"
 import { T, tr } from 'kernel/words'
-import { cases, hidden, inOrder, sameAs } from 'kernel'
+import { cases, failureReason, hidden, inOrder, sameAs } from 'kernel'
 
 /** A sentence of the level, its things read as names (not variables). */
 export const sentenceOf = (level, text) => parse(text, { consts: level.things ?? [] })
@@ -135,7 +135,16 @@ export function checkIso(level, words) {
     const given = givenText(test, words)
     const goal = test.goal ? words(test.goal) : name
     const derived = sameAs(test.make, {
-      why: () => ({ relation: 'derives', subject: goal, given }),
+      why: () => failureReason({ relation: 'derives', subject: goal, given }, ({ want }) => {
+        const start = given.en.charAt(0).toUpperCase() + given.en.slice(1)
+        const values = {
+          zh: { zh: String(given.zh), en: String(start) },
+          zh2: { zh: String(goal.zh), en: String(goal.en) },
+        }
+        return want
+          ? T('{zh}时，「{zh2}」应当可推导，这份声明却推导不出。', values)
+          : T('{zh}时，「{zh2}」不应当可推导，这份声明却推导出了它。', values)
+      }),
     })(got.derived)
     if (derived) return derived
     // A way that takes what is given, where the test asks for one.

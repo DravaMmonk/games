@@ -97,7 +97,7 @@ export default function BlueprintDialog({ board, head, mode, onClose }) {
         />
         {errors.length > 0 && (
           <ul className="blueprint-errors" role="alert">
-            {errors.slice(0, 6).map((e, k) => <li key={k}>{L(e)}</li>)}
+            {errors.slice(0, 6).map((e, k) => <li key={k}>{L({ zh: e.zh, en: e.en })}</li>)}
             {errors.length > 6 && <li>{tr("另有 {value} 处", {value: errors.length - 6})}</li>}
           </ul>
         )}

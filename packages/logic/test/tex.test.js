@@ -16,6 +16,9 @@ test('a rule keeps its letters in math, its mark apart from its brackets', () =>
 test("a step's marks: a rule backwards, a goal closed", () => {
   assert.equal(texOf('⊢ ⟵ R₁ R₃'), '\\vdash \\longleftarrow R_{1}\\; R_{3}')
   assert.equal(texOf('⊢ ✓'), '\\vdash \\checkmark')
+  assert.equal(texOf('⊢ ⤓'), '\\vdash \\underline{\\downarrow}')
+  assert.equal(texOf('↻'), '\\circlearrowright')
+  assert.equal(texOf('↪'), '\\hookrightarrow')
 })
 
 test("TeX's own characters inside words are escaped", () => {

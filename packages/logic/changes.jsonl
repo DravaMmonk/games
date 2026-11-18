@@ -28,3 +28,7 @@
 {"seq":28,"at":"2026-11-18T22:42:48.626Z","why":"Machine board formulas typeset in TeX (one LaTeX face); report steps carry the card's icon and number.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"395bef8b19db92a1"}]}
 {"seq":29,"at":"2026-11-18T23:08:11.930Z","why":"The Expected card shows the goals wanted without the word 变成.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"276a7d14d75f34c6"}]}
 {"seq":30,"at":"2026-11-18T23:18:06.413Z","why":"Formulas typeset in TeX across the game; prose stays text (manual 6.9).","adopt":true,"files":[]}
+{"seq":31,"at":"2026-11-18T23:27:00.871Z","why":"Report rules and check lists no longer restyle KaTeX's own spans.","adopt":true,"files":[]}
+{"seq":32,"at":"2026-11-18T23:46:54.118Z","why":"Repeat frame is a step only where it decides (继续/跳出); a refused step reads ✗ and gives its state back; import dialog shows its errors.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"dd271ab471e015ca"}]}
+{"seq":33,"at":"2026-11-18T23:49:19.442Z","why":"Run report: a step's number, card, name and note sit on one centre line.","adopt":true,"files":[]}
+{"seq":34,"at":"2026-11-18T23:53:20.757Z","why":"Repeat frame decisions read ↻ / ↪; a goal moved to the end reads ⊢ ⤓ (an underlined down arrow in TeX).","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"276a7d14d75f34c6"}]}

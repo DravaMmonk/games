@@ -58,7 +58,7 @@ export const ruleLines = ({ ruleEntries: entries = [], rules: order = [] }, task
   return order.map((key) => ({ mark: ruleMark(key, order), text: ruleWritten(entries.find((e) => e.key === key), text, term) }))
 }
 /** What a tactic did (machine.js `did`), in marks: ⊢ ⟵ R₁ (a rule backwards), ⊢ ≡ R₁ (a rewrite), ⊢ ✓ (a hypothesis
- *  closes it), ⊢ ↷ (moved to the end). */
+ *  closes it), ⊢ ⤓ (moved to the end). */
 export function didText(did, run) {
   const goal = goalMark(0, did.goals)
   const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.rules ?? did.rules)).join(' ')
@@ -66,7 +66,7 @@ export function didText(did, run) {
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
   if (did.op === 'rwHyps') return T("{goal} 的已知 ≡ {rules}", { goal, rules })
   if (did.op === 'assumption') return `${goal} ✓`
-  return `${goal} ↷`
+  return `${goal} ⤓`
 }
 // A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
 const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))

@@ -54,15 +54,18 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
       <ol className="mr-flow" aria-label={tr('运行步骤')}>
         {start && <Box value={start} task={task} show={show} />}
         {shown.flatMap(({ s, k }, n) => {
-          const failed = s.failed ?? (s.value?.kind === 'state' && s.value.error ? s.value.error : null)
+          // A card that cannot do its step says ✗ (why, on a long press or hover) and gives back the state it was handed:
+          // the next box. A card that cannot run at all (an input missing) says why, and nothing follows.
+          const broken = s.failed
+          const refused = !broken && s.value?.kind === 'state' && s.value.error ? s.value.error : null
           return [
-            <li key={`s${k}`} className={`mr-step ${k === at ? 'is-on' : ''} ${failed ? 'is-fail' : ''}`}>
+            <li key={`s${k}`} className={`mr-step ${k === at ? 'is-on' : ''} ${broken || refused ? 'is-fail' : ''} ${refused ? 'is-refused' : ''}`}>
               <span className="mr-num">{n + 1}</span>
               <span className="mr-name">{s.mark}{L(s.label)}</span>
-              {s.detail && <Formula text={s.detail} className="mr-note" />}
-              {failed && <span className="mr-why">{L(failed)}</span>}
+              {refused ? <span className="mr-wrong" title={L(refused)} aria-label={L(refused)}>✗</span> : s.detail && <Formula text={s.detail} className="mr-note" />}
+              {broken && <span className="mr-why">{L(broken)}</span>}
             </li>,
-            !failed && s.value !== undefined && <Box key={`b${k}`} value={s.value} task={task} show={show} on={k === at} />,
+            !broken && s.value !== undefined && <Box key={`b${k}`} value={refused ? { ...s.value, error: undefined } : s.value} task={task} show={show} on={k === at} />,
           ]
         })}
       </ol>

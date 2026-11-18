@@ -240,26 +240,33 @@ const repeat = {
     if (key) return v
     const round = ctx.region('body')
     const first = (x) => (x.kind === 'state' ? firstOf(x) : x)
+    const over = (x) => (x.kind === 'clauses' && refuted(x.set)) || (x.kind === 'eqs' && x.fail) || (x.kind === 'state' && (x.error || !x.goals.length))
+    // A traced run (../../engine/circuit.js) sees the frame's cards each round, and the frame itself only where it
+    // decides: once more (↻) or out (↪), with what it goes on with. Its opening and its result are not steps
+    // of their own (runTest leaves them out: `framesDeciding`).
+    ctx.framesDeciding?.add(node.id)
+    const decide = (out, value) => {
+      ctx.trace?.push({ id: node.id, key: null, inner: true, label: out ? OUT : AGAIN, value })
+      return value
+    }
     let cur = first(v)
+    if (over(cur)) return decide(true, cur)
     for (let k = 0; k < 60; k++) {
-      if ((cur.kind === 'clauses' && refuted(cur.set)) || (cur.kind === 'eqs' && cur.fail)) return cur
-      if (cur.kind === 'state' && (cur.error || !cur.goals.length)) return cur
-      // A traced run (../../engine/circuit.js) sees each round: what the frame opens with, its cards, what comes back.
-      // The board's own pass was the first round; these are the second on.
-      let next
-      if (k === 0) next = first(body)
-      else {
-        ctx.trace?.push({ id: node.id, key: 'body', value: cur })
-        next = first(round(cur))
-        ctx.trace?.push({ id: node.id, key: null, round: k + 1, value: next, quiet: true })
-      }
-      if (next.kind === 'state' && next.error) return cur
-      if (sameJson(next, cur)) return cur
+      // The board's own pass was the first round; the rest run here.
+      const next = k === 0 ? first(body) : first(round(cur))
+      // A round that fails, or changes nothing, ends it on what it had; one that finishes the work, on that.
+      if ((next.kind === 'state' && next.error) || sameJson(unsaid(next), unsaid(cur))) return decide(true, cur)
+      if (over(next)) return decide(true, next)
+      decide(false, next)
       cur = next
     }
     throw fail('转了 60 圈还没停下来', 'Still changing after 60 rounds')
   },
 }
+
+// The frame's two decisions, in marks (./tex.js): once more ↻, out ↪.
+const AGAIN = '↻'
+const OUT = '↪'
 
 const LIMIT = 250
 /**
@@ -701,10 +708,11 @@ export const runTactic = (level, type, state, keys = null) => level.parts(type).
 export const MACHINE_TESTS = {
   runTest: (level, circuit, test, { traced = false, workshopParts } = {}) => {
     const trace = []
+    const framesDeciding = new Set()
     const run = runBoard(circuit, {
       parts: workshopParts ?? level.parts,
       bind: inputsOf(test, level),
-      ctx: ctxOf(level, circuit, { trace: traced ? trace : null }),
+      ctx: ctxOf(level, circuit, { trace: traced ? trace : null, framesDeciding }),
       traceTargets: ['out'],
     })
     // Rule parts are not steps: what they give is on their cards from the start. The rules on the board, numbered
@@ -714,7 +722,10 @@ export const MACHINE_TESTS = {
     const given = trace.filter((e) => e.value?.kind === 'rules').map((e, k) => ({ e, k, place: at.get(e.path?.[0] ?? e.id) ?? Infinity }))
     const ruleEntries = given.sort((a, b) => a.place - b.place || a.k - b.k).flatMap(({ e }) => e.value.entries)
     const rules = [...new Set(ruleEntries.map((e) => e.key))]
-    return { ...run, trace: trace.filter((e) => e.value?.kind !== 'rules'), rules, ruleEntries }
+    // A repeat frame is a step only where it decides (its `inner` entries); the board's own entries for it (what it
+    // opens with, what it gives) say nothing more.
+    const said = (e) => e.inner || e.error !== undefined || e.path?.length || !framesDeciding.has(e.id)
+    return { ...run, trace: trace.filter((e) => e.value?.kind !== 'rules' && said(e)), rules, ruleEntries }
   },
   check: (level, test, outputs) => {
     const problem = judge(test.want ?? level.want, test, outputs.out, level)

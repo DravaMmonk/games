@@ -35,3 +35,5 @@
 {"seq":35,"at":"2026-11-18T22:27:52.760Z","why":"A run never scrolls the phone page to the card it is on.","adopt":true,"files":[]}
 {"seq":36,"at":"2026-11-18T22:42:48.898Z","why":"Machine board formulas typeset in TeX (one LaTeX face); report steps carry the card's icon and number.","adopt":true,"files":[]}
 {"seq":37,"at":"2026-11-18T23:18:06.850Z","why":"Formulas typeset in TeX across the game; prose stays text (manual 6.9).","adopt":true,"files":[]}
+{"seq":38,"at":"2026-11-18T23:46:54.395Z","why":"Repeat frame is a step only where it decides (继续/跳出); a refused step reads ✗ and gives its state back; import dialog shows its errors.","adopt":true,"files":[]}
+{"seq":39,"at":"2026-11-18T23:49:19.712Z","why":"Import dialog shows its errors.","adopt":true,"files":[]}

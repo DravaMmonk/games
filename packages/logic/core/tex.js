@@ -5,7 +5,9 @@
 const SIGNS = {
   '→': '\\to', '↔': '\\leftrightarrow', '∧': '\\land', '∨': '\\lor', '¬': '\\lnot', '∀': '\\forall', '∃': '\\exists',
   '⊥': '\\bot', '⊤': '\\top', '⊢': '\\vdash', '⟹': '\\Longrightarrow', '⟵': '\\longleftarrow', '←': '\\leftarrow',
-  '≡': '\\equiv', '↷': '\\curvearrowright', '✓': '\\checkmark', '⋀': '\\bigwedge', '⟦': '\\llbracket', '⟧': '\\rrbracket',
+  '≡': '\\equiv', '↷': '\\curvearrowright', '↻': '\\circlearrowright', '↪': '\\hookrightarrow',
+  // A goal moved to the end: a down arrow to a bar (⤓), which KaTeX has no glyph for.
+  '⤓': '\\underline{\\downarrow}', '✓': '\\checkmark', '⋀': '\\bigwedge', '⟦': '\\llbracket', '⟧': '\\rrbracket',
   '≐': '\\doteq', '×': '\\times', '·': '\\cdot', '≠': '\\neq', '≤': '\\le', '≥': '\\ge', '∈': '\\in', '—': '\\text{—}',
 }
 const SUBS = '₀₁₂₃₄₅₆₇₈₉'

@@ -1,4 +1,4 @@
-import { freshBoardProgress } from '../core/index.js'
+import { fresh as freshBoardProgress } from '../core/progress.js'
 
 /** Mount an existing game screen as a package play or a standalone preview. */
 export function taskScreen(readContext, define, screenKey = 'kind') {

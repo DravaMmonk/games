@@ -15,7 +15,7 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "74a19ecbd4574c7a7eebf96a9ee78152f55b1135eed0d4cdd80cf188cc9a4ea0"
+      "hash": "2e6f63ab5d9254228c3e9253424ef52fa707346bc96c5d061d6f215608f70202"
     },
     "sentence": {
       "version": "0.0.0",
@@ -27,11 +27,11 @@
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "336ece088e2e2e3fe07a79ce7e210af02e69304efe7ab5c8888f3ed170dd849f"
+      "hash": "d415f04b0b5b79b9bda98fe55b75740a1cbf65a69d9bd82723b0df2604f3043c"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "9da49a41847a93856344586aede05102838e840d65f0f9df2857e650a6bed633"
+      "hash": "bb6df1e7c337037a38c7ff61dde5dcb3a6405ba09207e005db5dc1c878b0f86a"
     }
   }
 }

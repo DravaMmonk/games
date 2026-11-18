@@ -40,7 +40,7 @@ export { readWorks, publicationEvents } from './course-model.js'
 export { keptBoards } from './kept-boards.js'
 export { circuitRuntime } from './circuit-preset.js'
 export { preparePartsWorks } from './board-works.js'
-export { inheritedBoard, passedWork, earnedUnlocks, fresh as freshBoardProgress } from './progress.js'
+export { inheritedBoard, passedWork, earnedUnlocks } from './progress.js'
 
 /** Board work, fixed terminals and scoped regions for composite circuit plays. */
 export { workView, workExtension, withWorkExtension, workNodes } from './board/work-extension.js'

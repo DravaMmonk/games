@@ -3,7 +3,7 @@
 // entries). An object shows under every group that names it; what no group names is left over. A group is an object of
 // its own, opened in the middle from its heading row.
 import { memberOwners, collectionProvider, relationType, editorForType } from './editors.js'
-import { orderedMembers, orderedTags } from '../engine/objects.js'
+import { orderedTags } from '../engine/objects.js'
 import { tagKey, tagKeyOfRef, tagMembers, tagName } from './objects-edit.js'
 import { edgesOf } from './override-edit.js'
 
@@ -39,18 +39,11 @@ const expanded = (content, refs, owner = (id) => id, kinds = Object.keys(content
  * The groups of the `kind` list by `by` ('tag', 'relation', or a registered collection type), in their order: [{ kind: the group's
  * object kind, full, members: [full names of the list's objects] }].
  */
-export function groupsOf(content, kind, by, { nestedTags = false } = {}) {
+export function groupsOf(content, kind, by) {
   const registries = content?.registries ?? {}
   const owners = stageOwners(content)
   const owner = owners ? (id) => owners.get(id) ?? id : (id) => id
-  if (by === 'tag') return orderedTags(content, kind).map(name => {
-    const full = tagKey(kind, name)
-    if (!nestedTags) return { kind: 'tag', full, members: [...new Set(tagMembers(content, full).map(owner))] }
-    const values = registries.tag[full].values
-    const children = values.filter(id => id.startsWith('#')).map(id => tagKey(kind, id.slice(1)))
-    const direct = values.filter(id => !id.startsWith('#'))
-    return { kind: 'tag', full, children, members: [...new Set(orderedMembers(content, direct, kind).map(owner))] }
-  })
+  if (by === 'tag') return orderedTags(content, kind).map((name) => tagKey(kind, name)).map((full) => ({ kind: 'tag', full, members: [...new Set(tagMembers(content, full).map(owner))] }))
   const collection = collectionProvider(by)
   if (collection?.accepts(kind)) {
     const names = Object.keys(registries[by] ?? {}).sort(byName)
@@ -63,25 +56,6 @@ export function groupsOf(content, kind, by, { nestedTags = false } = {}) {
       .map(([full, relation]) => ({ kind: 'relation', full, members: expanded(content, edgesOf(relation).flatMap(({ from, to }) => [from, to]), owner, [kind]) }))
   }
   return []
-}
-
-/** Follow authored subgroup references without repeating their members in parent rows. */
-export function groupHierarchy(groups) {
-  const byName = new Map(groups.map(group => [group.full, group]))
-  const children = new Set(groups.flatMap(group => group.children ?? []))
-  const rendered = new Set()
-  const branch = (group, ancestors = new Set()) => {
-    rendered.add(group.full)
-    const path = new Set([...ancestors, group.full])
-    return {
-      ...group,
-      children: (group.children ?? []).filter(name => byName.has(name) && !path.has(name))
-        .map(name => branch(byName.get(name), path)),
-    }
-  }
-  const roots = groups.filter(group => !children.has(group.full)).map(group => branch(group))
-  for (const group of groups) if (!rendered.has(group.full)) roots.push(branch(group))
-  return roots
 }
 
 /** The items no group names, in the order given. */

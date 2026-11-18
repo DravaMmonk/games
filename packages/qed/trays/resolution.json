@@ -4,6 +4,6 @@
   "workshop": false,
   "includeUnlisted": true,
   "values": [
-    "res"
+    "#resolution"
   ]
 }

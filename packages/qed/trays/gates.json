@@ -3,10 +3,6 @@
   "desc": "@tray.gates.desc",
   "includeUnlisted": true,
   "values": [
-    "gNot",
-    "gAnd",
-    "gOr",
-    "gImp",
-    "gIff"
+    "#gates"
   ]
 }

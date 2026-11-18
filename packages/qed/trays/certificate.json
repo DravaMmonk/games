@@ -3,15 +3,7 @@
   "desc": "@tray.certificate.desc",
   "workshop": false,
   "includeUnlisted": true,
-  "values": [],
-  "menus": [
-    {
-      "id": "certificate-certificate",
-      "title": "@tray.certificate.menu.certificate-certificate.title",
-      "values": [
-        "clausify",
-        "replay"
-      ]
-    }
+  "values": [
+    "#certificate"
   ]
 }

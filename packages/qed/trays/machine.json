@@ -8,85 +8,57 @@
       "id": "machine-rule-building",
       "title": "@tray.machine.menu.machine-rule-building.title",
       "values": [
-        "anyR",
-        "swapConcl",
-        "mkRule",
-        "keepBound",
-        "elimGen"
+        "#machine-rule-building"
       ]
     },
     {
       "id": "machine-lists",
       "title": "@tray.machine.menu.machine-lists.title",
       "values": [
-        "consFront",
-        "eachOf"
+        "#machine-lists"
       ]
     },
     {
       "id": "machine-unification",
       "title": "@tray.machine.menu.machine-unification.title",
       "values": [
-        "uDecompose-r-pattern-desc",
-        "uDelete",
-        "uConflict",
-        "uEliminate",
-        "uSwap",
-        "uCheck-r-pattern-desc",
-        "uPattern",
-        "unifier-r-pattern-desc"
+        "#machine-unification"
       ]
     },
     {
       "id": "machine-flow",
       "title": "@tray.machine.menu.machine-flow.title",
       "values": [
-        "repeat-s-results-desc",
-        "append-s-results-desc",
-        "defer",
-        "search",
-        "each"
+        "#machine-flow"
       ]
     },
     {
       "id": "machine-reasoning",
       "title": "@tray.machine.menu.machine-reasoning.title",
       "values": [
-        "rule",
-        "assumption-s-results-desc",
-        "erule-s-results-desc",
-        "frule",
-        "introRules",
-        "elimRules",
-        "auto"
+        "#machine-reasoning"
       ]
     },
     {
       "id": "machine-equality",
       "title": "@tray.machine.menu.machine-equality.title",
       "values": [
-        "rw-au-hyps-desc",
-        "simp-au-hyps-desc",
-        "logic/hyp"
+        "#machine-equality"
       ]
     },
     {
       "id": "machine-clauses",
       "title": "@tray.machine.menu.machine-clauses.title",
       "values": [
-        "skolem",
-        "toClauses",
-        "resolve",
-        "saturate"
+        "#machine-clauses"
       ]
     },
     {
       "id": "machine-certificate",
       "title": "@tray.machine.menu.machine-certificate.title",
       "values": [
-        "clausify",
-        "replay",
-        "metis"
+        "#certificate",
+        "#machine-certificate"
       ]
     }
   ]

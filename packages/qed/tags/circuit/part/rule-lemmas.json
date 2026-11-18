@@ -1,0 +1,17 @@
+{
+  "title": "@tag.rule-lemmas.title",
+  "values": [
+    "addAssoc",
+    "addComm",
+    "addSucc",
+    "addZero",
+    "appAssoc",
+    "appNil",
+    "ifFalse",
+    "ifTrue",
+    "inject",
+    "insLen",
+    "revApp",
+    "succNeq"
+  ]
+}

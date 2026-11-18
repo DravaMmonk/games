@@ -1,0 +1,27 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "shape": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/origin-size-rectangle"
+      },
+      "min": 1,
+      "about": {
+        "zh": "闯入者：几个矩形的并",
+        "en": "the intruder: a union of rectangles"
+      }
+    },
+    "seed": {
+      "type": "int"
+    }
+  }
+}

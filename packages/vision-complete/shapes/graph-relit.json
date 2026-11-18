@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/relit"
+      ]
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/relit-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/relit-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

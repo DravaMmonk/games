@@ -1,4 +1,4 @@
-import { kindSchemas, withKindDeclarations } from '../engine/plugin-kinds.js'
+import { kindSchemas, schemaLayers, withKindDeclarations } from '../engine/plugin-kinds.js'
 import { vocabularyFor } from '../engine/kernel.js'
 import { ENTRY } from '../engine/vocabulary.js'
 import { projectVocabulary } from '../engine/kind-meanings.js'
@@ -22,7 +22,8 @@ export async function pageContent(manifest, base, fetcher = fetch, vocabulary) {
   const courseText = catalogReader(courseCatalogs, 'i18n/course')
   const packageText = catalogReader(packageCatalogs, 'i18n/package')
   if (vocabulary.packageCode !== undefined) {
-    const layers = Object.entries(contentObjects.kind ?? {}).map(([name, value]) => ({ id: name.split('/')[0], catalogs: packageCatalogs, objects: [{ kind: 'kind', name: name.split('/')[1], value }] }))
+    const order = [...new Set([...Object.keys(contentObjects.kind ?? {}), ...Object.keys(contentObjects.shape ?? {})].map(name => name.split('/')[0]))]
+    const layers = schemaLayers(order, { kind: contentObjects.kind, shape: contentObjects.shape }, { catalogs: packageCatalogs })
     vocabulary = withKindDeclarations(projectVocabulary({ ...vocabularyFor(), codeObjects: vocabulary.codeObjects, meanings: vocabulary.meanings }), layers, vocabulary.packageCode, { checked: true })
   }
 

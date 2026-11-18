@@ -59,7 +59,7 @@ export function CapabilityList({ capabilities, current, onOpen }) {
           const on = current?.kind === kind && current?.name === name
           return (
             <li key={name}>
-              <ListRow icon={Cpu} on={on} onClick={() => onOpen(kind, name)} title={L(it.about)} id={name} />
+              <ListRow icon={Cpu} on={on} onClick={() => onOpen(kind, name)} title={it.about ? L(it.about) : name} id={it.about ? name : undefined} />
             </li>
           )
         })}

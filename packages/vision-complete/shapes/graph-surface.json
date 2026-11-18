@@ -1,0 +1,49 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/surface"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "lamp": {
+          "type": "list",
+          "of": {
+            "type": "num"
+          },
+          "min": 3
+        },
+        "fill": {
+          "type": "list",
+          "of": {
+            "type": "num"
+          },
+          "min": 3,
+          "optional": true
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/surface-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/surface-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

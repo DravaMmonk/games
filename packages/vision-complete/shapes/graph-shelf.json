@@ -1,0 +1,53 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/shelf"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "expect": {
+          "type": "oneOf",
+          "values": [
+            "small",
+            "both"
+          ]
+        },
+        "grain": {
+          "type": "num",
+          "optional": true
+        },
+        "blur": {
+          "type": "num",
+          "about": {
+            "zh": "先模糊（高斯的 σ，复制边缘）",
+            "en": "a blur first (the Gaussian’s σ, the edge replicated)"
+          },
+          "optional": true
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/shelf-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/shelf-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "name": {
+        "type": "str",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "label": {
+        "type": "text"
+      },
+      "view": {
+        "type": "oneOf",
+        "values": [
+          "value",
+          "numbers",
+          "pixels",
+          "plane",
+          "carried",
+          "chain",
+          "plot",
+          "profile",
+          "surface",
+          "slope",
+          "spectrum",
+          "centredBins",
+          "wave",
+          "bands",
+          "terms",
+          "dots",
+          "sequence"
+        ],
+        "about": {
+          "zh": "这个口的值起初画成哪种显示方式（玩家在详情和结果区里换）",
+          "en": "the view its value starts in (the player switches it in its detail and results row)"
+        },
+        "optional": true
+      }
+    }
+  },
+  "optional": true
+}

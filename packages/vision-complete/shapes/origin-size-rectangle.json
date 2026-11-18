@@ -1,0 +1,11 @@
+{
+  "type": "list",
+  "of": {
+    "type": "int"
+  },
+  "min": 4,
+  "about": {
+    "zh": "一个矩形：x0, y0, 宽, 高",
+    "en": "a rectangle: x0, y0, width, height"
+  }
+}

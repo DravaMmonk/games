@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/twoNoisings"
+      ]
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/two-noisings-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/two-noisings-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

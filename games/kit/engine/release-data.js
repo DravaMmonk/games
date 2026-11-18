@@ -38,7 +38,7 @@ export function structureProblems(before, after, at = 'surface') {
     // Adding an alternative preserves every value accepted by an existing schema.
     if (before.type && before.type !== 'either' && after?.type === 'either' && after.of.some((choice) => structureProblems(before, choice, at).length === 0)) return []
     if (!after || typeof after !== 'object' || Array.isArray(after)) return [`${at}: was an object`]
-    const out = Object.entries(before).flatMap(([k, v]) => (k in after ? structureProblems(v, after[k], `${at}.${k}`) : [`${at}.${k} is gone`]))
+    const out = Object.entries(before).filter(([key]) => !(before.type && key === 'about')).flatMap(([k, v]) => (k in after ? structureProblems(v, after[k], `${at}.${k}`) : [`${at}.${k} is gone`]))
     // A schema object's new field is one old content lacks: it must be optional.
     if (before.type === 'obj' && after.type === 'obj') for (const [k, f] of Object.entries(after.fields ?? {})) if (!(k in (before.fields ?? {})) && !f.optional) out.push(`${at}.fields.${k} is new and not optional`)
     // A bound a schema gains narrows what old content may be.

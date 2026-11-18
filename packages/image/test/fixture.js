@@ -14,7 +14,7 @@ export function imageFixture(owner = 'sample') {
   }
   installImageFixture(root)
   if (owner !== 'sample') {
-    for (const folder of ['core', 'view', 'kinds']) {
+    for (const folder of ['core', 'view', 'kinds', 'shapes']) {
       const source = new URL(`../../${owner}/${folder}`, import.meta.url)
       if (existsSync(source)) cpSync(source, join(root, 'packages', owner, folder), { recursive: true })
     }

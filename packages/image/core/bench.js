@@ -28,66 +28,11 @@ const FORMAT = S.oneOf(FORMATS)
 /** Text, or a text the model computes: { of: name }. */
 export const TEXT_OF = S.either(S.text(), S.obj({ of: S.str() }))
 
-const KNOB_COMMON = {
-  label: S.opt(S.text()),
-  start: S.opt(S.any({ about: t('起始值（阶段的 start 优先）') })),
-  format: S.opt(FORMAT),
-  unit: S.opt(S.str()),
-  fixed: S.opt(S.bool({ about: t('只显示，不能动') })),
-  drawn: S.opt(S.bool({ about: t('在图上拖动来设，不另画控件') })),
-  perCase: S.opt(S.bool({ about: t('每个情形一个值') })),
-}
-/** A knob: a range, an index into `values`, one of `choices`, or a switch. */
-export const KNOB = S.either(
-  S.obj({ ...KNOB_COMMON, min: num, max: num, step: num, ends: S.opt(S.list(S.text(), { min: 2 })) }),
-  S.obj({ ...KNOB_COMMON, values: S.list(S.any(), { min: 2 }), ends: S.opt(S.list(S.text(), { min: 2 })) }),
-  S.obj({ ...KNOB_COMMON, choices: S.list(S.obj({ value: S.any(), label: S.opt(S.text()) }), { min: 2 }), look: S.opt(S.oneOf(['seg', 'dot'])) }),
-  S.obj({ ...KNOB_COMMON, toggle: S.bool() }),
-  S.obj({ ...KNOB_COMMON, list: S.bool({ about: t('一列东西（在图上点出的点对）') }) }),
-)
-
-/**
- * A limit on a quantity the model computes. With `near`, the comparisons apply to the distance from it; `abs` takes
- * the size. Every given condition must hold; a missing or non-numeric value fails the numeric ones.
- */
-export const LIMIT = S.obj({
-  of: S.str(),
-  label: S.opt(S.text()),
-  atLeast: S.opt(num), atMost: S.opt(num), above: S.opt(num), below: S.opt(num), near: S.opt(num), abs: S.opt(S.bool()),
-  is: S.opt(S.any()), not: S.opt(S.any()),
-  format: S.opt(FORMAT), unit: S.opt(S.str()),
-})
-
-const ACTION_ID = { id: S.opt(S.str({ about: t('模型可以按这个名字换按钮上的字') })) }
-export const ACTION = S.either(
-  S.obj({ ...ACTION_ID, act: S.str(), arg: S.opt(S.any()), label: S.text(), primary: S.opt(S.bool()), icon: S.opt(S.oneOf(['reset'])), repeat: S.opt(S.int({ min: 2 })), every: S.opt(S.int({ min: 1 })), always: S.opt(S.bool({ about: t('运行中也能按') })) }),
-  S.obj({ ...ACTION_ID, reset: S.list(S.str()), label: S.text(), icon: S.opt(S.oneOf(['reset'])) }),
-)
-
-const STAGE_COMMON = {
-  title: S.text(), note: S.text(),
-  opens: S.opt(S.list(S.str(), { about: t('这一步能动的旋钮（不写：全部）') })),
-  start: S.opt(S.map(S.any())),
-  goal: S.opt(S.list(LIMIT)),
-  win: S.opt(S.text()), status: S.opt(S.text()),
-}
-
-// Layout blocks: a display item, or a card (panel), a column (stack) or a row of blocks. Nested a few levels deep.
-const BLOCK_DEPTH = 4
-function blockSchema(depth) {
-  const item = S.call('display')
-  if (!depth) return item
-  const inner = S.list(blockSchema(depth - 1))
-  return S.either(item, S.obj({ panel: inner, quiet: S.opt(S.bool()), dock: S.opt(S.bool({ about: t('手机上停在底部') })) }), S.obj({ stack: inner, center: S.opt(S.bool()) }), S.obj({ row: inner, narrow: S.opt(S.bool({ about: t('第一列窄，手机上也并排') })), tight: S.opt(S.bool({ about: t('只占所需的宽') })) }))
-}
-export const BLOCKS = S.list(blockSchema(BLOCK_DEPTH))
-export const LAYOUT = S.obj({ head: S.opt(BLOCKS), main: BLOCKS, side: S.opt(BLOCKS), foot: S.opt(BLOCKS), split: S.opt(S.oneOf(['even', 'narrow', 'wide'], { about: t('主卡和旁栏的宽：各半，旁栏窄（300–340px），旁栏宽（340–430px）') })) })
-
 // What every display item may carry besides its own parameters.
 const ITEM_COMMON = {
   when: S.opt(S.str({ about: t('只在模型的这个量为真时显示') })),
   unless: S.opt(S.str()),
-  with: S.opt(S.list(blockSchema(1), { about: t('嵌进这一项里的项') })),
+  with: S.opt(S.shape('image/nested-layout-blocks', { about: t('嵌进这一项里的项') })),
 }
 const LINE = S.obj({ of: S.str(), kind: S.oneOf(['target', 'yours', 'faint', 'error', 'seen']), label: S.opt(S.text()), legend: S.opt(S.text()) })
 const STAT = S.obj({ of: S.str(), label: S.text(), format: S.opt(FORMAT), unit: S.opt(S.str()), goal: S.opt(S.bool({ about: t('达到目标时标绿') })) })
@@ -97,10 +42,10 @@ const LOOK = S.oneOf(['legend', 'label', 'note', 'caption', 'mono', 'serif', 'sm
 export const KERNEL_DISPLAYS = {
   step: { about: t('这一步的标题和说明') },
   knobs: { about: t('打开的旋钮'), params: S.obj({ only: S.opt(S.list(S.str())) }) },
-  actions: { about: t('按钮'), params: S.obj({ only: S.opt(S.list(S.int())) }) },
+  actions: { params: S.obj({ only: S.opt(S.list(S.int())) }) },
   verdict: { about: t('目标达到没有；分步的台子带「下一步」'), params: S.obj({ center: S.opt(S.bool()) }) },
   goals: { about: t('目标的每一条和此刻的值'), params: S.obj({ phoneCols: S.opt(S.int({ min: 1, max: 2 })) }) },
-  stages: { about: t('步骤列表') },
+  stages: {},
   cases: { about: t('切换情形，每个带对错'), params: S.obj({ passed: S.opt(S.text({ about: t('「n / m 」后面的字') })) }) },
   plot: {
     about: t('曲线图：指向一处读出各条线的值'),
@@ -113,10 +58,10 @@ export const KERNEL_DISPLAYS = {
   },
   strips: { about: t('几行像素，最暗是 0，最亮是 1'), params: S.obj({ rows: S.list(S.obj({ of: S.str(), label: S.text() })) }) },
   text: { about: t('一段字：写定的，或模型算出的'), params: S.obj({ text: S.opt(S.text()), of: S.opt(S.str()), look: S.opt(LOOK) }) },
-  stats: { about: t('几个读数'), params: S.obj({ of: S.list(STAT), phone: S.opt(S.oneOf(['line'])) }) },
+  stats: { params: S.obj({ of: S.list(STAT), phone: S.opt(S.oneOf(['line'])) }) },
   chips: { about: t('一排小标签'), params: S.obj({ of: S.str(), look: S.opt(S.oneOf(['wave', 'plain'])) }) },
   curve: { about: t('一条小曲线（损失）'), params: S.obj({ of: S.str(), caption: S.str() }) },
-  table: { about: t('一张表'), params: S.obj({ of: S.str() }) },
+  table: { params: S.obj({ of: S.str() }) },
   progress: { about: t('一排进度点'), params: S.obj({ of: S.str() }) },
 }
 
@@ -125,27 +70,8 @@ export function displayItems(domainItems) {
   const all = { ...KERNEL_DISPLAYS, ...domainItems }
   return Object.fromEntries(Object.entries(all).map(([name, item]) => {
     const own = item.params
-    return [name, { about: item.about, params: S.obj({ ...(own?.fields ?? {}), ...ITEM_COMMON }) }]
+    return [name, { ...(item.about && { about: item.about }), params: S.obj({ ...(own?.fields ?? {}), ...ITEM_COMMON }) }]
   }))
-}
-
-/**
- * A level's bench by its model: models are { [name]: { about, setup?, stage?, case? } } — the model's parameters, and
- * the fields it adds to a stage or a case.
- */
-export function benchSchema(models) {
-  return S.by('model', Object.fromEntries(Object.entries(models).map(([name, m]) => [name, S.obj({
-    model: S.oneOf([name]),
-    ...(m.setup ? { setup: m.setup } : {}),
-    knobs: S.opt(S.map(KNOB)),
-    cases: S.opt(S.list(S.obj({ label: S.text(), ...(m.case?.fields ?? {}) }), { min: 2 })),
-    stages: S.opt(S.list(S.obj({ ...STAGE_COMMON, ...(m.stage?.fields ?? {}) }), { min: 1 })),
-    actions: S.opt(S.list(ACTION)),
-    goal: S.opt(S.list(LIMIT)),
-    check: S.opt(S.oneOf(['live', 'submit'], { about: t('目标怎样判：live 随旋钮实时判（默认）；submit 只在玩家按「检查」时判，在那之前目标的读数和画面里的结果都不显示，玩家要先想好再试') })),
-    win: S.opt(S.text()), status: S.opt(S.text()),
-    layout: LAYOUT,
-  })])))
 }
 
 /* ---------- knobs ---------- */

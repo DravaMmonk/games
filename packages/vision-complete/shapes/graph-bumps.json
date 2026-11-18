@@ -1,0 +1,37 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/bumps"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "above": {
+          "type": "num"
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/bumps-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/bumps-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

@@ -27,7 +27,7 @@ const PREFIX = '/studio/api/'
 const MODULE = 'virtual:studio-domains'
 
 const courseCatalog = {
-  about: 'List placed levels in other games for cross-game prerequisite links.',
+  about: { zh: '列出其他游戏中已编排的关卡，供跨游戏先修引用。', en: 'List placed levels in other games for cross-game prerequisite links.' },
   params: { game: 'string' },
   async run({ game }) {
     const root = contentRoot()

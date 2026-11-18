@@ -76,8 +76,12 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
         domain = await runtimeOf(ws.content(), ws.root)
         ws.schemas = domain.vocabulary
       }
-      if (name.startsWith('kind.')) {
-        const layers = ws.packageLayers.map(layer => layer.id !== ws.packageId ? layer : { ...layer, objects: [...layer.objects.filter(o => o.kind !== 'kind'), ...[...ws.contentObjects.kind].map(([name, value]) => ({ kind: 'kind', name, value }))] })
+      if (name.startsWith('kind.') || name.startsWith('object.') && args.kind === 'shape') {
+        const declarations = ['kind', 'shape']
+        const layers = ws.packageLayers.map(layer => layer.id !== ws.packageId ? layer : { ...layer, objects: [
+          ...layer.objects.filter(o => !declarations.includes(o.kind)),
+          ...declarations.flatMap(kind => [...ws.contentObjects[kind]].map(([name, value]) => ({ kind, name, value }))),
+        ] })
         // Rebuild from the unextended layer vocabulary, so replacing a declaration is a hard switch.
         const { layerVocabulary } = await import('../resolver.js')
         ws.schemas = layerVocabulary(layers)

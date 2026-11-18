@@ -37,7 +37,7 @@ const ap = (flags, g) => {
   return sum / g
 }
 const RANKS = row(Array.from({ length: N }, (_, k) => k + 1))
-const RANKED = S.obj({ flags: S.list(S.oneOf([0, 1]), { min: N, about: t('按分数排好的 16 个检测，对 1 错 0') }), g: S.int({ min: 1, about: t('标注了几个') }) })
+const RANKED = S.obj({ flags: S.list(S.oneOf([0, 1]), { min: N, about: t('按分数排好的 16 个检测，对 1 错 0') }), g: S.int({ min: 1 }) })
 
 // An anchor (cx, cy, w, h) and the corrections (tx, ty, tw, th): the box is centred at cx + tx·w, cy + ty·h, w·e^tw
 // by h·e^th.

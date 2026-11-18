@@ -1,0 +1,22 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "dogs": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      }
+    }
+  }
+}

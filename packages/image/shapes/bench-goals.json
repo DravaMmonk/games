@@ -1,0 +1,56 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "of": {
+        "type": "str"
+      },
+      "label": {
+        "type": "text",
+        "optional": true
+      },
+      "atLeast": {
+        "type": "num",
+        "optional": true
+      },
+      "atMost": {
+        "type": "num",
+        "optional": true
+      },
+      "above": {
+        "type": "num",
+        "optional": true
+      },
+      "below": {
+        "type": "num",
+        "optional": true
+      },
+      "near": {
+        "type": "num",
+        "optional": true
+      },
+      "abs": {
+        "type": "bool",
+        "optional": true
+      },
+      "is": {
+        "type": "any",
+        "optional": true
+      },
+      "not": {
+        "type": "any",
+        "optional": true
+      },
+      "format": {
+        "type": "shape",
+        "name": "image/readout-format"
+      },
+      "unit": {
+        "type": "str",
+        "optional": true
+      }
+    }
+  },
+  "optional": true
+}

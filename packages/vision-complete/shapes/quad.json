@@ -1,0 +1,15 @@
+{
+  "type": "list",
+  "of": {
+    "type": "list",
+    "of": {
+      "type": "num"
+    },
+    "min": 2
+  },
+  "min": 4,
+  "about": {
+    "zh": "书的四个角在照片里的位置",
+    "en": "where the book’s four corners are in the photo"
+  }
+}

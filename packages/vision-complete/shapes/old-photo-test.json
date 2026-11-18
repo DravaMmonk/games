@@ -1,0 +1,31 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "letter": {
+      "type": "oneOf",
+      "values": [
+        "T",
+        "L",
+        "X",
+        "O",
+        "F"
+      ]
+    },
+    "dx": {
+      "type": "int"
+    },
+    "dy": {
+      "type": "int"
+    },
+    "seed": {
+      "type": "int"
+    }
+  }
+}

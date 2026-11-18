@@ -1,0 +1,24 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "marks": {
+      "type": "shape",
+      "name": "vision-complete/marks"
+    },
+    "seed": {
+      "type": "int",
+      "about": {
+        "zh": "颗粒的种子",
+        "en": "the grain’s seed"
+      },
+      "optional": true
+    }
+  }
+}

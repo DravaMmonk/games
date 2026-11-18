@@ -1,0 +1,8 @@
+{
+  "type": "str",
+  "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
+  "about": {
+    "zh": "ASCII 值：写进蓝图文本",
+    "en": "an ASCII value, as blueprint text writes it"
+  }
+}

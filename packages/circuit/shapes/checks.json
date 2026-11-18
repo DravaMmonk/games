@@ -1,0 +1,20 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "holds": {
+        "type": "shape",
+        "name": "circuit/engine-expression"
+      },
+      "say": {
+        "type": "text"
+      }
+    }
+  },
+  "about": {
+    "zh": "设置必须满足的条件：不满足时卡片上说出原因，元件不计算",
+    "en": "conditions the settings must meet: else the card says why and the part computes nothing"
+  },
+  "optional": true
+}

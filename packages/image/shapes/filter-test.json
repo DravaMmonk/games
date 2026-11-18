@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "in": {
+      "type": "call",
+      "kind": "picture",
+      "optional": true
+    },
+    "inputs": {
+      "type": "map",
+      "of": {
+        "type": "call",
+        "kind": "picture"
+      },
+      "about": {
+        "zh": "有几个输入时，每个输入的图",
+        "en": "the picture of each input, when there are several"
+      },
+      "optional": true
+    }
+  }
+}

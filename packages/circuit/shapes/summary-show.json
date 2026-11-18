@@ -1,0 +1,19 @@
+{
+  "type": "obj",
+  "fields": {
+    "show": {
+      "type": "oneOf",
+      "values": [
+        "summary"
+      ]
+    },
+    "text": {
+      "type": "text",
+      "about": {
+        "zh": "带 {设置} 的一句话",
+        "en": "words with {setting} in them"
+      },
+      "optional": true
+    }
+  }
+}

@@ -18,8 +18,8 @@ export const GLOSSARY = S.obj({
 export const OPEN = S.map(S.list(S.obj({ part: S.str(), level: S.level() })))
 
 
-export function defineVocabulary({ module, kinds, game, level, languages = {} }) {
-  return { module, kinds, game, level, languages }
+export function defineVocabulary({ module, kinds, game, level, languages = {}, shapes }) {
+  return { module, kinds, game, level, languages, ...(shapes && { shapes }) }
 }
 
 /** The vocabulary as plain data: its kinds and items with what they are and their parameters, and the content schemas. */

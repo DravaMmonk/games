@@ -81,35 +81,8 @@
                     "view": "grid"
                   },
                   "views": {
-                    "type": "list",
-                    "of": {
-                      "type": "oneOf",
-                      "values": [
-                        "value",
-                        "numbers",
-                        "pixels",
-                        "plane",
-                        "carried",
-                        "chain",
-                        "plot",
-                        "profile",
-                        "surface",
-                        "slope",
-                        "spectrum",
-                        "centredBins",
-                        "wave",
-                        "bands",
-                        "terms",
-                        "dots",
-                        "sequence"
-                      ]
-                    },
-                    "min": 1,
-                    "about": {
-                      "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-                      "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-                    },
-                    "optional": true
+                    "type": "shape",
+                    "name": "tick-bus/views"
                   },
                   "label": {
                     "type": "text",
@@ -141,35 +114,8 @@
                     ]
                   },
                   "views": {
-                    "type": "list",
-                    "of": {
-                      "type": "oneOf",
-                      "values": [
-                        "value",
-                        "numbers",
-                        "pixels",
-                        "plane",
-                        "carried",
-                        "chain",
-                        "plot",
-                        "profile",
-                        "surface",
-                        "slope",
-                        "spectrum",
-                        "centredBins",
-                        "wave",
-                        "bands",
-                        "terms",
-                        "dots",
-                        "sequence"
-                      ]
-                    },
-                    "min": 1,
-                    "about": {
-                      "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-                      "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-                    },
-                    "optional": true
+                    "type": "shape",
+                    "name": "tick-bus/views"
                   },
                   "label": {
                     "type": "text",
@@ -193,35 +139,8 @@
                     }
                   },
                   "views": {
-                    "type": "list",
-                    "of": {
-                      "type": "oneOf",
-                      "values": [
-                        "value",
-                        "numbers",
-                        "pixels",
-                        "plane",
-                        "carried",
-                        "chain",
-                        "plot",
-                        "profile",
-                        "surface",
-                        "slope",
-                        "spectrum",
-                        "centredBins",
-                        "wave",
-                        "bands",
-                        "terms",
-                        "dots",
-                        "sequence"
-                      ]
-                    },
-                    "min": 1,
-                    "about": {
-                      "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-                      "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-                    },
-                    "optional": true
+                    "type": "shape",
+                    "name": "tick-bus/views"
                   },
                   "label": {
                     "type": "text",
@@ -268,10 +187,6 @@
     },
     "listens": {
       "type": "bool",
-      "about": {
-        "zh": "板上有线元件",
-        "en": "the board has the line card"
-      },
       "optional": true
     },
     "talks": {
@@ -283,119 +198,18 @@
       "optional": true
     },
     "inputs": {
-      "type": "list",
-      "of": {
-        "type": "obj",
-        "fields": {
-          "name": {
-            "type": "str",
-            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
-          },
-          "label": {
-            "type": "text"
-          },
-          "view": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ],
-            "about": {
-              "zh": "这个口的值起初画成哪种显示方式（玩家在详情和结果区里换）",
-              "en": "the view its value starts in (the player switches it in its detail and results row)"
-            },
-            "optional": true
-          }
-        }
-      },
-      "optional": true
+      "type": "shape",
+      "name": "tick-bus/inputs"
     },
     "outputs": {
-      "type": "list",
-      "of": {
-        "type": "obj",
-        "fields": {
-          "name": {
-            "type": "str",
-            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
-          },
-          "label": {
-            "type": "text"
-          },
-          "view": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ],
-            "about": {
-              "zh": "这个口的值起初画成哪种显示方式（玩家在详情和结果区里换）",
-              "en": "the view its value starts in (the player switches it in its detail and results row)"
-            },
-            "optional": true
-          }
-        }
-      },
-      "optional": true
+      "type": "shape",
+      "name": "tick-bus/inputs"
     },
     "tests": {
       "type": "list",
       "of": {
-        "type": "obj",
-        "fields": {
-          "line": {
-            "type": "str",
-            "pattern": "^[01.]*$",
-            "about": {
-              "zh": "一拍一个字符：0、1，或 . 表示什么也不说",
-              "en": "one character a tick: 0, 1, or . for nothing said"
-            }
-          },
-          "inputs": {
-            "type": "map",
-            "of": {
-              "type": "list",
-              "of": {
-                "type": "int"
-              }
-            },
-            "about": {
-              "zh": "每个输入每一拍的值",
-              "en": "each input’s value tick by tick"
-            },
-            "optional": true
-          }
-        }
+        "type": "shape",
+        "name": "tick-bus/test"
       },
       "min": 1,
       "section": "tests"
@@ -403,31 +217,8 @@
     "hidden": {
       "type": "list",
       "of": {
-        "type": "obj",
-        "fields": {
-          "line": {
-            "type": "str",
-            "pattern": "^[01.]*$",
-            "about": {
-              "zh": "一拍一个字符：0、1，或 . 表示什么也不说",
-              "en": "one character a tick: 0, 1, or . for nothing said"
-            }
-          },
-          "inputs": {
-            "type": "map",
-            "of": {
-              "type": "list",
-              "of": {
-                "type": "int"
-              }
-            },
-            "about": {
-              "zh": "每个输入每一拍的值",
-              "en": "each input’s value tick by tick"
-            },
-            "optional": true
-          }
-        }
+        "type": "shape",
+        "name": "tick-bus/test"
       },
       "section": "tests",
       "about": {
@@ -448,11 +239,7 @@
       }
     },
     "solution": {
-      "type": "board",
-      "about": {
-        "zh": "一块板的蓝图文本，每行一个字符串",
-        "en": "a board as blueprint text, one string a line"
-      }
+      "type": "board"
     },
     "naive": {
       "type": "list",
@@ -491,35 +278,8 @@
             }
           },
           "views": {
-            "type": "list",
-            "of": {
-              "type": "oneOf",
-              "values": [
-                "value",
-                "numbers",
-                "pixels",
-                "plane",
-                "carried",
-                "chain",
-                "plot",
-                "profile",
-                "surface",
-                "slope",
-                "spectrum",
-                "centredBins",
-                "wave",
-                "bands",
-                "terms",
-                "dots",
-                "sequence"
-              ]
-            },
-            "min": 1,
-            "about": {
-              "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-              "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-            },
-            "optional": true
+            "type": "shape",
+            "name": "tick-bus/views"
           },
           "label": {
             "type": "text",
@@ -539,159 +299,24 @@
       "type": "obj",
       "fields": {
         "scalar": {
-          "type": "list",
-          "of": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ]
-          },
-          "min": 1,
-          "about": {
-            "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-            "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-          },
-          "optional": true
+          "type": "shape",
+          "name": "tick-bus/views"
         },
         "grid": {
-          "type": "list",
-          "of": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ]
-          },
-          "min": 1,
-          "about": {
-            "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-            "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-          },
-          "optional": true
+          "type": "shape",
+          "name": "tick-bus/views"
         },
         "bits": {
-          "type": "list",
-          "of": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ]
-          },
-          "min": 1,
-          "about": {
-            "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-            "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-          },
-          "optional": true
+          "type": "shape",
+          "name": "tick-bus/views"
         },
         "ticks": {
-          "type": "list",
-          "of": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ]
-          },
-          "min": 1,
-          "about": {
-            "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-            "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-          },
-          "optional": true
+          "type": "shape",
+          "name": "tick-bus/views"
         },
         "list": {
-          "type": "list",
-          "of": {
-            "type": "oneOf",
-            "values": [
-              "value",
-              "numbers",
-              "pixels",
-              "plane",
-              "carried",
-              "chain",
-              "plot",
-              "profile",
-              "surface",
-              "slope",
-              "spectrum",
-              "centredBins",
-              "wave",
-              "bands",
-              "terms",
-              "dots",
-              "sequence"
-            ]
-          },
-          "min": 1,
-          "about": {
-            "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
-            "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
-          },
-          "optional": true
+          "type": "shape",
+          "name": "tick-bus/views"
         }
       },
       "about": {

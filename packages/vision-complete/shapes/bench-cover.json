@@ -1,0 +1,114 @@
+{
+  "type": "obj",
+  "fields": {
+    "model": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/cover"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "cover": {
+          "type": "obj",
+          "fields": {
+            "w": {
+              "type": "num"
+            },
+            "h": {
+              "type": "num"
+            }
+          }
+        },
+        "photo": {
+          "type": "obj",
+          "fields": {
+            "w": {
+              "type": "num"
+            },
+            "h": {
+              "type": "num"
+            }
+          }
+        },
+        "title": {
+          "type": "list",
+          "of": {
+            "type": "num"
+          },
+          "min": 4
+        },
+        "logo": {
+          "type": "list",
+          "of": {
+            "type": "num"
+          },
+          "min": 4
+        },
+        "quad": {
+          "type": "list",
+          "of": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "min": 2
+          },
+          "min": 4
+        },
+        "clutter": {
+          "type": "obj",
+          "fields": {
+            "note": {
+              "type": "list",
+              "of": {
+                "type": "list",
+                "of": {
+                  "type": "num"
+                },
+                "min": 2
+              },
+              "min": 4
+            },
+            "paper": {
+              "type": "list",
+              "of": {
+                "type": "list",
+                "of": {
+                  "type": "num"
+                },
+                "min": 2
+              },
+              "min": 4
+            }
+          }
+        },
+        "seed": {
+          "type": "int"
+        }
+      }
+    },
+    "cases": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          }
+        }
+      },
+      "min": 2,
+      "optional": true
+    },
+    "stages": {
+      "type": "shape",
+      "name": "image/bench-stages"
+    },
+    "knobs": {
+      "type": "shape",
+      "name": "image/bench-knobs"
+    }
+  }
+}

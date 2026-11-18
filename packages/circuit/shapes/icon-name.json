@@ -1,0 +1,5 @@
+{
+  "type": "shape",
+  "name": "circuit/optional-icon-name",
+  "optional": true
+}

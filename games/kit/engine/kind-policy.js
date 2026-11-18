@@ -3,7 +3,7 @@ const packaged = { declares: 'package', overrides: { package: ['*'], game: ['$te
 const game = { declares: 'game', overrides: { game: ['*'] } }
 export const BUILTIN_POLICIES = {
   level: packaged, task: packaged, tag: { ...packaged, overrides: { ...packaged.overrides, game: ['values', '$text'] } }, relation: { ...packaged, variants: { requires: { overrides: { package: ['*'], game: ['edges', '$text'] } } } },
-  entry: packaged, section: packaged, kind: packaged, i18n: { declares: 'package', overrides: { package: ['*'], game: ['*'] } }, chapter: game, game,
+  shape: { declares: 'package', overrides: {} }, entry: packaged, section: packaged, kind: packaged, i18n: { declares: 'package', overrides: { package: ['*'], game: ['*'] } }, chapter: game, game,
 }
 export const kindPolicy = (kind, schemas, value) => {
   const definition = schemas?.objectKinds?.[kind] ?? BUILTIN_POLICIES[kind] ?? packaged

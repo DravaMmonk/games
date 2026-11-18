@@ -1,0 +1,82 @@
+{
+  "type": "obj",
+  "fields": {
+    "model": {
+      "type": "oneOf",
+      "values": [
+        "image/wave"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "N": {
+          "type": "int",
+          "min": 2
+        }
+      }
+    },
+    "stages": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "title": {
+            "type": "text"
+          },
+          "note": {
+            "type": "text"
+          },
+          "opens": {
+            "type": "shape",
+            "name": "image/stage-opens"
+          },
+          "start": {
+            "type": "map",
+            "of": {
+              "type": "any"
+            },
+            "optional": true
+          },
+          "goal": {
+            "type": "shape",
+            "name": "image/bench-goals"
+          },
+          "win": {
+            "type": "text",
+            "optional": true
+          },
+          "status": {
+            "type": "text",
+            "optional": true
+          },
+          "target": {
+            "type": "map",
+            "of": {
+              "type": "num"
+            }
+          }
+        }
+      },
+      "min": 1,
+      "optional": true
+    },
+    "knobs": {
+      "type": "shape",
+      "name": "image/bench-knobs"
+    },
+    "cases": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          }
+        }
+      },
+      "min": 2,
+      "optional": true
+    }
+  }
+}

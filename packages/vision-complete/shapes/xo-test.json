@@ -1,0 +1,32 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "letter": {
+      "type": "oneOf",
+      "values": [
+        "X",
+        "O"
+      ]
+    },
+    "ox": {
+      "type": "int"
+    },
+    "oy": {
+      "type": "int"
+    },
+    "ink": {
+      "type": "num"
+    },
+    "seed": {
+      "type": "shape",
+      "name": "vision-complete/seed"
+    }
+  }
+}

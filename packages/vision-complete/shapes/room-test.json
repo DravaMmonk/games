@@ -1,0 +1,19 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "seed": {
+      "type": "int"
+    },
+    "obstacles": {
+      "type": "shape",
+      "name": "vision-complete/depth-layers"
+    }
+  }
+}

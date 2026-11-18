@@ -1,0 +1,27 @@
+{
+  "type": "obj",
+  "fields": {
+    "line": {
+      "type": "str",
+      "pattern": "^[01.]*$",
+      "about": {
+        "zh": "一拍一个字符：0、1，或 . 表示什么也不说",
+        "en": "one character a tick: 0, 1, or . for nothing said"
+      }
+    },
+    "inputs": {
+      "type": "map",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        }
+      },
+      "about": {
+        "zh": "每个输入每一拍的值",
+        "en": "each input’s value tick by tick"
+      },
+      "optional": true
+    }
+  }
+}

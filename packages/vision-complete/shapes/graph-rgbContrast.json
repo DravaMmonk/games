@@ -1,0 +1,41 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/rgbContrast"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "mix": {
+          "type": "oneOf",
+          "values": [
+            "redGreen",
+            "blueYellow"
+          ]
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/colour-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/colour-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

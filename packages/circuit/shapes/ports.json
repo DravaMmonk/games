@@ -1,0 +1,30 @@
+{
+  "type": "obj",
+  "fields": {
+    "name": {
+      "type": "str",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "type": {
+      "type": "ref",
+      "kind": "valueType",
+      "optional": true
+    },
+    "label": {
+      "type": "text",
+      "optional": true
+    },
+    "about": {
+      "type": "text",
+      "optional": true
+    },
+    "optional": {
+      "type": "bool",
+      "about": {
+        "zh": "可以不接：不接时运算在这里读到「—」",
+        "en": "may be left unwired: the computation reads 「—」 there when it is"
+      },
+      "optional": true
+    }
+  }
+}

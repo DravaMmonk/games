@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "x": {
+      "type": "num"
+    },
+    "y": {
+      "type": "num"
+    },
+    "q": {
+      "type": "list",
+      "of": {
+        "type": "num"
+      },
+      "min": 2,
+      "about": {
+        "zh": "右图的点 (x′, y′)",
+        "en": "the right point (x′, y′)"
+      }
+    }
+  }
+}

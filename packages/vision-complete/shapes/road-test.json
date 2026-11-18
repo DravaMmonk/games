@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "lanes": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/lanes"
+      }
+    },
+    "specks": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "num"
+        },
+        "min": 2
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "seed": {
+      "type": "int"
+    },
+    "ambiguous": {
+      "type": "list",
+      "of": {
+        "type": "int"
+      },
+      "about": {
+        "zh": "第二近紧跟在后的格子",
+        "en": "the cells where the second nearest is close behind"
+      }
+    }
+  }
+}

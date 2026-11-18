@@ -1,0 +1,32 @@
+{
+  "type": "obj",
+  "fields": {
+    "show": {
+      "type": "oneOf",
+      "values": [
+        "readout"
+      ]
+    },
+    "label": {
+      "type": "text"
+    },
+    "expr": {
+      "type": "shape",
+      "name": "circuit/engine-expression"
+    },
+    "unit": {
+      "type": "text",
+      "optional": true
+    },
+    "digits": {
+      "type": "int",
+      "min": 0,
+      "max": 8,
+      "optional": true
+    }
+  },
+  "about": {
+    "zh": "由设置算出的读数",
+    "en": "a reading worked out from the settings"
+  }
+}

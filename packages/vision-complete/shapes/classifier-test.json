@@ -1,0 +1,28 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "street": {
+      "type": "shape",
+      "name": "vision-complete/street"
+    },
+    "weights": {
+      "type": "oneOf",
+      "values": [
+        "car",
+        "road",
+        "both",
+        "wheels",
+        "sky",
+        "shadow",
+        "wide"
+      ]
+    }
+  }
+}

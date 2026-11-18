@@ -1,0 +1,8 @@
+{
+  "type": "bool",
+  "about": {
+    "zh": "从上一段的电路开始",
+    "en": "start from the task before’s board"
+  },
+  "optional": true
+}

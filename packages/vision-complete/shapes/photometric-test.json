@@ -1,0 +1,23 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "height": {
+      "type": "shape",
+      "name": "vision-complete/height"
+    },
+    "seed": {
+      "type": "int",
+      "about": {
+        "zh": "污渍的种子",
+        "en": "the stains’ seed"
+      }
+    }
+  }
+}

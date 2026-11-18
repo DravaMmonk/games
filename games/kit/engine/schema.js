@@ -1,9 +1,11 @@
+import { shapeCompiler } from './schema-shapes.js'
 import { tagName } from './tag-identity.js'
 // The shape of content (games/DESIGN.md 6.2). A schema is plain data, { type, … }, so a domain's whole vocabulary
 // prints as JSON for whoever writes content (an agent, a studio) without reading any code. validate() reports every
 // place a value does not fit, by its path.
 //
-//   any, bool, num, int, str        a value of that kind (num and int may carry min / max)
+//   any, bool, num, int, str        a value of that kind (num and int may carry min / max, str a pattern)
+//   shape(name)                     a named schema declared by an installed package
 //   text                            resolved catalog text, or a language-neutral literal (a symbol, 'a + b'),
 //                                   carrying only the kernel's markup (markup.js)
 //   oneOf(values)                   one of these values
@@ -23,7 +25,7 @@ import { tagName } from './tag-identity.js'
 //                                   named in its vocabulary's `languages`; given the domain's readers (`languages`),
 //                                   what one cannot read is reported here
 //
-// A schema may carry `about` ({ zh, en } or a string): what the field means, for whoever writes it. It may also carry
+// A schema may carry `about` ({ zh, en }): what the field means, for whoever writes it. It may also carry
 // hints for whoever edits the value (the studio picks a control by them, games/DESIGN.md 6.7); they change nothing a
 // value may be, and validate() ignores them:
 //   view: 'grid'    a list of lists of numbers is a matrix; so is a list of numbers, read row by row, `cols` to a row
@@ -42,6 +44,7 @@ export const HINTS = { view: ['grid', 'ticks', 'expr', 'icon', 'board'], section
 const make = (type) => (extra = {}) => ({ type, ...extra })
 
 export const S = {
+  shape: (name, extra = {}) => ({ type: 'shape', name, ...extra }),
   any: make('any'),
   bool: make('bool'),
   num: make('num'),
@@ -66,11 +69,23 @@ export const S = {
   name: (kind, extra = {}) => ({ type: 'name', kind, ...extra }),
 }
 
+export const validAbout = value => isText(value) && ['zh', 'en'].every(lang => value[lang]?.trim() && !markupOf(value[lang]).problems.length)
+
+/** Resolve references passed directly to a schema reader. Assembly already expands authored declarations. */
+export function resolveShape(schema, vocabulary) {
+  if (schema?.type !== 'shape') return schema
+  const { name, type: _type, ...hints } = schema
+  return { ...shapeCompiler(vocabulary?.shapes ?? {}, vocabulary ?? { kinds: {} }).resolve(name), ...hints }
+}
+
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
 const show = (v) => (typeof v === 'string' ? JSON.stringify(v) : JSON.stringify(v)?.slice(0, 40) ?? String(v))
 
 /** Whether every parameter of an item may be left out (so the item can be written by its name alone). */
-const bare = (params) => !params || (params.type === 'obj' && Object.values(params.fields).every((f) => f.optional))
+const bare = (params, vocabulary) => {
+  const schema = resolveShape(params, vocabulary)
+  return !schema || (schema.type === 'obj' && Object.values(schema.fields).every(field => resolveShape(field, vocabulary).optional))
+}
 
 /**
  * Every place `value` does not fit `schema`, as [{ at, says }]. `vocabulary` (vocabulary.js) resolves ref and call;
@@ -84,7 +99,8 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
   const say = (where, says, shape = false) => out.push({ at: where || '(root)', says, ...(shape ? { shape } : {}) })
   const item = (kind, name) => vocabulary?.kinds[kind]?.[name]
 
-  const walk = (s, v, where) => {
+  const walk = (schema, v, where) => {
+    const s = resolveShape(schema, vocabulary)
     switch (s.type) {
       case 'any':
         return
@@ -128,7 +144,8 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
         return
       case 'obj': {
         if (!isObj(v)) return say(where, `expected an object, found ${show(v)}`)
-        for (const [k, f] of Object.entries(s.fields)) {
+        for (const [k, schema] of Object.entries(s.fields)) {
+          const f = resolveShape(schema, vocabulary)
           if (v[k] === undefined) { if (!f.optional) say(`${where}.${k}`, 'is missing') }
           else walk(f, v[k], `${where}.${k}`)
         }
@@ -138,7 +155,13 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
       case 'either': {
         // Try matching literal discriminators first. Invalid values still use every branch for diagnostics.
         const results = new Map()
-        const candidates = isObj(v) ? s.of.filter(option => option.type !== 'obj' || Object.entries(option.fields).every(([key, field]) => field.type !== 'oneOf' || v[key] === undefined || field.values.includes(v[key]))) : s.of
+        const candidates = isObj(v) ? s.of.filter(option => {
+          const shape = resolveShape(option, vocabulary)
+          return shape.type !== 'obj' || Object.entries(shape.fields).every(([key, field]) => {
+            const f = resolveShape(field, vocabulary)
+            return f.type !== 'oneOf' || v[key] === undefined || f.values.includes(v[key])
+          })
+        }) : s.of
         for (const option of candidates) {
           const problems = validate(option, v, { vocabulary, levels, tasks, languages, names, at: where })
           if (!problems.length) return
@@ -196,7 +219,7 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
         if (typeof v === 'string') {
           const it = item(s.kind, v)
           if (!it) say(where, `${show(v)} is no ${s.kind} of the vocabulary`)
-          else if (!bare(it.params)) say(where, `the ${s.kind} ${show(v)} needs parameters: { ${show(v)}: … }`)
+          else if (!bare(it.params, vocabulary)) say(where, `the ${s.kind} ${show(v)} needs parameters: { ${show(v)}: … }`)
           return
         }
         if (!isObj(v) || Object.keys(v).length !== 1) return say(where, `expected a ${s.kind}: { name: parameters } or a name, found ${show(v)}`)
@@ -216,12 +239,13 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
 }
 
 // Of an either's shapes, the first of the kind of `v` that has all its fields.
-const sameShape = (s, v) => {
+const sameShape = (schema, v, vocabulary) => {
+  const s = resolveShape(schema, vocabulary)
   if (v === undefined) return true
-  if (s.type === 'either') return s.of.some(option => sameShape(option, v))
-  if (s.type === 'by') return isObj(v) && Boolean(s.cases[v[s.field]]) && sameShape(s.cases[v[s.field]], v)
-  if (s.type === 'obj') return isObj(v) && Object.entries(v).every(([key, value]) => s.fields[key] && sameShape(s.fields[key], value))
-  if (['list', 'set', 'edges'].includes(s.type)) return Array.isArray(v) && v.every(value => sameShape(s.of, value))
+  if (s.type === 'either') return s.of.some(option => sameShape(option, v, vocabulary))
+  if (s.type === 'by') return isObj(v) && Boolean(s.cases[v[s.field]]) && sameShape(s.cases[v[s.field]], v, vocabulary)
+  if (s.type === 'obj') return isObj(v) && Object.entries(v).every(([key, value]) => s.fields[key] && sameShape(s.fields[key], value, vocabulary))
+  if (['list', 'set', 'edges'].includes(s.type)) return Array.isArray(v) && v.every(value => sameShape(s.of, value, vocabulary))
   if (s.type === 'map') return isObj(v)
   if (s.type === 'oneOf') return s.values.includes(v)
   if (s.type === 'text') return typeof v === 'string' || isText(v)
@@ -231,7 +255,7 @@ const sameShape = (s, v) => {
   if (s.type === 'board') return Array.isArray(v)
   return true
 }
-const kin = (s, v) => s.of.find(option => sameShape(option, v))
+const kin = (s, v, vocabulary) => s.of.find(option => sameShape(option, v, vocabulary))
 
 
 /**
@@ -243,8 +267,9 @@ const kin = (s, v) => s.of.find(option => sameShape(option, v))
 export function find(schema, value, type, { vocabulary = null } = {}) {
   const out = []
   const fits = (s, v) => validate(s, v, { vocabulary }).length === 0
-  const walk = (s, v, path) => {
+  const walk = (schema, v, path) => {
     if (v === undefined) return
+    const s = resolveShape(schema, vocabulary)
     if (s.type === type) out.push({ path, value: v, schema: s })
     switch (s.type) {
       case 'set':
@@ -261,7 +286,8 @@ export function find(schema, value, type, { vocabulary = null } = {}) {
         return
       case 'map':
         if (isObj(v)) for (const [k, x] of Object.entries(v)) {
-          if (s.key?.type === type) out.push({ path: [...path, k], value: k, schema: s.key, key: true })
+          const key = resolveShape(s.key, vocabulary)
+          if (key?.type === type) out.push({ path: [...path, k], value: k, schema: key, key: true })
           walk(s.of, x, [...path, k])
         }
         return
@@ -269,7 +295,7 @@ export function find(schema, value, type, { vocabulary = null } = {}) {
         if (isObj(v)) for (const [k, f] of Object.entries(s.fields)) walk(f, v[k], [...path, k])
         return
       case 'either': {
-        const shape = s.of.find((x) => fits(x, v)) ?? kin(s, v)
+        const shape = s.of.find((x) => fits(x, v)) ?? kin(s, v, vocabulary)
         if (shape) walk(shape, v, path)
         return
       }
@@ -299,9 +325,10 @@ export function shapeAt(schema, value, path, { vocabulary = null } = {}) {
   let v = value
   const resolve = () => {
     for (;;) {
+      s = resolveShape(s, vocabulary)
       if (s?.type === 'either') {
         const fit = s.of.find((x) => validate(x, v, { vocabulary }).length === 0)
-        s = fit ?? kin(s, v) ?? null
+        s = fit ?? kin(s, v, vocabulary) ?? null
       } else if (s?.type === 'by') s = isObj(v) ? s.cases[v[s.field]] ?? null : null
       else return
     }

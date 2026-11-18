@@ -65,7 +65,9 @@ export function layerManifest(layer, layers, schemas, dir) {
     values.set(key, { ...values.get(key), [lang]: value })
   }
   const surface = Object.fromEntries([...entries].map(([key, entry]) => {
-    const value = sourceValue(values.get(key) ?? {})
+    const declaration = values.get(key) ?? {}
+    const value = sourceValue(entry.kind === 'shape' ? schemas.shapes[entry.name]
+      : entry.kind === 'kind' ? schemas.objectKinds[entry.name] ?? declaration : declaration)
     return [key, { ...entry, hash: hash(stableJSON(value)), value }]
   }))
   const exports = Object.fromEntries(Object.entries(layer.entryPaths ?? {}).map(([side, file]) => [side, exportedNames(file)]))

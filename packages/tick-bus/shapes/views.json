@@ -1,0 +1,31 @@
+{
+  "type": "list",
+  "of": {
+    "type": "oneOf",
+    "values": [
+      "value",
+      "numbers",
+      "pixels",
+      "plane",
+      "carried",
+      "chain",
+      "plot",
+      "profile",
+      "surface",
+      "slope",
+      "spectrum",
+      "centredBins",
+      "wave",
+      "bands",
+      "terms",
+      "dots",
+      "sequence"
+    ]
+  },
+  "min": 1,
+  "about": {
+    "zh": "能用的显示方式，第一种是起始；只有一种时玩家不能切换",
+    "en": "the views it may be drawn in, the first to start in; with one, the player cannot switch"
+  },
+  "optional": true
+}

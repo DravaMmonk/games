@@ -1,0 +1,8 @@
+{
+  "type": "str",
+  "about": {
+    "zh": "一行式子：调用领域的引擎资源",
+    "en": "one line calling the domain’s engine resources"
+  },
+  "view": "expr"
+}

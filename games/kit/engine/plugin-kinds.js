@@ -2,22 +2,24 @@ import { BUILTIN_POLICIES } from './kind-policy.js'
 import { CHAPTER } from './course-schema.js'
 import { catalogReader, sourceValue } from './catalogs.js'
 // Data declarations extend an assembly, never process-wide content registries.
-import { S, validate } from './schema.js'
+import { mapSchemaChildren, shapeCompiler, schemaOwner, usesNamedShapes } from './schema-shapes.js'
+import { CODE_NAME } from './object-name.js'
+import { S, validate, validAbout } from './schema.js'
 import { mergeFields } from './collections.js'
 
-export const BUILTIN_KIND_NAMES = ['level', 'task', 'entry', 'tag', 'relation', 'section', 'kind', 'chapter', 'game']
+export const BUILTIN_KIND_NAMES = ['level', 'task', 'entry', 'tag', 'relation', 'section', 'kind', 'shape', 'chapter', 'game']
 
 export const KIND_DECLARATION = S.obj({
   folder: S.opt(S.str({ pattern: '^[a-z][a-z0-9-]*$' })),
   schema: S.opt(S.any()), extends: S.opt(S.str({ pattern: '^(?:level|task|[a-z][a-z0-9-]*/[a-z][a-z0-9-]*)$' })),
-  fields: S.opt(S.map(S.any())), play: S.opt(S.str({ reference: 'play' })), references: S.opt(S.list(S.str())),
+  caseGroups: S.opt(S.str()), fields: S.opt(S.map(S.any())), play: S.opt(S.str({ reference: 'play' })), references: S.opt(S.list(S.str())),
   relations: S.opt(S.map(S.obj({ from: S.str(), to: S.str() }))),
   declares: S.oneOf(['package', 'game']),
   overrides: S.map(S.list(S.str()), { keys: '^(package|game)$' }),
   text: S.opt(S.list(S.str())),
   studio: S.opt(S.obj({ name: S.text(), icon: S.str(), group: S.opt(S.text()) })),
 })
-export const kindSchemas = schemas => ({ chapter: CHAPTER, kind: KIND_DECLARATION,
+export const kindSchemas = schemas => ({ chapter: CHAPTER, kind: KIND_DECLARATION, shape: S.any(),
   ...Object.fromEntries(Object.entries(schemas?.objectKinds ?? {}).filter(([, d]) => !d.extends).map(([name, d]) => [name, d.schema])) })
 
 const extend = (schema, fields) => {
@@ -27,13 +29,18 @@ const extend = (schema, fields) => {
   for (const key of Object.keys(fields)) if (schema.fields[key]) throw new Error(`field extension cannot redefine ${key}`)
   return { ...schema, fields: { ...schema.fields, ...fields } }
 }
+const SCHEMA_TYPES = new Set(Object.keys(S).filter(type => !['opt', 'shape'].includes(type)))
+function inspect(schema, name) {
+  if (!SCHEMA_TYPES.has(schema.type)) throw new Error(`${name}: invalid field schema ${schema.type}`)
+  if (Object.hasOwn(schema, 'about') && !validAbout(schema.about)) throw new Error(`${name}: about needs Chinese and English text`)
+  for (const key of ['fields', 'cases']) for (const [field, child] of Object.entries(schema[key] ?? {})) inspect(child, `${name}.${field}`)
+  if (schema.of) (Array.isArray(schema.of) ? schema.of : [schema.of]).forEach(child => inspect(child, name))
+  if (schema.key) inspect(schema.key, name)
+}
+
 /** Expand shared fields in declaration discriminator trees once, before consumers read their schemas. */
 function declarationSchema(source) {
-  const schema = { ...source }
-  if (schema.fields) schema.fields = Object.fromEntries(Object.entries(schema.fields).map(([key, field]) => [key, declarationSchema(field)]))
-  if (schema.of) schema.of = Array.isArray(schema.of) ? schema.of.map(declarationSchema) : declarationSchema(schema.of)
-  if (schema.key) schema.key = declarationSchema(schema.key)
-  if (schema.cases) schema.cases = Object.fromEntries(Object.entries(schema.cases).map(([key, branch]) => [key, declarationSchema(branch)]))
+  const schema = mapSchemaChildren(source, declarationSchema)
   if (schema.type === 'by' && schema.fields) {
     const fields = schema.fields
     delete schema.fields
@@ -56,27 +63,50 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
       raw[object.name] = mergeFields(raw[object.name], read(object), KIND_DECLARATION)
     }
   }
+  const shapeDeclarations = { ...vocabulary.shapes }
+  const owners = new Map(layers.map(layer => [layer.id, layer.config?.uses]))
+  for (const layer of layers) for (const object of layer.objects.filter(object => object.kind === 'shape')) {
+    const name = object.name.includes('/') ? object.name : `${layer.id}/${object.name}`
+    if (!CODE_NAME.test(name) || schemaOwner(name) !== layer.id || Object.hasOwn(shapeDeclarations, name)) throw new Error(`invalid or duplicate schema shape ${name}`)
+    shapeDeclarations[name] = object.value
+  }
+  const compiler = shapeCompiler(shapeDeclarations, vocabulary, (owner, name) => {
+    if (!checked && owner !== schemaOwner(name) && !owners.get(owner)?.[schemaOwner(name)]) throw new Error(`${owner}: schema shape ${name} requires a declared package dependency`)
+  })
+  const shapes = Object.fromEntries(Object.keys(shapeDeclarations).map(name => {
+    const schema = compiler.resolve(name)
+    inspect(schema, name)
+    return [name, declarationSchema(schema)]
+  }))
+  const scoped = new Set()
+  const taskDefinitions = []
   for (const [name, rawDefinition] of Object.entries(raw)) {
     const d = rawDefinition.extends ? rawDefinition : { folder: name.split('/').at(-1), ...rawDefinition }
     const errors = validate(KIND_DECLARATION, d)
     if (errors.length) throw new Error(`${name}: ${JSON.stringify(errors)}`)
-    if (d.play && d.extends !== 'task') throw new Error(`${name}: play scopes a task extension`)
+    if (d.play && d.extends !== 'task' || d.caseGroups && !d.play) throw new Error(`${name}: play scopes a task extension`)
+    if (d.play) {
+      if (schemaOwner(d.play) !== schemaOwner(name)) throw new Error(`${name}: task schema must be declared by ${schemaOwner(d.play)}`)
+      if (scoped.has(d.play)) throw new Error(`${d.play}: duplicate task schema`)
+      scoped.add(d.play)
+    }
     if (d.extends ? !d.fields || d.folder || d.schema && !d.play : !d.schema || !d.folder || d.fields) throw new Error(`${name}: declare folder + schema, or extends + fields`)
     if (!d.extends && Object.entries(definitions).some(([otherName, other]) => other.folder === d.folder && other.declares === d.declares && otherName.split('/')[0] === name.split('/')[0])) throw new Error(`${name}: duplicate object folder ${d.folder}`)
-    if (!d.extends && ['levels', 'tasks', 'entries', 'tags', 'relations', 'sections', 'chapters', 'kinds', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
-    const inspect = schema => {
-      const types = ['any', 'bool', 'num', 'int', 'str', 'text', 'oneOf', 'list', 'set', 'edges', 'map', 'obj', 'either', 'by', 'ref', 'name', 'level', 'task', 'board', 'syntax', 'call']
-      if (!schema || !types.includes(schema.type)) throw new Error(`${name}: invalid field schema`)
-      if (schema.type === 'obj' || schema.type === 'by') Object.values(schema.fields ?? {}).forEach(inspect)
-      if (['list', 'set', 'edges', 'map'].includes(schema.type)) inspect(schema.of)
-      if (schema.type === 'either') schema.of.forEach(inspect)
-      if (schema.type === 'by') Object.values(schema.cases).forEach(inspect)
+    if (!d.extends && ['levels', 'tasks', 'entries', 'tags', 'relations', 'sections', 'chapters', 'kinds', 'shapes', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
+    const owner = schemaOwner(name)
+    const compiled = group => {
+      const resolve = schema => {
+        const result = compiler.compile(schema, owner, group)
+        inspect(result, name)
+        return declarationSchema(result)
+      }
+      return { ...d, ...(d.schema && { schema: resolve(d.schema) }), ...(d.fields && { fields: Object.fromEntries(Object.entries(d.fields).map(([key, field]) => [key, resolve(field)])) }) }
     }
-    if (d.extends) { Object.values(d.fields).forEach(inspect); if (d.schema) inspect(d.schema) }
-    else inspect(d.schema)
-    const definition = structuredClone(d)
-    if (definition.schema) definition.schema = declarationSchema(definition.schema)
-    if (definition.fields) definition.fields = Object.fromEntries(Object.entries(definition.fields).map(([key, field]) => [key, declarationSchema(field)]))
+    const definition = compiled(null)
+    if (d.play) {
+      const groups = d.caseGroups ? [...new Set(Object.keys(vocabulary.kinds[d.caseGroups] ?? {}).map(schemaOwner))] : [owner]
+      for (const group of groups) taskDefinitions.push({ group, declaration: d.caseGroups ? compiled(group) : definition })
+    }
     for (const path of d.text ?? []) {
       let field = definition.schema
       for (const key of path.split('.')) field = key === '*' ? field?.of : field?.fields?.[key]
@@ -112,7 +142,10 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
     }
   }
   // Scoped task fields form their own play branch, so unrelated plays may use the same field name.
-  for (const d of extensions.filter(d => d.play)) {
+  // Keep case diagnostics in the declaring layers’ order.
+  const order = [...owners.keys()]
+  taskDefinitions.sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group))
+  for (const { declaration: d } of taskDefinitions) {
     const tasks = s => {
       if (s.type === 'either') return { ...s, of: s.of.map(tasks) }
       if (!s.fields.tasks) return s
@@ -128,18 +161,34 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
     level = tasks(level)
   }
 
-  const scoped = extensions.filter(d => d.play).map(d => d.play)
-  if (scoped.length) {
+  if (taskDefinitions.length) {
+    const plays = taskDefinitions.map(({ declaration }) => declaration.play)
     const exclude = schema => {
       if (schema.type === 'either') return { ...schema, of: schema.of.map(exclude) }
-      if (schema.fields?.play?.type === 'str') return { ...schema, fields: { ...schema.fields, play: { ...schema.fields.play, pattern: `^(?!(?:${scoped.join('|')})$).+` } } }
+      if (schema.fields?.play?.type === 'str') return { ...schema, fields: { ...schema.fields, play: { ...schema.fields.play, pattern: `^(?!(?:${plays.join('|')})$).+` } } }
       if (!schema.fields?.tasks) return schema
       return { ...schema, fields: { ...schema.fields, tasks: { ...schema.fields.tasks, of: exclude(schema.fields.tasks.of) } } }
     }
     level = exclude(level)
   }
 
-  return { ...vocabulary, level, kindPolicies: { ...BUILTIN_POLICIES, ...definitions }, objectKinds: definitions }
+  const compileItems = tables => Object.fromEntries(Object.entries(tables ?? {}).map(([kind, items]) => [kind,
+    Object.fromEntries(Object.entries(items).map(([name, item]) => {
+      const schemas = ['params', 'test', 'case', 'stage'].filter(key => usesNamedShapes(item[key]))
+      return [name, schemas.length ? { ...item, ...Object.fromEntries(schemas.map(key => [key, declarationSchema(compiler.compile(item[key], schemaOwner(name)))])) } : item]
+    })),
+  ]))
+  return { ...vocabulary, level, shapes, shapeDeclarations, kinds: compileItems(vocabulary.kinds), capabilities: compileItems(vocabulary.capabilities), kindPolicies: { ...BUILTIN_POLICIES, ...definitions }, objectKinds: definitions }
+}
+
+/** Reconstruct the authored declaration layers in their original dependency order. */
+export function schemaLayers(order, declarations, extra = {}) {
+  return order.map(id => ({
+    id, ...extra,
+    objects: Object.entries(declarations).flatMap(([kind, values]) => Object.entries(values ?? {})
+      .filter(([name]) => schemaOwner(name) === id)
+      .map(([name, value]) => ({ kind, name, value }))),
+  }))
 }
 
 /** A namespaced kind owns its folder in its own layer. Shared kinds are available in other layers. */

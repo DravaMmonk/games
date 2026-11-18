@@ -1,0 +1,38 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "items": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "tile": {
+            "type": "oneOf",
+            "values": [
+              "X",
+              "C",
+              "P",
+              "K",
+              "R",
+              "S"
+            ]
+          },
+          "at": {
+            "type": "shape",
+            "name": "vision-complete/tile-position"
+          },
+          "hi": {
+            "type": "num"
+          }
+        }
+      }
+    }
+  }
+}

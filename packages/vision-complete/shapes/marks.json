@@ -1,0 +1,34 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "mark": {
+        "type": "oneOf",
+        "values": [
+          "X",
+          "O"
+        ]
+      },
+      "at": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "scale": {
+        "type": "oneOf",
+        "values": [
+          1,
+          2
+        ],
+        "about": {
+          "zh": "2 是大号",
+          "en": "2 for a large one"
+        },
+        "optional": true
+      }
+    }
+  }
+}

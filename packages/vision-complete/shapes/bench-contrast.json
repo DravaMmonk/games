@@ -1,0 +1,62 @@
+{
+  "type": "obj",
+  "fields": {
+    "model": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/contrast"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "names": {
+          "type": "list",
+          "of": {
+            "type": "str"
+          }
+        },
+        "base": {
+          "type": "list",
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          }
+        },
+        "tau": {
+          "type": "num"
+        },
+        "rate": {
+          "type": "num"
+        },
+        "testSeeds": {
+          "type": "list",
+          "of": {
+            "type": "int"
+          }
+        }
+      }
+    },
+    "cases": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          }
+        }
+      },
+      "min": 2,
+      "optional": true
+    },
+    "stages": {
+      "type": "shape",
+      "name": "image/bench-stages"
+    },
+    "knobs": {
+      "type": "shape",
+      "name": "image/bench-knobs"
+    }
+  }
+}

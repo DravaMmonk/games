@@ -1,0 +1,22 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "bright": {
+      "type": "int",
+      "min": 0,
+      "max": 15
+    },
+    "dark": {
+      "type": "int",
+      "min": 0,
+      "max": 15
+    }
+  }
+}

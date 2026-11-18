@@ -26,7 +26,7 @@ function stereo(seed, layers, { far = 0, noise = 0, gain = 1, offset = 0 } = {})
   return { left: jitter(left, seed + 50), right: map(jitter(right, seed + 90), (v) => v * gain + offset), truth }
 }
 const box = ([x0, y0, x1, y1]) => (x, y) => x >= x0 && x < x1 && y >= y0 && y < y1
-const LAYERS = S.list(S.obj({ box: S.list(S.int(), { min: 4, about: t('它占的矩形：x0, y0, x1, y1（不含 x1、y1）') }), d: S.int({ min: 0, about: t('视差') }) }), { about: t('远墙前面的几层，从后往前') })
+const LAYERS = S.list(S.obj({ box: S.list(S.int(), { min: 4, about: t('它占的矩形：x0, y0, x1, y1（不含 x1、y1）') }), d: S.int({ min: 0 }) }), { about: t('远墙前面的几层，从后往前') })
 const layersOf = (layers) => layers.map((l) => [box(l.box), l.d])
 const depthOf = (d, fb) => map(d, (v) => fb / v)
 

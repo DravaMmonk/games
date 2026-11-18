@@ -1,0 +1,8 @@
+{
+  "type": "bool",
+  "about": {
+    "zh": "第一列窄，手机上也并排",
+    "en": "a narrow first column, side by side on a phone too"
+  },
+  "optional": true
+}

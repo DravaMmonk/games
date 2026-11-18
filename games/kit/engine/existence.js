@@ -99,6 +99,17 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
     const dependency = emitter({ kind: 'package', name: layer.id }, `${layer.id}/${layer.id.startsWith('@') ? 'game.json' : 'package.json'}`)
     for (const name of dependencyIds(layer.config)) dependency('package', name, `${dependencies}.${name}`)
     for (const object of layer.codeObjects ?? []) if (object.value.type) emitter({ kind: object.kind, name: object.name }, `${layer.id}/code/${object.kind}/${object.name}`)('kind', object.value.type, 'type')
+    const schemaReferences = (schema, emit, at) => {
+      if (!schema) return
+      if (schema.type === 'shape') emit('shape', schema.name, fieldAt(at, 'name'))
+      for (const key of ['fields', 'cases']) for (const [name, child] of Object.entries(schema[key] ?? {})) schemaReferences(child, emit, fieldAt(fieldAt(at, key), name))
+      if (Array.isArray(schema.of)) schema.of.forEach((child, i) => schemaReferences(child, emit, `${fieldAt(at, 'of')}[${i}]`))
+      else schemaReferences(schema.of, emit, fieldAt(at, 'of'))
+      schemaReferences(schema.key, emit, fieldAt(at, 'key'))
+    }
+    for (const [kind, items] of Object.entries(schemas.kinds ?? {})) for (const [name, item] of Object.entries(items)) {
+      if (item.shape && ownerOf(name) === layer.id) emitter({ kind, name }, `${layer.id}/code/${kind}/${name}`)('shape', item.shape, 'shape')
+    }
     collectReferences(layer.config, schemas.game, schemas, emit, '')
     for (const [override, objects] of [[false, layer.objects], [true, layer.overrides ?? []]]) for (const object of objects) {
       const { kind, name, value } = object
@@ -109,6 +120,11 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
       if (kind === 'relation' && (value.member ?? value.of) && !['any', 'tag'].includes(value.member ?? value.of)) emit('kind', value.member ?? value.of, value.member ? 'member' : 'of')
       collectReferences(value, schemaForKind(kind, schemas, value), schemas, emit, '')
       if (kind === 'tag') emit('kind', value.kind, 'kind')
+      if (kind === 'shape') schemaReferences(value, emit, '')
+      if (kind === 'kind') {
+        schemaReferences(value.schema, emit, 'schema')
+        for (const [key, field] of Object.entries(value.fields ?? {})) schemaReferences(field, emit, fieldAt('fields', key))
+      }
     }
     for (const { namespace, lang, entries } of layer.textOverrides ?? []) for (const key of Object.keys(entries)) {
       const name = key.includes('/') ? key : `${namespace}/${key}`

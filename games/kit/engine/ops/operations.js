@@ -25,7 +25,7 @@ import { expandNames } from '../names.js'
 import { sourceValue } from '../catalogs.js'
 import { OBJECT_NAME, OBJECT_SCHEMAS } from '../objects.js'
 
-const PATH = S.either(S.str(), S.list(S.either(S.str(), S.int({ min: 0 }))), { about: t('字段的路径：tests[0].goal') })
+const PATH = { ...S.either(S.str(), S.list(S.either(S.str(), S.int({ min: 0 })))), about: t('字段的路径：tests[0].goal') }
 const NEW_ID = S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9-]*$', about: t('新的关卡 id（也是文件名）') })
 const fail = (message) => { throw new Error(message) }
 const levelOf = (ws, id) => ws.levels.get(id) ?? fail(`no level ${id}`)
@@ -42,7 +42,7 @@ const restore = (op, base, path, args) => {
   return { op: `${op}.unset`, ...args, path: keys }
 }
 // Tasks by id (../tasks.js): the levels as a list, a task found, where a task goes in a level.
-const TASK = S.str({ pattern: TASK_ID, about: t('任务的 id') })
+const TASK = S.str({ pattern: TASK_ID })
 const TASK_PLACE = S.obj({ level: S.level(), after: S.opt(TASK), first: S.opt(S.bool()) }, { about: t('一关里的一个位置：after 那个任务后面，first 时最前，都不给就在最后') })
 const levelsOf = (ws) => [...ws.levels].map(([id, l]) => ({ id, ...l }))
 const taskOf = (ws, id) => findTask(levelsOf(ws), id) ?? fail(`no task ${id}`)
@@ -285,7 +285,6 @@ export const OPERATIONS = {
     },
   },
   'blueprint.remove': {
-    about: t('删掉课程蓝图'),
     params: S.obj({}),
     apply(ws) {
       if (ws.blueprint === undefined) fail('the game has no blueprint')
@@ -358,7 +357,6 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
   const get = (ws, name, member) => objects(ws).get(target(ws, name, member)) ?? fail(`no ${kind} ${name}`)
   Object.assign(operations, {
     [`${kind}.put`]: {
-      about: t('写入对象', 'Write an object'),
       params: S.obj({ ...selector, data: kind === 'chapter' ? CHAPTER : objectKind ? vocabulary.objectKinds[objectKind].schema : kind === 'entry' ? ENTRY : (kind === 'kind' ? KIND_DECLARATION : null) ?? (kind === 'tag' ? S.obj({ title: S.opt(S.text()), desc: S.opt(S.text()), values: OBJECT_SCHEMAS.tags.fields.values }) : OBJECT_SCHEMAS[plural] ?? S.any()) }),
       apply(ws, args) {
         const name = target(ws, args[kind], args.member), old = objects(ws).get(name)
@@ -369,7 +367,6 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
       },
     },
     [`${kind}.set`]: {
-      about: t('修改对象字段', 'Set an object field'),
       params: S.obj({ ...selector, path: PATH, value: S.any() }),
       apply(ws, args) {
         const name = target(ws, args[kind], args.member), old = get(ws, args[kind], args.member)
@@ -379,7 +376,6 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
       },
     },
     [`${kind}.remove`]: {
-      about: t('删除对象', 'Remove an object'),
       params: S.obj(selector),
       apply(ws, args) {
         const name = target(ws, args[kind], args.member), old = get(ws, args[kind], args.member)
@@ -394,7 +390,6 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
 for (const [kind, plural] of [['entry', 'entries'], ['tag', 'tags'], ['relation', 'relations'], ['section', 'sections'], ['chapter', 'chapters'], ['kind', 'kinds']]) Object.assign(OPERATIONS, objectOperations(kind, plural))
 
 OPERATIONS['entry.patch'] = {
-  about: t('修改对象字段', 'Set an object field'),
   params: S.obj({ entry: S.str({ pattern: OBJECT_NAME }), fields: S.map(S.any()) }),
   apply(ws, { entry, fields }) {
     const old = ws.entries.get(entry) ?? fail(`no entry ${entry}`)
@@ -452,7 +447,6 @@ Object.assign(OPERATIONS, {
 
 // Declared kinds use one operation family instead of generating commands at import time.
 for (const action of ['put', 'set', 'remove']) OPERATIONS[`object.${action}`] = {
-  about: t('编辑声明的对象', 'Edit a declared object'),
   params: S.obj({ kind: S.str(), name: S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9-]*$' }),
     ...(action === 'put' ? { data: S.any() } : action === 'set' ? { path: PATH, value: S.any() } : {}) }),
   apply(ws, { kind, name, data, path, value }) {

@@ -1,0 +1,183 @@
+{
+  "type": "list",
+  "of": {
+    "type": "by",
+    "field": "show",
+    "cases": {
+      "value": {
+        "type": "obj",
+        "fields": {
+          "show": {
+            "type": "oneOf",
+            "values": [
+              "value"
+            ]
+          },
+          "output": {
+            "type": "str",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+            "optional": true
+          }
+        }
+      },
+      "settings": {
+        "type": "shape",
+        "name": "circuit/settings-show"
+      },
+      "setting": {
+        "type": "shape",
+        "name": "circuit/setting-show"
+      },
+      "summary": {
+        "type": "shape",
+        "name": "circuit/summary-show"
+      },
+      "readout": {
+        "type": "shape",
+        "name": "circuit/readout-show"
+      },
+      "action": {
+        "type": "shape",
+        "name": "circuit/action-show"
+      },
+      "text": {
+        "type": "obj",
+        "fields": {
+          "show": {
+            "type": "oneOf",
+            "values": [
+              "text"
+            ]
+          },
+          "text": {
+            "type": "text"
+          }
+        }
+      },
+      "desc": {
+        "type": "obj",
+        "fields": {
+          "show": {
+            "type": "oneOf",
+            "values": [
+              "desc"
+            ]
+          }
+        }
+      },
+      "ports": {
+        "type": "obj",
+        "fields": {
+          "show": {
+            "type": "oneOf",
+            "values": [
+              "ports"
+            ]
+          }
+        }
+      },
+      "widget": {
+        "type": "shape",
+        "name": "circuit/widget-show"
+      },
+      "row": {
+        "type": "obj",
+        "fields": {
+          "show": {
+            "type": "oneOf",
+            "values": [
+              "row"
+            ]
+          },
+          "blocks": {
+            "type": "list",
+            "of": {
+              "type": "by",
+              "field": "show",
+              "cases": {
+                "value": {
+                  "type": "obj",
+                  "fields": {
+                    "show": {
+                      "type": "oneOf",
+                      "values": [
+                        "value"
+                      ]
+                    },
+                    "output": {
+                      "type": "str",
+                      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+                      "optional": true
+                    }
+                  }
+                },
+                "settings": {
+                  "type": "shape",
+                  "name": "circuit/settings-show"
+                },
+                "setting": {
+                  "type": "shape",
+                  "name": "circuit/setting-show"
+                },
+                "summary": {
+                  "type": "shape",
+                  "name": "circuit/summary-show"
+                },
+                "readout": {
+                  "type": "shape",
+                  "name": "circuit/readout-show"
+                },
+                "action": {
+                  "type": "shape",
+                  "name": "circuit/action-show"
+                },
+                "text": {
+                  "type": "obj",
+                  "fields": {
+                    "show": {
+                      "type": "oneOf",
+                      "values": [
+                        "text"
+                      ]
+                    },
+                    "text": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "desc": {
+                  "type": "obj",
+                  "fields": {
+                    "show": {
+                      "type": "oneOf",
+                      "values": [
+                        "desc"
+                      ]
+                    }
+                  }
+                },
+                "ports": {
+                  "type": "obj",
+                  "fields": {
+                    "show": {
+                      "type": "oneOf",
+                      "values": [
+                        "ports"
+                      ]
+                    }
+                  }
+                },
+                "widget": {
+                  "type": "shape",
+                  "name": "circuit/widget-show"
+                }
+              }
+            },
+            "min": 1
+          }
+        }
+      }
+    }
+  },
+  "optional": true
+}

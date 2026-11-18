@@ -238,7 +238,7 @@ export function installCircuitFixture(root) {
   const dir = join(root, 'packages', 'circuit')
   if (existsSync(join(dir, 'package.json'))) return
   mkdirSync(dir, { recursive: true })
-  for (const folder of ['kinds', 'i18n', 'core']) cpSync(new URL(`../../../../packages/circuit/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+  for (const folder of ['kinds', 'shapes', 'i18n', 'core']) cpSync(new URL(`../../../../packages/circuit/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {} }, null, 2) + '\n')
 }
 
@@ -271,7 +271,7 @@ export function installImageFixture(root) {
   for (const id of ['image', 'table']) {
     const dir = join(root, 'packages', id)
     mkdirSync(dir, { recursive: true })
-    for (const folder of ['core', 'view', 'kinds']) cpSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+    for (const folder of ['core', 'view', 'kinds', 'shapes'].filter(folder => existsSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
     cpSync(new URL(`../../../../packages/${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }
@@ -283,7 +283,7 @@ export function installTableFixture(root) {
   for (const id of ['state-graph']) {
     const dir = join(root, 'packages', id)
     mkdirSync(dir, { recursive: true })
-    for (const folder of ['core', 'view', 'kinds']) cpSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+    for (const folder of ['core', 'view', 'kinds', 'shapes'].filter(folder => existsSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
     cpSync(new URL(`../../../../packages/${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }
@@ -297,7 +297,7 @@ export function installLogicFixture(root) {
     const dir = join(root, 'packages', id)
     if (existsSync(join(dir, 'package.json'))) continue
     mkdirSync(dir, { recursive: true })
-    for (const folder of ['core', 'view', 'kinds']) cpSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+    for (const folder of ['core', 'view', 'kinds', 'shapes'].filter(folder => existsSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../../../packages/${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
     cpSync(new URL(`../../../../packages/${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }

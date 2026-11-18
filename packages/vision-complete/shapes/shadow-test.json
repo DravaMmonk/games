@@ -1,0 +1,28 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "paint": {
+      "type": "call",
+      "kind": "picture"
+    },
+    "light": {
+      "type": "oneOf",
+      "values": [
+        "diagonal",
+        "fromLeft",
+        "pole",
+        "corner",
+        "overhead",
+        "leaves",
+        "bars"
+      ]
+    }
+  }
+}

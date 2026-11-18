@@ -1,0 +1,34 @@
+{
+  "type": "obj",
+  "fields": {
+    "show": {
+      "type": "oneOf",
+      "values": [
+        "action"
+      ]
+    },
+    "label": {
+      "type": "text"
+    },
+    "set": {
+      "type": "map",
+      "of": {
+        "type": "shape",
+        "name": "circuit/engine-expression"
+      },
+      "about": {
+        "zh": "设置 → 按下后的新值",
+        "en": "setting → its value once pressed"
+      }
+    },
+    "when": {
+      "type": "shape",
+      "name": "circuit/engine-expression",
+      "optional": true
+    }
+  },
+  "about": {
+    "zh": "按下把几个设置改成算出的值",
+    "en": "a button setting some settings to worked-out values"
+  }
+}

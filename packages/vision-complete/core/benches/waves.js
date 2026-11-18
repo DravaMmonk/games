@@ -13,7 +13,7 @@ const num = S.num()
 export const sum = {
   about: t('叠加：频率 ks 各一道正弦波，振幅旋钮名为 k1、k2…，叠到目标上'),
   setup: S.obj({ N: S.int({ min: 2 }), ks: S.list(S.int()) }),
-  stage: S.obj({ target: S.list(num, { about: t('每个频率的振幅') }) }),
+  stage: S.obj({ target: S.list(num) }),
   make({ N, ks }, bench) {
     const components = ks.map((k) => sinusoid(k, 'sin'))
     const curve = (amps) => (u) => 0.5 + amps.reduce((s, a, i) => s + a * components[i](u), 0)

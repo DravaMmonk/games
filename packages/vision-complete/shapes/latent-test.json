@@ -1,0 +1,16 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "eps": {
+      "type": "shape",
+      "name": "vision-complete/latent-pair"
+    }
+  }
+}

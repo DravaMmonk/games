@@ -1,0 +1,81 @@
+{
+  "type": "obj",
+  "fields": {
+    "model": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/ransac"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "n": {
+          "type": "int"
+        },
+        "sigma": {
+          "type": "num"
+        },
+        "trials": {
+          "type": "int"
+        },
+        "tol": {
+          "type": "obj",
+          "fields": {
+            "theta": {
+              "type": "num"
+            },
+            "rho": {
+              "type": "num"
+            }
+          }
+        },
+        "solution": {
+          "type": "obj",
+          "fields": {
+            "delta": {
+              "type": "num"
+            },
+            "k": {
+              "type": "list",
+              "of": {
+                "type": "int"
+              }
+            }
+          },
+          "about": {
+            "zh": "一组能过的设定：门槛 δ 和每一种外点比例的轮数",
+            "en": "settings that pass: the threshold δ and the rounds for each outlier ratio"
+          }
+        }
+      }
+    },
+    "cases": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          },
+          "outliers": {
+            "type": "num"
+          },
+          "budget": {
+            "type": "int"
+          }
+        }
+      },
+      "min": 2,
+      "optional": true
+    },
+    "stages": {
+      "type": "shape",
+      "name": "image/bench-stages"
+    },
+    "knobs": {
+      "type": "shape",
+      "name": "image/bench-knobs"
+    }
+  }
+}

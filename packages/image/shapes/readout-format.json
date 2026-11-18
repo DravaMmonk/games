@@ -1,0 +1,20 @@
+{
+  "type": "oneOf",
+  "values": [
+    "auto",
+    "raw",
+    "int",
+    "fixed1",
+    "fixed2",
+    "fixed3",
+    "fixed4",
+    "pct",
+    "pct1",
+    "exp",
+    "grouped",
+    "quarterPi",
+    "pow10",
+    "outOf"
+  ],
+  "optional": true
+}

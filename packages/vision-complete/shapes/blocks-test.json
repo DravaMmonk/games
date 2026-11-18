@@ -1,0 +1,37 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "rects": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/origin-size-rectangle"
+      }
+    },
+    "notches": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "about": {
+        "zh": "亮块上缺的格子",
+        "en": "cells missing from the blocks"
+      },
+      "optional": true
+    },
+    "seed": {
+      "type": "int"
+    }
+  }
+}

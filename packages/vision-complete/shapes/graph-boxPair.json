@@ -1,0 +1,41 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/boxPair"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "expect": {
+          "type": "oneOf",
+          "values": [
+            "iou",
+            "good"
+          ]
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/box-pair-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/box-pair-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "obj",
+  "fields": {
+    "cx": {
+      "type": "int",
+      "about": {
+        "zh": "车的左边在第几列",
+        "en": "the column of the car’s left side"
+      }
+    },
+    "house": {
+      "type": "int",
+      "about": {
+        "zh": "房子的左边在第几列",
+        "en": "the column of the house’s left side"
+      },
+      "optional": true
+    }
+  }
+}

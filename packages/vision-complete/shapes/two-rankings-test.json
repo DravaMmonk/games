@@ -1,0 +1,38 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "one": {
+      "type": "obj",
+      "fields": {
+        "flags": {
+          "type": "shape",
+          "name": "vision-complete/flags"
+        },
+        "g": {
+          "type": "int",
+          "min": 1
+        }
+      }
+    },
+    "two": {
+      "type": "obj",
+      "fields": {
+        "flags": {
+          "type": "shape",
+          "name": "vision-complete/flags"
+        },
+        "g": {
+          "type": "int",
+          "min": 1
+        }
+      }
+    }
+  }
+}

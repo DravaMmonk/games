@@ -1,7 +1,7 @@
 // Browser assembly shared by Studio's preview and its single-level play page.
 import { projectVocabulary } from '../engine/kind-meanings.js'
 import { registerPlugins } from '../engine/plugins.js'
-import { withKindDeclarations } from '../engine/plugin-kinds.js'
+import { schemaLayers, withKindDeclarations } from '../engine/plugin-kinds.js'
 import { vocabularyFor } from '../engine/kernel.js'
 import { runtimeIds } from '../engine/runtime-model.js'
 import { composeGame, configureGame } from './compose-game.js'
@@ -13,8 +13,11 @@ export async function loadGame(content, packageLoaders) {
   const kernel = await registerPlugins(entries, { view: true, tasks: content.levels.flatMap(level => level.tasks) })
   const ids = runtimeIds(content)
   const pluginIds = new Set([...kernel.tables.play.keys()].map(name => name.split('/')[0]))
-  const layers = Object.entries(content.registries?.kind ?? {}).filter(([name]) => content.objectKinds?.[name]).map(([name, value]) => ({ id: name.split('/')[0], resolved: true, objects: [{ kind: 'kind', name: name.split('/')[1], value }] }))
-  const vocabulary = withKindDeclarations(projectVocabulary({ ...vocabularyFor([]), meanings: [...kernel.tables.kind.values()] }), layers, pluginIds.size > 0)
+  const layers = schemaLayers(content.layerOrder ?? [], {
+    kind: Object.fromEntries(Object.entries(content.registries?.kind ?? {}).filter(([name]) => content.objectKinds?.[name])),
+    shape: content.registries?.shape,
+  }, { resolved: true })
+  const vocabulary = withKindDeclarations(projectVocabulary({ ...vocabularyFor([]), meanings: [...kernel.tables.kind.values()] }), layers, pluginIds.size > 0, { checked: true })
   const modules = ids.map(id => pluginGame(id, kernel, vocabulary))
   const game = composeGame(content, modules)
   return configureGame(game, content, kernel)

@@ -1,0 +1,20 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "flags": {
+      "type": "shape",
+      "name": "vision-complete/flags"
+    },
+    "g": {
+      "type": "int",
+      "min": 1
+    }
+  }
+}

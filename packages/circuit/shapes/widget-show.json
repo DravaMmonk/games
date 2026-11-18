@@ -1,0 +1,19 @@
+{
+  "type": "obj",
+  "fields": {
+    "show": {
+      "type": "oneOf",
+      "values": [
+        "widget"
+      ]
+    },
+    "widget": {
+      "type": "ref",
+      "kind": "widget"
+    },
+    "params": {
+      "type": "any",
+      "optional": true
+    }
+  }
+}

@@ -195,7 +195,7 @@ export const vocabulary = qualifyVocabulary('logic', defineVocabulary({
     family: FAMILIES,
     kind: KINDS,
     want: WANTS,
-    mark: Object.fromEntries(Object.entries(symbolFor).map(([mark, symbol]) => [mark, item(symbol)])),
+    mark: Object.fromEntries(Object.entries(symbolFor).map(([mark, symbol]) => [mark, { symbol }])),
   },
   game: GAME,
   level: LEVEL,

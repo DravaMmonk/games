@@ -156,14 +156,14 @@ function readLayerUncached(id, dir, config, declarations) {
     if (result?.then) throw new Error(`${id}: register(kernel) must register declarations synchronously`)
   }
   const objects = levelFiles(dir).map(([name, file]) => ({ kind: 'level', name, value: json(file) }))
-  for (const folder of ['tags', 'relations', 'sections', 'chapters']) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind: kindForFolder[folder], name: folder === 'tags' ? name.split('/').at(-1) : name, value: folder === 'tags' ? tagValue(name, json(file)) : json(file) })
+  for (const folder of ['tags', 'relations', 'sections', 'chapters', 'shapes']) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind: kindForFolder[folder], name: folder === 'tags' ? name.split('/').at(-1) : name, value: folder === 'tags' ? tagValue(name, json(file)) : json(file) })
   for (const [name, file] of objectFiles(dir, 'entries')) objects.push({ kind: 'entry', name, value: entryValue(name, json(file)) })
   for (const [name, file] of objectFiles(dir, 'kinds')) objects.push({ kind: 'kind', name, value: json(file) })
   for (const [kind, folder] of Object.entries(objectFoldersFor(id, declarations))) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind, name, value: json(file) })
   const overrides = [], textOverrides = []
   const overrideDir = resolve(dir, 'overrides')
   for (const namespace of existsSync(overrideDir) ? readdirSync(overrideDir) : []) {
-    for (const [kind, folder] of Object.entries({ ...folders, kind: 'kinds', ...objectFoldersFor(namespace, declarations) })) for (const [name, file] of objectFiles(resolve(overrideDir, namespace), folder)) overrides.push({ kind, name: `${namespace}/${kind === 'tag' ? name.split('/').at(-1) : name}`, value: kind === 'tag' ? tagValue(name, json(file)) : json(file) })
+    for (const [kind, folder] of Object.entries({ ...Object.fromEntries(Object.entries(folders).filter(([kind]) => kind !== 'shape')), kind: 'kinds', ...objectFoldersFor(namespace, declarations) })) for (const [name, file] of objectFiles(resolve(overrideDir, namespace), folder)) overrides.push({ kind, name: `${namespace}/${kind === 'tag' ? name.split('/').at(-1) : name}`, value: kind === 'tag' ? tagValue(name, json(file)) : json(file) })
     for (const [lang, entries] of Object.entries(readCatalogs(resolve(overrideDir, namespace, 'i18n')))) textOverrides.push({ namespace, lang, entries })
   }
   return { id, config, entryPaths: Object.fromEntries([['core', 'core/index.js'], ['view', 'view/index.jsx']].filter(([, path]) => existsSync(resolve(dir, path))).map(([side, path]) => [side, resolve(dir, path)])), tagReaders, meanings: [...kernel.tables.kind.values()], codeObjects: [...viewRegistrations(existsSync(resolve(dir, 'view/index.jsx')) ? resolve(dir, 'view/index.jsx') : null), ...pluginObjects(kernel)], objects, overrides, textOverrides, hasCore: existsSync(resolve(dir, 'core/index.js')), hasView: existsSync(resolve(dir, 'view/index.jsx')), catalogs: readCatalogs(resolve(dir, 'i18n')) }

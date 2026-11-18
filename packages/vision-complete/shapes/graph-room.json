@@ -1,0 +1,41 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/room"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "expect": {
+          "type": "oneOf",
+          "values": [
+            "distance",
+            "stop"
+          ]
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/room-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/room-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

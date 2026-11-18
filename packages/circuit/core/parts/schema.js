@@ -8,7 +8,7 @@ import { T as t } from 'kernel'
 
 
 
-const LOCAL_NAME = S.str({ pattern: '^[A-Za-z_][A-Za-z0-9_]*$', about: t('ASCII 名字：字母或下划线开头') })
+const LOCAL_NAME = S.str({ pattern: '^[A-Za-z_][A-Za-z0-9_]*$' })
 export const NAME = S.str({ pattern: '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$' })
 const WORD = S.str({ pattern: '^[A-Za-z0-9_][A-Za-z0-9_.-]*$', about: t('ASCII 值：写进蓝图文本') })
 export const EXPR = S.str({ view: 'expr', about: t('一行式子：调用领域的引擎资源') })
@@ -35,7 +35,7 @@ const CONTROL = {
   tree: { optional: S.opt(S.bool({ about: t('可以不填', 'may be left empty') })) },
   buttons: { options: S.opt(OPTIONS), from: FROM, layout: S.opt(S.oneOf(LAYOUTS, { about: t('row 一行，column 一列，grid 两两一行，pad 上下左右四向（选项 up、left、right、down）') })) },
   number: { ...RANGE, integer: S.opt(S.bool()), stepper: S.opt(S.bool({ about: t('两边加 − / + 按钮') })), optional: S.opt(S.bool({ about: t('没写时读到「—」（新元件仍从 default 起）') })) },
-  slider: { ...RANGE, min: S.num(), max: S.num(), marks: S.opt(S.list(S.num(), { about: t('刻度') })) },
+  slider: { ...RANGE, min: S.num(), max: S.num(), marks: S.opt(S.list(S.num())) },
   toggle: { on: S.opt(S.text()), off: S.opt(S.text()) },
   custom: { widget: S.ref('widget'), params: S.opt(S.any()) },
 }
@@ -54,21 +54,21 @@ export const INLINE_SETTING = S.obj({
 })
 
 const leaf = {
-  value: S.obj({ show: S.oneOf(['value']), output: S.opt(LOCAL_NAME) }, { about: t('输出上的值') }),
-  settings: S.obj({ show: S.oneOf(['settings']), keys: S.opt(S.list(LOCAL_NAME)) }, { about: t('设置的控件') }),
+  value: S.obj({ show: S.oneOf(['value']), output: S.opt(LOCAL_NAME) }),
+  settings: S.obj({ show: S.oneOf(['settings']), keys: S.opt(S.list(LOCAL_NAME)) }),
   setting: S.obj({ show: S.oneOf(['setting']), key: LOCAL_NAME, as: S.opt(S.oneOf(['control', 'label'])) }, { about: t('一个设置：控件，或此刻的值的字') }),
-  summary: S.obj({ show: S.oneOf(['summary']), text: S.opt(S.text({ about: t('带 {设置} 的一句话') })) }, { about: t('一行设置摘要') }),
+  summary: S.obj({ show: S.oneOf(['summary']), text: S.opt(S.text({ about: t('带 {设置} 的一句话') })) }),
   readout: S.obj({ show: S.oneOf(['readout']), label: S.text(), expr: EXPR, unit: S.opt(S.text()), digits: S.opt(S.int({ min: 0, max: 8 })) }, { about: t('由设置算出的读数') }),
   action: S.obj({ show: S.oneOf(['action']), label: S.text(), set: S.map(EXPR, { about: t('设置 → 按下后的新值') }), when: S.opt(EXPR) }, { about: t('按下把几个设置改成算出的值') }),
-  text: S.obj({ show: S.oneOf(['text']), text: S.text() }, { about: t('一段固定的字') }),
-  desc: S.obj({ show: S.oneOf(['desc']) }, { about: t('元件的说明') }),
-  ports: S.obj({ show: S.oneOf(['ports']) }, { about: t('输入口和输出口') }),
-  widget: S.obj({ show: S.oneOf(['widget']), widget: S.ref('widget'), params: S.opt(S.any()) }, { about: t('领域的显示项') }),
+  text: S.obj({ show: S.oneOf(['text']), text: S.text() }),
+  desc: S.obj({ show: S.oneOf(['desc']) }),
+  ports: S.obj({ show: S.oneOf(['ports']) }),
+  widget: S.obj({ show: S.oneOf(['widget']), widget: S.ref('widget'), params: S.opt(S.any()) }),
 }
 /** The blocks a view is made of; a row puts some side by side. */
 export const BLOCKS = Object.keys(leaf).concat('row')
 const LEAF = S.by('show', leaf)
-export const BLOCK = S.by('show', { ...leaf, row: S.obj({ show: S.oneOf(['row']), blocks: S.list(LEAF, { min: 1 }) }, { about: t('几个块排成一行') }) })
+export const BLOCK = S.by('show', { ...leaf, row: S.obj({ show: S.oneOf(['row']), blocks: S.list(LEAF, { min: 1 }) }) })
 const VIEW = S.list(BLOCK)
 /** Desktop card, phone tile and shared detail. */
 export const FACES = ['card', 'tile', 'detail']
@@ -79,7 +79,7 @@ const RULE = S.obj({ on: S.opt(LOCAL_NAME), when: S.opt(EXPR), set: S.map(EXPR, 
 const CHECK = S.obj({ holds: EXPR, say: S.text() })
 const PORT = S.obj({ name: LOCAL_NAME, type: S.opt(S.ref('valueType')), label: S.opt(S.text()), about: S.opt(S.text()), optional: S.opt(S.bool({ about: t('可以不接：不接时运算在这里读到「—」') })) })
 const REGION = S.obj({ name: LOCAL_NAME, type: S.opt(S.ref('valueType')), label: S.opt(S.text()), opens: S.opt(S.bool()), closes: S.opt(S.bool()), gives: S.opt(S.list(LOCAL_NAME)), when: S.opt(EXPR) })
-const HOLES = { inputs: S.opt(S.list(PORT)), outputs: S.opt(S.list(PORT, { min: 2, about: t('几个输出时才写') })) }
+const HOLES = { inputs: S.opt(S.list(PORT)), outputs: S.opt(S.list(PORT, { min: 2 })) }
 const SETTINGS = {
   settings: S.opt(S.map(INLINE_SETTING, { keys: LOCAL_NAME.pattern })),
   rules: S.opt(S.list(RULE, { about: t('交互：一个设置改了，另几个跟着改') })),

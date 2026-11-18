@@ -1,0 +1,19 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "at": {
+      "type": "shape",
+      "name": "vision-complete/blob-centre"
+    },
+    "seed": {
+      "type": "int"
+    }
+  }
+}

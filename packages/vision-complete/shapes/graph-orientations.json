@@ -1,0 +1,53 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/orientations"
+      ]
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          },
+          "train": {
+            "type": "shape",
+            "name": "image/training-test"
+          },
+          "in": {
+            "type": "call",
+            "kind": "picture"
+          }
+        }
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          },
+          "train": {
+            "type": "shape",
+            "name": "image/training-test"
+          },
+          "in": {
+            "type": "call",
+            "kind": "picture"
+          }
+        }
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

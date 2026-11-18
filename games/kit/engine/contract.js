@@ -15,7 +15,7 @@ import { playId } from './plays.js'
 //   gameProblems(content, spec, game)       game.js's game (the shell's description) plays the same levels
 //
 // Each returns what is wrong as [string], empty when the contract holds (validateProblems: { problems, … }).
-import { HINTS, S, validate as fits } from './schema.js'
+import { HINTS, S, validate as fits, validAbout } from './schema.js'
 import { describe } from './vocabulary.js'
 import { taskShapes, tasksSchema } from './tasks.js'
 
@@ -60,6 +60,7 @@ function* schemasIn(s, at) {
   if (s.of) for (const [k, x] of (Array.isArray(s.of) ? s.of : [s.of]).entries()) yield* schemasIn(x, `${at}${Array.isArray(s.of) ? `|${k}` : '[]'}`)
   if (s.fields) for (const [k, x] of Object.entries(s.fields)) yield* schemasIn(x, `${at}.${k}`)
   if (s.cases) for (const [k, x] of Object.entries(s.cases)) yield* schemasIn(x, `${at}<${k}>`)
+  if (s.key) yield* schemasIn(s.key, `${at}.key`)
 }
 
 // The schema types are what schema.js makes (opt is a flag on another type, not a type of its own).
@@ -71,13 +72,16 @@ export function vocabularyProblems(name, v) {
   if (v.module !== name) say(`it is ${v.module}'s, in the folder ${name}`)
   if (!Number.isInteger(v.version) || v.version < 1) say(`version ${v.version} is no whole number from 1`)
   if (!v.kinds || !Object.keys(v.kinds).length) say('it has no kinds')
-  const schemas = [['game', v.game], ['level', v.level]]
+  const schemas = [['game', v.game], ['level', v.level], ...Object.entries(v.shapes ?? {})]
+  const about = (value, at) => {
+    if (value?.about !== undefined && !validAbout(value.about)) say(`${at}: about needs Chinese and English text`)
+  }
   for (const [kind, items] of Object.entries(v.kinds ?? {})) {
     // A module may use only capabilities registered by its dependencies.
     if (!Object.keys(items).length && kind !== 'op') say(`the kind ${kind} has no items`)
     for (const [item, it] of Object.entries(items)) {
-      if (!isText(it.about)) say(`${kind}.${item} says nothing of what it is (about)`)
-      if (it.params) schemas.push([`${kind}.${item}`, it.params])
+      about(it, `${kind}.${item}`)
+      for (const key of ['params', 'test', 'case', 'stage']) if (it[key]?.type) schemas.push([`${kind}.${item}.${key}`, it[key]])
       if (kind === 'op' && !(Array.isArray(it.args) && it.args.every((a) => typeof a?.name === 'string'))) say(`op.${item} lists no arguments (args: [{ name }])`)
       if (kind === 'op' && it.params && it.params.type !== 'obj') say(`op.${item}: its named parameters are an S.obj`)
     }
@@ -87,11 +91,12 @@ export function vocabularyProblems(name, v) {
   const tasks = v.level ? tasksSchema(v) : null
   if (v.level && !tasks) say('a level is a list of tasks (tasks.js taskLevel)')
   if (tasks && taskShapes(tasks).some((shape) => !shape.fields?.id || shape.fields.id.optional)) say('a level’s tasks need an id each (tasks.js TASK_ID_FIELD)')
-  for (const [lang, it] of Object.entries(v.languages ?? {})) if (!isText(it?.about)) say(`the language ${lang} says nothing of what it is (about)`)
+  for (const [lang, it] of Object.entries(v.languages ?? {})) about(it, `language ${lang}`)
   for (const r of v.removes ?? []) if (typeof r?.at !== 'string' || !isText(r.why)) say(`a removal says not where (at) or why (why): ${JSON.stringify(r)}`)
   for (const [where, schema] of schemas) {
     if (!schema) { say(`no ${where} schema`); continue }
     for (const [s, at] of schemasIn(schema, where)) {
+      about(s, at)
       if (!TYPES.includes(s.type)) say(`${at}: ${JSON.stringify(s.type)} is no schema type`)
       // Typed resources come from the vocabulary and installed declarations.
       if (s.type === 'syntax' && !v.languages?.[s.lang]) say(`${at}: names the language ${s.lang}, which the vocabulary has not`)
@@ -152,7 +157,7 @@ export function moduleProblems(module, registry, runtime = null) {
   for (const [kind, table] of Object.entries(registry.tables)) for (const [name, item] of Object.entries(table)) {
     if (!name.startsWith(prefix)) continue
     count++
-    if (!isText(item.about)) out.push(`${name}: missing description`)
+    if (item.about !== undefined && !validAbout(item.about)) out.push(`${name}: about needs Chinese and English text`)
     if (!sameJson(JSON.parse(JSON.stringify(item)), item)) out.push(`${name}: capability is not printable data`)
     if (kind === 'valueType') for (const type of item.accepts ?? []) if (!declaredType(type)) out.push(`${name}: accepts unknown value type ${type}`)
     if (kind === 'board') for (const type of item.valueTypes ?? []) if (!declaredType(type)) out.push(`${name}: board uses unknown value type ${type}`)

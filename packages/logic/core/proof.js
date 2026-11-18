@@ -495,8 +495,8 @@ const thingText = (t, ctx) => sayTerm(parse(`${t} = ${t}`, { consts: ctx.task.co
  * thing, or a sentence where the level has a ∀ over sentences), and the places a rewrite may replace.
  */
 export const OPTIONS = {
-  names: { about: T('能取的名字', 'Names to take'), args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).name.map((value) => ({ value, label: value })) },
-  things: { about: T('能选的东西', 'Things to choose'), args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).term.map((value) => ({ value, label: thingText(value, ctx) })) },
+  names: { args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).name.map((value) => ({ value, label: value })) },
+  things: { args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).term.map((value) => ({ value, label: thingText(value, ctx) })) },
   instances: {
     about: T('能代入的东西或句子', 'Things or sentences to put in'),
     args: [],

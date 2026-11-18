@@ -1,0 +1,39 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "layout": {
+      "type": "oneOf",
+      "values": [
+        "apples",
+        "flags",
+        "flowers",
+        "stall",
+        "street",
+        "desk",
+        "market",
+        "poster",
+        "garden",
+        "kitchen"
+      ]
+    },
+    "light": {
+      "type": "oneOf",
+      "values": [
+        "diagonal",
+        "fromLeft",
+        "pole",
+        "corner",
+        "overhead",
+        "leaves",
+        "bars"
+      ]
+    }
+  }
+}

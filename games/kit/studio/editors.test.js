@@ -20,7 +20,7 @@ test('Studio mounts editors and lists by full object type and keeps unknown type
   assert.equal(editorForType('sample/scene').list, list)
   assert.equal(editorForType('sample/missing'), undefined)
   assert.equal(fieldEditor('scene'), control)
-  const vocabulary = browserVocabulary({ legacyModules: [], packageCode: true, kindDeclarations: {} })
+  const vocabulary = browserVocabulary({ layerOrder: ['sample'], legacyModules: [], packageCode: true, kindDeclarations: {} })
   assert.equal(vocabulary.projected, true)
   assert.deepEqual(fileSchema(vocabulary, 'scenes'), { type: 'any' })
   assert.equal(contentVocabulary(vocabulary, { count: 2 }).sceneCount, 2)

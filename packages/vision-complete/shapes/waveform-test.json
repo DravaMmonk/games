@@ -1,0 +1,38 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "c": {
+      "type": "num"
+    },
+    "waves": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "int",
+            "min": 0
+          },
+          "A": {
+            "type": "num"
+          },
+          "phase": {
+            "type": "num",
+            "about": {
+              "zh": "错开多少度",
+              "en": "how many degrees it is shifted"
+            },
+            "optional": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -65,13 +65,11 @@ export const vocabulary = qualifyVocabulary('image', defineVocabulary({
     unlock: UNLOCKS,
     view: VIEWS,
     picture: items(PICTURES),
-    scene: Object.fromEntries(Object.entries(SCENES).map(([name, s]) => [name, { about: s.about, ...(s.setup ? { params: s.setup } : {}), test: s.test }])),
+    scene: Object.fromEntries(Object.entries(SCENES).map(([name, s]) => [name, { about: s.about, shape: `image/graph-${name.split('/')[1]}`, ...(s.setup ? { params: s.setup } : {}), test: s.test }])),
     target: items(TARGETS),
     constraint: items(CONSTRAINTS),
-    benchModel: Object.fromEntries(Object.entries(BENCH_MODELS).map(([name, m]) => [name, { about: m.about, ...(m.setup ? { params: m.setup } : {}), ...(m.stage ? { stage: m.stage } : {}), ...(m.case ? { case: m.case } : {}) }])),
+    benchModel: Object.fromEntries(Object.entries(BENCH_MODELS).map(([name, m]) => [name, { about: m.about, shape: `image/bench-${name.split('/')[1]}`, ...(m.setup ? { params: m.setup } : {}), ...(m.stage ? { stage: m.stage } : {}), ...(m.case ? { case: m.case } : {}) }])),
     display: Object.fromEntries(Object.entries(displayItems(DISPLAYS))),
   },
-
-  // A level is a list of tasks (../../engine/tasks.js), each by its kind, and a circuit task by its scene too.
 
 }))

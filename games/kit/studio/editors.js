@@ -4,7 +4,10 @@ export function installStudioPlugins(kernel) { plugins = kernel }
 export const registeredEditors = () => [...(plugins?.tables.editor.values() ?? [])]
 export const editorRoute = (selection = null) => registeredEditors().find(editor => editor.route && (!selection || selection[editor.route.selector] !== undefined))?.route
 export const editorForType = type => [...(plugins?.tables.editor.values() ?? [])].find(editor => editor.type === type)
-export const registeredMeanings = () => [...(plugins?.tables.kind.values() ?? [])]
+export function registeredMeanings(order) {
+  const entries = [...(plugins?.tables.kind ?? [])]
+  return order ? order.flatMap(id => entries.filter(([name]) => name.startsWith(`${id}/`)).map(([, meaning]) => meaning)) : entries.map(([, meaning]) => meaning)
+}
 export const fieldEditor = kind => [...(plugins?.tables.editor.values() ?? [])].map(editor => editor.fields?.[kind]).find(Boolean)
 export const editorRules = () => Object.assign({}, ...registeredMeanings().map(meaning => meaning.studio?.rules))
 export const fileSchema = (vocabulary, field) => (vocabulary?.meanings ?? registeredMeanings()).map(meaning => meaning.studio?.schemas?.[field]).map(schema => typeof schema === 'function' ? schema(vocabulary) : schema).find(Boolean)

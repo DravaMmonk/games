@@ -1,0 +1,63 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/samples"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "scale": {
+          "type": "num"
+        },
+        "offset": {
+          "type": "num",
+          "optional": true
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          },
+          "train": {
+            "type": "shape",
+            "name": "image/training-test"
+          },
+          "x": {
+            "type": "num"
+          }
+        }
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          },
+          "train": {
+            "type": "shape",
+            "name": "image/training-test"
+          },
+          "x": {
+            "type": "num"
+          }
+        }
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

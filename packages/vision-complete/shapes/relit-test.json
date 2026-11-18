@@ -1,0 +1,22 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "subject": {
+      "type": "call",
+      "kind": "picture"
+    },
+    "gain": {
+      "type": "num"
+    },
+    "offset": {
+      "type": "num"
+    }
+  }
+}

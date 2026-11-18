@@ -9,7 +9,7 @@ import { OBJECT_SCHEMAS } from './objects.js'
 import { ENTRY } from './vocabulary.js'
 import { catalogReader, sourceValue } from './catalogs.js'
 
-export const folders = { level: 'levels', entry: 'entries', tag: 'tags', relation: 'relations', section: 'sections', chapter: 'chapters' }
+export const folders = { level: 'levels', entry: 'entries', tag: 'tags', relation: 'relations', section: 'sections', chapter: 'chapters', shape: 'shapes' }
 export const kindForFolder = Object.fromEntries(Object.entries(folders).map(([kind, folder]) => [folder, kind]))
 export const schemaForKind = (kind, schemas = {}, value) => {
   const schema = ({ level: schemas.level, game: schemas.game, entry: ENTRY, ...kindSchemas(schemas), ...Object.fromEntries(Object.entries(OBJECT_SCHEMAS).map(([folder, schema]) => [kindForFolder[folder], schema])) })[kind]

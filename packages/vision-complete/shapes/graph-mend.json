@@ -1,0 +1,47 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/mend"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "scale": {
+          "type": "oneOf",
+          "values": [
+            1,
+            2
+          ],
+          "about": {
+            "zh": "图案的一格画成几格（2：8 × 8 的图案）",
+            "en": "how many cells a pattern pixel takes (2: 8 × 8 patterns)"
+          },
+          "optional": true
+        }
+      },
+      "optional": true
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/mend-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/mend-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

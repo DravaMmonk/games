@@ -3,7 +3,7 @@
 import { projectVocabulary } from '../engine/kind-meanings.js'
 import { registeredMeanings } from './editors.js'
 import { vocabularyFor } from '../engine/kernel.js'
-import { withKindDeclarations } from '../engine/plugin-kinds.js'
+import { schemaLayers, withKindDeclarations } from '../engine/plugin-kinds.js'
 
 // Tools that only read. The same read asked again while the first is on its way (a view opened twice, an effect run
 // twice in development) waits for the first instead of queueing behind it on the bridge.
@@ -32,7 +32,7 @@ async function send(tool, args, retries = 0) {
 }
 
 /** The vocabulary the server checked against, rebuilt with its schemas: kernel modules plus declared object types. */
-export function browserVocabulary({ legacyModules, packageCode, kindDeclarations }) {
-  const layers = Object.entries(kindDeclarations).map(([name, value]) => ({ id: name.split('/')[0], resolved: true, objects: [{ kind: 'kind', name: name.split('/').slice(1).join('/'), value }] }))
-  return withKindDeclarations(projectVocabulary({ ...vocabularyFor(legacyModules), meanings: registeredMeanings() }), layers, packageCode)
+export function browserVocabulary({ legacyModules, packageCode, kindDeclarations, shapeDeclarations, layerOrder }) {
+  const layers = schemaLayers(layerOrder, { kind: kindDeclarations, shape: shapeDeclarations }, { resolved: true })
+  return withKindDeclarations(projectVocabulary({ ...vocabularyFor(legacyModules), meanings: registeredMeanings(layerOrder) }), layers, packageCode, { checked: true })
 }

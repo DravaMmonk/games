@@ -1,0 +1,26 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "bumps": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "num"
+        },
+        "min": 3
+      },
+      "about": {
+        "zh": "鼓包：cx, cy, 高",
+        "en": "bumps: cx, cy, height"
+      }
+    }
+  }
+}

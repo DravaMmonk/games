@@ -1,0 +1,46 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "part": {
+      "type": "oneOf",
+      "values": [
+        "plate",
+        "ring",
+        "bracket",
+        "gear",
+        "tile"
+      ]
+    },
+    "dents": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/origin-size-rectangle"
+      },
+      "optional": true
+    },
+    "scratches": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/origin-size-rectangle"
+      },
+      "optional": true
+    },
+    "lamp": {
+      "type": "num",
+      "about": {
+        "zh": "灯还剩原来亮度的几成",
+        "en": "what the lamp has left of its brightness"
+      },
+      "optional": true
+    }
+  }
+}

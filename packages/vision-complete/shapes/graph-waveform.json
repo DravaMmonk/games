@@ -1,0 +1,38 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/waveform"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "k": {
+          "type": "int",
+          "min": 0
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/waveform-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/waveform-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

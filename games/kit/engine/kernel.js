@@ -6,7 +6,7 @@ import { createCapabilityRegistry } from './capabilities.js'
 export const capabilities = createCapabilityRegistry()
 
 export const vocabulary = {
-  plugins: { tags: { key: '<member>:<namespace>/<name>', register: 'tag(fullName, member)', reserved: ['kernel'], readers: [...kernelTags.values()].map(({ name, member }) => ({ name, member })) }, core: ['play', 'kind', 'state', 'check', 'agent', 'tag', 'object'], view: ['play', 'editor', 'display'], exports: ['kernel', 'kernel/view'], declarations: 'kinds/<name>.json' },
+  plugins: { tags: { key: '<member>:<namespace>/<name>', register: 'tag(fullName, member)', reserved: ['kernel'], readers: [...kernelTags.values()].map(({ name, member }) => ({ name, member })) }, core: ['play', 'kind', 'state', 'check', 'agent', 'tag', 'object'], view: ['play', 'editor', 'display'], exports: ['kernel', 'kernel/view'], declarations: 'kinds/<name>.json', shapes: 'shapes/<name>.json' },
   meanings: capabilities.meanings,
   capabilities: capabilities.tables,
   kinds: capabilities.kinds,

@@ -794,28 +794,8 @@
                   "min": 0
                 },
                 "items": {
-                  "type": "list",
-                  "of": {
-                    "type": "obj",
-                    "fields": {
-                      "n": {
-                        "type": "text",
-                        "optional": true
-                      },
-                      "w": {
-                        "type": "int",
-                        "min": 0
-                      },
-                      "v": {
-                        "type": "num",
-                        "optional": true
-                      },
-                      "many": {
-                        "type": "bool",
-                        "optional": true
-                      }
-                    }
-                  }
+                  "type": "shape",
+                  "name": "state-graph/packing-items"
                 },
                 "ways": {
                   "type": "bool",
@@ -854,28 +834,8 @@
                   "min": 0
                 },
                 "items": {
-                  "type": "list",
-                  "of": {
-                    "type": "obj",
-                    "fields": {
-                      "n": {
-                        "type": "text",
-                        "optional": true
-                      },
-                      "w": {
-                        "type": "int",
-                        "min": 0
-                      },
-                      "v": {
-                        "type": "num",
-                        "optional": true
-                      },
-                      "many": {
-                        "type": "bool",
-                        "optional": true
-                      }
-                    }
-                  }
+                  "type": "shape",
+                  "name": "state-graph/packing-items"
                 }
               }
             },
@@ -1224,10 +1184,6 @@
       },
       "naive": {
         "type": "board",
-        "about": {
-          "zh": "一块电路板的蓝图文本，每行一个字符串",
-          "en": "a board as blueprint text, one string a line"
-        },
         "optional": true
       },
       "guide": {
@@ -1411,10 +1367,6 @@
       },
       "solution": {
         "type": "board",
-        "about": {
-          "zh": "一块电路板的蓝图文本，每行一个字符串",
-          "en": "a board as blueprint text, one string a line"
-        },
         "optional": true
       },
       "panel": {

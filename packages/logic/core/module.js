@@ -7,10 +7,10 @@ export default {
   register(registry) {
     if (!registry.schemas.circuit) circuit.register(registry)
     registry.vocabulary('logic', vocabulary)
-    registry.add('display', 'logic/proof-screen', { about: { en: 'Proof cards, readouts and panels' }, role: 'circuit' })
-    registry.add('display', 'logic/gates-screen', { about: { en: 'Truth circuit cards, readouts and panels' }, role: 'circuit' })
-    registry.add('display', 'logic/machine-screen', { about: { en: 'Proof assistant cards, readouts and panels' }, role: 'circuit' })
-    registry.add('display', 'logic/passed', { about: { en: 'Declared rules in the pass dialog' }, role: 'passed' })
+    registry.add('display', 'logic/proof-screen', { about: { zh: '证明卡片、读数和面板', en: 'Proof cards, readouts and panels' }, role: 'circuit' })
+    registry.add('display', 'logic/gates-screen', { about: { zh: '真值电路卡片、读数和面板', en: 'Truth circuit cards, readouts and panels' }, role: 'circuit' })
+    registry.add('display', 'logic/machine-screen', { about: { zh: '证明助手卡片、读数和面板', en: 'Proof assistant cards, readouts and panels' }, role: 'circuit' })
+    registry.add('display', 'logic/passed', { about: { zh: '通关窗口中的已声明规则', en: 'Declared rules in the pass dialog' }, role: 'passed' })
     registry.implementDisplays(['logic/proof-screen', 'logic/gates-screen', 'logic/machine-screen', 'logic/passed'], 'logic/view')
     registry.implementOperations(OPS)
     for (const [name, about] of Object.entries({

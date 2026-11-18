@@ -1,0 +1,25 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "letter": {
+      "type": "oneOf",
+      "values": [
+        "X",
+        "O"
+      ]
+    },
+    "f1": {
+      "type": "num"
+    },
+    "f2": {
+      "type": "num"
+    }
+  }
+}

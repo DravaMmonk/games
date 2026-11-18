@@ -1,0 +1,50 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "anchors": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "cx": {
+            "type": "num"
+          },
+          "cy": {
+            "type": "num"
+          },
+          "w": {
+            "type": "num"
+          },
+          "h": {
+            "type": "num"
+          }
+        }
+      },
+      "min": 1
+    },
+    "t": {
+      "type": "obj",
+      "fields": {
+        "tx": {
+          "type": "num"
+        },
+        "ty": {
+          "type": "num"
+        },
+        "tw": {
+          "type": "num"
+        },
+        "th": {
+          "type": "num"
+        }
+      }
+    }
+  }
+}

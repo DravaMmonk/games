@@ -38,7 +38,7 @@ const value = (text) => {
 
 if (words[0] === 'list') {
   const schemas = layerVocabulary(resolveLayers({ packages: packageIds(), closure: true, unlocked: true }).layers)
-  for (const [name, op] of Object.entries(operationsFor(schemas))) console.log(`${name}  ${op.about.en}\n  ${Object.entries(op.params.fields).map(([k, s]) => `${k}${s.optional ? '?' : ''}: ${s.type}`).join(', ')}`)
+  for (const [name, op] of Object.entries(operationsFor(schemas))) console.log(`${name}  ${op.about?.en ?? ''}\n  ${Object.entries(op.params.fields).map(([k, s]) => `${k}${s.optional ? '?' : ''}: ${s.type}`).join(', ')}`)
   process.exit(0)
 }
 

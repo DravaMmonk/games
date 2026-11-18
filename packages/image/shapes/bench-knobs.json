@@ -1,0 +1,240 @@
+{
+  "type": "map",
+  "of": {
+    "type": "either",
+    "of": [
+      {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "start": {
+            "type": "shape",
+            "name": "image/knob-start"
+          },
+          "format": {
+            "type": "shape",
+            "name": "image/readout-format"
+          },
+          "unit": {
+            "type": "str",
+            "optional": true
+          },
+          "fixed": {
+            "type": "shape",
+            "name": "image/fixed-knob"
+          },
+          "drawn": {
+            "type": "shape",
+            "name": "image/drawn-knob"
+          },
+          "perCase": {
+            "type": "shape",
+            "name": "image/per-case-knob"
+          },
+          "min": {
+            "type": "num"
+          },
+          "max": {
+            "type": "num"
+          },
+          "step": {
+            "type": "num"
+          },
+          "ends": {
+            "type": "list",
+            "of": {
+              "type": "text"
+            },
+            "min": 2,
+            "optional": true
+          }
+        }
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "start": {
+            "type": "shape",
+            "name": "image/knob-start"
+          },
+          "format": {
+            "type": "shape",
+            "name": "image/readout-format"
+          },
+          "unit": {
+            "type": "str",
+            "optional": true
+          },
+          "fixed": {
+            "type": "shape",
+            "name": "image/fixed-knob"
+          },
+          "drawn": {
+            "type": "shape",
+            "name": "image/drawn-knob"
+          },
+          "perCase": {
+            "type": "shape",
+            "name": "image/per-case-knob"
+          },
+          "values": {
+            "type": "list",
+            "of": {
+              "type": "any"
+            },
+            "min": 2
+          },
+          "ends": {
+            "type": "list",
+            "of": {
+              "type": "text"
+            },
+            "min": 2,
+            "optional": true
+          }
+        }
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "start": {
+            "type": "shape",
+            "name": "image/knob-start"
+          },
+          "format": {
+            "type": "shape",
+            "name": "image/readout-format"
+          },
+          "unit": {
+            "type": "str",
+            "optional": true
+          },
+          "fixed": {
+            "type": "shape",
+            "name": "image/fixed-knob"
+          },
+          "drawn": {
+            "type": "shape",
+            "name": "image/drawn-knob"
+          },
+          "perCase": {
+            "type": "shape",
+            "name": "image/per-case-knob"
+          },
+          "choices": {
+            "type": "list",
+            "of": {
+              "type": "obj",
+              "fields": {
+                "value": {
+                  "type": "any"
+                },
+                "label": {
+                  "type": "text",
+                  "optional": true
+                }
+              }
+            },
+            "min": 2
+          },
+          "look": {
+            "type": "oneOf",
+            "values": [
+              "seg",
+              "dot"
+            ],
+            "optional": true
+          }
+        }
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "start": {
+            "type": "shape",
+            "name": "image/knob-start"
+          },
+          "format": {
+            "type": "shape",
+            "name": "image/readout-format"
+          },
+          "unit": {
+            "type": "str",
+            "optional": true
+          },
+          "fixed": {
+            "type": "shape",
+            "name": "image/fixed-knob"
+          },
+          "drawn": {
+            "type": "shape",
+            "name": "image/drawn-knob"
+          },
+          "perCase": {
+            "type": "shape",
+            "name": "image/per-case-knob"
+          },
+          "toggle": {
+            "type": "bool"
+          }
+        }
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "start": {
+            "type": "shape",
+            "name": "image/knob-start"
+          },
+          "format": {
+            "type": "shape",
+            "name": "image/readout-format"
+          },
+          "unit": {
+            "type": "str",
+            "optional": true
+          },
+          "fixed": {
+            "type": "shape",
+            "name": "image/fixed-knob"
+          },
+          "drawn": {
+            "type": "shape",
+            "name": "image/drawn-knob"
+          },
+          "perCase": {
+            "type": "shape",
+            "name": "image/per-case-knob"
+          },
+          "list": {
+            "type": "bool",
+            "about": {
+              "zh": "一列东西（在图上点出的点对）",
+              "en": "a list of things (pairs picked on a picture)"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "optional": true
+}

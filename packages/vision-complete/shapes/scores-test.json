@@ -1,0 +1,19 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "s": {
+      "type": "list",
+      "of": {
+        "type": "num"
+      },
+      "min": 3
+    }
+  }
+}

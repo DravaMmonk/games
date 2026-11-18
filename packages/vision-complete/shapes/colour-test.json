@@ -1,0 +1,36 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "paint": {
+      "type": "oneOf",
+      "values": [
+        "halves",
+        "greyBlock",
+        "redSpot",
+        "slanted",
+        "blueBar",
+        "skyline",
+        "greySquare",
+        "dunes",
+        "slope",
+        "greyRamp"
+      ],
+      "optional": true
+    },
+    "noise": {
+      "type": "int",
+      "about": {
+        "zh": "彩色噪点的种子",
+        "en": "the seed of colour noise"
+      },
+      "optional": true
+    }
+  }
+}

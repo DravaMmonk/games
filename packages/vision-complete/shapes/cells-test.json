@@ -1,0 +1,63 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "rects": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 4,
+        "about": {
+          "zh": "细胞：x0, y0, x1, y1（不含 x1、y1）",
+          "en": "a cell: x0, y0, x1, y1 (x1, y1 excluded)"
+        }
+      }
+    },
+    "gapX": {
+      "type": "list",
+      "of": {
+        "type": "int"
+      },
+      "about": {
+        "zh": "竖缝所在的列",
+        "en": "the columns of upright gaps"
+      },
+      "optional": true
+    },
+    "gapY": {
+      "type": "list",
+      "of": {
+        "type": "int"
+      },
+      "about": {
+        "zh": "横缝所在的行",
+        "en": "the rows of gaps across"
+      },
+      "optional": true
+    },
+    "seed": {
+      "type": "int"
+    },
+    "cell": {
+      "type": "num",
+      "optional": true
+    },
+    "back": {
+      "type": "num",
+      "optional": true
+    },
+    "grain": {
+      "type": "num",
+      "optional": true
+    }
+  }
+}

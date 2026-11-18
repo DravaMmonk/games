@@ -1,0 +1,46 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/sides"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "left": {
+          "type": "shape",
+          "name": "vision-complete/latent-pair"
+        },
+        "right": {
+          "type": "shape",
+          "name": "vision-complete/latent-pair"
+        },
+        "sigma": {
+          "type": "shape",
+          "name": "vision-complete/latent-pair"
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/sides-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/sides-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

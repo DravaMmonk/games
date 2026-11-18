@@ -1,0 +1,95 @@
+{
+  "type": "obj",
+  "fields": {
+    "model": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/racer"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "kernels": {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str"
+              },
+              "cells": {
+                "type": "list",
+                "of": {
+                  "type": "num"
+                },
+                "min": 9,
+                "view": "grid"
+              },
+              "div": {
+                "type": "num"
+              }
+            }
+          },
+          "about": {
+            "zh": "核按 3×3 核元件的读法：权重是 cells ÷ div",
+            "en": "kernels as the 3×3 kernel part reads them: the weights are cells ÷ div"
+          }
+        },
+        "inputs": {
+          "type": "list",
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          }
+        },
+        "rounds": {
+          "type": "int",
+          "min": 1
+        },
+        "minGap": {
+          "type": "num"
+        },
+        "time": {
+          "type": "obj",
+          "fields": {
+            "start": {
+              "type": "num"
+            },
+            "step": {
+              "type": "num"
+            },
+            "min": {
+              "type": "num"
+            }
+          },
+          "about": {
+            "zh": "第 n 轮（从 0 数）的秒数：max(min, start − step·n)",
+            "en": "the seconds for round n (from 0): max(min, start − step·n)"
+          }
+        }
+      }
+    },
+    "cases": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text"
+          }
+        }
+      },
+      "min": 2,
+      "optional": true
+    },
+    "stages": {
+      "type": "shape",
+      "name": "image/bench-stages"
+    },
+    "knobs": {
+      "type": "shape",
+      "name": "image/bench-knobs"
+    }
+  }
+}

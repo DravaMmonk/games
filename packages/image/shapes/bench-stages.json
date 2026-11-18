@@ -1,0 +1,39 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "title": {
+        "type": "text"
+      },
+      "note": {
+        "type": "text"
+      },
+      "opens": {
+        "type": "shape",
+        "name": "image/stage-opens"
+      },
+      "start": {
+        "type": "map",
+        "of": {
+          "type": "any"
+        },
+        "optional": true
+      },
+      "goal": {
+        "type": "shape",
+        "name": "image/bench-goals"
+      },
+      "win": {
+        "type": "text",
+        "optional": true
+      },
+      "status": {
+        "type": "text",
+        "optional": true
+      }
+    }
+  },
+  "min": 1,
+  "optional": true
+}

@@ -1,0 +1,8 @@
+{
+  "type": "bool",
+  "about": {
+    "zh": "只显示，不能动",
+    "en": "shown, not turned"
+  },
+  "optional": true
+}

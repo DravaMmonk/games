@@ -1,0 +1,27 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "quad": {
+      "type": "shape",
+      "name": "vision-complete/quad"
+    },
+    "seed": {
+      "type": "int"
+    },
+    "wrong": {
+      "type": "int",
+      "min": 0,
+      "about": {
+        "zh": "错配几对",
+        "en": "how many wrong pairs"
+      }
+    }
+  }
+}

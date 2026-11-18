@@ -1,0 +1,20 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "height": {
+      "type": "shape",
+      "name": "vision-complete/height"
+    },
+    "paint": {
+      "type": "call",
+      "kind": "picture"
+    }
+  }
+}

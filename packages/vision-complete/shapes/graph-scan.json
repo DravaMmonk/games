@@ -1,0 +1,46 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/scan"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "expect": {
+          "type": "oneOf",
+          "values": [
+            "clean",
+            "edges",
+            "paper"
+          ],
+          "about": {
+            "zh": "期望：去掉颗粒的扫描件（clean）、Sobel 平方和大于 0.04 处（edges）、纸的边（paper）",
+            "en": "expected: the scan without its grain (clean), where Sobel’s sum of squares is over 0.04 (edges), the paper’s edges (paper)"
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/scan-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/scan-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

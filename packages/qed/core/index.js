@@ -13,7 +13,7 @@ export function register(kernel) {
       const words = S.list(S.either(S.name('qed/wordset'), S.map(S.text())))
       const bind = schema => !schema || typeof schema !== 'object' ? schema : Array.isArray(schema) ? schema.map(bind) : Object.fromEntries(Object.entries(schema).map(([key, value]) => [key, key === 'words' ? { ...words, ...(value.optional && { optional: true }) } : bind(value)]))
       return { ...base, [vocabularyProjection]: true, game: S.obj({ ...base.game.fields, words: S.opt(S.name('qed/wordset')), hero: S.opt(S.str({ reference: 'display' })) }), level: bind(base.level),
-        capabilities: { ...base.capabilities, display: { ...base.capabilities.display, 'qed/hero': { about: { en: 'QED map illustration' }, role: 'hero' } } } }
+        capabilities: { ...base.capabilities, display: { ...base.capabilities.display, 'qed/hero': { about: { zh: '证明完毕的地图插图', en: 'QED map illustration' }, role: 'hero' } } } }
     },
   })
 }

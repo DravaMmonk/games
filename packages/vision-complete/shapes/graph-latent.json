@@ -1,0 +1,46 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/latent"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "mu": {
+          "type": "shape",
+          "name": "vision-complete/latent-pair"
+        },
+        "sigma": {
+          "type": "shape",
+          "name": "vision-complete/latent-pair"
+        },
+        "given": {
+          "type": "bool",
+          "optional": true
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/latent-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/latent-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

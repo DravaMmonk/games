@@ -1,0 +1,27 @@
+{
+  "type": "obj",
+  "fields": {
+    "show": {
+      "type": "oneOf",
+      "values": [
+        "setting"
+      ]
+    },
+    "key": {
+      "type": "str",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "as": {
+      "type": "oneOf",
+      "values": [
+        "control",
+        "label"
+      ],
+      "optional": true
+    }
+  },
+  "about": {
+    "zh": "一个设置：控件，或此刻的值的字",
+    "en": "one setting: its control, or the words for its value"
+  }
+}

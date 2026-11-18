@@ -1,0 +1,59 @@
+{
+  "type": "list",
+  "of": {
+    "type": "either",
+    "of": [
+      {
+        "type": "call",
+        "kind": "display"
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "panel": {
+            "type": "shape",
+            "name": "image/layout-children"
+          },
+          "quiet": {
+            "type": "bool",
+            "optional": true
+          },
+          "dock": {
+            "type": "shape",
+            "name": "image/mobile-dock"
+          }
+        }
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "stack": {
+            "type": "shape",
+            "name": "image/layout-children"
+          },
+          "center": {
+            "type": "bool",
+            "optional": true
+          }
+        }
+      },
+      {
+        "type": "obj",
+        "fields": {
+          "row": {
+            "type": "shape",
+            "name": "image/layout-children"
+          },
+          "narrow": {
+            "type": "shape",
+            "name": "image/narrow-layout"
+          },
+          "tight": {
+            "type": "shape",
+            "name": "image/tight-layout"
+          }
+        }
+      }
+    ]
+  }
+}

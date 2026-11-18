@@ -1,0 +1,24 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "n": {
+        "type": "text",
+        "optional": true
+      },
+      "w": {
+        "type": "int",
+        "min": 0
+      },
+      "v": {
+        "type": "num",
+        "optional": true
+      },
+      "many": {
+        "type": "bool",
+        "optional": true
+      }
+    }
+  }
+}

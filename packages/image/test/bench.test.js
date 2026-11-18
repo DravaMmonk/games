@@ -1,9 +1,10 @@
 // node --test games/kit/engine — the parameter bench's data: knobs, the goal's judge, number formats, the schema.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { S, validate } from '../../../games/kit/engine/schema.js'
-import { defineVocabulary } from '../../../games/kit/engine/vocabulary.js'
-import { benchRun, benchSchema, displayItems, formatValue, judge, knobStart, knobValues, needText, openKnobs, passingSettings, rowValue, startValues } from './../core/bench.js'
+import { shapeAt, validate } from '../../../games/kit/engine/schema.js'
+import { readPackage } from '../../../games/kit/engine/resolver.js'
+import { contentSchemas } from '../../../games/kit/engine/content.js'
+import { benchRun, formatValue, judge, knobStart, knobValues, needText, openKnobs, passingSettings, rowValue, startValues } from './../core/bench.js'
 
 const BENCH = {
   knobs: {
@@ -100,19 +101,13 @@ test('numbers and thresholds as a goal row writes them', () => {
 })
 
 test('a bench is checked as data: knobs, goal, layout blocks and display items with their parameters', () => {
-  const vocabulary = defineVocabulary({
-    module: 'test', version: 1, game: S.obj({}), level: S.obj({}),
-    kinds: { display: displayItems({ picture: { about: 'a picture', params: S.obj({ big: S.opt(S.bool()) }) } }) },
-  })
-  const schema = benchSchema({ m: { about: 'a model', setup: S.obj({ n: S.int() }), stage: S.obj({ target: S.num() }) } })
-  const bench = {
-    model: 'm', setup: { n: 3 },
-    knobs: { a: { min: 0, max: 1, step: 0.5, label: 'a' } },
-    stages: [{ title: 'one', note: 'turn a', opens: ['a'], target: 1, goal: [{ of: 'a', atLeast: 1 }] }],
-    layout: { main: [{ picture: { big: true, with: ['goals'] } }, { plot: { lines: [{ of: 'y', kind: 'yours' }], height: [200, 160] } }], side: [{ panel: ['step', 'knobs', 'verdict'] }, 'stages'] },
-  }
+  const content = readPackage('comp90086')
+  const level = content.levels.find(level => level.id === 'comp90086/projection')
+  const bench = level.tasks[0].bench
+  const vocabulary = contentSchemas.get(content)
+  const schema = shapeAt(vocabulary.level, level, ['tasks', 0, 'bench'], { vocabulary })
   assert.deepEqual(validate(schema, bench, { vocabulary }), [])
-  const wrong = { ...bench, knobs: { a: { min: 0, max: 1 } }, layout: { main: [{ picture: { huge: true } }, 'nothing'] } }
+  const wrong = { ...bench, knobs: { a: { min: 0, max: 1 } }, layout: { main: [{ 'image/plot': { huge: true } }, 'nothing'] } }
   const problems = validate(schema, wrong, { vocabulary }).map((p) => p.at)
   assert.ok(problems.some((at) => at.startsWith('.knobs.a')))
   assert.ok(problems.some((at) => at.startsWith('.layout.main[0]')))

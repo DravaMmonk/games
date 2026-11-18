@@ -1,0 +1,38 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "tile": {
+        "type": "oneOf",
+        "values": [
+          "X",
+          "C",
+          "P",
+          "K",
+          "R",
+          "S"
+        ]
+      },
+      "at": {
+        "type": "shape",
+        "name": "vision-complete/tile-position"
+      },
+      "erased": {
+        "type": "list",
+        "of": {
+          "type": "list",
+          "of": {
+            "type": "int"
+          },
+          "min": 2
+        },
+        "about": {
+          "zh": "擦掉的格子 [u, v]",
+          "en": "the pixels erased, [u, v]"
+        },
+        "optional": true
+      }
+    }
+  }
+}

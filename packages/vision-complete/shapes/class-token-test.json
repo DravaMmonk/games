@@ -1,0 +1,38 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "street": {
+      "type": "shape",
+      "name": "vision-complete/street"
+    },
+    "query": {
+      "type": "oneOf",
+      "values": [
+        "bright",
+        "stripe",
+        "dark"
+      ]
+    },
+    "patches": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "about": {
+        "zh": "车所在的图块 [列, 行]",
+        "en": "the patches with the car, [column, row]"
+      }
+    }
+  }
+}

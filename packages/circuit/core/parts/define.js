@@ -263,7 +263,7 @@ export function withParts(vocabulary, file) {
   // A domain with its circuit primitives in code has only its other parts in parts/<name>.json.
   const parts = Object.fromEntries(Object.entries(file?.parts ?? {}).filter(([, part]) => definesParts(vocabulary) || !circuitPrimitive(part)))
   if (!file) return vocabulary
-  const part = Object.fromEntries(Object.entries(parts).map(([type, def]) => [type, { about: def.desc ?? def.name ?? type }]))
+  const part = Object.fromEntries(Object.entries(parts).map(([type, def]) => [type, { ...(def.desc?.zh && def.desc?.en && { about: def.desc }) }]))
   return { ...vocabulary, kinds: { ...vocabulary.kinds, valueType: { ...registeredValueTypes, ...vocabulary.kinds.valueType }, part: registerParts(vocabulary.kinds.part, part) } }
 }
 

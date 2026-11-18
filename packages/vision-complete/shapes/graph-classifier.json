@@ -1,0 +1,63 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/classifier"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "check": {
+          "type": "oneOf",
+          "values": [
+            "contribution",
+            "occlusion",
+            "share",
+            "heatShare",
+            "checkup"
+          ]
+        },
+        "cover": {
+          "type": "obj",
+          "fields": {
+            "v": {
+              "type": "num",
+              "optional": true
+            },
+            "r": {
+              "type": "int",
+              "min": 1,
+              "optional": true
+            }
+          },
+          "about": {
+            "zh": "遮挡用的块：亮度 v，r × r（默认黑的 3 × 3）",
+            "en": "the block covering: brightness v, r × r (black 3 × 3 at first)"
+          },
+          "optional": true
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/classifier-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/classifier-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

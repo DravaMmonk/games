@@ -1,0 +1,23 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "a": {
+      "type": "call",
+      "kind": "picture"
+    },
+    "b": {
+      "type": "call",
+      "kind": "picture"
+    },
+    "same": {
+      "type": "bool"
+    }
+  }
+}

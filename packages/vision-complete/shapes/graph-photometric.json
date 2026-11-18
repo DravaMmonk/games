@@ -1,0 +1,50 @@
+{
+  "type": "obj",
+  "fields": {
+    "scene": {
+      "type": "oneOf",
+      "values": [
+        "vision-complete/photometric"
+      ]
+    },
+    "setup": {
+      "type": "obj",
+      "fields": {
+        "expect": {
+          "type": "oneOf",
+          "values": [
+            "lean",
+            "albedo",
+            "steep"
+          ]
+        },
+        "above": {
+          "type": "num",
+          "about": {
+            "zh": "倾斜的门槛（lean：nx / nz；steep：坡度）",
+            "en": "the threshold of the tilt (lean: nx / nz; steep: the slope)"
+          },
+          "optional": true
+        }
+      }
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/photometric-test"
+      },
+      "min": 1,
+      "section": "tests"
+    },
+    "hidden": {
+      "type": "list",
+      "of": {
+        "type": "shape",
+        "name": "vision-complete/photometric-test"
+      },
+      "section": "tests",
+      "optional": true
+    }
+  }
+}

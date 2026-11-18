@@ -1,0 +1,47 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "x0": {
+      "type": "int"
+    },
+    "y0": {
+      "type": "int"
+    },
+    "x1": {
+      "type": "int"
+    },
+    "y1": {
+      "type": "int"
+    },
+    "lines": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 3
+      },
+      "about": {
+        "zh": "一行字：x, y, 长度",
+        "en": "a line of text: x, y, length"
+      },
+      "optional": true
+    },
+    "noise": {
+      "type": "num",
+      "optional": true
+    },
+    "seed": {
+      "type": "int",
+      "optional": true
+    }
+  }
+}

@@ -13,16 +13,23 @@ export function qualifyVocabulary(id, raw) {
     if (!value || typeof value !== 'object') return value
     if (Array.isArray(value)) return value.map((v) => schema(v))
     const out = { ...value }
+    if (out.type === 'shape' || typeof out.shape === 'string') {
+      const key = out.type === 'shape' ? 'name' : 'shape'
+      out[key] = capabilityName(id, out[key])
+    }
     if (out.type === 'syntax') out.lang = capabilityName(id, out.lang)
     if (out.fields) out.fields = Object.fromEntries(Object.entries(out.fields).map(([key, s]) => [key, schema(s, key)]))
     if (out.of) out.of = schema(out.of)
     if (out.params) out.params = schema(out.params)
     if (out.key) out.key = schema(out.key)
+    if (out.test) out.test = schema(out.test)
+    if (out.stage) out.stage = schema(out.stage)
+    if (out.case) out.case = schema(out.case)
     if (out.cases) out.cases = Object.fromEntries(Object.entries(out.cases).map(([key, s]) => [discriminators[out.field] && declared(discriminators[out.field], key) ? capabilityName(id, key) : key, schema(s)]))
     if (out.type === 'oneOf' && discriminators[field]) out.values = out.values.map((v) => declared(discriminators[field], v) ? capabilityName(id, v) : v)
     return out
   }
-  return { ...raw, version: 1, kinds: Object.fromEntries(Object.entries(raw.kinds).map(([kind, items]) => [kind, qualifyItems(id, Object.fromEntries(Object.entries(items).map(([name, item]) => [name, schema(item)])))])), game: schema(raw.game), level: schema(raw.level), languages: qualifyItems(id, raw.languages ?? {}) }
+  return { ...raw, version: 1, kinds: Object.fromEntries(Object.entries(raw.kinds).map(([kind, items]) => [kind, qualifyItems(id, Object.fromEntries(Object.entries(items).map(([name, item]) => [name, schema(item)])))])), shapes: qualifyItems(id, Object.fromEntries(Object.entries(raw.shapes ?? {}).map(([name, shape]) => [name, schema(shape)]))), game: schema(raw.game), level: schema(raw.level), languages: qualifyItems(id, raw.languages ?? {}) }
 }
 
 const registryKind = kind => ({ op: 'operation', part: 'primitive' })[kind] ?? kind

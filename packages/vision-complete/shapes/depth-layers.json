@@ -1,0 +1,27 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "box": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 4,
+        "about": {
+          "zh": "它占的矩形：x0, y0, x1, y1（不含 x1、y1）",
+          "en": "the rectangle it fills: x0, y0, x1, y1 (x1, y1 excluded)"
+        }
+      },
+      "d": {
+        "type": "int",
+        "min": 0
+      }
+    }
+  },
+  "about": {
+    "zh": "远墙前面的几层，从后往前",
+    "en": "the layers before the far wall, back to front"
+  }
+}

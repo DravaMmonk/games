@@ -1,0 +1,34 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "on": {
+        "type": "str",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+        "optional": true
+      },
+      "when": {
+        "type": "shape",
+        "name": "circuit/engine-expression",
+        "optional": true
+      },
+      "set": {
+        "type": "map",
+        "of": {
+          "type": "shape",
+          "name": "circuit/engine-expression"
+        },
+        "about": {
+          "zh": "设置 → 新值的式子",
+          "en": "setting → the expression of its new value"
+        }
+      }
+    }
+  },
+  "about": {
+    "zh": "交互：一个设置改了，另几个跟着改",
+    "en": "interaction: when a setting changes, others follow"
+  },
+  "optional": true
+}

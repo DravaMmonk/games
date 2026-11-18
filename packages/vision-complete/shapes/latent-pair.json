@@ -1,0 +1,11 @@
+{
+  "type": "list",
+  "of": {
+    "type": "num"
+  },
+  "min": 2,
+  "about": {
+    "zh": "潜空间里的两个数",
+    "en": "two numbers in latent space"
+  }
+}

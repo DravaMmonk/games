@@ -1,0 +1,8 @@
+{
+  "type": "bool",
+  "about": {
+    "zh": "手机上停在底部",
+    "en": "sticks to the bottom on a phone"
+  },
+  "optional": true
+}

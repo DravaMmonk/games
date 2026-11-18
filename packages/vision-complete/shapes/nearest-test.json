@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "q": {
+      "type": "call",
+      "kind": "picture"
+    },
+    "candidates": {
+      "type": "list",
+      "of": {
+        "type": "call",
+        "kind": "picture"
+      },
+      "min": 3
+    },
+    "which": {
+      "type": "int",
+      "min": 0,
+      "max": 2
+    }
+  }
+}

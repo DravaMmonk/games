@@ -1,0 +1,23 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "train": {
+      "type": "shape",
+      "name": "image/training-test"
+    },
+    "line": {
+      "type": "shape",
+      "name": "vision-complete/lanes"
+    },
+    "seed": {
+      "type": "int"
+    },
+    "outliers": {
+      "type": "int",
+      "min": 0
+    }
+  }
+}

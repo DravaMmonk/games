@@ -567,6 +567,14 @@ export function* prepareLogicWorks(content) {
   }
   /** Whether a task holds a part, or a shape of one: has(part), has(part, 'form', shape) (../../course.js holds). */
   const holdsIn = (task, flags) => holds(course, at(task), flags)
+  // On the machine board a rule part is only the rules it gives: the proof-board part of the same type (the
+  // assumption box's region and assumption, Apply's two inputs) does not define it there.
+  const machineHoldsIn = (task, flags) => {
+    const has = holdsIn(task, flags)
+    const rules = ruleTypes(task)
+    const definition = (type, fallback) => (rules.has(type) && !machineParts[type] ? fallback : has.definition(type, fallback))
+    return Object.assign((...args) => has(...args), has, { definition })
+  }
   // The truth circuits as the kernel's circuit screen reads them (gates.js gateCourse).
   const truthCircuits = gateCourse({ built: gateParts, builders: gateBuilders, offerIn, holdsIn, syncOwn: kept.sync })
   // The proofs, the same way: their parts are the proof rules and the lemmas (proofParts).
@@ -593,7 +601,7 @@ export function* prepareLogicWorks(content) {
     builder: (type, task) => task?.built?.[type]?.opens().level ?? null,
     defined: (task) => ({ of: (type) => taskPartsOf(task)[type] ?? defs[type] ?? null, defaults: (type) => (taskPartsOf(task)[type] ? {} : defaultsOf(type)), ops: OPS }),
     offerIn,
-    holdsIn,
+    holdsIn: machineHoldsIn,
     syncOwn: kept.sync,
     // A machine level that upgrades a part opens on the board that part runs; a preset stays locked in.
     opening: (task, _progress, viewOf) => {

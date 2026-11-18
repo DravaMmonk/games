@@ -1,3 +1,4 @@
+import { levelMarks } from '../../progress/core/index.js'
 import { circuitFixtureSchema } from '../../qed/test/fixture.js'
 // node --test games/kit/engine/ops — every operation on a toy game in a temp folder: what it changes, what it
 // refuses, and that its inverse puts the content back exactly.
@@ -24,14 +25,14 @@ import { writeContentFixture } from '../../qed/test/fixture.js'
 const openGame = (id, root, options = {}) => (options.scope === 'game' ? openWorkspace : openPackage)(id, root, { vocabulary: id === 'ptoy' ? PVOCAB : VOCAB, ...options })
 
 const ERA = S.obj({ id: S.str(), title: S.opt(S.text()) })
-const VOCAB = defineVocabulary({
+const VOCAB = { ...defineVocabulary({
   module: 'toy',
   version: 1,
   kinds: { primitive: { a: { about: 'a' }, b: { about: 'b' }, c: { about: 'c' } } },
   game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), description: S.opt(S.text()) }),
   // What a toy level says once is its whole puzzle; its one task is only its id.
   level: taskLevel({ title: S.text(), brief: S.opt(S.text()), tests: S.opt(S.list(S.any())), adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))), solution: S.opt(S.board()), from: S.opt(S.level()) }, {}, { parts: true }),
-})
+}), levelMarks }
 // The toy's course: the main path in order, every level requiring the one before.
 const DOMAIN = {
   vocabulary: VOCAB,
@@ -53,7 +54,7 @@ function toy() {
   const levels = Object.fromEntries(['a1', 'a2', 'a3', 'b1', 'b2', 'c1'].map((id) => [id, {
     title: { en: id }, tests: [1], ...(id === 'b1' && { from: 'a2', brief: { en: 'after <level-ref to="a2"></level-ref>', zh: '接着 <level-ref to="a2"></level-ref>' } }), tasks: [{ id }],
   }]))
-  writeContentFixture(root, 'toy', { game, glossary, levels, tagOverrides: { 'kernel/tags/level/optional': ['toy/a3'] } }, VOCAB)
+  writeContentFixture(root, 'toy', { game, glossary, levels, tagOverrides: { 'progress/tags/level/optional': ['toy/a3'] } }, VOCAB)
   return { root, ws: openWorkspace('toy', root, { vocabulary: VOCAB }) }
 }
 const run = (ws, op, args) => {
@@ -204,7 +205,7 @@ test('level.add and level.remove update placement while preserving content refer
 test('game tag patches update the assembled route and undo cleanly', () => {
   const { ws } = toy()
   const result = roundTrip(ws, 'override.put', {
-    layer: ws.layer, kind: 'tag', name: 'kernel/optional', member: 'level', data: { values: { add: ['toy/a2'] } },
+    layer: ws.layer, kind: 'tag', name: levelMarks.optional, member: 'level', data: { values: { add: ['toy/a2'] } },
   })
   assert.equal(result.after.eras[0].levels.find(level => level.id === 'toy/a2').optional, true)
 })

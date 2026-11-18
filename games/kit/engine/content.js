@@ -2,7 +2,7 @@ import { collectionProblems } from './collections.js'
 import { layerProblems, BUILTIN_POLICIES } from './kind-policy.js'
 import { schemaForKind } from './layers.js'
 import { existenceProblems } from './existence.js'
-import { LEVEL_MARKS, tagKey, tagName } from './tag-identity.js'
+import { tagKey, tagName } from './tag-identity.js'
 import { kindSchemas, BUILTIN_KIND_NAMES } from './plugin-kinds.js'
 import { meaningsOf, derivedFields } from './kind-meanings.js'
 import { registryVocabularies } from './objects.js'
@@ -76,7 +76,7 @@ export function assemble({ id, packageId = id, schemas, contentObjects = {}, cou
   const scheduled = new Set(packageTarget ? levels.map(([id]) => id) : (sourceChapters ?? []).flatMap((chapter) => resolve(chapter.levels, 'level', `chapters/${chapter.id}`)))
   const relationDefinitions = Object.assign({}, ...Object.values(objectKinds ?? {}).map(d => d.relations))
   for (const [name, relation] of Object.entries(relationMap)) if (!['requires', ...Object.keys(relationDefinitions)].includes(relation.kind)) objectProblems.push({ at: `relations/${name}`, says: `unknown relation ${relation.kind}` })
-  const marks = Object.fromEntries(Object.entries(LEVEL_MARKS).map(([mark, name]) => [mark, new Set(readTag(registries, 'level', name))]))
+  const marks = Object.fromEntries(Object.entries(schemas.levelMarks ?? {}).map(([mark, name]) => [mark, new Set(readTag(registries, 'level', name))]))
   const relationEdges = expandRelations(relationMap, resolve, scheduled, objectProblems, marks.optional, relationDefinitions)
   levels = levels.map(([name, value]) => [name, refs(value, schemas.level)])
   game = refs(game, schemas.game)

@@ -18,7 +18,6 @@ import MapEditor from './MapEditor.jsx'
 import CopyTable from './CopyTable.jsx'
 import MapPreview from './MapPreview.jsx'
 import { pendingValue, writtenBy } from './pending-view.js'
-import { LEVEL_MARKS } from '../engine/tag-identity.js'
 import { addEdgeOps, removeEdgeOps, tagOverrideOps } from './override-edit.js'
 import { usePref } from './prefs.js'
 import { objectsOf, tagByRef, tagKey, tagMembers, tagName } from './objects-edit.js'
@@ -112,7 +111,7 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
       </>}
       {played && mode !== 'order' && (mode === 'map'
         ? <ChapterMap content={content} chapter={chapter} played={played} e={e} at={at} ops={ops} previewOps={previewOps} applying={applying} titleOf={titleOf} onSelect={onSelect} onOps={onOps} />
-        : <ChapterLinks content={content} played={played} e={e} at={at} pending={pending} titleOf={titleOf} describe={describe} onSelect={onSelect} onOps={onOps} />)}
+        : <ChapterLinks content={content} played={played} e={e} at={at} pending={pending} titleOf={titleOf} describe={describe} onSelect={onSelect} onOps={onOps} levelMarks={vocabulary?.levelMarks} />)}
     </article>
   )
 }
@@ -125,7 +124,7 @@ const refusal = (reason) => ({
   tagged: tr('这条先修来自标签，要在包里改。', 'This prerequisite comes through a tag: change it in the package.'),
 })[reason]
 
-function ChapterLinks({ content, played, e, at, pending, titleOf, describe, onSelect, onOps }) {
+function ChapterLinks({ content, played, e, at, pending, titleOf, describe, onSelect, onOps, levelMarks = {} }) {
   const ids = useMemo(() => eraLevels(played), [played])
   const links = useMemo(() => (played.links ?? []).filter((link) => !link.fromGame).map((link) => ({ ...link, source: 'course' })), [played])
   const requires = useMemo(() => new Map(ids.map((id) => [id, links.filter(({ to }) => to === id).map(({ from }) => from)])), [ids, links])
@@ -158,8 +157,8 @@ function ChapterLinks({ content, played, e, at, pending, titleOf, describe, onSe
     if (linkKey(edge) === highlight) reset()
     return null
   }
-  const mark = (flag, on) => {
-    const key = tagKey('level', LEVEL_MARKS[flag])
+  const mark = (name, on) => {
+    const key = tagKey('level', name)
     const now = tagMembers(content, key)
     const next = on ? [...now, selected] : now.filter(id => id !== selected)
     onOps(tagOverrideOps(content, layer, key, next))
@@ -174,8 +173,8 @@ function ChapterLinks({ content, played, e, at, pending, titleOf, describe, onSe
       <div className="arrange-actions">
         {wire ? <strong title={`${describe(wire.from)} → ${describe(wire.to)}`}>{describe(wire.from)} → {describe(wire.to)}</strong> : entry ? <>
             <strong>{describe(selected)}</strong>
-            <label><input type="checkbox" checked={Boolean(entry.optional)} disabled={pending} onChange={(ev) => mark('optional', ev.target.checked)} />{tr('可选', 'Optional')}</label>
-            <label><input type="checkbox" checked={Boolean(entry.skippable)} disabled={pending} onChange={(ev) => mark('skippable', ev.target.checked)} />{tr('可跳过', 'Skippable')}</label>
+            {levelMarks.optional && <label><input type="checkbox" checked={Boolean(entry.optional)} disabled={pending} onChange={(ev) => mark(levelMarks.optional, ev.target.checked)} />{tr('可选', 'Optional')}</label>}
+            {levelMarks.skippable && <label><input type="checkbox" checked={Boolean(entry.skippable)} disabled={pending} onChange={(ev) => mark(levelMarks.skippable, ev.target.checked)} />{tr('可跳过', 'Skippable')}</label>}
           </> : null}
       </div>
       <ArrangementBoard board={board} titleOf={titleOf} badges={badges} describe={describe} active={selected} wire={highlight} pending={pending} isExternal={(id) => !ids.includes(id)} refuse={refuse}

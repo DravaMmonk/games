@@ -10,9 +10,11 @@ export { partStages, stagePatch, requiredStage } from './part-stages.js'
 export { defineCourse, reach, met, audit, againstOpen, RULE_TEXT } from './course.js'
 
 const stagesOf = registries => partStages(registries['circuit/part'])
+export const levelMarks = { optional: 'progress/optional', skippable: 'progress/skippable' }
 
 export const progressMeaning = {
   type: 'progress/part', read: value => value,
+  vocabulary: vocabulary => ({ ...vocabulary, levelMarks }),
   circuitProgress(course, parts, content, facts) {
     Object.assign(course, grantingFields(content, facts))
     if (content.standalone) {
@@ -67,6 +69,7 @@ export const progressMeaning = {
 }
 
 export function register(kernel) {
+  for (const name of Object.values(levelMarks)) kernel.tag(name, 'level')
   kernel.kind('progress/part', progressMeaning)
   kernel.check('progress/course', Object.assign(courseChecks, { phase: 'course' }))
   kernel.check('progress/references', Object.assign(referenceChecks, { phase: 'references' }))

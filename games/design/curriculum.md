@@ -2,7 +2,7 @@
 
 **包提供对象，游戏编排课程。** 关卡设计在 `packages/<包>/` 里做：关卡、元件、词条各自独立，标签把同种对象收成集合，关系写先修和元件取代。标签没有教学含义，也不规定一关只能属于一个组；同一关可以出现在几个标签里。包之间可以依赖和覆盖，基础元件可以放进库包共用（第 6.1 节）。
 
-**章是游戏层的内核对象。** 游戏配置 `game.json` 的 `chapters` 是 `list<chapter>`，给出章的全名和顺序。每章独立写在 `games/<游戏>/chapters/<章>.json`，全名为 `@<游戏>/<章>`。章的 `levels: list<level>` 保存具体关卡全名，`rows` 保存路线图。章文案和现有 `machine` 字段随章保存。原本用数字 id 编号的章增加 `number`，保留现有地图编号。游戏配置的 `encyclopedia: list<section>` 保留百科分组的显示顺序，分组内顺序取其 `values`。可选关和可跳过关由游戏分别加入内核的 `kernel/optional`、`kernel/skippable` 关卡标签。导入标签会一次性展开并写入章的列表，之后由游戏维护顺序。
+**章是游戏层的内核对象。** 游戏配置 `game.json` 的 `chapters` 是 `list<chapter>`，给出章的全名和顺序。每章独立写在 `games/<游戏>/chapters/<章>.json`，全名为 `@<游戏>/<章>`。章的 `levels: list<level>` 保存具体关卡全名，`rows` 保存路线图。章文案和现有 `machine` 字段随章保存。原本用数字 id 编号的章增加 `number`，保留现有地图编号。游戏配置的 `encyclopedia: list<section>` 保留百科分组的显示顺序，分组内顺序取其 `values`。可选关和可跳过关由游戏通过 `progress` 包提供的 `progress/optional`、`progress/skippable` 关卡标签指定。导入标签会一次性展开并写入章的列表，之后由游戏维护顺序。
 
 ```json
 // games/qed/game.json

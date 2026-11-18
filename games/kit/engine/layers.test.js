@@ -341,14 +341,12 @@ test('reader registration alone creates no tag in a package or game', () => {
     a.config.kind = kind
     const standalone = assembleLayers('base', [a], schemas, { packageId: 'base' })
     assert.equal(standalone.tags['level:base/reader'], undefined)
-    assert.equal(standalone.sources.tag['level:kernel/optional'], undefined)
+    assert.equal(standalone.sources.tag['kind:kernel/studio-left'], undefined)
     assert.deepEqual(standalone.tags['level:base/empty'].values, [])
   }
   const b = layer('b', ['base'], [], [obj('tag', 'base/reader', { kind: 'level', values: { add: ['base/a'] } })])
   assert.deepEqual(assembleLayers('b', [a, b], schemas, { packageId: 'b' }).tags['level:base/reader'].values, ['base/a'])
-  const course = assembleLayers('demo', [a, game([obj('tag', 'kernel/optional', { kind: 'level', values: { add: ['base/a'] } })])], schemas)
-  assert.equal(course.eras[0].levels.find(level => level.id === 'base/a').optional, true)
-  assert.equal(course.tags['level:kernel/skippable'], undefined)
+  const course = assembleLayers('demo', [a, game()], schemas)
   assert.equal(course.tags['level:base/reader'], undefined)
 })
 

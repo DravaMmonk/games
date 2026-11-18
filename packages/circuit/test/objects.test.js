@@ -1,3 +1,4 @@
+import { levelMarks } from '../../progress/core/index.js'
 import { circuitFixtureSchema } from '../../qed/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -13,11 +14,11 @@ const vocabulary = defineVocabulary({ module: 'toy', version: 1, kinds: {},
   game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })) }),
   level: S.obj({ title: S.text(), adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))) }),
 })
-const source = () => ({ id: 'toy', schemas: vocabulary,
+const source = () => ({ id: 'toy', schemas: { ...vocabulary, levelMarks },
   game: { vocabulary: 1, title: 'Toy', chapters: [{ id: 'main', levels: ['toy/start', 'toy/a', 'toy/b', 'toy/c', 'toy/end'], rows: [['toy/a'], ['toy/b', 'toy/c']] }] },
   levels: ['start', 'a', 'b', 'c', 'end'].map((id) => [id, { title: id }]),
   glossary: { groups: [], entries: [] },
-  tags: [['core', { kind: 'level', title: 'Core', values: ['a', '#extras', 'b'] }], ['extras', { kind: 'level', values: ['c'] }], ['kernel/optional', { kind: 'level', values: ['#toy/extras'] }, 'kernel']],
+  tags: [['core', { kind: 'level', title: 'Core', values: ['a', '#extras', 'b'] }], ['extras', { kind: 'level', values: ['c'] }], [levelMarks.optional, { kind: 'level', values: ['#toy/extras'] }, 'progress']],
   relations: [['path', { kind: 'requires', edges: [{ from: 'a', to: 'b' }, { from: 'start', to: '#core' }, { from: '#core', to: 'end' }] }]],
 })
 

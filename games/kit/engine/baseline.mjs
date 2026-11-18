@@ -51,7 +51,7 @@ async function writeReport(file, value) {
 mkdirSync(folder, { recursive: true })
 let total = 0
 try {
-  for (const target of targets) {
+  targets: for (const target of targets) {
     const { id, kind } = target
     const packaged = kind === 'package'
     if (action === 'compare' && !existsSync(resolve(sourceFolder, `${kind}-${id}.json`))) {
@@ -76,6 +76,10 @@ try {
       for (const fragment of spec.specs ?? [spec]) {
         records.push({ course: { levels: fragment.course.levels, plan: fragment.course.plan, ...Object.assign({}, ...meanings.map(meaning => meaning.baselineCourse?.({ fragment }))) } })
         const reports = await taskReports(fragment, meanings)
+        if (reports === null) {
+          console.log(`${action} ${kind} ${id}: no baseline observer is registered for its tasks; left outside the corpus`)
+          continue targets
+        }
         records.push(...reports)
         for (const meaning of meanings) records.push(...(meaning.baselineRecords?.({ fragment }) ?? []))
       }

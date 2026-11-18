@@ -1,3 +1,4 @@
+import { isValidElement } from 'react'
 import { isGrid } from '../engine/grid.js'
 import { VIEWS, shapeOf, valueText } from '../engine/views.js'
 import { L } from '../shell/i18n.js'
@@ -35,7 +36,11 @@ function CardGrid({ value, view }) {
 }
 
 /** A value in words, coloured by what it is: none, yes, no. */
-const Words = ({ value, text, className = 'vw-value' }) => <span className={`${className} ${value === null || value === undefined ? 'is-none' : typeof value === 'boolean' ? `is-${value}` : ''}`}>{L(text(value))}</span>
+// A domain may draw a value itself (text gives an element: logic typesets its formulas).
+const Words = ({ value, text, className = 'vw-value' }) => {
+  const said = text(value)
+  return <span className={`${className} ${value === null || value === undefined ? 'is-none' : typeof value === 'boolean' ? `is-${value}` : ''}`}>{isValidElement(said) ? said : L(said)}</span>
+}
 
 export default function Show({ value, shape = shapeOf(value), scene, views, of, label, text = valueText, mark, onPick, explain, curve }) {
   const list = useOffered(shape, views, value)

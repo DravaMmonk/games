@@ -37,34 +37,73 @@ const proofEntries = ({ task, test, run }) => {
 export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
 const goalText = (g, text) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(punctuation("；"))} ⊢ ${text(g.goal)}` : text(g.goal))
-// A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
-const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))
-const lines = (head, list) => [...head.filter(Boolean), ...list].join('\n')
-
-/**
- * A value in words, a line each: a sentence, a rule, a list; the rules a rule part gives; a proof state's goals, numbered (or that
- * it is proved, or that the step failed, and why); equations; a clause set, once ⊥ is in only the clauses ⊥ comes from.
- */
-function showMachine(v, { task }) {
-  if (v === undefined || v === null) return '—'
-  if (typeof v === 'string') return v
+// Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
+// numbered once for the whole board (R₁ R₂ …: the run's `rules`, ./machine.js; a lone rule plain R). A goal with no
+// hypotheses keeps its turnstile in front.
+const SUB = '₀₁₂₃₄₅₆₇₈₉'
+const sub = (n) => String(n).replace(/\d/g, (d) => SUB[d])
+const goalMark = (k, count) => (count > 1 ? `⊢${sub(k + 1)}` : '⊢')
+const markedGoal = (g, text, mark) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(punctuation("；"))} ${mark} ${text(g.goal)}` : `${mark} ${text(g.goal)}`)
+const ruleMark = (key, order) => (order.length > 1 ? `R${sub(order.indexOf(key) + 1)}` : 'R')
+const orderOf = (v, run) => (run?.rules && v.keys.every((k) => run.rules.includes(k)) ? run.rules : [...new Set(v.entries.map((e) => e.key))])
+/** A state's goals, a line each, marked ⊢₁ ⊢₂ … (the run report's boxes hold only these). */
+export const goalLines = (v, task) => {
+  const text = machineTextOf(task)
+  return v.goals.map((g, k) => markedGoal(g, text, goalMark(k, v.goals.length)))
+}
+/** The rules on the board, a line each, marked R₁ R₂ … (the run report lists them first). */
+export const ruleLines = ({ ruleEntries: entries = [], rules: order = [] }, task) => {
   const text = machineTextOf(task)
   const term = machineTermOf(task)
-  if (v.kind === 'sentence' || v.kind === 'rule' || v.kind === 'any') return genValueText(v, text)
-  if (v.kind === 'list') return lines([], v.items.map((x, k) => `${k + 1}. ${genValueText(x, text)}`))
-  if (v.kind === 'rules') return lines([], v.entries.map((e, k) => `${k + 1}. ${ruleWritten(e, text, term)}`))
+  return order.map((key) => ({ mark: ruleMark(key, order), text: ruleWritten(entries.find((e) => e.key === key), text, term) }))
+}
+/** What a tactic did (machine.js `did`), in marks: ⊢ ⟵ R₁ (a rule backwards), ⊢ ≡ R₁ (a rewrite), ⊢ ✓ (a hypothesis
+ *  closes it), ⊢ ↷ (moved to the end). */
+export function didText(did, run) {
+  const goal = goalMark(0, did.goals)
+  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.rules ?? did.rules)).join(' ')
+  if (did.op === 'rule') return `${goal} ⟵ ${rules}`
+  if (did.op === 'rw') return `${goal} ≡ ${rules}`
+  if (did.op === 'rwHyps') return T("{goal} 的已知 ≡ {rules}", { goal, rules })
+  if (did.op === 'assumption') return `${goal} ✓`
+  return `${goal} ↷`
+}
+// A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
+const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))
+
+/**
+ * A value in words, a line each: a sentence, a rule, a list; the rules a rule part gives (R₁ …, numbered for the board
+ * when a run is given); a proof state's goals (⊢₁ …) (or that
+ * it is proved, or that the step failed, and why); equations; a clause set, once ⊥ is in only the clauses ⊥ comes from.
+ * Each line is prose or a formula (`formula`: what the board typesets); showMachine joins them as text.
+ */
+export function machineLines(v, { task, run }) {
+  const prose = (list) => list.filter(Boolean).map((s) => ({ s, formula: false }))
+  const formulas = (list) => list.map((s) => ({ s, formula: true }))
+  if (v === undefined || v === null) return prose(['—'])
+  if (typeof v === 'string') return prose([v])
+  if (v.kind === 'want') return v.lines
+  const text = machineTextOf(task)
+  const term = machineTermOf(task)
+  if (v.kind === 'sentence' || v.kind === 'rule' || v.kind === 'any') return formulas([genValueText(v, text)])
+  if (v.kind === 'list') return formulas(v.items.map((x, k) => `${k + 1}. ${genValueText(x, text)}`))
+  if (v.kind === 'rules') {
+    const order = orderOf(v, run)
+    return formulas(v.entries.map((e) => `${ruleMark(e.key, order)} ${ruleWritten(e, text, term)}`))
+  }
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0
-    return lines([
+    return [...prose([
       v.error && `${tr("这一步失败")}：${L(v.error)}`,
       !v.goals.length && tr('证明完毕'),
       others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1}),
-    ], v.goals.map((g, k) => `${k + 1}. ${goalText(g, text)}`))
+    ]), ...formulas(goalLines(v, task))]
   }
-  if (v.kind === 'eqs') return lines([v.fail && `${tr('合一失败')}：${L(v.fail)}`, !v.eqs.length && tr('没有等式了')], v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))
+  if (v.kind === 'eqs') return [...prose([v.fail && `${tr('合一失败')}：${L(v.fail)}`, !v.eqs.length && tr('没有等式了')]), ...formulas(v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))]
   const shown = certificate(v.set) ?? v.set.map((_, i) => i)
-  return lines([refuted(v.set) && tr('推出了空子句 ⊥'), v.endless && tr("仍在增加")], shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(punctuation("、"))}` : ''}`))
+  return [...prose([refuted(v.set) && tr('推出了空子句 ⊥'), v.endless && tr("仍在增加")]), ...formulas(shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(punctuation("、"))}` : ''}`))]
 }
+const showMachine = (v, ctx) => machineLines(v, ctx).map((l) => l.s).join('\n')
 
 const WANT = {
   'logic/elim': T('这份声明的消去规则'),
@@ -77,10 +116,18 @@ const WANT = {
   'logic/proved': T('证明完毕'),
 }
 /** What a test wants of the result, in words: the results a step makes, the elimination rule, or the level's want. */
+// What a test wants, as lines (`kind: 'want'`, machineLines): words, and the goals or the rule wanted as formulas, so a
+// card typesets them as it does every other formula.
 function wantOf(task, test) {
   const text = machineTextOf(task)
-  if (test.becomes) return test.becomes.length ? `${tr('变成 ')}${test.becomes.map((r) => (r.length ? r.map((g) => goalText(parseGoal(g), text)).join(' | ') : tr('证完'))).join(tr('，或者 '))}` : tr("这一步失败", {}, "circuit-readouts")
-  if (test.elim) return `${tr('消去规则 ')}${ruleText(elimOf(test), text)}`
+  const prose = (s) => ({ s, formula: false })
+  const formula = (s) => ({ s, formula: true })
+  if (test.becomes) {
+    if (!test.becomes.length) return tr("这一步失败", {}, "circuit-readouts")
+    const ways = test.becomes.map((r) => (r.length ? formula(r.map((g) => goalText(parseGoal(g), text)).join(' | ')) : prose(tr('证完'))))
+    return { kind: 'want', lines: [prose(tr('变成 ').trim()), ...ways.flatMap((w, k) => (k ? [prose(tr('或者')), w] : [w]))] }
+  }
+  if (test.elim) return { kind: 'want', lines: [prose(tr('消去规则 ').trim()), formula(ruleText(elimOf(test), text))] }
   return L(WANT[test.want ?? task.want])
 }
 

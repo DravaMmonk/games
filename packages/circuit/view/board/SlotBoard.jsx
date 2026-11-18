@@ -196,10 +196,8 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
       return [out && <button key={`${key}:out`} type="button" data-wire-tag={key} className={linkedSource === w.from ? 'is-linked' : ''} onClick={(e) => { e.stopPropagation(); jump(w, w.to) }}>{name} →</button>, into && <button key={`${key}:in`} type="button" data-wire-tag={key} className={linkedSource === w.from ? 'is-linked' : ''} onClick={(e) => { e.stopPropagation(); jump(w, src) }}>← {name}</button>].filter(Boolean)
     })}</span>
   }
-  useEffect(() => {
-    if (!blocks?.active) return
-    requestAnimationFrame(() => board.current?.querySelector(`[data-part="${CSS.escape(blocks.active)}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }))
-  }, [blocks?.active])
+  // A run never moves the page: the card it is on is marked where it stands (a page that scrolled after the run jumped
+  // about under the player on a phone).
   const [wires, setWires] = useState(readMode)
   const mode = WIRE_MODES.find((m) => m.id === wires)
   const next = WIRE_MODES[(WIRE_MODES.indexOf(mode) + 1) % WIRE_MODES.length]

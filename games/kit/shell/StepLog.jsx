@@ -5,7 +5,8 @@ import { L, tr } from './i18n.js'
 // name, a round) and what it gave, the current one marked and kept in view, a failed one marked. The box and each
 // result have a greatest height and scroll, so a long clause set or sentence never pushes the page about.
 //
-// steps: [{ label: { zh, en } | string, value: node, failed?: { zh, en } }]   at: the current step's index, or −1
+// steps: [{ label: { zh, en } | string, mark?: a node before the name (the card's icon and number), detail?: what the step did (apart from the card's name), value: node,
+//          failed?: { zh, en } }]   at: the current step's index, or −1
 
 export default function StepLog({ steps, at }) {
   const box = useRef(null)
@@ -23,7 +24,7 @@ export default function StepLog({ steps, at }) {
     <ol className="step-log" ref={box} aria-label={tr('运行步骤')}>
       {steps.map((s, k) => (
         <li key={k} className={`step-log-item ${k === at ? 'is-on' : ''} ${s.failed ? 'is-fail' : ''}`}>
-          <span className="step-log-head"><b>{k + 1}</b>{L(s.label)}</span>
+          <span className="step-log-head"><b>{k + 1}</b>{s.mark}{L(s.label)}{s.detail && <span className="step-log-detail">{L(s.detail)}</span>}</span>
           <div className="step-log-value">{s.value}</div>
           {s.failed && <span className="step-log-why">{L(s.failed)}</span>}
         </li>

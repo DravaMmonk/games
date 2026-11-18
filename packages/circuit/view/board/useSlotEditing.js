@@ -12,12 +12,12 @@ import { byId, canRemoveCard, connectWire, ends, isPart, layout, parsePort, plac
 import { leavesLockedRegion, lockedCards, PRESET_CARD_REFUSAL } from "../../core/board/presets.js"
 import { drawWires } from "./SlotBoard.jsx"
 import { blockAtSlot, movePhonePart, placeInPhoneSlot, transferBlockMembers } from "../../core/board/blocks.js"
-import { regionAddress, regionsFit, regionsOf } from "../../core/board/regions.js"
+import { regionsFit } from "../../core/board/regions.js"
 import { usePickedPort } from "./usePickedPort.js"
+import { cardOrder, numberAt } from "../../core/board/card-order.js"
 import { visibleSlot } from "../../core/board/visibleSlot.js"
 
 const buzz = (pattern = 8) => navigator.vibrate?.(pattern)
-export const NUMBERS = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳'
 
 /**
  * How the phone board is edited, the same in every game. Wires go dot to dot: tap one dot, then another (or the
@@ -49,25 +49,14 @@ export function useSlotEditing({ graph, onChange, parts, create, label, openNode
   const canRemove = (node) => canRemoveCard(parts, node, protectedIds)
   const wouldLeave = (node, region) => leavesLockedRegion(protectedIds, node, region)
   // Parts are numbered in reading order: the board's slots, and a frame's regions right after the frame.
-  const orderOf = (g) => {
-    const ordered = []
-    const walk = (region) => {
-      const { cell } = placement(g, parts, region)
-      for (const id of [...cell.keys()].sort((x, y) => cell.get(x) - cell.get(y))) {
-        ordered.push(id)
-        for (const r of regionsOf(parts, byId(g, id))) walk(regionAddress(id, r.name))
-      }
-    }
-    walk(null)
-    return ordered
-  }
+  const orderOf = (g) => cardOrder(g, parts)
   const ordered = orderOf(graph)
   // A part's name with its number on board `g` (the board as it is, or as it is about to be).
   const nameIn = (g, node, order = g === graph ? ordered : orderOf(g)) => {
     if (!node) return ''
     if (!isPart(parts, node)) return L(label(node))
     const index = order.indexOf(node.id)
-    return `${NUMBERS[index] ?? `#${index + 1}`} ${L(label(node))}`
+    return `${numberAt(index)} ${L(label(node))}`
   }
   const nameOf = (node) => nameIn(graph, node)
   const edit = (next, note) => {

@@ -21,7 +21,7 @@ const words = (x) => (typeof x === 'string' ? { zh: x, en: x } : x)
 
 /**
  * A run's steps as its step log reads them (../shell/StepLog.jsx), one for every trace entry, in the order they ran:
- * { label, value, failed }. A step is named by its card (`nameAt(path, id)`, path the packed parts it is in), after the
+ * { label, detail, value, failed, entry }: the card's name, and apart from it what the step did. A step is named by its card (`nameAt(path, id)`, path the packed parts it is in), after the
  * packed parts it is in, outermost first; a frame's step by the round it goes into (`round`), a part's own step inside
  * (`inner`) by what it says it did (`label`) or the part it applied (`sub`: `partName(type)`), any other step after what
  * the domain says it did (`detail(entry)`, words or null). A card that cannot
@@ -32,11 +32,10 @@ export function traceSteps(trace, { nameAt, partName, detail }) {
     const path = e.path ?? []
     const own = words(nameAt(path, e.id) ?? e.id)
     const what = e.inner && (e.label ?? (e.sub ? partName(e.sub) : null))
-    const said = !what && !e.round && detail?.(e)
-    const step = what ? join(own, words(what)) : e.round ? join(own, T("第 {round} 轮", {round: e.round})) : said ? join(own, words(said)) : own
-    const label = path.reduceRight((inner, _, k) => join(words(nameAt(path.slice(0, k), path[k]) ?? path[k]), inner, '›'), step)
+    const said = what ? words(what) : e.round ? T("第 {round} 轮", {round: e.round}) : detail?.(e)
+    const label = path.reduceRight((inner, _, k) => join(words(nameAt(path.slice(0, k), path[k]) ?? path[k]), inner, '›'), own)
     const failed = e.error === undefined ? null : e.error === MISSING ? T("「{zh}」缺少输入", {zh: { zh: String(own.zh), en: String(own.en) }}) : words(e.error)
-    return { label, value: e.value, failed }
+    return { label, detail: said ? words(said) : null, value: e.value, failed, entry: e }
   })
 }
 

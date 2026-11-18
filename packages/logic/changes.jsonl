@@ -23,3 +23,6 @@
 {"seq":23,"at":"2026-11-18T21:13:04.803Z","why":"Every test in the course is named 案例 1, 2, 3; the letters' own tab is 一般形式.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"9efbcb6d94eda594"}]}
 {"seq":24,"at":"2026-11-18T21:14:46.849Z","why":"Test of the case labels.","adopt":true,"files":[]}
 {"seq":25,"at":"2026-11-18T21:39:22.439Z","why":"Machine run report: each step says what it did (rule k on goal n), rule parts are not steps; goals numbered, values left-aligned and smaller.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"2c876c16c2544e1b"}]}
+{"seq":26,"at":"2026-11-18T22:16:37.355Z","why":"Prover run report as a step chart: rules numbered once (R₁), goal boxes joined by steps (⊢ ⟵ R₁, ⊢ ✓), goals marked on the turnstile; name and note apart.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"3d8cc9f62ea1bda2"}]}
+{"seq":27,"at":"2026-11-18T22:25:51.908Z","why":"A hypothesis closing a goal reads ⊢ ✓, not an emoji.","adopt":true,"files":[]}
+{"seq":28,"at":"2026-11-18T22:42:48.626Z","why":"Machine board formulas typeset in TeX (one LaTeX face); report steps carry the card's icon and number.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"395bef8b19db92a1"}]}

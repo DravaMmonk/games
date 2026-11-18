@@ -40,7 +40,7 @@ import { workNodes } from 'circuit'
 // whole list, in order. A rule list is a constant: it may be wired into a frame from outside. Until a level says
 // `backtrack`, a tactic gives only its first result; from then on, every result, and each card after it works on each
 // of them in turn (tactics.js).
-import { sameJson, punctuation } from 'kernel'
+import { sameJson } from 'kernel'
 import { OperationError } from 'kernel'
 import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
@@ -150,14 +150,15 @@ const stateIn = (v) => {
   return v
 }
 const firstOf = (s) => ({ ...s, more: undefined })
-// What a tactic did, for the step log (`did`, said of the card `didBy`): the rules (their numbers on the list wired in)
-// or the hypotheses it used, on the first goal.
-const numbers = (list) => [...new Set(list)].join(punctuation('、'))
+// What a tactic did, for the step log (`did`, said of the card `didBy`): what it did (`op`), the rules it used (their
+// keys; the log numbers them as the board does, R₁ R₂ …) and how many goals it was handed (one goal is plain ⊢, more are
+// ⊢₁ ⊢₂ …; a tactic works on the first). ./circuit-readouts.js didText writes it.
+const keysOf = (by) => [...new Set(by.map((b) => b.rule))]
 const DID = {
-  rule: (by) => T("用规则 {k} 改目标 1", { k: numbers(by.map((b) => b.rule)) }),
-  rw: (by, node) => (atOf(node) === 'hyps' ? T("用规则 {k} 改写目标 1 的已知", { k: numbers(by.map((b) => b.rule)) }) : T("用规则 {k} 改写目标 1", { k: numbers(by.map((b) => b.rule)) })),
-  assumption: (by) => T("用已知 {k} 证完目标 1", { k: numbers(by.map((b) => b.hyp)) }),
-  defer: () => T('把目标 1 移到最后'),
+  rule: (by) => ({ op: 'rule', rules: keysOf(by) }),
+  rw: (by, node) => ({ op: atOf(node) === 'hyps' ? 'rwHyps' : 'rw', rules: keysOf(by) }),
+  assumption: () => ({ op: 'assumption' }),
+  defer: () => ({ op: 'defer' }),
 }
 const unsaid = (s) => (s.did === undefined && s.didBy === undefined ? s : { ...s, did: undefined, didBy: undefined })
 // A tactic card: on each result it is handed (only the first, until the level backtracks), every result it makes; a
@@ -177,7 +178,7 @@ const tactic = (t, say) => ({
     }
     const kept = (ctx.backtrack ? out : out.slice(0, 1))
     const by = kept.map((x) => x.by).filter(Boolean)
-    const did = say?.(by, node)
+    const did = say && { ...say(by, node), goals: firstOf(s).goals.length }
     const made = asValue(kept.map(({ by: _by, ...x }) => unsaid(x)), { ...unsaid(firstOf(s)), error: why })
     const said = did && kept.length ? { ...made, did, didBy: node.id } : made
     return s.endless ? { ...said, endless: true } : said
@@ -196,11 +197,11 @@ const NOT_REWRITE = ['接进来的有一条不能用来改写（只有等价、�
 function firstThatApplies(rules, ctx, apply) {
   const out = []
   let why = null
-  for (const [k, r] of rules.entries()) {
+  for (const r of rules) {
     const got = apply(r)
     if (got.fail) why ??= got.fail
     else {
-      out.push(...got.results.map((x) => ({ ...x, by: { rule: k + 1 } })))
+      out.push(...got.results.map((x) => ({ ...x, by: { rule: r.key } })))
       if (!ctx.backtrack) break
     }
   }
@@ -706,8 +707,14 @@ export const MACHINE_TESTS = {
       ctx: ctxOf(level, circuit, { trace: traced ? trace : null }),
       traceTargets: ['out'],
     })
-    // Rule parts are not steps: what they give is on their cards from the start.
-    return { ...run, trace: trace.filter((e) => e.value?.kind !== 'rules') }
+    // Rule parts are not steps: what they give is on their cards from the start. The rules on the board, numbered
+    // once for the whole run (R₁ R₂ …, in the order of their cards on the board): `rules`, their keys, and
+    // `ruleEntries`, what the cards give.
+    const at = new Map(circuit.nodes.map((n, k) => [n.id, k]))
+    const given = trace.filter((e) => e.value?.kind === 'rules').map((e, k) => ({ e, k, place: at.get(e.path?.[0] ?? e.id) ?? Infinity }))
+    const ruleEntries = given.sort((a, b) => a.place - b.place || a.k - b.k).flatMap(({ e }) => e.value.entries)
+    const rules = [...new Set(ruleEntries.map((e) => e.key))]
+    return { ...run, trace: trace.filter((e) => e.value?.kind !== 'rules'), rules, ruleEntries }
   },
   check: (level, test, outputs) => {
     const problem = judge(test.want ?? level.want, test, outputs.out, level)

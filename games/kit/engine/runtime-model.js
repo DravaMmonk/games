@@ -64,11 +64,7 @@ export function runtimeSpec(content, runtimes) {
     syncOwn: (built) => specs.forEach((spec) => spec.syncOwn?.(built)),
     builtIn: specs.flatMap((spec) => spec.builtIn ?? []),
     texts: {
-      ...Object.fromEntries(specs.map((spec, index) => {
-        const { glossary: _glossary, ...texts } = spec.texts ?? {}
-        return [scopes[index].id, texts]
-      })),
-      glossary: content.glossary.entries,
+      ...Object.fromEntries(specs.map((spec, index) => [scopes[index].id, spec.texts ?? {}])),
     },
     quotes: meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.quotes?.({ content }) ?? []),
   }

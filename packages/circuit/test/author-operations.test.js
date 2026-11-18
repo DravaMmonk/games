@@ -8,7 +8,6 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { COURSE_OPTIONS } from '../../../games/kit/engine/course-schema.js'
 import { eraLevels } from '../../../games/kit/course.js'
 import { S } from '../../../games/kit/engine/schema.js'
 import { defineVocabulary } from '../../../games/kit/engine/vocabulary.js'
@@ -24,12 +23,12 @@ import { writeContentFixture } from '../../qed/test/fixture.js'
 
 const openGame = (id, root, options = {}) => (options.scope === 'game' ? openWorkspace : openPackage)(id, root, { vocabulary: id === 'ptoy' ? PVOCAB : VOCAB, ...options })
 
-const ERA = S.obj({ id: S.str(), title: S.opt(S.text()), ...COURSE_OPTIONS })
+const ERA = S.obj({ id: S.str(), title: S.opt(S.text()) })
 const VOCAB = defineVocabulary({
   module: 'toy',
   version: 1,
   kinds: { primitive: { a: { about: 'a' }, b: { about: 'b' }, c: { about: 'c' } } },
-  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS, description: S.opt(S.text()) }),
+  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), description: S.opt(S.text()) }),
   // What a toy level says once is its whole puzzle; its one task is only its id.
   level: taskLevel({ title: S.text(), brief: S.opt(S.text()), tests: S.opt(S.list(S.any())), adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))), solution: S.opt(S.board()), from: S.opt(S.level()) }, {}, { parts: true }),
 })
@@ -57,7 +56,10 @@ function toy() {
   writeContentFixture(root, 'toy', { game, glossary, levels, tagOverrides: { 'kernel/tags/level/optional': ['toy/a3'] } }, VOCAB)
   return { root, ws: openWorkspace('toy', root, { vocabulary: VOCAB }) }
 }
-const run = (ws, op, args) => operationsFor(circuitFixtureSchema(VOCAB))[op].apply(ws, args, { vocabulary: VOCAB, domain: DOMAIN })
+const run = (ws, op, args) => {
+  const vocabulary = ws.schemas ?? circuitFixtureSchema(VOCAB)
+  return operationsFor(vocabulary)[op].apply(ws, args, { vocabulary, domain: DOMAIN })
+}
 const undone = (ws, inverse) => { for (const { op, ...args } of inverse) run(ws, op, args) }
 /** Runs op, checks its inverse restores the content exactly, and returns what it did (with the content after it). */
 function roundTrip(ws, op, args) {
@@ -91,14 +93,15 @@ test('field edits, patches and replacements reject id changes before mutation', 
     ['level.replace', { level: 'a1', data: changed }],
     ['entry.set', { entry: 'e', path: 'id', value: 'new' }],
     ['entry.patch', { entry: 'e', fields: { id: 'new' } }],
-    ['entry.put', { entry: 'e', data: { ...ws.entries.get('e'), id: 'new' } }],
+    ['entry.put', { entry: 'e', data: { ...ws.contentObjects.entry.get('e'), id: 'new' } }],
   ]) {
     assert.throws(() => run(ws, op, args), /id cannot change; create a new object, then delete the old one/, op)
     assert.deepEqual(ws.snapshot(), before, `${op} leaves the workspace intact`)
   }
   for (const kind of ['tag', 'relation', 'section']) {
     const plural = { tag: 'tags', relation: 'relations', section: 'sections' }[kind]
-    ws[plural].set(kind === 'tag' ? 'level:object' : 'object', {})
+    const objects = kind === 'section' ? ws.contentObjects.section : ws[plural]
+    objects.set(kind === 'tag' ? 'level:object' : 'object', {})
     assert.throws(() => run(ws, `${kind}.set`, { [kind]: 'object', ...(kind === 'tag' && { member: 'level' }), path: 'id', value: 'new' }), /id cannot change/)
   }
 })
@@ -141,7 +144,7 @@ test('a refused id edit restores all earlier operations in its changeset', async
   const before = ws.content()
   for (const op of [
     { op: 'level.set', level: 'a1', path: 'tasks[0].id', value: 'new' },
-    { op: 'entry.put', entry: 'e', data: { ...ws.entries.get('e'), id: 'new' } },
+    { op: 'entry.put', entry: 'e', data: { ...ws.contentObjects.entry.get('e'), id: 'new' } },
   ]) {
     const result = await runChangeset(ws, { ops: [{ op: 'level.set', level: 'a1', path: 'tests', value: [2] }, op] }, { check: false, domain: DOMAIN })
     assert.equal(result.ok, false)
@@ -251,7 +254,7 @@ test('text.set edits one language at a field path and round trips', () => {
   const { ws } = toy()
   const before = level(ws, 'b1').brief
   const gameTitle = ws.game.title
-  const entryTitle = ws.entries.get('e').title
+  const entryTitle = ws.contentObjects.entry.get('e').title
   roundTrip(ws, 'text.set', { level: 'b1', path: 'brief', lang: 'en', value: 'then' })
   assert.deepEqual(level(ws, 'b1').brief, { ...before, en: 'then' })
   roundTrip(ws, 'text.set', { level: 'b1', path: 'brief', lang: 'fr', value: 'ensuite' })
@@ -259,7 +262,7 @@ test('text.set edits one language at a field path and round trips', () => {
   roundTrip(ws, 'text.set', { in: 'game', path: 'title', lang: 'zh', value: '玩具' })
   assert.deepEqual(ws.game.title, { ...gameTitle, zh: '玩具' })
   roundTrip(ws, 'text.set', { entry: 'e', path: 'title', lang: 'ja', value: '項目' })
-  assert.deepEqual(ws.entries.get('e').title, { ...entryTitle, ja: '項目' })
+  assert.deepEqual(ws.contentObjects.entry.get('e').title, { ...entryTitle, ja: '項目' })
   assert.throws(() => run(ws, 'text.set', { level: 'b1', path: 'from', lang: 'en', value: 'x' }), /not a text/)
 })
 
@@ -300,11 +303,11 @@ test('preview, apply and undo a locale edit across a workspace reopen', async ()
 test('entry.put, entry.patch and entry.remove edit the encyclopedia', () => {
   const { ws } = toy()
   roundTrip(ws, 'entry.put', { entry: 'f', data: { title: 'F', body: [] } })
-  assert.deepEqual([...ws.entries.keys()], ['e', 'f'])
+  assert.deepEqual([...ws.contentObjects.entry.keys()], ['e', 'f'])
   roundTrip(ws, 'entry.patch', { entry: 'e', fields: { title: 'E2', at: null } })
-  assert.deepEqual(ws.entries.get('e'), { title: 'E2', body: ['see <level-ref to="a2"></level-ref>'] })
+  assert.deepEqual(ws.contentObjects.entry.get('e'), { title: 'E2', body: ['see <level-ref to="a2"></level-ref>'] })
   roundTrip(ws, 'entry.remove', { entry: 'e' })
-  assert.deepEqual([...ws.entries.keys()], ['f'])
+  assert.deepEqual([...ws.contentObjects.entry.keys()], ['f'])
 })
 
 test('the log keeps each file’s hashes; a write lands only on the files and the log it was made on', async () => {
@@ -436,7 +439,7 @@ const PVOCAB = defineVocabulary({
   module: 'ptoy',
   version: 1,
   kinds: { operation: { add: { about: 'a + b', args: [{ name: 'a', type: 'kernel/number' }, { name: 'b', type: 'kernel/number' }], returns: 'kernel/number' } }, family: { value: { about: 'numbers' } } },
-  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
+  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })) }),
   level: S.obj({ title: S.text(), brief: S.opt(S.text()), adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))), solution: S.opt(S.board()), uses: S.opt(S.map(S.str(), { key: S.ref('primitive', { reference: 'circuit/part' }) })) }),
 })
 const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'kernel/number' }, { name: 'b', type: 'kernel/number' }], outputType: 'kernel/number', op: 'add' }
@@ -554,9 +557,9 @@ test('entry identity and membership cannot be hidden by the encyclopedia project
   for (const op of [{ op: 'entry.set', entry: 'e', path: 'id', value: 'other' }, { op: 'entry.patch', entry: 'e', fields: { group: 'g' } }]) {
     const result = await runChangeset(ws, { ops: [op] }, { check: false, domain: DOMAIN })
     assert.equal(result.ok, false)
-    assert.match(result.problems.join('\n'), /identity belongs|id cannot change/)
-    assert.equal(ws.entries.get('e').id, undefined)
-    assert.equal(ws.entries.get('e').group, undefined)
+    assert.match(result.problems.join('\n'), /not a field here|id cannot change/)
+    assert.equal(ws.contentObjects.entry.get('e').id, undefined)
+    assert.equal(ws.contentObjects.entry.get('e').group, undefined)
   }
 })
 

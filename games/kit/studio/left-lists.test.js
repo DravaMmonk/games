@@ -23,7 +23,7 @@ test('the address keeps what is open: an object list’s object, or a group’s 
   assert.deepEqual(readOpen(new URLSearchParams('capability=x&override=x'), GAME_LISTS), { list: 'overrides', open: { override: 'x' } })
   assert.deepEqual(readHeading(new URLSearchParams('object=sample/collection demo/main&level=demo/a')), { kind: 'sample/collection', full: 'demo/main' })
   assert.equal(readHeading(new URLSearchParams('level=demo/a')), null)
-  assert.deepEqual(['tag', 'relation', 'sample/collection', 'section'].map((k) => listOfHeading(k)), ['tree', 'tree', 'type:sample/collection', 'entries'])
+  assert.deepEqual(['tag', 'relation', 'sample/collection', 'section'].map((k) => listOfHeading(k)), ['tree', 'tree', 'type:sample/collection', 'type:entry'])
   assert.equal(listOfHeading('tag', 'sample/item'), 'type:sample/item')
   assert.equal(listOfHeading('tag', 'other/item'), 'type:other/item')
 })
@@ -47,15 +47,16 @@ const content = {
     section: { 'demo/map': { title: 'Words', values: [] } },
   },
 }
-const object = (full, kind = 'tag') => ({ kind, full, namespace: 'demo', value: objectValue(content, kind, full), ...(kind === 'tag' && { tagKind: 'level' }) })
+const section = { folder: 'sections', schema: { type: 'obj', fields: {} } }
+const object = (full, kind = 'tag') => ({ kind, full, namespace: 'demo', value: objectValue(content, kind, full), ...(kind === 'tag' ? { tagKind: 'level' } : { declared: section }) })
 
 test('an object’s file is the registry’s value without its id (a tag without its kind, which its folder says), written back by short names', () => {
   assert.equal(objectValue(content, 'tag', 'level:demo/first').id, undefined)
   assert.equal(objectValue(content, 'tag', 'level:demo/first').kind, undefined)
   assert.equal(objectValue(content, 'tag', 'level:demo/none'), null)
   assert.equal(objectFileName('tag', 'level:demo/first'), 'demo/tags/level/first.json')
-  assert.equal(objectFileName('section', 'demo/map'), 'demo/sections/map.json')
-  assert.equal(objectFileName('section', 'demo/map', null, 'demo'), 'sections/map.json')
+  assert.equal(objectFileName('section', 'demo/map', null, null, section), 'demo/sections/map.json')
+  assert.equal(objectFileName('section', 'demo/map', null, 'demo', section), 'sections/map.json')
   assert.deepEqual(ownObjectData('demo', objectValue(content, 'tag', 'level:demo/first')),
     { title: { en: 'First', $key: 'tags.first' }, values: ['a', 'other/b', '#inner'] })
 })
@@ -65,12 +66,12 @@ test('an edit of the layer’s own object is its object operation; another layer
   assert.deepEqual(objectOp(object('level:demo/first'), ['title'], { set: 'Erste', lang: 'de' }, 'text'),
     { op: 'tag.set', tag: 'first', member: 'level', path: ['title'], value: { en: 'First', de: 'Erste', $key: 'tags.first' } })
   assert.deepEqual(objectOp(object('level:demo/first'), ['title'], { unset: true }), { op: 'tag.put', tag: 'first', member: 'level', data: { values: ['a', 'other/b', '#inner'] } })
-  assert.deepEqual(objectOp(object('demo/map', 'section'), ['values'], { set: ['demo/a'] }), { op: 'section.set', section: 'map', path: ['values'], value: ['a'] })
+  assert.deepEqual(objectOp(object('demo/map', 'section'), ['values'], { set: ['demo/a'] }), { op: 'object.set', kind: 'section', name: 'map', path: ['values'], value: ['a'] })
   assert.equal(objectOp(object('level:demo/first'), [], { unset: true }), null)
   assert.equal(objectOp(object('level:other/far'), ['values'], { set: [] }), null)
   // The forms reach them through the same file operation as any other file.
-  assert.deepEqual(opFor({ object: object('demo/map', 'section') }, 'values', { set: ['demo/a'] }), { op: 'section.set', section: 'map', path: ['values'], value: ['a'] })
-  const shown = fileForm(content, {}, { object: { kind: 'section', full: 'demo/map' } }, [])
+  assert.deepEqual(opFor({ object: object('demo/map', 'section') }, 'values', { set: ['demo/a'] }), { op: 'object.set', kind: 'section', name: 'map', path: ['values'], value: ['a'] })
+  const shown = fileForm(content, {}, { object: { kind: 'section', full: 'demo/map', declared: section } }, [])
   assert.deepEqual(shown.value, { title: 'Words', values: [] })
   assert.equal(shown.form.kind, 'obj')
 })

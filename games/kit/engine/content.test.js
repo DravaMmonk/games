@@ -79,7 +79,7 @@ test('a small language reports what it cannot read, by the path, without throwin
   assert.deepEqual(validate(vocabulary.level, { goal: ')))' }, { vocabulary }), [], 'without the readers only the type is checked')
   assert.match(validate(vocabulary.level, { goal: 3 }, { vocabulary })[0].says, /expected brackets text/)
   assert.deepEqual(validate(S.syntax('nope'), 'x', { languages }), [], 'a language the domain does not read is the contract’s to refuse')
-  const content = { id: 'g', vocabulary: 1, levels: [{ id: 'one', goal: '(()' }], glossary: { groups: [], entries: [] } }
+  const content = { id: 'g', vocabulary: 1, levels: [{ id: 'one', goal: '(()' }] }
   assert.deepEqual(checkContent({ vocabulary, languages }, content), [{ at: 'levels/one.json.goal', says: '"(()" is no brackets: unclosed (' }])
 })
 
@@ -98,9 +98,6 @@ test('a name the content defines must be one it defines', () => {
   assert.deepEqual(validate(S.name('lemma'), 'swap', { names }), [])
   assert.match(validate(S.name('lemma'), 'nonexistent', { names })[0].says, /"nonexistent" is no lemma of this game/)
   assert.deepEqual(validate(S.name('gate'), 'x', { names }), [], 'a kind of name the domain does not give is the contract’s to refuse')
-  const vocabulary = defineVocabulary({ module: 'toy', version: 1, kinds: {}, game: S.obj({}), level: S.obj({}) })
-  const content = { id: 'g', vocabulary: 1, levels: [], glossary: { groups: [{ id: 'a', title: 'A' }], entries: [{ id: 'e', group: 'b', title: 'E', body: [], see: ['f'] }] } }
-  assert.deepEqual(checkContent({ vocabulary }, content).map((p) => p.at), ['entries/e.json.see[0]'])
 })
 
 test('a vocabulary prints as plain data', () => {
@@ -114,7 +111,6 @@ test('content is checked file by file', () => {
     id: 'toy', schemas: VOCAB,
     game: { vocabulary: 3, title: { en: '玩具' }, extra: 1 },
     levels: [['b', { mode: 'read', text: 'x' }], ['a', { mode: 'run', world: 'nowhere' }]],
-    glossary: { groups: [], entries: [{ id: 'e', title: 'E', body: [] }] },
   })
   assert.deepEqual(content.levels.map((l) => l.id), ['toy/a', 'toy/b'])
   assert.ok(checkContent({ vocabulary: VOCAB }, content).some(problem => problem.rule === 'exists' && problem.kind === 'world' && problem.target === 'nowhere'))
@@ -148,10 +144,8 @@ test('a data game is read from its folder', () => {
 
   mkdirSync(join(dir, 'games', 'toy', 'tags/level'), { recursive: true })
   mkdirSync(join(dir, 'games', 'toy', 'relations'))
-  mkdirSync(join(dir, 'games', 'toy', 'sections'))
   writeFileSync(join(dir, 'games/toy/tags/level/forbidden.json'), JSON.stringify({ values: [] }))
   writeFileSync(join(dir, 'games/toy/relations/forbidden.json'), JSON.stringify({ kind: 'requires', edges: [] }))
-  writeFileSync(join(dir, 'games/toy/sections/forbidden.json'), JSON.stringify({ title: 'Forbidden', values: [] }))
   const forbidden = readContent('toy', dir, { vocabulary: VOCAB })
-  assert.equal(checkContent({ vocabulary: VOCAB }, forbidden).filter((p) => /may only be declared by package/.test(p.says)).length, 3)
+  assert.equal(checkContent({ vocabulary: VOCAB }, forbidden).filter((p) => /may only be declared by package/.test(p.says)).length, 2)
 })

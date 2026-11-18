@@ -10,8 +10,7 @@ export const OBJECT_NAME = '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$'
 export const REFERENCE = S.str({ pattern: '^#?(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$' })
 export const TAG = S.obj({ kind: S.str(), title: S.opt(S.text()), desc: S.opt(S.text()), values: S.set({ ...REFERENCE, reference: '$kind' }) })
 export const RELATION = S.obj({ kind: S.str(), edges: S.edges({ ...REFERENCE, reference: '$endpoint' }) })
-export const SECTION = S.obj({ title: S.text(), desc: S.opt(S.text()), values: S.list({ ...REFERENCE, reference: 'entry' }) })
-export const OBJECT_SCHEMAS = { tags: TAG, relations: RELATION, sections: SECTION }
+export const OBJECT_SCHEMAS = { tags: TAG, relations: RELATION }
 export const referenceName = (namespace, value) => typeof value === 'string' && value.startsWith('#') ? `#${fullName(namespace, value.slice(1))}` : fullName(namespace, value)
 
 /** Qualify each object at its declaring layer, including relation patches. */
@@ -72,7 +71,7 @@ export function referenceResolver(registries, problems = [], vocabulary = regist
   return expand
 }
 
-export const referenceKind = (schema) => schema?.type === 'either' ? schema.of.map(referenceKind).find(Boolean) : schema?.reference ?? (schema?.type === 'level' ? 'level' : ['ref', 'name'].includes(schema?.type) ? (schema.kind?.includes('/') ? schema.kind : { entry: 'entry' }[schema.kind]) : null)
+export const referenceKind = (schema) => schema?.type === 'either' ? schema.of.map(referenceKind).find(Boolean) : schema?.reference ?? (schema?.type === 'level' ? 'level' : ['ref', 'name'].includes(schema?.type) && schema.kind?.includes('/') ? schema.kind : null)
 
 /** Read a named tag while retaining member traversal order for presentation. */
 export function readTag(registries, member, name, active = new Set()) {

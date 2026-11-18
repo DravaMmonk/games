@@ -13,7 +13,6 @@ test('the page loads independent course and package catalogs, and a translation 
     title: { en: 'Course', zh: '课程', $key: '@toy/heading' },
     chapters: [{ id: 'main', title: { en: 'Opening', zh: '开场', $key: '@toy/chapter' }, levels: ['toy/first'] }],
     levels: [{ id: 'toy/first', title: { en: 'Level', zh: '关卡', $key: 'toy/heading' } }],
-    glossary: { groups: [], entries: [] },
   }
   const assets = contentAssets(content)
   const manifest = JSON.parse(assets.get(CONTENT_FILE))

@@ -61,7 +61,7 @@ export const circuitSpec = (courseOf) => (content, circuit = courseOf(content)) 
     circuit,
     blueprints: circuit.blueprints,
     syncOwn: circuit.syncOwn,
-    texts: { chapters: circuit.CHAPTERS, glossary: content.glossary.entries },
+    texts: { chapters: circuit.CHAPTERS },
   }
 }
 

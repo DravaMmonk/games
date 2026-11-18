@@ -4,10 +4,8 @@ import { schemaForKind } from './layers.js'
 import { existenceProblems } from './existence.js'
 import { LEVEL_MARKS, tagKey, tagName } from './tag-identity.js'
 import { kindSchemas, BUILTIN_KIND_NAMES } from './plugin-kinds.js'
-import { encyclopedia } from './encyclopedia.js'
 import { meaningsOf, derivedFields } from './kind-meanings.js'
 import { registryVocabularies } from './objects.js'
-import { GLOSSARY } from './vocabulary.js'
 import { createRegistries, expandNames, fullName, registryOf } from './names.js'
 import { referenceResolver, readTag, expandReferences, expandRelations, assembleChapters } from './objects.js'
 
@@ -22,30 +20,27 @@ const sourceContents = new WeakSet()
 export const hasCatalogSource = (content) => sourceContents.has(content)
 
 /** One content from a game's files. `levels` and named objects: [[id, value, namespace?]] in any order (they are kept sorted by id). */
-export function assemble({ id, packageId = id, schemas, contentObjects = {}, courseNamespace = `@${id}`, game, levels, tags = [], relations = [], sections = [], declarationProblems = [], glossary, blueprint, overridden = {}, fromDisk = false, qualified = false, existenceChecked = false, provenance = {}, packageTarget = null, objectKinds = schemas?.objectKinds }) {
+export function assemble({ id, packageId = id, schemas, contentObjects = {}, courseNamespace = `@${id}`, game, levels, tags = [], relations = [], declarationProblems = [], blueprint, overridden = {}, fromDisk = false, qualified = false, existenceChecked = false, provenance = {}, packageTarget = null, objectKinds = schemas?.objectKinds }) {
   if (!schemas) throw new Error('content assembly needs the domain vocabulary')
   const expand = (value, namespace, schema, context = '') => qualified ? value : expandNames(value, namespace, { objects: contentObjects, schema, vocabulary: schemas, context })
   game = expand(game, courseNamespace, schemas.game, 'configuration')
   levels = levels.map(([name, value]) => [fullName(packageId, name), expand(value, packageId, schemas?.level)])
-  glossary = expand(glossary, packageId, GLOSSARY)
   blueprint = expand(blueprint, `@${id}`)
   overridden = Object.fromEntries(Object.entries(overridden).map(([key, value]) => [fullName(packageId, key), value]))
   const byId = ([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)
   const objects = (folder, entries) => registryOf(folder, entries.map(([name, value, namespace = packageId]) => {
-    const kind = { tags: 'tag', relations: 'relation', sections: 'section' }[folder]
+    const kind = { tags: 'tag', relations: 'relation' }[folder]
     const full = fullName(namespace, name)
     return [kind === 'tag' ? tagKey(value.kind, full) : full, expand(value, namespace, schemaForKind(kind, schemas, value))]
   }))
   const tagMap = objects('tags', tags)
-  const sectionMap = objects('sections', sections)
   const relationMap = objects('relations', relations)
   const registries = createRegistries({
     ...Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, []])),
     level: levels,
-    entry: (glossary?.entries ?? []).map((entry) => [entry.id, entry]),
     ...Object.fromEntries(Object.entries(contentObjects).filter(([kind]) => kind !== 'kind').map(([kind, values]) => [kind, Object.entries(values).map(([name, value]) => [fullName(kind === 'chapter' ? courseNamespace : packageId, name), expand(value, kind === 'chapter' ? courseNamespace : packageId, kindSchemas(schemas)[kind])])])),
     kind: [...new Set([...BUILTIN_KIND_NAMES, ...Object.keys(objectKinds ?? {})])].map(name => [name, contentObjects.kind?.[name] ?? objectKinds?.[name] ?? BUILTIN_POLICIES[name] ?? { declares: 'package', overrides: { package: ['*'], game: ['$text'] } }]),
-    tag: Object.entries(tagMap), relation: Object.entries(relationMap), section: Object.entries(sectionMap),
+    tag: Object.entries(tagMap), relation: Object.entries(relationMap),
   })
   if (!packageTarget) registries.game = { [`${courseNamespace}/config`]: game }
   registryVocabularies.set(registries, schemas)
@@ -84,20 +79,16 @@ export function assemble({ id, packageId = id, schemas, contentObjects = {}, cou
   const marks = Object.fromEntries(Object.entries(LEVEL_MARKS).map(([mark, name]) => [mark, new Set(readTag(registries, 'level', name))]))
   const relationEdges = expandRelations(relationMap, resolve, scheduled, objectProblems, marks.optional, relationDefinitions)
   levels = levels.map(([name, value]) => [name, refs(value, schemas.level)])
-  glossary = refs(glossary, GLOSSARY)
-  const entryObjects = glossary?.entries ?? []
-  glossary = encyclopedia(entryObjects, sectionMap, resolve, game.encyclopedia)
   game = refs(game, schemas.game)
   const eras = sourceChapters && assembleChapters(sourceChapters, { expand: resolve, relations: relationEdges, ...marks, problems: objectProblems })
-  const projections = Object.assign({}, ...meaningsOf(schemas).map(meaning => meaning.assemble?.({ registries, relationEdges, resolve, problems: objectProblems, schemas })))
+  const projections = Object.assign({}, ...meaningsOf(schemas).map(meaning => meaning.assemble?.({ game, registries, relationEdges, resolve, problems: objectProblems, schemas })))
   const content = {
     id, ...game, ...provenance, ...(Object.keys(objectKinds ?? {}).length && { objectKinds }), ...(packageTarget && { packageTarget }), ...(eras && { eras, sourceChapters }), ...projections,
     levels: [...levels].sort(byId).map(([levelId, level]) => ({ id: levelId, ...level })),
-    tags: tagMap, relations: relationMap, sections: sectionMap, relationEdges, objectProblems, glossary,
+    tags: tagMap, relations: relationMap, relationEdges, objectProblems,
     ...(blueprint ? { blueprint } : {}), overridden, registries,
   }
   registries.level = registryOf('level', content.levels.map((level) => [level.id, level]))
-  registries.entry = registryOf('entry', entryObjects.map((entry) => [entry.id, entry]))
   contentSchemas.set(content, schemas)
   if (fromDisk) sourceContents.add(content)
   return content
@@ -116,13 +107,13 @@ export function deepFreeze(value) {
 /** File-shaped assembly inputs for publishers and pending-course validation. */
 export function assemblySource(content) {
   const schemas = contentSchemas.get(content) ?? { objectKinds: content.objectKinds }
-  const { objectKinds: _objectKinds, id, levels, glossary: _glossary, blueprint, overridden, registries, objectProblems: _problems, relationEdges: _edges, eras: _eras, sourceChapters: _sourceChapters, sources: _sources, overrideHistory: _history, layerOrder: _layerOrder, layerUses: _layerUses, capabilityDeclarations, tags = {}, relations = {}, sections = {}, ...configuration } = content
+  const { objectKinds: _objectKinds, id, levels, blueprint, overridden, registries, objectProblems: _problems, relationEdges: _edges, eras: _eras, sourceChapters: _sourceChapters, sources: _sources, overrideHistory: _history, layerOrder: _layerOrder, layerUses: _layerUses, capabilityDeclarations, tags = {}, relations = {}, ...configuration } = content
   const game = Object.fromEntries(Object.entries(configuration).filter(([key]) => !derivedFields(schemas).includes(key)))
   const sourceObjects = Object.assign({}, registries, ...meaningsOf(schemas).map(meaning => meaning.source?.({ content })))
   return {
     id, game, ...(capabilityDeclarations && { capabilityDeclarations }), contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, kind === 'kind' ? Object.fromEntries(Object.entries(registries?.kind ?? {}).filter(([name]) => _objectKinds?.[name])) : sourceObjects?.[kind] ?? {}])),
-    glossary: { groups: [], entries: Object.entries(registries?.entry ?? {}).map(([id, entry]) => ({ id, ...entry })) }, blueprint, overridden,
+    blueprint, overridden,
     levels: levels.map(({ id, ...level }) => [id, level]),
-    ...Object.fromEntries(Object.entries({ tags, relations, sections }).map(([kind, objects]) => [kind, Object.entries(objects).map(([name, object]) => [kind === 'tags' ? tagName(name) : name, object, (kind === 'tags' ? tagName(name) : name).split('/')[0]])])),
+    ...Object.fromEntries(Object.entries({ tags, relations }).map(([kind, objects]) => [kind, Object.entries(objects).map(([name, object]) => [kind === 'tags' ? tagName(name) : name, object, (kind === 'tags' ? tagName(name) : name).split('/')[0]])])),
   }
 }

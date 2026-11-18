@@ -7,7 +7,7 @@ import { packageDirectory } from './resolver.js'
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { contentRoot, gameDirectory, hubOrder, isDataGame, resolveLayers } from './resolver.js'
+import { contentRoot, gameDirectory, hubOrder, isDataGame, layerVocabulary, resolveLayers } from './resolver.js'
 import { lockTarget } from './releases.js'
 import { writeJson } from './ops/json.js'
 
@@ -65,7 +65,9 @@ export function gameOnPackage({ root = contentRoot(), id, from, title }) {
   if (!from || !isDataGame(from, root)) fail(`no game ${from} to take the course settings from`)
   const { packageRanges: packages, game, layers } = resolveLayers({ game: from, root })
   const { kernel, chapters, title: _title, author: _author, lede: _lede, kicker: _kicker, topic: _topic, description: _description,
-    art: _art, icon: _icon, hidden: _hidden, dev: _dev, encyclopedia: _encyclopedia, hero: _hero, optional: _optional, skippable: _skippable, ...settings } = game
+    art: _art, icon: _icon, hidden: _hidden, dev: _dev, hero: _hero, optional: _optional, skippable: _skippable, ...settings } = game
+  const fields = layerVocabulary(layers.slice(0, -1)).game.fields
+  for (const key of Object.keys(settings)) if (fields[key]?.scaffold === false) delete settings[key]
   const sourceChapter = layers.at(-1).objects.find(object => object.kind === 'chapter' && chapters?.[0]?.endsWith(`/${object.name}`))
   const { levels: _, rows: __, ...chapter } = sourceChapter?.value ?? {}
   const words = { zh: typeof title === 'string' ? title : title?.zh ?? id, en: typeof title === 'string' ? title : title?.en ?? id }

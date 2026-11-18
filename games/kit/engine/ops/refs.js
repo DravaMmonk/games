@@ -4,7 +4,6 @@ import { tagName } from '../tag-identity.js'
 // ({ part, level }).
 import { kindSchemas } from '../plugin-kinds.js'
 import { S, find } from '../schema.js'
-import { ENTRY } from '../vocabulary.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { textEntries } from '../i18n.js'
 
@@ -17,7 +16,6 @@ const link = (id, namespace) => new RegExp(`(<level-ref to="(?:${namespace}/)?)$
 /** The files of a workspace with the schema each is read by: [[name, value, schema]]. */
 export const workspaceFiles = (ws, vocabulary) => [
   ['game.json', own(ws.game), vocabulary.game],
-  ...[...ws.entries].map(([id, entry]) => [`entries/${id}.json`, entry, ENTRY]),
   ...Object.entries(ws.contentObjects ?? {}).flatMap(([kind, values]) => [...values].map(([id, value]) => [`${ws.kindFolders?.[kind] ?? kind}/${id}.json`, value, kindSchemas(vocabulary)[kind]])),
   ...[...ws.levels].map(([id, level]) => [`levels/${id}.json`, level, vocabulary.level]),
   ...[...ws.overrideFiles ?? []].flatMap(([file, value]) => {

@@ -3,6 +3,7 @@ import { referenceKinds } from '../engine/markup.js'
 import { tr } from './i18n.js'
 
 const KINDS = new Set()
+const displays = new Map()
 /** Every reference in a text: its kind and what it points to. */
 export const REF = /<([a-z][a-z0-9-]*)-ref to="([^"]+)"><\/\1-ref>/g
 
@@ -11,13 +12,13 @@ let hooks = null // { name(kind, id) → { label?, title } | null, open(kind, id
 const svg = (d) => `<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`
 const ICONS = {
   level: svg('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
-  wiki: svg('<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m10 2 0 7 2.5-2 2.5 2V2"/>'),
 }
-const GO = { level: (n) => tr(`前往 ${n}`, `Go to ${n}`), wiki: (n) => tr(`在百科里看 ${n}`, `See ${n} in the encyclopedia`) }
+const GO = { level: (n) => tr(`前往 ${n}`, `Go to ${n}`) }
 const escape = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
 
 function registerReference(kind, { icon = '', action = name => name } = {}) {
   KINDS.add(kind)
+  displays.set(kind, { icon, action })
   if (typeof customElements !== 'undefined') {
     if (customElements.get(`${kind}-ref`)) return
     customElements.define(`${kind}-ref`, class extends HTMLElement {
@@ -36,6 +37,7 @@ function registerReference(kind, { icon = '', action = name => name } = {}) {
       render() {
         const { label = '', title = this.getAttribute('to') } = hooks?.name(kind, this.getAttribute('to')) ?? {}
         const name = `${label} ${title}`.trim()
+        const { icon, action } = displays.get(kind)
         this.innerHTML = `<button type="button" class="ref-chip is-${kind}" title="${escape((GO[kind] ?? action)(name))}">${ICONS[kind] ?? icon}${label ? `<b>${escape(label)}</b>` : ''}<span>${escape(title)}</span></button>`
       }
     })

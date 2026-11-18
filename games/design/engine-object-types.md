@@ -2,7 +2,7 @@
 
 **对象类型的结构是数据。** 包在 `kinds/<名>.json` 声明 `folder`、JSON `schema`、`references`、`relations`、`declares`、`overrides`、`text` 和 `studio`。对象类型全名是 `<包>/<名>`，实例使用声明目录。结构参与普通的覆盖、引用、文案、来源与兼容性流程；含义由 `kind` 协议挂载。有些类型只用于组织资料，可以只有数据。
 
-内核自带关卡、任务、标签、关系、词条、百科分组、文案、对象类型、章和游戏配置。包可给关卡、任务扩展字段，声明 `{ extends: "level" | "task", fields }`；任务可用 `play` 限定分支，或用 `schema` 判别树。共用字段展开到各分支，字段须遵守原有必填和防重定义规则。
+内核自带关卡、任务、标签、关系、文案、对象类型、章和游戏配置。包可扩展关卡、任务和游戏配置，通过 `{ extends: "level" | "task" | "game", fields }` 声明字段。任务可用 `play` 限定分支，或用 `schema` 判别树。共用字段展开到各分支，字段须遵守原有必填和防重定义规则。
 
 **命名形状。** 包在 `shapes/<名>.json` 放一份 schema，完整名字是 `<包>/<名>`。其他 schema 用 `{ "type": "shape", "name": "<包>/<名>" }` 引用，可在引用处指定 `optional` 等字段编辑信息。跨包引用须声明直接依赖。组装时展开命名形状，遇到未声明的名字或循环引用就报错。词汇表列出原始声明和参考名字，Studio 读取展开后的字段。公开面记录展开后的形状和对象类型，用它们计算结构兼容性。
 
@@ -20,3 +20,8 @@
 
 新包用 `npm run new -- package <新包> --kind <play|ext|course|lib> --from <已有包>`，也可用 `--empty` 创建空包。终端可交互选择种类。工具 `create_package` 的 `id`、`kind`、`from` 或 `empty` 做同样的事（Studio 构建工作区的包列表用它：复制沿用原包的种类，空包先选种类）。新游戏用 `npm run new-game -- <新游戏> --from <已有游戏>`，或工具 `create_game` 的 `id`、`from`、`title`；复制选包与开局设置，从空章开始编排。需要持续共用的内容由库包提供。
 
+
+
+### 百科对象
+
+`encyclopedia/kinds/` 声明 `entry` 和 `section`，用 `objectKind` 保留已有的短类型名。词条和分组文件仍在各内容包的 `entries/`、`sections/`，文案键和 `<wiki-ref to="…"></wiki-ref>` 写法保持原样。使用这些对象的包直接声明依赖，游戏显式选中百科包后即可在 `game.json` 的 `encyclopedia` 字段填写分组顺序。该字段由 `extends: "game"` 声明加入游戏 schema，并通过 `scaffold: false` 让新游戏从空的分组顺序开始。

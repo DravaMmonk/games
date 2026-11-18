@@ -1,8 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { termRegistry, termUsage } from './terminology.js'
-import { GLOSSARY } from './vocabulary.js'
-import { validate } from './schema.js'
+import { termRegistry, termUsage } from '../core/terminology.js'
+import { GLOSSARY } from '../core/schema.js'
+import { validate } from '../../../games/kit/engine/schema.js'
 
 const t = (zh, en) => ({ zh, en })
 const entry = (id, fields = {}) => ({ id, group: 'g', title: t('光轴', 'Optical axis'), body: [t('穿过小孔、垂直像平面的直线。', 'The line through the hole perpendicular to the image plane.')], ...fields })

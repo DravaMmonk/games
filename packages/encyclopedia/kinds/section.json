@@ -1,0 +1,37 @@
+{
+  "objectKind": "section",
+  "folder": "sections",
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  },
+  "schema": {
+    "type": "obj",
+    "fields": {
+      "title": {
+        "type": "text"
+      },
+      "desc": {
+        "type": "text",
+        "optional": true
+      },
+      "values": {
+        "type": "list",
+        "of": {
+          "type": "str",
+          "reference": "entry",
+          "pattern": "^#?(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$"
+        }
+      }
+    }
+  },
+  "studio": {
+    "name": "@kind.section.name",
+    "icon": "BookOpen"
+  }
+}

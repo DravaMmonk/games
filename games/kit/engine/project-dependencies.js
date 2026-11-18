@@ -61,7 +61,7 @@ export function dependencyProblemsInProject(content, root = contentRoot()) {
     if (peers.find(([id]) => id === peer.id)?.[1].packageId !== packageId) return peer
     const source = assemblySource(peer), pending = assemblySource(content)
     return assemble({ ...source, schemas: contentVocabularyFor(peer), levels: pending.levels, contentObjects: pending.contentObjects,
-      tags: pending.tags, relations: pending.relations, sections: pending.sections,
+      tags: pending.tags, relations: pending.relations,
     })
   })
   const packages = new Map(peers.map(([id, { packageId }]) => [id, packageId]))

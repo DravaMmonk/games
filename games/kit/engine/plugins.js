@@ -4,7 +4,7 @@ import { tagKey, kernelTags } from './tag-identity.js'
 // Environment-neutral package registration. Each assembly owns its registry.
 const PACKAGE_OBJECT = /^[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9-]*$/
 const CORE = ['play', 'kind', 'state', 'check', 'agent']
-const VIEW = ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension']
+const VIEW = ['play', 'editor', 'display', 'game', 'shell', 'unlocks', 'editorExtension']
 const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'] }
 
 export function createPluginKernel() {
@@ -16,6 +16,7 @@ export function createPluginKernel() {
   // These names are consumed by Studio, including in headless author checks.
   for (const [key, reader] of kernelTags) add('tag', key, reader)
   const objects = []
+  const references = new Map()
   const capabilities = new Map(), capabilityImplementations = new Map()
   const register = (registry, kind, name, value) => {
     const items = registry.get(kind) ?? new Map()
@@ -24,7 +25,7 @@ export function createPluginKernel() {
     registry.set(kind, items)
   }
   return {
-    tables, objects, capabilities, capabilityImplementations,
+    tables, objects, capabilities, capabilityImplementations, references,
     forPackage(id, side) {
       const api = Object.fromEntries((side === 'core' ? CORE : VIEW).map(type => [type, (name, value) => {
         if (!name.startsWith(`${id}/`) || !CODE_NAME.test(name)) throw new Error(`${id}: invalid ${type} name ${name}`)
@@ -36,7 +37,7 @@ export function createPluginKernel() {
           if ([...tables.editor.values()].some(editor => editor.type === value.type)) throw new Error(`${name}: duplicate editor type ${value.type}`)
         }
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)
-        if (['check', 'state', 'game', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
+        if (['check', 'state', 'game', 'shell', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
       }]))
       api.object = (kind, name, value = {}) => {
@@ -55,7 +56,10 @@ export function createPluginKernel() {
         own(name)
         register(capabilityImplementations, kind, name, { side, value })
       }
-      if (side === 'core') api.reference = registerReferenceKind
+      if (side === 'core') api.reference = (name, definition) => {
+        registerReferenceKind(name, definition)
+        references.set(name, { ...definition, owner: id })
+      }
       api.tag = (name, member) => {
         if (side !== 'core') throw new Error('tag readers register in core')
         if (!name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: tag reader needs its own full name`)
@@ -105,6 +109,10 @@ export function pluginMeanings(kernel, order) {
       return { ...base, kinds: merge(base.kinds), capabilities: merge(base.capabilities) }
     },
   })
+  if (kernel?.references.size) {
+    const references = [...kernel.references].filter(([, definition]) => !order || order.includes(definition.owner))
+    meanings.push({ vocabulary: base => ({ ...base, references: { ...base.references, ...Object.fromEntries(references) } }) })
+  }
   return meanings
 }
 

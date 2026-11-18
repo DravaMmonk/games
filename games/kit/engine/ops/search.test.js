@@ -2,6 +2,7 @@
 // never inside a link tag; board lines; ids found and left alone; a replace as text.set and level.blueprint operations
 // that a changeset runs; and on a small game on a real domain (./fixture.js), a replace that the operation set takes and
 // that leaves nothing to find.
+import { glossarySchemas } from '../../../../packages/encyclopedia/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { S } from '../schema.js'
@@ -11,13 +12,13 @@ import { openPackage } from './workspace.js'
 import { runChangeset } from './changeset.js'
 import { storyRoot } from '../test-fixture.js'
 
-const VOCAB = defineVocabulary({
+const VOCAB = glossarySchemas(defineVocabulary({
   module: 'toy',
   version: 1,
   kinds: {},
   game: S.obj({ title: S.text(), eras: S.list(S.any()) }),
   level: S.obj({ title: S.text(), hint: S.opt(S.list(S.text())), solution: S.board(), name: S.opt(S.str()) }),
-})
+}))
 // Content is written in one language, under `en` whatever the words are (../i18n.js).
 const CONTENT = {
   id: 'toy', vocabulary: 1, title: { en: 'The flag game' }, eras: [],

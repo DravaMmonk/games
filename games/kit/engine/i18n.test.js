@@ -23,8 +23,8 @@ test('language maps are independent of English or Chinese', () => {
 
 test('references are validated independently in every language', () => {
   const names = { level: new Map([['start', 'Start']]), part: new Map(), wiki: new Map() }
-  const field = { zh: '开始', fr: '<level-ref to="start"></level-ref>', ja: '<wiki-ref to="missing"></wiki-ref>' }
-  assert.deepEqual(refProblems(field, 'title', names), ['title refers to a missing encyclopedia entry: missing'])
+  const field = { zh: '开始', fr: '<level-ref to="start"></level-ref>', ja: '<level-ref to="missing"></level-ref>' }
+  assert.deepEqual(refProblems(field, 'title', names), ['title refers to a missing level: missing'])
 })
 
 test('catalog text keeps its identity through serialization and resolves each language independently', () => {

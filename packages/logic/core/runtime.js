@@ -38,7 +38,7 @@ function spec(content, works = logicWorks(content)) {
     // that board passes its level (gates.js builtGates), and a lemma with a card runs as the kit's card (proof.js).
     builtIn: [...new Set(logic.course.levels.flatMap((l) => logic.course.builds(l)))].filter((p) => logic.gates[p] || logic.lemmas[p]?.card),
     quotes: Object.values(content.registries?.['circuit/quote'] ?? {}).map(quote => quote.text),
-    texts: { chapters: logic.CHAPTERS, ...logic.texts, glossary: content.glossary.entries },
+    texts: { chapters: logic.CHAPTERS, ...logic.texts },
   }
 }
 

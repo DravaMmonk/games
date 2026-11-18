@@ -1,3 +1,4 @@
+import { contentSchemas } from '../engine/content.js'
 // Module adapters retain their screens and work readers; this layer only joins their data projections.
 import { defineGame } from '../shell/index.js'
 import { runtimeWorks } from '../engine/runtime-model.js'
@@ -37,6 +38,8 @@ export function composeGame(content, modules) {
 /** Install optional game services after the gameplay adapters have been composed. */
 export function configureGame(game, content, kernel) {
   game.pluginKernel = kernel
+  game.contentVocabulary = contentSchemas.get(content)
+  game.shellExtensions = [...kernel.tables.shell]
   for (const configure of kernel.tables.game.values()) configure(game, content)
   return game
 }

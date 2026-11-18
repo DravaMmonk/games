@@ -18,6 +18,7 @@ function WorkshopSwitch({ value, locked, write }) {
 }
 
 export function register(kernel) {
+  kernel.shell('progress/workshop', useWorkshopShell)
   kernel.game('progress/workshop', (game, content) => {
     game.workshop = {
       replaces: content.replaces ?? {},
@@ -25,7 +26,6 @@ export function register(kernel) {
       publications: Object.fromEntries(content.levels.flatMap(level => level.tasks.map(task => [task.id, task.publishes ?? []]))),
     }
     game.useCircuitParts = useCircuitWorkshop
-    game.useCircuitTools = useWorkshopShell
     game.partAtStage = partAtStage
     installStageViews(game)
     const workshop = courseWorkshop(game, () => loadWorkshop(window.localStorage))

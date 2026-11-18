@@ -30,3 +30,5 @@ export { getAt, showPath } from '../engine/ops/edit.js'
 export { shapeAt } from '../engine/schema.js'
 
 export { editorSlot } from './editors.js'
+
+export { tagByRef } from './objects-edit.js'

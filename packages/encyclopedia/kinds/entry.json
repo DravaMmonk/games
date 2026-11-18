@@ -1,0 +1,51 @@
+{
+  "objectKind": "entry",
+  "folder": "entries",
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  },
+  "schema": {
+    "type": "obj",
+    "fields": {
+      "title": {
+        "type": "text"
+      },
+      "aliases": {
+        "type": "list",
+        "of": {
+          "type": "text"
+        },
+        "min": 1,
+        "optional": true
+      },
+      "body": {
+        "type": "list",
+        "of": {
+          "type": "text"
+        }
+      },
+      "at": {
+        "type": "level",
+        "optional": true
+      },
+      "see": {
+        "type": "list",
+        "of": {
+          "type": "str",
+          "reference": "entry"
+        },
+        "optional": true
+      }
+    }
+  },
+  "studio": {
+    "name": "@kind.entry.name",
+    "icon": "BookOpen"
+  }
+}

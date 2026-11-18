@@ -16,6 +16,7 @@ const packageIds = new Set(existsSync(packages)
   ? readdirSync(packages).filter(id => existsSync(resolve(packages, id, 'package.json'))) : [])
 
 // These words also name kernel schema fields, result shapes and ordinary UI controls.
+const optionalPackageNames = new Set(['encyclopedia'])
 const protocolWords = new Set(['text', 'rows', 'table', 'scalar'])
 const packageProperty = /^(?:package|packageId|packageIds|packages|uses|module|domain|layerOrder)$/
 const packageCall = /(?:Package|Layer|Runtime|Module|Deps|Dependency|Plugin)$/
@@ -34,7 +35,7 @@ const kitBoundary = {
     const literal = (node, value) => {
       if (typeof value !== 'string') return
       const [owner, member] = value.split('/')
-      if (!packageIds.has(owner) || /^text\/(?:plain|html)$/.test(value)) return
+      if (!packageIds.has(owner) && !optionalPackageNames.has(owner) || /^text\/(?:plain|html)$/.test(value)) return
       const parent = node.parent
       const packageContext = packageProperty.test(propertyName(parent.key ?? parent.id ?? parent.left?.property ?? parent.right?.property ?? parent.left ?? parent.right))
         || parent.type === 'CallExpression' && packageCall.test(propertyName(parent.callee.property ?? parent.callee))
@@ -49,6 +50,8 @@ const kitBoundary = {
       ExportNamedDeclaration: node => { if (node.source) imported(node) },
       ImportExpression: imported,
       CallExpression: node => { if (node.callee.name === 'require') imported(node) },
+      MemberExpression: node => { if (optionalPackageNames.has(propertyName(node.property))) literal(node.property, propertyName(node.property)) },
+      Property: node => { if (node.key.type === 'Identifier' && optionalPackageNames.has(node.key.name)) literal(node.key, node.key.name) },
       Literal: node => literal(node, node.value),
       TemplateElement: node => literal(node, node.value.cooked),
     }

@@ -95,6 +95,7 @@ const bare = (params, vocabulary) => {
  */
 export function validate(schema, value, { vocabulary = null, levels = null, tasks = null, languages = null, names = null, at = '' } = {}) {
   const out = []
+  const references = vocabulary?.references && new Map(Object.entries(vocabulary.references))
   // `shape`: the value is not the shape asked for at all (a by's field names no case), not just wrong inside.
   const say = (where, says, shape = false) => out.push({ at: where || '(root)', says, ...(shape ? { shape } : {}) })
   const item = (kind, name) => vocabulary?.kinds[kind]?.[name]
@@ -118,11 +119,11 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
         return
       case 'text':
         if (typeof v === 'string') {
-          for (const p of markupOf(v).problems) say(where, p)
+          for (const p of markupOf(v, references).problems) say(where, p)
           return
         }
         if (!isText(v)) return say(where, `expected text by language or a string, found ${show(v)}`)
-        for (const [lang, text] of textEntries(v)) for (const p of markupOf(text).problems) say(`${where}.${lang}`, p)
+        for (const [lang, text] of textEntries(v)) for (const p of markupOf(text, references).problems) say(`${where}.${lang}`, p)
         return
       case 'oneOf':
         if (!s.values.includes(v)) say(where, `expected one of ${s.values.map(show).join(', ')}, found ${show(v)}`)

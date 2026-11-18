@@ -189,7 +189,8 @@ test('terminology review inspects both task overrides and glossary bodies throug
   const { S } = await import('../../../games/kit/engine/schema.js')
   const { taskLevel } = await import('../../../games/kit/engine/tasks.js')
   const { reviewTerminology } = await import('../../../games/kit/pipeline/terminology.js')
-  const vocabulary = { game: S.obj({ title: S.text() }), level: taskLevel({ title: S.text() }, { brief: S.text(), hint: S.opt(S.list(S.text())) }) }
+  const { glossarySchemas } = await import('../../encyclopedia/test/fixture.js')
+  const vocabulary = glossarySchemas({ game: S.obj({ title: S.text() }), level: taskLevel({ title: S.text() }, { brief: S.text(), hint: S.opt(S.list(S.text())) }) })
   const content = {
     id: 'toy', vocabulary: 1, title: t('Toy'), eras: [],
     levels: [{ id: 'a', title: t('A'), tasks: [{ id: 'a', brief: t('Find the point.') }, { id: 'a_2', brief: t('<wiki-ref to="late"></wiki-ref>') }] }],

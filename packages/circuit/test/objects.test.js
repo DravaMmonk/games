@@ -4,13 +4,13 @@ import assert from 'node:assert/strict'
 import { assembleCircuitFixture as assembleContent } from '../../qed/test/fixture.js'
 import { S, validate } from '../../../games/kit/engine/schema.js'
 import { checkContent, defineVocabulary } from '../../../games/kit/engine/vocabulary.js'
-import { COURSE_FIELDS, COURSE_OPTIONS } from '../../../games/kit/engine/course-schema.js'
+import { COURSE_FIELDS } from '../../../games/kit/engine/course-schema.js'
 import { referenceResolver, expandReferences, relationOrder, importLevelOrder } from '../../../games/kit/engine/objects.js'
 
 const assemble = options => assembleContent({ ...options, schemas: circuitFixtureSchema(options.schemas) })
 
 const vocabulary = defineVocabulary({ module: 'toy', version: 1, kinds: {},
-  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
+  game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })) }),
   level: S.obj({ title: S.text(), adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))) }),
 })
 const source = () => ({ id: 'toy', schemas: vocabulary,
@@ -41,7 +41,7 @@ test('the generic resolver expands every typed list, checks kind and cycles, and
     loop: { kind: 'level', values: ['#loop'] }, wrong: { kind: 'level', values: ['p'] }, mixed: { kind: 'level', values: ['#parts'] },
   }, level: { a: {}, b: {} }, part: { p: {} }, setting: {}, entry: { e: {} } }
   const expand = referenceResolver(registry, problems)
-  const schema = S.obj({ levels: S.list(S.level()), optional: S.list(S.level()), arbitrary: S.obj({ entries: S.list(S.name('entry')), items: S.list(S.ref('primitive', { reference: 'circuit/part' })) }) })
+  const schema = S.obj({ levels: S.list(S.level()), optional: S.list(S.level()), arbitrary: S.obj({ entries: S.list(S.str({ reference: 'entry' })), items: S.list(S.ref('primitive', { reference: 'circuit/part' })) }) })
   assert.deepEqual(expandReferences({ levels: ['#all'], optional: ['#nested'], arbitrary: { entries: ['#words'], items: ['#parts'] } }, schema, expand), {
     levels: ['a', 'b'], optional: ['b'], arbitrary: { entries: ['e'], items: ['p'] },
   })

@@ -1,0 +1,23 @@
+{
+  "extends": "game",
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  },
+  "fields": {
+    "encyclopedia": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "section"
+      },
+      "optional": true,
+      "scaffold": false
+    }
+  }
+}

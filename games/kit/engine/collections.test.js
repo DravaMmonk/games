@@ -150,7 +150,7 @@ test('independent list and edge patches compose by field type across arbitrary k
 })
 
 test('encyclopedia section order and each section member list remain explicit', async () => {
-  const { encyclopedia } = await import('./encyclopedia.js')
+  const { encyclopedia } = await import('../../../packages/encyclopedia/core/glossary.js')
   const entries = ['a', 'b', 'c'].map(id => ({ id: `p/${id}`, title: id }))
   const sections = { 'p/first': { title: 'First', values: ['p/b', 'p/a'] }, 'p/second': { title: 'Second', values: ['p/c'] } }
   const result = encyclopedia(entries, sections, value => [value], ['p/second', 'p/first'])

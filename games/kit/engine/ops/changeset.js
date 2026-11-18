@@ -24,7 +24,7 @@ import { shapeAt, validate } from '../schema.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tasksSchema } from '../tasks.js'
 
-import { ENTRY, checkContent } from '../vocabulary.js'
+import { checkContent } from '../vocabulary.js'
 import { checkGame } from '../checks.js'
 import { runtimeOf } from '../resolver.js'
 import { dependencyProblemsInProject } from '../project-dependencies.js'
@@ -90,7 +90,11 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
           if (ws.contentObjects[kind].size) throw new Error(`cannot remove nonempty kind ${kind}`)
           delete ws.contentObjects[kind]; delete ws.kindFolders[kind]
         }
-        for (const [kind, definition] of Object.entries(ws.schemas.objectKinds)) if (!definition.extends) { ws.kindFolders[kind] = definition.folder; ws.contentObjects[kind] ??= new Map() }
+        for (const [name, definition] of Object.entries(ws.schemas.objectKinds)) if (!definition.extends) {
+          const kind = definition.objectKind ?? name
+          ws.kindFolders[kind] = definition.folder
+          ws.contentObjects[kind] ??= new Map()
+        }
       }
       ws.normalize(meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, domain.vocabulary), previous)
       says.push(done.says)
@@ -130,7 +134,7 @@ function sourceArguments(ws, operation, supplied, vocabulary) {
   const targets = {
     level: [vocabulary.level, ws.levels.get(args.level)],
     task: [tasksSchema(vocabulary), undefined],
-    entry: [ENTRY, ws.entries.get(args.entry)],
+    entry: [kindSchemas(ws.schemas).entry, ws.contentObjects.entry?.get(args.entry)],
     game: [undefined, ws.game],
     chapter: [kindSchemas(vocabulary).chapter, ws.contentObjects.chapter?.get(args.chapter)],
     ...Object.fromEntries(Object.entries({ tag: 'tags', relation: 'relations', section: 'sections' }).map(([kind, plural]) => [kind, [OBJECT_SCHEMAS[plural], ws[plural]?.get(kind === 'tag' ? tagKey(args.member, args.tag) : args[kind])]])),

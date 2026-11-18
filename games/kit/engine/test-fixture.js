@@ -1,5 +1,5 @@
 // Small self-contained workspaces for platform tests.
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { lockTarget } from './releases.js'
@@ -43,4 +43,23 @@ export function storyRoot() {
   put('games/story/chapters/ground.json', { levels: ['story/given'], chapter: { title: '@opening' } })
   lockFixture(root)
   return { root, id }
+}
+
+export function installGlossaryFixture(root) {
+  const dir = resolve(root, 'packages/encyclopedia')
+  if (existsSync(dir)) return
+  mkdirSync(dir, { recursive: true })
+  for (const path of ['package.json', 'core', 'view', 'i18n', 'kinds']) {
+    cpSync(new URL(`../../../packages/encyclopedia/${path}`, import.meta.url), resolve(dir, path), { recursive: true })
+  }
+}
+
+export function addGlossaryFixture(root, pkg, game) {
+  installGlossaryFixture(root)
+  for (const [file, field] of [[`packages/${pkg}/package.json`, 'uses'], ...(game ? [[`games/${game}/game.json`, 'packages']] : [])]) {
+    const path = resolve(root, file)
+    const config = JSON.parse(readFileSync(path))
+    config[field] = { ...config[field], encyclopedia: '^0.0.0' }
+    writeFileSync(path, JSON.stringify(config, null, 2) + '\n')
+  }
 }

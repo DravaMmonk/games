@@ -1,3 +1,4 @@
+import { definitionOfKind } from '../engine/plugin-kinds.js'
 // The middle for an object of a type with no editor of its own (games/MODULES.md 5.3): a type a package declares in
 // kinds/ (until its package registers an editor for it) or a content kind of the kernel's. Its fields as rows — a click
 // picks the field for the right column, where it is edited — and its place among the other objects.
@@ -11,7 +12,7 @@ import { shownName } from './objects-edit.js'
 export default function ObjectSummary({ kind, content, namespace, vocabulary, full, onPick, onOpen }) {
   const value = objectValue(content, kind, full)
   if (!value) return <p className="arrange-empty">{tr('这个对象已经不在了。', 'This object is gone.')}</p>
-  const declared = content.objectKinds?.[kind]?.extends ? null : content.objectKinds?.[kind]
+  const declared = definitionOfKind(content.objectKinds, kind)
   const schema = objectSchema(kind, { declared })
   return (
     <article className="arrange">

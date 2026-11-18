@@ -1,12 +1,11 @@
 import { playId } from '../engine/plays.js'
-import { createElement, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
-import { ArrowLeft, BookMarked, BookOpen, PanelLeft } from 'lucide-react'
+import { Fragment, createElement, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { ArrowLeft, BookOpen, PanelLeft } from 'lucide-react'
 import { applyTheme } from '../theme.js'
 import { currentLang } from '../lang.js'
 import { L, tr } from './i18n.js'
 import { PHONE, useMedia } from './useMedia.js'
 import { Dialog, FailDialog, SolvedDialog, TaskDoneDialog } from './Dialogs.jsx'
-import Encyclopedia, { openedEntries, useWiki } from './Encyclopedia.jsx'
 import IntroSheet from './IntroSheet.jsx'
 import LevelMap from './LevelMap.jsx'
 import LevelDrawer from './LevelDrawer.jsx'
@@ -61,9 +60,35 @@ const SITE = { games: '../index.html' }
  * asked (a level without one offers to add one), a port's view switched is the view it starts in, and the studio hears
  * which task is played.
  */
-const useEmptyShell = () => ({})
 
-export default function GameShell({ game, store, author = null }) {
+function useShellExtensions(hooks, context) {
+  // The mounted shell is keyed by the registration sequence, which fixes the hook order.
+  const extensions = hooks.map(([name, useShell]) => ({ name, ...useShell(context) }))
+  const render = slot => extensions.map(extension => <Fragment key={extension.name}>{slot(extension)}</Fragment>)
+  return {
+    mapActions: render(extension => extension.mapActions),
+    levelActions: render(extension => extension.levelActions),
+    panel: props => render(extension => extension.panel?.(props)),
+    reference: (kind, id) => {
+      for (const extension of extensions) {
+        const target = extension.reference?.(kind, id)
+        if (target) return target
+      }
+      return null
+    },
+    progressText: Object.assign({}, ...extensions.map(extension => extension.progressText)),
+    taskProps: Object.assign({}, ...extensions.map(extension => extension.taskProps)),
+    area: extensions.find(extension => extension.area)?.area,
+    close: url => extensions.forEach(extension => extension.close?.(url)),
+  }
+}
+
+export default function GameShell(props) {
+  const key = (props.game.shellExtensions ?? []).map(([name]) => name).join(',')
+  return <GameShellInstance key={key} {...props} />
+}
+
+function GameShellInstance({ game, store, author = null }) {
   const [viewportRoot, setViewportRoot] = useState(null)
   const progress = useSyncExternalStore(store.subscribe, store.load)
   const update = store.update
@@ -124,9 +149,7 @@ export default function GameShell({ game, store, author = null }) {
 
   const level = levelId ? game.byId[levelId] : null
   const chapter = level ? game.chapters.find((c) => c.id === level.chapter) : null
-  const wiki = useWiki(game, progress, solved, level)
-  const useExtension = game.shell?.useShell ?? useEmptyShell
-  const extension = useExtension({ game, progress, level, author, solved, phone, theme, setSheet })
+  const extension = useShellExtensions(game.shellExtensions ?? [], { game, progress, level, author, solved, phone, theme, setSheet, authoring: author?.edit ?? null })
   const area = extension.area
   // Safari's software keyboard resizes the visual viewport without resizing the layout viewport.
   useEffect(() => {
@@ -184,7 +207,8 @@ export default function GameShell({ game, store, author = null }) {
       const wasSolved = new Set(without.solved), solvedNow = new Set(done.solved)
       const levels = game.levels.filter(next => next.id !== level.id && !game.isOpen(next, wasSolved) && game.isOpen(next, solvedNow))
       const rewards = [...(game.pluginKernel?.tables.unlocks.values() ?? [])].flatMap(unlocks => unlocks(game, level, without, done))
-      setWon({ id: level.id, levels, rewards, entries: openedEntries(game, wiki.entries, level, without, done) })
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      setWon({ id: level.id, levels, rewards })
     }
     else setTaskWon({ index: taskAt, next: nextRequiredTask(game, done, level.id, taskAt) })
   }
@@ -198,13 +222,7 @@ export default function GameShell({ game, store, author = null }) {
   const [goTo, setGoTo] = useState(null)
   const [sheetAt, setSheetAt] = useState(null) // { id } the box or the encyclopedia opens at
   const [locked, setLocked] = useState(null) // { title, at } an object the player cannot open yet
-  const reference = (kind, id) => {
-    if (kind === 'wiki') {
-      const value = game.glossary?.entries.find(entry => entry.id === id)
-      return value && { title: L(value.title), open: wiki.isOpen(value), at: game.byId[value.at], panel: 'wiki' }
-    }
-    return extension.reference?.(kind, id)
-  }
+  const reference = extension.reference
   const refName = (kind, id) => kind === 'level'
     ? game.byId[id] && { label: game.levelLabel(game.byId[id]), title: L(game.byId[id].title) }
     : reference(kind, id)
@@ -319,11 +337,7 @@ export default function GameShell({ game, store, author = null }) {
           {area && <span className="game-level-title bench-title"><span>{area.title}</span></span>}
           {intro && <button className="kit-btn is-label bar-button intro-button" onClick={() => setIntroFor(introKey)} aria-label={tr('引言')}><BookOpen size={16} /><span>{tr('引言')}</span></button>}
           {edit && !intro && <button className="kit-btn is-label bar-button intro-button" onClick={() => edit.add({ at: 'intro', scope: taskAt === 0 ? 'level' : 'task' })}><BookOpen size={16} /><span>{tr('+ 引言')}</span></button>}
-          {level && game.glossary && (
-            <button className="kit-btn is-label bar-button wiki-button" onClick={() => setSheet('wiki')} aria-label={tr(`百科${wiki.unread.length ? `（${wiki.unread.length} 条未读）` : ''}`, `Encyclopedia${wiki.unread.length ? ` (${wiki.unread.length} unread)` : ''}`)}>
-              <BookMarked size={16} /><span>{tr('百科')}</span>{wiki.unread.length > 0 && <i className="wiki-dot" />}
-            </button>
-          )}
+          {level && extension.levelActions}
         </TopBar>
 
         {!level && !area && (
@@ -337,8 +351,6 @@ export default function GameShell({ game, store, author = null }) {
             onReset={() => update(store.blank)}
             actions={extension.mapActions}
             progressText={extension.progressText}
-            onWiki={game.glossary && (() => setSheet('wiki'))}
-            unread={wiki.unread.length}
             theme={theme}
             edit={authoring}
           />
@@ -392,7 +404,6 @@ export default function GameShell({ game, store, author = null }) {
         )}
         {failure && level && <FailDialog fail={failure.info} fails={failure.fails} onClose={() => setFailure(null)} />}
         {extension.panel?.({ sheet, start: sheetAt, close: () => { setSheet(null); setSheetAt(null) } })}
-        {sheet === 'wiki' && <Encyclopedia game={game} wiki={wiki} level={level} phone={phone} start={sheetAt} edit={authoring} onClose={() => { setSheet(null); setSheetAt(null) }} />}
         {locked && <Dialog top title={tr(`「${locked.title}」尚未解锁`, `“${locked.title}” is still locked`)} lines={[locked.at && locked.at.id === level?.id ? tr('通过这一关后解锁。') : locked.at ? tr(`进行到 ${game.levelLabel(locked.at)}「${L(locked.at.title)}」时解锁。`, `Unlocks at ${game.levelLabel(locked.at)} “${L(locked.at.title)}”.`) : tr('继续推进后解锁。')]} actions={[[tr('确定'), () => setLocked(null)]]} onClose={() => setLocked(null)} />}
         {target && (game.isOpen(target, solved, progress.all)
           ? <Dialog top title={tr(`前往 ${game.levelLabel(target)}「${L(target.title)}」？`, `Go to ${game.levelLabel(target)} “${L(target.title)}”?`)} lines={[atTarget ? tr('你正在这里。') : extension.progressText?.leave ?? tr('作品和进度都会保存，可以随时返回。', 'Your work and progress are saved. You can return anytime.')]} actions={atTarget ? [[tr('确定'), () => setGoTo(null)]] : [[tr('取消'), () => setGoTo(null)], [tr('前往'), go]]} onClose={() => setGoTo(null)} />

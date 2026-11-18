@@ -3,9 +3,9 @@ import assert from 'node:assert/strict'
 import { markupOf } from './markup.js'
 
 test('math fences preserve LaTeX, inequalities and adjacent reference markup', () => {
-  const parsed=markupOf(String.raw`Value \(a<b>c\), \[\frac{1}{N}\sum_n x_n\] <wiki-ref to="term"></wiki-ref>`)
+  const parsed=markupOf(String.raw`Value \(a<b>c\), \[\frac{1}{N}\sum_n x_n\] <level-ref to="term"></level-ref>`)
   assert.deepEqual(parsed.problems,[])
-  assert.deepEqual(parsed.nodes,['Value ',{math:'a<b>c',display:false},', ',{math:String.raw`\frac{1}{N}\sum_n x_n`,display:true},' ',{ref:'wiki',to:'term'}])
+  assert.deepEqual(parsed.nodes,['Value ',{math:'a<b>c',display:false},', ',{math:String.raw`\frac{1}{N}\sum_n x_n`,display:true},' ',{ref:'level',to:'term'}])
 })
 
 test('code spans retain literal math notation while ordinary emphasis can contain math', () => {

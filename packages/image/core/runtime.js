@@ -29,7 +29,7 @@ function spec(content, works = imageWorks(content)) {
     // The built parts that run no circuit (games/DIRECTION.md §2, 4): a part a level unlocks is the engine's own
     // implementation; only a built part of parts.json (inside) runs the player's board.
     builtIn: [...new Set(image.course.levels.flatMap((l) => image.course.builds(l)))].filter((p) => !image.kit.types[p]?.kit),
-    texts: { chapters: image.CHAPTERS, intros: image.intros, glossary: content.glossary?.entries ?? [] },
+    texts: { chapters: image.CHAPTERS, intros: image.intros },
     quotes: Object.values(content.registries?.['circuit/quote'] ?? {}).map(quote => quote.text),
   }
 }

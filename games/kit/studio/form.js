@@ -28,7 +28,7 @@ import { copyWithoutTextKeys } from '../engine/catalogs.js'
 import { getLang, L, tr } from '../shell/i18n.js'
 import { SECTIONS, callOf, find, sectionOf, validate } from '../engine/schema.js'
 import { parsePath, setAt, showPath, unsetAt } from '../engine/ops/edit.js'
-import { GLOSSARY } from '../engine/vocabulary.js'
+import { fileSchema as projectionSchema } from './editors.js'
 import { fileSchema } from './editors.js'
 import { newTaskId } from '../engine/tasks.js'
 
@@ -653,7 +653,7 @@ export function fileForm(content, vocabulary, at, order) {
     const value = objectValue(content, at.object.kind, at.object.full)
     return value && { value, form: formOf(objectSchema(at.object.kind, at.object), value, { vocabulary, levels: order }) }
   }
-  if (at?.glossary) return { value: content.glossary, form: formOf(GLOSSARY, content.glossary, { vocabulary, levels: order }) }
+  if (at?.glossary) return { value: content.glossary, form: formOf(projectionSchema(vocabulary, 'glossary'), content.glossary, { vocabulary, levels: order }) }
   if (at?.parts) {
     const value = content.partDefs ?? { parts: {} }
     return { value, form: formOf(fileSchema(vocabulary, 'partDefs'), value, { vocabulary, levels: order }) }

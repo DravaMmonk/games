@@ -90,11 +90,11 @@ function contentLayers(owner) {
 test('assembled typed tags report each authored missing member once, preserving member identity', () => {
   const content = assembleLayers('consumer', [layer('consumer', [
     object('tag', 'gone-test', { kind: 'level', values: ['consumer/nowhere'] }),
-    object('tag', 'gone-test', { kind: 'entry', values: ['consumer/nowhere'] }),
+    object('tag', 'gone-test', { kind: 'chapter', values: ['consumer/nowhere'] }),
   ])], schemas, { packageId: 'consumer' })
   const problems = contentExistenceProblems(content, schemas)
   assert.equal(problems.length, 2)
-  for (const [i, member] of ['level', 'entry'].entries()) {
+  for (const [i, member] of ['level', 'chapter'].entries()) {
     assert.deepEqual(problems[i].object, { kind: 'tag', name: 'consumer/gone-test', member })
     assert.equal(problems[i].path, 'values[0]')
     assert.equal(problems[i].at, 'consumer/tag/consumer/gone-test.values[0]')

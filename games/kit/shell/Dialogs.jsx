@@ -1,5 +1,4 @@
 import { createElement, isValidElement } from 'react'
-import { BookMarked } from 'lucide-react'
 import { L, tr } from './i18n.js'
 import { Markup } from './Markup.jsx'
 import { readShow } from '../engine/views.js'
@@ -56,12 +55,9 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
   const note = game.note(level)
   // What else passing it gives, as the game says it: a label and its lines (rules declared, a sentence's skeleton…).
   const passed = game.passed(level)
-  // Everything the pass opens, in one list: the levels, then what the game's rewards give (parts…), then the
-  // encyclopedia's entries.
   const opened = [
     ...unlocked.levels.map((next) => ({ key: `level:${next.id}`, kind: 'level', chip: game.levelLabel(next), label: next.title })),
     ...unlocked.rewards.map(item => ({ ...item, key: `${item.kind}:${item.key}` })),
-    ...(unlocked.entries ?? []).map((entry) => ({ key: `entry:${entry.id}`, kind: 'entry', icon: BookMarked, label: entry.title })),
   ]
   return (
     <div ref={overlay} className="dialog-scrim">

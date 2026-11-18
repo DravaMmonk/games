@@ -4,7 +4,7 @@ import { textKey } from './i18n.js'
 import { shapeAt } from './schema.js'
 import { meaningsOf, kindMatches } from './kind-meanings.js'
 import { tagKey, tagName, kernelTags } from './tag-identity.js'
-import { BUILTIN_KIND_NAMES } from './plugin-kinds.js'
+import { BUILTIN_KIND_NAMES, objectKindNames } from './plugin-kinds.js'
 import { schemaForKind } from './layers.js'
 
 const ownerOf = name => name.replace(/^#/, '').split('/')[0]
@@ -92,9 +92,11 @@ export function collectReferences(value, schema, schemas, emit, at) {
 
 export function existenceProblems(layers, schemas, surfaces = publicSurfaces(layers, schemas)) {
   const targets = []
+  const kindNames = objectKindNames(schemas.objectKinds)
   for (const layer of layers) {
     const emitter = (object, base) => (kind, target, path, member) => {
       if (typeof target !== 'string') return
+      if (kind === 'kind') target = kindNames[target] ?? target
       if (target.startsWith('#')) { member = kind === 'tag' ? member : kind; kind = 'tag'; target = target.slice(1) }
       targets.push({ layer: layer.id, object, path, kind, target, at: path ? fieldAt(base, path) : base, ...(member && { member }) })
     }
@@ -120,7 +122,7 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
       const at = `${layer.id}/${override ? 'overrides/' : ''}${kind}/${name}`
       const emit = emitter({ kind, name, ...(kind === 'tag' && { member: value.kind }), ...(override && { override: true }) }, at)
       if (override) emit(kind, name, '', value.kind)
-      if (kind.includes('/')) emit('kind', kind, '')
+      if (kind.includes('/') || Object.hasOwn(kindNames, kind)) emit('kind', kind, '')
       if (kind === 'relation' && (value.member ?? value.of) && !['any', 'tag'].includes(value.member ?? value.of)) emit('kind', value.member ?? value.of, value.member ? 'member' : 'of')
       collectReferences(value, schemaForKind(kind, schemas, value), schemas, emit, '')
       if (kind === 'tag') emit('kind', value.kind, 'kind')
@@ -189,5 +191,5 @@ export function contentExistenceProblems(content, schemas) {
 /** Core/view registration references use the same identity check as authored content. */
 export function registrationProblems(content, kernel) {
   const layers = (content.layerOrder ?? []).filter(id => !id.startsWith('@')).map(id => ({ id, config: { uses: Object.fromEntries((content.layerUses?.[id] ?? []).map(name => [name, '^1.0.0'])) }, objects: Object.keys(content.registries.kind ?? {}).filter(name => name.startsWith(`${id}/`)).map(name => ({ kind: 'kind', name, value: {} })), codeObjects: ['kind', 'editor'].flatMap(kind => [...kernel.tables[kind]].filter(([name]) => name.startsWith(`${id}/`)).map(([name, value]) => ({ kind: kind === 'kind' ? 'kindMeaning' : kind, name, value: { type: value.type } }))) }))
-  return existenceProblems(layers, { kinds: {} })
+  return existenceProblems(layers, { kinds: {}, objectKinds: content.objectKinds })
 }

@@ -3,7 +3,7 @@ import { CHAPTER } from '../course-schema.js'
 import { meaningsOf } from '../kind-meanings.js'
 import { satisfies, dependencyIds } from '../semver.js'
 import { tagKey, tagName } from '../tag-identity.js'
-import { KIND_DECLARATION } from '../plugin-kinds.js'
+import { KIND_DECLARATION, kindSchemas, objectKindNames } from '../plugin-kinds.js'
 // The operation set (games/DIRECTION.md decision 4): every change to a data game's content is one of these. The CLI
 // (cli.js), the MCP server (mcp.js) and later the studio only ever run them, through a changeset (changeset.js).
 //
@@ -16,7 +16,6 @@ import { S, shapeAt } from '../schema.js'
 import { getAt, parsePath, showPath } from './edit.js'
 import { assertStableIds, mergePatch, setAt, unsetAt } from './identity.js'
 import { levelRefs } from './refs.js'
-import { ENTRY } from '../vocabulary.js'
 import { TASK_ID, findTask, newTaskId } from '../tasks.js'
 import { T as t } from '../../shell/i18n.js'
 import { isLanguageCode, LANGUAGE_CODE, textKey, withTextKey } from '../i18n.js'
@@ -123,7 +122,7 @@ export const OPERATIONS = {
         ws.contentObjects.chapter.set(chapter, { ...old, levels: old.levels.filter(id => !matches(id)), ...(old.rows && { rows: old.rows.map(row => row.map(id => matches(id) ? null : id)) }) })
         inverse.push({ op: 'chapter.put', chapter, data: old })
       }
-      for (const [kind, plural] of [['entry', 'entries'], ['tag', 'tags'], ['relation', 'relations'], ['section', 'sections']]) for (const [name, old] of ws[plural]) {
+      for (const [kind, plural] of [['tag', 'tags'], ['relation', 'relations']]) for (const [name, old] of ws[plural]) {
         if (!references.some((r) => r.file === `${plural}/${kind === 'tag' ? `${old.kind}/${tagName(name)}` : name}.json`)) continue
         const next = { ...old }
         if (kind === 'tag') next.values = old.values.filter((id) => !matches(id))
@@ -347,7 +346,7 @@ export function opScope({ op, in: where, layer, chapter }) {
 // The same operations edit entries, tags, relations and sections. Reads use ws.content().registries[kind][fullName].
 function objectOperations(kind, plural, objectKind, vocabulary) {
   const operations = {}
-  const objects = (ws) => kind === 'chapter' ? ws.contentObjects.chapter : objectKind ? ws.contentObjects[objectKind] : (kind === 'kind') ? ws.contentObjects[kind] : ws[plural]
+  const objects = (ws) => kind === 'chapter' ? ws.contentObjects.chapter : objectKind ? ws.contentObjects[vocabulary.objectKinds[objectKind].objectKind ?? objectKind] : (kind === 'kind') ? ws.contentObjects[kind] : ws[plural]
   const selector = { [kind]: S.str({ pattern: OBJECT_NAME }), ...(kind === 'tag' && { member: S.str() }) }
   const target = (ws, name, member) => {
     if (name.includes('/') || name.startsWith('@')) fail('declare objects in this package using its local name')
@@ -357,7 +356,7 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
   const get = (ws, name, member) => objects(ws).get(target(ws, name, member)) ?? fail(`no ${kind} ${name}`)
   Object.assign(operations, {
     [`${kind}.put`]: {
-      params: S.obj({ ...selector, data: kind === 'chapter' ? CHAPTER : objectKind ? vocabulary.objectKinds[objectKind].schema : kind === 'entry' ? ENTRY : (kind === 'kind' ? KIND_DECLARATION : null) ?? (kind === 'tag' ? S.obj({ title: S.opt(S.text()), desc: S.opt(S.text()), values: OBJECT_SCHEMAS.tags.fields.values }) : OBJECT_SCHEMAS[plural] ?? S.any()) }),
+      params: S.obj({ ...selector, data: kind === 'chapter' ? CHAPTER : objectKind ? vocabulary.objectKinds[objectKind].schema : (kind === 'kind' ? KIND_DECLARATION : null) ?? (kind === 'tag' ? S.obj({ title: S.opt(S.text()), desc: S.opt(S.text()), values: OBJECT_SCHEMAS.tags.fields.values }) : OBJECT_SCHEMAS[plural] ?? S.any()) }),
       apply(ws, args) {
         const name = target(ws, args[kind], args.member), old = objects(ws).get(name)
         if (kind === 'tag' && args.data.kind !== undefined) fail('tag member belongs in the member selector')
@@ -387,16 +386,7 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
   return operations
 }
 
-for (const [kind, plural] of [['entry', 'entries'], ['tag', 'tags'], ['relation', 'relations'], ['section', 'sections'], ['chapter', 'chapters'], ['kind', 'kinds']]) Object.assign(OPERATIONS, objectOperations(kind, plural))
-
-OPERATIONS['entry.patch'] = {
-  params: S.obj({ entry: S.str({ pattern: OBJECT_NAME }), fields: S.map(S.any()) }),
-  apply(ws, { entry, fields }) {
-    const old = ws.entries.get(entry) ?? fail(`no entry ${entry}`)
-    ws.entries.set(entry, mergePatch(old, fields))
-    return { says: `entry ${entry}: patched`, inverse: [{ op: 'entry.put', entry, data: old }] }
-  },
-}
+for (const [kind, plural] of [['tag', 'tags'], ['relation', 'relations'], ['chapter', 'chapters'], ['kind', 'kinds']]) Object.assign(OPERATIONS, objectOperations(kind, plural))
 
 /** Overrides always write to the named authoring layer, never to the declaration. */
 const overrideParams = { layer: S.str(), kind: S.str(), member: S.opt(S.str()), name: S.str({ pattern: '^(?:@?[a-z][a-z0-9-]*)/[A-Za-z0-9][A-Za-z0-9_.-]*$' }) }
@@ -464,14 +454,14 @@ function textTarget(ws, args, vocabulary) {
   const mapTarget = (kind, values, schema, name) => args[kind] === undefined ? [] : [{ id: args[kind], value: values.get(name ?? args[kind]) ?? fail(`no ${kind} ${args[kind]}`), schema, selector: { [kind]: args[kind], ...(kind === 'tag' && { member: args.member }) }, set: value => values.set(name ?? args[kind], value) }]
   const choices = [
     ...(args.level === undefined ? [] : [{ id: args.level, value: levelOf(ws, args.level), schema: vocabulary.level, selector: { level: args.level }, operation: 'level', set: value => ws.levels.set(args.level, value) }]),
-    ...mapTarget('entry', ws.entries, ENTRY),
+    ...mapTarget('entry', ws.contentObjects.entry, kindSchemas(vocabulary).entry),
     ...mapTarget('chapter', ws.contentObjects.chapter, CHAPTER),
     ...mapTarget('tag', ws.tags, OBJECT_SCHEMAS.tags, tagKey(args.member, args.tag)),
-    ...mapTarget('section', ws.sections, OBJECT_SCHEMAS.sections),
+    ...mapTarget('section', ws.contentObjects.section, kindSchemas(vocabulary).section),
     ...(args.in !== 'game' ? [] : [{ id: 'game', value: ws.game, schema: vocabulary.game, selector: { in: 'game' }, operation: 'game', set: value => { ws.game = value } }]),
     ...(args.kind === undefined ? [] : (() => {
       const objects = ws.contentObjects[args.kind]
-      const schema = vocabulary.objectKinds?.[args.kind]?.schema
+      const schema = kindSchemas(vocabulary)[args.kind]
       if (!objects || !schema || args.name === undefined) fail('name a declared kind and object')
       const own = objects.has(args.name)
       const value = own ? objects.get(args.name) : ws.content().registries?.[args.kind]?.[args.name]
@@ -490,7 +480,7 @@ function textTarget(ws, args, vocabulary) {
 /** Package kind meanings contribute their authoring commands to the active workspace. */
 export function operationsFor(vocabulary) {
   const meanings = meaningsOf(vocabulary)
-  const extra = Object.assign({}, ...meanings.map(meaning => meaning.operations), ...meanings.filter(meaning => meaning.selector && vocabulary.objectKinds?.[meaning.type]).map(meaning => objectOperations(meaning.selector, undefined, meaning.type, vocabulary)))
+  const extra = Object.assign({}, ...meanings.map(meaning => meaning.operations), ...meanings.filter(meaning => meaning.selector && objectKindNames(vocabulary.objectKinds)[meaning.type]).map(meaning => objectOperations(meaning.selector, undefined, objectKindNames(vocabulary.objectKinds)[meaning.type], vocabulary)))
   const fields = Object.assign({ chapter: S.opt(S.str()), kind: S.opt(S.str()), name: S.opt(S.str()) }, ...meanings.map(meaning => meaning.textParameters))
   return { ...OPERATIONS, ...extra, ...Object.fromEntries(['text.set', 'text.override'].map(name => [name, { ...OPERATIONS[name], params: { ...OPERATIONS[name].params, fields: { ...OPERATIONS[name].params.fields, ...fields } } }])) }
 }

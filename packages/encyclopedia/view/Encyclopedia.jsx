@@ -1,8 +1,5 @@
 import { useMemo } from 'react'
-import { L, T, tr, isPair } from './i18n.js'
-import { default as Library, useSeen } from './Library.jsx'
-import { Markup } from './Markup.jsx'
-import { fileMark } from './edit.js'
+import { L, T, tr, isPair, Library, useSeen, Markup, fileMark } from 'kernel/view'
 
 // The encyclopedia (百科), the same in every game, after the one in Turing Complete: not one level's walkthrough but
 // the game's big ideas, grouped: how the game is played, then the terms of the subject it teaches. A game brings
@@ -10,7 +7,7 @@ import { fileMark } from './edit.js'
 // opens once the player reaches level `at` (none: from the start), or with every level unlocked. Entries not read
 // yet carry a dot, here and on the buttons that open it.
 
-function glossaryLayout(game) {
+export function glossaryLayout(game) {
   const { groups = [], entries = [], groupByChapter } = game.glossary ?? {}
   if (!groupByChapter) return { groups, entries }
   const order = new Map(game.levels.map((level, index) => [level.id, index]))

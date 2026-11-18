@@ -3,15 +3,19 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "693efeae8a11d2f9c38b424dfe54915dc5093061bf1d9a4c315a51b0b1a7860f"
+      "hash": "5667e1bc0653dbb2bc1983d98d8ed4eb584189ba92e3760df14243fbb8df3bcb"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "0351b730abf4130f3b429eaf5400782aa9a56ae78c383323c2ecbecda225705b"
+      "hash": "a79a2ec93ec4d7182516b465c6469dec723b367d4c414fec7acbedfd184cd3fd"
+    },
+    "encyclopedia": {
+      "version": "0.0.0",
+      "hash": "1d885ffb1f0074d593ce25842d149d10e2ec240fa2683eaa0afc02ae559ebc84"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "6d78dea77f9b166b77cdee2c6ccc21a202642da39094848b2ff6684398757541"
+      "hash": "29b50ab5be6c437b08ef5b8250ea7fa1fa2048334a0bc53249fb2c2d7343dcec"
     },
     "scalar": {
       "version": "0.0.0",
@@ -19,11 +23,11 @@
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "23177d38a2f87e7730aab638a4c67c556ef16bf3eee6e2ec705bb2ad1cda7fdd"
+      "hash": "4b02b5f4c6f5924cd2d998288faef5c73f5c4c57b0c63dc51cf7525242f7ba58"
     },
     "qed": {
       "version": "0.0.0",
-      "hash": "9b53610e7492e706b16e63712185fb2e4acd144368c27ca989ea5c0c715e4164"
+      "hash": "1f5bae94d66448a34e0c6992a5fdd67ad33be7b55ce0973d61dfe6d891ab19aa"
     }
   }
 }

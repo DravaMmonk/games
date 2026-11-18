@@ -129,3 +129,7 @@ export {
 export { packageLevel } from '../engine/package-play.js'
 
 export { default as ClearButton } from '../shell/ClearButton.jsx'
+
+export { fileMark } from '../shell/edit.js'
+
+export { tagByRef } from '../studio/public.jsx'

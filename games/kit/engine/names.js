@@ -1,10 +1,10 @@
-import { BUILTIN_KIND_NAMES } from './plugin-kinds.js'
+import { BUILTIN_KIND_NAMES, objectKindNames } from './plugin-kinds.js'
 // Content names are resolved at the file boundary. Ports, settings keys, variant ids and domain resources stay local.
 import { meaningsOf } from './kind-meanings.js'
 import { textEntries, textKey, withTextKey } from './i18n.js'
 import { caseOf, shapeAt } from './schema.js'
 
-export const OBJECT_KINDS = ['level', 'entry', 'tag', 'relation', 'section', 'chapter', 'game']
+export const OBJECT_KINDS = ['level', 'tag', 'relation', 'chapter', 'game']
 
 export { fullName } from './object-name.js'
 import { fullName } from './object-name.js'
@@ -37,12 +37,14 @@ export function expandNames(value, namespace, { resolve, textKeys = true, schema
       return `<${kind}-ref to="${resolved}">`
     })
   }
+  const kinds = objectKindNames(vocabulary?.objectKinds)
+  const isKind = v => BUILTIN_KIND_NAMES.includes(v) || Object.hasOwn(kinds, v)
   const ref = (kind, v) => {
     const replacement = readers.map(reader => reader.rewrite?.({ value: v, schema: { type: 'ref', kind, reference: kind }, path: [] })).find(result => result && Object.hasOwn(result, 'value'))
     if (replacement) return replacement.value
-    if (kind === 'kind' && BUILTIN_KIND_NAMES.includes(v)) return v
+    if (kind === 'kind' && isKind(v)) return v
     if (vocabulary?.capabilityKinds?.[kind]) return name(v)
-    return ['entry', 'group', 'tag', 'relation', 'section', 'chapter', ...Object.keys(vocabulary?.objectKinds ?? {}), 'kind'].includes(kind) ? name(v) : v
+    return ['tag', 'relation', 'chapter', 'kind'].includes(kind) || Object.hasOwn(kinds, kind) ? name(v) : v
   }
   const walk = (v, s, path = []) => {
     if (v === undefined || v === null) return v
@@ -60,7 +62,7 @@ export function expandNames(value, namespace, { resolve, textKeys = true, schema
     }
     const replacement = readers.map(reader => reader.rewrite?.({ value: v, schema: s, path, key: path.at(-1) })).find(result => result && Object.hasOwn(result, 'value'))
     if (replacement) return replacement.value
-    if (s?.reference) return s.reference === 'kind' && BUILTIN_KIND_NAMES.includes(v) ? v : name(v)
+    if (s?.reference) return s.reference === 'kind' && isKind(v) ? v : name(v)
     if (s?.type === 'level' || s?.type === 'task') return name(v)
     if (s?.type === 'ref' || s?.type === 'name') return ref(s.kind, v)
     if (s?.type === 'call') {
@@ -77,7 +79,7 @@ export function expandNames(value, namespace, { resolve, textKeys = true, schema
     return Object.fromEntries(Object.entries(v).map(([key, child]) => {
       let field = s?.type === 'map' ? s.of : s?.fields?.[key]
       let target = s?.key ? ref(s.key.reference ?? s.key.kind, key) : key
-      if (key === 'id' && path.length === 2 && ['tasks', 'entries', 'groups'].includes(path[0])) return [key, name(child)]
+      if (key === 'id' && path.length === 2 && path[0] === 'tasks') return [key, name(child)]
       if (key === 'from' && v.fromGame) return [key, child]
       for (const reader of readers) {
         const replacement = reader.rewrite?.({ value: child, schema: field, path: [...path, key], key, object: v })

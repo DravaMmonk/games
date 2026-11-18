@@ -1,7 +1,6 @@
 import { describeObservation } from '../core/observation.js'
 import { circuitSettings } from './settings.js'
 import { composeCircuitModules } from './compose.js'
-import { useCircuitShell } from './shell.jsx'
 import { passedLevelIn, taskOpen } from 'kernel/view'
 import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress.js'
 /**
@@ -130,6 +129,5 @@ export function defineGame(def) {
     return [...game.introduced(level).filter(accepts).map(part => ({ label: part.name, fresh: true, open: all || game.isOpen(level, solved) })), ...game.unlocked(first).filter(accepts).map(part => ({ label: part.label, open: all || solved.has(level.id) }))]
   }
   game.composeModules = composeCircuitModules
-  game.shell = { useShell: useCircuitShell }
   return game
 }

@@ -11,10 +11,11 @@
 // Nothing a player could not see is shown: no reference or naive answers, no hidden tests (only how many fail), no
 // level data beyond what the screen draws.
 
+import { meaningsOf } from '../kind-meanings.js'
 import { firstTask, passed, saved } from '../../shell/progress.js'
 import { taskContext } from '../../shell/played-task.js'
 import { close, outcomeOf } from './session.js'
-import { plain, refsIn, side } from './words.js'
+import { plain, side } from './words.js'
 
 
 /**
@@ -31,13 +32,12 @@ const EXPLAIN = {
 export function createPlay({ game, course, hook, record, now = () => new Date() }) {
   record.progress = game.progress?.normalize?.(record.progress) ?? record.progress
   const lang = record.lang
+  const textProviders = meaningsOf(game.contentVocabulary).map(meaning => meaning.blindText?.(game)).filter(Boolean)
   const solved = () => new Set(record.progress.solved)
   const required = (id) => !course.plan?.place.get(id)?.optional
   const names = (kind, id) => {
     if (kind === 'level') return game.byId[id] ? `${game.levelLabel(game.byId[id])} ${side(game.byId[id].title, lang)}` : null
-    const supplied = game.referenceName?.(kind, id, lang)
-    if (supplied) return supplied
-    return side(game.glossary?.entries.find((e) => e.id === id)?.title, lang) || null
+    return game.referenceName?.(kind, id, lang) || textProviders.map(provider => provider.name?.(kind, id, lang)).find(Boolean) || null
   }
   const say = (v) => plain(v, lang, names)
   // The session's bound counts the levels played: a level skipped (a play not covered) is not one.
@@ -113,19 +113,9 @@ export function createPlay({ game, course, hook, record, now = () => new Date() 
     if (entry.hints) sections.push(`## ${lang === 'en' ? 'Hints opened' : '已打开的提示'}\n${hints.slice(0, entry.hints).map(say).join('\n')}`)
     if (hints.length > entry.hints) sections.push(lang === 'en' ? `(${hints.length - entry.hints} more hint(s) behind the Hint button.)` : `（提示按钮后面还有 ${hints.length - entry.hints} 条提示。）`)
     sections.push(...domainView(opened))
-    const wiki = encyclopedia([intro, brief, hints.slice(0, entry.hints)], at)
-    if (wiki) sections.push(wiki)
+    for (const provider of textProviders) sections.push(...provider.linked?.({ texts: [intro, brief, hints.slice(0, entry.hints)], level: at.level, solved: solved(), lang, say }) ?? [])
     if (out.length) sections.unshift(out.join('\n\n'))
     return { text: sections.join('\n\n'), level: at.level.id, task: at.task }
-  }
-
-  /** The encyclopedia entries the shown text links to, open by now (what a click on the link shows). */
-  function encyclopedia(texts, at) {
-    const has = solved()
-    const open = (e) => !e.at || (game.byId[e.at] && (game.isOpen(game.byId[e.at], has) || e.at === at.level.id))
-    const entries = refsIn(texts, 'wiki').map((id) => game.glossary?.entries.find((e) => e.id === id)).filter((e) => e && open(e))
-    if (!entries.length) return null
-    return `## ${lang === 'en' ? 'Encyclopedia (linked above)' : '百科（上文链接的词条）'}\n${entries.map((e) => `- ${say(e.title)}: ${say(e.body)}`).join('\n')}`
   }
 
   /** What the domain's screen shows: the initial work, the available tools, the tests and the work format. */

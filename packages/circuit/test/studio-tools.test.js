@@ -1,3 +1,4 @@
+import { installGlossaryFixture } from '../../../games/kit/engine/test-fixture.js'
 import { itemOf } from '../../../games/kit/studio/worklist.js'
 import { installCircuitFixture, installScalarFixture, lockFixture, readStarter } from '../../qed/test/fixture.js'
 // node --test games/kit/studio — the studio's tools, pure parts: bulk edits as operations (bulk.js), the command
@@ -76,6 +77,7 @@ function openStarter(template) {
   }
   installCircuitFixture(root)
   installScalarFixture(root)
+  installGlossaryFixture(root)
   lockFixture(root)
   return openPackage(d, root)
 }

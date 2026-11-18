@@ -34,16 +34,3 @@ export function plain(v, lang, names = () => null) {
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 }
-
-/** Every reference of `kind` in a text (both sides), in order, once each. */
-export function refsIn(v, kind) {
-  const out = []
-  const walk = (x) => {
-    if (typeof x === 'string') {
-      for (const m of x.matchAll(REF)) if (m[1] === kind && !out.includes(m[2])) out.push(m[2])
-    } else if (Array.isArray(x)) x.forEach(walk)
-    else if (x && typeof x === 'object') Object.values(x).forEach(walk)
-  }
-  walk(v)
-  return out
-}

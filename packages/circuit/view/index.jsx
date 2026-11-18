@@ -30,7 +30,9 @@ import { ExprField, IconField } from './studio/PartFields.jsx'
 import BoardField from './studio/BoardField.jsx'
 import { onPartPage } from './studio/part-page.js'
 import BoardPlay from './BoardPlay.jsx'
+import { useCircuitShell } from './shell.jsx'
 export function register(kernel) {
+  kernel.shell('circuit/parts', useCircuitShell)
   kernel.editor('circuit/part', { type: 'circuit/part', listKey: 'parts', route: { type: 'circuit/part', selector: 'part', file: 'parts', root: 'parts' }, component: PartObjectEditor, page: PartEditor, list: PartsList, preview: PartStudioPreview,
     name: ['元件', 'Parts'], groupings: ['tag', 'circuit/tray', 'relation'], relations: [['replaces', '取代', 'Replaces']],
     fields: { expr: ExprField, icon: IconField, board: BoardField }, onPage: onPartPage })

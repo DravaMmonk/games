@@ -310,7 +310,7 @@ const tools = {
         tags,
         levels: packageLevelOrder(content).map(id => ({ id, label: id, title: levelIn(content, id).title })),
         ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.namesForTool?.({ content }))),
-        entries: content.glossary.entries.map(e => ({ id: e.id, title: e.title })), quotes: [],
+        entries: (content.glossary?.entries ?? []).map(e => ({ id: e.id, title: e.title })), quotes: [],
       }
       const shown = await gameOf(content)
       const domain = await runtimeOf(content)

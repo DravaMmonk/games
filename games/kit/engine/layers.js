@@ -6,13 +6,12 @@ import { tagKey, kernelTags } from './tag-identity.js'
 import { kindSchemas } from './plugin-kinds.js'
 import { expandNames, fullName, OBJECT_KINDS } from './names.js'
 import { OBJECT_SCHEMAS } from './objects.js'
-import { ENTRY } from './vocabulary.js'
 import { catalogReader, sourceValue } from './catalogs.js'
 
-export const folders = { level: 'levels', entry: 'entries', tag: 'tags', relation: 'relations', section: 'sections', chapter: 'chapters', shape: 'shapes' }
+export const folders = { level: 'levels', tag: 'tags', relation: 'relations', chapter: 'chapters', shape: 'shapes' }
 export const kindForFolder = Object.fromEntries(Object.entries(folders).map(([kind, folder]) => [folder, kind]))
 export const schemaForKind = (kind, schemas = {}, value) => {
-  const schema = ({ level: schemas.level, game: schemas.game, entry: ENTRY, ...kindSchemas(schemas), ...Object.fromEntries(Object.entries(OBJECT_SCHEMAS).map(([folder, schema]) => [kindForFolder[folder], schema])) })[kind]
+  const schema = ({ level: schemas.level, game: schemas.game, ...kindSchemas(schemas), ...Object.fromEntries(Object.entries(OBJECT_SCHEMAS).map(([folder, schema]) => [kindForFolder[folder], schema])) })[kind]
   if (!value || !['tag', 'relation'].includes(kind)) return schema
   const reference = kind === 'tag' ? value.kind : value.kind === 'requires' ? 'level' : Object.values(schemas.objectKinds ?? {}).map(d => d.relations?.[value.kind]?.from).find(Boolean) ?? 'any'
   const bind = s => s && { ...s, ...(s.reference?.startsWith('$') && { reference }), ...(s.of && { of: bind(s.of) }), ...(s.fields && { fields: Object.fromEntries(Object.entries(s.fields).map(([key, field]) => [key, bind(field)])) }) }
@@ -130,7 +129,6 @@ export function composeLayers(layers, schemas) {
     const { name, qualify } = contextFor(layer, layers, schemas)
     const texts = (value, schema, context = '') => readText(sourceValue(qualify(value, schema, context)), layer.id, schema, schemas)
     const object = (kind, value, before) => {
-      if (kind === 'entry' && (Object.hasOwn(value, 'id') || Object.hasOwn(value, 'group'))) throw new Error('entry identity belongs in its name and membership in entry tags')
       const schema = schemaForKind(kind, schemas, { ...before, ...value })
       const qualified = qualify(value, schema)
       return readText(sourceValue(qualified), layer.id, schema, schemas)

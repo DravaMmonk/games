@@ -1,4 +1,4 @@
-import { lockFixture } from './test-fixture.js'
+import { addGlossaryFixture, lockFixture } from './test-fixture.js'
 import { existenceProblems } from './existence.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -10,6 +10,7 @@ import { defineVocabulary } from './vocabulary.js'
 import { composeLayers, orderPackages, visibleOverrides } from './layers.js'
 import { readContent, readPackage, assembleLayers } from './resolver.js'
 import { dependencyProblemsInProject } from './project-dependencies.js'
+import { contentSchemas } from './content.js'
 import { contentAssets, CONTENT_FILE } from '../app/content-assets.js'
 import { pageContent } from '../app/page-content.js'
 import { openGame, openPackage } from './ops/workspace.js'
@@ -18,7 +19,7 @@ import { runChangeset, undo } from './ops/changeset.js'
 const schemas = defineVocabulary({ module: 'toy', version: 1, kinds: {}, game: S.obj({ title: S.opt(S.text()), chapters: S.opt(S.list(S.str({ reference: 'chapter' }))) }), level: S.obj({ title: S.opt(S.text()), from: S.opt(S.level()), options: S.opt(S.map(S.any())) }) })
 const layer = (id, uses = [], objects = [], overrides = []) => ({ id, config: { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
 const obj = (kind, name, value) => ({ kind, name, value })
-const base = () => layer('base', [], [obj('level', 'a', { title: 'A', options: { x: 1, y: 2 } }), obj('level', 'b', { title: 'B' }), obj('tag', 'all', { kind: 'level', values: ['a'] }), obj('relation', 'path', { kind: 'requires', edges: [{ from: 'a', to: 'b' }] }), obj('section', 'map', { title: 'Map', values: [] })])
+const base = () => layer('base', [], [obj('level', 'a', { title: 'A', options: { x: 1, y: 2 } }), obj('level', 'b', { title: 'B' }), obj('tag', 'all', { kind: 'level', values: ['a'] }), obj('relation', 'path', { kind: 'requires', edges: [{ from: 'a', to: 'b' }] })])
 const problems = layers => existenceProblems(composeLayers(layers, schemas).qualifiedLayers, schemas).map(problem => problem.says).join('\n')
 const game = (overrides = []) => ({ id: '@demo', config: { chapters: ['@demo/one'] }, objects: [obj('chapter', 'one', { levels: ['base/a', 'base/b'] })], catalogs: {}, overrides })
 
@@ -176,6 +177,8 @@ test('author writes refuse changed dependency files while holding every selected
 
 test('entry files, typed tag paths, ordering and overrides round trip through authoring and publishing', async () => {
   const { root, put } = fixture()
+  addGlossaryFixture(root, 'base', 'demo')
+  addGlossaryFixture(root, 'extra')
   put('packages/base/entries/z.json', { title: '@entry-z', body: [], see: ['a'] })
   put('packages/base/entries/a.json', { title: 'A', body: [] })
   put('packages/base/entries/c.json', { title: 'C', body: [] })
@@ -195,7 +198,7 @@ test('entry files, typed tag paths, ordering and overrides round trip through au
   assert.deepEqual(content.sources.entry['base/z'], { declaration: 'base', overrides: ['extra'], collections: { see: { 'base/a': ['base'] } } })
   lockFixture(root)
   const assets = contentAssets(readContent('demo', root, { vocabulary: schemas }))
-  const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', async (url) => ({ ok: true, json: async () => JSON.parse(assets.get(url.pathname.slice(1))) }), schemas)
+  const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', async (url) => ({ ok: true, json: async () => JSON.parse(assets.get(url.pathname.slice(1))) }), contentSchemas.get(content))
   assert.deepEqual(restored.glossary, content.glossary)
   const domain = { vocabulary: schemas }
   const ws = openGame('demo', root, { vocabulary: schemas, layer: 'extra' })
@@ -218,15 +221,13 @@ test('entry files, typed tag paths, ordering and overrides round trip through au
   assert.equal((await undo(openGame('demo', root, { vocabulary: schemas, layer: 'base' }), { check: false, write: true, domain })).ok, true)
 })
 
-test('source files reject retired glossary and tag formats and tag overrides cannot change kind', () => {
+test('source files reject retired tag formats and tag overrides cannot change kind', () => {
   const { root, put } = fixture()
   put('packages/base/tags/entry/words.json', { values: [] })
   put('packages/extra/overrides/base/tags/level/words.json', { values: [] })
   assert.match(readContent('demo', root, { vocabulary: schemas }).objectProblems.map(p => p.says).join('\n'), /missing target tag/)
   put('packages/base/tags/entry/words.json', { kind: 'entry', values: [] })
   assert.throws(() => readContent('demo', root, { vocabulary: schemas }), /kind belongs in the path/)
-  put('packages/base/glossary.json', { groups: [], entries: [] })
-  assert.throws(() => readContent('demo', root, { vocabulary: schemas }), /glossary.json has been replaced/)
 })
 
 
@@ -348,6 +349,8 @@ test('non-play packages omit unused reader tags and retain declarations and cont
 
 test('same-named tags persist, publish and undo independently by member type', async () => {
   const { root, put } = fixture()
+  addGlossaryFixture(root, 'base', 'demo')
+  lockFixture(root)
   put('packages/base/entries/word.json', { title: 'Word', body: [] })
   const ws = openPackage('base', root, { vocabulary: schemas })
   const domain = { vocabulary: schemas }
@@ -362,7 +365,7 @@ test('same-named tags persist, publish and undo independently by member type', a
   assert.deepEqual(content.tags['entry:base/pick'].values, ['base/word'])
   assert.deepEqual(content.tags['level:base/draft'].values, [])
   const assets = contentAssets(content)
-  const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', async url => ({ ok: true, json: async () => JSON.parse(assets.get(url.pathname.slice(1))) }), schemas)
+  const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', async url => ({ ok: true, json: async () => JSON.parse(assets.get(url.pathname.slice(1))) }), contentSchemas.get(content))
   assert.deepEqual(restored.registries.tag, content.registries.tag)
   const reopened = openPackage('base', root, { vocabulary: schemas })
   assert.deepEqual(reopened.changes(), [])

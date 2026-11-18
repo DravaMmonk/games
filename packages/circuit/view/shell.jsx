@@ -6,13 +6,9 @@ import PartsBook, { levelOf, useParts } from './PartsBook.jsx'
 export function useCircuitShell(context) {
   const { game, progress, phone, setSheet } = context
   const box = useParts(game, progress)
-  const useTools = game.useCircuitTools ?? noTools
-  const tools = useTools(context)
   const part = id => game.parts?.all.find(part => part.key === id)
   return {
-    ...tools,
     mapActions: <>
-      {tools.mapActions}
       {game.parts && <button className="kit-btn is-label wiki-button" onClick={() => setSheet('circuit/parts')}><Package size={15} /><span>{tr('元件箱')}</span><b>{box.unread.length > 0 ? tr(`新增 ${box.unread.length} 个`, `${box.unread.length} new`) : `${game.parts.earned(progress).length}/${game.parts.all.length}`}</b></button>}
     </>,
     reference(kind, id) {
@@ -31,5 +27,3 @@ export function useCircuitShell(context) {
     },
   }
 }
-
-const noTools = () => ({})

@@ -1,3 +1,4 @@
+import { kindSchemas } from '../plugin-kinds.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tagName } from '../tag-identity.js'
 // Search across a game's content, and replace as operations (games/design/README.md 7.1). What is searched: every localized text
@@ -13,7 +14,6 @@ import { meaningsOf, derivedFields } from '../kind-meanings.js'
 import { contentSchemas } from '../content.js'
 import { find } from '../schema.js'
 import { textEntries } from '../i18n.js'
-import { ENTRY } from '../vocabulary.js'
 
 const REF_TAG = /<([a-z][a-z0-9-]*)-ref to="[^"]+"><\/\1-ref>/g
 const KINDS = ['text', 'board', 'id']
@@ -77,12 +77,12 @@ export function searchable(content, vocabulary, kinds = KINDS) {
   }
   if (kinds.includes('text')) {
     texts(game, vocabulary.game, { file: 'game.json', in: 'game' })
-    for (const { id, group: _group, ...entry } of glossary.entries) texts(entry, ENTRY, { file: `entries/${id}.json`, entry: id })
+    for (const { id, group: _group, ...entry } of glossary?.entries ?? []) texts(entry, kindSchemas(vocabulary).entry, { file: `entries/${id}.json`, entry: id })
     for (const [key, tag] of Object.entries(content.tags ?? {})) texts(tag, OBJECT_SCHEMAS.tags, { file: `tags/${tag.kind}/${tagName(key)}.json`, tag: tagName(key), member: tag.kind })
     for (const meaning of meaningsOf(contentSchemas.get(content))) meaning.search?.({ content, texts })
   }
   if (kinds.includes('id')) for (const [key, tag] of Object.entries(content.tags ?? {})) out.push({ file: `tags/${tag.kind}/${tagName(key)}.json`, tag: tagName(key), member: tag.kind, path: [], kind: 'id', text: tagName(key) })
-  if (kinds.includes('id')) glossary.entries.forEach((e) => out.push({ file: `entries/${e.id}.json`, entry: e.id, path: [], kind: 'id', text: e.id }))
+  if (kinds.includes('id')) glossary?.entries.forEach((e) => out.push({ file: `entries/${e.id}.json`, entry: e.id, path: [], kind: 'id', text: e.id }))
   return out
 }
 

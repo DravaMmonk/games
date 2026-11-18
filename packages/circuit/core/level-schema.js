@@ -7,7 +7,7 @@
 import { taskLevel } from 'kernel'
 import { ITEM_REFERENCE } from './task-fields.js'
 import { TRAY } from './trays.js'
-import { CHAPTERS, COURSE_OPTIONS } from 'kernel'
+import { CHAPTERS } from 'kernel'
 import { S } from 'kernel'
 import { RESULTS, SHOW, START_VIEW, TASK_VIEWS } from 'kernel'
 import { T as t } from 'kernel'
@@ -75,5 +75,4 @@ export const GAME = S.obj({
   kicker: S.text(),
   lede: S.text({ about: t('这款游戏教什么、学完能亲手做成什么，不写关卡数', 'what the game teaches and what the player ends up building, not how many levels') }),
   chapters: CHAPTERS,
-  ...COURSE_OPTIONS,
 })

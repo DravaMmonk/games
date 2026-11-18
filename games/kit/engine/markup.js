@@ -22,14 +22,13 @@ export function registerReferenceKind(kind, { target, label = kind, quoteOrder =
 }
 
 registerReferenceKind('level', { target: 'level', quoteOrder: 1 })
-registerReferenceKind('wiki', { target: 'entry', label: 'encyclopedia entry' })
 const TOKEN = /\\\(([\s\S]*?)\\\)|\\\[([\s\S]*?)\\\]|(\\\(|\\\[)|<([a-z][a-z0-9-]*)-ref to="([^"<>]+)"><\/\4-ref>|<(\/?)([A-Za-z][A-Za-z0-9-]*)([^<>]*)>/g
 
 /**
  * A text read as markup: { nodes, problems }. nodes: [string | { tag, kids } | { ref, to } | { math, display }]; problems: what in it is
  * not the markup above (a tag outside the set, an attribute, a tag left open or closed twice), each in words.
  */
-export function markupOf(text) {
+export function markupOf(text, registered = referenceKinds) {
   const root = { kids: [] }
   const stack = [root]
   const problems = []
@@ -50,13 +49,13 @@ export function markupOf(text) {
       else put({ math: inlineMath ?? displayMath, display: displayMath !== undefined })
       continue
     }
-    if (refKind && referenceKinds.has(refKind)) {
+    if (refKind && registered.has(refKind)) {
       put({ ref: refKind, to: refTo })
       continue
     }
     const name = tag?.toLowerCase()
     if (!TAGS.includes(name)) {
-      problems.push(`${whole} is no markup a text may carry (${[...TAGS.map((t) => `<${t}>`), ...[...referenceKinds.keys()].map((k) => `<${k}-ref to="…">`)].join(' ')})`)
+      problems.push(`${whole} is no markup a text may carry (${[...TAGS.map((t) => `<${t}>`), ...[...registered.keys()].map((k) => `<${k}-ref to="…">`)].join(' ')})`)
       put(whole)
       continue
     }

@@ -14,18 +14,16 @@ import { contentSchemas } from './content.js'
 // entry is a link, ../shell/refs.js);
 // `audit` adds the game's own course problems to the shared audit's. game.json may leave findings open (`open`, the
 // work list in its design doc): they are listed, not failed, and one met since fails until it is dropped.
-import { referenceKinds } from './markup.js'
 import { REF, refProblems } from './text.js'
 import { gameOf } from './games.mjs'
-import { GLOSSARY, checkContent } from './vocabulary.js'
+import { checkContent } from './vocabulary.js'
 import { firstText, textEntries } from './i18n.js'
 import { find } from './schema.js'
-import { termRegistry } from './terminology.js'
 import { noMemo } from './check-cache.js'
 import { dependencyProblemsInProject } from './project-dependencies.js'
 import { packageLevel } from './package-play.js'
 
-const registeredReferenceNames = (content, selections = {}) => Object.fromEntries([...referenceKinds].flatMap(([kind, { target }]) => {
+const registeredReferenceNames = (content, selections = {}) => Object.fromEntries(Object.entries(contentSchemas.get(content)?.references ?? {}).flatMap(([kind, { target }]) => {
   if (!target) return []
   const objects = selections[target] ?? Object.entries(content.registries[target] ?? {}).map(([id, value]) => ({ ...value, id }))
   return [[kind, new Map(objects.map(({ id, title, name }) => [id, String(firstText(title ?? name))]))]]
@@ -37,12 +35,12 @@ export async function checkPackage(content, { domain, root, mutants = false }) {
   if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, root))
   const lines = wrong.map(problem => ({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(['exists', 'dependency'].includes(problem.rule) && { problem }) }))
   if (wrong.length) return lines
+  lines.push(...meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? []))
   const names = { ...registeredReferenceNames(content), ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, vocabulary: domain.vocabulary }))) }
   const quotes = meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.quotes?.({ content }) ?? [])
-  for (const [name, value] of Object.entries({ levels: content.levels, entries: content.glossary.entries, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
+  for (const [name, value] of Object.entries({ levels: content.levels, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
     for (const problem of refProblems(value, name, names, quotes)) lines.push({ fail: true, text: `text ${problem}` })
   }
-  for (const f of termRegistry(content.glossary).failures) lines.push({ fail: true, text: `terminology ${f.rule} ${f.at}: ${f.says}` })
   for (const level of content.levels) {
     try {
       const shell = packageLevel(content, level.id)
@@ -70,7 +68,7 @@ export async function checkGame(content, { domain, mutants = false, cache = null
   if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, root))
   for (const problem of wrong) lines.push({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(['exists', 'dependency'].includes(problem.rule) && { problem }) })
   if (wrong.length) return lines
-  for (const f of termRegistry(content.glossary).failures) fail(`terminology ${f.rule} ${f.at}: ${f.says}`)
+  lines.push(...meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? []))
   const spec = domain.spec(content)
   lines.push(...await domain.checkPhase?.({ phase: 'course', spec, content }) ?? [])
 
@@ -85,29 +83,22 @@ export async function checkGame(content, { domain, mutants = false, cache = null
   // References to levels, parts and entries: the names come from the game as the shell gets it.
   const game = await gameOf(content)
   const names = {
-    ...registeredReferenceNames(content, { level: game.levels, entry: game.glossary?.entries ?? [] }),
+    ...registeredReferenceNames(content, { level: game.levels }),
     ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, game, vocabulary: domain.vocabulary }))),
   }
-  const extraTexts = Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content, game })))
-  // A game plays the levels its course places; the rest of its package, and the encyclopedia entries that open at them,
-  // are not in it (an entry stands in its place, empty, so the problems still count entries as the file does).
-  const placed = new Set(spec.levels.map((l) => l.id))
-  const inGame = (entry) => !entry.at || placed.has(entry.at)
-  const texts = { ...(spec.texts ?? {}), ...(spec.texts?.glossary && { glossary: spec.texts.glossary.map((entry) => (inGame(entry) ? entry : {})) }) }
-  for (const [name, value] of Object.entries({ levels: spec.levels, ...texts, ...extraTexts })) for (const problem of refProblems(value, name, names, spec.quotes)) fail(`text ${problem}`)
+  const extraTexts = Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content, game, spec })))
+  const placed = new Set(spec.levels.map(level => level.id))
+  for (const [name, value] of Object.entries({ levels: spec.levels, ...spec.texts, ...extraTexts })) for (const problem of refProblems(value, name, names, spec.quotes)) fail(`text ${problem}`)
 
   // An entry is linked only where it is open already: in a level it opens at or after, in an entry opening no earlier.
   // The links are read off every text of the content, by its schema, whatever its fields are called.
   const vocabulary = meaningsOf(contentSchemas.get(content)).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, content }) ?? vocabulary, domain.vocabulary)
-  const entries = new Map((game.glossary?.entries ?? []).map((e) => [e.id, e]))
   const opensBy = (at, where) => !at || at === where || (where && spec.course.before(at, where))
   const linked = (schema, value, kind) => find(schema, value, 'text', { vocabulary })
     .flatMap(({ value }) => typeof value === 'string' ? [value] : textEntries(value).map(([, text]) => text))
     .flatMap((s) => [...s.matchAll(REF)].filter((m) => m[1] === kind).map((m) => m[2]))
   const levelLinks = (kind) => content.levels.filter(({ id }) => placed.has(id)).map(({ id, ...level }) => [id, [...new Set(linked(vocabulary.level, level, kind))]])
-  for (const [id, links] of levelLinks('wiki')) for (const entry of links) if (entries.has(entry) && !opensBy(entries.get(entry).at, id)) fail(`${id} links the entry ${entry}, which opens later (at ${entries.get(entry).at})`)
-  lines.push(...await domain.checkPhase?.({ phase: 'references', spec, content, game, levelLinks, opensBy }) ?? [])
-  for (const entry of content.glossary.entries.filter(inGame)) for (const id of new Set(linked(GLOSSARY.fields.entries.of, entry, 'wiki'))) if (entries.has(id) && !opensBy(entries.get(id).at, entry.at)) fail(`entry ${entry.id} links the entry ${id}, which opens later (at ${entries.get(id).at})`)
+  lines.push(...await domain.checkPhase?.({ phase: 'references', spec, content, game, levelLinks, opensBy, linked, placed }) ?? [])
 
   // Mutation reports are requested explicitly because providers may perform expensive checks.
   // A domain's check of one level goes through `memo` (check-cache.js), which runs it or hands back what it said last.

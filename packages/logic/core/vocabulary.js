@@ -10,7 +10,7 @@
 
 import { qualifyVocabulary } from 'kernel'
 import { symbolFor } from './symbols.js'
-import { CHAPTERS, COURSE_OPTIONS } from 'kernel'
+import { CHAPTERS } from 'kernel'
 import { S } from 'kernel'
 import { defineVocabulary } from 'kernel'
 import { taskLevel } from 'kernel'
@@ -182,7 +182,6 @@ const GAME = S.obj({
   lede: S.text({ about: t('这款游戏教什么、学完能亲手做成什么，不写关卡数', 'what the game teaches and what the player ends up building, not how many levels') }),
   words: S.opt(S.str({ about: t('游戏默认使用的一套词', 'The default word set for the game') })),
   chapters: CHAPTERS,
-  ...COURSE_OPTIONS,
 })
 
 export const vocabulary = qualifyVocabulary('logic', defineVocabulary({

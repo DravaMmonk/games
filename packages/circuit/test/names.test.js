@@ -51,7 +51,7 @@ test('file assembly qualifies each layer and keeps the registries independent', 
 })
 
 test('typed references preserve cross-namespace and game-owned objects', () => {
-  const schema = S.obj({ levels: S.list(S.level()), parts: S.map(S.ref('primitive', { reference: 'circuit/part' }), { key: S.ref('primitive', { reference: 'circuit/part' }) }), entry: S.name('entry'), title: S.text(), world: S.ref('world') })
+  const schema = S.obj({ levels: S.list(S.level()), parts: S.map(S.ref('primitive', { reference: 'circuit/part' }), { key: S.ref('primitive', { reference: 'circuit/part' }) }), entry: S.str({ reference: 'entry' }), title: S.text(), world: S.ref('world') })
   const value = expandNames({
     levels: ['start', 'other/start', '@demo/start'], parts: { calc: '@demo/pin', 'other/calc': 'library/given' }, entry: 'term',
     title: t('other/heading', '<level-ref to="start"></level-ref> <part-ref to="part:calc"></part-ref>'), world: 'grid',

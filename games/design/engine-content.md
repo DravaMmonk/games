@@ -86,5 +86,5 @@ npm run deps -- upgrade --game qed [package]
 
 Studio 从工具元数据读取范围、锁定、manifest 与兼容性。包记录含 `compatibility` 的 `type`、`changes`、`added`、`previous`、`next`、`proposed`、`affected`、`behaviorStatus`；预览只比较结构，行为状态为 `pending-publication`。
 
-**游戏配置与首页。** 每款游戏的 `game.json` 保存入口元数据（`title`、`author`、`kicker`、`lede`、`topic`、`description`、`hero`、`art`、`icon`、`dev`、`hidden`）、组装配置（`kernel`、`packages`、`chapters`、`encyclopedia`）和单值选择（`words`、`power`、`box`）。首页构建按 `games/hub-order.json` 的游戏 id 顺序读取配置，按章计算关卡数，卡片显示 `title`、`topic`、`lede`、`author` 和 `art`。页面标题、搜索引擎描述和标签页图标分别取 `title`、`description` 和 `icon`。`dev` 给卡片加开发中标记，`hidden` 隐藏卡片，游戏仍会构建。入口文案用 `@game.*` 键，写在游戏的语言表里。
+**游戏配置与首页。** 每款游戏的 `game.json` 保存入口元数据（`title`、`author`、`kicker`、`lede`、`topic`、`description`、`hero`、`art`、`icon`、`dev`、`hidden`）、组装配置（`kernel`、`packages`、`chapters`，以及百科包提供的可选分组顺序 `encyclopedia`）和单值选择（`words`、`power`、`box`）。首页构建按 `games/hub-order.json` 的游戏 id 顺序读取配置，按章计算关卡数，卡片显示 `title`、`topic`、`lede`、`author` 和 `art`。页面标题、搜索引擎描述和标签页图标分别取 `title`、`description` 和 `icon`。`dev` 给卡片加开发中标记，`hidden` 隐藏卡片，游戏仍会构建。入口文案用 `@game.*` 键，写在游戏的语言表里。
 

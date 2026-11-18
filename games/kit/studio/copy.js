@@ -1,3 +1,4 @@
+import { contentSchemas } from '../engine/content.js'
 import { kindSchemas } from '../engine/plugin-kinds.js'
 import { objectTypes, listOfType } from './object-types.js'
 import { glossaryTarget } from './form.js'
@@ -8,7 +9,7 @@ import { glossaryTarget } from './form.js'
 // workspace the package's texts; the game workspace the game's and the package's, which it puts its own wording over.
 import { languagesOf } from '../engine/i18n.js'
 import { find } from '../engine/schema.js'
-import { GLOSSARY } from '../engine/vocabulary.js'
+import { fileSchema as projectionSchema } from './editors.js'
 import { showPath } from '../engine/ops/edit.js'
 import { eraLevels } from '../course.js'
 import { levelTags } from './groups.js'
@@ -39,7 +40,9 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
     return rows
   }
   if (scope === 'glossary') {
-    for (const t of find(GLOSSARY, content.glossary, 'text')) {
+    const schema = projectionSchema(contentSchemas.get(content) ?? vocabulary, 'glossary')
+    if (!schema || !content.glossary) return rows
+    for (const t of find(schema, content.glossary, 'text')) {
       const entry = content.glossary[t.path[0]]?.[t.path[1]]
       const target = glossaryTarget(content.glossary, t.path)
       if (!target) continue

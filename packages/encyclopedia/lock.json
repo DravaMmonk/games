@@ -1,0 +1,9 @@
+{
+  "target": "encyclopedia",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "5667e1bc0653dbb2bc1983d98d8ed4eb584189ba92e3760df14243fbb8df3bcb"
+    }
+  }
+}

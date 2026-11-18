@@ -17,6 +17,7 @@ const put = (root, name, data) => {
 }
 const project = () => mkdtempSync(resolve(tmpdir(), 'versions-contract-'))
 const config = (uses = {}) => ({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses })
+const topic = { declares: 'package', overrides: { package: ['*'] }, schema: S.obj({ title: S.text(), body: S.list(S.text()) }) }
 const entry = value => ({ hash: hash(JSON.stringify(value)), value })
 
 test('ranges use exact, tilde and caret semantics including zero-major boundaries', () => {
@@ -56,7 +57,8 @@ test('locks report missing pins, range drift, extra dependencies and content has
     assert.equal(resolveLayers({ package: 'course', closure: true, root }).lockStatus.problems[0].reason, 'missing lock')
     lockTarget(target, root)
     assert.equal(resolveLayers({ package: 'course', closure: true, root }).lockStatus.valid, true)
-    put(root, 'packages/library/entries/one.json', { title: 'One', body: ['An explanatory test entry.'] })
+    put(root, 'packages/library/kinds/topic.json', topic)
+    put(root, 'packages/library/topic/one.json', { title: 'One', body: ['An explanatory test entry.'] })
     assert.equal(readPackage('course', root).objectProblems.some(problem => problem.rule === 'dependency'), false)
     assert.equal(openPackage('course', root).content().objectProblems.some(problem => problem.rule === 'dependency'), false)
     lockTarget(target, root)
@@ -72,10 +74,11 @@ test('checked archives and workspace sources use the same reader, manifests and 
   const root = project()
   try {
     put(root, 'packages/library/package.json', config())
-    put(root, 'packages/library/core/index.js', "export const answerValue = 42; export function register(kernel) { kernel.tag('library/read', 'entry') }")
+    put(root, 'packages/library/core/index.js', "export const answerValue = 42; export function register(kernel) { kernel.tag('library/read', 'library/topic') }")
     put(root, 'packages/library/view/index.jsx', "export function Widget() { return <span /> } export function register(kernel) { kernel.display('library/widget', Widget) }")
     put(root, 'packages/library/test/contract.test.js', "import test from 'node:test'; import assert from 'node:assert/strict'; import { answerValue } from '../core/index.js'; test('public value', () => assert.equal(answerValue, 42))")
-    put(root, 'packages/library/entries/one.json', { title: 'One', body: ['An explanatory test entry.'] })
+    put(root, 'packages/library/kinds/topic.json', topic)
+    put(root, 'packages/library/topic/one.json', { title: 'One', body: ['An explanatory test entry.'] })
     const target = { id: 'library', kind: 'package' }
     lockTarget(target, root)
     const first = publishPackage('library', root, { launch: true })
@@ -83,7 +86,7 @@ test('checked archives and workspace sources use the same reader, manifests and 
     const source = resolveLayers({ package: 'library', closure: true, root }).layers[0]
     assert.ok(source.manifest.surface['display:library/widget'])
     assert.equal(source.manifest.kind, 'lib')
-    assert.ok(source.manifest.surface['tag:entry:library/read'])
+    assert.ok(source.manifest.surface['tag:library/topic:library/read'])
     assert.deepEqual(source.manifest.exports.core, ['answerValue', 'register'])
     renameSync(resolve(root, 'packages/library'), resolve(root, 'held'))
     const archive = resolveLayers({ package: 'library', closure: true, root }).layers[0]
@@ -100,10 +103,10 @@ test('checked archives and workspace sources use the same reader, manifests and 
     assert.equal(checkTarget({ id: 'library', kind: 'package' }, root).status, 0)
     rmSync(resolve(root, 'packages/library'), { recursive: true, force: true })
     renameSync(resolve(root, 'held'), resolve(root, 'packages/library'))
-    put(root, 'packages/library/entries/two.json', { title: 'Two', body: ['An explanatory test entry.'] })
+    put(root, 'packages/library/topic/two.json', { title: 'Two', body: ['An explanatory test entry.'] })
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.1.0')
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.1.1')
-    rmSync(resolve(root, 'packages/library/entries/one.json'))
+    rmSync(resolve(root, 'packages/library/topic/one.json'))
     assert.equal(publishPackage('library', root, { launch: true }).version, '2.0.0')
     renameSync(resolve(root, 'packages/library'), resolve(root, 'held-again'))
     put(root, 'packages/other/package.json', config({ library: '~1.0.0' }))

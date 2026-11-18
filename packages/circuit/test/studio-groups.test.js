@@ -1,3 +1,4 @@
+import * as encyclopedia from '../../encyclopedia/core/index.js'
 import * as progress from '../../progress/core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -47,6 +48,6 @@ test('each list groups by the tags of its kind, or by the objects that gather it
 import { registerPlugins } from '../../../games/kit/engine/plugins.js'
 import { installStudioPlugins } from '../../../games/kit/studio/editors.js'
 import * as core from '../core/index.js'
-const plugins = await registerPlugins([{ id: 'circuit', core }, { id: 'progress', core: progress }])
+const plugins = await registerPlugins([{ id: 'circuit', core }, { id: 'progress', core: progress }, { id: 'encyclopedia', core: encyclopedia }])
 plugins.forPackage('circuit', 'view').editor('circuit/part', { type: 'circuit/part', component() {}, groupings: ['tag', 'circuit/tray', 'relation'] })
 installStudioPlugins(plugins)

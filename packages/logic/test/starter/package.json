@@ -7,6 +7,7 @@
     "circuit": "^0.0.0",
     "logic": "^0.0.0",
     "qed": "^0.0.0",
-    "scalar": "^0.0.0"
+    "scalar": "^0.0.0",
+    "encyclopedia": "^0.0.0"
   }
 }

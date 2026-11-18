@@ -1,3 +1,4 @@
+import { definitionOfKind } from '../engine/plugin-kinds.js'
 // The package workspace of the studio (games/design/README.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
 // and plays a package's levels without code, a level group at a time. It is a thin skin over the operation set (the
 // package's side of it, useChangeset.js): the tree, the forms, the copy table, the comparisons, the game played, the
@@ -50,10 +51,8 @@ import { useChangeset } from './useChangeset.js'
 import { OverrideDetail, OverrideList, visibleOverrides } from './OverrideAudit.jsx'
 import ObjectLinks from './ObjectLinks.jsx'
 import { CapabilityList, CapabilityView, currentCapability } from './CapabilityBrowser.jsx'
-import { EntryList } from './ObjectLists.jsx'
 import GroupedList from './GroupedList.jsx'
 import { groupingsFor, relationKind } from './list-groups.js'
-import { SectionEditor } from './GatherEditor.jsx'
 import TagEditor from './TagEditor.jsx'
 import RelationBoard from './RelationBoard.jsx'
 import { HEADING_KINDS, OBJECT_LISTS, PACKAGE_LISTS, capabilityKey, headingParam, isObjectList, listOfHeading, openParams, overrideKey, readHeading, readOpen } from './left-lists.js'
@@ -555,7 +554,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const newLevelContext = { vocabulary: vocab?.vocabulary, levels: playOrder, lang }
   const firstTaskSchema = vocab && tasksSchema(vocab.vocabulary)
   const levelChoices = vocab ? creationChoices(firstTaskSchema ?? vocab.vocabulary.level, newLevelContext) : []
-  const declaredType = (type) => (content?.objectKinds?.[type] && !content.objectKinds[type].extends ? content.objectKinds[type] : null)
+  const declaredType = (type) => definitionOfKind(content?.objectKinds, type) ?? null
   // A new object starts blank or as a copy of any object open, this package's or one it uses (games/MODULES.md 5.5).
   /** The add menu of a list of another type: a new one (blank), a copy of the one open (greyed when none is). */
   const addObjectOptions = (type) => {
@@ -757,8 +756,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     onOpen: (next) => openNamed(...Object.entries(next)[0]),
     onSelect: (full) => (full ? openHeading({ kind: heading.kind, full }) : select(null)),
   }
-  const GroupEditor = heading && (editorForType(heading.kind)?.component ?? { tag: TagEditor, relation: RelationBoard, section: SectionEditor }[heading.kind] ?? ObjectSummary)
+  const GroupEditor = heading && (editorForType(heading.kind)?.component ?? { tag: TagEditor, relation: RelationBoard }[heading.kind] ?? ObjectSummary)
   const PageEditor = selectionName(at) !== undefined ? editorForType(editorRoute(at)?.type)?.page ?? ObjectSummary : GameFrame
+  const EntryList = editorForType('entry')?.list
   const OtherList = editorForType(otherType)?.list ?? GroupedList
   // The middle: an object list's object (above), several levels picked at once, a group's own object, or the page.
   const middle = side === 'packages' ? 'package' : objectList ? 'objects' : pickedIds.length > 1 ? 'bulk' : heading ? 'group' : 'page'
@@ -809,7 +809,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
             {side === 'packages' ? <PackageList packages={packages} current={pkg} picked={pickedPackage} disabled={saving} onPick={setPickedPackage} onOpen={openPackage} onCreate={makePackage} />
               : side === 'kernel' ? <CapabilityList capabilities={capabilities} definitions={capabilityKinds} namespace={namespace} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
               : side === 'overrides' ? <OverrideList events={events} layer={namespace} current={openKey} onOpen={(key) => openIn('overrides', key)} />
-              : side === 'entries' ? <EntryList content={content} namespace={namespace} game={game} current={at?.glossary && field?.path?.[0] === 'entries' ? field.path[1] : null}
+              : side === 'entries' && EntryList ? <EntryList content={content} namespace={namespace} game={game} current={at?.glossary && field?.path?.[0] === 'entries' ? field.path[1] : null}
                 heading={heading} onHeading={(next) => openHeading(next)} {...grouping('entry', entriesBy, setEntriesBy)} onOpen={(k) => jump(null, `entries[${k}]`, 'glossary')}
                 addOptions={entryAdds} onAdd={addEntry} />
               : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={earnedAt} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}

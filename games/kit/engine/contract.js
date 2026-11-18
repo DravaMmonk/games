@@ -142,7 +142,6 @@ export function gameProblems(content, spec, game) {
     }
     if (!chapters.has(l.chapter)) say(`${l.id}: in no chapter`)
   }
-  if (!sameJson(game.glossary, content.glossary)) say('its encyclopedia is not the content’s glossary')
   return out
 }
 

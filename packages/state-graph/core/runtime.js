@@ -22,7 +22,7 @@ function spec(content, works = tableWorks(content)) {
     table,
     blueprints: table.blueprints,
     syncOwn: table.syncOwn,
-    texts: { chapters: table.CHAPTERS, parts: table.PARTS, glossary: content.glossary.entries },
+    texts: { chapters: table.CHAPTERS, parts: table.PARTS },
   };
 }
 

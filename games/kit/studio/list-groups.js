@@ -8,7 +8,7 @@ import { tagKey, tagKeyOfRef, tagMembers, tagName } from './objects-edit.js'
 import { edgesOf } from './override-edit.js'
 
 /** How each list can be grouped, the first the default. */
-export const GROUPINGS = { level: ['tag', 'relation'], entry: ['tag', 'section', 'relation'] }
+export const GROUPINGS = { level: ['tag', 'relation'] }
 
 export const groupingsFor = kind => editorForType(kind)?.groupings ?? GROUPINGS[kind] ?? ['tag', 'relation']
 
@@ -45,11 +45,10 @@ export function groupsOf(content, kind, by) {
   const owner = owners ? (id) => owners.get(id) ?? id : (id) => id
   if (by === 'tag') return orderedTags(content, kind).map((name) => tagKey(kind, name)).map((full) => ({ kind: 'tag', full, members: [...new Set(tagMembers(content, full).map(owner))] }))
   const collection = collectionProvider(by)
-  if (by === 'section' || collection?.accepts(kind)) {
+  if (collection?.accepts(kind)) {
     const names = Object.keys(registries[by] ?? {}).sort(byName)
     return names.map(full => ({ kind: by, full, members: expanded(content,
-      collection ? collection.members(registries[by][full]) : registries[by][full].values ?? [], owner,
-      collection ? collection.types() : ['entry']) }))
+      collection.members(registries[by][full]), owner, collection.types()) }))
   }
   if (by === 'relation') {
     return Object.entries(registries.relation ?? {}).filter(([, relation]) => relationKind(content, relation) === kind)

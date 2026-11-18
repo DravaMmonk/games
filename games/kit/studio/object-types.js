@@ -7,11 +7,11 @@ import { editorForType, registeredEditors } from './editors.js'
 import { tagKey, tagMembers } from './objects-edit.js'
 
 /** The lists the kernel's own types have always had (their keys stay, so saved choices and addresses keep working). */
-export const BUILT_IN_LISTS = { level: 'tree', entry: 'entries' }
+export const BUILT_IN_LISTS = { level: 'tree' }
 /** The lists that are not one object type's, after the type lists; search always last. */
 export const TOOL_LISTS = ['kernel', 'overrides', 'search']
 
-const BUILT_IN_NAMES = { level: ['关卡', 'Levels'], entry: ['词条', 'Entries'] }
+const BUILT_IN_NAMES = { level: ['关卡', 'Levels'] }
 
 /** The list an object type is shown in, and back. */
 export const listOfType = (type) => BUILT_IN_LISTS[type] ?? editorForType(type)?.listKey ?? `type:${type}`
@@ -31,7 +31,11 @@ const declared = (content, type) => {
 export function objectTypes(content) {
   const own = Object.keys(BUILT_IN_NAMES).map((type) => ({ type, name: BUILT_IN_NAMES[type] }))
   const packages = Object.keys(content?.objectKinds ?? {}).filter((type) => declared(content, type)).sort()
-    .map((type) => ({ type, name: editorForType(type)?.name ?? declared(content, type).studio?.name ?? [type, type], icon: declared(content, type).studio?.icon }))
+    .map((name) => {
+      const definition = declared(content, name)
+      const type = definition.objectKind ?? name
+      return { type, name: editorForType(type)?.name ?? definition.studio?.name ?? [type, type], icon: definition.studio?.icon }
+    })
   return [...own, ...packages]
 }
 
@@ -41,7 +45,6 @@ export const objectsOfType = (content, type) => Object.keys(content?.registries?
 /** Whether a type has anything to list in this content (what is listed when no package says). */
 export function hasObjects(content, type) {
   if (type === 'level') return true
-  if (type === 'entry') return Boolean(content?.glossary?.entries?.length)
   return objectsOfType(content, type).length > 0
 }
 

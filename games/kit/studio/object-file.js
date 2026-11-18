@@ -1,3 +1,4 @@
+import { definitionOfKind } from '../engine/plugin-kinds.js'
 // An object's file in the side panel (Inspector.jsx; games/design/README.md 6.7): a tag, a relation or a layout picked in the
 // left column has its file on the right, as the schema's form and as raw JSON. The registries hold the objects with
 // full names (`<namespace>/<name>`); the layer writes its own by their short names, through the object operations:
@@ -15,7 +16,7 @@ import { edgesOf, relationPatch, tagPatch } from './override-edit.js'
 import { textWith } from './tag-edit.js'
 import { objectOverride } from './collection-edit.js'
 
-export const OBJECT_KINDS = { tag: 'tags', relation: 'relations', section: 'sections', chapter: 'chapters' }
+export const OBJECT_KINDS = { tag: 'tags', relation: 'relations', chapter: 'chapters' }
 // A tag's kind is in its file's path (tags/<kind>/<name>.json), not in the file.
 const withoutKind = (schema) => ({ ...schema, fields: Object.fromEntries(Object.entries(schema.fields).filter(([key]) => key !== 'kind')) })
 
@@ -106,7 +107,7 @@ export function overrideFileOf(event) {
 /** Where an override's file is, in the layer that made it. */
 export function overrideFileName(event, content = null) {
   const [namespace, name] = [namespaceOf(event.name) ?? '', event.name.slice(event.name.indexOf('/') + 1)]
-  const folder = event.kind === 'i18n' ? 'i18n' : event.kind === 'tag' ? `tags/${event.after?.kind ?? event.before?.kind ?? 'level'}` : content?.objectKinds?.[event.kind]?.folder ?? OBJECT_KINDS[event.kind] ?? folders[event.kind] ?? event.kind
+  const folder = event.kind === 'i18n' ? 'i18n' : event.kind === 'tag' ? `tags/${event.after?.kind ?? event.before?.kind ?? 'level'}` : definitionOfKind(content?.objectKinds, event.kind)?.folder ?? OBJECT_KINDS[event.kind] ?? folders[event.kind] ?? event.kind
   return `${event.layer}/overrides/${namespace}/${folder}/${name}.json`
 }
 

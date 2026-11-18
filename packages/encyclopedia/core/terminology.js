@@ -1,7 +1,6 @@
 // A game's glossary is its term registry. Definitions stay in body; aliases name the same entry, never a
 // second explanation. This module checks data and literal references, not whether arbitrary prose is technical.
-import { REF } from './text.js'
-import { textEntries } from './i18n.js'
+import { REF, textEntries } from 'kernel'
 
 const texts = (value) => typeof value === 'string' ? [['', value]] : textEntries(value ?? {})
 const normal = (s) => String(s ?? '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en')

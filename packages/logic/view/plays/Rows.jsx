@@ -13,7 +13,7 @@ export default function Rows({ screen, resource, play }) {
   const stage = (
     <div className={play.stage}>
       <TreeRows {...resource.rows(work, change, `${entry.id}:${entry.source.task}`, at)} />
-      {resource.lines && <NamedLines lines={resource.lines(work, L, at)} />}
+      {resource.lines && <NamedLines lines={resource.lines(work, L, at)} formulas />}
     </div>
   )
   const tests = resource.tabs?.length > 1 && <TestTabs tests={resource.tabs} index={at} onSelect={select} phone={phone} />

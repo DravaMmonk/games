@@ -2,6 +2,7 @@ import RunDock from '../RunDock.jsx'
 import Verdict from '../Verdict.jsx'
 import { checkAction } from '../useCheckOnce.js'
 import { L, tr } from '../i18n.js'
+import { FormulaText } from '../FormulaText.jsx'
 import PlayLayout from './PlayLayout.jsx'
 import { useCheckedWork } from './useWork.js'
 
@@ -24,7 +25,7 @@ export default function ValueTables({ screen, resource, play }) {
     const { headers, title, rows } = tables[fi]
     return (
       <table className="vt-table">
-        <thead><tr>{headers.map((header, k) => <th key={k}>{L(header)}</th>)}<th className="is-value">{L(title)}</th></tr></thead>
+        <thead><tr>{headers.map((header, k) => <th key={k}><FormulaText text={header} /></th>)}<th className="is-value"><FormulaText text={title} /></th></tr></thead>
         <tbody>
           {rows.map(({ given, value }, k) => {
             const tried = state.tried[`${fi}:${k}`]
@@ -57,7 +58,7 @@ export default function ValueTables({ screen, resource, play }) {
       {mode === 'classify' && tables.map(({ title }, k) => (
         <section key={k} className={`vt-claim ${checked?.wrong.has(k) ? 'is-wrong' : ''}`}>
           <header>
-            <b>{L(title)}</b>
+            <b><FormulaText text={title} /></b>
             <span className="vt-mark-pick" role="group">
               {[[true, L(labels.classify[1])], [false, L(labels.classify[0])]].map(([v, label]) => (
                 <button key={label} type="button" aria-pressed={state.marks[k] === v} onClick={() => update({ marks: { ...state.marks, [k]: v } })}>{label}</button>

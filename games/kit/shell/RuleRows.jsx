@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { L } from './i18n.js'
 import Popover from './Popover.jsx'
+import { FormulaText } from './FormulaText.jsx'
 
 // Rows of rules to fill in, the same in every game: a head (what the rows are about), then a row for each rule, its
 // name on the left and its slots one after another, each a button that says what is written there and opens its editor
@@ -39,12 +40,12 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
       {head && (
         <div className="rr-row is-head">
           <span className="rr-name">{L(head.name)}</span>
-          <span className="rr-body">{head.goal === undefined ? head.body : <><b className="rr-goal">{L(head.goal)}</b><span className="rr-end">{L(head.end)}</span></>}</span>
+          <span className="rr-body">{head.goal === undefined ? head.body : <><b className="rr-goal"><FormulaText text={head.goal} /></b><span className="rr-end">{L(head.end)}</span></>}</span>
         </div>
       )}
       {rows.map((row, k) => (
         <div key={k} className="rr-row">
-          <span className="rr-name">{row.when && <>{L(row.when)} ⟹ </>}{row.equation ? <><b>{L(row.name)}</b> =</> : L(row.name)}{row.mark !== undefined && <i>{row.mark}</i>}</span>
+          <span className="rr-name">{row.when && <>{L(row.when)} ⟹ </>}{row.equation ? <><b><FormulaText text={row.name} /></b> =</> : L(row.name)}{row.mark !== undefined && <i>{row.mark}</i>}</span>
           <span className="rr-body">
             {row.toggle && <span className="rr-lead"><button type="button" aria-pressed={row.toggle.on} disabled={!editor} onClick={row.toggle.run}>{L(row.toggle.label)}</button></span>}
             {!row.slots.length && !editor && row.empty && <i className="rr-empty">{L(row.empty)}</i>}
@@ -58,7 +59,7 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
                   disabled={!editor}
                   onClick={(event) => setSheet({ row: k, slot: j, anchor: event.currentTarget })}
                 >
-                  {L(slot.text ?? blank)}
+                  {slot.text === null ? L(blank) : <FormulaText text={slot.text} />}
                 </button>
                 {/* What comes between two slots stays with the one before it, so a wrapped row never starts with it. */}
                 {j < row.slots.length - 1 ? <span className="rr-sep">；</span> : row.end && <span className="rr-end">{L(row.end)}</span>}

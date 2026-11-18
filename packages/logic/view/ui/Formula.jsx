@@ -1,0 +1,26 @@
+// Logic's formulas as every play shows them: typeset in TeX (../../core/tex.js), one face for all of logic's signs.
+// The line between what is typeset and what is not: a formal object (a sentence, a sequent ⊢, a rule ⟹, a proof term,
+// an equation, a clause, a ?-letter) and a mark that stands for one (R₁, ⊢₁, ⊢ ⟵ R₁, ⊢ ✓) are typeset wherever they
+// stand; prose (an explanation, a name, a verdict, 证明完毕, a sentence in plain words still to be translated) is not.
+// Inside a formula, a sentence's own words (下雨) are upright text in it. What the player is editing (a picker, a block
+// in a strip) is a native control and keeps the page's face.
+import { Typeset } from 'kernel/view'
+import { L } from 'kernel/view'
+import { texOf } from '../../core/tex.js'
+import { machineLines } from '../../core/circuit-readouts.js'
+
+/** One formula (its text as logic writes it, or a { zh, en } pair), typeset; its plain text while that loads. */
+export function Formula({ text, className = '' }) {
+  const line = String(L(text))
+  return <span className={`tx-line ${className}`.trim()}><Typeset tex={texOf(line)} plain={<span className="tx-plain">{line}</span>} /></span>
+}
+
+/** A machine value as a card shows it: its lines, the formulas typeset. */
+export const typesetMachine = (v, ctx) => (
+  <span className="tx-lines">
+    {machineLines(v, ctx).map((l, k) => (l.formula ? <Formula key={k} text={l.s} /> : <span key={k} className="tx-prose">{l.s}</span>))}
+  </span>
+)
+
+/** A value that is one formula (a proof board's sentence, with its proof term), as a card shows it. */
+export const typesetOne = (show) => (v, ctx) => <span className="tx-lines"><Formula text={show(v, ctx)} /></span>

@@ -10,7 +10,7 @@ import { runMachine } from '../../core/machine.js'
 import { presetFor } from '../../core/work.js'
 import { didText, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
 import MachineReport from './MachineReport.jsx'
-import { typesetMachine } from './Tex.jsx'
+import { typesetMachine } from './Formula.jsx'
 
 export const machineScreen = {
   course: (game) => game.logic.machineBoards,

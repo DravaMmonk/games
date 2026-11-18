@@ -125,7 +125,7 @@ function wantOf(task, test) {
   if (test.becomes) {
     if (!test.becomes.length) return tr("这一步失败", {}, "circuit-readouts")
     const ways = test.becomes.map((r) => (r.length ? formula(r.map((g) => goalText(parseGoal(g), text)).join(' | ')) : prose(tr('证完'))))
-    return { kind: 'want', lines: [prose(tr('变成 ').trim()), ...ways.flatMap((w, k) => (k ? [prose(tr('或者')), w] : [w]))] }
+    return { kind: 'want', lines: ways.flatMap((w, k) => (k ? [prose(tr('或者')), w] : [w])) }
   }
   if (test.elim) return { kind: 'want', lines: [prose(tr('消去规则 ').trim()), formula(ruleText(elimOf(test), text))] }
   return L(WANT[test.want ?? task.want])

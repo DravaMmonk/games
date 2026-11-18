@@ -31,7 +31,7 @@ export default function BoardChecks({ screen, resource, play }) {
   const stage = (
     <div className={play.stage}>
       <TreeRows {...resource.rows(at)} />
-      <NamedLines lines={resource.lines(at, L)} />
+      <NamedLines lines={resource.lines(at, L)} formulas />
       <Checks
         {...fields} phone={phone} rows={work} onChange={change} onPick={setRow}
         rowClass={(k) => k === row ? 'is-on' : ''}

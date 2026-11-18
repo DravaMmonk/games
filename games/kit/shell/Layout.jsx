@@ -14,7 +14,7 @@ import { TASK_BOARD_SECTIONS } from '../engine/plays.js'
 
 /** A level's text with its markup (Markup.jsx). `mark`: the props marking it as a field of the content while the
  *  studio edits (edit.js). */
-export function Text({ as: Tag = 'p', className, text, onClick, mark = {}, sentences = false }) {
+export function Text({ as: Tag = 'p', className, text, onClick, mark = {}, sentences = true }) {
   return <Tag className={className} onClick={onClick} {...mark}><Markup text={text ?? ''} sentences={sentences} /></Tag>
 }
 

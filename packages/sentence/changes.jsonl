@@ -1,3 +1,4 @@
 {"seq":1,"at":"2026-11-18T09:31:58.846Z","why":"Separate reusable sentence building from logic","adopt":true,"files":[{"file":"packages/sentence/package.json","after":"8245ebf9f37094fb"},{"file":"packages/sentence/i18n/en.json","after":"1a680296bf3ca89a"},{"file":"packages/sentence/i18n/zh.json","after":"8d70e667736427d2"}]}
 {"seq":2,"at":"2026-11-18T10:11:24.986Z","why":"Classify packages by functional responsibility","adopt":true,"files":[{"file":"packages/sentence/package.json","after":"df7d7767f4ef9bc6"}]}
 {"seq":3,"at":"2026-11-18T12:49:47.913Z","why":"Record the sentence UI catalog as it stands on main","adopt":true,"files":[{"file":"packages/sentence/i18n/en.json","after":"a261bc0b0a81df7c"}]}
+{"seq":4,"at":"2026-11-18T23:18:06.589Z","why":"Formulas typeset in TeX across the game; prose stays text (manual 6.9).","adopt":true,"files":[]}

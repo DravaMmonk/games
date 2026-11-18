@@ -8,7 +8,7 @@ import { L } from 'kernel/view'
 import { T, tr } from 'kernel/words'
 import { inputsOf, inputsOfLevel } from '../../core/machine.js'
 import { goalLines, ruleLines } from '../../core/circuit-readouts.js'
-import { TexLine } from './Tex.jsx'
+import { Formula } from './Formula.jsx'
 
 const PROVED = T('证明完毕')
 
@@ -17,7 +17,7 @@ function Box({ value, task, show, on = false }) {
   const state = value?.kind === 'state'
   const more = state ? value.more?.length ?? 0 : 0
   const lines = state && value.goals.length
-    ? goalLines(value, task).map((line, k) => <TexLine key={k} line={line} className="mr-line" />)
+    ? goalLines(value, task).map((line, k) => <Formula key={k} text={line} className="mr-line" />)
     : [<span key="0" className="mr-line">{state ? L(PROVED) : L(show(value))}</span>]
   return (
     <li className={`mr-box ${on ? 'is-on' : ''} ${state && !value.goals.length ? 'is-done' : ''}`}>
@@ -48,7 +48,7 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
     <div className="mr" ref={box}>
       {rules.length > 0 && (
         <ul className="mr-rules" aria-label={tr('规则')}>
-          {rules.map((r) => <li key={r.mark}><TexLine line={r.mark} className="mr-rule-mark" /><TexLine line={r.text} /></li>)}
+          {rules.map((r) => <li key={r.mark}><Formula text={r.mark} className="mr-rule-mark" /><Formula text={r.text} /></li>)}
         </ul>
       )}
       <ol className="mr-flow" aria-label={tr('运行步骤')}>
@@ -59,7 +59,7 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
             <li key={`s${k}`} className={`mr-step ${k === at ? 'is-on' : ''} ${failed ? 'is-fail' : ''}`}>
               <span className="mr-num">{n + 1}</span>
               <span className="mr-name">{s.mark}{L(s.label)}</span>
-              {s.detail && <TexLine line={L(s.detail)} className="mr-note" />}
+              {s.detail && <Formula text={s.detail} className="mr-note" />}
               {failed && <span className="mr-why">{L(failed)}</span>}
             </li>,
             !failed && s.value !== undefined && <Box key={`b${k}`} value={s.value} task={task} show={show} on={k === at} />,

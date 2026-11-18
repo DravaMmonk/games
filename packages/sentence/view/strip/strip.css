@@ -1,7 +1,7 @@
 /* The strip (games/kit/strip): one line of text that wraps, as it reads, with a framed box for each empty place, and
    the tray of chips. Colours come from the kit's tokens; `--fam` is a part's or chip's family colour, set by the game
    with [data-family]. */
-.ks-strip { padding: var(--sp-6) var(--sp-6); border-radius: var(--r-lg); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); font-family: var(--serif); font-size: 24px; line-height: 2; color: var(--heading); overflow-wrap: anywhere; }
+.ks-strip { padding: var(--sp-6) var(--sp-6); border-radius: var(--r-lg); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); font-family: var(--formula-face); font-size: 24px; line-height: 2; color: var(--heading); overflow-wrap: anywhere; }
 .ks-plain { white-space: pre-wrap; }
 .ks-part { white-space: pre-wrap; }
 .ks-word { margin: 0; padding: 0; border: 0; border-radius: var(--r-sm); color: inherit; background: none; font: inherit; line-height: inherit; white-space: pre-wrap; cursor: pointer; box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--fam, var(--rule)) 70%, transparent); transition: background 120ms ease; }
@@ -37,7 +37,7 @@
 .ks-chip-label { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: var(--track-label); color: var(--muted); }
 .ks-chip-row { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
 .ks-chip { min-height: 46px; padding: var(--sp-2) var(--sp-5); display: grid; justify-items: start; align-content: center; gap: 1px; border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline), inset 0 -3px 0 var(--fam, var(--rule)); font: inherit; text-align: left; cursor: pointer; }
-.ks-chip b { font-family: var(--serif); font-size: 17px; font-weight: 500; line-height: 1.25; }
+.ks-chip b { font-family: var(--formula-face); font-size: 17px; font-weight: 500; line-height: 1.25; }
 .ks-chip small { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
 .ks-chip:hover:not(:disabled) { box-shadow: inset 0 0 0 1px var(--fam, var(--rule)), inset 0 -3px 0 var(--fam, var(--rule)); }
 .ks-chip:disabled { opacity: .32; cursor: default; }
@@ -66,7 +66,7 @@
   box-sizing: border-box; min-height: var(--sent-h); max-width: 100%; padding: var(--sp-1) var(--sent-px);
   display: inline-flex; align-items: center; justify-content: flex-start;
   border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas);
-  font: var(--sent-fs)/1.35 var(--serif); text-align: left; word-break: keep-all; overflow-wrap: break-word;
+  font: var(--sent-fs)/1.35 var(--sans); text-align: left; word-break: keep-all; overflow-wrap: break-word;
 }
 .ks-pick-sentence.is-empty {
   border: 1px dashed var(--rule); color: var(--muted); background: transparent; font-family: var(--sans); font-size: calc(var(--sent-fs) - 1.5px);

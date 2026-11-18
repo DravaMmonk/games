@@ -2,7 +2,7 @@
 .sentence-stage { max-width: 760px; margin: 0 auto; padding: var(--sp-6) var(--sp-6) var(--sp-7); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
 .sentence-stage b, .sentence-stage code { overflow-wrap: anywhere; }
 .level-phone .sentence-stage { width: 100%; margin: 0; padding: 0; }
-.sentence-prompt { margin: 0; display: flex; align-items: baseline; gap: var(--sp-3); font-family: var(--serif); font-size: 20px; color: var(--heading); }
+.sentence-prompt { margin: 0; display: flex; align-items: baseline; gap: var(--sp-3); font-family: var(--sans); font-size: 20px; color: var(--heading); }
 
 .tree-evidence { display: grid; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-radius: var(--r-md); background: color-mix(in srgb, var(--fail) 6%, var(--paper)); font-size: var(--fs-small); }
 .tree-evidence p { margin: 0; }

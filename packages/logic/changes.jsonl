@@ -26,3 +26,5 @@
 {"seq":26,"at":"2026-11-18T22:16:37.355Z","why":"Prover run report as a step chart: rules numbered once (R₁), goal boxes joined by steps (⊢ ⟵ R₁, ⊢ ✓), goals marked on the turnstile; name and note apart.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"3d8cc9f62ea1bda2"}]}
 {"seq":27,"at":"2026-11-18T22:25:51.908Z","why":"A hypothesis closing a goal reads ⊢ ✓, not an emoji.","adopt":true,"files":[]}
 {"seq":28,"at":"2026-11-18T22:42:48.626Z","why":"Machine board formulas typeset in TeX (one LaTeX face); report steps carry the card's icon and number.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"395bef8b19db92a1"}]}
+{"seq":29,"at":"2026-11-18T23:08:11.930Z","why":"The Expected card shows the goals wanted without the word 变成.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"276a7d14d75f34c6"}]}
+{"seq":30,"at":"2026-11-18T23:18:06.413Z","why":"Formulas typeset in TeX across the game; prose stays text (manual 6.9).","adopt":true,"files":[]}

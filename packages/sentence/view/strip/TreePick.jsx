@@ -1,7 +1,7 @@
 import { T as catalogText } from 'kernel/words'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
-import { L, Popover } from 'kernel/view'
+import { FormulaText, L, Popover } from 'kernel/view'
 import { tr } from 'kernel/words'
 import TreeEditor from './TreeEditor.jsx'
 
@@ -29,7 +29,7 @@ export function TreeButton({ value, onChange, build, title, placeholder, scope, 
     <>
       <span className="ks-pick-item ks-pick-one">
         <button type="button" className={`ks-pick-sentence ${value ? '' : 'is-empty'}`} aria-expanded={Boolean(anchor)} disabled={disabled} onClick={(event) => setAnchor(event.currentTarget)}>
-          {value ? L(build.text(value)) : L(placeholder)}
+          {value ? <FormulaText text={build.text(value)} /> : L(placeholder)}
         </button>
         {clearable && value && !disabled && <button type="button" className="ks-pick-drop" onClick={() => onChange('')} aria-label={tr('清空')}><X size={12} /></button>}
       </span>
@@ -50,7 +50,7 @@ export function SentenceRow({ texts, end }) {
     <span className="rr-body">
       {texts.map((text, k) => (
         <span key={k} className="rr-item">
-          <span className="rr-slot is-read">{text}</span>
+          <span className="rr-slot is-read"><FormulaText text={text} /></span>
           {k < texts.length - 1 ? <span className="rr-sep">；</span> : end && <span className="rr-end">{L(endOf(end, texts.length))}</span>}
         </span>
       ))}
@@ -93,7 +93,7 @@ export function TreeList({ value, onChange, build, title, addLabel, scope, kept 
             disabled={s !== null && kept.includes(s)}
             onClick={(event) => setOpen({ at: k, anchor: event.currentTarget, cleared: false })}
           >
-            {s === null ? L(blank) : L(build.text(s))}
+            {s === null ? L(blank) : <FormulaText text={build.text(s)} />}
           </button>
           {k < shown.length - 1 ? <span className="rr-sep">；</span> : end && <span className="rr-end">{L(endOf(end, shown.length))}</span>}
         </span>

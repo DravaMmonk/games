@@ -1,4 +1,5 @@
 import { SentenceRow, TreeButton, TreeList } from 'sentence/view'
+import { Formula } from '../ui/Formula.jsx'
 import { ChoiceField, Field, InlineChoice, RowTable, Verdict, L } from 'kernel/view'
 
 const read = (cell, row) => cell.read ? cell.read(row) : row[cell.name]
@@ -10,9 +11,9 @@ const sentences = (cell, value) => <SentenceRow texts={value.map((item) => L(cel
 function display(cell, row) {
   const value = read(cell, row)
   switch (cell.shape) {
-    case 'tree': return value ? L(cell.build.text(value)) : placeholder(cell)
+    case 'tree': return value ? <Formula text={cell.build.text(value)} /> : placeholder(cell)
     case 'tree-list': return value.length
-      ? <span className="ck-lines">{value.map((item, k) => <span key={k}>{`${k + 1}. ${L(cell.build.text(item))}`}</span>)}</span>
+      ? <span className="ck-lines">{value.map((item, k) => <span key={k}>{k + 1}. <Formula text={cell.build.text(item)} /></span>)}</span>
       : placeholder(cell)
     case 'choice': {
       const option = cell.options.find((o) => o.value === value)
@@ -41,7 +42,7 @@ function CellForm({ cell, row, set, at }) {
     // Fixed, a field reads as it would be written, only locked: the sentence in its box, the situation's premises in
     // short boxes, the choice's buttons with the one it holds lit.
     if (cell.shape === 'choice') return <ChoiceField label={cell.fixedLabel} options={cell.options} value={value} disabled />
-    if (cell.shape === 'tree') return <Field label={cell.fixedLabel}><span className="ff-fixed">{value ? L(cell.build.text(value)) : L(cell.placeholder)}</span></Field>
+    if (cell.shape === 'tree') return <Field label={cell.fixedLabel}><span className="ff-fixed">{value ? <Formula text={cell.build.text(value)} /> : L(cell.placeholder)}</span></Field>
     return <Field label={cell.fixedLabel}>{value.length ? sentences(cell, value) : placeholder(cell)}</Field>
   }
   const field = edit(cell, row, set, at, true)

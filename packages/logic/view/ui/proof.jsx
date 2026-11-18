@@ -13,6 +13,7 @@ import { sentencePicker } from '../../core/sentenceLanguage.js'
 import { scriptLines } from '../../core/script.js'
 import { runProof } from '../../core/proof.js'
 import { proofReadout, proofTextOf as textOf } from '../../core/circuit-readouts.js'
+import { typesetOne } from './Formula.jsx'
 
 /** The language a card's sentence is built in: the parts of the level's sentences, each letter read as the test's. */
 function language(task, test) {
@@ -39,6 +40,8 @@ export const proofScreen = {
     }
   },
   context: (task, test) => ({ task, text: textOf(task, test) }),
+  // A sentence on a card (and the goal wanted) is typeset in TeX, as every formula is.
+  typeset: typesetOne(proofReadout.show),
   card: { phoneRegionLabel: (node, index) => node.type.split('/').at(-1) === 'orE' ? '①②'[index] : undefined },
   // A script the proof follows, a line each, indented as its blocks are.
   told: (task, test) => (task.script ? scriptLines(task.script, (t) => textOf(task, test)(parse(t, { consts: [...(task.consts ?? []), ...(task.things ?? [])] }))).map(([depth, text]) => ({ text: `${'  '.repeat(depth)}${text}` })) : []),

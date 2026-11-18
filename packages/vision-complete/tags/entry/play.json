@@ -1,13 +1,9 @@
 {
   "title": "@tag.play.title",
   "values": [
-    "circuit-wiki/board",
     "image/tests",
     "image/details",
-    "circuit-wiki/layout",
-    "circuit-wiki/wiremode",
     "image/bench",
-    "circuit-wiki/parts",
     "image/score",
     "image/views",
     "image/training"

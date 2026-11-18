@@ -1,6 +1,6 @@
 {
   "see": [
     "image/details",
-    "circuit-wiki/board"
+    "@vision-complete/image-board"
   ]
 }

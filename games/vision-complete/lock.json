@@ -29,17 +29,13 @@
       "version": "0.0.0",
       "hash": "d218a11d3b41a9e1664d45617cf63ff6e1ac54cadc6b840e3911a7a79224cc22"
     },
-    "circuit-wiki": {
-      "version": "0.0.0",
-      "hash": "11eeca47a05e97458a106715edc6cce3505b544489d04dbeb1eb7ca0d59d6f21"
-    },
     "image": {
       "version": "0.0.0",
       "hash": "2efd67fadf42b7424dec7ec3672409b6d0f385ef7a26e9ff02e8abd65f13086b"
     },
     "vision-complete": {
       "version": "0.0.0",
-      "hash": "cd0dbe1b1a7285b04ed70607bd98e689097867944590e3d15cf2b62ddd620690"
+      "hash": "704bcbd67d14e30f61619eceadb0eee45bde236cbaef961581b5f5bd2a7dd156"
     },
     "workshop": {
       "version": "0.0.0",

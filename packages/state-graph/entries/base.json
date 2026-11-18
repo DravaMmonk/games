@@ -7,7 +7,6 @@
     "@glossary.entries.base.body.2"
   ],
   "see": [
-    "recurrence",
-    "circuit-wiki/component"
+    "recurrence"
   ]
 }

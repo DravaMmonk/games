@@ -34,7 +34,7 @@
 
 库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `numlib` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `numlib/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if`。逐拍玩法 `tick` 提供 `tick/held` 和 `tick/keep`，管理每拍提交及封装元件的寄存器作用域。接线检查与封装求值接收玩法提供的扩展规则。
 
-`progress` 是独立功能包，按任务和关卡完成记录计算对象阶段。课程包用 `progress/policy` 选择对象类型、解锁提示及检查规则。`circuit` 使用通用进度，并负责托盘、接线和元件阶段的具体行为。`circuit-wiki` 依赖 `circuit` 和 `wiki`，提供通用接线词条。`workshop` 依赖 `circuit`，管理玩家工坊、跨游戏复用与通关时的个人元件发布。个人元件和课程元件都使用各玩法提供的电路封装器。电路蓝图的读写归 `circuit`，课程蓝图归 Pipeline。
+`progress` 是独立功能包，按任务和关卡完成记录计算对象阶段。课程包用 `progress/policy` 选择对象类型、解锁提示及检查规则。`circuit` 使用通用进度，并负责托盘、接线和元件阶段的具体行为。`workshop` 依赖 `circuit`，管理玩家工坊、跨游戏复用与通关时的个人元件发布。个人元件和课程元件都使用各玩法提供的电路封装器。电路蓝图的读写归 `circuit`，课程蓝图归 Pipeline。
 
 `capabilities/<kind>.json` 提供 `name`、`studio.label`、可选的 `studio.order`、`items` 和 `implementation`。包用 `{ "extends": "<kind>", "items": { ... } }` 给自身或直接依赖的能力种类贡献项，项名仍归贡献包。内核提供通用的 `valueType`、`language` 和 `play`。`circuit` 定义 `operation`、`primitive`、`board`、`display` 等共享种类。逻辑、图像、表格和逐拍玩法各自定义专用种类，例如 `logic/want`、`image/scene`、`table/world` 和 `tick/want`。
 

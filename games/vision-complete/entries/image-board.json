@@ -1,0 +1,13 @@
+{
+  "title": "@glossary.entries.imageBoard.title",
+  "body": [
+    "@glossary.entries.imageBoard.body.0",
+    "@glossary.entries.imageBoard.body.1",
+    "@glossary.entries.imageBoard.body.2"
+  ],
+  "see": [
+    "image/tests",
+    "image/views",
+    "image/bench"
+  ]
+}

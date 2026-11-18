@@ -1,7 +1,7 @@
 {
   "at": "vision-complete/1-3",
   "see": [
-    "circuit-wiki/board",
+    "@vision-complete/image-board",
     "vision-complete/separable"
   ]
 }

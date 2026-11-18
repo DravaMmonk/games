@@ -5,6 +5,6 @@
   ],
   "at": "qed/table",
   "see": [
-    "circuit-wiki/board"
+    "@qed/proof-board"
   ]
 }

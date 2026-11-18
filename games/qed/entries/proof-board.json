@@ -1,0 +1,12 @@
+{
+  "title": "@glossary.entries.proofBoard.title",
+  "at": "qed/copy",
+  "body": [
+    "@glossary.entries.proofBoard.body.0",
+    "@glossary.entries.proofBoard.body.1"
+  ],
+  "see": [
+    "qed/rule",
+    "logic/box"
+  ]
+}

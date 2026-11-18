@@ -30,9 +30,10 @@
   "game.lede": "No logic background is required. Start with truth tables, connect inference rules into proofs, and learn assumptions, case analysis, quantifiers and induction as you build a proof assistant.",
   "game.title": "Q.E.D.",
   "game.topic": "Formal Proof",
-  "glossary.entries.board.body.2": "When a part requires a proposition, select one from the choices available in the level.",
-  "glossary.entries.board.body.3": "Each level has <b>tests</b>: one uses the letter schema, while the others substitute everyday propositions. The circuit must pass each test. Tests expose mismatches; a general conclusion rests on the proof structure and its substitution rules, not on a few examples alone.",
   "glossary.entries.map.body.0": "Levels are arranged in chapters. After the pen-and-paper exercises, each chapter adds a module to the same prover, retaining earlier capabilities as the course specifies. Passing a level unlocks those whose prerequisites are met; topics and challenges are optional branches.",
   "glossary.entries.map.title": "level map",
+  "glossary.entries.proofBoard.body.0": "When a part requires a proposition, select one from the choices available in the level.",
+  "glossary.entries.proofBoard.body.1": "Each level has <b>tests</b>: one uses the letter schema, while the others substitute everyday propositions. The circuit must pass each test. Tests expose mismatches; a general conclusion rests on the proof structure and its substitution rules, not on a few examples alone.",
+  "glossary.entries.proofBoard.title": "Proof board and substitution tests",
   "section.play.title": "How to play"
 }

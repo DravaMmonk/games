@@ -160,7 +160,7 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   const partsText = partDefs === undefined ? undefined : normalize(partDefs, PARTS_FILE, 'parts')
   const levelText = Object.entries(levels).map(([level, value]) => [level, normalize(value, vocabulary.level, `level.${level}`)])
   const objectText = Object.entries({ tags, relations, sections, trays }).flatMap(([kind, values]) => Object.entries(values).map(([name, value]) => [kind, name, normalize(value, kind === 'trays' ? JSON.parse(readFileSync(new URL('../../circuit/kinds/tray.json', import.meta.url))).schema : kind === 'sections' ? kindSchemas(vocabulary).section : OBJECT_SCHEMAS[kind], `${kind.split('/').at(-1)}.${name}`)]))
-  put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0', numlib: '^0.0.0', sentence: '^0.0.0', workshop: '^0.0.0', 'circuit-wiki': '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
+  put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0', numlib: '^0.0.0', sentence: '^0.0.0', workshop: '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
   for (const [path, values] of Object.entries(tagOverrides)) {
     const file = join(course, 'overrides', path + '.json')
     mkdirSync(join(file, '..'), { recursive: true })
@@ -219,7 +219,6 @@ export function lockFixture(root) {
     const legacy = ['parts', 'trays'].some(folder => existsSync(join(dir, folder))) || objectFiles(dir, 'levels').some(([, file]) => JSON.parse(readFileSync(file)).tasks?.some(task => !task.play))
     const logic = ['parts', 'levels', 'symbols'].some(folder => objectFiles(dir, folder).some(([, file]) => /logic\//.test(readFileSync(file, 'utf8'))))
     if (logic) { installLogicFixture(root); config.uses = { ...config.uses, logic: '^0.0.0', qed: '^0.0.0' }; writeFileSync(file, JSON.stringify(config, null, 2) + '\n') }
-    if (config.uses?.['circuit-wiki']) installCircuitWikiFixture(root)
     const progressing = (config.uses?.progress && config.uses?.circuit) || ['parts', 'levels', 'trays'].some(folder => objectFiles(dir, folder).some(([, file]) => {
       const object = JSON.parse(readFileSync(file))
       if (folder === 'parts') return Object.hasOwn(object, 'stages')
@@ -239,7 +238,7 @@ export function lockFixture(root) {
     const file = join(games, id, 'game.json')
     if (!existsSync(file)) continue
     const game = JSON.parse(readFileSync(file))
-    game.packages = { ...game.packages, ...Object.fromEntries(packageIds(root).filter(id => ['logic', 'qed', 'progress', 'circuit-wiki', 'numlib', 'sentence', 'wiki', 'workshop'].includes(id)).map(id => [id, '^0.0.0'])), circuit: '^0.0.0' }; game.kernel = `^${kernelIdentity().version}`
+    game.packages = { ...game.packages, ...Object.fromEntries(packageIds(root).filter(id => ['logic', 'qed', 'progress', 'numlib', 'sentence', 'wiki', 'workshop'].includes(id)).map(id => [id, '^0.0.0'])), circuit: '^0.0.0' }; game.kernel = `^${kernelIdentity().version}`
     writeFileSync(file, JSON.stringify(game, null, 2) + '\n')
   }
   for (const id of packageIds(root)) {
@@ -299,7 +298,6 @@ export function installImageFixture(root) {
 
 /** Install table and its course-specific consumer without real authored objects. */
 export function installTableFixture(root) {
-  installCircuitWikiFixture(root)
   installGlossaryFixture(root)
   installImageFixture(root)
   installProgressFixture(root)
@@ -321,7 +319,6 @@ export function installScalarFixture(root) {
 }
 
 export function installLogicFixture(root) {
-  installCircuitWikiFixture(root)
   installGlossaryFixture(root)
   installScalarFixture(root)
   installCircuitFixture(root)
@@ -359,14 +356,6 @@ export function readStarter(fixtureDir) {
   lockFixture(root)
   starterFixtures.set(fixtureDir, root)
   return readContent('starter', root)
-}
-
-function installCircuitWikiFixture(root) {
-  const dir = join(root, 'packages/circuit-wiki')
-  if (existsSync(join(dir, 'package.json'))) return
-  for (const file of ['i18n', 'package.json']) {
-    cpSync(new URL(`../../circuit-wiki/${file}`, import.meta.url), join(dir, file), { recursive: true })
-  }
 }
 
 const partPolicy = { kind: 'circuit/part', stages: true, grants: true, unlocks: true, checks: ['stages', 'availability', 'course', 'references'] }

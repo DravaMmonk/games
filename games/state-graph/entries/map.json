@@ -6,6 +6,6 @@
   ],
   "see": [
     "@state-graph/brief",
-    "circuit-wiki/parts"
+    "@state-graph/robot"
   ]
 }

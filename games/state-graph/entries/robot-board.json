@@ -1,0 +1,12 @@
+{
+  "title": "@glossary.entries.robotBoard.title",
+  "at": "state-graph/copy",
+  "body": [
+    "@glossary.entries.robotBoard.body.0",
+    "@glossary.entries.robotBoard.body.1"
+  ],
+  "see": [
+    "@state-graph/robot",
+    "table/testBoard"
+  ]
+}

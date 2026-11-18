@@ -44,6 +44,10 @@
   "glossary.entries.game.body.1": "You start as Probe V-0, just powered on: your sensor turns the world into a grid of numbers that you cannot read yet. Your job is to learn, step by step, to read them.",
   "glossary.entries.game.body.2": "Your progress is kept in this browser on this device: close the page and come back, and the levels you passed and the circuits you built are still there.",
   "glossary.entries.game.title": "How the game works",
+  "glossary.entries.imageBoard.body.0": "Some parts have settings: what to multiply by, how high a threshold is, which way to shift, nine weights. Change a setting and the results on every part update at once; a part with an input left unwired says it is missing one.",
+  "glossary.entries.imageBoard.body.1": "Every part shows what it produces on the currently selected test, so you can follow the image as it changes along the circuit.",
+  "glossary.entries.imageBoard.body.2": "Each level’s parts list holds only the parts that level offers. The “Parts” box on the map lists every part in the game, with the ones you have earned lit up and described. When a level asks you to build something by hand, the ready-made version is put away for that level.",
+  "glossary.entries.imageBoard.title": "Image circuits and part previews",
   "glossary.entries.intro.body.0": "The first time you enter a level, a few pages of “Intro” open: what the level is about, where it shows up in the real world, any new parts, and a question worth thinking about before you start. You can reopen it any time from “Intro” in the top bar.",
   "glossary.entries.intro.body.1": "Below the task there is a “Hint” button for when you are stuck. Hints are fairly direct, so it pays to try on your own first.",
   "glossary.entries.intro.body.2": "When you pass, the passed window sums up in a few lines what just happened. Most of the ideas it names have an entry in this encyclopedia.",
@@ -52,8 +56,5 @@
   "glossary.entries.map.body.1": "A level opens once the levels before it are passed; passed levels are ticked and closed ones show a padlock. “Continue” takes you straight to the first level you have not passed yet.",
   "glossary.entries.map.body.2": "Inside a level, the “Levels” button in the top bar opens a list of levels, so you can switch levels without going back to the map.",
   "glossary.entries.map.title": "The level map and chapters",
-  "glossary.entries.parts.body.2": "Each level’s parts list holds only the parts that level offers. The “Parts” box on the map lists every part in the game, with the ones you have earned lit up and described. When a level asks you to build something by hand, the ready-made version is put away for that level.",
-  "section.play.title": "How to play",
-  "glossary.entries.board.body.2": "Some parts have settings: what to multiply by, how high a threshold is, which way to shift, nine weights. Change a setting and the results on every part update at once; a part with an input left unwired says it is missing one.",
-  "glossary.entries.board.body.3": "Every part shows what it produces on the currently selected test, so you can follow the image as it changes along the circuit."
+  "section.play.title": "How to play"
 }

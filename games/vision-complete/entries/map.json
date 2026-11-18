@@ -7,7 +7,7 @@
   ],
   "see": [
     "@vision-complete/game",
-    "circuit-wiki/parts",
+    "@vision-complete/image-board",
     "@vision-complete/intro"
   ]
 }

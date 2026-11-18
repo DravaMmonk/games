@@ -43,3 +43,5 @@ jobs:
           publish_branch: gh-pages
           publish_dir: trace-viewer/dist-games
           commit_message: 'deploy: games'
+          # Keep gh-pages as one commit: the site is rebuilt from main each time, so its old deploys are not kept.
+          force_orphan: true

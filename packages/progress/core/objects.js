@@ -7,9 +7,14 @@ const keyOf = (kind, id) => JSON.stringify([kind, id])
 /** Read stage and grant state from the existing level and task save. */
 export function objectProgress(content, isOpen = (id, solved) => solved.has(id)) {
   const scope = grantScope(Object.entries(content.registries?.['progress/policy'] ?? {}))
-  const possibleGrants = new Set()
+  const possibleGrants = new Map()
   const grant = (items, ids, source) => {
-    for (const kind of scope(source)) for (const id of ids ?? []) items.add(keyOf(kind, id))
+    if (!ids?.length) return
+    for (const kind of scope(source)) {
+      const known = items.get(kind) ?? new Set()
+      for (const id of ids) known.add(id)
+      items.set(kind, known)
+    }
   }
   for (const level of content.levels) for (const object of [level, ...(level.tasks ?? [])]) {
     for (const field of ['adds', 'opens', 'awards', 'gives']) grant(possibleGrants, object[field], level.id)
@@ -20,7 +25,7 @@ export function objectProgress(content, isOpen = (id, solved) => solved.has(id))
       const policy = policyFor(content, kind, target)
       if (!policy.stages && !policy.grants) continue
       const chain = stageChain(target, policy.stages ? value : { ...value, stages: [] })
-      const awarded = policy.grants && chain.some(stage => possibleGrants.has(keyOf(kind, stage.id)))
+      const awarded = policy.grants && chain.some(stage => possibleGrants.get(kind)?.has(stage.id))
       if (awarded || chain.length > 1) tracked.set(keyOf(kind, target), {
         kind, target, title: value.title ?? value.name ?? target, policy, chain, awarded,
       })
@@ -29,13 +34,22 @@ export function objectProgress(content, isOpen = (id, solved) => solved.has(id))
   const tasks = new Map(content.levels.flatMap(level => (level.tasks ?? []).map(task => [task.id, { level: level.id, optional: task.optional }])))
   return (progress, at) => {
     const solved = new Set(progress.solved)
-    const offered = new Set(), withheld = new Set()
+    const offered = new Map(), withheld = new Map(), awards = new Map(), introduced = new Map()
+    const award = (ids, level) => {
+      grant(offered, ids, level)
+      grant(awards, ids, level)
+    }
+    const introduce = (ids, local, active, level) => {
+      const visible = ids?.filter(id => !local.has(id))
+      grant(offered, active ? ids : visible, level)
+      grant(introduced, visible, level)
+    }
     const completed = (level, task) => completedTask(progress, level.id, task.id, task.optional)
     for (const level of content.levels) {
-      if (solved.has(level.id)) grant(offered, level.awards, level.id)
+      if (solved.has(level.id)) award(level.awards, level.id)
       const local = new Set(level.local ?? [])
       const reachable = at?.level === level.id || isOpen(level.id, solved)
-      if (reachable) for (const field of ['adds', 'opens']) grant(offered, level[field]?.filter(id => !local.has(id) || at?.level === level.id), level.id)
+      if (reachable) for (const field of ['adds', 'opens']) introduce(level[field], local, at?.level === level.id, level.id)
       if (at?.level === level.id) {
         grant(offered, level.gives, level.id)
         grant(withheld, level.withholds, level.id)
@@ -43,10 +57,10 @@ export function objectProgress(content, isOpen = (id, solved) => solved.has(id))
       let next = reachable
       for (const task of level.tasks ?? []) {
         const passed = completed(level, task)
-        if (passed) grant(offered, task.awards, level.id)
+        if (passed) award(task.awards, level.id)
         if (next || passed || at?.task === task.id) {
-          const taskLocal = new Set(task.local ?? [])
-          for (const field of ['adds', 'opens']) grant(offered, task[field]?.filter(id => !taskLocal.has(id) || at?.task === task.id), level.id)
+          const taskLocal = new Set([...local, ...(task.local ?? [])])
+          for (const field of ['adds', 'opens']) introduce(task[field], taskLocal, at?.task === task.id, level.id)
         }
         if (at?.task === task.id) {
           grant(offered, task.gives, level.id)
@@ -62,14 +76,14 @@ export function objectProgress(content, isOpen = (id, solved) => solved.has(id))
     }
     const stage = ({ kind, chain, awarded }) => {
       if (progress.all) return chain.at(-1)
-      let current = awarded && offered.has(keyOf(kind, chain[0].id)) ? chain[0] : undefined
+      let current = awarded && offered.get(kind)?.has(chain[0].id) ? chain[0] : undefined
       for (const entry of chain.slice(1)) {
         if (entry.afterLevel || entry.afterTask) {
           if (!reached(entry)) break
           current = entry
-        } else if (awarded ? offered.has(keyOf(kind, entry.id)) : !current && entry.index === 1) current = entry
+        } else if (awarded ? offered.get(kind)?.has(entry.id) : !current && entry.index === 1) current = entry
       }
-      const cap = chain.find(entry => withheld.has(keyOf(kind, entry.id)))
+      const cap = chain.find(entry => withheld.get(kind)?.has(entry.id))
       return cap && current?.index >= cap.index ? chain[cap.index - 1] : current
     }
     const reachedObjects = () => [...tracked.values()].flatMap(track => {
@@ -77,6 +91,9 @@ export function objectProgress(content, isOpen = (id, solved) => solved.has(id))
       return current && track.policy.unlocks ? [{ kind: track.kind, target: track.target, title: track.title, stage: current }] : []
     })
     return {
+      grants(kind) {
+        return { awards: [...awards.get(kind) ?? []], introduced: [...introduced.get(kind) ?? []] }
+      },
       stage(kind, target) {
         const track = tracked.get(keyOf(kind, target))
         return track && (stage(track) ?? null)

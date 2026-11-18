@@ -28,7 +28,7 @@ export function ExprField({ field, onSet, ctx, label }) {
   const box = useRef(null)
   const [open, setOpen] = useState(false)
   const ops = useMemo(() => ({ ...(ctx.vocabulary?.kinds.operation ?? {}), ...BUILTIN_ITEMS }), [ctx.vocabulary])
-  const part = partAt(ctx.partDefs, field.path)
+  const part = partAt(ctx.content?.partDefs, field.path)
   const said = useMemo(() => {
     try {
       const tree = parse(draft)

@@ -18,11 +18,12 @@ import PartsList from './studio/PartsList.jsx'
 import { TrayEditor } from './studio/TrayEditor.jsx'
 import { ExprField, IconField } from './studio/PartFields.jsx'
 import BoardField from './studio/BoardField.jsx'
-import { onPartPage } from './studio/part-page.js'
+import { onPartPage, previewPartFace } from './studio/part-page.js'
 import BoardPlay from './BoardPlay.jsx'
 import { useCircuitShell } from './shell.jsx'
 export function register(kernel) {
   kernel.game('circuit/stages', (game, content) => {
+    game.partDefs = content.partDefs
     if (policyFor(content, 'circuit/part').stages) {
       game.partAtStage = partAtStage
       installStageViews(game)
@@ -37,7 +38,7 @@ export function register(kernel) {
   kernel.shell('circuit/parts', useCircuitShell)
   kernel.editor('circuit/part', { type: 'circuit/part', listKey: 'parts', route: { type: 'circuit/part', selector: 'part', file: 'parts', root: 'parts' }, component: PartObjectEditor, page: PartEditor, list: PartsList, preview: PartStudioPreview,
     name: T('元件', {}, 'studio-editor'), groupings: ['tag', 'circuit/tray', 'relation'], relations: [['replaces', '取代', 'Replaces']],
-    fields: { expr: ExprField, icon: IconField, board: BoardField }, onPage: onPartPage })
+    fields: { expr: ExprField, icon: IconField, board: BoardField }, inspectorDraft: previewPartFace, onPage: onPartPage })
   kernel.editor('circuit/tray', { type: 'circuit/tray', component: TrayEditor, group: { listType: 'circuit/part', name: T('托盘', {}, 'studio-editor'), createLabel: T('新的托盘'), initial: () => ({ values: [] }) } })
   kernel.display('circuit/part-link', { reference: 'part', icon: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>', action: name => tr("在元件箱里看 {name}", {name}) })
   kernel.play('circuit/board', { component: BoardPlay, preview: BoardPlay, define: defineCircuit })

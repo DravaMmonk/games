@@ -16,7 +16,7 @@ import { useEffect, useRef } from 'react'
 import { ArrowDown, ArrowUp, ArrowRightLeft, Braces, ChevronRight, Copy, MousePointerClick, Pin, Trash2 } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
 import { copyWithoutTextKeys, sourceValue } from '../engine/catalogs.js'
-import { getAt, setAt, showPath } from '../engine/ops/edit.js'
+import { getAt, showPath } from '../engine/ops/edit.js'
 import { fieldAt, fileForm, moved, opFor, placeFindings, taskListOps } from './form.js'
 import { Field } from './Fields.jsx'
 import { AddFields } from './AddFields.jsx'
@@ -28,20 +28,13 @@ import { confirmDelete, removesContent } from './delete.js'
 import InspectorTabs, { inspectorTabKey } from './InspectorTabs.jsx'
 import { objectFileName, overrideFileName, overrideFileOf, overrideOp } from './object-file.js'
 
-export default function Inspector({ content, vocab, at, field, pendingFace, ctx, places, tabs, selection,
+export default function Inspector({ content, vocab, at, field, draft, ctx, places, tabs, selection,
   onEdit, onOps, onPick, onNavigate, onLevel, onRemoveLevel, onRemoveSelection, onToggleTab, onOpenTab, onCloseTab }) {
   const [json, setJson] = usePref('inspector-json', false)
   const { vocabulary } = vocab
   const order = ctx.levels
   const root = at?.root ?? []
-  const pathToFace = pendingFace && field.path.slice(0, 4)
-  const partDefs = content.partDefs
-  const part = pathToFace && partDefs?.parts?.[pathToFace[1]]
-  const face = pathToFace && pathToFace[3]
-  const preview = part && (part.views?.[face]?.length ?? -1) < pendingFace.length
-    ? { ...content, partDefs: setAt(partDefs, pathToFace.slice(0, 3), { ...part.views, [face]: pendingFace }) }
-    : content
-  const shown = field?.path && fileForm(preview, vocabulary, at, order)
+  const shown = field?.path && fileForm(draft ?? content, vocabulary, at, order)
   const file = at?.object ? { object: { ...at.object, value: shown?.value, tagKind: content.registries?.tag?.[at.object.full]?.kind } } : at?.level ? { level: at.level } : at?.parts ? { parts: true } : at?.glossary ? { glossary: content.glossary } : { game: true }
   // Another layer's object is read here only: it is overridden from the middle.
   const readOnly = Boolean(at?.object && !at.object.own)
@@ -139,7 +132,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
   const list = typeof last === 'number' && !isTask ? getAt(shown.value, parent) : null
   const optional = !list && hit.entry?.optional
   const { at: findings } = placeFindings(shown.form, places.filter((p) => (at?.object ? false : at?.level ? p.level === at.level : at?.parts ? p.file === 'parts' : at?.glossary ? p.file === 'glossary' : !p.level && !p.file)))
-  const ctxHere = { ...ctx, findings, partDefs }
+  const ctxHere = { ...ctx, findings, content }
   return (
     <div className="insp">
       {header}

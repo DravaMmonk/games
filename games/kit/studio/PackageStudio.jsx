@@ -35,7 +35,7 @@ import { confirmDelete } from './delete.js'
 import PanelResizer from './PanelResizer.jsx'
 import Tree from './Tree.jsx'
 import Search from './Search.jsx'
-import Editor from './Editor.jsx'
+import Bulk from './Bulk.jsx'
 import Compare from './Compare.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
@@ -384,9 +384,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     else setField(null)
   }
   /** A field into the side panel (opened if folded); a field of another task has the page play that task. */
-  const pickField = (path, focus = false, pendingFace = null, trail = null) => {
+  const pickField = (path, focus = false, pendingValue = null, trail = null) => {
     setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
-    setField({ path, ...(focus && { focus }), ...(pendingFace && { pendingFace }), ...(trail && { trail }) })
+    setField({ path, ...(focus && { focus }), ...(pendingValue && { pendingValue }), ...(trail && { trail }) })
     if (path[0] === 'tasks' && Number.isInteger(path[1])) setGo({ task: path[1] })
   }
   const inspectorSelection = at ?? { game: true }
@@ -606,7 +606,12 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const togglePanel = (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] }))
   // The side panel's field: its control's context (as the forms had it), and the mark the page draws it with.
   const sideFile = at?.level ? { level: at.level } : objectRoot ? { [editorRoute(at)?.file]: true, root: objectRoot } : at?.glossary ? { glossary: true } : at ? { game: true } : null
-  const pendingFace = field?.pendingFace && ops.some((op) => op.op === `${editorRoute()?.file}.set` && op.value === field.pendingFace && !shown?.ops.includes(op)) ? field.pendingFace : null
+  const selectedRoute = at && editorRoute(at)
+  const selectedEditor = selectedRoute && editorForType(selectedRoute.type)
+  const pendingValue = field?.pendingValue
+  const draft = pendingValue && ops.some(op => op.op === `${selectedRoute?.file}.set` && op.value === pendingValue && !shown?.ops.includes(op))
+    ? selectedEditor?.inspectorDraft?.(content, field.path, pendingValue)
+    : null
   const pageMark = field?.path && sideFile?.level && sideFile.level === play?.level ? { ...markOf(levelValue(sideFile.level), field.path), level: sideFile.level }
     : field?.path && selectionName(at) !== undefined && field.path[0] === editorRoute(at)?.root && field.path[1] === selectionName(at) ? JSON.stringify(field.path.slice(2))
     : field?.path && sideFile?.game ? { file: 'game', path: JSON.stringify(field.path) }
@@ -847,7 +852,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
             )}
             {middle === 'bulk' && (
               <div className="studio-scroll">
-                <Editor side={SCOPE} content={content} base={base} vocab={vocab} at={at} picked={pickedIds} field={field} places={places} names={names} levelOptions={levelOptions} playOrder={playOrder} onEdit={edit} onOps={addOps} onSelect={select} onPick={(path) => pickField(path)} onPlay={playFrom} onMove={setMoving} onRemoveLevel={removeLevel} />
+                <Bulk content={content} vocabulary={vocab.vocabulary} ids={pickedIds} ctx={sideCtx}
+                  onAdd={addOps} onMove={setMoving} onSelect={select} />
               </div>
             )}
             {middle === 'group' && (
@@ -872,7 +878,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               ? <Inspector content={content} vocab={vocab} at={objectFile} field={objectFile.object || objectFile.capability || objectFile.override ? { path: objectPath } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickObjectField} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => {}}
                 tabs={inspectorTabs} selection={objectFile} onToggleTab={() => {}} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}
                 onNavigate={(path) => pickObjectField(path)} />
-              : <Inspector content={content} vocab={vocab} at={sideFile} field={field} pendingFace={pendingFace} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={(path) => pickField(path)} onLevel={(lvl, path) => { select({ level: lvl }); pickField(path) }} onRemoveLevel={removeLevel} onRemoveSelection={() => select(null)}
+              : <Inspector content={content} vocab={vocab} at={sideFile} field={field} draft={draft} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={(path) => pickField(path)} onLevel={(lvl, path) => { select({ level: lvl }); pickField(path) }} onRemoveLevel={removeLevel} onRemoveSelection={() => select(null)}
                 tabs={inspectorTabs} selection={inspectorSelection} onToggleTab={toggleInspectorTab} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}
                 onNavigate={(path, trail) => pickField(path, false, null, trail)} />)}
           </aside>

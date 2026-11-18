@@ -68,7 +68,6 @@ async function gameOf(content, stamp) {
   const game = await defineContent(content)
   game.store = createProgress({ id: `studio.${content.id}`, persist: !content.standalone })
   game.stamp = stamp
-  game.partDefs = content.partDefs
   return game
 }
 

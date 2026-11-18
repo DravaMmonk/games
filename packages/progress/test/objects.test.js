@@ -55,6 +55,8 @@ test('a text course configures inline stages and grants by object type without c
   assert.equal(progress({ passed: ['story/given'], solved: [] }).stage('entry', 'story/given').definition.title, 'Clue unlocked')
   assert.equal(progress({ passed: [], solved: [] }).stage('entry', 'story/bonus'), null)
   assert.equal(progress({ passed: ['story/given'], solved: [] }).stage('entry', 'story/bonus').id, 'story/bonus')
+  assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('entry'), { awards: ['story/bonus'], introduced: [] })
+  assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('level').awards, [])
   assert.deepEqual(progressMeaning.contentChecks({ content }), [])
   assert.ok(courseLayout(content).dependencyLinks.some(link => link.from === 'story/given' && link.to === 'story/review' && link.source === 'reference'))
 

@@ -40,7 +40,7 @@ import Compare from './Compare.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Review from './Review.jsx'
-import { JsonFile, PackageList, PackageMeta, packageJson } from './ProjectLists.jsx'
+import { JsonFile, PackageList, PackageMeta, packageJson, surfaceLabels } from './ProjectLists.jsx'
 import { PackageName } from './PackageGroups.jsx'
 import ListRow from './ListRow.jsx'
 import { copyWithoutTextKeys } from '../engine/catalogs.js'
@@ -840,7 +840,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
             )}
             {middle === 'package' && (
               <div className="studio-scroll">
-                <PackageMeta packages={packages} games={games} id={pickedPackage} open={pkg} disabled={saving} onOpen={openPackage} />
+                <PackageMeta packages={packages} games={games} id={pickedPackage} labels={surfaceLabels(content, vocab?.vocabulary)} open={pkg} disabled={saving} onOpen={openPackage} />
               </div>
             )}
             {middle === 'bulk' && (

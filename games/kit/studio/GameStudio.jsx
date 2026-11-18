@@ -1,6 +1,4 @@
-import { PackageDependencies, PackageName, packageSidebarGroups } from './PackageGroups.jsx'
-import { objectTypes } from './object-types.js'
-import { typeName } from './LeftTypes.jsx'
+import { PackageDependencies, PackageName, packageKindLabel, packageSidebarGroups } from './PackageGroups.jsx'
 // The game workspace of the studio (games/design/README.md 6.7): where a course designer makes a game on a package and
 // arranges its learning route. On the left a list (left-lists.js GAME_LISTS): the game's settings and its chapters, or
 // the overrides it sees; in the middle what is picked: a chapter's fields and its board (ChapterBoard.jsx: whole level
@@ -32,7 +30,7 @@ import Review from './Review.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
-import { GameList, GameMeta, JsonFile, gameJson } from './ProjectLists.jsx'
+import { GameList, GameMeta, JsonFile, PackageUsers, gameJson, surfaceCounts, surfaceLabels, surfaceName } from './ProjectLists.jsx'
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarGrouping from './SidebarGrouping.jsx'
 import ListRow from './ListRow.jsx'
@@ -257,7 +255,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr('回到编排', 'Back to arranging')}</button>
               </>} />}
             <div className="studio-scroll" hidden={playing}>
-              {packagesShown && <PackageCard key={packageShown} id={packageShown} packages={packages} used={used} content={content} pending={busyEditing} onBuild={onBuild} onOps={tryOps} />}
+              {packagesShown && <PackageCard key={packageShown} id={packageShown} packages={packages} games={games} used={used} labels={surfaceLabels(content, vocab?.vocabulary)} pending={busyEditing} onBuild={onBuild} onOps={tryOps} />}
               {overridesShown && <OverrideDetail event={openEvent} layer={layer} pending={busyEditing} onOps={addOps} onOpen={() => setSide('chapters')} />}
               {gamesShown && <GameMeta games={games} packages={packages} id={pickedGame} open={game} disabled={saving} onOpen={openGame} />}
               {!gamesShown && !overridesShown && !packagesShown && (at?.game || e === null
@@ -328,14 +326,15 @@ function UsedPackages({ packages, used, current, onOpen }) {
  * A package picked in the list: whether the game plays it (added, with the dependencies it lacks, or taken out:
  * `onOps(ops)` resolves to the kernel's refusal or null), what it loads on, what it holds; open it to build.
  */
-function PackageCard({ id, packages, used, content, pending, onBuild, onOps }) {
+function PackageCard({ id, packages, games, used, labels, pending, onBuild, onOps }) {
   const [refusal, setRefusal] = useState(null)
   const info = packages.find(pkg => pkg.id === id)
   if (!info) return <article className="arrange" />
   const uses = packages.filter(pkg => Object.hasOwn(info.uses, pkg.id))
   const missing = missingDependencies(packages, used, id)
+  const missingNames = missing.map((dep) => L(packages.find((pkg) => pkg.id === dep)?.title) ?? dep)
   const run = async (ops) => setRefusal(await onOps(ops))
-  const count = (kind) => Object.keys(content?.registries?.[kind] ?? {}).filter((name) => name.startsWith(`${id}/`)).length
+  const surface = surfaceCounts(info)
   return (
     <article className="editor">
       <header className="editor-head">
@@ -345,18 +344,24 @@ function PackageCard({ id, packages, used, content, pending, onBuild, onOps }) {
         {used.includes(id)
           ? <button type="button" className="kit-btn is-label" disabled={pending} onClick={() => run(packageRemoveOps(id))}><Minus size={13} aria-hidden="true" />{tr('不再选用', 'Remove from the game')}</button>
           : <button type="button" className="kit-btn is-label" disabled={pending} onClick={() => run(packageAddOps(packages, used, id))}>
-            <Plus size={13} aria-hidden="true" />{missing.length ? tr(`连同 ${missing.join('、')} 一起选用`, `Add with ${missing.join(', ')}`) : tr('选用', 'Add to the game')}
+            <Plus size={13} aria-hidden="true" />{missing.length ? tr(`连同 ${missingNames.join('、')} 一起选用`, `Add with ${missingNames.join(', ')}`) : tr('选用', 'Add to the game')}
           </button>}
         {onBuild && <button type="button" className="kit-btn is-label" onClick={() => onBuild(id)}><Hammer size={13} aria-hidden="true" />{tr('构建', 'Build')}</button>}
       </header>
       <p className="package-description">{L(info.desc)}</p>
       {refusal && <p className="is-error package-refusal" role="alert">{refusal}</p>}
       <dl className="package-facts">
+        <dt>{tr('种类', 'Kind')}</dt><dd>{info.kind ? <>{packageKindLabel(info.kind)} <code>{info.kind}</code></> : '—'}</dd>
+        <dt>{tr('版本', 'Version')}</dt><dd><code>{info.version ?? '—'}</code></dd>
         {uses.length > 0 && <><dt>{tr('依赖', 'Uses')}</dt><dd><PackageDependencies key={id} packages={uses} /></dd></>}
-        {used.includes(id) && objectTypes(content).map(info => [info.type, ...typeName(info)]).map(([kind, zh, en]) => (
-          <Fragment key={kind}><dt>{tr(zh, en)}</dt><dd>{count(kind)}</dd></Fragment>
-        ))}
+        <PackageUsers packages={packages} games={games} id={id} />
       </dl>
+      {surface.length > 0 && <>
+        <h3 className="package-meta-file">{tr('公开内容', 'Public surface')}</h3>
+        <dl className="package-facts">
+          {surface.map(([kind, n]) => <Fragment key={kind}><dt>{surfaceName(kind, labels)}</dt><dd>{n}</dd></Fragment>)}
+        </dl>
+      </>}
     </article>
   )
 }

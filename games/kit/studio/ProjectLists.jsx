@@ -12,6 +12,8 @@ import SidebarGrouping from './SidebarGrouping.jsx'
 import { PackageName, packageSidebarGroups, packageKindLabel } from './PackageGroups.jsx'
 import { PACKAGE_KINDS } from '../engine/package-kinds.js'
 import { sourceValue } from '../engine/catalogs.js'
+import { objectTypes } from './object-types.js'
+import { typeName } from './LeftTypes.jsx'
 
 const ID = /^[a-z][a-z0-9-]*$/
 
@@ -159,6 +161,16 @@ const kindName = (kind) => { try { return packageKindLabel(kind) } catch { retur
 const short = (hash) => (hash ? String(hash).slice(0, 8) : '—')
 const none = <span className="package-meta-none">{tr('无', 'None')}</span>
 
+/** A game as a package is shown (PackageGroups.jsx PackageName): its title, its id small. */
+export function GameName({ info }) {
+  return <span className="package-name" title={L(info.lede) ?? undefined}><span>{L(info.title) ?? info.id}</span><code>{info.id}</code></span>
+}
+
+function GameRef({ games, id }) {
+  const info = games.find(game => game.id === id)
+  return info ? <GameName info={info} /> : <code>{id}</code>
+}
+
 function PackageRef({ packages, id, range }) {
   const info = packages.find(pkg => pkg.id === id)
   return info ? <PackageName info={info} range={range} /> : <code>{id} {range}</code>
@@ -184,6 +196,44 @@ const SURFACE = {
   level: ['关卡', 'Levels'], task: ['任务', 'Tasks'], entry: ['词条', 'Entries'], tag: ['标签', 'Tags'], relation: ['关系', 'Relations'],
   section: ['百科分组', 'Encyclopedia sections'], kind: ['类型声明', 'Kind declarations'], menu: ['菜单', 'Menus'], i18n: ['文案键', 'Text keys'],
   export: ['代码导出', 'Code exports'], display: ['显示', 'Displays'],
+  play: ['玩法', 'Plays'], playView: ['玩法界面', 'Play views'], agent: ['盲玩代理', 'Blind-play agents'], check: ['检查', 'Checks'],
+  kindMeaning: ['类型含义', 'Kind meanings'], shape: ['命名形状', 'Named shapes'], editor: ['编辑器', 'Editors'],
+  editorExtension: ['编辑器扩展', 'Editor extensions'], gameHook: ['游戏钩子', 'Game hooks'], unlocks: ['通关解锁项', 'Unlocks on passing'],
+  valueType: ['值类型', 'Value types'], language: ['语言', 'Languages'],
+}
+
+/** What a package's public surface holds, kind by kind ([kind, count], text keys last). */
+export function surfaceCounts(info) {
+  const surface = Object.values(info.manifest?.surface ?? {}).reduce((n, { kind }) => (kind === 'package' ? n : n.set(kind, (n.get(kind) ?? 0) + 1)), new Map())
+  return [...surface].sort((a, b) => (a[0] === 'i18n') - (b[0] === 'i18n') || b[1] - a[1] || a[0].localeCompare(b[0]))
+}
+
+/**
+ * The names the loaded content gives the kinds packages declare: object kinds (their Studio names) and capability kinds
+ * (their `studio.label`), by full name. A kind the content does not load keeps its id.
+ */
+export function surfaceLabels(content, vocabulary) {
+  const labels = {}
+  for (const info of objectTypes(content)) labels[info.type] = tr(...typeName(info))
+  for (const [kind, definition] of Object.entries(vocabulary?.capabilityKinds ?? {})) if (definition?.studio?.label) labels[kind] = L(definition.studio.label)
+  return labels
+}
+
+/** The name of a kind of public content: the kernel's (SURFACE), else the one its package declares (`labels`), else its id. */
+export const surfaceName = (kind, labels = {}) => (SURFACE[kind] ? tr(...SURFACE[kind]) : labels[kind] ?? <code>{kind}</code>)
+
+/**
+ * The packages and games that use a package, each by title and id.
+ */
+export function PackageUsers({ packages, games, id }) {
+  const usedBy = packages.filter((p) => Object.hasOwn(p.uses ?? {}, id)).map((p) => p.id)
+  const playedBy = games.filter((g) => Object.hasOwn(g.packages ?? {}, id)).map((g) => g.id)
+  return (
+    <>
+      <dt>{tr('被哪些包用到', 'Used by packages')}</dt><dd>{usedBy.length ? usedBy.map((u) => <PackageRef key={u} packages={packages} id={u} />) : none}</dd>
+      <dt>{tr('被哪些游戏选用', 'Played by games')}</dt><dd>{playedBy.length ? playedBy.map((g) => <GameRef key={g} games={games} id={g} />) : none}</dd>
+    </>
+  )
 }
 
 /**
@@ -191,14 +241,11 @@ const SURFACE = {
  * the packages and games that need it, whether its dependency lock holds, its code, and what its public surface
  * holds, kind by kind.
  */
-export function PackageMeta({ packages, games = [], id, open, disabled, onOpen }) {
+export function PackageMeta({ packages, games = [], id, open, disabled, onOpen, labels = {} }) {
   const info = packages.find((p) => p.id === id)
   if (!info) return null
   const uses = Object.entries(info.uses ?? {})
-  const usedBy = packages.filter((p) => Object.hasOwn(p.uses ?? {}, id)).map((p) => p.id)
-  const playedBy = games.filter((g) => Object.hasOwn(g.packages ?? {}, id)).map((g) => g.id)
-  const surface = Object.values(info.manifest?.surface ?? {}).reduce((n, { kind }) => (kind === 'package' ? n : n.set(kind, (n.get(kind) ?? 0) + 1)), new Map())
-  const kinds = [...surface].sort((a, b) => (a[0] === 'i18n') - (b[0] === 'i18n') || b[1] - a[1] || a[0].localeCompare(b[0]))
+  const kinds = surfaceCounts(info)
   const exportsOf = Object.entries(info.manifest?.exports ?? {})
   return (
     <article className="package-meta">
@@ -210,8 +257,7 @@ export function PackageMeta({ packages, games = [], id, open, disabled, onOpen }
         <dt>{tr('版本', 'Version')}</dt><dd><code>{info.version ?? '—'}</code></dd>
         <dt>{tr('内核', 'Kernel')}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
         <dt>{tr('依赖', 'Uses')}</dt><dd>{uses.length ? uses.map(([dep, range]) => <PackageRef key={dep} packages={packages} id={dep} range={range} />) : none}</dd>
-        <dt>{tr('被哪些包用到', 'Used by packages')}</dt><dd>{usedBy.length ? usedBy.map((u) => <PackageRef key={u} packages={packages} id={u} />) : none}</dd>
-        <dt>{tr('被哪些游戏选用', 'Played by games')}</dt><dd>{playedBy.length ? playedBy.map((g) => <code key={g}>{g}</code>) : none}</dd>
+        <PackageUsers packages={packages} games={games} id={id} />
       </dl>
       <Lock lock={info.lock} status={info.lockStatus} packages={packages} />
       {exportsOf.length > 0 && <>
@@ -224,7 +270,7 @@ export function PackageMeta({ packages, games = [], id, open, disabled, onOpen }
       </>}
       <h3 className="package-meta-file">{tr('公开内容', 'Public surface')}</h3>
       <dl className="package-facts">
-        {kinds.map(([kind, n]) => <Fragment key={kind}><dt>{SURFACE[kind] ? tr(...SURFACE[kind]) : kind}</dt><dd>{n}</dd></Fragment>)}
+        {kinds.map(([kind, n]) => <Fragment key={kind}><dt>{surfaceName(kind, labels)}</dt><dd>{n}</dd></Fragment>)}
         <dt>{tr('文件', 'Files')}</dt><dd>{Object.keys(info.manifest?.files ?? {}).length}</dd>
         <dt>{tr('内容哈希', 'Content hash')}</dt><dd><code className="package-meta-hash" title={info.manifest?.hash}>{short(info.manifest?.hash)}</code></dd>
       </dl>

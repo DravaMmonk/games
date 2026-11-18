@@ -29,7 +29,7 @@ import Review from './Review.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
-import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, gameJson, packageJson } from './ProjectLists.jsx'
+import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, gameJson, packageJson, surfaceLabels } from './ProjectLists.jsx'
 import { PackageName } from './PackageGroups.jsx'
 import GameFrame from './GameFrame.jsx'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
@@ -227,7 +227,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
               </>} />}
             <div className="studio-scroll" hidden={playing}>
               {shownList === 'games' ? <GameMeta games={games} packages={packages} id={pickedOpen.games} open={opened.game} disabled={saving} onOpen={(id) => openOther('game', id)} />
-                : shownList === 'packages' ? <PackageMeta packages={packages} games={games} id={pickedOpen.packages} open={opened.package} disabled={saving} onOpen={(id) => openOther('package', id)} />
+                : shownList === 'packages' ? <PackageMeta packages={packages} games={games} id={pickedOpen.packages} labels={surfaceLabels(content, vocab?.vocabulary)} open={opened.package} disabled={saving} onOpen={(id) => openOther('package', id)} />
                 : <article className="editor is-wide">
                   <CopyTable side={side} content={content} vocabulary={vocab.vocabulary} scope={scope} setScope={showScope} file={file} order={order} names={names} places={places} onEdit={edit}
                     onJump={(row) => pick(copyFieldOf(row))} />

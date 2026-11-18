@@ -215,3 +215,6 @@ packages/*/changes.lock
 
 # Local content release store
 /releases/
+
+# Baseline corpora and other local tool output (games/kit/engine/baseline.mjs): never committed.
+/output/

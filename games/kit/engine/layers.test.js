@@ -332,6 +332,20 @@ test('tag contributions require the exact typed declaration or reader; kernel is
   assert.throws(() => orderPackages([layer('kernel')]), /reserved namespace/)
 })
 
+test('non-play packages omit unused reader tags and retain declarations and contributions', () => {
+  const a = base()
+  a.tagReaders = [{ name: 'base/reader', member: 'level', reader: 'base' }]
+  a.objects.push(obj('tag', 'empty', { kind: 'level', values: [] }))
+  const standalone = assembleLayers('base', [a], schemas, { packageId: 'base' })
+  assert.equal(standalone.tags['level:base/reader'], undefined)
+  assert.equal(standalone.sources.tag['level:kernel/optional'], undefined)
+  assert.deepEqual(standalone.tags['level:base/empty'].values, [])
+  const b = layer('b', ['base'], [], [obj('tag', 'base/reader', { kind: 'level', values: { add: ['base/a'] } })])
+  assert.deepEqual(assembleLayers('b', [a, b], schemas, { packageId: 'b' }).tags['level:base/reader'].values, ['base/a'])
+  const course = assembleLayers('demo', [a, game([obj('tag', 'kernel/optional', { kind: 'level', values: { add: ['base/a'] } })])], schemas)
+  assert.equal(course.eras[0].levels.find(level => level.id === 'base/a').optional, true)
+})
+
 test('same-named tags persist, publish and undo independently by member type', async () => {
   const { root, put } = fixture()
   put('packages/base/entries/word.json', { title: 'Word', body: [] })
@@ -340,11 +354,13 @@ test('same-named tags persist, publish and undo independently by member type', a
   const result = await runChangeset(ws, { why: 'Use the same tag name in two types', ops: [
     { op: 'tag.put', tag: 'pick', member: 'level', data: { title: { en: 'Levels' }, values: ['a'] } },
     { op: 'tag.put', tag: 'pick', member: 'entry', data: { title: { en: 'Entries' }, values: ['word'] } },
+    { op: 'tag.put', tag: 'draft', member: 'level', data: { values: [] } },
   ] }, { write: true, check: false, domain })
   assert.equal(result.ok, true, result.problems.join('\n'))
   const content = readPackage('base', root, { vocabulary: schemas })
   assert.deepEqual(content.tags['level:base/pick'].values, ['base/a'])
   assert.deepEqual(content.tags['entry:base/pick'].values, ['base/word'])
+  assert.deepEqual(content.tags['level:base/draft'].values, [])
   const assets = contentAssets(content)
   const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', async url => ({ ok: true, json: async () => JSON.parse(assets.get(url.pathname.slice(1))) }), schemas)
   assert.deepEqual(restored.registries.tag, content.registries.tag)

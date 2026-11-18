@@ -264,6 +264,16 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
   const result = composeLayers(layers, schemas)
   declarationProblems = [...declarationProblems, ...result.policyProblems, ...layers.flatMap(layer => layer.dependencyProblems ?? []), ...existenceProblems(result.qualifiedLayers, schemas)]
   const { registries: r, configurations, sources, overrideHistory, layerOrder, layerUses } = result
+  const packageKind = layers.find(layer => layer.id === packageId)?.config.kind
+  if (packageKind && packageKind !== 'play') {
+    // A reader makes the tag addressable. Only a declaration or a contribution makes it package content.
+    for (const [key, source] of Object.entries(sources.tag)) {
+      if (source.reader && source.declaration === null && !source.overrides.length) {
+        delete r.tag[key]
+        delete sources.tag[key]
+      }
+    }
+  }
   const game = Object.assign({}, ...configurations)
   delete game.uses
   delete game.packages

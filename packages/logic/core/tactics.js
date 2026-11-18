@@ -116,11 +116,12 @@ export function assumption(s) {
   if (!g) return { fail: NO_GOALS }
   const results = []
   const why = []
-  for (const h of g.hyps) {
+  g.hyps.forEach((h, k) => {
     const u = unify([[g.goal, h]], s.inst ?? {}, { scopes: s.scopes ?? {}, fixed: s.fixed ?? [] })
-    if (u.fail) { why.push(u.fail); continue }
-    results.push(after(s, u.σ, s.goals.slice(1), s.scopes ?? {}))
-  }
+    if (u.fail) { why.push(u.fail); return }
+    // `by`: the hypothesis it took (its number), for the machine's step log.
+    results.push({ ...after(s, u.σ, s.goals.slice(1), s.scopes ?? {}), by: { hyp: k + 1 } })
+  })
   if (results.length) return { results }
   return { fail: late(why) ?? NONE }
 }

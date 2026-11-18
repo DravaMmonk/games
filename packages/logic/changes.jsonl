@@ -22,3 +22,4 @@
 {"seq":22,"at":"2026-11-18T21:03:48.843Z","why":"Machine board: a compact face for sentences (layout lg-machine-level).","adopt":true,"files":[{"file":"packages/logic/capabilities/play.json","after":"76b367c2b69cf405"}]}
 {"seq":23,"at":"2026-11-18T21:13:04.803Z","why":"Every test in the course is named 案例 1, 2, 3; the letters' own tab is 一般形式.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"9efbcb6d94eda594"}]}
 {"seq":24,"at":"2026-11-18T21:14:46.849Z","why":"Test of the case labels.","adopt":true,"files":[]}
+{"seq":25,"at":"2026-11-18T21:39:22.439Z","why":"Machine run report: each step says what it did (rule k on goal n), rule parts are not steps; goals numbered, values left-aligned and smaller.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"2c876c16c2544e1b"}]}

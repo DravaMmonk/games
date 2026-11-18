@@ -30,3 +30,4 @@
 {"seq":30,"at":"2026-11-18T21:03:49.113Z","why":"Report-only boards keep showing what no test changes, such as a rule part's rules.","adopt":true,"files":[]}
 {"seq":31,"at":"2026-11-18T21:19:31.450Z","why":"results: 'report' keeps one fixed-size report box under the board, there before a run; a phone jumps to it only on a click of the run bar.","adopt":true,"files":[{"file":"packages/circuit/i18n/en.json","after":"e46047132dc9ce21"}]}
 {"seq":32,"at":"2026-11-18T21:21:13.629Z","why":"On a desktop the report box is as tall as the run column.","adopt":true,"files":[]}
+{"seq":33,"at":"2026-11-18T21:39:22.714Z","why":"Machine run report: each step says what it did (rule k on goal n), rule parts are not steps; goals numbered, values left-aligned and smaller.","adopt":true,"files":[]}

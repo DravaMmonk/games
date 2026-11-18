@@ -40,7 +40,7 @@ import { workNodes } from 'circuit'
 // whole list, in order. A rule list is a constant: it may be wired into a frame from outside. Until a level says
 // `backtrack`, a tactic gives only its first result; from then on, every result, and each card after it works on each
 // of them in turn (tactics.js).
-import { sameJson } from 'kernel'
+import { sameJson, punctuation } from 'kernel'
 import { OperationError } from 'kernel'
 import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
@@ -150,13 +150,23 @@ const stateIn = (v) => {
   return v
 }
 const firstOf = (s) => ({ ...s, more: undefined })
+// What a tactic did, for the step log (`did`, said of the card `didBy`): the rules (their numbers on the list wired in)
+// or the hypotheses it used, on the first goal.
+const numbers = (list) => [...new Set(list)].join(punctuation('、'))
+const DID = {
+  rule: (by) => T("用规则 {k} 改目标 1", { k: numbers(by.map((b) => b.rule)) }),
+  rw: (by, node) => (atOf(node) === 'hyps' ? T("用规则 {k} 改写目标 1 的已知", { k: numbers(by.map((b) => b.rule)) }) : T("用规则 {k} 改写目标 1", { k: numbers(by.map((b) => b.rule)) })),
+  assumption: (by) => T("用已知 {k} 证完目标 1", { k: numbers(by.map((b) => b.hyp)) }),
+  defer: () => T('把目标 1 移到最后'),
+}
+const unsaid = (s) => (s.did === undefined && s.didBy === undefined ? s : { ...s, did: undefined, didBy: undefined })
 // A tactic card: on each result it is handed (only the first, until the level backtracks), every result it makes; a
 // failure is the state with what went wrong (a frame reads it). An input that failed passes through.
-const tactic = (t) => ({
+const tactic = (t, say) => ({
   inputs: ['in'],
   eval: ({ in: v }, node, ctx) => {
     const s = stateIn(v)
-    if (s.error) return s
+    if (s.error) return unsaid(s)
     const out = []
     let why = null
     for (const one of ctx.backtrack ? resultsOf(s) : [firstOf(s)]) {
@@ -165,8 +175,12 @@ const tactic = (t) => ({
       else out.push(...r.results)
       if (out.length >= 24) break
     }
-    const made = asValue(ctx.backtrack ? out : out.slice(0, 1), { ...firstOf(s), error: why })
-    return s.endless ? { ...made, endless: true } : made
+    const kept = (ctx.backtrack ? out : out.slice(0, 1))
+    const by = kept.map((x) => x.by).filter(Boolean)
+    const did = say?.(by, node)
+    const made = asValue(kept.map(({ by: _by, ...x }) => unsaid(x)), { ...unsaid(firstOf(s)), error: why })
+    const said = did && kept.length ? { ...made, did, didBy: node.id } : made
+    return s.endless ? { ...said, endless: true } : said
   },
 })
 // The rules wired into a card, from the book it uses: every one of them must be there.
@@ -182,22 +196,22 @@ const NOT_REWRITE = ['接进来的有一条不能用来改写（只有等价、�
 function firstThatApplies(rules, ctx, apply) {
   const out = []
   let why = null
-  for (const r of rules) {
+  for (const [k, r] of rules.entries()) {
     const got = apply(r)
     if (got.fail) why ??= got.fail
     else {
-      out.push(...got.results)
+      out.push(...got.results.map((x) => ({ ...x, by: { rule: k + 1 } })))
       if (!ctx.backtrack) break
     }
   }
   return out.length ? { results: out } : { fail: why ?? T('没有一条规则用得上') }
 }
 // A tactic card reading its rules from the port `rules` as well as the state from `in`.
-const usesRules = (t) => {
-  const card = tactic((s, ctx, node) => t(s, ctx, node, ctx.wiredRules))
+const usesRules = (t, say) => {
+  const card = tactic((s, ctx, node) => t(s, ctx, node, ctx.wiredRules), say)
   return { inputs: ['in', 'rules'], eval: ({ in: v, rules }, node, ctx) => card.eval({ in: v }, node, { ...ctx, wiredRules: rules }) }
 }
-const ruleCard = (t) => usesRules((s, ctx, _node, rules) => firstThatApplies(wired(rules, ctx.rules ?? KERNEL, NOT_RULE), ctx, (r) => t(s, r)))
+const ruleCard = (t, say) => usesRules((s, ctx, _node, rules) => firstThatApplies(wired(rules, ctx.rules ?? KERNEL, NOT_RULE), ctx, (r) => t(s, r)), say)
 // Where a rewrite card rewrites: the goal, or the hypotheses.
 const atOf = (node) => (node.params?.at === 'hyps' ? 'hyps' : 'goal')
 // A step inside a part, for a traced run (../../engine/circuit.js): a round of it, or the card it applies (`sub`).
@@ -383,14 +397,14 @@ const BODIES = {
   uPattern: unifyCard('pattern'),
   repeat,
   // Tactics (chapters 8 and 9).
-  rule: ruleCard(rule),
-  assumption: tactic(assumption),
-  defer: tactic(defer),
+  rule: ruleCard(rule, DID.rule),
+  assumption: tactic(assumption, DID.assumption),
+  defer: tactic(defer, DID.defer),
   append,
   search,
   each,
   // Rewriting (chapter 10): one rule once, on the goal or the hypotheses.
-  rw: usesRules((s, ctx, node, rules) => firstThatApplies(wired(rules, ctx.rewrites, NOT_REWRITE), ctx, (r) => rewrite(s, r, atOf(node)))),
+  rw: usesRules((s, ctx, node, rules) => firstThatApplies(wired(rules, ctx.rewrites, NOT_REWRITE), ctx, (r) => rewrite(s, r, atOf(node))), DID.rw),
   // Clauses (chapter 11, resolution.js): ∃ out of the hypotheses, a state split into clauses, a round of resolution,
   // someone else's prover, and the certificate replayed in the kernel.
   skolem: tactic(skolemStep),
@@ -692,7 +706,8 @@ export const MACHINE_TESTS = {
       ctx: ctxOf(level, circuit, { trace: traced ? trace : null }),
       traceTargets: ['out'],
     })
-    return { ...run, trace }
+    // Rule parts are not steps: what they give is on their cards from the start.
+    return { ...run, trace: trace.filter((e) => e.value?.kind !== 'rules') }
   },
   check: (level, test, outputs) => {
     const problem = judge(test.want ?? level.want, test, outputs.out, level)

@@ -111,6 +111,7 @@ import "./training.css"
 //   readouts?(task, board, report) → [{ value, label }]   the numbers under the task (Readouts.jsx)
 //   log                   a board run once keeps a step log under its results (StepLog.jsx): every step run so far, the
 //                         card named after the built parts it is in, what it gave or why it failed, the current one marked
+//   stepNote?(entry)      what a step did, beside its card's name in the log (words or null)
 //   className             the domain's class on the level
 
 const finalFailure = (run) => run.fail?.at?.tick === undefined ? reportedFailure(run) : run.error
@@ -151,7 +152,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -395,6 +396,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
         return node ? at.parts.label(node) : null
       },
       partName: (type) => cards[type]?.name ?? type,
+      detail: stepNote,
     })
   }, [logged, runOf, drawn, level, parts, packed, cards])
   const stepLog = logged && <StepLog steps={named.slice(0, shown.list.length).map((s) => ({ label: s.label, value: s.value === undefined ? null : <Show value={s.value} scene="card" text={show} />, failed: s.failed }))} at={shown.at} />

@@ -90,5 +90,8 @@
 .ck-grid { border-collapse: separate; border-spacing: 4px; }
 .ck-grid td { padding: 0; }
 
-/* The machine board: sentences, rules and goals on cards, notes and the step log in a smaller, compact face. */
-.lg-machine-level .vw-value { font: 500 12px/1.35 var(--sans); letter-spacing: 0; }
+/* The machine board: sentences, rules and goals on cards, notes and the step log in a small, compact face (a case may
+   hold several goals and rules). */
+/* A state's goals and a part's rules are numbered lines, read from the left. */
+.lg-machine-level .vw-value { font: 500 11px/1.4 var(--sans); letter-spacing: 0; text-align: left; }
+.lg-machine-level :is(.pf-face.is-tile, .pb-term) > :is(.pf-value, .pb-thumb) { justify-self: stretch; }

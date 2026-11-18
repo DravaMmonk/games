@@ -42,7 +42,7 @@ const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind ==
 const lines = (head, list) => [...head.filter(Boolean), ...list].join('\n')
 
 /**
- * A value in words, a line each: a sentence, a rule, a list; the rules a rule part gives; a proof state's goals (or that
+ * A value in words, a line each: a sentence, a rule, a list; the rules a rule part gives; a proof state's goals, numbered (or that
  * it is proved, or that the step failed, and why); equations; a clause set, once ⊥ is in only the clauses ⊥ comes from.
  */
 function showMachine(v, { task }) {
@@ -59,7 +59,7 @@ function showMachine(v, { task }) {
       v.error && `${tr("这一步失败")}：${L(v.error)}`,
       !v.goals.length && tr('证明完毕'),
       others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1}),
-    ], v.goals.map((g) => goalText(g, text)))
+    ], v.goals.map((g, k) => `${k + 1}. ${goalText(g, text)}`))
   }
   if (v.kind === 'eqs') return lines([v.fail && `${tr('合一失败')}：${L(v.fail)}`, !v.eqs.length && tr('没有等式了')], v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))
   const shown = certificate(v.set) ?? v.set.map((_, i) => i)

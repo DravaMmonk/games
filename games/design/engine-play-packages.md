@@ -5,7 +5,7 @@
 | 功能包 `feature` | 提供可独立使用的功能及所需的交互和接口。 | `circuit`、`sentence`、`text`、`wiki` |
 | 拓展包 `ext` | 依托一个或多个已有功能，为特定场景提供可复用的机制或内容。 | `image`、`logic`、`table`、`tick`、`progress`、`workshop` |
 | 课程包 `course` | 组织专题的关卡、教学素材和课程专用实现。 | `qed`、`state-graph`、`vision-complete` |
-| 库包 `lib` | 提供可复用的数据结构、算法和底层能力。 | `scalar`、`imglib`、`cvlib`、`mllib` |
+| 库包 `lib` | 提供可复用的数据结构、算法和底层能力。 | `scalarlib`、`imglib`、`cvlib`、`mllib` |
 
 `circuit` 提供通用接线、电路蓝图和元件编辑器。`sentence` 提供空位和拼块交互，语法、拼块与判定由使用包提供。`text` 提供文字作答与匹配规则。`wiki` 提供可独立组织与展示的百科。
 

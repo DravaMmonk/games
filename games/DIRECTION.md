@@ -82,7 +82,7 @@ Studio 不自带专题逻辑，控件来自内核，能力只读，依赖对象�
 
 ### 决策九：模板起步，库包共享
 
-`kit/templates/<模板>/starter/` 提供起步包和建游戏的课程样例，`new-package`、`new-game` 复制数据。模板不是依赖，不会把后续修改传播给已创建的包。可复用的代码、数据结构和底层能力由库包提供，使用者通过 `uses` 选择，例如 `scalar`，图像相关算法分属 `imglib`、`cvlib`、`mllib`。
+`kit/templates/<模板>/starter/` 提供起步包和建游戏的课程样例，`new-package`、`new-game` 复制数据。模板不是依赖，不会把后续修改传播给已创建的包。可复用的代码、数据结构和底层能力由库包提供，使用者通过 `uses` 选择，例如 `scalarlib`，图像相关算法分属 `imglib`、`cvlib`、`mllib`。
 
 ### 决策十：基础设施与课程设计分别验收
 

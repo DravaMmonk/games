@@ -5,7 +5,7 @@
     "circuit": "^0.0.0",
     "progress": "^0.0.0",
     "logic": "^0.0.0",
-    "scalar": "^0.0.0",
+    "scalarlib": "^0.0.0",
     "sentence": "^0.0.0",
     "wiki": "^0.0.0",
     "workshop": "^0.0.0"

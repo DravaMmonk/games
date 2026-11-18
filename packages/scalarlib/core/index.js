@@ -13,7 +13,7 @@ function number(value, coerce = false) {
 
 const num = value => number(value, true)
 
-export const operations = qualifyItems('scalar', {
+export const operations = qualifyItems('scalarlib', {
   add: { about: 'a + b', args: nums('a', 'b'), returns: 'kernel/number', params: S.obj({}), symmetric: true, run: ([a, b]) => number(a) + number(b) },
   sub: { about: 'a − b', args: nums('a', 'b'), returns: 'kernel/number', params: S.obj({}), run: ([a, b]) => number(a) - number(b) },
   constant: { about: t("设置中的常量"), args: [], returns: 'kernel/number', params: { type: 'obj', fields: { value: { type: 'num', default: 0 } } }, run: (_args, { value }) => value },

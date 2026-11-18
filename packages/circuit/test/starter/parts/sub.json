@@ -3,5 +3,5 @@
   "desc": "@part.sub.desc",
   "icon": "Minus",
   "family": "circuit/value",
-  "op": "scalar/sub"
+  "op": "scalarlib/sub"
 }

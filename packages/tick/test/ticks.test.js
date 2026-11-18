@@ -1,5 +1,5 @@
 // node --test games/kit/engine — the tick world on small boards of plain numbers.
-import { operations as numeric } from '../../scalar/core/index.js'
+import { operations as numeric } from '../../scalarlib/core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { sink, source } from '../../circuit/core/index.js'
@@ -123,8 +123,8 @@ test('parts defined as data read and keep registers, and two packed counters cou
   assert.equal(operations['tick/held'].run([], { reg: 'A', start: 5 }, { held: () => undefined }), 5)
   assert.equal(PARTS.read.eval({}, { params: { reg: 'B', start: '' } }, {}), null)
   // Two counters packed on one board, each keeping its own A: one steps by 1, the other by 2.
-  const step = { name: 'step', desc: 'd', icon: 'Box', family: 'f', inputs: [{ name: 'a' }, { name: 'b' }], op: 'scalar/plus' }
-  const by = { name: 'by', desc: 'd', icon: 'Box', family: 'f', inputs: [], settings: { 'value': { control: 'number', default: 0 } }, op: 'scalar/constant' }
+  const step = { name: 'step', desc: 'd', icon: 'Box', family: 'f', inputs: [{ name: 'a' }, { name: 'b' }], op: 'scalarlib/plus' }
+  const by = { name: 'by', desc: 'd', icon: 'Box', family: 'f', inputs: [], settings: { 'value': { control: 'number', default: 0 } }, op: 'scalarlib/constant' }
   const more = defineParts({ ...file, parts: { ...file.parts, step, by } }, { ...numeric, ...operations }).PARTS
   const inner = { nodes: [{ id: 'r', type: 'read', params: { reg: 'A', start: '0' } }, { id: 's', type: 'step', params: {} }, { id: 'k', type: 'keep', params: { reg: 'A' } }, { id: 'n', type: 'in', params: { name: 'n' } }, { id: 'out', type: 'out', params: { name: 'out' } }], wires: [{ from: 'r', to: 's', port: 'a' }, { from: 'n', to: 's', port: 'b' }, { from: 's', to: 'k', port: 'in' }, { from: 'r', to: 'out', port: 'in' }] }
   const all = { ...more, in: source(), out: sink() }

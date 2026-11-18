@@ -5,9 +5,9 @@
       "version": "0.0.0",
       "hash": "c197cff76d74d57bbfba7ce4a44ce6c92dcc6c28c022d1a7f1a2d1ca5d0ef54c"
     },
-    "scalar": {
+    "scalarlib": {
       "version": "0.0.0",
-      "hash": "8aaea2629369bccad3c980f6aa5a46ecc0b21b0ff0e45b118da1f7828864e9fe"
+      "hash": "72c72b1d76c82f0475e0100a8029289ddc38660fa3db272d96746ca7ab290a9f"
     },
     "sentence": {
       "version": "0.0.0",
@@ -19,19 +19,19 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "ea351f5d9519b5e09a42f00e8cb66b27d845a3d9981ed7892fe587c992ff6453"
+      "hash": "94c84c487f351afca8bc5ca2080f0e304b3dcf4d8d06b63b18cdc1a437f407aa"
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "853e92856ba5af5052b5a9889348af9586174cb813b3850c4650169ae4f09be2"
+      "hash": "945f0c00af311f85e2114e0c1f7bcbe09cd6d5fb45601198184ac8d302e0fa8d"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "d4e39857c6da3c47f50562514b3603bdc2b762a54aa2224e989058d698aa5794"
+      "hash": "b9b2456c5f80fe51c84e8cda56e73337b210f099d638ca834d7a3f69c0303c21"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "d726d60d9ead83d082bd956d66eb1a30cb56b00e7bfa6c06e36d1b4c880742a6"
+      "hash": "e5be1154950db0b01b4d29e4db2997ad54bfb83a72422c38f0805b758530b63a"
     }
   }
 }

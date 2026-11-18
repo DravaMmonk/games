@@ -1,5 +1,5 @@
 import { moduleProblems } from '../../../games/kit/engine/contract.js'
-import { register as registerScalar } from '../../scalar/core/index.js'
+import { register as registerScalar } from '../../scalarlib/core/index.js'
 import { register } from '../core/index.js'
 import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { test } from 'node:test'
@@ -20,7 +20,7 @@ test('each kind rejects duplicate names and permits a name shared across kinds',
 })
 
 test('qualified operation names round-trip beside match case delimiters', () => {
-  const expression = "match $op { add: scalar/add(a, b), _: image/gauss(a, 1, 'crop') }"
+  const expression = "match $op { add: scalarlib/add(a, b), _: image/gauss(a, 1, 'crop') }"
   assert.equal(print(parse(expression)), expression)
 })
 
@@ -62,10 +62,10 @@ test('module contracts reject missing implementations and incomplete signatures'
 test('operations from another module execute through the normal part compiler', async () => {
   const kernel = createPluginKernel()
   register(kernel.forPackage('circuit', 'core'))
-  registerScalar(kernel.forPackage('scalar', 'core'))
+  registerScalar(kernel.forPackage('scalarlib', 'core'))
   const { defineParts } = await import('../core/parts/define.js')
   const { PARTS } = defineParts({ parts: { sample: {
-    inputs: [{ name: 'a', type: 'kernel/number' }], outputType: 'kernel/number', op: 'scalar/add',
+    inputs: [{ name: 'a', type: 'kernel/number' }], outputType: 'kernel/number', op: 'scalarlib/add',
   } } }, {})
   assert.equal(PARTS.sample.eval({ a: 3, b: 3 }, {}), 6)
 })

@@ -20,3 +20,5 @@
 {"seq":20,"at":"2026-11-18T20:57:58.993Z","why":"Machine board: the output card shows what a test wants, the results area is only the run report, and tests are named 案例 1, 2, 3.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"9177a688b16ecf6b"},{"file":"packages/logic/capabilities/play.json","after":"4a852866e2195ded"}]}
 {"seq":21,"at":"2026-11-18T21:01:27.670Z","why":"English: the expected step reads 'becomes …' now that the card is labelled Expected.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"7b866b5b1a31643e"}]}
 {"seq":22,"at":"2026-11-18T21:03:48.843Z","why":"Machine board: a compact face for sentences (layout lg-machine-level).","adopt":true,"files":[{"file":"packages/logic/capabilities/play.json","after":"76b367c2b69cf405"}]}
+{"seq":23,"at":"2026-11-18T21:13:04.803Z","why":"Every test in the course is named 案例 1, 2, 3; the letters' own tab is 一般形式.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"9efbcb6d94eda594"}]}
+{"seq":24,"at":"2026-11-18T21:14:46.849Z","why":"Test of the case labels.","adopt":true,"files":[]}

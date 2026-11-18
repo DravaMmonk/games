@@ -579,7 +579,7 @@
   "level.contra.title": "contrapositive",
   "level.copy.intro.0.t": "Each extra atom doubles the rows of a truth table. The prover’s new module, the <wiki-ref to=\"kernel\"></wiki-ref>, works another way: from premises to a conclusion, one <wiki-ref to=\"rule\"></wiki-ref> at a time.",
   "level.copy.intro.1.t": "The <b>givens</b> on the left are the premises; the <b>goal</b> on the right is the proposition to prove. A wire carries a sentence already proved.",
-  "level.copy.intro.2.t": "The <b>tests</b> below put different sentences in place of the letters of one pattern, the last being the letters themselves. One board must pass them all.",
+  "level.copy.intro.2.t": "The <b>cases</b> below put different sentences in place of the letters of one pattern; the last, the <b>general form</b>, is the letters themselves. One board must pass them all.",
   "level.copy.tasks.copy.hint.0": "A given’s dot is on its right; the goal’s dot is on its left.",
   "level.copy.title": "Copy",
   "level.curry.intro.0.t": "“If it rains and it is windy, the ground is wet” and “if it rains, then if it is also windy, the ground is wet” say the same.",

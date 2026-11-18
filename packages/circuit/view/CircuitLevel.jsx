@@ -202,7 +202,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *   results, resultsTitle, resultsAside   what a run gives (the strip on a desktop, below the board on a phone)
  *   above           on a phone, over the board
  *   below           on a phone, under the board (what a run shows as it goes, the level's own panels)
- *   follow          on a phone, the run on view (its id): a new one takes the page to its bottom once
+ *   follow          on a phone, { began, key }: while a run shows under the board, the page keeps to its bottom
  *   describe(node, ctx), sheet(node, ctx)   a card's detail content: description and body (default: card.body)
  *   details         offer the same detail sheet from desktop card headers
  *   addSheet?({ at, region, place, close })   the sheet for an empty slot (default: the parts, each with what it does)
@@ -402,13 +402,21 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
     scroller,
     history,
   })
-  // A run started here takes the page to its bottom once, where its report is (a run kept from before does not).
-  const followed = useRef(follow)
+  // While a run shows under the board, the page sits at its bottom (no scrolling to watch), until the player scrolls away.
+  const pinned = useRef(false)
+  const was = useRef(false)
   useLayoutEffect(() => {
     const el = scroller.current
-    if (follow != null && follow !== followed.current && el) el.scrollTop = el.scrollHeight
-    followed.current = follow
-  }, [follow])
+    if (!el || !follow) return
+    if (!follow.began) { pinned.current = false; return }
+    if (!was.current) pinned.current = true
+    if (pinned.current) el.scrollTop = el.scrollHeight
+  }, [follow?.began, follow?.key])
+  useLayoutEffect(() => { was.current = Boolean(follow?.began) })
+  const onScroll = () => {
+    const el = scroller.current
+    if (follow?.began && el) pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 4
+  }
   const close = () => setSheet(null)
   const node = sheet?.node && circuit.nodes.find((n) => n.id === sheet.node)
   const role = node && parts.role(node)
@@ -432,7 +440,7 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
   }
   const place = (type) => { editing.place(type, sheet.slot, sheet.region); close() }
   return (
-    <PhonePage rootRef={root} scrollRef={scroller} className={`cl-phone ${className}`} brief={brief} taskNav={taskNav} tests={tests} tools={<Tray start={trayControl} items={trayItems} folded={trayFolded} onPick={editing.placeFirstFree} />} results={results} dock={dock}>
+    <PhonePage rootRef={root} scrollRef={scroller} onScroll={follow ? onScroll : undefined} className={`cl-phone ${className}`} brief={brief} taskNav={taskNav} tests={tests} tools={<Tray start={trayControl} items={trayItems} folded={trayFolded} onPick={editing.placeFirstFree} />} results={results} dock={dock}>
       {above}
       <SlotBoard
         boardRef={boardRef}

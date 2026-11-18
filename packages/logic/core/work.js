@@ -24,7 +24,7 @@ import { operationsOf } from 'circuit'
 import { compileParts } from 'circuit'
 import { presetCardIds, presetOf, withPreset } from 'circuit'
 import { T } from 'kernel/words'
-import { render, say } from './notation.js'
+import { render } from './notation.js'
 import { typeOf } from './iso.js'
 import { equations } from './define.js'
 import { lemmaReference, PROOF_BOARD } from './proof.js'
@@ -122,8 +122,8 @@ function readBuilt(content) {
  * A proof level is a schema: its test (`tests: [{ premises, goal }]`) is written in letters, and each test case
  * (`cases`) fills the letters in with sentences ({ A: 'Rain', B: 'Wet' }, a
  * compound sentence too: { A: 'Rain ∧ Wind' }). Every case becomes a test of its own, with the case as `subst` and its
- * sentences as its label, so one proof is checked on all of them; a last test keeps the bare letters, the pattern
- * itself. A level opens on its first case, the one its task is written in.
+ * named 案例 1, 2, 3, so one proof is checked on all of them; a last test keeps the bare letters, the pattern
+ * itself (一般形式). A level opens on its first case, the one its task is written in.
  *   partDefs    parts.json: the primitive gates, the proof rules and the machine board's parts
  *               (../../engine/parts/define.js) over the domain's engine resources (ops.js), and the built parts
  *               (readBuilt): the lemmas the player proves, the gates built on a truth circuit (gates.js), the machine
@@ -159,22 +159,25 @@ function readBuilt(content) {
  * the proofs as the kernel's circuit screen reads a course, wrong: what reading the content found wrong, … }: each of LEVELS { id, title, …, tasks }, its
  * tasks as read (`task` the index, `taskId` the id). Reading builds all of it anew: the content is never written to.
  */
+// What the course calls its tests, in every play: 案例 1, 2, 3, and last (where the level is written in letters) the
+// general form, the letters bare.
+export const caseLabel = (k) => catalogText("案例 {k}", { k: k + 1 })
+const GENERAL = catalogText("一般形式")
+
 // A proof level's tests from its schema and cases (see logicWorks), and the schema kept for the cards' choices.
 function expand(level, notation) {
   const schema = level.tests[0]
-  const test = (c) => {
+  const test = (c, k = 0) => {
     const subst = Object.fromEntries(Object.entries(c).map(([letter, text]) => [letter, parse(text)]))
     const fill = (text) => show(replaceAtoms(parse(text), subst))
-    const parts = Object.values(subst).map((f) => say(f, notation))
-    // A test with nothing to fill in (a level with no letters) is the level's one test.
-    const label = parts.length ? { zh: parts.map((p) => p.zh).join(' · '), en: parts.map((p) => p.en).join(' · ') } : catalogText("这一组")
+    const label = caseLabel(k)
     // A proof term the level asks for (chapter 7) names premises, not sentences: every case asks for the same.
     return { premises: Object.fromEntries(Object.entries(schema.premises ?? {}).map(([name, text]) => [name, fill(text)])), goal: fill(schema.goal), ...(schema.term ? { term: schema.term } : {}), subst, label }
   }
   // Last of the tests: the schema in its own letters (A := A …), the pattern bare.
   const letters = Object.fromEntries(Object.keys(level.cases[0] ?? {}).map((l) => [l, l]))
-  const concrete = level.cases.length ? level.cases.map(test) : [test({})]
-  const symbolic = { ...test(letters), symbolic: true, label: catalogText("字母") }
+  const concrete = level.cases.length ? level.cases.map((c, k) => test(c, k)) : [test({})]
+  const symbolic = { ...test(letters), symbolic: true, label: GENERAL }
   symbolic.caseBrief = proofBrief(symbolic, level, { ...notation, words: level.symbolicWords ?? null, propertyWords: false })
   return { schema, tests: [...concrete, symbolic] }
 }
@@ -187,13 +190,9 @@ function expand(level, notation) {
  */
 function caseViews(level, notation) {
   const words = (c) => ({ ...notation.words, ...Object.fromEntries(Object.entries(c).map(([letter, atom]) => [letter, notation.words?.[atom] ?? { zh: atom, en: atom }])) })
-  const label = (c) => {
-    const parts = Object.values(c).map((atom) => say(parse(atom), notation))
-    return { zh: parts.map((p) => p.zh).join(' · '), en: parts.map((p) => p.en).join(' · ') }
-  }
   return [
-    ...level.cases.map((c) => ({ label: label(c), notation: { ...notation, words: words(c) } })),
-    { label: catalogText("字母"), notation: { ...notation, words: level.symbolicWords ?? null }, symbolic: true },
+    ...level.cases.map((c, k) => ({ label: caseLabel(k), notation: { ...notation, words: words(c) } })),
+    { label: GENERAL, notation: { ...notation, words: level.symbolicWords ?? null }, symbolic: true },
   ]
 }
 
@@ -207,8 +206,6 @@ function vocabOf(level) {
   return { preds: v.preds, consts: v.consts, names: [...new Set([...names, ...v.consts])] }
 }
 
-// A machine test's tab: 案例 1, 2, 3 (its input is on the board).
-const machineLabel = (k) => catalogText("案例 {k}", { k: k + 1 })
 
 /**
  * A proof level's task, written from its schema in letters (the test cases name the letters' everyday sentences):
@@ -452,7 +449,7 @@ export function* prepareLogicWorks(content) {
     Object.assign(one, answers({
       ...one, ...declarations(one, one.id), ...(!one.brief && expanded.schema ? { brief: expanded.tests.at(-1).caseBrief } : {}),
       ...(WORLD_KINDS.includes(one.kind) ? { vocab: vocabOf(one) } : {}), ...expanded, ...views,
-      ...(one.kind === 'logic/machine' ? { tests: one.tests.map((t, k) => ({ label: machineLabel(k), ...t })) } : {}),
+      ...(one.kind === 'logic/machine' ? { tests: one.tests.map((t, k) => ({ label: caseLabel(k), ...t })) } : {}),
       lemmas, proofs: lemmaParts, facts, gates: boardGates, partDefs: defs, notation,
     }))
   }

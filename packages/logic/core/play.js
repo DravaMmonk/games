@@ -11,6 +11,7 @@ import { say } from './notation.js'
 import { runProof } from './proof.js'
 import { runMachine } from './machine.js'
 import { machineReadout, proofReadout } from './circuit-readouts.js'
+import { caseLabel } from './work.js'
 import { L } from "kernel"
 import { T } from 'kernel/words'
 
@@ -63,7 +64,7 @@ const gates = circuitPlay({
   },
 })
 
-const testLabel = (test, at) => test.label ?? TEST_WORDS.label(at)
+const testLabel = (test, at) => test.label ?? caseLabel(at)
 const partDefinition = ({ game, level }, type) => game.circuit.forTask(level.source).defined?.of(type) ?? game.defined.of(type)
 
 function derivationPlay(readout, run) {

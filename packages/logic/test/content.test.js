@@ -168,7 +168,8 @@ test('proof tasks offer a concrete default and a symbolic final case', () => {
     assert.ok(t.tests.length >= 2, entry.id)
     assert.notEqual(t.tests[0].symbolic, true, entry.id)
     assert.equal(t.tests.at(-1).symbolic, true, entry.id)
-    assert.equal(t.tests.at(-1).label.zh, '字母', entry.id)
+    assert.equal(t.tests.at(-1).label.zh, '一般形式', entry.id)
+    assert.equal(t.tests[0].label.zh, '案例 1', entry.id)
   }
 })
 

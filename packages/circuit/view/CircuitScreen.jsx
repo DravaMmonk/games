@@ -401,7 +401,11 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const final = judged
     ? ended && (checked.constraint || (run.hidden?.failed && run.hidden.note))
     : run.run?.over && run.run.final
-  const results = <><Results key={run.at} rows={rows} text={show} verdict={[verdict, final]} at={timed && run.run ? at : -1} count={timed && test ? timeline.count(test) : 0} marks={timed && ended && runOf.fail?.at?.tick !== undefined ? [runOf.fail.at.tick] : []} />{stepLog}</>
+  const outcome = <Results key={run.at} rows={rows} text={show} verdict={[verdict, final]} at={timed && run.run ? at : -1} count={timed && test ? timeline.count(test) : 0} marks={timed && ended && runOf.fail?.at?.tick !== undefined ? [runOf.fail.at.tick] : []} />
+  const results = reportOnly
+    // Only the run's report: a box of one size under the board, there before any run.
+    ? <div className="cs-report">{outcome}{stepLog || (!run.run && <p className="cs-report-empty">{L(WORDS.reportEmpty)}</p>)}</div>
+    : <>{outcome}{stepLog}</>
   // A table of cases: a row a test, what the board gives on each as the run reaches it (before a run, on the row picked).
   const ins = kind.portsIn(level)
   const out = kind.portsOut(level)[0]?.name
@@ -479,7 +483,6 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
           brief={brief}
           taskNav={<TaskNavigation level={entry} />}
           below={onPhone && practice.panel}
-          follow={reportOnly ? run.run?.id : undefined}
           describe={(n) => (known?.(n.type) ? resolve.definition(n.type).description : BUILT[n.type] ? builtDefinitions[n.type].desc ?? cards[n.type]?.desc : kind.isFixed(n.type) || !cards[n.type] ? null : game.textAt(cards[n.type], level.id, n.type)?.desc)}
           results={showResults ? strip : undefined}
           pad={surface?.pad ? <Dock pad={surface.pad} /> : undefined}

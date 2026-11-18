@@ -16,5 +16,6 @@ export const WORDS = {
   deleteBlock: T('删除区块'),
   moveBlock: T('拖动区块'),
   notWired: T("待接线"),
+  reportEmpty: T("运行后，这里逐步记下每张卡片做了什么。"),
   notConfigured: T("待配置"),
 }

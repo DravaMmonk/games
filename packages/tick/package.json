@@ -8,7 +8,7 @@
   "uses": {
     "circuit": "^0.0.0",
     "progress": "^0.0.0",
-    "scalarlib": "^0.0.0",
+    "numlib": "^0.0.0",
     "wiki": "^0.0.0"
   }
 }

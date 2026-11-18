@@ -4,13 +4,13 @@ import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { packageCodeProblems } from '../../../games/kit/engine/plugin-boundaries.js'
 import { evaluatePlay } from '../../../games/kit/engine/plugin-runtime.js'
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
-import { register as registerScalar } from '../../scalarlib/core/index.js'
+import { register as registerScalar } from '../../numlib/core/index.js'
 import { register } from '../core/index.js'
 import { boardPlay } from '../core/board-play.js'
 
 const root = new URL('../../../', import.meta.url).pathname
 const fixture = () => {
-  const parts = { 'sample/add': { name: 'Add', desc: 'Add inputs', family: 'circuit/value', icon: 'Plus', op: 'scalarlib/add' } }
+  const parts = { 'sample/add': { name: 'Add', desc: 'Add inputs', family: 'circuit/value', icon: 'Plus', op: 'numlib/add' } }
   return {
     id: 'sample', title: 'Sample', eras: [], trays: {},
     standalone: { level: 'sample/sum' }, glossary: { groups: [], entries: [] },
@@ -29,7 +29,7 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   const content = fixture()
   const kernel = createPluginKernel()
   register(kernel.forPackage('circuit', 'core'))
-  registerScalar(kernel.forPackage('scalarlib', 'core'))
+  registerScalar(kernel.forPackage('numlib', 'core'))
   assert.deepEqual(packageCodeProblems('circuit', root), [])
   assert.deepEqual((await kernel.checks({ content })).filter(line => line.fail), [])
   const task = content.levels[0].tasks[0]

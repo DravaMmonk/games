@@ -3,5 +3,5 @@
   "desc": "@part.gAnd.desc",
   "icon": "ToggleLeft",
   "family": "logic/gate",
-  "op": "scalarlib/and"
+  "op": "numlib/and"
 }

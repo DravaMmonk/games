@@ -33,7 +33,7 @@
 
 **包元数据和依赖。** `package.json` 声明种类 `kind`、`version`、`kernel` 范围和直接 `uses` 范围表。`"type": "module"` 声明包内的 JS 采用 ES 模块，新建和复制包时自动写入。种类为功能包 `feature`、拓展包 `ext`、课程包 `course` 或库包 `lib`。功能包提供可独立使用的机制，拓展包依托已有功能提供特定场景的能力。包 id 独立于种类，Studio 的包工作区、游戏选包、文案工作区和依赖列表按种类分组和筛选。包只可引用自身和直接依赖的对象，依赖不传递授权、不成环。游戏 `game.json` 的 `packages` 必须列全依赖闭包，至少一个包。加载按依赖拓扑排序，平局按包名，游戏最后；`packages` 的第一项是主包，选择顺序与拓扑加载顺序分别保存。
 
-**包的显示名。** 每个 `package.json` 的 `title` 和 `desc` 都是文案键，例如 `@package.title` 和 `@package.desc`。包名须有完整的译文。包简介面向 Studio 作者，缺译时回退到中文。标题用人能直接叫出的名字，简介用一句话说明包提供什么。新建空包写入双语起始文案，复制包沿用来源的文案，发布 manifest 保留这两个字段。新库包 id 用「缩写 + `lib`」，例如 `cvlib`、`imglib`、`mllib`、`scalarlib`。
+**包的显示名。** 每个 `package.json` 的 `title` 和 `desc` 都是文案键，例如 `@package.title` 和 `@package.desc`。包名须有完整的译文。包简介面向 Studio 作者，缺译时回退到中文。标题用人能直接叫出的名字，简介用一句话说明包提供什么。新建空包写入双语起始文案，复制包沿用来源的文案，发布 manifest 保留这两个字段。新库包 id 用「缩写 + `lib`」，例如 `cvlib`、`imglib`、`mllib`、`numlib`。
 
 **解析和公开面。** `engine/resolver.js` 的 `resolveLayers` 是读取游戏、包和依赖的唯一入口，产出拓扑排序的层；检查、操作集、Studio 服务端、构建、单关试玩、基线和 MCP 共用。内容根目录由解析器解释：默认当前工作区（从 `site/` 运行时取其父目录），可传 `root` 或用 `GAMES_ROOT` 覆盖。平台的安装位置不决定内容位置。游戏工作区只消费解析后的公开数据，依赖并发校验也重新解析层，不扫描包的内部文件。Vite 从已解析层取得代码入口。
 
@@ -73,7 +73,7 @@
 
 ```sh
 # site/
-npm run deps -- lock --package scalarlib
+npm run deps -- lock --package numlib
 npm run deps -- lock --game qed
 npm run deps -- upgrade --game qed [package]
 ```

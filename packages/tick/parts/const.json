@@ -11,5 +11,5 @@
       "integer": true
     }
   },
-  "op": "scalarlib/constant"
+  "op": "numlib/constant"
 }

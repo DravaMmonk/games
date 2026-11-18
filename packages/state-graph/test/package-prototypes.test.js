@@ -25,7 +25,7 @@ const numericParts = Object.fromEntries([
 ].map(([name, operation]) => [name, {
   icon: 'Plus', name: text(name), desc: text(name), family: 'circuit/value',
   inputs: ['a', 'b'].map(name => ({ name, type: 'kernel/number' })),
-  outputType: 'kernel/number', op: `scalarlib/${operation}`,
+  outputType: 'kernel/number', op: `numlib/${operation}`,
 }]))
 const layer = (id, objects = [], uses = [], overrides = []) => ({ id, config: { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
 
@@ -65,7 +65,7 @@ test('a numeric library works in packages using image and table boards, with no 
     installScalarFixture(root)
     const imageVocabulary = layerVocabulary(resolveLayers({ package: 'image', closure: true, root, unlocked: true }).layers)
     writeContentFixture(root, 'numeric-parts', { game: { vocabulary: 1 }, glossary: { groups: [], entries: [] }, partDefs: { parts: numericParts }, levels: {} }, circuitVocabulary)
-    put('packages/numeric-parts/package.json', { kind: 'ext', type: 'module', uses: { circuit: '^0.0.0', scalarlib: '^0.0.0' }, version: '0.0.0', kernel: '^0.0.0' })
+    put('packages/numeric-parts/package.json', { kind: 'ext', type: 'module', uses: { circuit: '^0.0.0', numlib: '^0.0.0' }, version: '0.0.0', kernel: '^0.0.0' })
     const common = { title: text('Sample'), vocabulary: 1 }
     writeContentFixture(root, 'picture', {
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {

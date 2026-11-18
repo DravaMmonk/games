@@ -5,9 +5,9 @@
       "version": "0.0.0",
       "hash": "c197cff76d74d57bbfba7ce4a44ce6c92dcc6c28c022d1a7f1a2d1ca5d0ef54c"
     },
-    "scalarlib": {
+    "numlib": {
       "version": "0.0.0",
-      "hash": "72c72b1d76c82f0475e0100a8029289ddc38660fa3db272d96746ca7ab290a9f"
+      "hash": "4f6404ab3a404d21071cfeea7db88bdefb5447c7e8d5ea183081ae5852ced3f7"
     },
     "wiki": {
       "version": "0.0.0",
@@ -15,11 +15,11 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "94c84c487f351afca8bc5ca2080f0e304b3dcf4d8d06b63b18cdc1a437f407aa"
+      "hash": "b3aa8399d06fe0249ad0b99d56892a0846887e34ab09a4471f84304b3f018242"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "b9b2456c5f80fe51c84e8cda56e73337b210f099d638ca834d7a3f69c0303c21"
+      "hash": "48c334c418f94107d4d0708d821d287485d3a247676f3d07e8167b054076d0c2"
     }
   }
 }

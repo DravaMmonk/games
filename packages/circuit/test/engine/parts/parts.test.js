@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { evaluate, parse, print, problemsOf } from '../../../core/parts/expr.js'
-import { operations as scalar } from '../../../../scalarlib/core/index.js'
+import { operations as scalar } from '../../../../numlib/core/index.js'
 import { BUILTIN_ITEMS, BUILTINS } from '../../../core/parts/builtins.js'
 import { applyRules, defineParts, partProblems } from '../../../core/index.js'
 import { evalSettings, failedCheck, partDesc, withParts } from '../../../core/parts/define.js'
@@ -30,11 +30,11 @@ const file = {
     sum: { name: 'Sum', desc: 'a + b', icon: 'Plus', family: 'value', inputs: [{ name: 'a' }, { name: 'b' }], op: 'add' },
     scaled: {
       name: 'Scaled', desc: 'a scaled', icon: 'Scaling', family: 'value', inputs: [{ name: 'a' }],
-      settings: { 'k': { control: 'slider', min: 1, max: 4, default: 2 }, 'how': { control: 'buttons', label: 'how', options: [{ value: 'up' }, { value: 'down' }], default: 'up' }, 'lock': { control: 'toggle', when: "scalarlib/eq($how, 'up')" } },
+      settings: { 'k': { control: 'slider', min: 1, max: 4, default: 2 }, 'how': { control: 'buttons', label: 'how', options: [{ value: 'up' }, { value: 'down' }], default: 'up' }, 'lock': { control: 'toggle', when: "numlib/eq($how, 'up')" } },
       op: 'scale',
-      rules: [{ on: 'how', when: "scalarlib/eq($how, 'down')", set: { k: "scalarlib/plus($k, 1)" } }],
-      checks: [{ holds: "scalarlib/le($k, 3)", say: { en: 'k is too large' } }],
-      views: { tile: [{ show: 'summary', text: '{how} ×{k}' }], card: [{ show: 'row', blocks: [{ show: 'setting', key: 'k' }, { show: 'readout', label: 'k²', expr: "scalarlib/times($k, $k)" }] }] },
+      rules: [{ on: 'how', when: "numlib/eq($how, 'down')", set: { k: "numlib/plus($k, 1)" } }],
+      checks: [{ holds: "numlib/le($k, 3)", say: { en: 'k is too large' } }],
+      views: { tile: [{ show: 'summary', text: '{how} ×{k}' }], card: [{ show: 'row', blocks: [{ show: 'setting', key: 'k' }, { show: 'readout', label: 'k²', expr: "numlib/times($k, $k)" }] }] },
     },
     split: { name: 'Split', desc: 'two', icon: 'Split', family: 'value', inputs: [{ name: 'a' }], outputs: [{ name: 'hi' }, { name: 'lo' }], op: { hi: 'upper', lo: 'lower' } },
   },
@@ -52,12 +52,12 @@ test('an expression reads, prints back, and says what it names wrong', () => {
 
 test('if works out only the branch it takes; a builtin’s numbers are plain numbers', () => {
   const env = { ins: {}, settings: { a: 6, b: 0 }, run: (name, args, named) => ({ ...BUILTINS, ...scalar })[name].run(args, named) }
-  assert.equal(evaluate(parse("circuit/if(scalarlib/eq($b, 0), $a, scalarlib/over($a, $b))"), env), 6, 'no division by 0 on the branch not taken')
+  assert.equal(evaluate(parse("circuit/if(numlib/eq($b, 0), $a, numlib/over($a, $b))"), env), 6, 'no division by 0 on the branch not taken')
   const ops = { ...BUILTIN_ITEMS, ...vocabulary.kinds.operation }
   const said = (text) => problemsOf(parse(text), { ops, inputs: ['a'], settings: { k: { control: 'slider' } }, fits: () => true })
-  assert.deepEqual(said("scalarlib/round(a)"), ['scalarlib/round(a): the input a is no plain number'])
-  assert.deepEqual(said("scalarlib/plus(add(a, a), 1)"), ['scalarlib/plus(a): what add gives is no plain number'])
-  assert.deepEqual(said("scalarlib/times(scalarlib/plus($k, 1), 2)"), [])
+  assert.deepEqual(said("numlib/round(a)"), ['numlib/round(a): the input a is no plain number'])
+  assert.deepEqual(said("numlib/plus(add(a, a), 1)"), ['numlib/plus(a): what add gives is no plain number'])
+  assert.deepEqual(said("numlib/times(numlib/plus($k, 1), 2)"), [])
 })
 
 test('parts.json becomes engine parts: settings resolved from shared definitions, one or several outputs, 「—」 given on', () => {
@@ -92,7 +92,7 @@ test('interaction: rules follow a change, checks say what fails, settings-only e
   assert.deepEqual(applyRules(defs.scaled, { k: 2, how: 'down' }, 'how', OPS, key => key === 'k'), { k: 2, how: 'down' })
   assert.deepEqual(applyRules(defs.scaled, { k: 2, how: 'up' }, 'how', OPS), { k: 2, how: 'up' })
   assert.deepEqual(failedCheck(defs.scaled, { k: 4 }, OPS), { en: 'k is too large' })
-  assert.equal(evalSettings("scalarlib/times($k, $k)", defs.scaled, { k: 3 }, OPS), 9)
+  assert.equal(evalSettings("numlib/times($k, $k)", defs.scaled, { k: 3 }, OPS), 9)
 })
 
 test('a parts.json that holds together has no problems; one that does not says where', () => {
@@ -174,7 +174,7 @@ test('a part with regions is a frame: its resource sees the card and the region,
 
     parts: {
       box: { name: 'Box', desc: 'b', icon: 'Box', family: 'value', inputs: [{ name: 'x' }], regions: [{ name: 'body', opens: true, closes: true }], op: 'box' },
-      thrice: { name: 'Thrice', desc: 't', icon: 'Repeat', family: 'value', inputs: [{ name: 'x' }], regions: [{ name: 'body', opens: true }, { name: 'more', opens: true, when: "scalarlib/eq($more, 'yes')" }], settings: { 'more': { control: 'select', options: [{ value: 'no' }, { value: 'yes' }] } }, op: 'thrice' },
+      thrice: { name: 'Thrice', desc: 't', icon: 'Repeat', family: 'value', inputs: [{ name: 'x' }], regions: [{ name: 'body', opens: true }, { name: 'more', opens: true, when: "numlib/eq($more, 'yes')" }], settings: { 'more': { control: 'select', options: [{ value: 'no' }, { value: 'yes' }] } }, op: 'thrice' },
       twice: { name: 'Twice', desc: 'd', icon: 'Plus', family: 'value', inputs: [{ name: 'x' }], op: 'twice' },
       named: { name: 'Named', desc: 'n', icon: 'Plus', family: 'value', inputs: [], op: 'named' },
     },

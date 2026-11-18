@@ -1,5 +1,5 @@
 {
-  "target": "scalarlib",
+  "target": "numlib",
   "dependencies": {
     "kernel": {
       "version": "0.0.0",

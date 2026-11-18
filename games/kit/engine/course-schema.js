@@ -12,3 +12,18 @@ export const CHAPTER = S.obj({
   ...COURSE_FIELDS,
 })
 export const CHAPTERS = S.list(S.str({ reference: 'chapter' }))
+
+/** Add a level schema with its own task shape. Shared required fields stay required. */
+export function extendLevelSchema(base, extension, { extensionTasksFirst = false } = {}) {
+  if (!base) return extension
+  const fields = { ...base.fields, ...extension.fields }
+  for (const [key, field] of Object.entries(extension.fields)) {
+    if (key === 'tasks') continue
+    const previous = base.fields[key]
+    const merged = previous ? S.either(previous, field) : field
+    fields[key] = !previous || previous.optional || field.optional ? S.opt(merged) : merged
+  }
+  const taskShapes = [base.fields.tasks.of, extension.fields.tasks.of]
+  if (extensionTasksFirst) taskShapes.reverse()
+  return S.obj({ ...fields, tasks: S.list(S.either(...taskShapes), { min: 1 }) })
+}

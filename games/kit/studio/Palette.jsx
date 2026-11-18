@@ -8,7 +8,7 @@ import { useOverlay } from '../shell/useOverlay.js'
 import { rankPalette } from './palette.js'
 import { useListCursor } from './useListCursor.js'
 
-const KIND = { recent: [T("最近")], action: [T("操作")], level: [T("关卡")], era: [T("章")], field: [T("字段", {}, "palette")], entry: [T("百科")], finding: [T("检查", {}, "palette")] }
+const KIND = { recent: T("最近"), action: T("操作"), level: T("关卡"), era: T("章"), field: T("字段", {}, "palette"), projected: T("对象"), finding: T("检查", {}, "palette") }
 const SHOWN = 80
 
 export default function Palette({ items, onRun, onClose }) {
@@ -49,12 +49,13 @@ export default function Palette({ items, onRun, onClose }) {
         />
         {asking ? <p className="palette-ask">{asking.label}</p> : <ul className="palette-list" ref={list} role="listbox">
           {shown.map((item, k) => {
-            const heading = item.kind !== group ? <li key={`g ${item.kind}`} className="palette-group">{L(KIND[item.kind])}</li> : null
-            group = item.kind
+            const key = item.file ?? item.kind
+            const heading = key !== group ? <li key={`g ${key}`} className="palette-group">{L(item.groupLabel ?? KIND[item.kind])}</li> : null
+            group = key
             return [heading, (
               <li key={item.key} role="option" aria-selected={k === at} className={`palette-item is-${item.kind} ${k === at ? 'is-at' : ''}`} onPointerDown={(e) => { e.preventDefault(); run(item) }} onPointerEnter={() => setAt(k)}>
-                <span>{item.label}</span>
-                {item.detail && <small>{item.detail}</small>}
+                <span>{L(item.label)}</span>
+                {item.detail && <small>{L(item.detail)}</small>}
               </li>
             )]
           })}

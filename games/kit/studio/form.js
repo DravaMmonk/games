@@ -28,7 +28,7 @@ import { copyWithoutTextKeys } from '../engine/catalogs.js'
 import { getLang, L, tr } from '../shell/i18n.js'
 import { SECTIONS, callOf, find, sectionOf, validate } from '../engine/schema.js'
 import { parsePath, showPath } from '../engine/ops/edit.js'
-import { projectionFile } from './editors.js'
+import { projectionFile, studioProjections } from './editors.js'
 import { newTaskId } from '../engine/tasks.js'
 
 import { objectOp, objectSchema, objectValue } from './object-file.js'
@@ -415,14 +415,18 @@ const keysOf = (dotted) => dotted.split('.').filter(Boolean).flatMap((k) => k.sp
  * (`content: levels/<id>.json.<path>: …`) and a copy problem (`text levels.<n>.<path> …`, n counting `order`, the levels in
  * play order). Lines about a level that say no place in it are { level, path: null }.
  */
-export function placesOf(lines, order) {
+export function placesOf(lines, order, vocabulary) {
+  const projections = studioProjections(vocabulary)
   const out = []
   for (const line of lines) {
     if (!line.fail) continue
     const content = /^content: levels\/(.+?)\.json((?:\.[^\s:[]+|\[\d+\])*): (.*)$/.exec(line.text)
     if (content) { out.push({ level: content[1], path: keysOf(content[2]), says: content[3] }); continue }
-    const parts = /^content: parts\.json((?:\.[^\s:[]+|\[\d+\])*): (.*)$/.exec(line.text)
-    if (parts) { out.push({ file: 'parts', path: keysOf(parts[1]), says: parts[2] }); continue }
+    const projected = /^content: ([a-z][a-z0-9-]*)\.json((?:\.[^\s:[\]]+|\[\d+\])*): (.*)$/.exec(line.text)
+    if (projected && projections[projected[1]]) {
+      out.push({ file: projected[1], path: keysOf(projected[2]), says: projected[3] })
+      continue
+    }
     const copy = /^text levels\.(\d+)((?:\.[^\s.]+)*) (.*)$/.exec(line.text)
     if (copy && order[Number(copy[1])]) { out.push({ level: order[Number(copy[1])], path: keysOf(copy[2]), says: copy[3] }); continue }
     for (const level of line.levels ?? []) out.push({ level, path: null, says: line.text })

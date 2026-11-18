@@ -4,6 +4,9 @@
   "package.desc": "Provides grouped and cross-linked reference entries that unlock with progress.",
   "package.title": "Encyclopedia",
   "ui": {
+    "复制所选词条": "Duplicate the entry open",
+    "新建词条": "New entry",
+    "新词条": "New entry",
     "请通过词条标签修改分组。": "Edit encyclopedia membership through entry tags.",
     "其它": "Other",
     "加入": "Add",

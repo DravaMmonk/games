@@ -123,7 +123,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   }, [rawNames])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
   const items = useMemo(() => lines.map(itemOf), [lines])
-  const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? []), [lines, checked, shown])
+  const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
 
   const layer = `@${game}`
   const events = useMemo(() => visibleOverrides(content, layer), [content, layer])

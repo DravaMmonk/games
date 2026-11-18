@@ -1,5 +1,6 @@
 {
   "ui": {
+    "对象": "Objects",
     "+ 引言": "+ Intro",
     "0 的情况": "The case 0",
     "1/a；a 为 0 时没有值": "1/a; no value when a is 0",
@@ -422,7 +423,6 @@
     "复制成新的任务": "Duplicate as a new task",
     "复制所选{zh}": "Duplicate the {zh} open",
     "复制所选关卡": "Duplicate the level picked",
-    "复制所选词条": "Duplicate the entry open",
     "复制最后一项": "Duplicate last item",
     "复制这一关成新的一关……": "Duplicate this level as…",
     "复制这一项": "Copy this item",
@@ -687,7 +687,6 @@
     "新建或复制": "New or copy",
     "新建游戏": "New game",
     "新建空白包": "New empty package",
-    "新建词条": "New entry",
     "新文件": "new",
     "新文件路径": "New file path",
     "新游戏已建好。打开它会放弃待定操作，现在打开吗？": "The game is made. Opening it discards the pending operations. Open it now?",
@@ -700,7 +699,6 @@
     "新的分组 ⟦sidebar-list-tools⟧": "New group",
     "新的标签": "New tag",
     "新的键": "New key",
-    "新词条": "New entry",
     "新键": "New key",
     "无": "None",
     "是": "yes",

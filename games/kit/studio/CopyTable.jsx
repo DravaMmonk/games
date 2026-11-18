@@ -5,7 +5,7 @@ import { useLang } from '../shell/useLang.js'
 import { showPath } from '../engine/ops/edit.js'
 import { textIn } from '../engine/i18n.js'
 import { RotateCcw } from 'lucide-react'
-import { allCopyRows, copyEdit, copyFileOf, copyLanguages, copyRows, packageWording } from './copy.js'
+import { allCopyRows, copyEdit, copyFileOf, copyLanguages, copyRows, copyScopes, packageWording } from './copy.js'
 import { usePref } from './prefs.js'
 import LanguagePicker from './LanguagePicker.jsx'
 import { TextField, textFindings } from './TextField.jsx'
@@ -99,9 +99,8 @@ export default function CopyTable({ side = 'package', content, vocabulary, scope
               ? (content.eras ?? []).map((era, index) => <option key={index} value={index}>{era.id} {L(era.title ?? era.chapter?.title) ?? ''}</option>)
               : Object.entries(content.tags ?? {}).filter(([, tag]) => tag.kind === 'level').map(([id, group]) => <option key={id} value={`group:${id}`}>{L(group.title) || id}</option>)}
             <option value="all">{side === 'game' ? tr('整款游戏') : tr("整个内容包")}</option>
-            <option value="glossary">{tr('百科')}</option>
+            {copyScopes(content, vocabulary).map(([name, title]) => <option key={name} value={name}>{L(title)}</option>)}
             {side === 'package' && <option value="ui">{tr('界面文案')}</option>}
-            {content.partDefs && <option value="parts">{tr("元件")}</option>}
           </select>}
           <select value={selectedField} onChange={(event) => setField(event.target.value)} aria-label={tr('字段')}>
             <option value="">{tr('全部字段')}</option>

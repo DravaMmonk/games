@@ -1,5 +1,5 @@
 import { setAt, sourceValue, unsetAt } from 'kernel'
-import { tr } from 'kernel/words'
+import { T, tr } from 'kernel/words'
 import { GLOSSARY } from './schema.js'
 
 /** Name the source represented by an encyclopedia field. */
@@ -19,6 +19,26 @@ function glossaryTarget(glossary, keys) {
 export const glossaryProjection = {
   read: content => content.glossary,
   schema: GLOSSARY,
+  copyLabel: T('百科'),
+  copyTypes: ['entry'],
+  fieldPath(glossary, path) {
+    if (path[0] !== 'entries' || typeof path[1] !== 'string') return path
+    const index = glossary?.entries.findIndex(entry => entry.id === path[1]) ?? -1
+    return index === -1 ? null : ['entries', index, ...path.slice(2)]
+  },
+  pagePath(glossary, path) {
+    if (path[0] !== 'entries' || !Number.isInteger(path[1])) return path
+    const id = glossary?.entries[path[1]]?.id
+    return id ? ['entries', id, ...path.slice(2)] : null
+  },
+  objectPath(glossary, kind, id) {
+    return kind === 'entry' ? this.fieldPath(glossary, ['entries', id]) : null
+  },
+  objects(glossary) {
+    return (glossary?.entries ?? []).map((entry, index) => ({
+      id: entry.id, title: entry.title, path: ['entries', index],
+    }))
+  },
   sourceFile: glossaryFile,
   textTarget(glossary, path) {
     const target = glossaryTarget(glossary, path)

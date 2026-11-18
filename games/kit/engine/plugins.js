@@ -33,7 +33,7 @@ export function createPluginKernel() {
         for (const key of required) if (typeof value?.[key] !== 'function') throw new Error(`${name}: ${type} needs ${key}()`)
         if (type === 'editor') {
           if (typeof value?.component !== 'function') throw new Error(`${name}: editor needs component()`)
-          for (const slot of ['list', 'page', 'preview', 'stages', 'inspectorDraft', 'onPage']) if (value[slot] !== undefined && typeof value[slot] !== 'function') throw new Error(`${name}: editor ${slot} needs a function`)
+          for (const slot of ['list', 'page', 'preview', 'sidebar', 'stages', 'inspectorDraft', 'onPage']) if (value[slot] !== undefined && typeof value[slot] !== 'function') throw new Error(`${name}: editor ${slot} needs a function`)
           if ([...tables.editor.values()].some(editor => editor.type === value.type)) throw new Error(`${name}: duplicate editor type ${value.type}`)
         }
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)

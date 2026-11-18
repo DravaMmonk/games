@@ -75,8 +75,19 @@ function uiCopyRows({ uiCatalogs = {} }) {
   }))
 }
 
-export const allCopyRows = (content, vocabulary, order, side = 'package') => ['all', 'ui', ...Object.entries(studioProjections(contentSchemas.get(content) ?? vocabulary)).filter(([, projection]) => projection.textTarget).map(([name]) => name), ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type]).map(({ type }) => listOfType(type))]
-  .flatMap((scope) => copyRows(content, vocabulary, scope, order, side))
+export function copyScopes(content, vocabulary) {
+  const projections = Object.entries(studioProjections(contentSchemas.get(content) ?? vocabulary))
+    .filter(([, projection]) => projection.textTarget && projection.read(content))
+  const covered = new Set(projections.flatMap(([, projection]) => projection.copyTypes ?? []))
+  return [
+    ...projections.map(([name, projection]) => [name, projection.copyLabel ?? name]),
+    ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type] && !covered.has(type) && Object.keys(content.registries?.[type] ?? {}).length)
+      .map(({ type, name }) => [listOfType(type), name]),
+  ]
+}
+
+export const allCopyRows = (content, vocabulary, order, side = 'package') => ['all', 'ui', ...copyScopes(content, vocabulary).map(([scope]) => scope)]
+  .flatMap(scope => copyRows(content, vocabulary, scope, order, side))
 
 export const copyLanguages = (rows) => [...new Set(['en', 'zh', ...languagesOf(rows.map((row) => row.value))])].sort()
 

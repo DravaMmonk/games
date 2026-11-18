@@ -16,6 +16,9 @@ export const editorRules = () => Object.assign({}, ...registeredMeanings().map(m
 export const studioProjections = vocabulary => Object.assign({}, ...(vocabulary?.meanings ?? registeredMeanings())
   .map(meaning => meaning.studio?.projections))
 
+export const navigableProjections = vocabulary => Object.entries(studioProjections(vocabulary))
+  .filter(([, projection]) => projection.fieldPath && projection.pagePath)
+
 export function projectionFile(content, vocabulary, at) {
   const projections = studioProjections(vocabulary)
   const name = Object.keys(projections).find(name => at?.[name])

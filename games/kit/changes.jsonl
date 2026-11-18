@@ -2,3 +2,4 @@
 {"seq":2,"at":"2026-11-18T09:16:00.855Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"f36cafff89fb6d1e"}]}
 {"seq":3,"at":"2026-11-18T13:37:06.823Z","why":"Move component editor text into the circuit package","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"983fb1758b7a5a4b"}]}
 {"seq":4,"at":"2026-11-18T13:41:45.180Z","why":"Move projection editor text into its owning packages","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"8a5021cc6a49193e"}]}
+{"seq":5,"at":"2026-11-18T13:47:45.048Z","why":"Move projection editor text into its owning packages","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"995c1ea81e849b79"}]}

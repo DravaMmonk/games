@@ -18,6 +18,9 @@ import { openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { runChangeset } from '../../../games/kit/engine/ops/changeset.js'
 import { bulkAdds, bulkPatch, bulkSet, bulkUnset, commonFields } from '../../../games/kit/studio/bulk.js'
 import { paletteIndex, rankPalette, scoreOf } from '../../../games/kit/studio/palette.js'
+import { navigableProjections } from '../../../games/kit/studio/editors.js'
+import { contentSchemas } from '../../../games/kit/engine/content.js'
+import { glossarySchemas } from '../../wiki/test/fixture.js'
 import { copyRows } from '../../../games/kit/studio/copy.js'
 
 const VOCAB = defineVocabulary({
@@ -121,16 +124,16 @@ const CONTENT = {
 
 test('the palette indexes levels, eras, fields, entries, findings, recent fields and actions, and ranks them as typed', () => {
   const items = paletteIndex({
-    content: CONTENT, labels: [{ id: 'b', label: '1-1' }, { id: 'a', label: '1-2' }, { id: 'c', label: '1-3' }], level: 'a', fields: ['title', 'tests', 'hint[0]'],
+    content: CONTENT, projections: navigableProjections(glossarySchemas(VOCAB)), labels: [{ id: 'b', label: '1-1' }, { id: 'a', label: '1-2' }, { id: 'c', label: '1-3' }], level: 'a', fields: ['title', 'tests', 'hint[0]'],
     items: [itemOf({ fail: true, text: 'a: reference fails test 2', levels: ['a'] }), itemOf({ text: 'b: answer PASS', levels: ['b'] })],
     recent: [{ level: 'a', path: 'title' }], actions: [{ id: 'search', label: 'Search and replace', keys: 'Ctrl+Shift+F' }], lang: 'en',
   })
-  assert.deepEqual(items.map((it) => it.kind), ['recent', 'action', 'level', 'level', 'level', 'era', 'field', 'field', 'field', 'entry', 'finding'])
+  assert.deepEqual(items.map((it) => it.kind), ['recent', 'action', 'level', 'level', 'level', 'era', 'field', 'field', 'field', 'projected', 'finding'])
   assert.deepEqual(items.filter((it) => it.kind === 'level').map((it) => it.label), ['1-1 乙', '1-2 甲', '1-3 丙'], 'levels in play order, by their number on the map')
   assert.equal(items.find((it) => it.kind === 'finding').finding.rule, 'domain', 'passing lines are not findings')
   assert.equal(rankPalette(items, '乙')[0].level, 'b')
   assert.equal(rankPalette(items, '1-3')[0].level, 'c')
-  assert.equal(rankPalette(items, 'adder')[0].kind, 'entry')
+  assert.deepEqual(rankPalette(items, 'adder')[0].path, ['entries', 0])
   assert.deepEqual(rankPalette(items, '>').map((it) => it.kind), ['action'])
   assert.deepEqual(rankPalette(items, '@hint').map((it) => it.path), ['hint[0]'])
   assert.equal(rankPalette(items, 'srch')[0].action, 'search', 'letters in order')
@@ -144,9 +147,9 @@ test('on every starter: the palette indexes every level and entry', () => {
   assert.ok(STARTERS.length > 0)
   for (const game of STARTERS) {
     const content = starter(game)
-    const items = paletteIndex({ content })
+    const items = paletteIndex({ content, projections: navigableProjections(contentSchemas.get(content)) })
     assert.equal(items.filter((it) => it.kind === 'level').length, content.levels.length, game)
-    assert.equal(items.filter((it) => it.kind === 'entry').length, content.glossary.entries.length, game)
+    assert.equal(items.filter((it) => it.kind === 'projected' && it.file === 'glossary').length, content.glossary.entries.length, game)
   }
 })
 

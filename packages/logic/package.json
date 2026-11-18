@@ -8,6 +8,7 @@
   "uses": {
     "circuit": "^0.0.0",
     "scalar": "^0.0.0",
-    "sentence": "^0.0.0"
+    "sentence": "^0.0.0",
+    "wiki": "^0.0.0"
   }
 }

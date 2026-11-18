@@ -3,19 +3,23 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "e7b68c05130c49e72f398291dab21af3d799d5e4410744402a3d69d1b93688e1"
-    },
-    "circuit": {
-      "version": "0.0.0",
-      "hash": "3490acbcba2071eb1d42b59748990c2278804bb850bbe183f3db3d94386137cf"
+      "hash": "77ea4f887cb0993ce5b6d3f3c5d500d565f4e3bfd288713b93059d98fbac932d"
     },
     "scalar": {
       "version": "0.0.0",
-      "hash": "131abcff2a0ba953bd8662fbe16668855b8c2271dec441eb2ae8f93c0552c7ab"
+      "hash": "188759ad37630092d7b80f9827f4054bace941089d1b01bae1788964f8b5d01b"
     },
     "sentence": {
       "version": "0.0.0",
-      "hash": "1523ae09076f503ec831d7cbc68db0ff37be8e829821d5802a40528f8743373d"
+      "hash": "2dfdfbdc8e8aabe413907a905177dfadf16a3509fb60e652931e73cbdee138e3"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "e45f7bdec9499fd17138531bab7e3dbbd1f9a7f29f30796ff40cb7681410f531"
+    },
+    "circuit": {
+      "version": "0.0.0",
+      "hash": "43f4a85ac80ace88d231d70bbc2fee54c86e9ab6c4b554580e415bb2e1020fb8"
     }
   }
 }

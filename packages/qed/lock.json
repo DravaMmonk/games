@@ -3,31 +3,31 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "e7b68c05130c49e72f398291dab21af3d799d5e4410744402a3d69d1b93688e1"
-    },
-    "circuit": {
-      "version": "0.0.0",
-      "hash": "3490acbcba2071eb1d42b59748990c2278804bb850bbe183f3db3d94386137cf"
-    },
-    "progress": {
-      "version": "0.0.0",
-      "hash": "c9c153afa74ab6b7db1405a31d4d8cb018b2f9c4fee5f61655b31b725d7a7e8e"
+      "hash": "77ea4f887cb0993ce5b6d3f3c5d500d565f4e3bfd288713b93059d98fbac932d"
     },
     "scalar": {
       "version": "0.0.0",
-      "hash": "131abcff2a0ba953bd8662fbe16668855b8c2271dec441eb2ae8f93c0552c7ab"
+      "hash": "188759ad37630092d7b80f9827f4054bace941089d1b01bae1788964f8b5d01b"
     },
     "sentence": {
       "version": "0.0.0",
-      "hash": "9aab68f4eb41908a8d52aac516d9f76b5d6280c5f5844d4707b504ade5d7355b"
-    },
-    "logic": {
-      "version": "0.0.0",
-      "hash": "2a2a7ca9c1d2ff4a8fe39d6139b8933047bf8406c7e5b9c9a9f3b09462182751"
+      "hash": "2dfdfbdc8e8aabe413907a905177dfadf16a3509fb60e652931e73cbdee138e3"
     },
     "wiki": {
       "version": "0.0.0",
-      "hash": "3705518f66d82954ebcddf48791a053fcbc81838bd12785694672c28e29b5da0"
+      "hash": "e45f7bdec9499fd17138531bab7e3dbbd1f9a7f29f30796ff40cb7681410f531"
+    },
+    "circuit": {
+      "version": "0.0.0",
+      "hash": "43f4a85ac80ace88d231d70bbc2fee54c86e9ab6c4b554580e415bb2e1020fb8"
+    },
+    "logic": {
+      "version": "0.0.0",
+      "hash": "8df3cc6ca78c0cd79a9c8d59f9bb92e7d9ecc4544e0c953513fa6bb768794197"
+    },
+    "progress": {
+      "version": "0.0.0",
+      "hash": "f5a5f1f879bb4934980f5b018d93c7b79080e32ccdcc0d0a1a6694a5a6801f57"
     }
   }
 }

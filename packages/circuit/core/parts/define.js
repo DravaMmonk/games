@@ -16,7 +16,7 @@
 import { sideOf } from 'kernel'
 
 
-import { PartError } from "../circuit.js"
+import { OperationError } from 'kernel'
 import { runRegion } from "../board/frames.js"
 import { facesOf, holesOf, insideOf, keepsOf, outletsOf, regionsOf, registerParts, resolveSettings, settingsOf } from "../parts.js"
 import { validate } from 'kernel'
@@ -86,12 +86,12 @@ export function optionsOf(s, def, { params = {}, ins = {}, ctx = {} } = {}, ops 
   }
 }
 
-const runner = (ops, ctx) => (name, args, named) => {
+const runner = (ops = {}, ctx) => (name, args, named) => {
   const op = BUILTINS[name] ?? ops[name] ?? registeredOperations[name]
-  if (!op) throw new PartError({ zh: `没有引擎资源 ${name}`, en: `no engine resource ${name}` })
+  if (!op) throw new OperationError({ zh: `没有引擎资源 ${name}`, en: `no engine resource ${name}` })
   return op.run(args, named, ctx)
 }
-const noCase = (v) => new PartError({ zh: `没有为 ${v} 写出运算`, en: `nothing is computed for ${v}` })
+const noCase = (v) => new OperationError({ zh: `没有为 ${v} 写出运算`, en: `nothing is computed for ${v}` })
 
 /** A node's settings as computing reads them. */
 export const settingsFor = (def, params = {}) => Object.fromEntries(settingsOf(def).map((s) => [s.key, coerce(s, params[s.key])]))
@@ -216,11 +216,11 @@ export function compileParts(parts, ops, code = {}) {
       settings: Object.fromEntries(settingsOf(def).filter((s) => OPTIONED.has(s.control) && s.options).map((s) => [s.key, s.options.map((o) => o.value)])),
       eval: (ins, node, ctx, key) => {
         const failed = failedCheck(def, node?.params ?? {}, ops)
-        if (failed) throw new PartError(failed)
+        if (failed) throw new OperationError(failed)
         const read = ports.reads ? ports.reads(node, key) : ports.inputs
         if (def.nulls !== 'pass' && read.some((n) => ins[n] === null || (ins[n] === undefined && !optional.has(n)))) return null
         const tree = trees[def.outputNames ? key : '']
-        if (!tree) throw new PartError({ zh: '这个元件的运算写错了', en: 'this part’s computation does not parse' })
+        if (!tree) throw new OperationError({ zh: '这个元件的运算写错了', en: 'this part’s computation does not parse' })
         const card = { ...ctx, node, key, ins, region: (name) => runRegion(node, ctx, name) }
         const env = { ins, settings: settingsFor(def, node?.params), run: runner(ops, card), noCase }
         if (!ctx?.tape) return evaluate(tree, env)

@@ -119,7 +119,7 @@ export const partMeaning = {
     if (references.length) return [...new Set(references.map(task => taskModule(task) ?? 'circuit'))]
     const owner = name => typeof name === 'string' && name.includes('/') ? name.split('/')[0] : null
     const types = parts.flatMap(part => [part.outputType, ...(part.inputs ?? []).map(port => port.type)])
-    return [[...types.map(owner), ...parts.map(part => owner(part.family) ?? owner(part.mark))].find(id => id && id !== 'circuit') ?? 'circuit']
+    return [[...types.map(owner), ...parts.map(part => owner(part.family) ?? owner(part.mark))].find(id => id && id !== 'circuit' && id !== 'kernel') ?? 'circuit']
   },
   scope({ content, id, taskModule }) {
     const parts = Object.fromEntries(Object.entries(content.partDefs?.parts ?? {}).filter(([, part]) => !part.inside || part.inside.some(entry => (taskModule(entry.reference) ?? 'circuit') === id)))

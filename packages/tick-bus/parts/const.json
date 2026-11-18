@@ -11,5 +11,5 @@
       "integer": true
     }
   },
-  "op": "circuit/constant"
+  "op": "scalar/constant"
 }

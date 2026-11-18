@@ -11,11 +11,11 @@ export function pluginSource(layers, root = contentRoot()) {
   const schemas = layerVocabulary(layers)
   return [
     ...entries.flatMap((entry, index) => ['core', 'view'].filter(side => entry[side]).map(side => `import * as ${side}${index} from ${q(entry[side])}`)),
-    `import { registerPlugins, pluginObjects } from ${q(resolve(KIT, 'engine/plugins.js'))}`,
+    `import { registerPlugins, pluginMeanings, pluginObjects } from ${q(resolve(KIT, 'engine/plugins.js'))}`,
     `import { pluginGame } from ${q(resolve(KIT, 'app/plugin-game.jsx'))}`,
     `const kernel = await registerPlugins([${entries.map((entry, index) => `{ id: ${q(entry.id)}, ${['core', 'view'].filter(side => entry[side]).map(side => `${side}: ${side}${index}`).join(', ')} }`).join(', ')}], { view: true })`,
     `import { vocabularyFor } from ${q(resolve(KIT, 'engine/kernel.js'))}`,
-    `const vocabulary = { ...vocabularyFor(), packageCode: ${q(schemas.packageCode)}, codeObjects: pluginObjects(kernel), meanings: [...kernel.tables.kind.values()] }`,
+    `const vocabulary = { ...vocabularyFor(), packageCode: ${q(schemas.packageCode)}, codeObjects: pluginObjects(kernel), meanings: pluginMeanings(kernel) }`,
   ].join('\n')
 }
 export function packageApp(root = contentRoot()) {

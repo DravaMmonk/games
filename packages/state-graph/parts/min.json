@@ -58,24 +58,24 @@
   "inputs": [
     {
       "name": "left",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "ul",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "start",
-      "type": "circuit/boolean"
+      "type": "kernel/boolean"
     },
     {
       "name": "cost",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "way3",
-      "type": "circuit/number"
+      "type": "kernel/number"
     }
   ],
-  "outputType": "circuit/number"
+  "outputType": "kernel/number"
 }

@@ -27,8 +27,8 @@ const given = { offers: { view: ['up', 'left'], facts: ['start', 'rock'] }, inpu
 
 const model = modelOf(partsOf({}));
 const world = {
-  sensors: { up: { type: 'circuit/number' }, left: { type: 'circuit/number' }, start: { type: 'circuit/boolean' }, rock: { type: 'circuit/boolean' } },
-  outs: [['cell', 'Cell', '', 'circuit/number']],
+  sensors: { up: { type: 'kernel/number' }, left: { type: 'kernel/number' }, start: { type: 'kernel/boolean' }, rock: { type: 'kernel/boolean' } },
+  outs: [['cell', 'Cell', '', 'kernel/number']],
 };
 const blueprint = robotBlueprint(model, given, world);
 
@@ -134,7 +134,7 @@ const counterSolution = ['k = table/const[value=1]()', 'g = table/pass(facts.sta
 const counterPorts = [{ 'state-graph/way': { n: 1, sensor: 'up' } }, { 'state-graph/way': { n: 2, sensor: 'left' } }, { 'state-graph/start': { sensor: 'start' } }];
 const twoLevels = () => ({
   id: 't', title: t('t'), registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['table/msum', 'table/const', 'table/pass', 'table/block'] } } },
-  partDefs: { parts: { counter: { name: t('counter'), desc: t('d'), inputs: [{ name: 'up', type: 'circuit/number' }, { name: 'left', type: 'circuit/number' }, { name: 'start', type: 'circuit/boolean' }], outputType: 'circuit/number', inside: [{ id: 'base', reference: { play: 'state-graph/circuit', world: 'state-graph/grid', robot: 'state-graph/scout', facts: ['start'], solution: counterSolution, ports: counterPorts } }] } } },
+  partDefs: { parts: { counter: { name: t('counter'), desc: t('d'), inputs: [{ name: 'up', type: 'kernel/number' }, { name: 'left', type: 'kernel/number' }, { name: 'start', type: 'kernel/boolean' }], outputType: 'kernel/number', inside: [{ id: 'base', reference: { play: 'state-graph/circuit', world: 'state-graph/grid', robot: 'state-graph/scout', facts: ['start'], solution: counterSolution, ports: counterPorts } }] } } },
   eras: [{ id: 'e', machine: 'state-graph/scout', levels: [{ id: 'build' }, { id: 'reuse' }], links: [{ from: 'build', to: 'reuse' }], chapter: { title: t('e'), desc: t('e') } }],
   levels: [
     { id: 'build', intro: [], robot: 'state-graph/scout', adds: ['table/msum', 'table/const', 'table/pass'],
@@ -148,10 +148,10 @@ const twoLevels = () => ({
 
 test('a robot circuit checks its declared interface against its referenced world', () => {
   const wrongInput = twoLevels();
-  wrongInput.partDefs.parts.counter.inputs[0].type = 'circuit/boolean';
+  wrongInput.partDefs.parts.counter.inputs[0].type = 'kernel/boolean';
   assert.ok(tableWorks(wrongInput).wrong.some(message => message.includes('input types do not match')));
   const wrongOutput = twoLevels();
-  wrongOutput.partDefs.parts.counter.outputType = 'circuit/boolean';
+  wrongOutput.partDefs.parts.counter.outputType = 'kernel/boolean';
   assert.ok(tableWorks(wrongOutput).wrong.some(message => message.includes('output type does not match')));
 });
 
@@ -193,7 +193,7 @@ test('robot workshop blueprints round-trip and restore with the same ports and s
   } };
   const part = {
     id: 'user_value', graph: { nodes: [], wires: [] }, inputs: [], outputs: ['cell'],
-    outputSignals: { cell: 'circuit/number' }, name: 'Saved value',
+    outputSignals: { cell: 'kernel/number' }, name: 'Saved value',
   };
   const viewFor = (definition) => workshopView(base, { parts: { [part.id]: definition } }, () => true, table.model.partOf).view;
   const view = viewFor(part);
@@ -205,7 +205,7 @@ test('robot workshop blueprints round-trip and restore with the same ports and s
   assert.deepEqual(plainBoard(read(print(graph, parts), opening, parts, [part.id]).graph), plainBoard(graph));
   assert.deepEqual(plainBoard(restoreRobotBoard(table.model, task, graph, { knows: view.partOf, parts })), plainBoard(graph));
   assert.match(read(`p = ${part.id}[value=2]()`, opening, parts, [part.id]).errors[0].en, /has no setting/);
-  const other = viewFor({ ...part, outputSignals: { cell: 'circuit/boolean' } });
+  const other = viewFor({ ...part, outputSignals: { cell: 'kernel/boolean' } });
   assert.equal(restoreRobotBoard(table.model, task, graph, { knows: other.partOf, parts: other.board.wiring(task) }), null);
 });
 

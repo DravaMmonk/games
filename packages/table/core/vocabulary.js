@@ -21,7 +21,7 @@ export const vocabulary = {
             "type": "table/number-input"
           }
         ],
-        "outputType": "circuit/number"
+        "outputType": "kernel/number"
       },
       "table/mmin": {
         "about": {
@@ -42,7 +42,7 @@ export const vocabulary = {
             "type": "table/number-input"
           }
         ],
-        "outputType": "circuit/number"
+        "outputType": "kernel/number"
       },
       "table/mmax": {
         "about": {
@@ -63,7 +63,7 @@ export const vocabulary = {
             "type": "table/number-input"
           }
         ],
-        "outputType": "circuit/number"
+        "outputType": "kernel/number"
       },
       "table/many": {
         "about": {
@@ -84,7 +84,7 @@ export const vocabulary = {
             "type": "table/boolean-input"
           }
         ],
-        "outputType": "circuit/boolean"
+        "outputType": "kernel/boolean"
       },
       "table/not": {
         "about": {
@@ -94,10 +94,10 @@ export const vocabulary = {
         "inputs": [
           {
             "name": "0",
-            "type": "circuit/boolean"
+            "type": "kernel/boolean"
           }
         ],
-        "outputType": "circuit/boolean"
+        "outputType": "kernel/boolean"
       },
       "table/add": {
         "about": {
@@ -114,7 +114,7 @@ export const vocabulary = {
             "type": "table/number-input"
           }
         ],
-        "outputType": "circuit/any",
+        "outputType": "kernel/any",
         "outputRule": "lift"
       },
       "table/mul": {
@@ -132,7 +132,7 @@ export const vocabulary = {
             "type": "table/number-input"
           }
         ],
-        "outputType": "circuit/any",
+        "outputType": "kernel/any",
         "outputRule": "lift"
       },
       "table/const": {
@@ -141,7 +141,7 @@ export const vocabulary = {
           "en": "Constant"
         },
         "inputs": [],
-        "outputType": "circuit/number",
+        "outputType": "kernel/number",
         "params": {
           "type": "obj",
           "fields": {
@@ -161,14 +161,14 @@ export const vocabulary = {
         "inputs": [
           {
             "name": "0",
-            "type": "circuit/boolean"
+            "type": "kernel/boolean"
           },
           {
             "name": "1",
-            "type": "circuit/any"
+            "type": "kernel/any"
           }
         ],
-        "outputType": "circuit/any",
+        "outputType": "kernel/any",
         "outputRule": {
           "copy": 1
         }
@@ -181,14 +181,14 @@ export const vocabulary = {
         "inputs": [
           {
             "name": "0",
-            "type": "circuit/boolean"
+            "type": "kernel/boolean"
           },
           {
             "name": "1",
-            "type": "circuit/any"
+            "type": "kernel/any"
           }
         ],
-        "outputType": "circuit/any",
+        "outputType": "kernel/any",
         "outputRule": {
           "copy": 1
         }

@@ -11,7 +11,8 @@ import { sourceOf, splitSource, srcNode } from "../wire-source.js"
 import { T } from 'kernel'
 
 
-import { PartError, evaluate } from "../circuit.js"
+import { evaluate } from "../circuit.js"
+import { OperationError } from 'kernel'
 import { frameTree, regionAddress, regionsFit, regionsOf } from "./regions.js"
 import { leavesLockedRegion, lockedCards } from "./presets.js"
 
@@ -81,7 +82,7 @@ export function moveInto(graph, parts, id, region, x, y) {
   return { ...moved, wires: moved.wires.filter((w) => !scopeRefusal(moved, parts, w.from, w.to, w.port, tree)) }
 }
 
-const fail = (zh, en) => new PartError(T(zh, en))
+const fail = (zh, en) => new OperationError(T(zh, en))
 /**
  * A region run on its own, as a function: a frame that runs its region again and again (a loop, a search, one item of a
  * list at a time) calls it with the value the region opens with and gets back what reaches the region's result. The

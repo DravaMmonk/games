@@ -555,7 +555,7 @@ export function* prepareLogicWorks(content) {
   }
   const builtFaces = (task) => Object.fromEntries(Object.entries(task.built ?? {}).filter(([type, p]) => p && settingsOf(built.parts[type]).length).map(([type, p]) => {
     const { name, desc, settings } = built.parts[type]
-    return [type, { name, desc, icon: 'CircuitBoard', family: 'logic/built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic/machine-value', ...(port === 'rules' ? { label: T('规则', 'Rules') } : {}) })), settings, outputType: p.outputType ?? 'logic/machine-value', op: 'circuit/zero' }]
+    return [type, { name, desc, icon: 'CircuitBoard', family: 'logic/built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic/machine-value', ...(port === 'rules' ? { label: T('规则', 'Rules') } : {}) })), settings, outputType: p.outputType ?? 'logic/machine-value', op: 'scalar/zero' }]
   }))
   /** What a task's tray holds for a player with `flags`, as what it shows and what it folds away. */
   course.registerParts(Object.fromEntries(TASKS.filter(task => task.kind === 'logic/machine').flatMap(task => [...ruleTypes(task).keys()].map(type => [type, RULE_DEFINITION]))))

@@ -1,5 +1,5 @@
 import { itemOf } from './worklist.js'
-import { installCircuitFixture, lockFixture, readStarter } from '../engine/ops/fixture.js'
+import { installCircuitFixture, installScalarFixture, lockFixture, readStarter } from '../engine/ops/fixture.js'
 // node --test games/kit/studio — the studio's tools, pure parts: bulk edits as operations (bulk.js), the command
 // palette's index and ranking (palette.js), the check's lines as a worklist (worklist.js), the copy
 // table's rows (copy.js); and on every domain's starter game (package-owned test fixtures, copied to a temp folder), that
@@ -75,6 +75,7 @@ function openStarter(template) {
     const rename = (folder) => { for (const entry of readdirSync(folder, { withFileTypes: true })) { const file = join(folder, entry.name); if (entry.isDirectory()) rename(file); else if (file.endsWith('.json')) writeFileSync(file, readFileSync(file, 'utf8').replaceAll('starter/', `${d}/`)) } }; rename(folder)
   }
   installCircuitFixture(root)
+  installScalarFixture(root)
   lockFixture(root)
   return openPackage(d, root)
 }

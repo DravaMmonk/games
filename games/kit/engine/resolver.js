@@ -6,7 +6,7 @@ import { chooseRelease, releaseSource, releaseIndex } from './release-store.js'
 import { existenceProblems, publicSurfaces } from './existence.js'
 import { createRequire } from 'node:module'
 import { installPackageImports, registerPackageLocation } from './plugin-boundaries.js'
-import { createPluginKernel, pluginObjects } from './plugins.js'
+import { createPluginKernel, pluginMeanings, pluginObjects } from './plugins.js'
 import { tagName } from './tag-identity.js'
 // Read the game configuration and its content package for the build and author tools.
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -166,7 +166,7 @@ function readLayerUncached(id, dir, config, declarations) {
     for (const [kind, folder] of Object.entries({ ...Object.fromEntries(Object.entries(folders).filter(([kind]) => kind !== 'shape')), kind: 'kinds', ...objectFoldersFor(namespace, declarations) })) for (const [name, file] of objectFiles(resolve(overrideDir, namespace), folder)) overrides.push({ kind, name: `${namespace}/${kind === 'tag' ? name.split('/').at(-1) : name}`, value: kind === 'tag' ? tagValue(name, json(file)) : json(file) })
     for (const [lang, entries] of Object.entries(readCatalogs(resolve(overrideDir, namespace, 'i18n')))) textOverrides.push({ namespace, lang, entries })
   }
-  return { id, config, entryPaths: Object.fromEntries([['core', 'core/index.js'], ['view', 'view/index.jsx']].filter(([, path]) => existsSync(resolve(dir, path))).map(([side, path]) => [side, resolve(dir, path)])), tagReaders, meanings: [...kernel.tables.kind.values()], codeObjects: [...viewRegistrations(existsSync(resolve(dir, 'view/index.jsx')) ? resolve(dir, 'view/index.jsx') : null), ...pluginObjects(kernel)], objects, overrides, textOverrides, hasCore: existsSync(resolve(dir, 'core/index.js')), hasView: existsSync(resolve(dir, 'view/index.jsx')), catalogs: readCatalogs(resolve(dir, 'i18n')) }
+  return { id, config, entryPaths: Object.fromEntries([['core', 'core/index.js'], ['view', 'view/index.jsx']].filter(([, path]) => existsSync(resolve(dir, path))).map(([side, path]) => [side, resolve(dir, path)])), tagReaders, meanings: pluginMeanings(kernel), codeObjects: [...viewRegistrations(existsSync(resolve(dir, 'view/index.jsx')) ? resolve(dir, 'view/index.jsx') : null), ...pluginObjects(kernel)], objects, overrides, textOverrides, hasCore: existsSync(resolve(dir, 'core/index.js')), hasView: existsSync(resolve(dir, 'view/index.jsx')), catalogs: readCatalogs(resolve(dir, 'i18n')) }
 }
 
 /** Resolve locked dependencies into a single layer representation for every consumer. */

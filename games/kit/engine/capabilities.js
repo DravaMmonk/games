@@ -1,5 +1,8 @@
 import { CODE_NAME } from './object-name.js'
 // Modules contribute closed, qualified capabilities. Packages only refer to these names.
+const PRIMITIVE_VALUE_TYPES = Object.fromEntries(
+  ['number', 'boolean', 'string', 'list', 'any'].map(name => [`kernel/${name}`, {}]),
+)
 const BUILTIN_CAPABILITY_KINDS = ['valueType', 'operation', 'primitive', 'board', 'display', 'language']
 
 const capabilityName = (id, name) => name.includes('/') ? name : `${id}/${name}`
@@ -37,7 +40,8 @@ const registryKind = kind => ({ op: 'operation', part: 'primitive' })[kind] ?? k
 /** A registry is assembled once, and rejects ambiguous capability declarations. */
 export function createCapabilityRegistry() {
   const tables = Object.assign(Object.create(null), Object.fromEntries(BUILTIN_CAPABILITY_KINDS.map(kind => [kind, Object.create(null)])))
-  const kinds = Object.create(null)
+  Object.assign(tables.valueType, PRIMITIVE_VALUE_TYPES)
+  const kinds = Object.assign(Object.create(null), { valueType: Object.assign(Object.create(null), PRIMITIVE_VALUE_TYPES) })
   const schemas = Object.create(null)
   const languages = Object.create(null)
   const operations = Object.create(null)
@@ -91,4 +95,4 @@ export function createCapabilityRegistry() {
 
 // Runtime implementations share the same qualified names as their declarations.
 export const registeredOperations = Object.create(null)
-export const registeredValueTypes = Object.create(null)
+export const registeredValueTypes = Object.assign(Object.create(null), PRIMITIVE_VALUE_TYPES)

@@ -58,7 +58,7 @@ export const strip = line({
 
 /** A pile of n stones; cell i holds whether the player to move, with i stones left, wins. */
 export const pile = line({
-  cellType: 'circuit/boolean', noun: i => tr(`剩 ${i} 颗`, `${i} left`), out: T('轮到的人赢吗', 'does the mover win'), ground: [T('一颗不剩', 'none left'), T('空', '0'), 'empty'], label: t => tr(`${t.n} 颗石子`, `${t.n} stones`), orderText: T('从一颗不剩开始，一颗一颗往上', 'from none left, one stone at a time upward'),
+  cellType: 'kernel/boolean', noun: i => tr(`剩 ${i} 颗`, `${i} left`), out: T('轮到的人赢吗', 'does the mover win'), ground: [T('一颗不剩', 'none left'), T('空', '0'), 'empty'], label: t => tr(`${t.n} 颗石子`, `${t.n} stones`), orderText: T('从一颗不剩开始，一颗一颗往上', 'from none left, one stone at a time upward'),
   near: { m2: [T('拿走 2 颗后', 'after taking 2'), '−2'], m1: [T('拿走 1 颗后', 'after taking 1'), '−1'], p1: [T('多 1 颗', 'one more'), '+1'] },
 });
 

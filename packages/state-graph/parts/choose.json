@@ -45,16 +45,16 @@
   "inputs": [
     {
       "name": "up",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "upk",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "value",
-      "type": "circuit/number"
+      "type": "kernel/number"
     }
   ],
-  "outputType": "circuit/number"
+  "outputType": "kernel/number"
 }

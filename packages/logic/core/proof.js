@@ -10,9 +10,10 @@ import { workNodes } from 'circuit'
 // only the box's other inputs (../../engine/circuit.js `reads`), so a box can read back what was made from it. A
 // proof is a circuit whose sources are the level's premises and whose sink `goal` must be the goal, with no
 // hypotheses open but the premises: which region a card sits in is how the editor keeps it tidy, while the hypotheses
-// on every judgment are what make a proof sound. A rule that does not fit throws a PartError saying what it needed
+// on every judgment are what make a proof sound. A rule that does not fit throws a OperationError saying what it needed
 // and what reached it.
-import { MISSING, PartError } from 'circuit'
+import { MISSING } from 'circuit'
+import { OperationError } from 'kernel'
 import { formOf, formed } from 'circuit'
 import { runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
@@ -34,7 +35,7 @@ const union = (...js) => new Map(js.flatMap((j) => [...j.hyps]))
 // What a port needed (a formula, or a SHAPE) and the formula that reached it, written in the level's notation.
 const need = (ctx, what, got) => {
   const [w, g] = [what.op ? say(what, ctx.notation) : what, say(got, ctx.notation)]
-  return new PartError({ zh: `这里要 ${w.zh}，接进来的是 ${g.zh}`, en: `This needs ${w.en}; it got ${g.en}` })
+  return new OperationError({ zh: `这里要 ${w.zh}，接进来的是 ${g.zh}`, en: `This needs ${w.en}; it got ${g.en}` })
 }
 const SHAPE = {
   imp: T('一句「若…则…」'),
@@ -49,7 +50,7 @@ const SHAPE = {
   clause: T('一条子句（几个字母或它们的否定用「或」连起来）'),
 }
 const sayIn = (ctx, f) => say(f, ctx.notation)
-const fail = (zh, en) => new PartError({ zh, en })
+const fail = (zh, en) => new OperationError({ zh, en })
 // A formula chosen on a card. Cards hold the level's schema (its letters), and a test case fills the letters in
 // (ctx.subst: A := it rains), so one proof runs on every case; the level's constants come through ctx.consts.
 const param = (node, key, ctx = {}) => {
@@ -392,7 +393,7 @@ function lemmaForm({ name, statement, premises = [], metas }, key, suffix = '') 
 /**
  * What a lemma's shape derives from these sentences by its proof (ctx.proofs[type][key]: { level, board() }, the proof
  * task that proved the shape and the board to run, course.js), its letters `bind` filled in: the formula, or a
- * PartError saying why the proof does not derive `want` here. The proof runs as its task runs a test: its premises (by
+ * OperationError saying why the proof does not derive `want` here. The proof runs as its task runs a test: its premises (by
  * the task's names, in order) are the sentences wired in, each its own hypothesis, and the task's letters on its cards
  * are this use's sentences (a letter under a quantifier is the property of the thing there).
  */

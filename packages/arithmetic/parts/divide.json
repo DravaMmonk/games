@@ -3,5 +3,5 @@
   "desc": "@part.divide.desc",
   "icon": "Divide",
   "family": "circuit/value",
-  "op": "circuit/over"
+  "op": "scalar/over"
 }

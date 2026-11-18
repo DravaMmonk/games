@@ -1,0 +1,9 @@
+{
+  "target": "scalar",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "57ede50d1be86b7804556afa79c4c372d27274421575279445194753e6e78f4c"
+    }
+  }
+}

@@ -58,8 +58,8 @@ export function builtGates(gates, builders, ownBoard) {
     all[type] = {
       ...g,
       ...packed({ circuit, inputs: g.ports, outputs: ['out'] }),
-      inputTypes: Object.fromEntries(g.ports.map((name) => [name, 'circuit/boolean'])),
-      outputType: 'circuit/boolean',
+      inputTypes: Object.fromEntries(g.ports.map((name) => [name, 'kernel/boolean'])),
+      outputType: 'kernel/boolean',
       built: true,
       opens: () => ({ circuit: circuit(), level }),
     }

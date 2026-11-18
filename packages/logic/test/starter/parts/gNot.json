@@ -3,5 +3,5 @@
   "desc": "@part.gNot.desc",
   "icon": "ToggleLeft",
   "family": "logic/gate",
-  "op": "circuit/not"
+  "op": "scalar/not"
 }

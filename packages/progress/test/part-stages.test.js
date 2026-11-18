@@ -14,7 +14,7 @@ import { referenceResolver, expandRelations } from "../../../games/kit/engine/ob
 
 const operations = {
   'toy/scale': {
-    args: [{ name: 'a', type: 'circuit/number' }], returns: 'circuit/number',
+    args: [{ name: 'a', type: 'kernel/number' }], returns: 'kernel/number',
     params: S.obj({ gain: S.num({ min: 1, max: 8, default: 2 }), mode: S.oneOf(['up', 'down'], { default: 'up' }) }),
     run: ([a], { gain, mode }) => mode === 'down' ? a / gain : a * gain,
   },
@@ -34,8 +34,8 @@ test('stage deltas inherit signatures and reset settings without mutating the pa
   const base = partDefinition(stages.get('sample/scale'), operations)
   const editable = partDefinition(stages.get('sample/adjustable'), operations)
   const division = partDefinition(stages.get('sample/division'), operations)
-  assert.deepEqual(base.inputs, [{ name: 'a', type: 'circuit/number' }])
-  assert.equal(base.outputType, 'circuit/number')
+  assert.deepEqual(base.inputs, [{ name: 'a', type: 'kernel/number' }])
+  assert.equal(base.outputType, 'kernel/number')
   assert.equal(base.setting.gain.fixed, true)
   assert.equal(editable.setting.gain.fixed, undefined)
   assert.deepEqual(division.setting.mode.options.map(option => option.value), ['up', 'down'])

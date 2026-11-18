@@ -5,8 +5,7 @@
 // the board the player passed its level's last task with).
 import { definedWorks, prepareDefinedWorks } from "../board-works.js"
 import { board } from "./board.js"
-import { OPS } from "./ops.js"
 
-export const circuitWorks = (content) => definedWorks(content, { board, ops: OPS })
+export const circuitWorks = (content) => definedWorks(content, { board })
 
-export const prepareWorks = (content) => prepareDefinedWorks(content, { board, ops: OPS })
+export const prepareWorks = (content) => prepareDefinedWorks(content, { board })

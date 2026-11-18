@@ -53,20 +53,20 @@
   "inputs": [
     {
       "name": "up",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "down",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "left",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "right",
-      "type": "circuit/number"
+      "type": "kernel/number"
     }
   ],
-  "outputType": "circuit/number"
+  "outputType": "kernel/number"
 }

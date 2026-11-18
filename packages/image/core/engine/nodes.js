@@ -1,4 +1,5 @@
-import { MISSING, PartError } from 'circuit'
+import { MISSING } from 'circuit'
+import { OperationError } from 'kernel'
 import { correlate, downsample, fromFn, gaussianKernel, image, map, maxPool, shift, zip } from './image.js'
 import { boxBlur3, boxKernel, gradientMagnitude, harrisResponse, horizontalDifference, sobelX, sobelY } from './filters.js'
 import { FREQUENCY } from './parts/frequency.js'
@@ -73,7 +74,7 @@ const NATIVE_TYPES = {
       if (b && p.constantSide === 'a') return map(b, (x) => op(p.constant ?? 1, x))
       if (a && p.constantSide === 'b') return map(a, (x) => op(x, p.constant ?? 1))
       if (a && b && (p.constantSide ?? 'none') === 'none') return zip(a, b, op)
-      throw new PartError(MISSING)
+      throw new OperationError(MISSING)
     },
     cost: 1,
   },

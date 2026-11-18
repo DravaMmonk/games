@@ -166,8 +166,8 @@ export function problemsOf(t, { ops, inputs, inputTypes = {}, settings, fits }) 
       if (x.args.length !== op.args.length) out.push(`${x.call} takes ${op.args.length} argument${op.args.length === 1 ? '' : 's'} (${op.args.map((a) => a.name).join(', ')}), given ${x.args.length}`)
       // A plain number is a literal, a setting or a number a builtin works out: never an input or a domain value.
       x.args.forEach((a, k) => {
-        if (!['num', 'circuit/number'].includes(op.args[k]?.type)) return
-        const what = 'in' in a ? (inputTypes[a.in] === 'circuit/number' ? null : `the input ${a.in}`) : 'str' in a ? `the word ${a.str}` : 'call' in a && ops[a.call] && !['num', 'circuit/number'].includes(ops[a.call].returns) ? `what ${a.call} gives` : null
+        if (!['num', 'kernel/number'].includes(op.args[k]?.type)) return
+        const what = 'in' in a ? (inputTypes[a.in] === 'kernel/number' ? null : `the input ${a.in}`) : 'str' in a ? `the word ${a.str}` : 'call' in a && ops[a.call] && !['num', 'kernel/number'].includes(ops[a.call].returns) ? `what ${a.call} gives` : null
         if (what) out.push(`${x.call}(${op.args[k].name}): ${what} is no plain number`)
       })
       for (const [key, arg] of Object.entries(x.named)) {

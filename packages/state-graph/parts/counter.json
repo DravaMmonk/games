@@ -42,16 +42,16 @@
   "inputs": [
     {
       "name": "up",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "left",
-      "type": "circuit/number"
+      "type": "kernel/number"
     },
     {
       "name": "start",
-      "type": "circuit/boolean"
+      "type": "kernel/boolean"
     }
   ],
-  "outputType": "circuit/number"
+  "outputType": "kernel/number"
 }

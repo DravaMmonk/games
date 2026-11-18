@@ -1,5 +1,5 @@
 import { workNodes } from 'circuit'
-import { PartError } from 'circuit'
+import { OperationError } from 'kernel'
 import { runBoard, sink, source } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { compare, image } from './image.js'
@@ -9,7 +9,7 @@ import { channel, compose } from './colour.js'
 // part whose inputs are different things by nature (`anySize`: a picture, a matrix and a canvas).
 export function prepare(ins, node, part) {
   const big = part.anySize || part.spec?.anySize ? [] : Object.values(ins).filter((img) => img.w * img.h > 1)
-  if (new Set(big.map((img) => `${img.w}×${img.h}`)).size > 1) throw new PartError({ zh: '输入尺寸不同', en: 'Inputs differ in size' })
+  if (new Set(big.map((img) => `${img.w}×${img.h}`)).size > 1) throw new OperationError({ zh: '输入尺寸不同', en: 'Inputs differ in size' })
   if (!big.length) return ins
   const out = { ...ins }
   for (const [port, img] of Object.entries(ins)) if (img.w * img.h === 1) {

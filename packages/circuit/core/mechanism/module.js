@@ -2,7 +2,6 @@ import { partMeaning, trayMeaning } from '../content-meaning.js'
 
 
 import { BUILTINS, BUILTIN_ITEMS } from "../parts/builtins.js"
-import { OPS } from "./ops.js"
 
 
 
@@ -19,12 +18,7 @@ export default {
     registry.implementDisplays(['circuit/screen'], 'circuit/view')
     Object.assign(registry.kinds.op, BUILTIN_ITEMS)
     for (const [name, item] of Object.entries(BUILTIN_ITEMS)) registry.add('operation', name, { kind: 'op', ...item })
-    registry.implementOperations({ ...OPS, ...BUILTINS })
-    registry.add('valueType', 'circuit/number', {})
-    registry.add('valueType', 'circuit/boolean', {})
-    registry.add('valueType', 'circuit/string', {})
-    registry.add('valueType', 'circuit/list', {})
-    registry.add('valueType', 'circuit/any', {})
-    registry.add('board', 'circuit/board', { valueTypes: ['circuit/number'] })
+    registry.implementOperations(BUILTINS)
+    registry.add('board', 'circuit/board', { valueTypes: ['kernel/number'] })
   },
 }

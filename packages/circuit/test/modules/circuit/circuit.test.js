@@ -6,8 +6,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readStarter } from "../../../../../games/kit/engine/ops/fixture.js"
 import { defineParts, partProblems } from '../../../core/index.js'
-import { OPS } from '../../../core/index.js'
-import { vocabulary } from '../../../core/index.js'
+import { operations as OPS } from '../../../../scalar/core/index.js'
+import { contentSchemas } from '../../../../../games/kit/engine/content.js'
 import { board } from '../../../core/index.js'
 import { primitivesOnly } from '../../../core/index.js'
 import { runLevel } from '../../../core/index.js'
@@ -21,9 +21,9 @@ const { fromText, toText } = board
 const { partOf } = plain
 
 test('the resources compute; a part made of them gives 「—」 when an input is 「—」', () => {
-  assert.equal(OPS['circuit/add'].run([2, 3]), 5)
-  assert.throws(() => OPS['circuit/sub'].run([2, 'x']), /not a number/)
-  assert.deepEqual(partProblems(content.partDefs, vocabulary), [])
+  assert.equal(OPS['scalar/add'].run([2, 3]), 5)
+  assert.throws(() => OPS['scalar/sub'].run([2, 'x']), /not a number/)
+  assert.deepEqual(partProblems(content.partDefs, contentSchemas.get(content)), [])
   assert.equal(PARTS['starter/add'].eval({ a: 2, b: 3 }, { params: {} }), 5)
   assert.equal(PARTS['starter/add'].eval({ a: 2, b: null }, { params: {} }), null)
 })

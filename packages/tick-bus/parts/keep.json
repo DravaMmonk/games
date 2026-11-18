@@ -3,7 +3,7 @@
   "desc": "@part.keep.desc",
   "icon": "ArrowDownToLine",
   "family": "tick-bus/memory",
-  "inputs": [{ "name": "in", "type": "circuit/number" }],
+  "inputs": [{ "name": "in", "type": "kernel/number" }],
   "settings": {
     "reg": {
       "control": "select",
@@ -13,5 +13,5 @@
     }
   },
   "keeps": { "input": "in", "register": "reg" },
-  "outputType": "circuit/number"
+  "outputType": "kernel/number"
 }

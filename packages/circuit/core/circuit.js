@@ -1,3 +1,4 @@
+import { OperationError } from 'kernel'
 // Evaluating a circuit, the same in every game. A circuit is the editor's shape (../circuit/model.js):
 //
 //   { nodes: [{ id, type, … }], wires: [{ from, to, port }] }      from: '<node>' or '<node>#<key>'
@@ -22,7 +23,7 @@
 // going round) passes the same ctx, and its cards' steps land in the same trace. Ids starting with '__' are the
 // engine's own and are not traced.
 //
-// Values are pulled from the targets back (by default every node), each computed once. A part that throws a PartError
+// Values are pulled from the targets back (by default every node), each computed once. A part that throws a OperationError
 // marks its node with that message, and the nodes downstream read it as missing; a Halt stops the whole evaluation
 // (a robot reading a cell not computed yet). Anything else a part throws marks its node as unable to compute.
 
@@ -30,14 +31,6 @@ import { acceptsType } from './value-types.js'
 
 
 import { sourceOf, splitSource } from "./wire-source.js"
-
-/** A node that cannot compute, with a message for the player ({ zh, en } or a string). */
-export class PartError extends Error {
-  constructor(message) {
-    super(typeof message === 'string' ? message : message?.en ?? message?.zh ?? 'part error')
-    this.label = message
-  }
-}
 
 /** Stops a whole evaluation; its `payload` is for whoever runs the circuit, `values` what was computed by then. */
 export class Halt extends Error {
@@ -73,7 +66,7 @@ function wiringOf(circuit) {
 /**
  * Evaluate a circuit. `parts` is the registry (an object, or a function of a type). `ctx` reaches every part's eval
  * (the test's inputs, a robot's sensors…). `targets` lists node ids to compute (default: all). `prepare(ins, node,
- * part)` may check or adjust a node's inputs before it runs (throw a PartError to refuse them).
+ * part)` may check or adjust a node's inputs before it runs (throw a OperationError to refuse them).
  * Returns { values: Map(source → value), errors: Map(node id → message) }.
  */
 export const evaluate = (circuit, { targets = null, ...options } = {}) => evaluation(circuit, options).run(targets)
@@ -153,7 +146,7 @@ export function evaluation(circuit, { parts, ctx = {}, prepare = null } = {}) {
         if (value !== undefined) values.set(id, value)
         if (ids) ids.set(id, inIds.in ?? null)
       } catch (error) {
-        fault(id, error instanceof PartError ? error.label : BROKEN, key)
+        fault(id, error instanceof OperationError ? error.label : BROKEN, key)
       }
       return
     }
@@ -174,7 +167,7 @@ export function evaluation(circuit, { parts, ctx = {}, prepare = null } = {}) {
         error.values ??= values
         throw error
       }
-      fault(id, error instanceof PartError ? error.label : BROKEN, key)
+      fault(id, error instanceof OperationError ? error.label : BROKEN, key)
     }
   }
 

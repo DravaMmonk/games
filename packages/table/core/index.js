@@ -63,8 +63,8 @@ export function extendVocabulary(base, contribution) {
 }
 
 const valueTypes = {
-  'table/number-input': { about: { zh: '数或一段数', en: 'A number or a segment of numbers' }, accepts: ['circuit/number', 'table/numbers'] },
-  'table/boolean-input': { about: { zh: '真假值或一段真假值', en: 'A boolean or a segment of booleans' }, accepts: ['circuit/boolean', 'table/booleans'] },
+  'table/number-input': { about: { zh: '数或一段数', en: 'A number or a segment of numbers' }, accepts: ['kernel/number', 'table/numbers'] },
+  'table/boolean-input': { about: { zh: '真假值或一段真假值', en: 'A boolean or a segment of booleans' }, accepts: ['kernel/boolean', 'table/booleans'] },
   'table/category': { about: { zh: '类别及其显示名称', en: 'A category and its displayed label' } },
   'table/numbers': { about: { zh: '一段数值', en: 'A segment of numbers' } },
   'table/booleans': { about: { zh: '一段真假值', en: 'A segment of boolean values' } },
@@ -84,7 +84,7 @@ export function register(kernel) {
           valueType: { ...result.capabilities.valueType, ...valueTypes },
           board: { ...result.capabilities.board, 'table/robot': {
             about: { zh: '逐格运行电路并读写表格的机器人', en: 'A robot that runs a circuit while reading and writing table cells' },
-            valueTypes: ['circuit/number', 'circuit/boolean', 'table/category', 'table/numbers', 'table/booleans'],
+            valueTypes: ['kernel/number', 'kernel/boolean', 'table/category', 'table/numbers', 'table/booleans'],
             primitives: Object.keys(PRIMITIVES),
           } },
         },

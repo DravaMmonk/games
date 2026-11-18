@@ -26,7 +26,7 @@
 
 关系文件写 `{ kind, edges: [{ from, to, required?, game? }] }`。`requires` 的 `edges` 是 `edges<level>`，`replaces` 是 `edges<circuit/part>`。先修关系的标签端点按集合边界连接。内核统一检查集合成员引用、重复、标签嵌套环和有向环。Studio 用 `orderedMembers(content, ids, kind)` 按先修和名字排列分组成员，标签名称按全名排列。
 
-**包元数据和依赖。** `package.json` 声明种类 `kind`、`version`、`kernel` 范围和直接 `uses` 范围表。`"type": "module"` 声明包内的 JS 采用 ES 模块，新建和复制包时自动写入。种类为玩法 `play`、扩展 `ext`、课程 `course` 或共用内容库 `lib`。包 id 独立于种类，Studio 的包工作区、游戏选包、文案工作区和依赖列表按种类分组和筛选。包只可引用自身和直接依赖的对象，依赖不传递授权、不成环。游戏 `game.json` 的 `packages` 必须列全依赖闭包，至少一个包。加载按依赖拓扑排序，平局按包名，游戏最后；`packages` 的第一项是主包，选择顺序与拓扑加载顺序分别保存。
+**包元数据和依赖。** `package.json` 声明种类 `kind`、`version`、`kernel` 范围和直接 `uses` 范围表。`"type": "module"` 声明包内的 JS 采用 ES 模块，新建和复制包时自动写入。种类为玩法 `play`、扩展 `ext`、课程 `course` 或基础实现库 `lib`。包 id 独立于种类，Studio 的包工作区、游戏选包、文案工作区和依赖列表按种类分组和筛选。包只可引用自身和直接依赖的对象，依赖不传递授权、不成环。游戏 `game.json` 的 `packages` 必须列全依赖闭包，至少一个包。加载按依赖拓扑排序，平局按包名，游戏最后；`packages` 的第一项是主包，选择顺序与拓扑加载顺序分别保存。
 
 **解析和公开面。** `engine/resolver.js` 的 `resolveLayers` 是读取游戏、包和依赖的唯一入口，产出拓扑排序的层；检查、操作集、Studio 服务端、构建、单关试玩、基线和 MCP 共用。内容根目录由解析器解释：默认当前工作区（从 `site/` 运行时取其父目录），可传 `root` 或用 `GAMES_ROOT` 覆盖。平台的安装位置不决定内容位置。游戏工作区只消费解析后的公开数据，依赖并发校验也重新解析层，不扫描包的内部文件。Vite 从已解析层取得代码入口。
 

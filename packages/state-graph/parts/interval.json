@@ -42,8 +42,8 @@
     },
     {
       "name": "weight",
-      "type": "circuit/number"
+      "type": "kernel/number"
     }
   ],
-  "outputType": "circuit/number"
+  "outputType": "kernel/number"
 }

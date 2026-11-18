@@ -35,13 +35,13 @@ const ROW_WORLDS = new Set(['state-graph/interval']);
 
 /** A port of a built part, from its vocabulary item (capabilities.json port): its label, short name and type, and the sensor
  *  (or input of the board) it stands for. */
-const SIGNAL_PORT = { 'circuit/number': 'circuit/number', 'circuit/boolean': 'circuit/boolean', 'table/numbers': 'table/number-input', 'table/booleans': 'table/boolean-input', 'table/category': 'table/category' };
+const SIGNAL_PORT = { 'kernel/number': 'kernel/number', 'kernel/boolean': 'kernel/boolean', 'table/numbers': 'table/number-input', 'table/booleans': 'table/boolean-input', 'table/category': 'table/category' };
 function portOf([name, p], W) {
   const sensor = s => W.sensors[s];
   switch (name) {
     case 'state-graph/reads': return { label: sensor(p).label, short: sensor(p).short, type: SIGNAL_PORT[sensor(p).type], sensor: p, input: null };
-    case 'state-graph/way': return { label: T(`来路${'一二三四'[p.n - 1]}`, `way in ${p.n}`), short: 'abcd'[p.n - 1], type: 'circuit/number', sensor: p.sensor ?? null, input: p.input ?? null };
-    case 'state-graph/start': return { label: T('起点', 'start'), short: T('起', 'start'), type: 'circuit/boolean', sensor: p.sensor, input: null };
+    case 'state-graph/way': return { label: T(`来路${'一二三四'[p.n - 1]}`, `way in ${p.n}`), short: 'abcd'[p.n - 1], type: 'kernel/number', sensor: p.sensor ?? null, input: p.input ?? null };
+    case 'state-graph/start': return { label: T('起点', 'start'), short: T('起', 'start'), type: 'kernel/boolean', sensor: p.sensor, input: null };
     default: return { label: p.label, short: p.short, type: SIGNAL_PORT[sensor(p.sensor).type], sensor: p.sensor, input: null };
   }
 }
@@ -254,7 +254,7 @@ export function* prepareTableWorks(content) {
     let board;
     const artifact = { ...reference, given, ports, solution: () => (board ??= robotBlueprint(model, given, W).read(reference.solution)) };
     const index = Object.fromEntries(ports.map((p, k) => [p.sensor ?? p.input, String(k)]));
-    const idle = type => (type.startsWith('circuit/boolean') ? false : null);
+    const idle = type => (type.startsWith('kernel/boolean') ? false : null);
     const setting = settingsOf(parts[type]).find(x => x.key === 'value')?.default;
     const running = () => ownBoard(task, artifact);
     built[type] = {

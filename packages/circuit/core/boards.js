@@ -5,7 +5,8 @@ import { splitSource } from "./wire-source.js"
 import { paramsOf } from './forms.js'
 
 
-import { BROKEN, PartError, evaluation, portsOf } from "./circuit.js"
+import { BROKEN, evaluation, portsOf } from "./circuit.js"
+import { OperationError } from 'kernel'
 
 export const nameOf = (node) => node.params?.name
 
@@ -167,7 +168,7 @@ export function packed({ circuit, inputs, outputs, parts, holds = false, inside:
       const out = inner.nodes.find((n) => nameOf(n) === name && partOf(n.type)?.sink)
       const { values, errors, ids } = run(out ? [out.id] : [])
       const value = out ? values.get(out.id) : undefined
-      if (value === undefined) throw new PartError(errors.size ? [...errors.values()][0] : BROKEN)
+      if (value === undefined) throw new OperationError(errors.size ? [...errors.values()][0] : BROKEN)
       if (ctx.tape) ctx.tape.last = ids.get(out.id) ?? null
       return value
     },

@@ -435,11 +435,11 @@ test('tasks by id: task.add, task.move in a level and across levels, task.remove
 const PVOCAB = defineVocabulary({
   module: 'ptoy',
   version: 1,
-  kinds: { op: { add: { about: 'a + b', args: [{ name: 'a', type: 'circuit/number' }, { name: 'b', type: 'circuit/number' }], returns: 'circuit/number' } }, family: { value: { about: 'numbers' } } },
+  kinds: { op: { add: { about: 'a + b', args: [{ name: 'a', type: 'kernel/number' }, { name: 'b', type: 'kernel/number' }], returns: 'kernel/number' } }, family: { value: { about: 'numbers' } } },
   game: S.obj({ title: S.text(), chapters: S.list(S.str({ reference: 'chapter' })), ...COURSE_OPTIONS }),
   level: S.obj({ title: S.text(), brief: S.opt(S.text()), adds: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))), solution: S.opt(S.board()), uses: S.opt(S.map(S.str(), { key: S.ref('part', { reference: 'circuit/part' }) })) }),
 })
-const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'circuit/number' }, { name: 'b', type: 'circuit/number' }], outputType: 'circuit/number', op: 'add' }
+const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'kernel/number' }, { name: 'b', type: 'kernel/number' }], outputType: 'kernel/number', op: 'add' }
 function partsToy() {
   const root = mkdtempSync(join(tmpdir(), 'ops-ptoy-'))
   const game = { vocabulary: 1, title: { en: 'Toy' }, chapters: [{ id: 'one', levels: ['a1'] }] }

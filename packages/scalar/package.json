@@ -1,0 +1,7 @@
+{
+  "kind": "lib",
+  "type": "module",
+  "version": "0.0.0",
+  "kernel": "^0.0.0",
+  "uses": {}
+}

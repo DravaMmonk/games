@@ -17,7 +17,6 @@ import { defineVocabulary } from 'kernel'
 import { GAME, PORT, levelSchema } from '../level-schema.js'
 
 
-import { OP_ITEMS } from "./ops.js"
 import { T as t } from 'kernel'
 
 
@@ -45,7 +44,7 @@ const LEVEL = levelSchema({
 export const vocabulary = qualifyVocabulary('circuit', defineVocabulary({
   module: 'circuit',
   version: 1,
-  kinds: { op: OP_ITEMS, family: FAMILIES },
+  kinds: { op: {}, family: FAMILIES },
   game: GAME,
   level: LEVEL,
 }))

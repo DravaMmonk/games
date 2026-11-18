@@ -1,7 +1,8 @@
 // node --test games/kit/engine — the engine on small circuits of plain numbers.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { Halt, MISSING, PartError, evaluate } from '../../../packages/circuit/core/index.js'
+import { Halt, MISSING, evaluate } from '../../../packages/circuit/core/index.js'
+import { OperationError } from 'kernel'
 import { packed, runBoard, sink, source } from '../../../packages/circuit/core/index.js'
 import { tableAt, walk } from '../../../packages/circuit/core/index.js'
 import { paceOf } from './playback-pace.js'
@@ -15,7 +16,7 @@ const PARTS = {
   add: { inputs: ['a', 'b'], eval: ({ a, b }) => a + b },
   merge: { inputs: ['a', 'b', 'c'], optional: ['a', 'b', 'c'], eval: (ins) => Object.values(ins).reduce((s, v) => s + v, 0) },
   neg: { inputs: ['in'], eval: ({ in: x }) => -x },
-  half: { inputs: ['in'], eval: ({ in: x }) => { if (x % 2) throw new PartError({ zh: '奇数', en: 'odd' }); return x / 2 } },
+  half: { inputs: ['in'], eval: ({ in: x }) => { if (x % 2) throw new OperationError({ zh: '奇数', en: 'odd' }); return x / 2 } },
   split: { inputs: ['in'], outputs: () => ['lo', 'hi'], eval: ({ in: x }, _n, _c, key) => (key === 'lo' ? x % 10 : Math.floor(x / 10)) },
   gate: { inputs: ['c', 'v'], idle: (port) => (port === 'c' ? false : null), eval: ({ c, v }) => (c ? v : null) },
   // A part that hands out a value of its own (`k`, from `in` alone) and reads back what was made of it (`back`).

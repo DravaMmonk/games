@@ -20,6 +20,6 @@ export default {
     })) registry.add('valueType', `logic/${name}`, { about })
     registry.add('board', 'logic/proof', { about: { en: 'An inference circuit with scoped assumption frames', zh: '带作用域假设框的推理电路' }, valueTypes: ['logic/judgment'] })
     registry.add('board', 'logic/machine', { about: { en: 'A circuit over proof assistant values', zh: '处理证明助手值的电路' }, valueTypes: ['logic/machine-value'] })
-    registry.add('board', 'logic/gates', { about: { en: 'A truth-value circuit', zh: '真值电路' }, valueTypes: ['circuit/boolean'] })
+    registry.add('board', 'logic/gates', { about: { en: 'A truth-value circuit', zh: '真值电路' }, valueTypes: ['kernel/boolean'] })
   },
 }

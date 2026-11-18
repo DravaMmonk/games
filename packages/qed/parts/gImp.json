@@ -12,6 +12,6 @@
       }
     }
   ],
-  "inputs": [{ "name": "a", "type": "circuit/boolean" }, { "name": "b", "type": "circuit/boolean" }],
-  "outputType": "circuit/boolean"
+  "inputs": [{ "name": "a", "type": "kernel/boolean" }, { "name": "b", "type": "kernel/boolean" }],
+  "outputType": "kernel/boolean"
 }

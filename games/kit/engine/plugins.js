@@ -1,10 +1,11 @@
+import { registeredOperations } from './capabilities.js'
 import { CODE_NAME } from './object-name.js'
 import { tagKey, kernelTags } from './tag-identity.js'
 // Environment-neutral package registration. Each assembly owns its registry.
 const PACKAGE_OBJECT = /^[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9-]*$/
-const CORE = ['play', 'kind', 'state', 'check', 'agent']
+const CORE = ['play', 'kind', 'state', 'check', 'agent', 'operation']
 const VIEW = ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension']
-const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'] }
+const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'], operation: ['run'] }
 
 export function createPluginKernel() {
   const tables = Object.fromEntries([...new Set([...CORE, ...VIEW]), 'playView', 'tag'].map(key => [key, new Map()]))
@@ -30,6 +31,7 @@ export function createPluginKernel() {
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)
         if (['check', 'state', 'game', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
+        if (type === 'operation') registeredOperations[name] = value
       }]))
       api.object = (kind, name, value = {}) => {
         if (side !== 'core' || !name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: objects register their own full name in core`)
@@ -74,7 +76,29 @@ export async function registerPlugins(entries, { view = false, tasks = [] } = {}
   return kernel
 }
 
+/** Project the selected layers’ kind meanings and operation signatures into the vocabulary. */
+export function pluginMeanings(kernel, order) {
+  const selected = table => {
+    const entries = [...(kernel?.tables[table] ?? [])]
+    return order ? order.flatMap(id => entries.filter(([name]) => name.startsWith(`${id}/`))) : entries
+  }
+  const meanings = selected('kind').map(([, meaning]) => meaning)
+  const operations = selected('operation').map(([name, { run: _run, ...item }]) => [name, item])
+  if (operations.length) {
+    const items = Object.fromEntries(operations)
+    const capabilities = Object.fromEntries(operations.map(([name, item]) => [name, { kind: 'op', ...item }]))
+    meanings.push({
+      vocabulary: base => ({
+        ...base,
+        kinds: { ...base.kinds, op: { ...base.kinds.op, ...items } },
+        capabilities: { ...base.capabilities, operation: { ...base.capabilities.operation, ...capabilities } },
+      }),
+    })
+  }
+  return meanings
+}
+
 /** Public identities registered by code, shared by Node and browser assembly. */
 export function pluginObjects(kernel) {
-  return [...kernel.objects, ...Object.entries(kernel.tables).filter(([kind]) => kind !== 'tag').flatMap(([kind, table]) => [...table].map(([name, value]) => ({ kind: ({ kind: 'kindMeaning', game: 'gameHook' })[kind] ?? kind, name, value: value?.type ? { type: value.type } : {} })))]
+  return [...kernel.objects, ...Object.entries(kernel.tables).filter(([kind]) => kind !== 'tag' && kind !== 'operation').flatMap(([kind, table]) => [...table].map(([name, value]) => ({ kind: ({ kind: 'kindMeaning', game: 'gameHook' })[kind] ?? kind, name, value: value?.type ? { type: value.type } : {} })))]
 }

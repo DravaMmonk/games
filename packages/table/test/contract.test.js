@@ -4,7 +4,7 @@ import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { register, modelOf, partsOf, fitted, blank } from '../core/index.js'
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 const world = {
- outs: [['cell', 'Cell', null, 'circuit/number']],
+ outs: [['cell', 'Cell', null, 'kernel/number']],
  order: () => [0, 1], keys: (_test, cell) => ({ cell: String(cell) }), base: () => [],
  read: (_test, cell) => cell + 1, answer: (_test, table) => table.get('1'),
 }

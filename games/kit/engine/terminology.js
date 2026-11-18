@@ -60,7 +60,7 @@ function bareNames(text, names) {
 
 /**
  * places: schema-declared player texts with {at, side, text, level?, entry?, label?}. before(a,b) is the course's
- * guaranteed prerequisite relation, not numeric/file order. Raw names are review candidates, never proof of misuse.
+ * guaranteed prerequisite relation, not scalar/file order. Raw names are review candidates, never proof of misuse.
  */
 export function termUsage(registry, places, before) {
   const failures = []

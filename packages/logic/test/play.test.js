@@ -1,3 +1,4 @@
+import { operations as scalar } from '../../scalar/core/index.js'
 import { circuitPlaySchema } from 'circuit'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
@@ -7,8 +8,8 @@ import { gateCourse } from '../core/gates.js'
 import { play } from '../core/play.js'
 
 // The gate the level holds, as a game's parts.json defines it.
-const gNot = { name: { zh: '非' }, desc: { zh: 'd' }, icon: 'ToggleLeft', family: 'logic/gate', inputs: [{ name: 'a' }], op: 'circuit/not' }
-const gates = { gNot: { ...defineParts({ parts: { gNot } }, {}).PARTS.gNot, name: gNot.name, desc: gNot.desc } }
+const gNot = { name: { zh: '非' }, desc: { zh: 'd' }, icon: 'ToggleLeft', family: 'logic/gate', inputs: [{ name: 'a' }], op: 'scalar/not' }
+const gates = { gNot: { ...defineParts({ parts: { gNot } }, scalar).PARTS.gNot, name: gNot.name, desc: gNot.desc } }
 
 test('the circuit template requires an explicit target column policy', () => {
   const circuit = { editor: 'circuit', judge: 'cases', resources: 'logic/gates' }

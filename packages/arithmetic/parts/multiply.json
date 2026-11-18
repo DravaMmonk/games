@@ -3,5 +3,5 @@
   "desc": "@part.multiply.desc",
   "icon": "X",
   "family": "circuit/value",
-  "op": "circuit/times"
+  "op": "scalar/times"
 }

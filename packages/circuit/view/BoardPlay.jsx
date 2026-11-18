@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { boardContext, boardPlay } from '../core/board-play.js'
-import { OPS } from '../core/mechanism/ops.js'
 import CircuitLevel from './CircuitLevel.jsx'
 import { partsFor } from './board/board-parts.js'
 import { iconOf } from './parts/icons.js'
@@ -9,7 +8,7 @@ import PartFace from './parts/PartFace.jsx'
 /** The package play mounts the same board editor used by the remaining native modules. */
 export default function BoardPlay({ context, work, onChange, phone }) {
   const { task, works, view } = useMemo(() => boardContext(context), [context])
-  const defined = { of: type => works.defs[type], defaults: works.defaultsOf, ops: OPS, value: () => null }
+  const defined = { of: type => works.defs[type], defaults: works.defaultsOf, value: () => null }
   const cards = Object.fromEntries(Object.entries(works.defs).map(([type, def]) => [type, { ...def, icon: iconOf(def.icon) }]))
   const parts = partsFor(task, view, { cards, portLabels: {}, defined })
   const flags = new Set(context.progress?.flags ?? [])

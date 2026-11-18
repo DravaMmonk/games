@@ -1,4 +1,5 @@
 import { moduleProblems } from './contract.js'
+import { register as registerScalar } from '../../../packages/scalar/core/index.js'
 import { register } from '../../../packages/circuit/core/index.js'
 import { createPluginKernel } from './plugins.js'
 import { test } from 'node:test'
@@ -19,7 +20,7 @@ test('each kind rejects duplicate names and permits a name shared across kinds',
 })
 
 test('qualified operation names round-trip beside match case delimiters', () => {
-  const expression = "match $op { add: circuit/add(a, b), _: image/gauss(a, 1, 'crop') }"
+  const expression = "match $op { add: scalar/add(a, b), _: image/gauss(a, 1, 'crop') }"
   assert.equal(print(parse(expression)), expression)
 })
 
@@ -38,11 +39,11 @@ test('types check nested operations, branches and outputs across modules', () =>
 })
 
 test('named parameters are checked using their declared value type', () => {
-  const schema = { kinds: { valueType: { 'circuit/number': {} }, op: {
-    'toy/scale': { args: [{ name: 'a', type: 'circuit/number' }], returns: 'circuit/number', params: S.obj({ label: S.str() }) },
+  const schema = { kinds: { valueType: { 'kernel/number': {} }, op: {
+    'toy/scale': { args: [{ name: 'a', type: 'kernel/number' }], returns: 'kernel/number', params: S.obj({ label: S.str() }) },
   } } }
   const file = { parts: { sample: {
-    inputs: [{ name: 'a', type: 'circuit/number' }], outputType: 'circuit/number', settings: { 'label': { control: 'number', default: 1 } }, op: 'toy/scale',
+    inputs: [{ name: 'a', type: 'kernel/number' }], outputType: 'kernel/number', settings: { 'label': { control: 'number', default: 1 } }, op: 'toy/scale',
   } } }
   assert.match(typeProblems(file, schema)[0].says, /parameter label/)
 })
@@ -59,10 +60,12 @@ test('module contracts reject missing implementations and incomplete signatures'
 })
 
 test('operations from another module execute through the normal part compiler', async () => {
-  register(createPluginKernel().forPackage('circuit', 'core'))
+  const kernel = createPluginKernel()
+  register(kernel.forPackage('circuit', 'core'))
+  registerScalar(kernel.forPackage('scalar', 'core'))
   const { defineParts } = await import('../../../packages/circuit/core/parts/define.js')
   const { PARTS } = defineParts({ parts: { sample: {
-    inputs: [{ name: 'a', type: 'circuit/number' }], outputType: 'circuit/number', op: 'circuit/add',
+    inputs: [{ name: 'a', type: 'kernel/number' }], outputType: 'kernel/number', op: 'scalar/add',
   } } }, {})
   assert.equal(PARTS.sample.eval({ a: 3, b: 3 }, {}), 6)
 })
@@ -71,10 +74,10 @@ test('circuit evaluation rejects an incompatible typed wire', async () => {
   const { evaluate } = await import('../../../packages/circuit/core/circuit.js')
   const graph = { nodes: [{ id: 'source', type: 'source' }, { id: 'target', type: 'target' }], wires: [{ from: 'source', to: 'target', port: 'a' }] }
   const parts = {
-    source: { inputs: [], outputType: 'circuit/boolean', eval: () => true },
-    target: { inputs: ['a'], inputTypes: { a: 'circuit/number' }, outputType: 'circuit/number', eval: ({ a }) => a },
+    source: { inputs: [], outputType: 'kernel/boolean', eval: () => true },
+    target: { inputs: ['a'], inputTypes: { a: 'kernel/number' }, outputType: 'kernel/number', eval: ({ a }) => a },
   }
-  assert.match(evaluate(graph, { parts }).errors.get('target'), /expects circuit\/number, received circuit\/boolean/)
+  assert.match(evaluate(graph, { parts }).errors.get('target'), /expects kernel\/number, received kernel\/boolean/)
 })
 
 

@@ -2,3 +2,4 @@
 {"seq":2,"at":"2026-11-17T20:59:51.154Z","why":"Apply the step 14 circuit progression schema and content migration","adopt":true,"files":[{"file":"packages/logic/kinds/symbol.json","after":"be21d6d9729a52a5"}]}
 {"seq":3,"at":"2026-11-17T22:11:59.019Z","why":"Apply step 16 package kinds and qualified names","adopt":true,"files":[{"file":"packages/logic/package.json","after":"052fc96810ea6ef0"}]}
 {"seq":4,"at":"2026-11-18T01:47:28.528Z","why":"Declare the package JavaScript as ES modules","adopt":true,"files":[{"file":"packages/logic/package.json","after":"98ee829bf6b8ecc7"}]}
+{"seq":5,"at":"2026-11-18T02:03:19.273Z","why":"Migrate scalar operations and primitive value types","adopt":true,"files":[{"file":"packages/logic/package.json","after":"c0608ca20d71ec71"}]}

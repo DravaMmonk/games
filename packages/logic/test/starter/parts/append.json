@@ -45,25 +45,25 @@
       "name": "third",
       "label": "@part.append.regions.2.label",
       "opens": true,
-      "when": "circuit/ge($ways, 3)"
+      "when": "scalar/ge($ways, 3)"
     },
     {
       "name": "fourth",
       "label": "@part.append.regions.3.label",
       "opens": true,
-      "when": "circuit/ge($ways, 4)"
+      "when": "scalar/ge($ways, 4)"
     },
     {
       "name": "fifth",
       "label": "@part.append.regions.4.label",
       "opens": true,
-      "when": "circuit/ge($ways, 5)"
+      "when": "scalar/ge($ways, 5)"
     },
     {
       "name": "sixth",
       "label": "@part.append.regions.5.label",
       "opens": true,
-      "when": "circuit/ge($ways, 6)"
+      "when": "scalar/ge($ways, 6)"
     }
   ],
   "op": "logic/append"

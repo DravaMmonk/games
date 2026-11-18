@@ -39,7 +39,7 @@ import { workNodes } from 'circuit'
 // `backtrack`, a tactic gives only its first result; from then on, every result, and each card after it works on each
 // of them in turn (tactics.js).
 import { sameJson } from 'kernel'
-import { PartError } from 'circuit'
+import { OperationError } from 'kernel'
 import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, all, fn, subst, tvar } from './formula.js'
@@ -53,7 +53,7 @@ import { L, T } from 'kernel'
 import { circuitBoard } from 'circuit'
 import { say } from './notation.js'
 
-const fail = (zh, en) => new PartError({ zh, en })
+const fail = (zh, en) => new OperationError({ zh, en })
 export const clausesValue = (set, extra = {}) => ({ kind: 'clauses', set, ...extra })
 export const eqsValue = (eqs, fail = null) => ({ kind: 'eqs', eqs, fail })
 
@@ -457,8 +457,8 @@ function skolemStep(s) {
 }
 function toClauses(v) {
   const s = firstOf(stateIn(v))
-  if (s.error) throw new PartError(s.error)
-  return clausesValue(clausesOfState(s, (t) => new PartError(t)), { from: s })
+  if (s.error) throw new OperationError(s.error)
+  return clausesValue(clausesOfState(s, (t) => new OperationError(t)), { from: s })
 }
 // Rounds until ⊥ or nothing new (a traced run sees each round).
 function saturated(c, node, ctx, round = resolveRound) {
@@ -485,7 +485,7 @@ function clausify(s0, ctx) {
   const namespace = source?.slice(0, source.lastIndexOf('/') + 1) ?? ''
   s = step(s, (x) => simplify(x, CNF_LAWS.map((key) => ctx.rewrites?.[`${namespace}${key}`]).filter(Boolean), 'hyps'))
   s = step(s, skolemStep)
-  if (s.error) throw new PartError(s.error)
+  if (s.error) throw new OperationError(s.error)
   return toClauses(s)
 }
 
@@ -685,7 +685,7 @@ const failsAsState = (run) => (ins, node, ctx) => {
   try {
     return run(ins, node, ctx)
   } catch (e) {
-    if (e instanceof PartError && ins.in?.kind === 'state') return { ...firstOf(ins.in), error: e.label }
+    if (e instanceof OperationError && ins.in?.kind === 'state') return { ...firstOf(ins.in), error: e.label }
     throw e
   }
 }

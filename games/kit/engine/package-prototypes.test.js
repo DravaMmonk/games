@@ -16,7 +16,7 @@ import { openPackage } from './ops/workspace.js'
 import { runChangeset, undo } from './ops/changeset.js'
 import { contentAssets, CONTENT_FILE } from '../app/content-assets.js'
 import { pageContent } from '../app/page-content.js'
-import { lockFixture, writeContentFixture, installTableFixture } from './ops/fixture.js'
+import { lockFixture, writeContentFixture, installTableFixture, installScalarFixture } from './ops/fixture.js'
 
 after(closeGames)
 const text = en => ({ en })
@@ -24,8 +24,8 @@ const arithmetic = Object.fromEntries([
   ['add', 'plus'], ['subtract', 'minus'], ['multiply', 'times'], ['divide', 'over'],
 ].map(([name, operation]) => [name, {
   icon: 'Plus', name: text(name), desc: text(name), family: 'circuit/value',
-  inputs: ['a', 'b'].map(name => ({ name, type: 'circuit/number' })),
-  outputType: 'circuit/number', op: `circuit/${operation}`,
+  inputs: ['a', 'b'].map(name => ({ name, type: 'kernel/number' })),
+  outputType: 'kernel/number', op: `scalar/${operation}`,
 }]))
 const layer = (id, objects = [], uses = [], overrides = []) => ({ id, config: { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
 
@@ -62,8 +62,10 @@ test('a numeric library works in packages using image and table boards, with no 
   const put = (path, value) => { const file = resolve(root, path); mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify(value)) }
   try {
     installTableFixture(root)
+    installScalarFixture(root)
     const imageVocabulary = layerVocabulary(resolveLayers({ package: 'image', closure: true, root, unlocked: true }).layers)
     writeContentFixture(root, 'arithmetic', { game: { vocabulary: 1 }, glossary: { groups: [], entries: [] }, partDefs: { parts: arithmetic }, levels: {} }, circuitVocabulary)
+    put('packages/arithmetic/package.json', { kind: 'lib', type: 'module', uses: { circuit: '^0.0.0', scalar: '^0.0.0' }, version: '0.0.0', kernel: '^0.0.0' })
     const common = { title: text('Sample'), vocabulary: 1 }
     writeContentFixture(root, 'picture', {
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {

@@ -62,18 +62,30 @@ export function catalogReader(catalogs, scope = 'i18n', { allowMissing = false }
 }
 
 
-/** Resolve nested annotations without treating the schema itself as content data. */
+/**
+ * Resolve nested annotations without treating the schema itself as content data. A reference is looked up when it is
+ * met (a namespaced key also finds the layer's own unqualified entry), so reading one declaration costs what it
+ * references, not a pass over the whole catalog; the catalogs themselves are validated where content reads them.
+ */
 export function declarationReader(catalogs, namespace = '') {
-  const qualified = namespace ? Object.fromEntries(Object.entries(catalogs).map(([lang, entries]) => [lang, {
-    ...entries, ...Object.fromEntries(Object.entries(entries).filter(([key]) => key !== 'ui' && !key.includes('/')).map(([key, text]) => [`${namespace}/${key}`, text])),
-  }])) : catalogs
-  const read = catalogReader(qualified)
   const qualify = key => namespace && !key.includes('/') ? `${namespace}/${key}` : key
+  const own = namespace ? `${namespace}/` : null
+  const lookup = (key) => {
+    const text = {}
+    for (const [lang, entries] of Object.entries(catalogs)) {
+      if (!entries || typeof entries !== 'object' || Array.isArray(entries)) continue
+      const local = own && key.startsWith(own) ? key.slice(own.length) : null
+      const found = Object.hasOwn(entries, key) ? entries[key] : local !== null && !local.includes('/') && local !== 'ui' && Object.hasOwn(entries, local) ? entries[local] : undefined
+      if (typeof found === 'string') text[lang] = found
+    }
+    if (!Object.keys(text).length) throw new Error(`declaration: ${textReference(key)} has no entry in i18n`)
+    return withTextKey(text, key)
+  }
   return value => mapTree(value, child => {
     const key = textKey(child)
     if (key) return withTextKey(child, qualify(key))
     const ref = referenceKey(child)
     if (!ref) return child
-    return read(textReference(qualify(ref)), 'declaration', null)
+    return lookup(qualify(ref))
   })
 }

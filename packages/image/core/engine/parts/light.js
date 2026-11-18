@@ -1,6 +1,6 @@
 // Parts for light (视觉完备 chapter 3): Lambert shading from a surface's normals, and a camera's three colour
 // sensors reading a spectrum. The spectrum is ten bands from violet to red; each sensor's curve sums to ten.
-import { lambertShade, sensorReading } from 'computer-vision'
+import { lambertShade, sensorReading } from 'cvlib'
 
 const lightParam = (key, label, value) => ({ key, label, kind: 'number', min: -1, max: 1, step: 0.05, default: value })
 

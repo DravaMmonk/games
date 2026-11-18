@@ -2748,6 +2748,8 @@
   "level.9-9.tasks.9-9.tests.1.label": "One above the other",
   "level.9-9.tasks.9-9.tests.2.label": "Three in a row",
   "level.9-9.title": "The thin line is gone",
+  "package.desc": "Provides a computer vision course through image circuits and experiments.",
+  "package.title": "Vision Complete",
   "part.add.desc": "Adds two pictures pixel by pixel: a + b",
   "part.add.name": "Add",
   "part.addNoise.desc": "Outputs √ᾱ·x₀ + √(1 − ᾱ)·ε: x₀ noised straight to step t.",

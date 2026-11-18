@@ -2,7 +2,7 @@
 // stacked up (sum), a probe that multiplies the row by a wave and averages (probe), and sampling (alias). Each is a
 // bench model (image/core/bench.js): what it computes from the knobs, for the bench's displays and its goal.
 import { benchRun, limitOf, openKnobs, passingSettings, startValues } from 'image'
-import { aliasOf, cosine, maxDiff, sampleAt, sinusoid, throughSamples } from 'image-processing'
+import { aliasOf, cosine, maxDiff, sampleAt, sinusoid, throughSamples } from 'imglib'
 import { T as t } from 'kernel'
 
 /* ---------- 叠加: 0.5 + Σ aₖ·sin(2π·k·x/N) ---------- */

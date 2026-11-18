@@ -24,4 +24,4 @@
 
 ### 百科对象
 
-`encyclopedia/kinds/` 声明 `entry` 和 `section`，用 `objectKind` 保留已有的短类型名。词条和分组文件仍在各内容包的 `entries/`、`sections/`，文案键和 `<wiki-ref to="…"></wiki-ref>` 写法保持原样。使用这些对象的包直接声明依赖，游戏显式选中百科包后即可在 `game.json` 的 `encyclopedia` 字段填写分组顺序。该字段由 `extends: "game"` 声明加入游戏 schema，并通过 `scaffold: false` 让新游戏从空的分组顺序开始。
+`wiki/kinds/` 声明 `entry` 和 `section`，用 `objectKind` 保留已有的短类型名。词条和分组文件仍在各内容包的 `entries/`、`sections/`，文案键和 `<wiki-ref to="…"></wiki-ref>` 写法保持原样。使用这些对象的包直接声明依赖，游戏显式选中百科包后即可在 `game.json` 的 `encyclopedia` 字段填写分组顺序。该字段由 `extends: "game"` 声明加入游戏 schema，并通过 `scaffold: false` 让新游戏从空的分组顺序开始。

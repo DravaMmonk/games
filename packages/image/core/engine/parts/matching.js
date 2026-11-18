@@ -1,8 +1,8 @@
 // Parts for finding the same point again (视觉完备 chapter 6): Hough voting, RANSAC and homographies, and warping a
 // picture by one. Points come from a mask's bright pixels; a homography travels as a 1×9 row and pairs of points as a
 // row of x, y, x′, y′ four at a time.
-import { fromFn, random, row } from 'image-processing'
-import { distanceToLine, houghGrid, HOUGH_BINS, pairsOf, pointsOf, ransacLine, robustHomography, warp } from 'computer-vision'
+import { fromFn, random, row } from 'imglib'
+import { distanceToLine, houghGrid, HOUGH_BINS, pairsOf, pointsOf, ransacLine, robustHomography, warp } from 'cvlib'
 
 export const MATCHING = {
   hough: {

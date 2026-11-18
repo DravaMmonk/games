@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PACKAGE_KINDS } from '../engine/package-kinds.js'
-import { tr } from '../shell/i18n.js'
+import { L, tr } from '../shell/i18n.js'
 
 const LABELS = {
   play: ['玩法包', 'Play packages'],
@@ -45,25 +45,8 @@ export function PackageKindFilter({ value, onChange, packages }) {
   )
 }
 
-export function PackagePicker({ packages, current, disabled, label, onChange, packageValue = id => id, children }) {
-  const [filter, setFilter] = useState('')
-  const groups = packageGroups(packages, filter)
-  const shown = groups.some(({ items }) => items.some(({ id }) => packageValue(id) === current))
-  const selected = shown || (children && current.startsWith('game:')) ? current : ''
-  return (
-    <div className="studio-package-picker">
-      <PackageKindFilter value={filter} onChange={setFilter} packages={packages} />
-      <select className="studio-game" value={selected} disabled={disabled} aria-label={label} onChange={event => onChange(event.target.value)}>
-        {!selected && <option value="" disabled>{tr('选择包', 'Choose a package')}</option>}
-        {groups.map(({ kind, items }) => (
-          <optgroup key={kind} label={packageKindLabel(kind)}>
-            {items.map(({ id }) => <option key={id} value={packageValue(id)}>{id}</option>)}
-          </optgroup>
-        ))}
-        {children}
-      </select>
-    </div>
-  )
+export function PackageName({ info, range }) {
+  return <span className="package-name" title={L(info.desc)}><span>{L(info.title)}</span><code>{info.id}{range && <> {range}</>}</code></span>
 }
 
 export function PackageDependencies({ packages }) {
@@ -75,7 +58,7 @@ export function PackageDependencies({ packages }) {
         {packageGroups(packages, filter).map(({ kind, items }) => (
           <div key={kind}>
             <dt>{packageKindLabel(kind)}</dt>
-            <dd>{items.map(({ id }) => <code key={id}>{id}</code>)}</dd>
+            <dd>{items.map(info => <PackageName key={info.id} info={info} />)}</dd>
           </div>
         ))}
       </dl>

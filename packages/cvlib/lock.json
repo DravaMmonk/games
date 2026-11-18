@@ -1,0 +1,17 @@
+{
+  "target": "cvlib",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "71396ab80632c21cdaaa4d0e2f148aab36a900bd70dab2267a72c365d1692e58"
+    },
+    "imglib": {
+      "version": "0.0.0",
+      "hash": "1a77b97fd55f1980e336523165c6896b08b66524abdd71ca5e99f9c80f342b79"
+    },
+    "mllib": {
+      "version": "0.0.0",
+      "hash": "59d008d4d21f58e4cc325ec193443b9d5ab6eaaff7c6f3ef3b03dbc5460fd5de"
+    }
+  }
+}

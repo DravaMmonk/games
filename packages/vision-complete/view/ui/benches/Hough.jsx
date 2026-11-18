@@ -3,7 +3,7 @@ import { finiteExtent } from 'kernel/view'
 import { tr } from 'kernel/view'
 import { mix, paintPixels, token } from 'kernel/view'
 import { useElementSize } from 'kernel/view'
-import { pointAlongLine, polarLine } from 'computer-vision'
+import { pointAlongLine, polarLine } from 'cvlib'
 import { linePath } from './matchDraw.js'
 import './match.css'
 

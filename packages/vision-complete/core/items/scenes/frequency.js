@@ -1,7 +1,7 @@
 // Scenes of frequency (scenes/index.js): a waveform made of a few waves, read for one of them; a photo under fine
 // grain, the photo gently blurred expected.
 
-import { correlate, cosine, fromFn, gaussianKernel, highpass, image, map, random, row, sampleAt, zip } from 'image-processing'
+import { correlate, cosine, fromFn, gaussianKernel, highpass, image, map, random, row, sampleAt, zip } from 'imglib'
 import { picture } from 'image'
 
 const N = 32

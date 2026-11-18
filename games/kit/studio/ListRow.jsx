@@ -4,9 +4,9 @@
 import { tr } from '../shell/i18n.js'
 
 /** `icon` a lucide icon (or `chip`, the icon drawn already); `title` its name (none: the id stands in); `children` badges. */
-export default function ListRow({ icon: Icon, chip = null, title, id, on = false, className = '', children = null, ...rest }) {
+export default function ListRow({ icon: Icon, chip = null, title, id, tooltip, on = false, className = '', children = null, ...rest }) {
   return (
-    <button type="button" className={`parts-row ${on ? 'is-on' : ''} ${className}`} aria-current={on ? 'true' : undefined} title={title && id ? `${title} · ${id}` : id ?? title ?? tr('（无名）', '(unnamed)')} {...rest}>
+    <button type="button" className={`parts-row ${on ? 'is-on' : ''} ${className}`} aria-current={on ? 'true' : undefined} title={tooltip ?? (title && id ? `${title} · ${id}` : id ?? title ?? tr('（无名）', '(unnamed)'))} {...rest}>
       <i className="family-chip">{chip ?? (Icon && <Icon size={12} aria-hidden="true" />)}</i>
       <span>{title || id}</span>
       {children}

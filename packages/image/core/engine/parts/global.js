@@ -1,6 +1,6 @@
 // Parts that see the whole picture (视觉完备 chapter 5): attention over patches, a position code, and the fixed
 // encoder a contrastive bench trains (a picture as 64 features of length 1).
-import { features, patchAttention } from 'computer-vision'
+import { features, patchAttention } from 'cvlib'
 
 export const GLOBAL = {
   attention: {

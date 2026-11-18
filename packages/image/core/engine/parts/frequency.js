@@ -1,6 +1,6 @@
 // Parts for frequency (视觉完备 chapter 2): a wave of 32 points, the spectrum, a low-pass in the frequency domain and
 // multiplying a picture's frequencies by a gain picture.
-import { applyGain, lowpass, magnitudeSpectrum, row, sampleAt, sinusoid } from 'image-processing'
+import { applyGain, lowpass, magnitudeSpectrum, row, sampleAt, sinusoid } from 'imglib'
 
 const N = 32
 

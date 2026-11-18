@@ -14,6 +14,7 @@ import { usable } from '../../circuit/core/course.js'
 import { openGame, openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { adopt, readLog, runChangeset, undo } from '../../../games/kit/engine/ops/changeset.js'
 import { proofsRoot, lockFixture } from './fixture.js'
+import { packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
 
 const roots = []
 after(async () => {
@@ -28,7 +29,7 @@ const fixture = () => {
     mkdirSync(dirname(path), { recursive: true })
     writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`)
   }
-  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
+  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, 'library') })
   put('packages/library/parts/apply.json', { name: 'Apply', desc: 'Apply an implication.', icon: 'GitFork', family: 'logic/rule', inputs: [{ name: 'imp', type: 'logic/judgment' }, { name: 'a', type: 'logic/judgment' }], outputType: 'logic/judgment', op: 'logic/mp' })
   lockFixture(root)
   return { root, put }

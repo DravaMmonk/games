@@ -2,7 +2,7 @@
 // from. Rounds come from a seed (one per attempt), so a retry is a new set and a check can replay any of them. As a
 // bench it is a process: start, answer (or run out of time), a short look at the right card, the next round.
 import { limitOf, picture } from 'image'
-import { correlate, random } from 'image-processing'
+import { correlate, random } from 'imglib'
 import { T as t } from 'kernel'
 
 export const maxAbsDiff = (a, b) => a.data.reduce((worst, v, i) => Math.max(worst, Math.abs(v - b.data[i])), 0)

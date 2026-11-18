@@ -61,3 +61,4 @@
 {"seq":61,"at":"2026-11-18T07:57:31.992Z","why":"Record the final capability descriptions","adopt":true,"files":[]}
 {"seq":62,"at":"2026-11-18T08:00:41.412Z","why":"Record the authored display inventory","adopt":true,"files":[]}
 {"seq":63,"at":"2026-11-18T08:03:41.176Z","why":"Record the final shared shape declarations","adopt":true,"files":[]}
+{"seq":64,"at":"2026-11-18T08:34:30.086Z","why":"Adopt step 23 package namespace references","adopt":true,"files":[{"file":"games/state-graph/game.json","after":"be6dabe73304f7ed"}]}

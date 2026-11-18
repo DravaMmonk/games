@@ -1,7 +1,7 @@
 // A shared row-of-pixels wave bench, judged by the same parameter-bench runner as its view.
 import { benchRun, openKnobs, startValues } from '../bench.js'
 import { piText } from '../engine/pi.js'
-import { cosine, maxDiff, sampleAt } from 'image-processing'
+import { cosine, maxDiff, sampleAt } from 'imglib'
 
 /* ---------- 一道波: c + A·cos(2π·k·x/N + φ·π/4) ---------- */
 

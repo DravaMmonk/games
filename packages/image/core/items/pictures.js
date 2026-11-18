@@ -5,8 +5,8 @@ import { qualifyItems } from 'kernel'
 // probe, an intro figure, a bench or a scene names one. Pictures are 16 × 16 unless they say their size.
 import { callOf } from 'kernel'
 import { GLYPHS, patterns } from './patterns.js'
-import { SIZE, addNoise, correlate, fromFn, gaussianKernel, map, random, zip } from 'image-processing'
-import { blob } from 'computer-vision'
+import { SIZE, addNoise, correlate, fromFn, gaussianKernel, map, random, zip } from 'imglib'
+import { blob } from 'cvlib'
 
 const TAU = 2 * Math.PI
 /** A letter of the library (GLYPHS), or rows of '#' and '.' drawn the same way. */

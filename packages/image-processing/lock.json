@@ -1,9 +1,0 @@
-{
-  "target": "image-processing",
-  "dependencies": {
-    "kernel": {
-      "version": "0.0.0",
-      "hash": "0fb15fdbd15bd1f99d0fec06becb47ba34a10120c9ba975782ab3fddddc2a0ca"
-    }
-  }
-}

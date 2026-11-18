@@ -39,7 +39,15 @@ export function newPackage({ root = contentRoot(), id, kind, from, empty = false
     mkdirSync(target, { recursive: true })
     for (const name of readdirSync(packageDirectory(from, root)).filter(name => !['changes.jsonl', 'changes.lock', 'lock.json', 'manifest.json', 'node_modules', '.DS_Store'].includes(name))) fill(resolve(packageDirectory(from, root), name), resolve(target, name), { [`${from}/`]: `${id}/` })
     config = JSON.parse(readFileSync(resolve(target, 'package.json'), 'utf8'))
-  } else mkdirSync(target, { recursive: true })
+  } else {
+    const dir = resolve(target, 'i18n')
+    mkdirSync(dir, { recursive: true })
+    config.title = '@package.title'
+    config.desc = '@package.desc'
+    const title = id.replaceAll('-', ' ').replace(/^./, letter => letter.toUpperCase())
+    writeFileSync(resolve(dir, 'zh.json'), writeJson({ 'package.desc': '提供本包定义的内容。', 'package.title': title }, null))
+    writeFileSync(resolve(dir, 'en.json'), writeJson({ 'package.desc': 'Provides the content defined in this package.', 'package.title': title }, null))
+  }
   writeFileSync(resolve(target, 'package.json'), writeJson({ ...config, kind, type: 'module' }, null))
   lockTarget({ kind: 'package', id }, root)
   return target

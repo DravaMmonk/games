@@ -2,7 +2,7 @@
 // pictures at once, a bright and a dark patch in reading order, patterns at several brightnesses, and photos to match
 // with their altered copies.
 
-import { fromFn, image } from 'image-processing'
+import { fromFn, image } from 'imglib'
 import { TILES, picture } from 'image'
 
 // Patterns placed on a 16 × 16 picture, each pattern pixel `scale` cells wide (4 patterns to a row at scale 1, 2 at

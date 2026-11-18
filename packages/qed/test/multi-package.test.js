@@ -44,7 +44,7 @@ test('three packages compose across logic, image and rows, retain layered text a
   put('packages/sums/levels/add.json', { title: '@title', tasks: [{ id: 'add', play: 'rows/equation', brief: '@brief', rows: [{ total: 5, chips: [0, 2, 3], reference: '2 + 3', naive: '0 + 3' }] }] })
   // Select packages through the public operation boundary; no image-only game fields are needed.
   const selected = await runChangeset(openGame(id, root), { ops: [
-    ...['image-processing', 'computer-vision', 'machine-learning'].map(id => ({ op: 'game.package.add', package: id, range: '^0.0.0' })),
+    ...['imglib', 'cvlib', 'mllib'].map(id => ({ op: 'game.package.add', package: id, range: '^0.0.0' })),
     { op: 'game.package.add', package: 'image', range: '^0.0.0' }, { op: 'game.package.add', package: 'rows', range: '^0.0.0' }, { op: 'game.package.add', package: 'z-pictures', range: '^1.0.0' }, { op: 'game.package.add', package: 'sums', range: '^1.0.0' },
     { op: 'chapter.set', chapter: 'ground', path: 'levels', value: [`${id}/given`, `${id}/apply`, `${id}/suppose`, 'z-pictures/same', 'sums/add'] },
   ] }, { write: true })

@@ -4,20 +4,23 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { localSourceRequest, sourceTools } from './studio-source.js'
+import { packageWordsFixture } from '../engine/test-fixture.js'
 
 test('Studio edits only workspace source and rejects stale or invalid writes', async () => {
   const root = mkdtempSync(join(tmpdir(), 'studio-source-'))
   try {
     const dir = join(root, 'packages/sample')
     mkdirSync(dir, { recursive: true })
-    writeFileSync(join(dir, 'package.json'), '{"kind":"lib","version":"0.0.0","kernel":"^0.0.0","uses":{}}')
+    mkdirSync(join(dir, 'i18n'))
+    const words = packageWordsFixture((path, value) => writeFileSync(join(root, path), JSON.stringify(value)), 'sample')
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {}, ...words }))
     let saves = 0
     const tools = sourceTools(root, () => { saves += 1 })
     const packageTarget = { package: 'sample' }
     const target = { ...packageTarget, path: 'core/math/calc.js' }
     const first = 'export const plus = (a, b) => a + b\n'
     const second = 'export const plus = (a, b) => Number(a) + Number(b)\n'
-    assert.deepEqual(tools.source_packages.run(), ['sample'])
+    assert.deepEqual(tools.source_packages.run().map(item => [item.id, item.title.en]), [['sample', 'sample']])
     assert.deepEqual(tools.source_list.run(packageTarget), { files: [], matches: [] })
     const created = await tools.source_save.run({ ...target, text: first, base: null })
     assert.deepEqual(tools.source_read.run(target), created)

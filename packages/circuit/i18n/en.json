@@ -1,4 +1,6 @@
 {
   "kind.part.name": "Parts",
-  "kind.tray.name": "Trays"
+  "kind.tray.name": "Trays",
+  "package.desc": "Provides circuit building, wiring, simulation, and checking.",
+  "package.title": "Circuits"
 }

@@ -22,13 +22,20 @@ const mapIndex = args.indexOf('--migration')
 if (mapIndex >= 0 && (!args[mapIndex + 1] || action !== 'compare')) throw new Error('--migration requires a file and compare mode')
 const mapFile = mapIndex < 0 ? resolve(sourceFolder, 'migration.json') : resolve(args.splice(mapIndex, 2)[1])
 const migration = action === 'compare' && (mapIndex >= 0 || existsSync(mapFile)) ? JSON.parse(readFileSync(mapFile, 'utf8')) : {}
+// Compare a renamed package to its original snapshot without moving or rewriting the locked corpus.
+const formerIds = new Map(Object.entries(migration.packageRenames ?? {}).map(([former, current]) => [current, former]))
+const snapshotId = ({ kind, id }) => kind === 'package' ? formerIds.get(id) ?? id : id
+const packageAliases = nameNormalizer([], { replacements: [...formerIds].flatMap(([current, former]) => [
+  { pattern: `(?<![\\w-])${current}(?=/[\\w])`, flags: 'g', replacement: former },
+  { pattern: `^${current} \\(${current}\\)$`, flags: 'gm', replacement: `${former} (${former})` },
+]) })
 if (!['save', 'compare'].includes(action)) throw new Error('usage: npm run baseline -- save|compare [<game>|--package <package>] [--migration <file>]')
 const asPackage = args.includes('--package')
 const ids = args.filter(arg => arg !== '--package')
 const targets = ids.length || asPackage ? contentTargets(ids, root, { package: asPackage })
   : [...contentTargets([], root, { game: true }), ...packageIds(root).map(id => ({ id, kind: 'package' }))]
 if (action === 'compare' && !ids.length && !asPackage) {
-  const installed = new Set(targets.map(({ kind, id }) => `${kind}-${id}.json`))
+  const installed = new Set(targets.map(target => `${target.kind}-${snapshotId(target)}.json`))
   for (const file of readdirSync(sourceFolder).filter(name => /^(game|package)-[^.]+[.]json$/.test(name))) {
     if (!installed.has(file)) console.log(`compare ${file.slice(0, -5)}: snapshot has no installed target`)
   }
@@ -54,7 +61,8 @@ try {
   targets: for (const target of targets) {
     const { id, kind } = target
     const packaged = kind === 'package'
-    if (action === 'compare' && !existsSync(resolve(sourceFolder, `${kind}-${id}.json`))) {
+    const lockedFile = resolve(sourceFolder, `${kind}-${snapshotId(target)}.json`)
+    if (action === 'compare' && !existsSync(lockedFile)) {
       console.log(`compare ${kind} ${id}: outside the locked corpus`)
       continue
     }
@@ -94,7 +102,7 @@ try {
     let changeCount = 0
     if (action === 'save') await writeReport(file, snapshot)
     else {
-      const before = unpackBaseline(JSON.parse(readFileSync(resolve(sourceFolder, `${kind}-${id}.json`), 'utf8')))
+      const before = unpackBaseline(JSON.parse(readFileSync(lockedFile, 'utf8')))
       const normalize = (data, names) => {
         const palette = dependencyPaletteBaseline(data, { packaged, dependencies: content.layerOrder, palette: migration.palette })
         const plays = levelPlayBaseline(nestedPlayBaseline(palette, migration.nestedPlays), migration.levelPlays)
@@ -102,7 +110,8 @@ try {
         return collectionFieldsBaseline(versionMetadataBaseline(existenceBaseline(named), migration.retiredDependency))
       }
       // The inventory itself describes migration locations, not behaviour.
-      const { names: oldNames, ...oldData } = before, { names: newNames, ...newData } = snapshot
+      const { names: oldNames, ...oldData } = before
+      const { names: newNames, ...newData } = formerIds.size ? packageAliases(snapshot) : snapshot
       const changes = differences(normalize(oldData, oldNames), normalize(newData, newNames))
       changeCount = changes.length
       total += changeCount

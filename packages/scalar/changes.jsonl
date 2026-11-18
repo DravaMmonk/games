@@ -1,0 +1,1 @@
+{"seq":1,"at":"2026-11-18T08:41:21.462Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/scalar/package.json","after":"843a08b2b13cd85f"},{"file":"packages/scalar/i18n/en.json","after":"ef4c67fafa8961cd"},{"file":"packages/scalar/i18n/zh.json","after":"4a3b3628c1e485fb"}]}

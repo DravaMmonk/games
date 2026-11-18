@@ -9,6 +9,7 @@ import { resolveLayers, readPackage } from './resolver.js'
 import { lockTarget, publishPackage, checkTarget, upgradeTarget, platformManifest } from './releases.js'
 import { releaseIndex, releaseSource } from './release-store.js'
 import { S } from './schema.js'
+import { packageWordsFixture } from './test-fixture.js'
 
 const put = (root, name, data) => {
   const file = resolve(root, name)
@@ -17,6 +18,7 @@ const put = (root, name, data) => {
 }
 const project = () => mkdtempSync(resolve(tmpdir(), 'versions-contract-'))
 const config = (uses = {}) => ({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses })
+const namedConfig = (root, id, uses) => ({ ...config(uses), ...packageWordsFixture((name, value) => put(root, name, value), id) })
 const topic = { declares: 'package', overrides: { package: ['*'] }, schema: S.obj({ title: S.text(), body: S.list(S.text()) }) }
 const entry = value => ({ hash: hash(JSON.stringify(value)), value })
 
@@ -73,7 +75,7 @@ test('locks report missing pins, range drift, extra dependencies and content has
 test('checked archives and workspace sources use the same reader, manifests and public layers', () => {
   const root = project()
   try {
-    put(root, 'packages/library/package.json', config())
+    put(root, 'packages/library/package.json', namedConfig(root, 'library'))
     put(root, 'packages/library/core/index.js', "export const answerValue = 42; export function register(kernel) { kernel.tag('library/read', 'library/topic') }")
     put(root, 'packages/library/view/index.jsx', "export function Widget() { return <span /> } export function register(kernel) { kernel.display('library/widget', Widget) }")
     put(root, 'packages/library/test/contract.test.js', "import test from 'node:test'; import assert from 'node:assert/strict'; import { answerValue } from '../core/index.js'; test('public value', () => assert.equal(answerValue, 42))")
@@ -86,6 +88,8 @@ test('checked archives and workspace sources use the same reader, manifests and 
     const source = resolveLayers({ package: 'library', closure: true, root }).layers[0]
     assert.ok(source.manifest.surface['display:library/widget'])
     assert.equal(source.manifest.kind, 'lib')
+    assert.equal(source.manifest.title, '@package.title')
+    assert.equal(source.manifest.desc, '@package.desc')
     assert.ok(source.manifest.surface['tag:library/topic:library/read'])
     assert.deepEqual(source.manifest.exports.core, ['answerValue', 'register'])
     renameSync(resolve(root, 'packages/library'), resolve(root, 'held'))
@@ -109,9 +113,9 @@ test('checked archives and workspace sources use the same reader, manifests and 
     rmSync(resolve(root, 'packages/library/topic/one.json'))
     assert.equal(publishPackage('library', root, { launch: true }).version, '2.0.0')
     renameSync(resolve(root, 'packages/library'), resolve(root, 'held-again'))
-    put(root, 'packages/other/package.json', config({ library: '~1.0.0' }))
+    put(root, 'packages/other/package.json', namedConfig(root, 'other', { library: '~1.0.0' }))
     lockTarget({ id: 'other', kind: 'package' }, root)
-    put(root, 'packages/course/package.json', config({ library: '^1.0.0', other: '^1.0.0' }))
+    put(root, 'packages/course/package.json', namedConfig(root, 'course', { library: '^1.0.0', other: '^1.0.0' }))
     const locked = lockTarget({ id: 'course', kind: 'package' }, root)
     assert.equal(locked.dependencies.library.version, '1.0.0')
     assert.equal(upgradeTarget({ id: 'course', kind: 'package' }, 'library', root).dependencies.library.version, '1.0.0')
@@ -130,13 +134,13 @@ test('checked archives and workspace sources use the same reader, manifests and 
 test('publication compares real dependent checks and reports a major behavioral change', () => {
   const root = project()
   try {
-    put(root, 'packages/library/package.json', config())
+    put(root, 'packages/library/package.json', namedConfig(root, 'library'))
     const code = value => `export const answerValue = ${value}; export function register() {}`
     put(root, 'packages/library/core/index.js', code(42))
     put(root, 'packages/library/test/contract.test.js', "import test from 'node:test'; import assert from 'node:assert/strict'; import { answerValue } from '../core/index.js'; test('public value', () => assert.equal(typeof answerValue, 'number'))")
     lockTarget({ id: 'library', kind: 'package' }, root)
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.0.0')
-    put(root, 'packages/course/package.json', config({ library: '^1.0.0' }))
+    put(root, 'packages/course/package.json', namedConfig(root, 'course', { library: '^1.0.0' }))
     put(root, 'packages/course/core/index.js', "import { answerValue } from 'library'; export function register(kernel) { kernel.play('course/probe', { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: () => ({ pass: true }), judge: report => report }); kernel.check('course/probe', () => [{ text: `probe ${answerValue}` }]) }")
     put(root, 'packages/course/capabilities/play.json', { extends: 'play', items: { probe: {} } })
     put(root, 'packages/course/levels/sum.json', { title: 'Probe', tasks: [{ id: 'probe', play: 'course/probe', brief: 'Observe the public value.' }] })

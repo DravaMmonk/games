@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { imageWorks } from '../core/work.js'
-import { image } from 'image-processing'
+import { image } from 'imglib'
 import { tidyImageBoard } from '../core/engine/board.js'
 
 const text = (s) => ({ zh: s, en: s })

@@ -1,0 +1,25 @@
+{
+  "target": "tick",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "71396ab80632c21cdaaa4d0e2f148aab36a900bd70dab2267a72c365d1692e58"
+    },
+    "circuit": {
+      "version": "0.0.0",
+      "hash": "d6fd947dc132eebd1099ad6490e4d27ba2d0fea2b5e25b34052fb792f78731d3"
+    },
+    "progress": {
+      "version": "0.0.0",
+      "hash": "01090aa5d690bc55995761cec662383496b865dd0014579cc49e9ded5856f8a6"
+    },
+    "scalar": {
+      "version": "0.0.0",
+      "hash": "89196d2c63b591aaffee3b30ab1c3a5348fd324b8f624cbf2f8793710541499f"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "01569fa0f2847c78bf22a14bfaabbd87c87f3fb54e7cf3fb54311b183c1a752b"
+    }
+  }
+}

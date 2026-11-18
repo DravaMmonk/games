@@ -1,0 +1,4 @@
+{
+  "package.desc": "Provides pixel representations, filtering, resampling, and frequency-domain operations.",
+  "package.title": "Image processing library"
+}

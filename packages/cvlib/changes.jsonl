@@ -1,0 +1,2 @@
+{"seq":1,"at":"2026-11-18T02:19:33.812Z","why":"Separate domain-independent learning algorithms from image models","adopt":true,"files":[{"file":"packages/computer-vision/package.json","after":"d4385a4acd839232"}]}
+{"seq":2,"at":"2026-11-18T08:41:17.124Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/cvlib/package.json","after":"19b266f14cc40f97"},{"file":"packages/cvlib/i18n/en.json","after":"a49c56452b17f57f"},{"file":"packages/cvlib/i18n/zh.json","after":"651f14d7fcf4a70b"}]}

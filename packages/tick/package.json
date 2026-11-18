@@ -1,0 +1,14 @@
+{
+  "kind": "play",
+  "title": "@package.title",
+  "desc": "@package.desc",
+  "type": "module",
+  "version": "0.0.0",
+  "kernel": "^0.0.0",
+  "uses": {
+    "circuit": "^0.0.0",
+    "progress": "^0.0.0",
+    "scalar": "^0.0.0",
+    "wiki": "^0.0.0"
+  }
+}

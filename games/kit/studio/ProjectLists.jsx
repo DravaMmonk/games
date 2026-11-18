@@ -9,8 +9,9 @@ import { Gamepad2, Package } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarGrouping from './SidebarGrouping.jsx'
-import { packageSidebarGroups, packageKindLabel } from './PackageGroups.jsx'
+import { PackageName, packageSidebarGroups, packageKindLabel } from './PackageGroups.jsx'
 import { PACKAGE_KINDS } from '../engine/package-kinds.js'
+import { sourceValue } from '../engine/catalogs.js'
 
 const ID = /^[a-z][a-z0-9-]*$/
 
@@ -70,7 +71,7 @@ function NewForm({ heading, fields, problem, onMake, onCancel }) {
 export function PackageList({ packages, current, picked, disabled, onPick, onOpen, onCreate = null }) {
   const [query, setQuery] = useState('')
   const [making, setMaking] = useState(null) // { from } or { empty: true }, and the last refusal
-  const listed = [...packages].sort((a, b) => a.id.localeCompare(b.id)).filter(({ id, uses }) => found(query, words(id, Object.keys(uses ?? {}))))
+  const listed = [...packages].sort((a, b) => a.id.localeCompare(b.id)).filter(({ id, title, uses }) => found(query, words(id, title, Object.keys(uses ?? {}))))
   const make = async ({ id, kind: chosen }) => {
     const name = id.trim()
     if (!ID.test(name)) return setMaking({ ...making, problem: tr('包 id 用小写字母、数字和连字符，字母开头', 'A package id is lowercase letters, digits and dashes, a letter first') })
@@ -91,8 +92,8 @@ export function PackageList({ packages, current, picked, disabled, onPick, onOpe
       <SidebarGrouping scope="package-projects" groupsOf={by => packageSidebarGroups(listed, by)} tools={{
         query, onQuery: setQuery, addOptions: disabled ? [] : addOptions, addLabel: tr('包', 'Packages'),
         onAdd: value => setMaking(value === 'empty' ? { empty: true } : { from: picked }),
-      }} row={({ id }) => (
-        <Row key={id} id={id} icon={Package} name={id} title={id} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen} />
+      }} row={({ id, title, desc }) => (
+        <Row key={id} id={id} icon={Package} name={L(title)} title={L(desc)} open={id === current} picked={id === picked} disabled={disabled} onPick={onPick} onOpen={onOpen}><code>{id}</code></Row>
       )}>
         {making && <NewForm heading={making.empty ? tr('新建空白包', 'New empty package') : tr(`复制 ${making.from} 为新包`, `New package, a copy of ${making.from}`)}
           fields={[['id', tr('包 id', 'Package id')], ...(making.empty ? [['kind', tr('包种类', 'Package kind'), PACKAGE_KINDS.map((k) => ({ value: k, label: `${kindName(k)} (${k})` }))]] : [])]}
@@ -140,11 +141,11 @@ export function GameList({ games, current, picked, disabled, onPick, onOpen, onC
 }
 
 /** Its head: what it is, and Open (or that it is open). */
-function MetaHead({ icon: Icon, id, children, open, disabled, onOpen, openLabel }) {
+function MetaHead({ icon: Icon, id, info, children, open, disabled, onOpen, openLabel }) {
   return (
     <header className="package-meta-head">
       <Icon size={15} aria-hidden="true" />
-      <code>{id}</code>
+      {info ? <PackageName info={info} /> : <code>{id}</code>}
       {children}
       <span className="kit-spacer" />
       {open ? <span className="object-kind">{tr('打开中', 'Open')}</span>
@@ -158,8 +159,13 @@ const kindName = (kind) => { try { return packageKindLabel(kind) } catch { retur
 const short = (hash) => (hash ? String(hash).slice(0, 8) : '—')
 const none = <span className="package-meta-none">{tr('无', 'None')}</span>
 
+function PackageRef({ packages, id, range }) {
+  const info = packages.find(pkg => pkg.id === id)
+  return info ? <PackageName info={info} range={range} /> : <code>{id} {range}</code>
+}
+
 /** Whether a dependency lock holds, and what it holds each dependency at. */
-function Lock({ lock, status }) {
+function Lock({ lock, status, packages }) {
   const ok = status?.valid !== false
   return (
     <>
@@ -167,7 +173,7 @@ function Lock({ lock, status }) {
       <dl className="package-facts">
         <dt>{tr('状态', 'State')}</dt>
         <dd className={ok ? 'is-ok' : 'is-error'}>{ok ? tr('与依赖现状一致', 'Matches the dependencies as they are') : (status?.problems ?? []).join('; ') || tr('不一致', 'Out of date')}</dd>
-        {Object.entries(lock?.dependencies ?? {}).map(([dep, at]) => <Fragment key={dep}><dt>{dep}</dt><dd><code>{at.version}</code><code className="package-meta-hash" title={at.hash}>{short(at.hash)}</code></dd></Fragment>)}
+        {Object.entries(lock?.dependencies ?? {}).map(([dep, at]) => <Fragment key={dep}><dt><PackageRef packages={packages} id={dep} /></dt><dd><code>{at.version}</code><code className="package-meta-hash" title={at.hash}>{short(at.hash)}</code></dd></Fragment>)}
       </dl>
     </>
   )
@@ -196,17 +202,18 @@ export function PackageMeta({ packages, games = [], id, open, disabled, onOpen }
   const exportsOf = Object.entries(info.manifest?.exports ?? {})
   return (
     <article className="package-meta">
-      <MetaHead icon={Package} id={id} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr('打开这个包', 'Open this package')} />
+      <MetaHead icon={Package} id={id} info={info} open={id === open} disabled={disabled} onOpen={onOpen} openLabel={tr('打开这个包', 'Open this package')} />
+      <p className="package-description">{L(info.desc)}</p>
       <h3 className="package-meta-file">package.json</h3>
       <dl className="package-facts">
         <dt>{tr('种类', 'Kind')}</dt><dd>{info.kind ? <>{kindName(info.kind)} <code>{info.kind}</code></> : none}</dd>
         <dt>{tr('版本', 'Version')}</dt><dd><code>{info.version ?? '—'}</code></dd>
         <dt>{tr('内核', 'Kernel')}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
-        <dt>{tr('依赖', 'Uses')}</dt><dd>{uses.length ? uses.map(([dep, range]) => <code key={dep}>{dep} {range}</code>) : none}</dd>
-        <dt>{tr('被哪些包用到', 'Used by packages')}</dt><dd>{usedBy.length ? usedBy.map((u) => <code key={u}>{u}</code>) : none}</dd>
+        <dt>{tr('依赖', 'Uses')}</dt><dd>{uses.length ? uses.map(([dep, range]) => <PackageRef key={dep} packages={packages} id={dep} range={range} />) : none}</dd>
+        <dt>{tr('被哪些包用到', 'Used by packages')}</dt><dd>{usedBy.length ? usedBy.map((u) => <PackageRef key={u} packages={packages} id={u} />) : none}</dd>
         <dt>{tr('被哪些游戏选用', 'Played by games')}</dt><dd>{playedBy.length ? playedBy.map((g) => <code key={g}>{g}</code>) : none}</dd>
       </dl>
-      <Lock lock={info.lock} status={info.lockStatus} />
+      <Lock lock={info.lock} status={info.lockStatus} packages={packages} />
       {exportsOf.length > 0 && <>
         <h3 className="package-meta-file">{tr('代码', 'Code')}</h3>
         <dl className="package-facts">
@@ -227,7 +234,7 @@ export function PackageMeta({ packages, games = [], id, open, disabled, onOpen }
 
 /** A game's meta (read only here: its own files are edited in the workspace): its title, its main package, the
  *  packages it plays (game.json `packages`), the kernel it needs, and whether its dependency lock holds. */
-export function GameMeta({ games, id, open, disabled, onOpen }) {
+export function GameMeta({ games, packages, id, open, disabled, onOpen }) {
   const info = games.find((g) => g.id === id)
   if (!info) return null
   const plays = Object.entries(info.packages ?? {})
@@ -237,11 +244,11 @@ export function GameMeta({ games, id, open, disabled, onOpen }) {
       <h3 className="package-meta-file">game.json</h3>
       <dl className="package-facts">
         <dt>{tr('名字', 'Title')}</dt><dd>{L(info.title) ?? '—'}</dd>
-        <dt>{tr('主包', 'Main package')}</dt><dd><code>{info.package ?? '—'}</code></dd>
+        <dt>{tr('主包', 'Main package')}</dt><dd><PackageRef packages={packages} id={info.package} /></dd>
         <dt>{tr('内核', 'Kernel')}</dt><dd><code>{info.kernel ?? '—'}</code></dd>
-        <dt>{tr('选用的包', 'Packages played')}</dt><dd>{plays.length ? plays.map(([p, range]) => <code key={p}>{p} {range}</code>) : none}</dd>
+        <dt>{tr('选用的包', 'Packages played')}</dt><dd>{plays.length ? plays.map(([p, range]) => <PackageRef key={p} packages={packages} id={p} range={range} />) : none}</dd>
       </dl>
-      <Lock lock={info.lock} status={info.lockStatus} />
+      <Lock lock={info.lock} status={info.lockStatus} packages={packages} />
     </article>
   )
 }
@@ -257,7 +264,7 @@ export function JsonFile({ name, value, note = null }) {
 }
 
 /** A package's package.json, as the packages list knows it. */
-export const packageJson = (info) => info && Object.fromEntries(['kind', 'type', 'version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]]))
+export const packageJson = (info) => info && sourceValue(Object.fromEntries(['kind', 'title', 'desc', 'type', 'version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]])))
 
 /** What the games list knows of a game's game.json (its texts by their keys). */
 export const gameJson = (info) => info && {

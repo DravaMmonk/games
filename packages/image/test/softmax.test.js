@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { imageKit } from '../core/engine/kit.js'
 import { NODE_TYPES } from '../core/engine/nodes.js'
-import { image } from 'image-processing'
+import { image } from 'imglib'
 
 const kit = imageKit({ ...NODE_TYPES })
 const io = { inputs: ['a', 'b', 'c'], outputs: ['x', 'y', 'z'] }

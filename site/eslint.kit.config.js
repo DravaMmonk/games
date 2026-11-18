@@ -16,8 +16,8 @@ const packageIds = new Set(existsSync(packages)
   ? readdirSync(packages).filter(id => existsSync(resolve(packages, id, 'package.json'))) : [])
 
 // These words also name kernel schema fields, result shapes and ordinary UI controls.
-const optionalPackageNames = new Set(['encyclopedia'])
-const protocolWords = new Set(['text', 'rows', 'table', 'scalar'])
+const optionalPackageNames = new Set(['wiki'])
+const protocolWords = new Set(['text', 'rows', 'table', 'scalar', 'wiki', 'tick'])
 const packageProperty = /^(?:package|packageId|packageIds|packages|uses|module|domain|layerOrder)$/
 const packageCall = /(?:Package|Layer|Runtime|Module|Deps|Dependency|Plugin)$/
 const propertyName = node => node?.name ?? node?.value

@@ -11,6 +11,8 @@
   "level.1-2.tasks.1-2.brief": "Give a + b − c + d − e.",
   "level.1-2.tasks.1-2.outputs.0.label": "Result",
   "level.1-2.title": "Two numbers more",
+  "package.desc": "Provides circuit building, wiring, simulation, and checking.",
+  "package.title": "Circuits",
   "part.add.desc": "Gives the sum of its two inputs; gives 「—」 if either input is 「—」.",
   "part.add.name": "Add",
   "part.addSub.desc": "Gives a plus b, less c.",

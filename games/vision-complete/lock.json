@@ -3,39 +3,39 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "0fb15fdbd15bd1f99d0fec06becb47ba34a10120c9ba975782ab3fddddc2a0ca"
+      "hash": "71396ab80632c21cdaaa4d0e2f148aab36a900bd70dab2267a72c365d1692e58"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "602fb6f2dbd618b88523d357c597cca5287a65b90e968dcb9087f14619402e1b"
+      "hash": "d6fd947dc132eebd1099ad6490e4d27ba2d0fea2b5e25b34052fb792f78731d3"
     },
-    "encyclopedia": {
+    "imglib": {
       "version": "0.0.0",
-      "hash": "bdb252e814a90540534f5880e2f5ae54e3eed00c1ab91ed607591893efe6ee05"
+      "hash": "1a77b97fd55f1980e336523165c6896b08b66524abdd71ca5e99f9c80f342b79"
     },
-    "image-processing": {
+    "mllib": {
       "version": "0.0.0",
-      "hash": "3daa5b7eb8c107efc36c06bccf772dfa7125712b6cdf5008ab9bb2bd17f54140"
+      "hash": "59d008d4d21f58e4cc325ec193443b9d5ab6eaaff7c6f3ef3b03dbc5460fd5de"
     },
-    "machine-learning": {
+    "cvlib": {
       "version": "0.0.0",
-      "hash": "5bdb93c50ceb620b4521bd5ab7610a14030b207246748720f6a51c2593a16f14"
-    },
-    "computer-vision": {
-      "version": "0.0.0",
-      "hash": "441d295dbfe82df957d02c2826a86c8aec48ee66731595dba21976058cf3ac88"
+      "hash": "0aaa80f90dd38718b8b8c327f35263514fcb24dcefaf4e6755a9f488f6b3816b"
     },
     "image": {
       "version": "0.0.0",
-      "hash": "31de329659bda3cc7919031773cd59fe9b324c48d3c5de5c1dc38acc7804bf4e"
+      "hash": "fe299e60b938c6d16e277baf85184533183da63cab5c00a020dbf89894a7a76b"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "c235e9383614debd3f414f73f962ecf1e27edbb2fa1ddbc5d8a327e571803c7a"
+      "hash": "01090aa5d690bc55995761cec662383496b865dd0014579cc49e9ded5856f8a6"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "01569fa0f2847c78bf22a14bfaabbd87c87f3fb54e7cf3fb54311b183c1a752b"
     },
     "vision-complete": {
       "version": "0.0.0",
-      "hash": "3827ec18f28b0756cda7b34caa2632af29354eb38573c29294ae0457ff8734fb"
+      "hash": "94e48aa824af38c5d1936d0d69e21144a9a296f50d144228fdf8a834313634ae"
     }
   }
 }

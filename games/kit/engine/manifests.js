@@ -1,6 +1,6 @@
 import { CODE_NAME } from './object-name.js'
 import { meaningsOf } from './kind-meanings.js'
-import { sourceValue } from './catalogs.js'
+import { catalogReader, referenceKey, sourceValue } from './catalogs.js'
 // Public identities are collected from the same qualified layers as existence checking.
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -9,6 +9,20 @@ import { publicSurfaces } from './existence.js'
 import { fileHashes, contentHash, hash, stableJSON, kitDirectory } from './release-data.js'
 
 const require = createRequire(resolve(kitDirectory, '../../site/package.json'))
+
+/** Read display metadata from the package's own catalog. */
+export function packageWords({ id, config, catalogs }) {
+  const file = `packages/${id}/package.json`
+  const read = catalogReader(catalogs, `packages/${id}/i18n`)
+  return Object.fromEntries(['title', 'desc'].map(field => {
+    const value = config[field]
+    if (!referenceKey(value)) throw new Error(`${file}: ${field} must be an @key catalog reference`)
+    const text = read(value, file)
+    for (const lang of ['zh', 'en']) if (!text[lang]?.trim()) throw new Error(`${file}: ${field} needs a ${lang} translation`)
+    return [field, text]
+  }))
+}
+
 export function exportedNames(file, seen = new Set()) {
   if (!file || seen.has(file)) return []
   seen.add(file)
@@ -81,5 +95,5 @@ export function layerManifest(layer, layers, schemas, dir) {
   const exports = Object.fromEntries(Object.entries(layer.entryPaths ?? {}).map(([side, file]) => [side, exportedNames(file)]))
   for (const [side, names] of Object.entries(exports)) for (const name of names) surface[`export:${side}/${name}`] = { kind: 'export', name: `${layer.id}/${side}/${name}`, hash: hash(name), value: name }
   const files = fileHashes(dir)
-  return { id: layer.id, kind: layer.config.kind, version: layer.config.version, kernel: layer.config.kernel, uses: layer.config.uses, surface, exports, files, hash: contentHash(files) }
+  return { id: layer.id, kind: layer.config.kind, title: layer.config.title, desc: layer.config.desc, version: layer.config.version, kernel: layer.config.kernel, uses: layer.config.uses, surface, exports, files, hash: contentHash(files) }
 }

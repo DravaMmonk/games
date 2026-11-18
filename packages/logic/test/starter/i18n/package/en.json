@@ -21,6 +21,8 @@
   "level.g-use.tasks.g-use.brief": "Work out the value of “it rains or it is windy, and it is cold” on every row.",
   "level.g-use.tasks.g-use.hint.0": "Work out the brackets first.",
   "level.g-use.title": "Cold and wet",
+  "package.desc": "Provides logical symbols, proof circuits, and proof checking.",
+  "package.title": "Logic and proofs",
   "part.allE.desc": "Connect ∀x. P(x) and choose an object t to obtain P(t).",
   "part.allE.inputs.0.label": "∀x. P(x)",
   "part.allE.name": "Choose an instance",

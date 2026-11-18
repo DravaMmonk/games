@@ -7,7 +7,7 @@
 // Dropping it leaves a loss that every collapsed encoder minimises.
 
 import { limitOf, picture } from 'image'
-import { correlate, downsample, gaussianKernel, map, random, shift } from 'image-processing'
+import { correlate, downsample, gaussianKernel, map, random, shift } from 'imglib'
 import { T as t } from 'kernel'
 
 /**

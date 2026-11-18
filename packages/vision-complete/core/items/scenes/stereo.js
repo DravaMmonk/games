@@ -1,7 +1,7 @@
 // Scenes of the third dimension (scenes/index.js): stereo pairs of textured layers, disparity maps to turn into
 // distance, epipolar geometry of one camera pair, and a robot vacuum's view of a room with obstacles.
-import { addNoise, fromFn, image, map, random, zip, row } from 'image-processing'
-import { cross3 } from 'computer-vision'
+import { addNoise, fromFn, image, map, random, zip, row } from 'imglib'
+import { cross3 } from 'cvlib'
 
 // Layers painted back to front, each with its own random texture and disparity d: the right camera sees a surface d
 // pixels further left, left(x) = right(x − d). The background is a far wall at disparity `far`.

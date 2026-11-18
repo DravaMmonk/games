@@ -1,4 +1,4 @@
-import { PackageDependencies, packageSidebarGroups } from './PackageGroups.jsx'
+import { PackageDependencies, PackageName, packageSidebarGroups } from './PackageGroups.jsx'
 import { objectTypes } from './object-types.js'
 import { typeName } from './LeftTypes.jsx'
 // The game workspace of the studio (games/design/README.md 6.7): where a course designer makes a game on a package and
@@ -261,7 +261,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             <div className="studio-scroll" hidden={playing}>
               {packagesShown && <PackageCard key={packageShown} id={packageShown} packages={packages} used={used} content={content} pending={busyEditing} onBuild={onBuild} onOps={tryOps} />}
               {overridesShown && <OverrideDetail event={openEvent} layer={layer} pending={busyEditing} onOps={addOps} onOpen={() => setSide('chapters')} />}
-              {gamesShown && <GameMeta games={games} id={pickedGame} open={game} disabled={saving} onOpen={openGame} />}
+              {gamesShown && <GameMeta games={games} packages={packages} id={pickedGame} open={game} disabled={saving} onOpen={openGame} />}
               {!gamesShown && !overridesShown && !packagesShown && (at?.game || e === null
                 ? <article className="editor"><header className="editor-head"><h1>{L(content.title)}</h1></header></article>
                 : <>
@@ -313,15 +313,14 @@ function UsedPackages({ packages, used, current, onOpen }) {
   const [query, setQuery] = useState('')
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
   const listed = [...packages].sort((a, b) => Number(used.includes(b.id)) - Number(used.includes(a.id)) || a.id.localeCompare(b.id))
-    .filter(({ id, uses }) => words.every((word) => `${id} ${Object.keys(uses ?? {}).join(' ')}`.toLowerCase().includes(word)))
+    .filter(({ id, title, uses }) => words.every((word) => `${id} ${Object.values(title).join(' ')} ${Object.keys(uses ?? {}).join(' ')}`.toLowerCase().includes(word)))
   return (
     <nav className="parts-list" aria-label={tr('包', 'Packages')}>
-      <SidebarGrouping scope="arrange-packages" groupsOf={by => packageSidebarGroups(listed, by)} tools={{ query, onQuery: setQuery }} row={({ id }) => (
-        <button key={id} type="button" className={`parts-row is-object ${id === current ? 'is-on' : ''} ${used.includes(id) ? '' : 'is-unused'}`} aria-current={id === current ? 'true' : undefined} onClick={() => onOpen(id)}>
-          <i className="family-chip"><Package size={12} aria-hidden="true" /></i>
-          <span>{id}</span>
-          {used.includes(id) ? <code>{tr('在用', 'In use')}</code> : <i />}
-        </button>
+      <SidebarGrouping scope="arrange-packages" groupsOf={by => packageSidebarGroups(listed, by)} tools={{ query, onQuery: setQuery }} row={({ id, title, desc }) => (
+        <ListRow key={id} icon={Package} title={L(title)} id={id} tooltip={L(desc)} on={id === current}
+          className={`is-object ${used.includes(id) ? '' : 'is-unused'}`} onClick={() => onOpen(id)}>
+          {used.includes(id) && <i className="project-pick-open">{tr('在用', 'In use')}</i>}
+        </ListRow>
       )} />
     </nav>
   )
@@ -333,15 +332,16 @@ function UsedPackages({ packages, used, current, onOpen }) {
  */
 function PackageCard({ id, packages, used, content, pending, onBuild, onOps }) {
   const [refusal, setRefusal] = useState(null)
-  if (!id) return <article className="arrange" />
-  const uses = Object.keys(packages.find(pkg => pkg.id === id)?.uses ?? {}).map(name => packages.find(pkg => pkg.id === name)).filter(Boolean)
+  const info = packages.find(pkg => pkg.id === id)
+  if (!info) return <article className="arrange" />
+  const uses = packages.filter(pkg => Object.hasOwn(info.uses, pkg.id))
   const missing = missingDependencies(packages, used, id)
   const run = async (ops) => setRefusal(await onOps(ops))
   const count = (kind) => Object.keys(content?.registries?.[kind] ?? {}).filter((name) => name.startsWith(`${id}/`)).length
   return (
     <article className="editor">
       <header className="editor-head">
-        <code className="editor-id is-static">{id}</code>
+        <PackageName info={info} />
         <span className="object-kind">{used.includes(id) ? tr('在用', 'In use') : tr('未用', 'Not used')}</span>
         <span className="kit-spacer" />
         {used.includes(id)
@@ -351,6 +351,7 @@ function PackageCard({ id, packages, used, content, pending, onBuild, onOps }) {
           </button>}
         {onBuild && <button type="button" className="kit-btn is-label" onClick={() => onBuild(id)}><Hammer size={13} aria-hidden="true" />{tr('构建', 'Build')}</button>}
       </header>
+      <p className="package-description">{L(info.desc)}</p>
       {refusal && <p className="is-error package-refusal" role="alert">{refusal}</p>}
       <dl className="package-facts">
         {uses.length > 0 && <><dt>{tr('依赖', 'Uses')}</dt><dd><PackageDependencies key={id} packages={uses} /></dd></>}

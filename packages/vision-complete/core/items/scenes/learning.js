@@ -3,7 +3,7 @@
 // scenes with red lights, scores into probabilities, and the parts on a sorting belt.
 
 import { GLYPHS, patterns } from 'image'
-import { addNoise, boxBlur3, compose, correlate, fromFn, image, map, maxPool, random, zip } from 'image-processing'
+import { addNoise, boxBlur3, compose, correlate, fromFn, image, map, maxPool, random, zip } from 'imglib'
 
 const num = (v) => image(1, 1, v)
 

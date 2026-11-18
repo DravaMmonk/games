@@ -1,8 +1,8 @@
 // Scenes of light (scenes/index.js): surfaces shaded from their normals, spectra read by a camera's three sensors,
 // cloths that match under one lamp only, paint and light split apart, coloured scenes under uneven light, and a
 // painted metal sheet photographed under three lamps (photometric stereo).
-import { compose, fromFn, gradientMagnitude, image, map, random, row, zip } from 'image-processing'
-import { CURVES, lambertShade, sensorReading } from 'computer-vision'
+import { compose, fromFn, gradientMagnitude, image, map, random, row, zip } from 'imglib'
+import { CURVES, lambertShade, sensorReading } from 'cvlib'
 import { picture } from 'image'
 
 const N = 16

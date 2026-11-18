@@ -3,7 +3,7 @@
 
 import { benchRun } from 'image'
 import { keyOf } from 'kernel'
-import { ransacBench, ransacRounds } from 'computer-vision'
+import { ransacBench, ransacRounds } from 'cvlib'
 
 /** The bench model: knobs delta (the threshold, shared) and k (rounds, one per case); each case an outlier ratio. */
 export const ransac = {

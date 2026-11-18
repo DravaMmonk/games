@@ -22,7 +22,7 @@ export function tableFixture() {
   writeFileSync(file, JSON.stringify(data))
  }
  update(join(root, 'packages/sample/package.json'), 'uses', [])
- update(join(root, 'games/sample/game.json'), 'packages', ['image-processing', 'computer-vision', 'machine-learning'])
+ update(join(root, 'games/sample/game.json'), 'packages', ['imglib', 'cvlib', 'mllib'])
  lockFixture(root)
  return { root, content: readContent('sample', root), cleanup: () => rmSync(root, { recursive: true, force: true }) }
 }

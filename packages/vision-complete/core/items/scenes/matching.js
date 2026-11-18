@@ -1,8 +1,8 @@
 // Scenes of matching (scenes/index.js): response maps with bumps, keypoints' distances to three candidates, a window
 // and its brightened partner, lanes on a road, a line among specks, one cell's gradient directions, and a book cover
 // pasted back onto a photo of it.
-import { fromFn, image, map, random, row, sobelGradient, zip } from 'image-processing'
-import { homographyDLT, houghGrid, pairsOf, peaksOf, project, warp } from 'computer-vision'
+import { fromFn, image, map, random, row, sobelGradient, zip } from 'imglib'
+import { homographyDLT, houghGrid, pairsOf, peaksOf, project, warp } from 'cvlib'
 import { picture } from 'image'
 
 const bumps = (list) => fromFn(16, 16, (x, y) => list.reduce((s, [cx, cy, h]) => s + h * Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / 2), 0))

@@ -1,9 +1,9 @@
 // Parts for drawing what was never seen (视觉完备 chapter 8): an autoencoder that squeezes a blob into a few numbers,
 // trained and fixed encoders and decoders, sampling from a latent code and reparameterising it.
 import { seedOf } from 'kernel'
-import { random, row } from 'image-processing'
-import { blobAt, decode, DECODER_START, encode, encodeBlobCentre, ENCODER_START } from 'computer-vision'
-import { gaussian } from 'machine-learning'
+import { random, row } from 'imglib'
+import { blobAt, decode, DECODER_START, encode, encodeBlobCentre, ENCODER_START } from 'cvlib'
+import { gaussian } from 'mllib'
 
 export const GENERATIVE = {
   'dg-encode': {

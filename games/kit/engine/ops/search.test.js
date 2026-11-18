@@ -2,7 +2,7 @@
 // never inside a link tag; board lines; ids found and left alone; a replace as text.set and level.blueprint operations
 // that a changeset runs; and on a small game on a real domain (./fixture.js), a replace that the operation set takes and
 // that leaves nothing to find.
-import { glossarySchemas } from '../../../../packages/encyclopedia/test/fixture.js'
+import { glossarySchemas } from '../../../../packages/wiki/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { S } from '../schema.js'

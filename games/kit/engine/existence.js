@@ -116,7 +116,7 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
     for (const [kind, items] of Object.entries(schemas.kinds ?? {})) for (const [name, item] of Object.entries(items)) {
       if (item.shape && ownerOf(name) === layer.id) emitter({ kind, name }, `${layer.id}/code/${kind}/${name}`)('shape', item.shape, 'shape')
     }
-    collectReferences(layer.config, schemas.game, schemas, emit, '')
+    if (layer.id.startsWith('@')) collectReferences(layer.config, schemas.game, schemas, emit, '')
     for (const [override, objects] of [[false, layer.objects], [true, layer.overrides ?? []]]) for (const object of objects) {
       const { kind, name, value } = object
       const at = `${layer.id}/${override ? 'overrides/' : ''}${kind}/${name}`

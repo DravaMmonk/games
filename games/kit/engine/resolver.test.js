@@ -7,7 +7,7 @@ import { resolve, dirname } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { contentRoot, readPackage, readContent } from './resolver.js'
 import { openGame } from './ops/workspace.js'
-import { storyRoot, lockFixture } from './test-fixture.js'
+import { storyRoot, lockFixture, packageWordsFixture } from './test-fixture.js'
 
 const put = (root, name, value) => {
   const file = resolve(root, name)
@@ -19,7 +19,8 @@ test('a package without games and a game with only its selected packages check i
   const { root, id } = storyRoot()
   const library = mkdtempSync(resolve(tmpdir(), 'independent-library-'))
   try {
-    put(library, 'packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
+    const words = packageWordsFixture((name, value) => put(library, name, value), 'library')
+    put(library, 'packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {}, ...words })
     lockFixture(library)
     for (const [project, args] of [[root, ['--game', id]], [root, ['--package', id]], [library, ['--package', 'library']]]) {
       const output = execFileSync(process.execPath, [resolve(import.meta.dirname, 'check.js'), ...args], { cwd: tmpdir(), env: { ...process.env, GAMES_ROOT: project, NODE_OPTIONS: '--no-warnings' }, encoding: 'utf8' })

@@ -132,10 +132,10 @@ export function composeLayers(layers, schemas) {
       return readText(sourceValue(qualified), layer.id, schema, schemas)
     }
     if (!layer.id.startsWith('@') && !layer.missing) {
-      for (const key of Object.keys(layer.config)) if (!['uses', 'kernel', 'version', 'kind', 'type'].includes(key)) throw new Error(`${layer.id}/package.json: unknown field ${key}`)
+      for (const key of Object.keys(layer.config)) if (!['uses', 'kernel', 'version', 'kind', 'type', 'title', 'desc'].includes(key)) throw new Error(`${layer.id}/package.json: unknown field ${key}`)
       validateConfig(layer.config)
     }
-    const qualifiedLayer = { ...layer, config: texts(layer.config ?? {}, schemas.game, 'configuration'), objects: [], overrides: [] }
+    const qualifiedLayer = { ...layer, config: layer.id.startsWith('@') ? texts(layer.config ?? {}, schemas.game, 'configuration') : layer.config, objects: [], overrides: [] }
     if (layer.id.startsWith('@')) {
       policyProblems.push(...layerProblems(layer.id, 'game', `${layer.id}/config`, qualifiedLayer.config, schemas.game, schemas))
       record('game', `${layer.id}/config`, qualifiedLayer.config, layer, false)

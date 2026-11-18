@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FileCode2 } from 'lucide-react'
-import { tr } from '../shell/i18n.js'
+import { L, tr } from '../shell/i18n.js'
 import { call } from './api.js'
 import ListRow from './ListRow.jsx'
 import './studio.css'
@@ -16,7 +16,8 @@ function sourceAddress(pkg, path = '') {
 export default function PackageSource() {
   const [packages, setPackages] = useState([])
   const [error, setError] = useState('')
-  const pkg = query.get('package') || packages[0]
+  const pkg = query.get('package') || packages[0]?.id
+  const info = packages.find(item => item.id === pkg)
   useEffect(() => {
     call('source_packages', {}).then(setPackages, error => setError(error.message))
   }, [])
@@ -26,9 +27,9 @@ export default function PackageSource() {
         <a className="kit-btn is-label" href={`?space=build&package=${encodeURIComponent(pkg ?? '')}`}>{tr('返回构建', 'Back to Build')}</a>
         <label className="package-source-picker">
           <span>{tr('包源码', 'Package source')}</span>
-          <select className="studio-game" aria-label={tr('源码包', 'Source package')} value={pkg ?? ''} onChange={event => window.location.assign(sourceAddress(event.target.value))}>
-            {pkg && !packages.includes(pkg) && <option value={pkg}>{pkg}</option>}
-            {packages.map(id => <option key={id} value={id}>{id}</option>)}
+          <select className="studio-game" aria-label={tr('源码包', 'Source package')} title={L(info?.desc)} value={pkg ?? ''} onChange={event => window.location.assign(sourceAddress(event.target.value))}>
+            {pkg && !info && <option value={pkg}>{pkg}</option>}
+            {packages.map(item => <option key={item.id} value={item.id} title={L(item.desc)}>{L(item.title)} · {item.id}</option>)}
           </select>
         </label>
       </header>

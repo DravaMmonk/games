@@ -22,9 +22,9 @@ import { join } from 'node:path'
 import { catalogsOf, normalizeText } from '../../../games/kit/engine/content-text.js'
 import { catalogReader, sourceValue } from '../../../games/kit/engine/catalogs.js'
 import { assemble as assembleContent, contentSchemas } from '../../../games/kit/engine/content.js'
-import { GLOSSARY as GLOSSARY_SCHEMA } from '../../encyclopedia/core/schema.js'
-import { glossarySchemas } from '../../encyclopedia/test/fixture.js'
-import { installGlossaryFixture } from '../../../games/kit/engine/test-fixture.js'
+import { GLOSSARY as GLOSSARY_SCHEMA } from '../../wiki/core/schema.js'
+import { glossarySchemas } from '../../wiki/test/fixture.js'
+import { installGlossaryFixture, packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
 import { OBJECT_SCHEMAS } from '../../../games/kit/engine/objects.js'
 import { PARTS_FILE } from '../../circuit/core/parts/schema.js'
 import { partMeaning, trayMeaning } from '../../circuit/core/content-meaning.js'
@@ -156,7 +156,7 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   const partsText = partDefs === undefined ? undefined : normalize(partDefs, PARTS_FILE, 'parts')
   const levelText = Object.entries(levels).map(([level, value]) => [level, normalize(value, vocabulary.level, `level.${level}`)])
   const objectText = Object.entries({ tags, relations, sections, trays }).flatMap(([kind, values]) => Object.entries(values).map(([name, value]) => [kind, name, normalize(value, kind === 'trays' ? JSON.parse(readFileSync(new URL('../../circuit/kinds/tray.json', import.meta.url))).schema : kind === 'sections' ? kindSchemas(vocabulary).section : OBJECT_SCHEMAS[kind], `${kind.split('/').at(-1)}.${name}`)]))
-  put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', encyclopedia: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0', scalar: '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
+  put(join(course, 'game.json'), { kernel: `^${kernelIdentity().version}`, packages: { [id]: '^0.0.0', circuit: '^0.0.0', progress: '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0', scalar: '^0.0.0' }) }, ...sourceValue(expandNames(gameText, id, { parts: new Set(Object.keys(partDefs?.parts ?? {})), schema: vocabulary.game, vocabulary, context: 'configuration', textKeys: false })) })
   for (const [path, values] of Object.entries(tagOverrides)) {
     const file = join(course, 'overrides', path + '.json')
     mkdirSync(join(file, '..'), { recursive: true })
@@ -164,7 +164,7 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   }
   mkdirSync(join(course, 'chapters'), { recursive: true })
   for (const [name, value] of chapterText) put(join(course, 'chapters', `${name}.json`), sourceValue(expandNames(value, id, { schema: CHAPTER, vocabulary, textKeys: false })))
-  put(join(pkg, 'package.json'), { kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: { circuit: '^0.0.0', progress: '^0.0.0', encyclopedia: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0' }) } })
+  const packageConfig = { kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: { circuit: '^0.0.0', progress: '^0.0.0', wiki: '^0.0.0', ...(logic && { logic: '^0.0.0', qed: '^0.0.0' }) } }
   if (glossaryText.entries.length) mkdirSync(join(pkg, 'entries'), { recursive: true })
   for (const { id, group: _group, ...entry } of glossaryText.entries) put(join(pkg, 'entries', `${id}.json`), sourceValue(entry))
   if (glossaryText.groups.length) mkdirSync(join(pkg, 'tags/entry'), { recursive: true })
@@ -182,6 +182,13 @@ export function writeContentFixture(root, id, { game: sourceGame, glossary, part
   const extra = Object.entries(contentObjects).flatMap(([kind, values]) => Object.entries(values).map(([name, value]) => [kind, name, normalize(value, kindSchemas(vocabulary)[kind], `${kind.split('/').at(-1)}.${name}`)]))
   for (const [kind, name, value] of extra) { mkdirSync(join(pkg, vocabulary.objectKinds?.[kind]?.folder ?? folders[kind]), { recursive: true }); put(join(pkg, vocabulary.objectKinds?.[kind]?.folder ?? folders[kind], `${name}.json`), sourceValue(value)) }
   putCatalogs(pkg, ...extra.map(([, , value]) => value), glossaryText, partsText, ...levelText.map(([, value]) => value), ...objectText.map(([, , value]) => value))
+  const words = packageWordsFixture((path, entries) => {
+    const file = join(root, path)
+    mkdirSync(join(file, '..'), { recursive: true })
+    const catalog = { ...(existsSync(file) && JSON.parse(readFileSync(file, 'utf8'))), ...entries }
+    put(file, Object.fromEntries(Object.keys(catalog).sort().map(key => [key, catalog[key]])))
+  }, id)
+  put(join(pkg, 'package.json'), { ...packageConfig, ...words })
   lockTarget({ kind: 'package', id }, root)
   lockTarget({ kind: 'game', id }, root)
 }
@@ -226,7 +233,7 @@ export function lockFixture(root) {
     const file = join(games, id, 'game.json')
     if (!existsSync(file)) continue
     const game = JSON.parse(readFileSync(file))
-    game.packages = { ...game.packages, ...Object.fromEntries(packageIds(root).filter(id => ['logic', 'qed', 'progress', 'scalar', 'encyclopedia'].includes(id)).map(id => [id, '^0.0.0'])), circuit: '^0.0.0' }; game.kernel = `^${kernelIdentity().version}`
+    game.packages = { ...game.packages, ...Object.fromEntries(packageIds(root).filter(id => ['logic', 'qed', 'progress', 'scalar', 'wiki'].includes(id)).map(id => [id, '^0.0.0'])), circuit: '^0.0.0' }; game.kernel = `^${kernelIdentity().version}`
     writeFileSync(file, JSON.stringify(game, null, 2) + '\n')
   }
   for (const id of packageIds(root)) {
@@ -244,7 +251,7 @@ export function installCircuitFixture(root) {
   if (existsSync(join(dir, 'package.json'))) return
   mkdirSync(dir, { recursive: true })
   for (const folder of ['kinds', 'shapes', 'i18n', 'core', 'view', 'capabilities']) cpSync(new URL(`../../circuit/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
-  writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'lib', type: 'module', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {} }, null, 2) + '\n')
+  writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'lib', type: 'module', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {}, title: '@package.title', desc: '@package.desc' }, null, 2) + '\n')
 }
 
 export const circuitFixtureKinds = {
@@ -275,10 +282,10 @@ export function installImageFixture(root) {
   installGlossaryFixture(root)
   installCircuitFixture(root)
   cpSync(new URL('../../circuit/view', import.meta.url), join(root, 'packages/circuit/view'), { recursive: true })
-  for (const id of ['image', 'table', 'image-processing', 'computer-vision', 'machine-learning']) {
+  for (const id of ['image', 'table', 'imglib', 'cvlib', 'mllib']) {
     const dir = join(root, 'packages', id)
     mkdirSync(dir, { recursive: true })
-    for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+    for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities', 'i18n'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
     cpSync(new URL(`../../${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }
@@ -291,7 +298,7 @@ export function installTableFixture(root) {
   for (const id of ['state-graph']) {
     const dir = join(root, 'packages', id)
     mkdirSync(dir, { recursive: true })
-    for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+    for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities', 'i18n'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
     cpSync(new URL(`../../${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }
@@ -300,7 +307,7 @@ export function installTableFixture(root) {
 export function installScalarFixture(root) {
   const dir = join(root, 'packages/scalar')
   if (existsSync(join(dir, 'package.json'))) return
-  for (const file of ['core', 'package.json']) {
+  for (const file of ['core', 'i18n', 'package.json']) {
     cpSync(new URL(`../../scalar/${file}`, import.meta.url), join(dir, file), { recursive: true })
   }
 }
@@ -315,7 +322,7 @@ export function installLogicFixture(root) {
     const dir = join(root, 'packages', id)
     if (existsSync(join(dir, 'package.json'))) continue
     mkdirSync(dir, { recursive: true })
-    for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
+    for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities', 'i18n'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
     cpSync(new URL(`../../${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }
@@ -351,7 +358,7 @@ export function installProgressFixture(root) {
   const dir = join(root, 'packages/progress')
   if (existsSync(join(dir, 'package.json'))) return
   mkdirSync(dir, { recursive: true })
-  for (const path of ['core', 'view', 'kinds', 'package.json']) {
+  for (const path of ['core', 'view', 'kinds', 'i18n', 'package.json']) {
     cpSync(new URL(`../../progress/${path}`, import.meta.url), join(dir, path), { recursive: true })
   }
 }

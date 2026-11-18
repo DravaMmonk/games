@@ -20,10 +20,16 @@ export function testProject(prefix = 'games-test-') {
   return { root, put }
 }
 
+export function packageWordsFixture(put, id) {
+  put(`packages/${id}/i18n/zh.json`, { 'package.desc': '测试包。', 'package.title': id })
+  put(`packages/${id}/i18n/en.json`, { 'package.desc': 'A package for tests.', 'package.title': id })
+  return { title: '@package.title', desc: '@package.desc' }
+}
+
 export function storyRoot() {
   const { root, put } = testProject()
   const id = 'story'
-  put('packages/story/package.json', { kind: 'play', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+  put('packages/story/package.json', { kind: 'play', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, id) })
   put('packages/story/capabilities/play.json', { extends: 'play', items: { answer: {} } })
   put('packages/story/core/index.js', `
     const identity = value => value
@@ -47,11 +53,11 @@ export function storyRoot() {
 }
 
 export function installGlossaryFixture(root) {
-  const dir = resolve(root, 'packages/encyclopedia')
+  const dir = resolve(root, 'packages/wiki')
   if (existsSync(dir)) return
   mkdirSync(dir, { recursive: true })
   for (const path of ['package.json', 'core', 'view', 'i18n', 'kinds']) {
-    cpSync(new URL(`../../../packages/encyclopedia/${path}`, import.meta.url), resolve(dir, path), { recursive: true })
+    cpSync(new URL(`../../../packages/wiki/${path}`, import.meta.url), resolve(dir, path), { recursive: true })
   }
 }
 
@@ -60,7 +66,7 @@ export function addGlossaryFixture(root, pkg, game) {
   for (const [file, field] of [[`packages/${pkg}/package.json`, 'uses'], ...(game ? [[`games/${game}/game.json`, 'packages']] : [])]) {
     const path = resolve(root, file)
     const config = JSON.parse(readFileSync(path))
-    config[field] = { ...config[field], encyclopedia: '^0.0.0' }
+    config[field] = { ...config[field], wiki: '^0.0.0' }
     writeFileSync(path, JSON.stringify(config, null, 2) + '\n')
   }
 }

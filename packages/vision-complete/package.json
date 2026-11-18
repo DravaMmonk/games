@@ -1,5 +1,7 @@
 {
   "kind": "course",
+  "title": "@package.title",
+  "desc": "@package.desc",
   "type": "module",
   "version": "0.0.0",
   "kernel": "^0.0.0",
@@ -7,9 +9,9 @@
     "circuit": "^0.0.0",
     "image": "^0.0.0",
     "progress": "^0.0.0",
-    "image-processing": "^0.0.0",
-    "computer-vision": "^0.0.0",
-    "machine-learning": "^0.0.0",
-    "encyclopedia": "^0.0.0"
+    "imglib": "^0.0.0",
+    "cvlib": "^0.0.0",
+    "mllib": "^0.0.0",
+    "wiki": "^0.0.0"
   }
 }

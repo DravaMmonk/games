@@ -1,8 +1,8 @@
 // Parts that learn (视觉完备 chapter 4): learnable kernels, dense layers and constants, the sigmoid, the larger of
 // two, many channels and residual blocks.
-import { image, map, random, zip } from 'image-processing'
-import { conv3, convRgb, residualConv } from 'computer-vision'
-import { affine, sigmoid } from 'machine-learning'
+import { image, map, random, zip } from 'imglib'
+import { conv3, convRgb, residualConv } from 'cvlib'
+import { affine, sigmoid } from 'mllib'
 
 // A trained layer starts from small random numbers (seeded, so every new layer starts the same way).
 const CONV_INIT = (() => {

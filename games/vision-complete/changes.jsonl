@@ -111,3 +111,4 @@
 {"seq":111,"at":"2026-11-18T07:57:32.788Z","why":"Record the final capability descriptions","adopt":true,"files":[]}
 {"seq":112,"at":"2026-11-18T08:00:42.203Z","why":"Record the authored display inventory","adopt":true,"files":[]}
 {"seq":113,"at":"2026-11-18T08:03:41.985Z","why":"Record the final shared shape declarations","adopt":true,"files":[]}
+{"seq":114,"at":"2026-11-18T08:34:31.384Z","why":"Adopt step 23 package namespace references","adopt":true,"files":[{"file":"games/vision-complete/game.json","after":"1d8c65cf77c9665a"}]}

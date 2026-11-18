@@ -1360,6 +1360,8 @@
   "level.wordcost.short": "每一块的代价不同",
   "level.wordcost.tasks.wordcost.hints.0": "和<level-ref to=\"wordbreak\"></level-ref>比，变的只有每一块的代价。",
   "level.wordcost.title": "有的词更贵",
+  "package.desc": "提供用机器人和接线学习动态规划的课程。",
+  "package.title": "状态之图",
   "part.align.desc": "一个词放上面，一个词放左边。字相同，左上 + 1；否则取上面和左边中较大的。",
   "part.align.name": "对齐表",
   "part.anyorder.desc": "只要每个格子都排在它要读的格子之后，什么顺序都行。",

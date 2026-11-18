@@ -1,7 +1,7 @@
 // Scenes of detection (scenes/index.js): two boxes and how much they overlap, ranked lists of detections into AP,
 // anchor boxes and their corrections, X- and O-marked boxes on a shelf, and dogs as solid blobs.
 
-import { correlate, fromFn, gaussianKernel, image, random, zip, row } from 'image-processing'
+import { correlate, fromFn, gaussianKernel, image, random, zip, row } from 'imglib'
 
 const num = (v) => image(1, 1, v)
 

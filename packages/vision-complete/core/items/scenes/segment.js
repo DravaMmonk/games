@@ -1,7 +1,7 @@
 // Scenes of labelling every pixel (scenes/index.js): a picture before and after max pooling, two-means on a
 // picture's brightness, and cells under a microscope.
 
-import { fromFn, image, maxPool, random } from 'image-processing'
+import { fromFn, image, maxPool, random } from 'imglib'
 import { picture } from 'image'
 
 // 2 × 2 blocks, one cell of each clearly the brightest.

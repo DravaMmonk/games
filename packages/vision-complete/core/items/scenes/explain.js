@@ -1,8 +1,8 @@
 // Scenes of checking a model (scenes/index.js): a street with a car, a linear classifier's weights for it (a weight
 // a cell: its score is the sum of weight × brightness), and a ViT's class token asking the street's patches.
 
-import { patchAttention } from 'computer-vision'
-import { fromFn, image } from 'image-processing'
+import { patchAttention } from 'cvlib'
+import { fromFn, image } from 'imglib'
 
 const num = (v) => image(1, 1, v)
 const at = (img, x, y) => (x < 0 || y < 0 || x >= img.w || y >= img.h ? null : img.data[y * img.w + x])

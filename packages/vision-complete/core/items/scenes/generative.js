@@ -2,9 +2,9 @@
 // blobs drawn from a latent code at μ + σ·ε, and diffusion: a letter noised in one step or two, restored from its
 // noise, and an old photo restored without knowing the noise.
 import { GLYPHS, patterns } from 'image'
-import { fromFn, image, random, zip, row } from 'image-processing'
-import { blob, blobAt, encodeBlobCentre } from 'computer-vision'
-import { gaussian } from 'machine-learning'
+import { fromFn, image, random, zip, row } from 'imglib'
+import { blob, blobAt, encodeBlobCentre } from 'cvlib'
+import { gaussian } from 'mllib'
 
 // The latent code μ + σ·ε, drawn as a blob.
 const drawn = (mu, sigma, e) => blobAt(mu[0] + sigma[0] * e[0], mu[1] + sigma[1] * e[1])

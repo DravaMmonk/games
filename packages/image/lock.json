@@ -3,23 +3,23 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "0fb15fdbd15bd1f99d0fec06becb47ba34a10120c9ba975782ab3fddddc2a0ca"
+      "hash": "71396ab80632c21cdaaa4d0e2f148aab36a900bd70dab2267a72c365d1692e58"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "602fb6f2dbd618b88523d357c597cca5287a65b90e968dcb9087f14619402e1b"
+      "hash": "d6fd947dc132eebd1099ad6490e4d27ba2d0fea2b5e25b34052fb792f78731d3"
     },
-    "image-processing": {
+    "imglib": {
       "version": "0.0.0",
-      "hash": "f4db2b7d81f4c998598a26ad1f98c73c027d0f52218e9ded5a3cfa287bbafaa6"
+      "hash": "1a77b97fd55f1980e336523165c6896b08b66524abdd71ca5e99f9c80f342b79"
     },
-    "machine-learning": {
+    "mllib": {
       "version": "0.0.0",
-      "hash": "a4f15997c6d94a74e77ba6a96b8f0bcb050d1ee05614806b7ffc2d4244dddd53"
+      "hash": "59d008d4d21f58e4cc325ec193443b9d5ab6eaaff7c6f3ef3b03dbc5460fd5de"
     },
-    "computer-vision": {
+    "cvlib": {
       "version": "0.0.0",
-      "hash": "441d295dbfe82df957d02c2826a86c8aec48ee66731595dba21976058cf3ac88"
+      "hash": "0aaa80f90dd38718b8b8c327f35263514fcb24dcefaf4e6755a9f488f6b3816b"
     }
   }
 }

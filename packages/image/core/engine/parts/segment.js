@@ -1,5 +1,5 @@
 // Parts for labelling every pixel (视觉完备 chapter 9): a transposed convolution, zero insertion and a kernel.
-import { correlate, zeroUp } from 'image-processing'
+import { correlate, zeroUp } from 'imglib'
 
 const NEAREST = [1, 1, 0, 1, 1, 0, 0, 0, 0]
 

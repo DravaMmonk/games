@@ -10,6 +10,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { join } from 'node:path'
 import { proofsRoot } from './fixture.js'
+import { packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
 import { readContent } from '../../../games/kit/engine/resolver.js'
 
 const { root, id: GAME } = proofsRoot()
@@ -149,13 +150,16 @@ test('the slow reads go to the second lane: a quick preview is not held up by a 
 
 test('the HTTP tools list, preview and write a package that no game selects', async () => {
   const pkg = join(root, 'packages', 'library')
-  mkdirSync(pkg, { recursive: true })
-  writeFileSync(join(pkg, 'package.json'), `${JSON.stringify({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })}\n`)
+  mkdirSync(join(pkg, 'i18n'), { recursive: true })
+  const words = packageWordsFixture((path, value) => writeFileSync(join(root, path), JSON.stringify(value, null, 2) + '\n'), 'library')
+  writeFileSync(join(pkg, 'package.json'), `${JSON.stringify({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {}, ...words })}\n`)
   mkdirSync(join(pkg, 'parts'), { recursive: true })
   writeFileSync(join(pkg, 'parts/apply.json'), JSON.stringify( { name: 'Apply', desc: 'Apply an implication.', icon: 'GitFork', family: 'logic/rule', inputs: [{ name: 'imp', type: 'logic/judgment' }, { name: 'a', type: 'logic/judgment' }], outputType: 'logic/judgment', op: 'logic/mp' }))
   lockFixture(root)
   const packages = (await post('packages', {})).body
-  assert.ok(packages.some((entry) => entry.id === 'library'))
+  const library = packages.find(entry => entry.id === 'library')
+  assert.equal(library.title.en, 'library')
+  assert.equal(library.desc.zh, '测试包。')
   const preview = (await post('preview', { package: 'library' })).body
   assert.equal(preview.ok, true, preview.problems.join('\n'))
   assert.deepEqual(preview.content.levels, [])

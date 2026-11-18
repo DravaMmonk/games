@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Check, X } from 'lucide-react'
 import { L, keyOf, tr } from 'kernel/view'
 import { Knob } from 'image/view'
-import { distanceToLine, pointAlongLine } from 'computer-vision'
+import { distanceToLine, pointAlongLine } from 'cvlib'
 import { linePath } from './matchDraw.js'
 import './match.css'
 

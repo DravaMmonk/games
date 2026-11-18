@@ -13,6 +13,7 @@ import { openGame, openPackage } from './ops/workspace.js'
 import { driftOf } from './ops/log.js'
 import { checkCache } from './check-cache.js'
 import { packageExportWarnings } from './plugin-boundaries.js'
+import { packageWords } from './manifests.js'
 
 const root = contentRoot()
 let problems = 0
@@ -31,6 +32,9 @@ for (const { id, kind } of contentTargets(asked, root, { package: process.argv.i
     // Read frozen: nothing that checks a game may write into its content.
     const ws = (packaged ? openPackage : openGame)(id, root)
     const content = deepFreeze((packaged ? readPackage : readContent)(id, root))
+    for (const layer of content.resolvedDependencies.layers) {
+      if (!layer.missing && !layer.id.startsWith('@')) packageWords(layer)
+    }
     head = `${firstText(content.title ?? id)} (${id})`
     lines = await checkGame(content, { domain: await runtimeOf(content), mutants, cache: packaged || !workspaceCheckCache() ? null : checkCache(id, { fresh }), root })
     // Files changed outside the operation set since its log last says: noted, not failed (adopt takes them).

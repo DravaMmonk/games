@@ -71,7 +71,7 @@ export function platformManifest() {
   const data = { ...vocabulary }
   delete data.version
   delete data.removes
-  const values = { vocabulary: data, objects: OBJECT_SCHEMAS, layout: { package: ['kind', 'type', 'version', 'kernel', 'uses', 'lock.json'], game: ['kernel', 'packages', 'lock.json'], firstPackage: 'primary', range: ['exact', '^', '~'] }, operations: Object.fromEntries(Object.entries(OPERATIONS).map(([id, operation]) => [id, operation.params])), exports: { core: exportedNames(resolve(kitDirectory, 'engine/index.js')), view: exportedNames(resolve(kitDirectory, 'app/view.jsx')) } }
+  const values = { vocabulary: data, objects: OBJECT_SCHEMAS, layout: { package: ['kind', 'title', 'desc', 'type', 'version', 'kernel', 'uses', 'lock.json'], game: ['kernel', 'packages', 'lock.json'], firstPackage: 'primary', range: ['exact', '^', '~'] }, operations: Object.fromEntries(Object.entries(OPERATIONS).map(([id, operation]) => [id, operation.params])), exports: { core: exportedNames(resolve(kitDirectory, 'engine/index.js')), view: exportedNames(resolve(kitDirectory, 'app/view.jsx')) } }
   return { id: 'kernel', version: readJSON(resolve(kitDirectory, 'platform.json')).version, surface: Object.fromEntries(Object.entries(values).map(([name, value]) => [name, { value, hash: hash(stableJSON(value)) }])) }
 }
 function requireLaunch(launch) {

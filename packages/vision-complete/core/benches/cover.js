@@ -2,8 +2,8 @@
 // fix a homography (an affine map with three) and the cover is pasted back, judged by its mean error over a grid on
 // the cover.
 import { limitOf } from 'image'
-import { random } from 'image-processing'
-import { affineFit, homographyDLT, invert3, project } from 'computer-vision'
+import { random } from 'imglib'
+import { affineFit, homographyDLT, invert3, project } from 'cvlib'
 import { T as t } from 'kernel'
 
 const rectCorners = ([x0, y0, x1, y1]) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]

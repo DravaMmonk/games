@@ -14,6 +14,7 @@ import { describe } from '../vocabulary.js'
 import { checkGame } from '../checks.js'
 import { checkCache } from '../check-cache.js'
 import { catalogReader } from '../catalogs.js'
+import { packageWords } from '../manifests.js'
 import { visibleOverrides } from '../layers.js'
 import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, packageDirectory } from '../resolver.js'
 import { gameOnPackage, newPackage } from '../scaffold.js'
@@ -129,7 +130,7 @@ const tools = {
       return Promise.all(packageIds(ROOT).map(async (id) => {
         const resolved = resolveLayers({ package: id, closure: true, root: ROOT })
         const layer = resolved.layers.find(layer => layer.id === id)
-        return { id, ...layer.config, source: layer.source, manifest: layer.manifest, lock: resolved.lock, lockStatus: resolved.lockStatus }
+        return { id, ...layer.config, ...packageWords(layer), source: layer.source, manifest: layer.manifest, lock: resolved.lock, lockStatus: resolved.lockStatus }
       }))
     },
   },

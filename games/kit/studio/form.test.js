@@ -109,7 +109,7 @@ test('encyclopedia form and copy edits target entry and tag objects', async () =
   assert.deepEqual(opFor(file, ['groups', 0, 'title'], { set: 'New', lang: 'en' }, 'text'), { op: 'text.set', tag: 'toy/terms', member: 'entry', path: ['title'], lang: 'en', value: 'New' })
   assert.equal(glossaryFile(glossary, ['entries', 0, 'body']), 'entries/term.json')
   assert.equal(glossaryFile(glossary, ['groups', 0, 'title']), 'tags/entry/terms.json')
-  const { glossarySchemas } = await import('../../../packages/encyclopedia/test/fixture.js')
+  const { glossarySchemas } = await import('../../../packages/wiki/test/fixture.js')
   const rows = copyRows({ glossary }, glossarySchemas({ game: { type: 'obj', fields: {} } }), 'glossary', [])
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/term'), 'en', 'New'), { op: 'text.set', entry: 'toy/term', path: ['title'], lang: 'en', value: 'New' })
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/terms'), 'en', 'New', 'game'), { op: 'text.override', tag: 'toy/terms', member: 'entry', path: ['title'], lang: 'en', value: 'New' })

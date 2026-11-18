@@ -2,3 +2,4 @@
 {"seq":2,"at":"2026-11-17T22:11:59.248Z","why":"Apply step 16 package kinds and qualified names","adopt":true,"files":[{"file":"packages/progress/package.json","after":"256cde12323971de"}]}
 {"seq":3,"at":"2026-11-18T00:04:46.219Z","why":"Step 20: adopt named schemas, shared play cases and trimmed authoring descriptions","adopt":true,"files":[{"file":"packages/progress/kinds/part.json","after":"c98e028990998a0e"}]}
 {"seq":4,"at":"2026-11-18T01:47:28.560Z","why":"Declare the package JavaScript as ES modules","adopt":true,"files":[{"file":"packages/progress/package.json","after":"0b2b20cfe371d491"}]}
+{"seq":5,"at":"2026-11-18T08:41:19.511Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/progress/package.json","after":"6c19699c477f7522"},{"file":"packages/progress/i18n/en.json","after":"579ed437eb85f058"},{"file":"packages/progress/i18n/zh.json","after":"a9eed0825a125c6e"}]}

@@ -6,6 +6,7 @@
 import './studio.css'
 import { useEffect, useState } from 'react'
 import { tr } from '../shell/i18n.js'
+import { useLang } from '../shell/useLang.js'
 import { call } from './api.js'
 import PackageStudio from './PackageStudio.jsx'
 import GameStudio from './GameStudio.jsx'
@@ -16,6 +17,7 @@ const QUERY = new URLSearchParams(window.location.search)
 const SPACE_OF = { build: 'build', package: 'build', arrange: 'arrange', game: 'arrange', copy: 'copy' }
 
 export default function Studio() {
+  useLang()
   const [games, setGames] = useState(null)
   const [space, setSpace] = useState(SPACE_OF[QUERY.get('space')] ?? 'build')
   const [game, setGame] = useState(QUERY.get('game'))

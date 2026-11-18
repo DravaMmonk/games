@@ -1,4 +1,4 @@
-import { fromFn, image, random, SIZE } from 'image-processing'
+import { fromFn, image, random, SIZE } from 'imglib'
 
 export const patterns = {
   blank: (v = 0) => image(SIZE, SIZE, v),

@@ -1,0 +1,9 @@
+{
+  "packageRenames": {
+    "computer-vision": "cvlib",
+    "image-processing": "imglib",
+    "machine-learning": "mllib",
+    "encyclopedia": "wiki",
+    "tick-bus": "tick"
+  }
+}

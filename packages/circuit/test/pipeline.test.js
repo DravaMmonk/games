@@ -16,7 +16,7 @@ const point = (id, basis = 'lecture', more = {}) => ({ id, term: t(`the ${id} te
 // One era: a wire, a register brought and practised, a part built from it and used last.
 const base = () => ({
   topic: t('x'), learner: t('x'), endpoint: t('x'), scope: t('x'), sources: ['notes/lecture-1.md'],
-  mechanisms: [{ id: 'tick-bus', where: t('x'), why: t('x') }],
+  mechanisms: [{ id: 'tick', where: t('x'), why: t('x') }],
   abilities: [{ id: 'wire', about: t('x') }],
   machines: [{ id: 'm1', title: t('m'), can: ['wire'], lacks: t('x') }],
   knowledge: [point('memory'), point('count', 'lecture', { core: true, depends: ['memory'] })],
@@ -189,7 +189,7 @@ test('terminology review inspects both task overrides and glossary bodies throug
   const { S } = await import('../../../games/kit/engine/schema.js')
   const { taskLevel } = await import('../../../games/kit/engine/tasks.js')
   const { reviewTerminology } = await import('../../../games/kit/pipeline/terminology.js')
-  const { glossarySchemas } = await import('../../encyclopedia/test/fixture.js')
+  const { glossarySchemas } = await import('../../wiki/test/fixture.js')
   const vocabulary = glossarySchemas({ game: S.obj({ title: S.text() }), level: taskLevel({ title: S.text() }, { brief: S.text(), hint: S.opt(S.list(S.text())) }) })
   const content = {
     id: 'toy', vocabulary: 1, title: t('Toy'), eras: [],

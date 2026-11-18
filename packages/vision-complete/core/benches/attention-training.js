@@ -1,4 +1,4 @@
-import { attentionWeights } from 'machine-learning'
+import { attentionWeights } from 'mllib'
 
 const cross = [1,0,0,1, 0,1,1,0, 0,1,1,0, 1,0,0,1]
 const ring = [1,1,1,1, 1,0,0,1, 1,0,0,1, 1,1,1,1]

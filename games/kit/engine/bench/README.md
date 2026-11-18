@@ -36,7 +36,7 @@ Validation:
 - `npm test`: 781 passed.
 - `npm run lint:kit`: passed.
 - `npm run words -- --check`: passed, 1711 words.
-- `npm run baseline -- compare with the original snapshots`: zero differences for all available snapshots (four games and five packages). The existing baseline tool skips circuit, image, rows, text and tick-bus because they have no locked snapshots; their package contract tests passed. Snapshots were read only; generated differences were written locally. `save` was never used.
+- `npm run baseline -- compare with the original snapshots`: zero differences for all available snapshots (four games and five packages). The existing baseline tool skips circuit, image, rows, text and tick because they have no locked snapshots; their package contract tests passed. Snapshots were read only; generated differences were written locally. `save` was never used.
 
 `GAMES_BASELINE_ROOT` selects the input snapshot directory only. Comparison reports continue to be written under the current worktree's `output/modules-baseline/`.
 

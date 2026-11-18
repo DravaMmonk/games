@@ -1,4 +1,6 @@
 {
   "kind.part.name": "元件",
-  "kind.tray.name": "托盘"
+  "kind.tray.name": "托盘",
+  "package.desc": "提供电路搭建、接线、仿真和判定。",
+  "package.title": "电路"
 }

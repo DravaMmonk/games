@@ -2,8 +2,8 @@ import { workNodes } from 'circuit'
 import { OperationError } from 'kernel'
 import { runBoard, sink, source } from 'circuit'
 import { runOutputTests } from 'kernel'
-import { channel, compare, compose, image } from 'image-processing'
-import { gradientStep } from 'machine-learning'
+import { channel, compare, compose, image } from 'imglib'
+import { gradientStep } from 'mllib'
 
 // A single number (1×1) meets a bigger input by filling its whole size; any other mismatch is an error, except for a
 // part whose inputs are different things by nature (`anySize`: a picture, a matrix and a canvas).

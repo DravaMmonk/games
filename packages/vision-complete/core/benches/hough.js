@@ -2,7 +2,7 @@
 // when, in every scene, the two strongest peaks are the scene's two lines.
 
 import { benchRun } from 'image'
-import { houghBench, houghScene } from 'computer-vision'
+import { houghBench, houghScene } from 'cvlib'
 import { T as t } from 'kernel'
 
 const NAMES = ['A', 'B']

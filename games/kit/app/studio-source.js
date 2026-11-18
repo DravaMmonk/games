@@ -3,7 +3,8 @@ import { createHash, randomUUID } from 'node:crypto'
 import { linkSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
-import { packageDirectory } from '../engine/resolver.js'
+import { packageDirectory, readCatalogs } from '../engine/resolver.js'
+import { packageWords } from '../engine/manifests.js'
 import { packageSourceProblems } from '../engine/plugin-boundaries.js'
 
 const sourcePath = /^(?:core|view|test)(?:\/[\w-][\w.-]*)*\/[\w-][\w.-]*\.(?:js|jsx|mjs)$/
@@ -54,7 +55,11 @@ export function sourceTools(root, onSave = () => {}) {
         if (!stat(dir)?.isDirectory()) return []
         return readdirSync(dir, { withFileTypes: true })
           .filter(entry => entry.isDirectory() && /^[a-z][a-z0-9-]*$/.test(entry.name) && stat(resolve(dir, entry.name, 'package.json'))?.isFile())
-          .map(entry => entry.name).sort()
+          .map(entry => entry.name).sort().map(id => {
+            const packageDir = resolve(dir, id)
+            const config = JSON.parse(readFileSync(resolve(packageDir, 'package.json'), 'utf8'))
+            return { id, ...packageWords({ id, config, catalogs: readCatalogs(resolve(packageDir, 'i18n')) }) }
+          })
       },
     },
     source_list: {

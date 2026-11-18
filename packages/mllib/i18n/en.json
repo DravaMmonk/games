@@ -1,0 +1,4 @@
+{
+  "package.desc": "Provides vector attention, activation functions, sampling, and numerical optimization.",
+  "package.title": "Machine learning library"
+}

@@ -6,10 +6,10 @@
     "progress": "^0.0.0",
     "image": "^0.0.0",
     "table": "^0.0.0",
-    "image-processing": "^0.0.0",
-    "computer-vision": "^0.0.0",
-    "machine-learning": "^0.0.0",
-    "encyclopedia": "^0.0.0"
+    "imglib": "^0.0.0",
+    "cvlib": "^0.0.0",
+    "mllib": "^0.0.0",
+    "wiki": "^0.0.0"
   },
   "title": "@game.title",
   "author": "DravaMmonk",

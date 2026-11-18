@@ -1,5 +1,7 @@
 {
   "kind": "course",
+  "title": "@package.title",
+  "desc": "@package.desc",
   "type": "module",
   "version": "0.0.0",
   "kernel": "^0.0.0",
@@ -8,6 +10,6 @@
     "logic": "^0.0.0",
     "qed": "^0.0.0",
     "scalar": "^0.0.0",
-    "encyclopedia": "^0.0.0"
+    "wiki": "^0.0.0"
   }
 }

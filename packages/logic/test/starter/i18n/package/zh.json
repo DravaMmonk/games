@@ -21,6 +21,8 @@
   "level.g-use.tasks.g-use.brief": "算出「下雨或者刮风，并且很冷」在每一行的真值。",
   "level.g-use.tasks.g-use.hint.0": "括号里的先算。",
   "level.g-use.title": "又冷又湿",
+  "package.desc": "提供逻辑符号、证明电路和证明判定。",
+  "package.title": "逻辑与证明",
   "part.allE.desc": "接入 ∀x. P(x)，选定对象 t，得到 P(t)。",
   "part.allE.inputs.0.label": "∀x. P(x)",
   "part.allE.name": "选定一例",

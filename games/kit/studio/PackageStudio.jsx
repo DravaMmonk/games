@@ -41,6 +41,7 @@ import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Review from './Review.jsx'
 import { JsonFile, PackageList, PackageMeta, packageJson } from './ProjectLists.jsx'
+import { PackageName } from './PackageGroups.jsx'
 import ListRow from './ListRow.jsx'
 import { copyWithoutTextKeys } from '../engine/catalogs.js'
 import { groupCategory, singular } from './SidebarListTools.jsx'
@@ -734,6 +735,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   // The packages first: the one open, and the others to open (the bar's name opens this list too).
   const lists = ['packages', ...leftKeys]
   // The package picked in that list: its meta goes in the right column; opening it is a double click or Open there.
+  const packageInfo = packages.find(info => info.id === pkg)
   const [pickedPackage, setPickedPackage] = useState(pkg)
   const openPackage = (id) => {
     if (id === pkg || saving) return
@@ -783,8 +785,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   return (
     <div className={`studio ${moving ? 'is-moving' : ''} ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }} onPalette={() => openOverlay('palette')}>
-        <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => showList('packages')} title={tr('在左栏选包', 'Pick a package in the left column')}>
-          <Package size={13} aria-hidden="true" /><span>{pkg}</span>
+        <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => showList('packages')} title={L(packageInfo.desc)}>
+          <Package size={13} aria-hidden="true" /><PackageName info={packageInfo} />
         </button>
         <button type="button" className="kit-btn is-label" disabled={saving} onClick={() => openSource(pkg)}>
           <FileCode2 size={14} aria-hidden="true" />{tr('源码', 'Source')}

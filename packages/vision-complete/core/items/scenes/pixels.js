@@ -1,7 +1,7 @@
 // Scenes of per-pixel work (scenes/index.js): a washed-out photo, an intruder against an empty scene, the inspection
 // station that compares a part with its reference.
 
-import { fromFn, map } from 'image-processing'
+import { fromFn, map } from 'imglib'
 import { picture } from 'image'
 
 const box = (x0, y0, w, h) => (x, y) => x >= x0 && x < x0 + w && y >= y0 && y < y0 + h

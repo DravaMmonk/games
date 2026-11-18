@@ -8,5 +8,7 @@
   "level.number.tasks.number-answer.brief": "写出三分之一，允许误差 0.001。",
   "level.number.title": "估计三分之一",
   "level.regex.tasks.regex-answer.brief": "写出 A 后接三位数字的编号。",
-  "level.regex.title": "写一个编号"
+  "level.regex.title": "写一个编号",
+  "package.desc": "提供文字和数值作答的玩法。",
+  "package.title": "文字作答"
 }

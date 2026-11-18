@@ -4,7 +4,7 @@
 // other way to stop it.
 
 import { benchRun, startValues } from 'image'
-import { stopBench } from 'machine-learning'
+import { stopBench } from 'mllib'
 import { T as t } from 'kernel'
 
 // Losses span 0.005 … 2, so they are plotted as log10.

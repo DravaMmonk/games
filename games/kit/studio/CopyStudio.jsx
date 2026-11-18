@@ -30,6 +30,7 @@ import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
 import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, gameJson, packageJson } from './ProjectLists.jsx'
+import { PackageName } from './PackageGroups.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
 const SETTLE = 700
@@ -51,6 +52,7 @@ const remember = (opened, scope, file) => {
  * another; `space` the workspace switch.
  */
 export default function CopyStudio({ opened, packages, games, onOpen, space }) {
+  const pkg = packages.find(info => info.id === opened.package)
   const side = opened.game ? 'game' : 'package'
   const target = useMemo(() => (opened.game ? opened.game : { package: opened.package }), [opened.game, opened.package])
   const pending = useChangeset(target, side)
@@ -146,9 +148,9 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
         <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => setList(opened.game ? 'games' : 'packages')}
-          title={opened.game ? tr('在左栏选游戏', 'Pick a game in the left column') : tr('在左栏选包', 'Pick a package in the left column')}>
+          title={opened.game ? tr('在左栏选游戏', 'Pick a game in the left column') : L(pkg.desc)}>
           {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
-          <span>{opened.game ? L(games.find((g) => g.id === opened.game)?.title) ?? opened.game : opened.package}</span>
+          {opened.game ? <span>{L(games.find((g) => g.id === opened.game)?.title) ?? opened.game}</span> : <PackageName info={pkg} />}
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
@@ -194,7 +196,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
           <main className="studio-main">
             <div className="studio-scroll">
-              {shownList === 'games' ? <GameMeta games={games} id={pickedOpen.games} open={opened.game} disabled={saving} onOpen={(id) => openOther('game', id)} />
+              {shownList === 'games' ? <GameMeta games={games} packages={packages} id={pickedOpen.games} open={opened.game} disabled={saving} onOpen={(id) => openOther('game', id)} />
                 : shownList === 'packages' ? <PackageMeta packages={packages} games={games} id={pickedOpen.packages} open={opened.package} disabled={saving} onOpen={(id) => openOther('package', id)} />
                 : <article className="editor is-wide">
                   <CopyTable side={side} content={content} vocabulary={vocab.vocabulary} scope={scope} setScope={showScope} file={file} order={order} names={names} places={places} onEdit={edit}

@@ -1,0 +1,2 @@
+{"seq":1,"at":"2026-11-18T02:19:33.754Z","why":"Separate domain-independent learning algorithms from image models","adopt":true,"files":[{"file":"packages/machine-learning/package.json","after":"b40904c0a659945e"}]}
+{"seq":2,"at":"2026-11-18T08:41:19.018Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/mllib/package.json","after":"843a08b2b13cd85f"},{"file":"packages/mllib/i18n/en.json","after":"672e3b5a53cae147"},{"file":"packages/mllib/i18n/zh.json","after":"d7a13b582d6048d9"}]}

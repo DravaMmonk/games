@@ -1361,7 +1361,7 @@
   "level.wordcost.tasks.wordcost.hints.0": "Compared with <level-ref to=\"wordbreak\"></level-ref>, only each part’s cost has changed.",
   "level.wordcost.title": "Some words cost more",
   "package.desc": "Provides a course on dynamic programming with robots and wiring.",
-  "package.title": "State Graph",
+  "package.title": "Dynamic Programming",
   "part.align.desc": "One word along the top, the other down the left. If the letters match, up-left + 1; otherwise the larger of up and left.",
   "part.align.name": "Alignment Table",
   "part.anyorder.desc": "Any order works, as long as every cell comes after the cells it reads.",

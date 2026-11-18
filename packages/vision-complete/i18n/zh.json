@@ -2749,7 +2749,7 @@
   "level.9-9.tasks.9-9.tests.2.label": "一排三个",
   "level.9-9.title": "细线不见了",
   "package.desc": "提供用图像电路和实验学习计算机视觉的课程。",
-  "package.title": "视觉完备",
+  "package.title": "计算机视觉",
   "part.add.desc": "两张图逐像素相加：a + b",
   "part.add.name": "相加",
   "part.addNoise.desc": "输出 √ᾱ·x₀ + √(1 − ᾱ)·ε：把 x₀ 一步加噪到第 t 步。",

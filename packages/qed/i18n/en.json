@@ -1978,7 +1978,7 @@
   "level.x-swap.tasks.x-swap.hint.1": "Can K supply the missing part? Once two parts meet end to end, join them as in <level-ref to=\"x-chain\"></level-ref>.",
   "level.x-swap.title": "Reordering without a box",
   "package.desc": "Provides a course on building mathematical proofs with circuits.",
-  "package.title": "Q.E.D.",
+  "package.title": "Formal Proof",
   "part.addAssoc.desc": "(x + y) + z = x + (y + z): a rule, and a left-to-right rewrite rule for Simp.",
   "part.addAssoc.name": "Addition associates",
   "part.addComm.desc": "x + y = y + x: a rule, and a rewrite rule; in Simp it rewrites back and forth without end.",

@@ -1978,7 +1978,7 @@
   "level.x-swap.tasks.x-swap.hint.1": "还缺的一段，K 能不能补上？两段首尾相接以后，照<level-ref to=\"x-chain\"></level-ref>接起来。",
   "level.x-swap.title": "不用框换顺序",
   "package.desc": "提供用电路搭建数学证明的课程。",
-  "package.title": "证明完毕",
+  "package.title": "形式化证明",
   "part.addAssoc.desc": "(x + y) + z = x + (y + z)：一条规则，也是化简的一条改写规则（从左往右）。",
   "part.addAssoc.name": "加法结合",
   "part.addComm.desc": "x + y = y + x：一条规则，也是一条改写规则；放进化简会来回改写，停不下来。",

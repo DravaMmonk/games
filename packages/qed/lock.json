@@ -11,11 +11,11 @@
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "c6c9ca7b23036997af9ff094ceda5a996d1bb771e970edf740fdbd85c151484f"
+      "hash": "0af1f73e6ce821fce84ad0ec540ad1c7f9d59b0f11076fae13059cbefa5fe77a"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "13b4775a1ce07bef835d4ff8d1cf8354fc46fc9278ea61f0ea77f36b63554efc"
+      "hash": "36e07924a795d7bdfdd82e82c7ed95a10fda4a69dac4fe4d8a2874eb9b5ccf0d"
     },
     "sentence": {
       "version": "0.0.0",
@@ -27,11 +27,11 @@
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "8de9857ee0d50ff338ce1d67d52848c05d254361da1545bb7dd61b8fe94bed28"
+      "hash": "b05f07858ad6668eb46637059b63f24646f5f31ce8669e96d94e8786ae34df79"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "e886553141aa39b9dbb8a76f8326a4a11d81c6de4295c5f7a932cba4477b96d8"
+      "hash": "63813dc91bba8d69e2e6dac902cd31b8ec9989c8ddae19c94765c2e9b5aabef1"
     }
   }
 }

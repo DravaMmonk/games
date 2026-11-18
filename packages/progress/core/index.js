@@ -35,7 +35,8 @@ export const progressMeaning = {
     if (!content.levels.some(level => level.requiresObjects?.length || level.tasks?.some(task => task.requiresObjects?.length))) return
     const stages = []
     for (const [kind, values] of Object.entries(objectsOf(content))) for (const [target, value] of Object.entries(values)) {
-      if (!policyFor(content, kind, target).checks.has('references')) continue
+      const policy = policyFor(content, kind, target)
+      if (!policy.stages || !policy.checks.has('references')) continue
       const first = value.stages?.[0]
       for (const stage of value.stages ?? []) {
         stages.push({ ...stage, item: stageName(target, stage.id) })
@@ -68,18 +69,17 @@ export const progressMeaning = {
         const policy = policyFor(content, kind, target)
         if (policy.grants) grants.add(target)
         if (policy.checks.has('references')) references.add(target)
-        if (!value.stages?.length) continue
-        if (!policy.stages) fail(`${kind} ${target}: stages require an enabled progress policy`)
+        if (!value?.stages?.length) continue
         for (const [index, stage] of value.stages.entries()) {
           const id = stageName(target, stage.id)
-          if (policy.grants) grants.add(id)
-          if (policy.checks.has('references')) references.add(id)
+          if (policy.stages && policy.grants) grants.add(id)
+          if (policy.stages && policy.checks.has('references')) references.add(id)
           const at = `${kind} ${target}.stages[${index}]`
           if (stages.has(id)) fail(`${at}: duplicate object or stage ${id}`)
           stages.add(id)
           if (id.split('/')[0] !== target.split('/')[0]) fail(`${at}: a stage belongs to its object's namespace`)
           if (stage.afterLevel && stage.afterTask) fail(`${at}: choose a level or a task for this stage`)
-          if (policy.checks.has('stages') && !policy.grants && index && !stage.afterLevel && !stage.afterTask) fail(`${at}: a later stage needs a level or task to pass`)
+          if (policy.stages && policy.checks.has('stages') && !policy.grants && index && !stage.afterLevel && !stage.afterTask) fail(`${at}: a later stage needs a level or task to pass`)
         }
       }
     }

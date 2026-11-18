@@ -29,7 +29,8 @@ test('a text course configures inline stages and grants by object type without c
     { id: 'learned', afterTask: 'given', title: 'Clue unlocked' }, { id: 'practised', afterLevel: 'given' },
   ] })
   write('entries/bonus.json', { title: 'Bonus', body: ['A completion reward.'] })
-  write('progress-policies/entries.json', { kind: 'entry', stages: true, grants: true, unlocks: true, checks: ['stages', 'references'] })
+  write('entries/other.json', { title: 'Extra', body: ['A reusable entry.'], stages: [{ id: 'extra', afterTask: 'given' }] })
+  write('progress-policies/entries.json', { kind: 'entry', targets: ['given', 'bonus'], stages: true, grants: true, unlocks: true, checks: ['stages', 'references'] })
   write('progress-policies/levels.json', { kind: 'level', stages: true })
   const file = join(root, 'packages/story/levels/given.json')
   const level = JSON.parse(readFileSync(file))

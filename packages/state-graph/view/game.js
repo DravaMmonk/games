@@ -1,6 +1,6 @@
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
-// A table game on the shared shell (../../shell), from its content (games/DESIGN.md 6.3): the course (course.js)
+// A table game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the table domain's screen (every level played through its play), its
 // parts box by robot, and its intro pictures.
 import { Cable, Grid3x3 } from 'lucide-react'
@@ -64,7 +64,7 @@ export default function tableGame(content, table = tableWorks(content)) {
   const primitives = cards.map(([k, at]) => ({ key: `part:${k}`, part: k, name: nameOf(k), desc: descOf(k), icon: lookIcon(k), at }))
 
   // The components box by robot: a robot can use every part earned in its era and the eras before it (parts carry over,
-  // games/DESIGN.md 2.1). It joins the box once the first level of its era is passed.
+  // games/design/README.md 2.1). It joins the box once the first level of its era is passed.
   const eraOf = new Map(ERAS.flatMap((era, e) => eraLevels(era).map((id) => [id, e])))
   const robotFilters = (progress) => ERAS.flatMap((era, e) => {
     if (!era.machine) return []

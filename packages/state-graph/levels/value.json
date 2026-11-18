@@ -9,54 +9,14 @@
       "t": "@level.value.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "v0",
-              "x": 0,
-              "y": 0,
-              "w": 54,
-              "h": 54,
-              "value": 10,
-              "label": "@level.value.intro.1.fig.scene.cells.v0.label",
-              "cls": "gold"
-            },
-            {
-              "id": "v1",
-              "x": 62,
-              "y": 0,
-              "w": 54,
-              "h": 54,
-              "value": 9,
-              "cls": "lit"
-            },
-            {
-              "id": "v2",
-              "x": 124,
-              "y": 0,
-              "w": 54,
-              "h": 54,
-              "value": 8.1,
-              "cls": "lit"
-            },
-            {
-              "id": "v3",
-              "x": 186,
-              "y": 0,
-              "w": 54,
-              "h": 54,
-              "value": 7.29,
-              "cls": "lit"
-            },
-            {
-              "id": "v4",
-              "x": 248,
-              "y": 0,
-              "w": 54,
-              "h": 54,
-              "value": 6.56,
-              "cls": "lit"
-            }
-          ],
+          "grid": {
+            "w": 54,
+            "h": 54,
+            "dx": 62,
+            "rows": [
+              [{"id": "v0", "value": 10, "label": "@level.value.intro.1.fig.scene.cells.v0.label", "cls": "gold"}, {"id": "v1", "value": 9, "cls": "lit"}, {"id": "v2", "value": 8.1, "cls": "lit"}, {"id": "v3", "value": 7.29, "cls": "lit"}, {"id": "v4", "value": 6.56, "cls": "lit"}]
+            ]
+          },
           "edges": []
         }
       }

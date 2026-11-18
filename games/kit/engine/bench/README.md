@@ -1,6 +1,6 @@
 # Author tool preview benchmark
 
-Run manually from `trace-viewer/`; this benchmark is not part of CI:
+Run manually from `site/`; this benchmark is not part of CI:
 
 ```sh
 node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/bench/preview.mjs

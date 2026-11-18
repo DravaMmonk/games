@@ -3,7 +3,7 @@ import { isFixed, keepFixedSettings } from "../../core/board/presets.js"
 import PartFace, { blocksOf } from "./PartFace.jsx"
 import { iconOf } from "./icons.js"
 
-// What the shared editors and the circuit level need of defined parts (games/DESIGN.md 6.8): the cards' description
+// What the shared editors and the circuit level need of defined parts (games/design/README.md 6.8): the cards' description
 // for the editors (circuit/model.js), the parts to place, and the faces drawn by PartFace. A domain's level screen
 // gives the circuit level `defined` = { of(type) → the part resolved or null, defaults(type), ops,
 // value(node, ctx, output, face), widgets?, allowed?(type, key) }; the nodes it does not define (the level's own, built parts) stay the domain's.

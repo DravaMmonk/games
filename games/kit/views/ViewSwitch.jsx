@@ -4,7 +4,7 @@ import { ViewScope } from './choice.js'
 import { VIEWS } from '../engine/views.js'
 import { L, tr } from '../shell/i18n.js'
 
-// The switch between the views a row may be drawn in (games/DESIGN.md 6.9), the one in force pressed.
+// The switch between the views a row may be drawn in (games/design/README.md 6.9), the one in force pressed.
 
 const ICONS = { value: Hash, numbers: Grid3x3, pixels: Image, plane: MoveUpRight, carried: Scaling, chain: Waypoints, plot: ChartSpline, profile: ScanLine, surface: Mountain, slope: Navigation, spectrum: Orbit, centredBins: Orbit, wave: Activity, bands: Rows3, terms: Table2, dots: ChartScatter, sequence: ListOrdered }
 

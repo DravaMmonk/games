@@ -1,6 +1,6 @@
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tagName } from '../tag-identity.js'
-// Search across a game's content, and replace as operations (games/DESIGN.md 7.1). What is searched: every localized text
+// Search across a game's content, and replace as operations (games/design/README.md 7.1). What is searched: every localized text
 // of the levels, game.json and the encyclopedia (each side on its own; a link tag is never matched inside, so a
 // replace cannot break one), every line of every board, and the ids of levels and entries. A replace is never an edit
 // of its own: it is the operations that make it — text.set for each language it changes, level.blueprint with the board's

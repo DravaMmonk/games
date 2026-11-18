@@ -79,7 +79,7 @@ function stack({ at, edges, box, below, x, w, join }) {
 
 /**
  * A chapter's levels, on the map and in the level drawer: a button for each level (byId: the chapter's levels), joined
- * by wires into its tree; a notes edition (game.notes, games/DESIGN.md 12.1) opens every level and lists them in
+ * by wires into its tree; a notes edition (game.notes, games/design/README.md 12.1) opens every level and lists them in
  * order, with no tree. current: the level being played (marked); next: the one to play next (its pad pulses).
  */
 export function LevelTree(props) {

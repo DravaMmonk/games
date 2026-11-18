@@ -1,4 +1,4 @@
-// A studio workspace's pending changeset (games/DESIGN.md 6.7), the same in both workspaces: every edit is an operation
+// A studio workspace's pending changeset (games/design/README.md 6.7), the same in both workspaces: every edit is an operation
 // added to it; the server runs it without writing (the preview tool) and answers with the content it leaves, every line
 // of the check and each file it changes. A preview comes in two steps, so editing stays quick on a big game: at once the
 // content the changeset leaves, checked against the vocabulary only; then, a moment after the last edit and one at a

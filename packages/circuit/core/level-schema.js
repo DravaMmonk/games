@@ -1,4 +1,4 @@
-// The schemas of a circuit game's content (games/DESIGN.md 6.2): a level and its tasks, and game.json, for a domain's
+// The schemas of a circuit game's content (games/design/README.md 6.2): a level and its tasks, and game.json, for a domain's
 // vocabulary. A domain gives what is its own (a task's fixed cards, a test, its checks) and gets the rest:
 //
 //   levelSchema({ page?, ports, test, checks?, more?, shared?, kinds? })   a level

@@ -1,5 +1,5 @@
 // What the game page's marks (../shell/edit.js) are in a level's content, for the studio editing on the page
-// (games/DESIGN.md 6.7). A mark says where a field shows — `at`, a path in the level as the screen knows it, `scope`,
+// (games/design/README.md 6.7). A mark says where a field shows — `at`, a path in the level as the screen knows it, `scope`,
 // the level or the task played, `task`, that task's index — and the content says where it is: in a level of tasks
 // (../engine/tasks.js) a task's field is under `tasks[task]` and a field all its tasks share is on the level; a level
 // that is no list of tasks has them all on itself. Domain-free: only the content and its schema are read.

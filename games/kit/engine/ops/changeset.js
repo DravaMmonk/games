@@ -29,7 +29,7 @@ import { checkGame } from '../checks.js'
 import { runtimeOf } from '../resolver.js'
 import { dependencyProblemsInProject } from '../project-dependencies.js'
 import { operationsFor, opScope } from './operations.js'
-import { append, hashOf, headOf, readLog, withLock } from './log.js'
+import { adoptionFiles, append, hashOf, headOf, readLog, withLock } from './log.js'
 
 export { LOG, readLog } from './log.js'
 
@@ -181,7 +181,7 @@ async function settle({ ws, content, changeset, domain, start, says, inverse, wr
       } catch (error) {
         return error.message
       }
-      append(ws, { ...(ws.layer && { layer: ws.layer }), why: changeset.why, ...(changeset.by && { by: changeset.by }), ops: changeset.ops, files: changes.map((c) => ({ file: c.file, before: hashOf(c.before), after: hashOf(c.after) })), inverse, ...(undoes !== null && { undoes }) })
+      append(ws, { ...(ws.layer && { layer: ws.layer }), why: changeset.why, ...(changeset.by && { by: changeset.by }), ops: changeset.ops, files: changes.map(({ file, after }) => ({ file, after: hashOf(after) })), inverse, ...(undoes !== null && { undoes }) })
       return null
     })
   }
@@ -208,12 +208,12 @@ export async function undo(ws, { seq = null, ...options } = {}) {
   if (seq !== null && seq !== entry.seq) return refused(`#${seq} is not the change undo would undo now (#${entry.seq} is): the log has changed since`)
   if (entry.layer && entry.layer !== ws.layer) return refused(`open layer ${entry.layer} to undo its change`)
   const disk = ws.onDisk()
-  const moved = entry.files.filter((f) => (disk.has(f.file) || f.file.includes('/i18n/')) && hashOf(disk.get(f.file)) !== f.after).map((f) => f.file)
+  const moved = entry.files.filter((f) => ws.owns(f.file) && hashOf(disk.get(f.file)) !== f.after).map((f) => f.file)
   if (moved.length) return refused(`#${entry.seq} cannot be undone: changed since it was made: ${moved.join(', ')}`)
   return runChangeset(ws, { why: `undo #${entry.seq}${entry.why ? `: ${entry.why}` : ''}`, ops: entry.inverse }, { ...options, undoes: entry.seq })
 }
 
 /** Take the game's files as they are now into the log (after a change outside the operation set): the entry's seq. */
 export function adopt(ws, why) {
-  return withLock(ws, () => append(ws, { why, adopt: true, files: [...ws.onDisk()].map(([file, text]) => ({ file, after: hashOf(text) })) }))
+  return withLock(ws, () => append(ws, { why, adopt: true, files: adoptionFiles(ws, ws.onDisk()) }))
 }

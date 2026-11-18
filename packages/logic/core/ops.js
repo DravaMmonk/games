@@ -1,4 +1,4 @@
-// The logic domain's engine resources (games/DESIGN.md 6.8): what a game's parts.json calls, each with what it is and
+// The logic domain's engine resources (games/design/README.md 6.8): what a game's parts.json calls, each with what it is and
 // its arguments. The proof rules and the lemmas' run are proof.js's, with the options a proof card's settings offer;
 // the machine board's parts and the rules a rule part offers are machine.js's.
 import { signatures } from './signatures.js'

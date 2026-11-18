@@ -1,4 +1,4 @@
-// The fields of a file as rows (games/DESIGN.md 6.7): each field one line — its key, a summary of what it holds, a dot
+// The fields of a file as rows (games/design/README.md 6.7): each field one line — its key, a summary of what it holds, a dot
 // when the pending changes touched it, the number of findings on it — and a click opens it in the side panel
 // (Inspector.jsx), where its control is. The fields that have no place on the game's screen (the course, the answers,
 // game.json) are edited this way; so is anything else, for whoever would rather read a level as a list. A list of

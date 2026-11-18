@@ -1,0 +1,31 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "x": {
+        "type": "num"
+      },
+      "y": {
+        "type": "num"
+      },
+      "t": {
+        "type": "text"
+      },
+      "anchor": {
+        "type": "oneOf",
+        "values": [
+          "start",
+          "middle",
+          "end"
+        ],
+        "optional": true
+      },
+      "cls": {
+        "type": "str",
+        "optional": true
+      }
+    }
+  },
+  "optional": true
+}

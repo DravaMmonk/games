@@ -6,58 +6,14 @@
       "t": "@level.robber.intro.0.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "h0",
-              "x": 0,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.0.fig.scene.cells.h0.label",
-              "value": 2,
-              "cls": "house "
-            },
-            {
-              "id": "h1",
-              "x": 62,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.0.fig.scene.cells.h1.label",
-              "value": 7,
-              "cls": "house "
-            },
-            {
-              "id": "h2",
-              "x": 124,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.0.fig.scene.cells.h2.label",
-              "value": 9,
-              "cls": "house "
-            },
-            {
-              "id": "h3",
-              "x": 186,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.0.fig.scene.cells.h3.label",
-              "value": 3,
-              "cls": "house "
-            },
-            {
-              "id": "h4",
-              "x": 248,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.0.fig.scene.cells.h4.label",
-              "value": 1,
-              "cls": "house "
-            }
-          ],
+          "grid": {
+            "w": 52,
+            "h": 60,
+            "dx": 62,
+            "rows": [
+              [{"id": "h0", "label": "@level.robber.intro.0.fig.scene.cells.h0.label", "value": 2, "cls": "house "}, {"id": "h1", "label": "@level.robber.intro.0.fig.scene.cells.h1.label", "value": 7, "cls": "house "}, {"id": "h2", "label": "@level.robber.intro.0.fig.scene.cells.h2.label", "value": 9, "cls": "house "}, {"id": "h3", "label": "@level.robber.intro.0.fig.scene.cells.h3.label", "value": 3, "cls": "house "}, {"id": "h4", "label": "@level.robber.intro.0.fig.scene.cells.h4.label", "value": 1, "cls": "house "}]
+            ]
+          },
           "edges": []
         }
       }
@@ -66,58 +22,14 @@
       "t": "@level.robber.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "h0",
-              "x": 0,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.1.fig.scene.cells.h0.label",
-              "value": 2,
-              "cls": "house hot"
-            },
-            {
-              "id": "h1",
-              "x": 62,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.1.fig.scene.cells.h1.label",
-              "value": 7,
-              "cls": "house dimc"
-            },
-            {
-              "id": "h2",
-              "x": 124,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.1.fig.scene.cells.h2.label",
-              "value": 9,
-              "cls": "house hot"
-            },
-            {
-              "id": "h3",
-              "x": 186,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.1.fig.scene.cells.h3.label",
-              "value": 3,
-              "cls": "house dimc"
-            },
-            {
-              "id": "h4",
-              "x": 248,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.robber.intro.1.fig.scene.cells.h4.label",
-              "value": 1,
-              "cls": "house hot"
-            }
-          ],
+          "grid": {
+            "w": 52,
+            "h": 60,
+            "dx": 62,
+            "rows": [
+              [{"id": "h0", "label": "@level.robber.intro.1.fig.scene.cells.h0.label", "value": 2, "cls": "house hot"}, {"id": "h1", "label": "@level.robber.intro.1.fig.scene.cells.h1.label", "value": 7, "cls": "house dimc"}, {"id": "h2", "label": "@level.robber.intro.1.fig.scene.cells.h2.label", "value": 9, "cls": "house hot"}, {"id": "h3", "label": "@level.robber.intro.1.fig.scene.cells.h3.label", "value": 3, "cls": "house dimc"}, {"id": "h4", "label": "@level.robber.intro.1.fig.scene.cells.h4.label", "value": 1, "cls": "house hot"}]
+            ]
+          },
           "edges": []
         }
       }
@@ -126,44 +38,14 @@
       "t": "@level.robber.intro.2.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "f0",
-              "x": 0,
-              "y": 0,
-              "w": 52,
-              "h": 52,
-              "corner": 0,
-              "cls": "dimc"
-            },
-            {
-              "id": "f1",
-              "x": 62,
-              "y": 0,
-              "w": 52,
-              "h": 52,
-              "corner": 1,
-              "cls": "dimc"
-            },
-            {
-              "id": "f2",
-              "x": 124,
-              "y": 0,
-              "w": 52,
-              "h": 52,
-              "corner": 2,
-              "cls": "lit"
-            },
-            {
-              "id": "f3",
-              "x": 186,
-              "y": 0,
-              "w": 52,
-              "h": 52,
-              "corner": 3,
-              "cls": "sel"
-            }
-          ],
+          "grid": {
+            "w": 52,
+            "h": 52,
+            "dx": 62,
+            "rows": [
+              [{"id": "f0", "corner": 0, "cls": "dimc"}, {"id": "f1", "corner": 1, "cls": "dimc"}, {"id": "f2", "corner": 2, "cls": "lit"}, {"id": "f3", "corner": 3, "cls": "sel"}]
+            ]
+          },
           "edges": [
             {
               "a": "f0",

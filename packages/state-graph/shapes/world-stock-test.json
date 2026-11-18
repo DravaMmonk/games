@@ -1,0 +1,15 @@
+{
+  "type": "obj",
+  "fields": {
+    "p": {
+      "type": "list",
+      "of": {
+        "type": "num"
+      }
+    },
+    "cool": {
+      "type": "bool",
+      "optional": true
+    }
+  }
+}

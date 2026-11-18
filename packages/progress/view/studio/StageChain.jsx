@@ -1,5 +1,5 @@
 import { L, tr, summaryOf, isText, shownName } from 'kernel/view'
-// A part's stages under its page (games/DESIGN.md 6.8, 6.7): the part and its stages in order, one picked to
+// A part's stages under its page (games/design/README.md 6.8, 6.7): the part and its stages in order, one picked to
 // preview on the page above and to open on the right; what the stage picked changes; and every setting there — what
 // the operation declares, what the part narrows, what holds — the ones the stage changes marked. A new stage is added
 // at the end, changing nothing yet.

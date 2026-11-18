@@ -1,4 +1,4 @@
-// How the kit shows a value (games/DESIGN.md 6.9), as data: a value's shape, the views that draw each shape, and the
+// How the kit shows a value (games/design/README.md 6.9), as data: a value's shape, the views that draw each shape, and the
 // scenes a value is drawn in. Content can select views for a task's `results` or a value shown beside text (`show`).
 //
 //   shapes   scalar  one value, written as words (a number, yes or no, a vector)

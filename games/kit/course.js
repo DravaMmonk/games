@@ -36,7 +36,7 @@ export function dependencyLayers(ids, requires) {
 }
 
 /**
- * A chapter's map, row by row (games/DESIGN.md 2.5): each row at most three places, a level or an empty one (null).
+ * A chapter's map, row by row (games/design/README.md 2.5): each row at most three places, a level or an empty one (null).
  * The selected package layout's rows stay as authored, less the levels not on this map; every other
  * level is laid out by the map's rules around it: one layer of the prerequisite graph at a time, in rows of up to
  * three after the rows of the layers before it, below each of its prerequisites and above every saved level that needs

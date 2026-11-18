@@ -1,4 +1,4 @@
-// The geometry of a grid of two rows read as arrows in the plane (games/DESIGN.md 6.9): each column a vector. Three
+// The geometry of a grid of two rows read as arrows in the plane (games/design/README.md 6.9): each column a vector. Three
 // views read it, each named by content (../../engine/views.js): `plane` every column an arrow from the origin;
 // `carried` two columns as a 2 × 2 matrix, the landing places of the two unit arrows; `chain` the columns walked one
 // after another, each arrow from the tip of the one before, and their sum from the origin.

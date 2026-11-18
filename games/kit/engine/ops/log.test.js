@@ -1,7 +1,10 @@
-// node --test (npm test, from trace-viewer) — who wrote what in a change log (log.js authorship), on entries written here.
+// node --test (npm test, from site) — who wrote what in a change log (log.js authorship), on entries written here.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { authorship } from './log.js'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
+import { adoptionFiles, authorship, driftOf, hashOf, LOG } from './log.js'
 
 const entry = (by, ...files) => ({ ...(by && { by }), ops: [], files: files.map((file) => ({ file })) })
 
@@ -20,4 +23,21 @@ test('a file an agent wrote counts as revised once a person changes it, and only
     { by: 'studio', changes: 2, files: 1, revised: 0 },
     { by: 'unknown', changes: 1, files: 1, revised: 0 },
   ])
+})
+
+test('drift replays compact adoptions, including removed, changed and newly added files', t => {
+  const dir = mkdtempSync(join(tmpdir(), 'compact-log-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const ws = { dir, owns: () => true }
+  const record = (file, text) => ({ file, after: hashOf(text) })
+  const log = [
+    { seq: 1, adopt: true, files: [record('kept', 'a'), record('edited', 'b'), record('removed', 'c')] },
+    { seq: 2, adopt: true, files: [record('edited', 'B'), record('removed', null)] },
+    { seq: 3, adopt: true, files: [] },
+  ]
+  writeFileSync(join(dir, LOG), log.map(entry => JSON.stringify(entry)).join('\n') + '\n')
+  assert.deepEqual(driftOf(ws, new Map([['kept', 'a'], ['edited', 'B']])), [])
+  const disk = new Map([['edited', 'b'], ['removed', 'c'], ['new', 'd']])
+  assert.deepEqual(driftOf(ws, disk), ['edited', 'removed', 'new'])
+  assert.deepEqual(adoptionFiles(ws, disk), [record('edited', 'b'), record('removed', 'c'), record('new', 'd'), record('kept', null)])
 })

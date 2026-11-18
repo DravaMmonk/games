@@ -1,0 +1,25 @@
+{
+  "type": "obj",
+  "fields": {
+    "dirs": {
+      "type": "obj",
+      "fields": {
+        "01": {
+          "type": "oneOf",
+          "values": [
+            "asc",
+            "desc"
+          ]
+        },
+        "inf": {
+          "type": "oneOf",
+          "values": [
+            "asc",
+            "desc"
+          ]
+        }
+      },
+      "optional": true
+    }
+  }
+}

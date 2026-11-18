@@ -6,76 +6,14 @@
       "t": "@level.change.intro.0.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "r0",
-              "x": 0,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 0,
-              "value": 0,
-              "cls": "lit"
-            },
-            {
-              "id": "r1",
-              "x": 60,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 1
-            },
-            {
-              "id": "r2",
-              "x": 120,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 2
-            },
-            {
-              "id": "r3",
-              "x": 180,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 3
-            },
-            {
-              "id": "r4",
-              "x": 240,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 4
-            },
-            {
-              "id": "r5",
-              "x": 300,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 5
-            },
-            {
-              "id": "r6",
-              "x": 360,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 6
-            },
-            {
-              "id": "r7",
-              "x": 420,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 7,
-              "value": "?",
-              "cls": "sel"
-            }
-          ],
+          "grid": {
+            "w": 50,
+            "h": 50,
+            "dx": 60,
+            "rows": [
+              [{"id": "r0", "corner": 0, "value": 0, "cls": "lit"}, {"id": "r1", "corner": 1}, {"id": "r2", "corner": 2}, {"id": "r3", "corner": 3}, {"id": "r4", "corner": 4}, {"id": "r5", "corner": 5}, {"id": "r6", "corner": 6}, {"id": "r7", "corner": 7, "value": "?", "cls": "sel"}]
+            ]
+          },
           "edges": []
         }
       }

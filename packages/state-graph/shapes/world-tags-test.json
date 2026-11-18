@@ -1,0 +1,39 @@
+{
+  "type": "obj",
+  "fields": {
+    "words": {
+      "type": "list",
+      "of": {
+        "type": "text"
+      }
+    },
+    "emit": {
+      "type": "list",
+      "of": {
+        "type": "map",
+        "of": {
+          "type": "num"
+        }
+      }
+    },
+    "start": {
+      "type": "map",
+      "of": {
+        "type": "num"
+      }
+    },
+    "trans": {
+      "type": "map",
+      "of": {
+        "type": "map",
+        "of": {
+          "type": "num"
+        }
+      }
+    },
+    "note": {
+      "type": "text",
+      "optional": true
+    }
+  }
+}

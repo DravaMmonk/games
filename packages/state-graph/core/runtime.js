@@ -1,15 +1,15 @@
-// The table domain for the checks (games/DESIGN.md 6.3): its vocabulary, a game's spec from its content (the course,
+// The table domain for the checks (games/design/README.md 6.3): its vocabulary, a game's spec from its content (the course,
 // its levels in play order and the texts a player reads), the domain's checks, and its play
 // hook for blind sessions (play.js). Nothing here draws: the page's side is game.js.
 
-import { vocabulary } from './vocabulary.js';
+import vocabulary from './capabilities.json' with { type: 'json' };
 import { tableWorks, prepareTableWorks } from './work.js';
 import { validate } from './validate.js';
 import { play } from './play.js';
 import { builtParts } from 'circuit'
 
 /** A table game's spec, as the checks read one (../../engine/checks.js). */
-// What a tray may list (vocabulary.js): the parts and ideas parts.json names.
+// What a tray may list (capabilities.json): the parts and ideas parts.json names.
 const names = content => ({ part: new Set(Object.keys(builtParts(content.partDefs))) });
 
 function spec(content, works = tableWorks(content)) {

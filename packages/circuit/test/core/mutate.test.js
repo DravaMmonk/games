@@ -1,4 +1,4 @@
-// node --test (npm test, from trace-viewer) — the mutants of a board (mutate.js), on a board and parts written here.
+// node --test (npm test, from site) — the mutants of a board (mutate.js), on a board and parts written here.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { evaluate } from '../../core/index.js'

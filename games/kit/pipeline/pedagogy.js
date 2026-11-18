@@ -1,4 +1,4 @@
-// The pedagogy lint (games/DESIGN.md 4.1, 8): what a game's content shows of levels that teach nothing new. The
+// The pedagogy lint (games/design/README.md 4.1, 8): what a game's content shows of levels that teach nothing new. The
 // checks see form, not meaning; they catch the shapes padding takes, and the review step reads for the rest.
 //
 //   pd-repeat-board   two levels' reference boards are the same board: the same puzzle twice

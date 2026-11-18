@@ -3,7 +3,7 @@
 Develop the course blueprint from the supplied sources, topic brief and current domain vocabulary. This step writes
 `blueprint.json` through the operation set; it does not write levels, copy or domain code.
 
-Read `games/DESIGN.md` §§1–4 and 6.5, the source materials, `games/kit/pipeline/blueprint.js` (schema and audit),
+Read `games/design/README.md` §§1–4 and 6.5, the source materials, `games/kit/pipeline/blueprint.js` (schema and audit),
 and the supplied vocabulary. Consider the learner's goals and prior knowledge, the concepts and dependencies,
 meaningful activities, the intended course scope, and what the domain can express. Use the handbook as guidance:
 choose the number of levels, task structure, routes and scaffolding for the topic, not from a fixed teaching formula.

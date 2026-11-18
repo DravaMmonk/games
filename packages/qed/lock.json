@@ -3,19 +3,19 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "f4bd03ac935c87c6f7b56772f8a5be63dfce763e2d1bf9587296634a5aaf715f"
+      "hash": "b5b3c65114a9f7d550c54948eae24c9c9f7ee10acb44bbbe452b2e4c07621b3c"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "454368ab2df2b8157375f41d0ba05ab89d97b8b5d38cf8362fc82565e099dc75"
+      "hash": "6e03dc76f965f05f7ebafea19f79b13920e642bf9db9355ede8e60a31baf0b66"
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "fa05adc73804649b8aa12bd3696f29d512756ca2e1c818cb5528cb2760ae5bd1"
+      "hash": "eef7d9214b23faede0e4fd14ba61bd09f3690a83fadec67118ec588310c65a35"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "4712c44fa1fcfe3c5a6134b4c34a8956c5d624cd71bb4f6cfe5c98359e62f820"
+      "hash": "19d5c9217d29613dad9fb070ac7b2544be013da80a73007782a81bd837cf35d0"
     }
   }
 }

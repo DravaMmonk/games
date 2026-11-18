@@ -15,7 +15,7 @@ const THEME_KEY = 'fieldnotes.theme'
 const HEIGHT = 'kit-embed-height'
 
 /**
- * One level of a notes edition, embedded in a page of the notes (games/DESIGN.md 12.1): the page's paragraph before it
+ * One level of a notes edition, embedded in a page of the notes (games/design/README.md 12.1): the page's paragraph before it
  * is its introduction and the one after its pass text, so the embed has no title, map, intro sheet or dialogs. The
  * level's screen is the game's own; the shared layouts read EmbedContext and lay it out as a block in the page's flow.
  * Progress is the game's (`store`, the same saves as its page), one board per task (no switcher). A task passed stays

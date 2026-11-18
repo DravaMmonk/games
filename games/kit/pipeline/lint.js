@@ -1,4 +1,4 @@
-// The copy lint (games/DIRECTION.md decision 1, games/DESIGN.md 4 and 7.2): what the handbook's copy rules forbid that
+// The copy lint (games/DIRECTION.md decision 1, games/design/README.md 4 and 7.2): what the handbook's copy rules forbid that
 // a machine can see, over a game's content. npm run check already checks both sides, links and positional references
 // to levels (../engine/text.js); this adds the words the rules ban, lengths, an intro that opens on a new part, a pass
 // text that names parts or looks ahead. Each finding names one rule.

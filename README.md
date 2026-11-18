@@ -3,12 +3,12 @@
 把所有知识地图变成图灵完备风格的游戏 — turn every knowledge map into a Turing Complete–style game. Published at
 <https://dravammonk.github.io/games/>.
 
-- `games/` — the kernel (`games/kit`) and each game's content. Start with `games/DESIGN.md`.
+- `games/` — the kernel (`games/kit`) and each game's content. Start with `games/design/README.md`.
 - `packages/` — the mechanisms games are built from (`core`, `view`, `kinds` per package).
-- `trace-viewer/` — the Vite project that runs, tests and builds them.
+- `site/` — the Vite project that runs, tests and builds them.
 
 ```bash
-cd trace-viewer && npm ci
+cd site && npm ci
 npm run dev        # http://localhost:5173/ → the games
 npm run studio     # the editor
 npm test

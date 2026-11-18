@@ -1,0 +1,17 @@
+{
+  "type": "obj",
+  "fields": {
+    "W": {
+      "type": "int",
+      "min": 0
+    },
+    "items": {
+      "type": "shape",
+      "name": "state-graph/packing-items"
+    },
+    "ways": {
+      "type": "bool",
+      "optional": true
+    }
+  }
+}

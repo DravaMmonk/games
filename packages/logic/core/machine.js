@@ -409,7 +409,7 @@ const ABOUT = {
   replay: T('重放', 'Replay'), rules: T('规则元件：给出它的规则', 'A rule part: the rules it gives'),
 }
 /**
- * The machine board's parts as engine resources (a game's parts.json makes each a part, games/DESIGN.md 6.8): a
+ * The machine board's parts as engine resources (a game's parts.json makes each a part, games/design/README.md 6.8): a
  * resource's arguments are its part's inputs, in order; the card it runs on, the region whose value it gives and the
  * regions to run come with ctx (../../engine/parts/define.js).
  */

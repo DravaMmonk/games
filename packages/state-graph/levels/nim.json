@@ -9,58 +9,14 @@
       "t": "@level.nim.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "p0",
-              "x": 0,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 0,
-              "value": "@level.nim.intro.1.fig.scene.cells.p0.value",
-              "cls": "no"
-            },
-            {
-              "id": "p1",
-              "x": 60,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 1
-            },
-            {
-              "id": "p2",
-              "x": 120,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 2
-            },
-            {
-              "id": "p3",
-              "x": 180,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 3
-            },
-            {
-              "id": "p4",
-              "x": 240,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 4
-            },
-            {
-              "id": "p5",
-              "x": 300,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 5
-            }
-          ],
+          "grid": {
+            "w": 50,
+            "h": 50,
+            "dx": 60,
+            "rows": [
+              [{"id": "p0", "corner": 0, "value": "@level.nim.intro.1.fig.scene.cells.p0.value", "cls": "no"}, {"id": "p1", "corner": 1}, {"id": "p2", "corner": 2}, {"id": "p3", "corner": 3}, {"id": "p4", "corner": 4}, {"id": "p5", "corner": 5}]
+            ]
+          },
           "edges": []
         }
       }

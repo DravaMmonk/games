@@ -24,7 +24,7 @@ import { taskShapes, tasksSchema } from './tasks.js'
 export const ENTRIES = ['vocabulary', 'prepare', 'spec', 'validate', 'play']
 const isFn = (f) => typeof f === 'function'
 // Each extension point and the shape it must have. A tool that needs more of every domain adds its hook here.
-//   play                { open(ctx), attempt(ctx, text) }: the blind-play harness's hook (games/DESIGN.md 6.6)
+//   play                { open(ctx), attempt(ctx, text) }: the blind-play harness's hook (games/design/README.md 6.6)
 //   names               names(content) → { kind: Set }: what the content defines that its schema names (S.name)
 //   languages           { lang: (text) → why it cannot be read, or null }: the readers of the vocabulary's languages
 //                       (schema.js syntax), one for each it names

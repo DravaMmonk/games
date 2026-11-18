@@ -10,7 +10,7 @@ import { nextParams } from "../parts/faces.jsx"
 import { withPartLabels } from "./board-parts.js"
 import PartSheet, { Implementations, Ports, Settings, marker } from "../parts/PartSheet.jsx"
 
-// The circuit editor's parts drawn (games/DESIGN.md 6.7, 6.8). A primitive's scenes are its three faces — the desktop
+// The circuit editor's parts drawn (games/design/README.md 6.7, 6.8). A primitive's scenes are its three faces — the desktop
 // card on the game's own canvas, the phone tile on its slot board, the detail both share — drawn by the game's page
 // (game.defined), so its icons, colours and controls are the player's; its settings move as a player would move them
 // (rules followed, readouts and actions live) and the three scenes share them (`state`); nothing is wired to it, so

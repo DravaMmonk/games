@@ -1,4 +1,4 @@
-// What the studio's workspaces open, listed in their left columns (games/DESIGN.md 6.7): the packages (Build, Copy)
+// What the studio's workspaces open, listed in their left columns (games/design/README.md 6.7): the packages (Build, Copy)
 // and the games (Arrange, Copy), each its own list with a search. A click picks one, its meta goes in the middle
 // (PackageMeta, GameMeta, read only) and its file in the right column (package.json, game.json: JsonFile, or the
 // open game's in the Inspector, where it is edited); a double click, Enter, or the meta's Open opens it, the workspace's pending

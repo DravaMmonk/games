@@ -1,0 +1,29 @@
+{
+  "type": "obj",
+  "fields": {
+    "s": {
+      "type": "str"
+    },
+    "dict": {
+      "type": "either",
+      "of": [
+        {
+          "type": "list",
+          "of": {
+            "type": "str"
+          }
+        },
+        {
+          "type": "map",
+          "of": {
+            "type": "num"
+          }
+        }
+      ]
+    },
+    "letter": {
+      "type": "num",
+      "optional": true
+    }
+  }
+}

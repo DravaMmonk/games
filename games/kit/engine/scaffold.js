@@ -52,7 +52,7 @@ const refs = (value, out = new Set()) => {
 }
 
 /**
- * A new game on an existing package (the studio's game workspace, games/DESIGN.md 6.7): games/<id>/ with its own course,
+ * A new game on an existing package (the studio's game workspace, games/design/README.md 6.7): games/<id>/ with its own course,
  * which keeps the course settings of `from` (a game on the same package) and starts with one empty chapter shaped
  * like its first; registered on the hub as hidden and in development. Returns the folder.
  */

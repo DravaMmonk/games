@@ -6,98 +6,14 @@
       "t": "@level.wordbreak.intro.0.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "c0",
-              "x": 0,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "c",
-              "cls": "tile"
-            },
-            {
-              "id": "c1",
-              "x": 46,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "a",
-              "cls": "tile"
-            },
-            {
-              "id": "c2",
-              "x": 92,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "t",
-              "cls": "tile"
-            },
-            {
-              "id": "c3",
-              "x": 138,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "s",
-              "cls": "tile"
-            },
-            {
-              "id": "c4",
-              "x": 184,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "a",
-              "cls": "tile"
-            },
-            {
-              "id": "c5",
-              "x": 230,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "n",
-              "cls": "tile"
-            },
-            {
-              "id": "c6",
-              "x": 276,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "d",
-              "cls": "tile"
-            },
-            {
-              "id": "c7",
-              "x": 322,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "d",
-              "cls": "tile"
-            },
-            {
-              "id": "c8",
-              "x": 368,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "o",
-              "cls": "tile"
-            },
-            {
-              "id": "c9",
-              "x": 414,
-              "y": 0,
-              "w": 38,
-              "h": 38,
-              "value": "g",
-              "cls": "tile"
-            }
-          ],
+          "grid": {
+            "w": 38,
+            "h": 38,
+            "dx": 46,
+            "rows": [
+              [{"id": "c0", "value": "c", "cls": "tile"}, {"id": "c1", "value": "a", "cls": "tile"}, {"id": "c2", "value": "t", "cls": "tile"}, {"id": "c3", "value": "s", "cls": "tile"}, {"id": "c4", "value": "a", "cls": "tile"}, {"id": "c5", "value": "n", "cls": "tile"}, {"id": "c6", "value": "d", "cls": "tile"}, {"id": "c7", "value": "d", "cls": "tile"}, {"id": "c8", "value": "o", "cls": "tile"}, {"id": "c9", "value": "g", "cls": "tile"}]
+            ]
+          },
           "edges": []
         }
       }

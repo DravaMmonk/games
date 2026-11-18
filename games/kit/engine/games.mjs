@@ -3,13 +3,13 @@ import { contentRoots, contentSchemas } from './content.js'
 import { packageApp } from '../app/package-vite.js'
 // A game's whole definition (the shell's levels, reference panels and encyclopedia), made under node for the checks from its
 // content (content.js): its domain's game.js loaded through vite, as the build loads it, with the few browser globals
-// the games touch at import time stubbed. vite and the games' packages are trace-viewer's, wherever node runs from.
+// the games touch at import time stubbed. vite and the games' packages are site's, wherever node runs from.
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { runtimeIds } from './runtime.js'
 
-const ROOT = resolve(import.meta.dirname, '../../../trace-viewer')
+const ROOT = resolve(import.meta.dirname, '../../../site')
 const KIT_DIR = resolve(import.meta.dirname, '..')
 
 const noop = () => {}

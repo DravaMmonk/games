@@ -1,4 +1,4 @@
-// A level embedded in a page of the notes (games/DESIGN.md 12.1, EmbedShell.jsx): the shared layouts read this to
+// A level embedded in a page of the notes (games/design/README.md 12.1, EmbedShell.jsx): the shared layouts read this to
 // lay the level out as a block in the page's flow, with no task column, title, map or dialogs of their own.
 import { createContext, useContext } from 'react'
 

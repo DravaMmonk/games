@@ -1,4 +1,4 @@
-// A part's way through the course (games/DESIGN.md 6.7, decision 23), read off the course and the content, with no
+// A part's way through the course (games/design/README.md 6.7, decision 23), read off the course and the content, with no
 // data of its own: where the course first gives it (a primitive from the start; a level bringing it in), where a level
 // or one of its tasks gives it there only or withholds it, where a part superseding it arrives, and each step of its
 // upgrade chains (the task whose work runs inside it). Each event says where in the level's content it is written, so

@@ -1,0 +1,85 @@
+{
+  "type": "obj",
+  "fields": {
+    "taps": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "id": {
+            "type": "str"
+          },
+          "label": {
+            "type": "text"
+          },
+          "kind": {
+            "type": "oneOf",
+            "values": [
+              "bool"
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "parts": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "id": {
+            "type": "str"
+          },
+          "name": {
+            "type": "text"
+          },
+          "tag": {
+            "type": "text",
+            "optional": true
+          },
+          "row": {
+            "type": "int",
+            "min": 0,
+            "optional": true
+          }
+        }
+      }
+    },
+    "outs": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "id": {
+            "type": "str"
+          },
+          "label": {
+            "type": "text"
+          }
+        }
+      }
+    },
+    "wires": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "from": {
+            "type": "str"
+          },
+          "to": {
+            "type": "str"
+          },
+          "kind": {
+            "type": "oneOf",
+            "values": [
+              "bool",
+              "off"
+            ],
+            "optional": true
+          }
+        }
+      }
+    }
+  }
+}

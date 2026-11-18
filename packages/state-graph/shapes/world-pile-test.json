@@ -1,0 +1,9 @@
+{
+  "type": "obj",
+  "fields": {
+    "n": {
+      "type": "int",
+      "min": 0
+    }
+  }
+}

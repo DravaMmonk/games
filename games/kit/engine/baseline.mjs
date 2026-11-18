@@ -40,7 +40,7 @@ try {
     for (const registry of Object.values(runtime.vocabulary.kinds)) for (const name of Object.keys(registry)) names.add(name)
     for (const level of content.levels) for (const task of level.tasks) names.add(task.id)
     const checked = spawnSync(process.execPath, [fileURLToPath(new URL('./check.js', import.meta.url)), ...(packaged ? ['--package'] : ['--game']), id, '--fresh'], {
-      cwd: resolve(import.meta.dirname, '../../../trace-viewer'), env: { ...process.env, GAMES_ROOT: root, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
+      cwd: resolve(import.meta.dirname, '../../../site'), env: { ...process.env, GAMES_ROOT: root, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
     })
     if (checked.error || checked.signal || checked.status === null) throw checked.error ?? new Error(`check interrupted: ${id}`)
     const records = []

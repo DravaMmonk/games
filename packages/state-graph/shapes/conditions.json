@@ -1,0 +1,7 @@
+{
+  "type": "list",
+  "of": {
+    "type": "shape",
+    "name": "state-graph/condition-not"
+  }
+}

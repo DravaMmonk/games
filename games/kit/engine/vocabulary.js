@@ -2,7 +2,7 @@ import { meaningsOf, derivedFields } from './kind-meanings.js'
 import { contentExistenceProblems } from './existence.js'
 import { shapeAt } from './schema.js'
 import { kindSchemas } from './plugin-kinds.js'
-// A domain's vocabulary: everything content may name (games/DESIGN.md 6.2). Content is data made of the vocabulary's
+// A domain's vocabulary: everything content may name (games/design/README.md 6.2). Content is data made of the vocabulary's
 // items and their parameters, and nothing else; whatever it needs that the vocabulary lacks is a new item, written in
 // the domain (code, under review), never worked around in the content.
 //

@@ -11,7 +11,7 @@ on:
       # Design notes and specs are not on the site; the kit's own Markdown is read by its code.
       - '!games/**/*.md'
       - 'games/kit/**/*.md'
-      - 'trace-viewer/**'
+      - 'site/**'
       - '.github/workflows/deploy-games.yml'
   workflow_dispatch:
 
@@ -27,21 +27,21 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: trace-viewer
+        working-directory: site
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: trace-viewer/package-lock.json
+          cache-dependency-path: site/package-lock.json
       - run: npm ci
       - run: npm run build:games
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: trace-viewer/dist-games
+          publish_dir: site/dist-games
           commit_message: 'deploy: games'
           # Keep gh-pages as one commit: the site is rebuilt from main each time, so its old deploys are not kept.
           force_orphan: true

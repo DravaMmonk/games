@@ -1,4 +1,4 @@
-// The logic domain's vocabulary (games/DESIGN.md 6.2): every thing a logic game's content may name, each with what it
+// The logic domain's vocabulary (games/design/README.md 6.2): every thing a logic game's content may name, each with what it
 // is and the schema of its parameters, and the schemas of game.json and of one level. Content is these items and
 // their parameters, and nothing else: whatever a level needs that is not here is a new item, written in this domain.
 //

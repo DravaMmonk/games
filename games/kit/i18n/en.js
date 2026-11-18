@@ -1,4 +1,4 @@
-// The English of the words the kit's own code says, by the base text (npm run words keeps it; games/DESIGN.md 6.10).
+// The English of the words the kit's own code says, by the base text (npm run words keeps it; games/design/README.md 6.10).
 export default {
   "": "",
   " 个": "",
@@ -1200,7 +1200,7 @@ export default {
   "笔 1": "Pen 1",
   "笔 1 和笔 2 各生成一半样本；竖线标出它们当前的位置。": "Pen 1 and pen 2 each generate half the samples; the vertical lines mark their current positions.",
   "笔 2": "Pen 2",
-  "笔记插图的名字（trace-viewer/src/figures 登记的 id，检查时核对）": "the id of one of the notes’ figures (as trace-viewer/src/figures registers it, checked)",
+  "笔记插图的名字（site/src/figures 登记的 id，检查时核对）": "the id of one of the notes’ figures (as site/src/figures registers it, checked)",
   "笔记版：一关对应一个笔记词条，所有关打开，不跑课程审计（手册第 12 节）": "the notes edition: a level per notes entry, every level open, no course audit (handbook section 12)",
   "第": "line ",
   "第 n 条来路（a、b、c、d）：一个传感器，或板上一个只属于这一关的输入": "way in n (a, b, c, d): a sensor, or an input of the board of its own",

@@ -1,0 +1,14 @@
+{
+  "type": "obj",
+  "fields": {
+    "label": {
+      "type": "text"
+    },
+    "short": {
+      "type": "text"
+    },
+    "sensor": {
+      "type": "str"
+    }
+  }
+}

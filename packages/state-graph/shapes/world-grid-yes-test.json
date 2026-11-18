@@ -1,0 +1,24 @@
+{
+  "type": "obj",
+  "fields": {
+    "R": {
+      "type": "int",
+      "min": 1
+    },
+    "C": {
+      "type": "int",
+      "min": 1
+    },
+    "rocks": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "optional": true
+    }
+  }
+}

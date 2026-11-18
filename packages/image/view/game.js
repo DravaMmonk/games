@@ -3,7 +3,7 @@ import WorkshopPlay from './WorkshopPlay.jsx'
 import { circuitScreen } from 'circuit/view'
 import { partDefinition } from 'circuit'
 import { displays as ui } from './ui/displays.js'
-// An image game on the shared shell (../../shell), from its content (games/DESIGN.md 6.3): the course (course.js)
+// An image game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the image domain's play resources, its
 // parts box and its intro figures.
 import { FlaskConical, Workflow } from 'lucide-react'

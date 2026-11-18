@@ -9,10 +9,7 @@ import { withHidden } from 'kernel'
 import { startBoard } from './engine/board.js'
 import { introProblems } from './intros.js'
 
-// The figures an intro may show: every folder of the notes' figures with a figure.js, under the id its registry
-// gives it.
-// Figure names admitted by the shared note-figure adapter.
-const FIGURES = ["attention-switchboard", "channel-stack", "contrastive-board", "conv-press", "epipolar-rig", "gan-bench", "harris-probe", "hough-accumulator", "lambert-studio", "normal-studio", "pool-sorter", "ransac-pegboard", "residual-manifold", "stereo-rangefinder", "surface-bump", "vae-sampler"]
+const FIGURES = ['conv-press', 'ransac-pegboard', 'surface-bump']
 
 /** spec: { levels, intros, kit, course, packageTarget?, publishedBy } (kit: the course's, engine/kit.js; publishedBy(key) the built
  *  parts a task runs inside). Returns [{ text, fail?, level? }]: a line

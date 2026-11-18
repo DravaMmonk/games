@@ -18,58 +18,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                },
-                "given": {
-                  "type": "map",
-                  "of": {
-                    "type": "num"
-                  },
-                  "keys": "^\\d+,\\d+$",
-                  "optional": true
-                },
-                "rocks": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  },
-                  "optional": true
-                },
-                "costs": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "num"
-                    }
-                  },
-                  "view": "grid",
-                  "optional": true
-                },
-                "coins": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "num"
-                    }
-                  },
-                  "view": "grid",
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-grid-test"
             },
             "min": 1,
             "section": "tests"
@@ -111,28 +61,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                },
-                "rocks": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  },
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-grid-yes-test"
             },
             "min": 1,
             "section": "tests"
@@ -151,17 +81,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-piles-test"
             },
             "min": 1,
             "section": "tests"
@@ -180,17 +101,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "k": {
-                  "type": "int",
-                  "min": 0
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-tri-test"
             },
             "min": 1,
             "section": "tests"
@@ -209,27 +121,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                },
-                "trees": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-lawn-test"
             },
             "min": 1,
             "section": "tests"
@@ -248,21 +141,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "n": {
-                  "type": "int",
-                  "min": 0
-                },
-                "broken": {
-                  "type": "list",
-                  "of": {
-                    "type": "int",
-                    "min": 0
-                  },
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-strip-test"
             },
             "min": 1,
             "section": "tests"
@@ -281,13 +161,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "n": {
-                  "type": "int",
-                  "min": 0
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-pile-test"
             },
             "min": 1,
             "section": "tests"
@@ -306,20 +181,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "n": {
-                  "type": "int",
-                  "min": 0
-                },
-                "coins": {
-                  "type": "list",
-                  "of": {
-                    "type": "int",
-                    "min": 1
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-coins-test"
             },
             "min": 1,
             "section": "tests"
@@ -338,33 +201,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "s": {
-                  "type": "str"
-                },
-                "dict": {
-                  "type": "either",
-                  "of": [
-                    {
-                      "type": "list",
-                      "of": {
-                        "type": "str"
-                      }
-                    },
-                    {
-                      "type": "map",
-                      "of": {
-                        "type": "num"
-                      }
-                    }
-                  ]
-                },
-                "letter": {
-                  "type": "num",
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-parts-test"
             },
             "min": 1,
             "section": "tests"
@@ -383,15 +221,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "a": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-rob1-test"
             },
             "min": 1,
             "section": "tests"
@@ -410,15 +241,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "a": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-rob1-test"
             },
             "min": 1,
             "section": "tests"
@@ -437,15 +261,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "a": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-rob1-test"
             },
             "min": 1,
             "section": "tests"
@@ -464,15 +281,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "a": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-rob1-test"
             },
             "min": 1,
             "section": "tests"
@@ -491,15 +301,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "a": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-rob1-test"
             },
             "min": 1,
             "section": "tests"
@@ -526,15 +329,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "a": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-rob1-test"
             },
             "min": 1,
             "section": "tests"
@@ -553,71 +349,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                },
-                "key": {
-                  "type": "list",
-                  "of": {
-                    "type": "int"
-                  },
-                  "min": 2,
-                  "optional": true
-                },
-                "keys": {
-                  "type": "map",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  },
-                  "optional": true
-                },
-                "doors": {
-                  "type": "list",
-                  "of": {
-                    "type": "either",
-                    "of": [
-                      {
-                        "type": "list",
-                        "of": {
-                          "type": "int"
-                        },
-                        "min": 2
-                      },
-                      {
-                        "type": "obj",
-                        "fields": {
-                          "at": {
-                            "type": "list",
-                            "of": {
-                              "type": "int"
-                            },
-                            "min": 2
-                          },
-                          "color": {
-                            "type": "oneOf",
-                            "values": [
-                              "red",
-                              "blue",
-                              "green"
-                            ]
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-keys-test"
             },
             "min": 1,
             "section": "tests"
@@ -648,34 +381,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "k": {
-                  "type": "list",
-                  "of": {
-                    "type": "either",
-                    "of": [
-                      {
-                        "type": "int",
-                        "min": 0
-                      },
-                      {
-                        "type": "oneOf",
-                        "values": [
-                          null
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "p": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  },
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-river-test"
             },
             "min": 1,
             "section": "tests"
@@ -694,19 +401,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "p": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  }
-                },
-                "cool": {
-                  "type": "bool",
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-stock-test"
             },
             "min": 1,
             "section": "tests"
@@ -725,15 +421,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "top": {
-                  "type": "str"
-                },
-                "left": {
-                  "type": "str"
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-align-test"
             },
             "min": 1,
             "section": "tests"
@@ -756,15 +445,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "top": {
-                  "type": "str"
-                },
-                "left": {
-                  "type": "str"
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-align-test"
             },
             "min": 1,
             "section": "tests"
@@ -876,27 +558,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "s": {
-                  "type": "str",
-                  "optional": true
-                },
-                "w": {
-                  "type": "list",
-                  "of": {
-                    "type": "num"
-                  },
-                  "optional": true
-                },
-                "words": {
-                  "type": "list",
-                  "of": {
-                    "type": "text"
-                  },
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-interval-test"
             },
             "min": 1,
             "section": "tests"
@@ -934,76 +597,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                },
-                "gold": {
-                  "type": "list",
-                  "of": {
-                    "type": "int"
-                  },
-                  "min": 2
-                },
-                "traps": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  },
-                  "optional": true
-                },
-                "walls": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  },
-                  "optional": true
-                },
-                "cliffs": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "int"
-                    },
-                    "min": 2
-                  },
-                  "optional": true
-                },
-                "ice": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "num"
-                    },
-                    "min": 3
-                  },
-                  "optional": true
-                },
-                "rd": {
-                  "type": "bool",
-                  "optional": true
-                },
-                "slip": {
-                  "type": "num",
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-vgrid-test"
             },
             "min": 1,
             "section": "tests"
@@ -1030,43 +625,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "words": {
-                  "type": "list",
-                  "of": {
-                    "type": "text"
-                  }
-                },
-                "emit": {
-                  "type": "list",
-                  "of": {
-                    "type": "map",
-                    "of": {
-                      "type": "num"
-                    }
-                  }
-                },
-                "start": {
-                  "type": "map",
-                  "of": {
-                    "type": "num"
-                  }
-                },
-                "trans": {
-                  "type": "map",
-                  "of": {
-                    "type": "map",
-                    "of": {
-                      "type": "num"
-                    }
-                  }
-                },
-                "note": {
-                  "type": "text",
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-tags-test"
             },
             "min": 1,
             "section": "tests"
@@ -1089,39 +649,8 @@
           "tests": {
             "type": "list",
             "of": {
-              "type": "obj",
-              "fields": {
-                "R": {
-                  "type": "int",
-                  "min": 1
-                },
-                "C": {
-                  "type": "int",
-                  "min": 1
-                },
-                "img": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "num"
-                    }
-                  },
-                  "view": "grid",
-                  "optional": true
-                },
-                "energy": {
-                  "type": "list",
-                  "of": {
-                    "type": "list",
-                    "of": {
-                      "type": "num"
-                    }
-                  },
-                  "view": "grid",
-                  "optional": true
-                }
-              }
+              "type": "shape",
+              "name": "state-graph/world-pic-test"
             },
             "min": 1,
             "section": "tests"
@@ -1213,8 +742,8 @@
           "type": "obj",
           "fields": {
             "when": {
-              "type": "call",
-              "kind": "condition"
+              "type": "shape",
+              "name": "state-graph/condition-not"
             },
             "say": {
               "type": "text"

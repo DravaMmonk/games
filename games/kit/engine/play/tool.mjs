@@ -1,6 +1,6 @@
 /* global process */
-// The play interface as a small stdio JSON tool (games/DESIGN.md 6.6), for an agent or an MCP server to wrap: one
-// request a line on stdin, one response a line on stdout. Run from trace-viewer: node ../games/kit/engine/play/tool.mjs.
+// The play interface as a small stdio JSON tool (games/design/README.md 6.6), for an agent or an MCP server to wrap: one
+// request a line on stdin, one response a line on stdout. Run from site: node ../games/kit/engine/play/tool.mjs.
 //
 //   { "id": 1, "tool": "play_view",    "args": { "game": "qed", "session": "s1", "level"?: "g-and" } }
 //   { "id": 2, "tool": "play_attempt", "args": { "game": "qed", "session": "s1", "text": "n = gNot(Wind)\na = gAnd(Rain, n)\nout <- a" } }

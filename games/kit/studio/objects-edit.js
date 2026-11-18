@@ -1,4 +1,4 @@
-// Names and lists for the studio's object editors (games/DESIGN.md 6.1, 6.7): the registries hold full names
+// Names and lists for the studio's object editors (games/design/README.md 6.1, 6.7): the registries hold full names
 // (`<namespace>/<name>`), the operations write a layer's own objects by their short names.
 import { collectionProvider } from './editors.js'
 import { orderedMembers, referenceResolver } from '../engine/objects.js'

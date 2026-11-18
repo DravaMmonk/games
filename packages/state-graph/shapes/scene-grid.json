@@ -1,0 +1,123 @@
+{
+  "type": "obj",
+  "fields": {
+    "w": {
+      "type": "num",
+      "min": 1
+    },
+    "h": {
+      "type": "num",
+      "min": 1
+    },
+    "x": {
+      "type": "num",
+      "optional": true
+    },
+    "y": {
+      "type": "num",
+      "optional": true
+    },
+    "dx": {
+      "type": "num",
+      "min": 1,
+      "optional": true
+    },
+    "dy": {
+      "type": "num",
+      "min": 1,
+      "optional": true
+    },
+    "palette": {
+      "type": "map",
+      "keys": "^[A-Za-z0-9]$",
+      "of": {
+        "type": "shape",
+        "name": "state-graph/scene-style"
+      },
+      "optional": true
+    },
+    "rows": {
+      "type": "list",
+      "min": 1,
+      "of": {
+        "type": "either",
+        "of": [
+          {
+            "type": "str",
+            "pattern": "^[ A-Za-z0-9]+$"
+          },
+          {
+            "type": "list",
+            "min": 1,
+            "of": {
+              "type": "either",
+              "of": [
+                {
+                  "type": "str",
+                  "pattern": "^[ A-Za-z0-9]$"
+                },
+                {
+                  "type": "obj",
+                  "fields": {
+                    "id": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "rx": {
+                      "type": "num",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "text",
+                      "optional": true
+                    },
+                    "value": {
+                      "type": "either",
+                      "of": [
+                        {
+                          "type": "num"
+                        },
+                        {
+                          "type": "text"
+                        }
+                      ],
+                      "optional": true
+                    },
+                    "corner": {
+                      "type": "either",
+                      "of": [
+                        {
+                          "type": "num"
+                        },
+                        {
+                          "type": "text"
+                        }
+                      ],
+                      "optional": true
+                    },
+                    "sub": {
+                      "type": "text",
+                      "optional": true
+                    },
+                    "cls": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "fill": {
+                      "type": "str",
+                      "optional": true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "about": {
+        "zh": "空格表示空位；字符引用调色表；默认格子 id 为从零开始的「行,列」",
+        "en": "Spaces leave holes; characters use the palette. Cell IDs default to zero-based “row,column”."
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// The board of a circuit task (games/DESIGN.md 6.3): the cards the task gives it, where they stand, how a saved board
+// The board of a circuit task (games/design/README.md 6.3): the cards the task gives it, where they stand, how a saved board
 // still fits the task, and the board as blueprint text. A domain says which cards its tasks give:
 //
 //   circuitBoard({ cards, ticks, right, gap, text }) → { ticks, FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf,

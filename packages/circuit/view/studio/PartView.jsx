@@ -5,7 +5,7 @@ import { Monitor, PanelRight, Plus, Smartphone } from 'lucide-react'
 import { picker } from '../parts/PartSheet.jsx'
 import { SCENES, editorFor } from '../parts/previews.js'
 
-// A part on the studio's part page (games/DESIGN.md 6.7): the scenes its editor draws (../shell/parts/previews.js),
+// A part on the studio's part page (games/design/README.md 6.7): the scenes its editor draws (../shell/parts/previews.js),
 // several side by side over its sheet, a single detail beside it; each scene a pane with its drawing face
 // (views.<scene>), picked by a click and added to with its +. Every field drawn carries its path in the part
 // (data-pf); in edit mode a click picks it. The scenes share what the player moves on them (`state`), afresh for each

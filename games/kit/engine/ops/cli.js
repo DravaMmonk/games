@@ -62,7 +62,7 @@ if (what === 'adopt') {
   console.log(`#${adopt(ws, option('--why'))}: the files of ${game} taken as they are`)
   process.exit(0)
 }
-// A changeset file is read from where the command was started (npm sets INIT_CWD there), not from trace-viewer.
+// A changeset file is read from where the command was started (npm sets INIT_CWD there), not from site.
 const changeset = option('--file') ? JSON.parse(readFileSync(resolve(process.env.INIT_CWD ?? '.', option('--file')), 'utf8')) : what && what !== 'undo' ? { ops: [{ op: what, ...Object.fromEntries(rest.map((kv) => [kv.slice(0, kv.indexOf('=')), value(kv.slice(kv.indexOf('=') + 1))])) }] } : null
 if (!changeset && what !== 'undo') {
   console.error(`usage: ${USAGE}`)

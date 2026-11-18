@@ -8,7 +8,7 @@ import { resolve } from 'node:path'
 import { publicSurfaces } from './existence.js'
 import { fileHashes, contentHash, hash, stableJSON, kitDirectory } from './release-data.js'
 
-const require = createRequire(resolve(kitDirectory, '../../trace-viewer/package.json'))
+const require = createRequire(resolve(kitDirectory, '../../site/package.json'))
 export function exportedNames(file, seen = new Set()) {
   if (!file || seen.has(file)) return []
   seen.add(file)

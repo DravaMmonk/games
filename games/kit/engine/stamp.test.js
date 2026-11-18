@@ -1,4 +1,4 @@
-// node --test (npm test, from trace-viewer) — task stamps (stamp.js), on a schema and content written here.
+// node --test (npm test, from site) — task stamps (stamp.js), on a schema and content written here.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { contentMeanings, solutionStamp as boardStamp } from '../../../packages/circuit/core/index.js'

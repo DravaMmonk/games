@@ -1,6 +1,6 @@
 import { defineParts } from 'circuit'
 import { qualifyItems } from 'kernel';
-// The parts of a table board (games/DESIGN.md 3): the primitives every course starts from, the input cards the level
+// The parts of a table board (games/design/README.md 3): the primitives every course starts from, the input cards the level
 // gives, and the parts the player builds (registered by course.js, each running the board it was built from).
 //
 // Signals are numbers, null (「—」: no route), booleans (「是 / 否」), kinds ({ cat, label }) or whole segments: lists of

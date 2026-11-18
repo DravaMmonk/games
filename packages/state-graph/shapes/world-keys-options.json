@@ -1,0 +1,17 @@
+{
+  "type": "obj",
+  "fields": {
+    "remember": {
+      "type": "list",
+      "of": {
+        "type": "oneOf",
+        "values": [
+          "red",
+          "blue",
+          "green"
+        ]
+      },
+      "optional": true
+    }
+  }
+}

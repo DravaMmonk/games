@@ -1,4 +1,4 @@
-// The copy workspace (games/DESIGN.md 6.7): the writer's. It opens a package or a game and audits and edits every
+// The copy workspace (games/design/README.md 6.7): the writer's. It opens a package or a game and audits and edits every
 // text of that layer in every language — terms, references, and a game's own wording over its packages' texts. On the
 // left the texts by object (the whole layer, a level group or a chapter, the encyclopedia, the parts) or by file, and
 // for a package search and replace last; in the middle the copy table (CopyTable.jsx) of what is picked, with its

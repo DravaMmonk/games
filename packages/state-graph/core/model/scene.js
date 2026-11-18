@@ -7,6 +7,23 @@ export const W = {
   capacity: T('容量', 'capacity'),
 };
 
+/** Expand a regular grid in drawing order, after any freely positioned cells. */
+export function expandScene(scene) {
+  const { grid, cells: positioned = [], ...annotations } = scene
+  if (!grid) return scene
+  const { w, h, x = 0, y = 0, dx = w, dy = h, rows, palette = {} } = grid
+  const cells = [...positioned]
+  for (const [r, row] of rows.entries()) {
+    for (const [c, entry] of [...row].entries()) {
+      if (entry === ' ') continue
+      const cell = typeof entry === 'string' ? palette[entry] : entry
+      if (!cell) throw new Error(`unknown scene grid marker ${JSON.stringify(entry)} at row ${r + 1}, column ${c + 1}`)
+      cells.push({ id: `${r},${c}`, x: x + c * dx, y: y + r * dy, w, h, ...cell })
+    }
+  }
+  return { cells, ...annotations }
+}
+
 /** A robot model standing in the middle of its field of view. */
 export function visionFig(model) {
   const r = ROBOTS[model], n = 2 * r.vision + 1, sp = n === 3 ? 62 : 48, sz = sp - 8, cells = [];

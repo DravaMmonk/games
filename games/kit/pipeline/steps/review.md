@@ -1,7 +1,7 @@
 # Step 5 · Review
 
 Review the course as a learner using the supplied blueprint, game data, levels, glossary and relevant domain
-implementation. This step reports findings; it does not change content. Read `games/DESIGN.md` §§1–4 and 8, and
+implementation. This step reports findings; it does not change content. Read `games/design/README.md` §§1–4 and 8, and
 use `.agents/skills/turing-complete-games/references/learning-review.md` when useful. `./deps`, `./check`, `./lint`,
 `./pedagogy` and `./terminology --json` provide evidence but do not establish pedagogical quality on their own.
 

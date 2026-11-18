@@ -1,5 +1,5 @@
 import { qualifyItems } from 'kernel';
-// The answers traced back through a table, drawn on the test board once a test passes (vocabulary.js trace): the
+// The answers traced back through a table, drawn on the test board once a test passes (capabilities.json trace): the
 // cells walked back through (`path`) and, for a pair of strings, the letters matched on each (`okTop`, `okLeft`).
 
 import { callOf } from 'kernel';

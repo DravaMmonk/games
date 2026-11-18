@@ -1,5 +1,5 @@
 // Manual benchmark: three fresh processes per target, two consecutive calls per process.
-// From trace-viewer: node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/bench/preview.mjs
+// From site: node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/bench/preview.mjs
 // Pass --tools for vocabulary/names/games/packages, or --sample <tool> <kind> <id> for CPU profiling.
 import { spawnSync } from 'node:child_process'
 import { performance } from 'node:perf_hooks'

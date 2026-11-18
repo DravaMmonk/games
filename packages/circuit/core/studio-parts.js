@@ -1,4 +1,4 @@
-// The parts of a game as the studio's parts list groups them (games/DESIGN.md 6.7): one group a tray of game.json
+// The parts of a game as the studio's parts list groups them (games/design/README.md 6.7): one group a tray of game.json
 // (`trays`, in its order; a part in several goes in the first), then one of the parts no tray holds; in a group, the
 // order the course gives them in. A game without trays has one group, in that order. Domain-free: only the content
 // and where the course first gives each part.

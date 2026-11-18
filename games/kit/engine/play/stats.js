@@ -1,4 +1,4 @@
-// The audit panel's blind-play numbers (games/DESIGN.md 5): every session a game has played (./session.js records,
+// The audit panel's blind-play numbers (games/design/README.md 5): every session a game has played (./session.js records,
 // games/<game>/playtests/), summed up level by level, without automatic difficulty judgments.
 //
 // A level's cost in one session is the attempts it took to pass; a level given up (by the player, or at the session's

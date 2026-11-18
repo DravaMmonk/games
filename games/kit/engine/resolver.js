@@ -24,7 +24,7 @@ export function contentRoot(root) {
   if (root) return resolve(root)
   if (process.env.GAMES_ROOT) return resolve(process.env.GAMES_ROOT)
   let dir = process.cwd()
-  if (dir.endsWith('/trace-viewer')) dir = dirname(dir)
+  if (dir.endsWith('/site')) dir = dirname(dir)
   return dir
 }
 export const packageDirectory = (id = '', root) => resolve(contentRoot(root), 'packages', id)

@@ -1,4 +1,4 @@
-// One item of a list in the studio's left column (games/DESIGN.md 6.7), whatever its type: its icon, what it is
+// One item of a list in the studio's left column (games/design/README.md 6.7), whatever its type: its icon, what it is
 // called, anything to say about it, and its id at the right end. Rows that do more (the levels tree: dragging, picking
 // several) draw the same parts themselves, in the same classes.
 import { tr } from '../shell/i18n.js'

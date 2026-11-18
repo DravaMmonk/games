@@ -1,5 +1,5 @@
 import { qualifyItems } from 'kernel';
-// Why a failed test went wrong beyond its numbers (vocabulary.js explain): a sentence added to the failure's message,
+// Why a failed test went wrong beyond its numbers (capabilities.json explain): a sentence added to the failure's message,
 // in the current language.
 
 import { callOf } from 'kernel';

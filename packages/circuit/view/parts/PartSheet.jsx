@@ -4,7 +4,7 @@ import { L, tr } from 'kernel/view'
 import { iconOf } from "./icons.js"
 import { settingsOf } from "../../core/parts.js"
 
-// A part's own fields as the studio's part page draws them (games/DESIGN.md 6.7): each carries its path in the part
+// A part's own fields as the studio's part page draws them (games/design/README.md 6.7): each carries its path in the part
 // (data-pf); in edit mode a click picks it (picker, on the page around them), and a + adds an item to a list.
 // PartSheet shows the part's independent implementations and settings.
 //

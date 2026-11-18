@@ -1,4 +1,4 @@
-// Pure edits of a relation's edges for the relation board (games/DESIGN.md 6.1). A relation is written either as
+// Pure edits of a relation's edges for the relation board (games/design/README.md 6.1). A relation is written either as
 // `edges` or, for order, as a `sequence`; the board always writes `edges`.
 import { relationType } from './editors.js'
 import { linkKey } from './arrangement.js'

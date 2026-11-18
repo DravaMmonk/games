@@ -1,0 +1,82 @@
+{
+  "type": "obj",
+  "fields": {
+    "R": {
+      "type": "int",
+      "min": 1
+    },
+    "C": {
+      "type": "int",
+      "min": 1
+    },
+    "arrows": {
+      "type": "bool",
+      "optional": true
+    },
+    "moves": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "optional": true
+    },
+    "cells": {
+      "type": "map",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "value": {
+            "type": "either",
+            "of": [
+              {
+                "type": "num"
+              },
+              {
+                "type": "text"
+              }
+            ],
+            "optional": true
+          },
+          "corner": {
+            "type": "either",
+            "of": [
+              {
+                "type": "num"
+              },
+              {
+                "type": "text"
+              }
+            ],
+            "optional": true
+          },
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "cls": {
+            "type": "str",
+            "optional": true
+          }
+        }
+      },
+      "keys": "^\\d+,\\d+$",
+      "optional": true
+    },
+    "edges": {
+      "type": "map",
+      "of": {
+        "type": "str"
+      },
+      "keys": "^\\d+,\\d+>\\d+,\\d+$",
+      "optional": true
+    },
+    "robot": {
+      "type": "str",
+      "optional": true
+    }
+  }
+}

@@ -10,7 +10,7 @@ import { builtPart, partCreationOptions, primitiveParts } from '../../core/index
 import { partReference } from '../../core/index.js'
 
 /**
- * The package's parts (games/DESIGN.md 6.7), in the order the course first gives them, grouped by their tags, the
+ * The package's parts (games/design/README.md 6.7), in the order the course first gives them, grouped by their tags, the
  * trays or the relations that gather them (GroupedList.jsx); a new part from the kernel's creation options.
  */
 export default function PartsList({ content, vocabulary, namespace, game, levelOptions, order = [], earned = new Map(), at, found, by, onBy, heading, onHeading, newOptions, onNew, onSelect, onOps }) {

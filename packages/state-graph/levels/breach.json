@@ -34,61 +34,16 @@
       "t": "@level.breach.intro.2.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "a",
-              "x": 0,
-              "y": 0,
-              "w": 56,
-              "h": 56,
-              "value": "A B",
-              "cls": "rab"
-            },
-            {
-              "id": "b",
-              "x": 66,
-              "y": 0,
-              "w": 56,
-              "h": 56,
-              "value": "B",
-              "cls": "rb"
-            },
-            {
-              "id": "c",
-              "x": 132,
-              "y": 0,
-              "w": 56,
-              "h": 56
-            },
-            {
-              "id": "d",
-              "x": 0,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "label": "@level.breach.intro.2.fig.scene.cells.d.label",
-              "value": "A",
-              "cls": "key ra"
-            },
-            {
-              "id": "e",
-              "x": 66,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "value": "?",
-              "cls": "sel"
-            },
-            {
-              "id": "f",
-              "x": 132,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "label": "@level.breach.intro.2.fig.scene.cells.f.label",
-              "cls": "door"
-            }
-          ],
+          "grid": {
+            "w": 56,
+            "h": 56,
+            "dx": 66,
+            "dy": 66,
+            "rows": [
+              [{"id": "a", "value": "A B", "cls": "rab"}, {"id": "b", "value": "B", "cls": "rb"}, {"id": "c"}],
+              [{"id": "d", "label": "@level.breach.intro.2.fig.scene.cells.d.label", "value": "A", "cls": "key ra"}, {"id": "e", "value": "?", "cls": "sel"}, {"id": "f", "label": "@level.breach.intro.2.fig.scene.cells.f.label", "cls": "door"}]
+            ]
+          },
           "edges": [
             {
               "a": "a",

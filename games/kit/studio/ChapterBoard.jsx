@@ -1,4 +1,4 @@
-// The arrange workspace's chapter board (games/DESIGN.md 2, 6.7): one chapter of the course, in three tabs. Levels
+// The arrange workspace's chapter board (games/design/README.md 2, 6.7): one chapter of the course, in three tabs. Levels
 // are imported from the bar (a level or a level tag, with what they need) whatever the tab.
 //
 // Order: its levels — an ordered list, the play order — one numbered column, reordered by dragging or Alt+↑/↓ and

@@ -1,6 +1,6 @@
 import { circuitPlaySchema } from '../core/play-schema.js'
 import { circuitScreen } from './CircuitScreen.jsx'
-// A game on a circuit domain (../engine/circuit-preset.js) on the shared shell, from its content (games/DESIGN.md 6.3):
+// A game on a circuit domain (../engine/circuit-preset.js) on the shared shell, from its content (games/design/README.md 6.3):
 // the course read becomes the shell's game description, every level played by the domain's screen (CircuitScreen.jsx)
 // and the parts box holding the game's primitives and its built parts (`part`: the parts.json entry; each opens on
 // the board it runs). The course read is `game.circuit`.

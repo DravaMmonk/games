@@ -1,6 +1,6 @@
 import { shapeCompiler } from './schema-shapes.js'
 import { tagName } from './tag-identity.js'
-// The shape of content (games/DESIGN.md 6.2). A schema is plain data, { type, … }, so a domain's whole vocabulary
+// The shape of content (games/design/README.md 6.2). A schema is plain data, { type, … }, so a domain's whole vocabulary
 // prints as JSON for whoever writes content (an agent, a studio) without reading any code. validate() reports every
 // place a value does not fit, by its path.
 //
@@ -26,7 +26,7 @@ import { tagName } from './tag-identity.js'
 //                                   what one cannot read is reported here
 //
 // A schema may carry `about` ({ zh, en }): what the field means, for whoever writes it. It may also carry
-// hints for whoever edits the value (the studio picks a control by them, games/DESIGN.md 6.7); they change nothing a
+// hints for whoever edits the value (the studio picks a control by them, games/design/README.md 6.7); they change nothing a
 // value may be, and validate() ignores them:
 //   view: 'grid'    a list of lists of numbers is a matrix; so is a list of numbers, read row by row, `cols` to a row
 //                   (without cols, a square: a 3 × 3 kernel as nine numbers)

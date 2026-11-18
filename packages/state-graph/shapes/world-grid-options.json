@@ -1,0 +1,28 @@
+{
+  "type": "obj",
+  "fields": {
+    "scan": {
+      "type": "oneOf",
+      "values": [
+        "rowTL",
+        "rowBR",
+        "colL",
+        "colR",
+        "colRB"
+      ],
+      "optional": true
+    },
+    "answerAt": {
+      "type": "oneOf",
+      "values": [
+        "start",
+        "end"
+      ],
+      "optional": true
+    },
+    "rounds": {
+      "type": "bool",
+      "optional": true
+    }
+  }
+}

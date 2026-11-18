@@ -1,7 +1,7 @@
 import { S } from 'kernel'
 import { extendVocabulary, fitted, blank } from 'table'
-import { vocabulary } from './vocabulary.js'
-import { levelSchema } from './level-schema.js'
+import vocabulary from './capabilities.json' with { type: 'json' }
+import levelSchema from './level-schema.json' with { type: 'json' }
 import { tableReports } from './baseline.js'
 import { tableWorks } from './work.js'
 import { robotReport } from './model/verdict.js'
@@ -12,6 +12,7 @@ import { WORLDS } from './model/worlds.js'
 import { judgeHand } from './model/hand-verdict.js'
 import { plays } from './plays.js'
 import { play } from './play.js'
+import { expandIntroScenes } from './items/figures.js'
 import runtime from './runtime.js'
 export { tableWorks, prepareTableWorks } from './work.js'
 export { default as runtime } from './runtime.js'
@@ -26,6 +27,9 @@ export function tableContext({ content, task, progress }) {
 }
 const meaning = {
  type: 'level', read: value => value, baselineReports: tableReports,
+ levelPuzzle({ puzzle }) {
+  if (puzzle.intro) return { intro: expandIntroScenes(puzzle.intro) }
+ },
  vocabulary(base) {
   const projected = extendVocabulary(base, vocabulary)
   const fields = { ...base.level?.fields, ...levelSchema.fields }

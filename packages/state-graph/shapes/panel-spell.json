@@ -1,0 +1,11 @@
+{
+  "type": "obj",
+  "fields": {
+    "candidates": {
+      "type": "list",
+      "of": {
+        "type": "str"
+      }
+    }
+  }
+}

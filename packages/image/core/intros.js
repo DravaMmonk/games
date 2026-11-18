@@ -6,7 +6,7 @@
 //                                          one part working on a picture: input → part → output. A part with two
 //                                          inputs takes inputs: ['square', 'disk']. Each is a picture
 //                                          (items/pictures.js), or 'test': the first test input of the figure's task.
-//   { figure: 'conv-press' }               one of the notes' figures (trace-viewer/src/figures)
+//   { figure: 'conv-press' }               one of the notes' figures (site/src/figures)
 // Any figure may add caption: { zh, en }; test and part figures may add view: 'terrain' and so on.
 // `level` is a level as the course reads it (course.js), its tasks read.
 import { isPair } from 'kernel'

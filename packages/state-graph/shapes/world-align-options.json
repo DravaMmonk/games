@@ -1,0 +1,9 @@
+{
+  "type": "obj",
+  "fields": {
+    "border0": {
+      "type": "bool",
+      "optional": true
+    }
+  }
+}

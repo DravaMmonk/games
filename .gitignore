@@ -11,13 +11,11 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-trace-viewer/dist-games/
+site/dist-games/
 downloads/
 eggs/
 .eggs/
 lib/
-!trace-viewer/src/lib/
-!trace-viewer/src/lib/**
 lib64/
 parts/
 !games/kit/modules/image/engine/parts/
@@ -150,9 +148,6 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
-
-# mkdocs documentation
-/site
 
 # mypy
 .mypy_cache/

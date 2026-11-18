@@ -1,5 +1,5 @@
 /* global process */
-// npm run play -- <game> [level] [options] — play a game blind (games/DESIGN.md 6.6), one command a step, the session
+// npm run play -- <game> [level] [options] — play a game blind (games/design/README.md 6.6), one command a step, the session
 // kept in games/<game>/playtests/<session>.json between commands:
 //
 //   (no action)            print the level played now (or `level`, when it is open): what the player sees of it

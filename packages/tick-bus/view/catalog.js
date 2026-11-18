@@ -1,6 +1,6 @@
 // What the tick-bus domain's fixed cards are called and what they do: the line and what the board says on it (a task's
 // inputs and outputs are the base's own cards, its parts a game's parts.json). A description says only what a card does
-// (games/DESIGN.md 4).
+// (games/design/README.md 4).
 import { Activity, Megaphone } from 'lucide-react'
 import { T } from 'kernel/view'
 import { LINE } from '../core/line.js'

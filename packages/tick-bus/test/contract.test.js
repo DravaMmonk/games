@@ -50,7 +50,7 @@ test('tick-bus core and view compose with circuit through public entries', async
     kernel.pair([task], true)
     assert.equal(kernel.tables.playView.get('tick-bus/board').component, view.BusBoard)
     const game = view.default(content)
-    const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
+    const require = createRequire(new URL('../../../site/package.json', import.meta.url))
     const { renderToString } = require('react-dom/server')
     const { createElement } = require('react')
     const context = { content, task }

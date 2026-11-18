@@ -1,0 +1,9 @@
+{
+  "type": "obj",
+  "fields": {
+    "prob": {
+      "type": "bool",
+      "optional": true
+    }
+  }
+}

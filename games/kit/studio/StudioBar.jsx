@@ -1,4 +1,4 @@
-// The bar the studio's workspaces share (Studio.jsx; games/DESIGN.md 6.7): the workspace switch, what the workspace
+// The bar the studio's workspaces share (Studio.jsx; games/design/README.md 6.7): the workspace switch, what the workspace
 // opens (a package, a game: its children), undo and redo of the pending changeset, the command palette, the busy
 // light, language and theme. No tabs: what is shown follows what is picked, and the helpers fold under the middle
 // (Drawer.jsx). Undo takes the last pending operation back, redo puts it again: ⌘/Ctrl-Z, ⇧⌘/Ctrl-Z or Ctrl-Y,

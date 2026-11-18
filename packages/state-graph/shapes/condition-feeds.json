@@ -1,0 +1,15 @@
+{
+  "type": "obj",
+  "fields": {
+    "from": {
+      "type": "ref",
+      "kind": "part",
+      "reference": "circuit/part"
+    },
+    "to": {
+      "type": "ref",
+      "kind": "part",
+      "reference": "circuit/part"
+    }
+  }
+}

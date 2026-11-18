@@ -1,4 +1,4 @@
-// A build list grouped (games/DESIGN.md 6.7): its objects under every group that names them (list-groups.js), each
+// A build list grouped (games/design/README.md 6.7): its objects under every group that names them (list-groups.js), each
 // group folding, its heading row opening the group's own object (a tag, a tray, a relation, a section) in the middle;
 // what no group names under the last heading. The tools above, in one row (SidebarListTools.jsx): a new object of the
 // list or a new group, a search, the grouping, and every group folded or unfolded.

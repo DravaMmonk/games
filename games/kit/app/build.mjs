@@ -7,7 +7,7 @@ import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
 import { contentTargets, gameDirectory } from '../engine/resolver.js'
 
-const cwd = resolve(import.meta.dirname, '../../../trace-viewer')
+const cwd = resolve(import.meta.dirname, '../../../site')
 const run = promisify(execFile)
 
 // One vite build; its output is printed whole when it ends, so parallel builds never interleave.

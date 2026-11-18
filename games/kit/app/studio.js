@@ -1,7 +1,7 @@
 import { packageEntries } from '../engine/plugin-node.js'
 import { packageApp } from './package-vite.js'
 import { packageIds } from '../engine/resolver.js'
-// The studio's server side (games/DESIGN.md 6.7), a Vite plugin for the dev server (npm run studio): the tools the
+// The studio's server side (games/design/README.md 6.7), a Vite plugin for the dev server (npm run studio): the tools the
 // MCP server offers (../engine/ops/tools.js) as HTTP endpoints, and the module that gives the studio's page every
 // domain's game.js. Like the MCP server it has no logic of its own: every change is a changeset run by the operation
 // set, every check npm run check's.

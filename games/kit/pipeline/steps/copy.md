@@ -2,7 +2,7 @@
 
 Refine the player-facing text and glossary through the operation set, in the language the game is written in (its
 translations are another step's work: `translate`). This step changes copy,
-not tests, boards or course structure. Read `games/DESIGN.md` §§1 and 4, the blueprint, levels, glossary, game data
+not tests, boards or course structure. Read `games/design/README.md` §§1 and 4, the blueprint, levels, glossary, game data
 and relevant part descriptions.
 
 Write naturally and accurately for the intended learner. Provide the context, assumptions, terms, goals and support

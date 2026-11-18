@@ -4,7 +4,7 @@
 // levels picked in the tree, as a bulk edit (Bulk.jsx); an era (its place in game.json, and the copy table of its
 // levels: every text in play order, to read a chapter's copy through and fix it in place); or the rest of game.json.
 // The level's own actions are operations: level.add (a copy after it), level.remove, and moving it in the tree; its
-// id never changes (games/DESIGN.md 6.1). A row says how many findings of the check are on its field and whether the pending changes touched it. A
+// id never changes (games/design/README.md 6.1). A row says how many findings of the check are on its field and whether the pending changes touched it. A
 // part of parts/<name>.json  is a file of its own here: its fields as rows, and its own actions —
 // part.add (a copy after it), part.remove.
 import { useMemo } from 'react'
@@ -150,7 +150,7 @@ function EraEditor({ content, vocabulary, order, names, levelOptions, e, field, 
   )
 }
 
-// The configuration a workspace edits (games/DESIGN.md 6.7): the package's (package.json, its trays), or the game's
+// The configuration a workspace edits (games/design/README.md 6.7): the package's (package.json, its trays), or the game's
 // (game.json, its course's settings; the chapters have their own board).
 
 function GameEditor({ side, content, base, vocabulary, order, names, levelOptions, field, onEdit, onPick }) {

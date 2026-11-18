@@ -1,11 +1,11 @@
 /* global process */
 // A game's change log (<game>/changes.jsonl, append only) and the lock its writers share. Each entry says what its
-// change did to every file it touched — the file's hash before and after (null: not there) — so the log and the files
+// change did to every file it changed — the resulting hash (null: removed) — so the log and the files
 // can be checked against each other: an undo goes back only from the state its entry left, and a file changed outside
 // the operation set (by hand, by git) shows as drift until an `adopt` entry takes the files as they are.
 //
-//   { seq, at, why?, by?, ops, step, files: [{ file, before, after }], inverse, undoes? }   a change
-//   { seq, at, why, adopt: true, files: [{ file, after }] }                            the files taken as they are
+//   { seq, at, why?, by?, ops, files: [{ file, after }], inverse, undoes? }  a change
+//   { seq, at, why, adopt: true, files: [{ file, after }] }                  changes made outside the log
 //
 // Writers (a changeset, an undo, an adoption) hold the game's lock (withLock) from checking the files against the
 // texts they were made on to appending the entry, so two processes never interleave, and seq is the last entry's + 1
@@ -76,11 +76,24 @@ function locked(path, id, fn, wait) {
   }
 }
 
-/** What the log last says each file holds: Map file → hash (null: removed), from every entry's `after`. */
-export function loggedState(ws) {
+/** Replay file deltas to get the last recorded hash for each path. */
+function loggedState(log) {
   const known = new Map()
-  for (const entry of readLog(ws)) for (const f of entry.files ?? []) if (typeof f === 'object') known.set(f.file, f.after)
+  for (const { files } of log) for (const { file, after } of files) known.set(file, after)
   return known
+}
+
+/** Hash changes between the log and the full on-disk inventory, including removals. */
+export function adoptionFiles(ws, texts) {
+  const known = loggedState(readLog(ws))
+  const files = [...texts].flatMap(([file, text]) => {
+    const after = hashOf(text)
+    return after === (known.get(file) ?? null) ? [] : [{ file, after }]
+  })
+  for (const [file, after] of known) {
+    if (after !== null && !texts.has(file) && ws.owns(file)) files.push({ file, after: null })
+  }
+  return files
 }
 
 /**
@@ -90,7 +103,7 @@ export function driftOf(ws, texts) {
   const log = readLog(ws)
   // A file the log never touched is judged only once an adoption has taken in every file the game had.
   const whole = log.some((e) => e.adopt)
-  const known = loggedState(ws)
+  const known = loggedState(log)
   return [...texts].filter(([file, text]) => (known.has(file) ? known.get(file) !== hashOf(text) : whole && text !== null)).map(([file]) => file)
 }
 

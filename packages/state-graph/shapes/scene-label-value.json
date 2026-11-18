@@ -1,0 +1,11 @@
+{
+  "type": "either",
+  "of": [
+    {
+      "type": "num"
+    },
+    {
+      "type": "text"
+    }
+  ]
+}

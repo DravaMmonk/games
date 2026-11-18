@@ -1,4 +1,4 @@
-// A level is a list of tasks (games/DESIGN.md 4, 6.2): what the level says once — its title, its introduction, its
+// A level is a list of tasks (games/design/README.md 4, 6.2): what the level says once — its title, its introduction, its
 // pass text, its place in the course — and its tasks, one or more, each a puzzle of the domain done in turn: its brief,
 // its hints, its board's ports, its tests, its answers. A level of one task is a plain level.
 //

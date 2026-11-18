@@ -1,5 +1,5 @@
 import { L, tr, call } from 'kernel/view'
-// A part's way through the course, under its page in the studio (games/DESIGN.md 6.7): read-only, from the course
+// A part's way through the course, under its page in the studio (games/design/README.md 6.7): read-only, from the course
 // (the tool `flow`, ../engine/flow.js), one tick a level in course order, each event a mark on it — at hand from the
 // start, brought in (+), given there only (↑), withheld (−), superseded (⇢), a step of its chains (■, its form). A tick
 // opens the level, at the task and on the field that says it.

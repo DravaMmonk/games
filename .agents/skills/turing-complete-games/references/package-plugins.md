@@ -1,6 +1,6 @@
 # 包插件
 
-当前协议以 `games/DESIGN.md` 第 6.3、6.3.1 节为准。
+当前协议以 `games/design/README.md` 第 6.3、6.3.1 节为准。
 
 ## 入口与登记
 

@@ -1,4 +1,4 @@
-// The build workspace's three lists — levels, parts, entries — grouped (games/DESIGN.md 6.7): by the tags of their
+// The build workspace's three lists — levels, parts, entries — grouped (games/design/README.md 6.7): by the tags of their
 // kind, or by the objects that gather them (a relation for levels and the others, a tray for parts, a section for
 // entries). An object shows under every group that names it; what no group names is left over. A group is an object of
 // its own, opened in the middle from its heading row.

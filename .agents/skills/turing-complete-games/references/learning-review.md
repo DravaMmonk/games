@@ -2,7 +2,7 @@
 
 These prompts help an agent evaluate a course, task or experiment in context. They are not a fixed checklist or
 acceptance gate: select the evidence and level of detail appropriate to the learning goal and user request. Engine
-contracts and automated checks are documented separately in `games/DESIGN.md`.
+contracts and automated checks are documented separately in `games/design/README.md`.
 
 ## Routes and concepts
 

@@ -36,7 +36,7 @@ test('table and state-graph core/view compose with circuit and image', async () 
   const game = await gameOf(content)
   assert.equal(typeof game.kinds['state-graph/circuit'].Screen, 'function')
   const task = content.levels[0].tasks[0], context = { content, task, kernel }
-  const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
+  const require = createRequire(new URL('../../../site/package.json', import.meta.url))
   const { renderToString } = require('react-dom/server'), { createElement } = require('react')
   const view = kernel.tables.playView.get(task.play)
   const html = renderToString(createElement(view.preview, { context, work: kernel.tables.play.get(task.play).initial(context), onChange: () => {} }))

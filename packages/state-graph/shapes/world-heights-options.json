@@ -1,0 +1,13 @@
+{
+  "type": "obj",
+  "fields": {
+    "filter": {
+      "type": "oneOf",
+      "values": [
+        "all",
+        "lower"
+      ],
+      "optional": true
+    }
+  }
+}

@@ -9,58 +9,14 @@
       "t": "@level.prefix.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "h0",
-              "x": 0,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.prefix.intro.1.fig.scene.cells.h0.label",
-              "value": 3,
-              "cls": "house "
-            },
-            {
-              "id": "h1",
-              "x": 62,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.prefix.intro.1.fig.scene.cells.h1.label",
-              "value": 1,
-              "cls": "house "
-            },
-            {
-              "id": "h2",
-              "x": 124,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.prefix.intro.1.fig.scene.cells.h2.label",
-              "value": 4,
-              "cls": "house "
-            },
-            {
-              "id": "h3",
-              "x": 186,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.prefix.intro.1.fig.scene.cells.h3.label",
-              "value": 1,
-              "cls": "house "
-            },
-            {
-              "id": "h4",
-              "x": 248,
-              "y": 0,
-              "w": 52,
-              "h": 60,
-              "label": "@level.prefix.intro.1.fig.scene.cells.h4.label",
-              "value": 5,
-              "cls": "house "
-            }
-          ],
+          "grid": {
+            "w": 52,
+            "h": 60,
+            "dx": 62,
+            "rows": [
+              [{"id": "h0", "label": "@level.prefix.intro.1.fig.scene.cells.h0.label", "value": 3, "cls": "house "}, {"id": "h1", "label": "@level.prefix.intro.1.fig.scene.cells.h1.label", "value": 1, "cls": "house "}, {"id": "h2", "label": "@level.prefix.intro.1.fig.scene.cells.h2.label", "value": 4, "cls": "house "}, {"id": "h3", "label": "@level.prefix.intro.1.fig.scene.cells.h3.label", "value": 1, "cls": "house "}, {"id": "h4", "label": "@level.prefix.intro.1.fig.scene.cells.h4.label", "value": 5, "cls": "house "}]
+            ]
+          },
           "edges": []
         }
       }

@@ -48,7 +48,7 @@ import { useRunHistory } from "./useLevelRuns.js"
 import { Workbench, TestStatus } from 'kernel/view'
 import { definedFaces } from "./parts/faces.jsx"
 
-// A circuit level, the same in every game (games/DESIGN.md 6.3): the board the player wires on the shared editor
+// A circuit level, the same in every game (games/design/README.md 6.3): the board the player wires on the shared editor
 // (a desktop's canvas, a phone's slot board), the parts to place (palette, tray), the level's saved boards (the
 // editor's corner), the tests and how they stand, the run (step, pause, go on, skip to the end) with the run bar, the
 // last run kept on the board while the level is open, passing and failing, the brief with its hints, and the packed
@@ -180,7 +180,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *
  *   screen          the level screen's props (GameShell)          board, run    useLevelBoard, useLevelRun
  *   parts           the editor's description of the cards (circuit/model.js)
- *   defined         the parts a game defines as data (games/DESIGN.md 6.8, parts/faces.jsx): { of(type) → the part
+ *   defined         the parts a game defines as data (games/design/README.md 6.8, parts/faces.jsx): { of(type) → the part
  *                   resolved or null, defaults(type), ops, value(node, ctx, output, face), widgets?, allowed?(type, key) };
  *                   their cards, tiles, details, settings and new nodes are the kernel's, `parts` and `card` only the
  *                   domain's other nodes'

@@ -46,7 +46,7 @@ test('logic core and view compose with circuit and QED through Vite and render a
     const context = { content, task, kernel }
     const game = await gameOf(content)
     assert.equal(typeof game.kinds['logic/proof'].Screen, 'function')
-    const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
+    const require = createRequire(new URL('../../../site/package.json', import.meta.url))
     const { renderToString } = require('react-dom/server')
     const { createElement } = require('react')
     const view = kernel.tables.playView.get('logic/proof')

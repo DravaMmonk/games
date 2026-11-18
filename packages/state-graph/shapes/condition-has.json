@@ -1,0 +1,24 @@
+{
+  "type": "either",
+  "of": [
+    {
+      "type": "ref",
+      "kind": "part",
+      "reference": "circuit/part"
+    },
+    {
+      "type": "obj",
+      "fields": {
+        "part": {
+          "type": "ref",
+          "kind": "part",
+          "reference": "circuit/part"
+        },
+        "value": {
+          "type": "num",
+          "optional": true
+        }
+      }
+    }
+  ]
+}

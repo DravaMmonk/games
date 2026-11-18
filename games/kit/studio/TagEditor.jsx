@@ -1,4 +1,4 @@
-// The tag editor of the package workspace (games/DESIGN.md 6.1, 6.7): one tag at a time, an unordered set of one kind
+// The tag editor of the package workspace (games/design/README.md 6.1, 6.7): one tag at a time, an unordered set of one kind
 // of object. Its title, its members (an object by its name and title; a nested tag as a link to it, unfolded to what
 // it holds), members added from what the kind offers and taken out, nested tags refused when they would close a ring;
 // Another layer's tags are read only. The list of tags is the left column's

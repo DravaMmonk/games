@@ -4,7 +4,7 @@
     {
       "name": "games",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "trace-viewer", "run", "dev", "--", "--port", "5173", "--strictPort"],
+      "runtimeArgs": ["--prefix", "site", "run", "dev", "--", "--port", "5173", "--strictPort"],
       "port": 5173
     },
     {
@@ -12,7 +12,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "cd trace-viewer && exec node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --mode studio --port 5190 --strictPort --force"
+        "cd site && exec node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --mode studio --port 5190 --strictPort --force"
       ],
       "port": 5190,
       "url": "http://localhost:5190"

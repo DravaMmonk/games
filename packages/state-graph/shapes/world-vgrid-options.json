@@ -1,0 +1,13 @@
+{
+  "type": "obj",
+  "fields": {
+    "arrows": {
+      "type": "bool",
+      "optional": true
+    },
+    "rounds": {
+      "type": "bool",
+      "optional": true
+    }
+  }
+}

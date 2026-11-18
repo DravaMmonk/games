@@ -42,7 +42,7 @@ export function imageContract(owner) {
       assert.equal(typeof game.kinds['image/graph'].Screen, 'function')
       const task = fixture.shell.levels[0].tasks[0]
       const context = { content: fixture.shell, task, kernel }
-      const require = createRequire(new URL('../../../trace-viewer/package.json', import.meta.url))
+      const require = createRequire(new URL('../../../site/package.json', import.meta.url))
       const { renderToString } = require('react-dom/server')
       const { createElement } = require('react')
       const view = kernel.tables.playView.get('image/graph')

@@ -33,44 +33,16 @@
       "t": "@level.slant.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "ul",
-              "x": 0,
-              "y": 0,
-              "w": 56,
-              "h": 56,
-              "label": "@level.slant.intro.1.fig.scene.cells.ul.label",
-              "cls": "lit"
-            },
-            {
-              "id": "u",
-              "x": 66,
-              "y": 0,
-              "w": 56,
-              "h": 56,
-              "label": "@level.slant.intro.1.fig.scene.cells.u.label",
-              "cls": "dimc"
-            },
-            {
-              "id": "l",
-              "x": 0,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "label": "@level.slant.intro.1.fig.scene.cells.l.label",
-              "cls": "lit"
-            },
-            {
-              "id": "c",
-              "x": 66,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "value": "?",
-              "cls": "sel"
-            }
-          ],
+          "grid": {
+            "w": 56,
+            "h": 56,
+            "dx": 66,
+            "dy": 66,
+            "rows": [
+              [{"id": "ul", "label": "@level.slant.intro.1.fig.scene.cells.ul.label", "cls": "lit"}, {"id": "u", "label": "@level.slant.intro.1.fig.scene.cells.u.label", "cls": "dimc"}],
+              [{"id": "l", "label": "@level.slant.intro.1.fig.scene.cells.l.label", "cls": "lit"}, {"id": "c", "value": "?", "cls": "sel"}]
+            ]
+          },
           "edges": [
             {
               "a": "ul",

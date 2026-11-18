@@ -1,0 +1,24 @@
+{
+  "type": "obj",
+  "fields": {
+    "diag": {
+      "type": "num",
+      "optional": true
+    },
+    "empty0": {
+      "type": "bool",
+      "optional": true
+    },
+    "scan": {
+      "type": "oneOf",
+      "values": [
+        "rowTL",
+        "rowBR",
+        "colL",
+        "colLB",
+        "len"
+      ],
+      "optional": true
+    }
+  }
+}

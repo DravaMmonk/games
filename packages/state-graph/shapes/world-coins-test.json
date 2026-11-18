@@ -1,0 +1,16 @@
+{
+  "type": "obj",
+  "fields": {
+    "n": {
+      "type": "int",
+      "min": 0
+    },
+    "coins": {
+      "type": "list",
+      "of": {
+        "type": "int",
+        "min": 1
+      }
+    }
+  }
+}

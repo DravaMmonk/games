@@ -1,4 +1,4 @@
-// What an editor shows of a value it writes while its writes are still pending (games/DESIGN.md 6.7): every edit is
+// What an editor shows of a value it writes while its writes are still pending (games/design/README.md 6.7): every edit is
 // at once an operation of the changeset, and the editor shows it before the preview comes back, so editing never
 // waits on the server. The relation board (RelationBoard.jsx) and the route map (ChapterBoard.jsx) use it.
 

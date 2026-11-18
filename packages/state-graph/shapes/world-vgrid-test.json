@@ -1,0 +1,72 @@
+{
+  "type": "obj",
+  "fields": {
+    "R": {
+      "type": "int",
+      "min": 1
+    },
+    "C": {
+      "type": "int",
+      "min": 1
+    },
+    "gold": {
+      "type": "list",
+      "of": {
+        "type": "int"
+      },
+      "min": 2
+    },
+    "traps": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "optional": true
+    },
+    "walls": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "optional": true
+    },
+    "cliffs": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "optional": true
+    },
+    "ice": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "num"
+        },
+        "min": 3
+      },
+      "optional": true
+    },
+    "rd": {
+      "type": "bool",
+      "optional": true
+    },
+    "slip": {
+      "type": "num",
+      "optional": true
+    }
+  }
+}

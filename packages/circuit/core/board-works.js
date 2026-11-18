@@ -1,5 +1,5 @@
 import { boardShape } from './board-shape.js'
-// A circuit game's course read from its content (games/DESIGN.md 6.3): its tasks with their tests and boards, the play
+// A circuit game's course read from its content (games/design/README.md 6.3): its tasks with their tests and boards, the play
 // order and level tree from its eras, and its built parts (parts.json, ./parts.js builtParts), each running inside
 // their package reference board or the passed work supplied by a publishing task, and
 // game.json's `replaces` says which built parts supersede which. A domain says how its own fields and tests read:

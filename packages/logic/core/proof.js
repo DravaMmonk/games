@@ -287,7 +287,7 @@ const ABOUT = {
   rewrite: T('等量代换：由 s = t 和 φ(s) 得到 φ(t)', 'Rewrite: from s = t and φ(s), φ(t)'),
 }
 /**
- * The proof rules as engine resources (a game's parts.json makes each a part, games/DESIGN.md 6.8): a resource's
+ * The proof rules as engine resources (a game's parts.json makes each a part, games/design/README.md 6.8): a resource's
  * arguments are its part's inputs, a box's regions included, in order; the card it runs on and the region whose value
  * it gives come with ctx (../../engine/parts/define.js).
  */

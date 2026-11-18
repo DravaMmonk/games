@@ -1,5 +1,5 @@
 /* global process */
-// npm run blind -- <game> <session> [levels] [attempts] [model] — one blind player (games/DESIGN.md 6.6): a fresh
+// npm run blind -- <game> <session> [levels] [attempts] [model] — one blind player (games/design/README.md 6.6): a fresh
 // `claude -p` in an empty scratch directory whose only tool is Bash allowed to run ./play there (this game's CLI, the
 // session fixed), so it sees the game only as a player does. It plays from the first level until the session's bound
 // (levels; default 12) with `attempts` a level (default 6). Afterwards the run's tokens, time and cost go into the

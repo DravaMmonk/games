@@ -1,7 +1,7 @@
 # Step 3 · Level specs
 
 Turn the supplied blueprint's slots into playable level data using the domain vocabulary and operation set. This
-step writes levels and course data, not domain code or the blueprint. Read `games/DESIGN.md` §§1–4 and 5, the
+step writes levels and course data, not domain code or the blueprint. Read `games/design/README.md` §§1–4 and 5, the
 blueprint, vocabulary and a relevant starter or existing level; use `./op list` to inspect available operations.
 
 Design tasks and tests around what the learner can see, do and infer. Choose the appropriate scaffolding and

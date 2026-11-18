@@ -1,4 +1,4 @@
-// A blind session (games/DESIGN.md 6.6): one player playing one game from its first level, in course order, keeping
+// A blind session (games/design/README.md 6.6): one player playing one game from its first level, in course order, keeping
 // its own progress like a save. Its record is data, part of the game's content: games/<game>/playtests/<session>.json,
 // whose shape is PLAYTEST below. It holds everything the audit panel (./stats.js) reads, and the progress to go on from.
 //

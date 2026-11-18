@@ -1,0 +1,13 @@
+{
+  "type": "obj",
+  "fields": {
+    "R": {
+      "type": "int",
+      "min": 1
+    },
+    "k": {
+      "type": "int",
+      "min": 0
+    }
+  }
+}

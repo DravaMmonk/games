@@ -1,7 +1,7 @@
 import { PackageDependencies, packageGroups, packageKindLabel } from './PackageGroups.jsx'
 import { objectTypes } from './object-types.js'
 import { typeName } from './LeftTypes.jsx'
-// The game workspace of the studio (games/DESIGN.md 6.7): where a course designer makes a game on a package and
+// The game workspace of the studio (games/design/README.md 6.7): where a course designer makes a game on a package and
 // arranges its learning route. On the left a list (left-lists.js GAME_LISTS): the game's settings and its chapters, or
 // the overrides it sees; in the middle what is picked: a chapter's fields and its board (ChapterBoard.jsx: whole level
 // groups and single levels placed, the links between them, the map's layout), the game's settings as rows, the copy

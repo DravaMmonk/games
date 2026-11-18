@@ -1,4 +1,4 @@
-// Gradients through a board (games/DESIGN.md 6): a run with a tape on ctx records every engine resource it calls, so
+// Gradients through a board (games/design/README.md 6): a run with a tape on ctx records every engine resource it calls, so
 // a domain can train the parameters a board holds by working back from a loss.
 //
 // The tape numbers values, not by what they are (two equal numbers are not the same value) but by where they came

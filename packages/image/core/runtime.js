@@ -1,4 +1,4 @@
-// The image domain for the checks (games/DESIGN.md 6.3): its vocabulary, a game's spec from its content (the course,
+// The image domain for the checks (games/design/README.md 6.3): its vocabulary, a game's spec from its content (the course,
 // its levels in play order, the texts a player reads), the domain's checks, and its play hook for blind sessions
 // (play.js). Nothing here draws: the page's side is game.js.
 import { vocabulary } from './vocabulary.js'

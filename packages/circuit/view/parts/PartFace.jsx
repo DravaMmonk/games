@@ -8,7 +8,7 @@ import { isFixed } from "../../core/board/presets.js"
 import { evalSettings, failedCheck, partDesc, shows } from "../../core/parts/define.js"
 import SettingField, { valueWords } from "./SettingField.jsx"
 
-// One face of a defined part (games/DESIGN.md 6.8): the desktop card's body, the phone tile, or the detail both
+// One face of a defined part (games/design/README.md 6.8): the desktop card's body, the phone tile, or the detail both
 // share, as parts/<name>.json's `views` lays it out in blocks (the default where it says nothing). The kernel draws every
 // block but the part's value and the domain's widgets, which the domain gives (`defined.value`, `defined.widgets`).
 //

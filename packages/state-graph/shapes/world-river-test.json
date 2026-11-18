@@ -1,0 +1,30 @@
+{
+  "type": "obj",
+  "fields": {
+    "k": {
+      "type": "list",
+      "of": {
+        "type": "either",
+        "of": [
+          {
+            "type": "int",
+            "min": 0
+          },
+          {
+            "type": "oneOf",
+            "values": [
+              null
+            ]
+          }
+        ]
+      }
+    },
+    "p": {
+      "type": "list",
+      "of": {
+        "type": "num"
+      },
+      "optional": true
+    }
+  }
+}

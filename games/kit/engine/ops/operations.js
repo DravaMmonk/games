@@ -331,7 +331,7 @@ Object.assign(OPERATIONS, {
   },
 })
 
-/** Which workspace an operation belongs to (games/DESIGN.md 6.7): 'package' (the levels, their groups and encyclopedia) or 'game' (the course and the game's own texts). */
+/** Which workspace an operation belongs to (games/design/README.md 6.7): 'package' (the levels, their groups and encyclopedia) or 'game' (the course and the game's own texts). */
 export function opScope({ op, in: where, layer, chapter }) {
   if (op.startsWith('game.package.')) return 'game'
   if (op.startsWith('chapter.') || chapter !== undefined) return 'game'

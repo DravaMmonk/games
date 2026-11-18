@@ -47,38 +47,16 @@
       "t": "@level.cheapest.intro.2.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "u",
-              "x": 66,
-              "y": 0,
-              "w": 56,
-              "h": 56,
-              "label": "@level.cheapest.intro.2.fig.scene.cells.u.label",
-              "value": 8,
-              "cls": "lit"
-            },
-            {
-              "id": "l",
-              "x": 0,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "label": "@level.cheapest.intro.2.fig.scene.cells.l.label",
-              "value": 6,
-              "cls": "lit"
-            },
-            {
-              "id": "c",
-              "x": 66,
-              "y": 66,
-              "w": 56,
-              "h": 56,
-              "value": 7,
-              "corner": 1,
-              "cls": "sel"
-            }
-          ],
+          "grid": {
+            "w": 56,
+            "h": 56,
+            "dx": 66,
+            "dy": 66,
+            "rows": [
+              [" ", {"id": "u", "label": "@level.cheapest.intro.2.fig.scene.cells.u.label", "value": 8, "cls": "lit"}],
+              [{"id": "l", "label": "@level.cheapest.intro.2.fig.scene.cells.l.label", "value": 6, "cls": "lit"}, {"id": "c", "value": 7, "corner": 1, "cls": "sel"}]
+            ]
+          },
           "edges": [
             {
               "a": "u",

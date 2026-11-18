@@ -16,17 +16,8 @@
             "optional": true
           },
           "grid": {
-            "type": "obj",
-            "fields": {
-              "R": {
-                "type": "int",
-                "min": 1
-              },
-              "C": {
-                "type": "int",
-                "min": 1
-              }
-            }
+            "type": "shape",
+            "name": "state-graph/world-piles-test"
           }
         }
       },

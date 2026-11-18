@@ -1,0 +1,49 @@
+{
+  "type": "obj",
+  "fields": {
+    "rx": {
+      "type": "num",
+      "optional": true
+    },
+    "label": {
+      "type": "text",
+      "optional": true
+    },
+    "value": {
+      "type": "either",
+      "of": [
+        {
+          "type": "num"
+        },
+        {
+          "type": "text"
+        }
+      ],
+      "optional": true
+    },
+    "corner": {
+      "type": "either",
+      "of": [
+        {
+          "type": "num"
+        },
+        {
+          "type": "text"
+        }
+      ],
+      "optional": true
+    },
+    "sub": {
+      "type": "text",
+      "optional": true
+    },
+    "cls": {
+      "type": "str",
+      "optional": true
+    },
+    "fill": {
+      "type": "str",
+      "optional": true
+    }
+  }
+}

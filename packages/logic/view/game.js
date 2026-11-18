@@ -1,7 +1,7 @@
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
-// A logic game on the shared shell (../../shell), from its content (games/DESIGN.md 6.3): the course (course.js)
+// A logic game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the logic domain's screens (a proof on the circuit editor, a truth table,
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
 import { CircuitBoard, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'

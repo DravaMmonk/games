@@ -10,7 +10,7 @@ import { runtimeOf, readContent } from '../engine/resolver.js'
 import { ALL_GAMES, knownGames } from '../engine/cli-args.js'
 import { contentAssets } from './content-assets.js'
 
-const DIST = resolve(import.meta.dirname, '../../../trace-viewer/dist-games')
+const DIST = resolve(import.meta.dirname, '../../../site/dist-games')
 const asked = process.argv.slice(2)
 let refused = 0
 for (const id of knownGames(asked.length ? asked : ALL_GAMES, 'npm run publish:content [-- <game>…]')) {

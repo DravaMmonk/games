@@ -1,0 +1,23 @@
+{
+  "type": "list",
+  "of": {
+    "type": "obj",
+    "fields": {
+      "a": {
+        "type": "str"
+      },
+      "b": {
+        "type": "str"
+      },
+      "cls": {
+        "type": "str"
+      },
+      "bend": {
+        "type": "num"
+      },
+      "off": {
+        "type": "num"
+      }
+    }
+  }
+}

@@ -33,7 +33,7 @@ async function open() {
   const game = define(content)
   const options = { content, tasks: taskStamps(vocabulary, content) }
   const store = game.openProgress?.(options) ?? createProgress({ id: content.id, tasks: options.tasks })
-  // A level embedded in a note (`?embed&level=…&lang=…`, games/DESIGN.md 12.1): the note sets its language.
+  // A level embedded in a note (`?embed&level=…&lang=…`, games/design/README.md 12.1): the note sets its language.
   const asked = new URL(window.location.href).searchParams
   if (asked.has('embed')) {
     const lang = asked.get('lang')

@@ -1,5 +1,5 @@
 import { glossaryFile } from './form.js'
-// The side panel (games/DESIGN.md 6.7): the one field picked — on the game's page (a click on a text, a test, a task's
+// The side panel (games/design/README.md 6.7): the one field picked — on the game's page (a click on a text, a test, a task's
 // name), in the rows of a file (Rows.jsx), by a finding, the palette or a search — with its control from the schema
 // (Fields.jsx, the same controls the forms used), what it means, the findings on it and its undo. Above it the way to
 // it, each step a link to the field around it; an item of a list can be moved, copied and taken out here; an optional
@@ -68,7 +68,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
   }
   const tasked = Boolean(at?.level)
   const edit = (path, change, type) => {
-    // An id never changes (games/DESIGN.md 6.1).
+    // An id never changes (games/design/README.md 6.1).
     if (path.at(-1) === 'id' && change.set !== undefined) return undefined
     // The task list edited as a whole goes task by task, so each task's board stays with it.
     if (tasked && path.length === 1 && path[0] === 'tasks' && Array.isArray(change.set)) return onOps(taskListOps(at.level, getAt(shown.value, path) ?? [], change.set, content.levels))

@@ -48,7 +48,7 @@ const parsedImports = new Map()
 export function packageCodeProblems(id, root) {
   const dir = location(id, root)
   const uses = dependencyIds(packageConfig(id, root))
-  const require = createRequire(resolve(KIT, '../../trace-viewer/package.json'))
+  const require = createRequire(resolve(KIT, '../../site/package.json'))
   const { parse } = require('espree')
   const problems = []
   for (const side of ['core', 'view']) for (const file of walkFiles(resolve(dir, side))) {

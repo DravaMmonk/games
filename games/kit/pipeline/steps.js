@@ -1,5 +1,5 @@
 import { runtimeIds } from '../engine/runtime.js'
-// The agent pipeline's steps (games/DIRECTION.md 4, games/DESIGN.md 7.2), the same for every topic: what each step
+// The agent pipeline's steps (games/DIRECTION.md 4, games/design/README.md 7.2), the same for every topic: what each step
 // reads and writes, who does it, the commands its agent gets, and the gate that decides it is done. Every gate's
 // failure names one rule; a step's product is content written through the operation set.
 //

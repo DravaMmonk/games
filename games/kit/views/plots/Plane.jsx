@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react'
 import { numberError, numberText, withinTolerance } from '../../engine/number.js'
 import { columns, extentOf, finitePoint, frameOf, tips } from './plane.js'
 
-// A grid of two rows as arrows in the plane (games/DESIGN.md 6.9, ./plane.js), over the faint integer grid, in the
+// A grid of two rows as arrows in the plane (games/design/README.md 6.9, ./plane.js), over the faint integer grid, in the
 // reading its view names:
 //
 //   plane     every column an arrow from the origin

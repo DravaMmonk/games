@@ -1,4 +1,4 @@
-// A changed file read field by field, for the studio's changeset review (games/DESIGN.md 6.7): what a JSON file held
+// A changed file read field by field, for the studio's changeset review (games/design/README.md 6.7): what a JSON file held
 // before and after, as the values that differ, each at its path. A text pair and a board (a list of lines) are compared
 // whole; objects are looked into key by key, lists item by item: the items a list keeps are left out, so an item added
 // (a save step appended), removed or moved shows alone, and items changed in place are looked into.

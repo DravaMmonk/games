@@ -1,4 +1,4 @@
-// What each part of the image domain does, in a line (games/DESIGN.md 4: a description says only what a part does),
+// What each part of the image domain does, in a line (games/design/README.md 4: a description says only what a part does),
 // and the names of a level's input cards: for the parts list, the components box and the cards (ui/), and for a blind
 // session (play.js).
 import { L } from 'kernel'

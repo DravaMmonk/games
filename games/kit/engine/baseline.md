@@ -1,7 +1,7 @@
 # Mechanism migration baseline
 
 This is the behaviour lock for `games/MODULES.md` step 1, not the plugin protocol for step 2.
-Run from `trace-viewer/`:
+Run from `site/`:
 
 ```sh
 npm run baseline -- save

@@ -6,7 +6,7 @@ import { usePointerSession } from '../usePointerSession.js'
 import Plot from './Plot.jsx'
 import { rowOf } from './range.js'
 
-// A grey grid with one row picked out (the view `profile`, games/DESIGN.md 6.9): the picture with a scan line across
+// A grey grid with one row picked out (the view `profile`, games/design/README.md 6.9): the picture with a scan line across
 // it, and under it that row as a function (Plot), each sample under its column, the row wanted on the same axes where
 // there is one. Dragging on the picture moves the line. `card` draws the picture and its line only.
 

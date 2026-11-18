@@ -1,6 +1,6 @@
 // A blind session under node (./cli.mjs, ./tool.mjs): the game as the shell gets it and its domain's play hook, both
 // through the checks' own loader (../games.mjs), the course the audit checks, and the session's record on disk
-// (games/<game>/playtests/<session>.json, ./session.js). Run from trace-viewer, as npm run play does.
+// (games/<game>/playtests/<session>.json, ./session.js). Run from site, as npm run play does.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { contentRoot, gameDirectory, readContent } from '../resolver.js'

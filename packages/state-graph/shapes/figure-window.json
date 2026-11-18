@@ -1,0 +1,18 @@
+{
+  "type": "obj",
+  "fields": {
+    "vals": {
+      "type": "map",
+      "of": {
+        "type": "shape",
+        "name": "state-graph/scene-label-value"
+      }
+    },
+    "on": {
+      "type": "list",
+      "of": {
+        "type": "str"
+      }
+    }
+  }
+}

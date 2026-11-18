@@ -15,7 +15,7 @@ import { defineVocabulary } from '../vocabulary.js'
 import { OPERATIONS, operationsFor } from './operations.js'
 import { openGame as openWorkspace, openPackage } from './workspace.js'
 import { adopt, runChangeset, readLog, undo } from './changeset.js'
-import { driftOf } from './log.js'
+import { driftOf, hashOf } from './log.js'
 import { withParts } from '../../../../packages/circuit/core/index.js'
 import { taskLevel } from '../tasks.js'
 
@@ -314,7 +314,7 @@ test('the log keeps each file’s hashes; a write lands only on the files and th
   const done = await runChangeset(ws, one, { write: true, check: false, domain: DOMAIN })
   assert.equal(done.ok, true, done.problems.join('\n'))
   const [entry] = readLog(ws)
-  assert.deepEqual(entry.files.map((f) => [f.file, typeof f.before, typeof f.after]), [['packages/toy/levels/a1.json', 'string', 'string']])
+  assert.deepEqual(entry.files, [{ file: 'packages/toy/levels/a1.json', after: hashOf(readFileSync(join(root, 'packages/toy/levels/a1.json'), 'utf8')) }])
   // Two writers that opened the game at once: the second is refused, the first's change stands.
   const a = openGame('toy', root)
   const b = openGame('toy', root)
@@ -334,6 +334,28 @@ test('the log keeps each file’s hashes; a write lands only on the files and th
   assert.match((await undo(now, { write: true, check: false, domain: DOMAIN })).problems[0], /#2 cannot be undone: changed since it was made: packages\/toy\/levels\/a2.json/)
   adopt(now, 'edited by hand')
   assert.deepEqual(driftOf(now, now.onDisk()), [])
+})
+
+test('undo crosses a compact adoption of unrelated changes but refuses an adopted edit to its file', async () => {
+  const { root } = toy()
+  const open = () => openGame('toy', root)
+  const options = { write: true, check: false, domain: DOMAIN }
+  const edit = { ops: [{ op: 'level.set', level: 'a1', path: 'brief', value: 'one' }] }
+  const hand = (id, brief) => {
+    const file = join(root, `packages/toy/levels/${id}.json`)
+    writeFileSync(file, JSON.stringify({ ...JSON.parse(readFileSync(file, 'utf8')), brief }))
+  }
+  adopt(open(), 'initial inventory')
+  assert.equal((await runChangeset(open(), edit, options)).ok, true)
+  hand('a2', 'unrelated')
+  adopt(open(), 'unrelated hand edit')
+  assert.deepEqual(readLog(open()).at(-1).files.map(({ file }) => file), ['packages/toy/levels/a2.json'])
+  assert.equal((await undo(open(), options)).ok, true)
+  assert.equal(readLog(open()).at(-1).undoes, 2)
+  assert.equal((await runChangeset(open(), edit, options)).ok, true)
+  hand('a1', 'related')
+  adopt(open(), 'related hand edit')
+  assert.match((await undo(open(), options)).problems[0], /cannot be undone: changed since/)
 })
 
 test('a changeset whose domain throws while it is settled is refused and leaves the workspace as it was', async () => {
@@ -409,7 +431,7 @@ test('tasks by id: task.add, task.move in a level and across levels, task.remove
   assert.equal(JSON.stringify([...ws.levels]), before)
 })
 
-// A toy whose parts are data (games/DESIGN.md 6.8): engine resources in its vocabulary, its parts in parts/<name>.json.
+// A toy whose parts are data (games/design/README.md 6.8): engine resources in its vocabulary, its parts in parts/<name>.json.
 const PVOCAB = defineVocabulary({
   module: 'ptoy',
   version: 1,

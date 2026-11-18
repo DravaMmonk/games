@@ -1,5 +1,5 @@
 import { boardShape } from 'circuit'
-// A table game's course, from its course configuration and content package ( vocabulary.js says what may be
+// A table game's course, from its course configuration and content package (capabilities.json says what may be
 // in it): the play order and the tree from its eras (../../course.js layout), each level's number, chapter and
 // introduction, its tasks as they are played (a circuit task with what its board is given, its palette and its reference
 // board), the parts its levels build (each running the board it was built from: a packed part, ../../engine/boards.js),
@@ -33,7 +33,7 @@ import { figure } from './items/figures.js';
 /** Worlds that are one family: the same board, read or scanned another way. */
 const ROW_WORLDS = new Set(['state-graph/interval']);
 
-/** A port of a built part, from its vocabulary item (vocabulary.js port): its label, short name and type, and the sensor
+/** A port of a built part, from its vocabulary item (capabilities.json port): its label, short name and type, and the sensor
  *  (or input of the board) it stands for. */
 const SIGNAL_PORT = { 'circuit/number': 'circuit/number', 'circuit/boolean': 'circuit/boolean', 'table/numbers': 'table/number-input', 'table/booleans': 'table/boolean-input', 'table/category': 'table/category' };
 function portOf([name, p], W) {

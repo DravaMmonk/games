@@ -1,5 +1,5 @@
 /* global process */
-// npm run words [-- --check] — the words the kit's own code says (games/DESIGN.md 6.10). Code writes a word in the base
+// npm run words [-- --check] — the words the kit's own code says (games/design/README.md 6.10). Code writes a word in the base
 // language alone, tr('清空') or T('清空') (../shell/i18n.js); how it reads in another language is the catalog's,
 // ../i18n/<lang>.js, keyed by the wording used in code. This command keeps the two together:
 //
@@ -14,8 +14,8 @@ import { createRequire } from 'node:module'
 import { packageIds, packageDirectory } from './resolver.js'
 
 const KIT = resolve(import.meta.dirname, '..')
-// The parser comes with the page's build tools (trace-viewer/node_modules, as ./games.mjs finds vite).
-const require = createRequire(resolve(KIT, '../../trace-viewer/package.json'))
+// The parser comes with the page's build tools (site/node_modules, as ./games.mjs finds vite).
+const require = createRequire(resolve(KIT, '../../site/package.json'))
 const { parse } = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 const CATALOG = resolve(KIT, 'i18n/en.js')
@@ -83,6 +83,6 @@ for (const f of files) {
   moved += cuts.length
 }
 const body = Object.keys(next).sort().map((zh) => `  ${JSON.stringify(zh)}: ${JSON.stringify(next[zh])},`).join('\n')
-writeFileSync(CATALOG, `// The English of the words the kit's own code says, by the base text (npm run words keeps it; games/DESIGN.md 6.10).\nexport default {\n${body}\n}\n`)
+writeFileSync(CATALOG, `// The English of the words the kit's own code says, by the base text (npm run words keeps it; games/design/README.md 6.10).\nexport default {\n${body}\n}\n`)
 const kept = [...said.values()].filter((s) => s.size > 1).length
 console.log(`${moved} call(s) moved; ${Object.keys(next).length} words in the catalog; ${kept} text(s) keep two translations in the code`)

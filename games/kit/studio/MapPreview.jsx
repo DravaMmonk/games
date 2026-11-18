@@ -1,4 +1,4 @@
-// The route map's preview (games/DESIGN.md 2.6, 6.7): one chapter of the game's map as the player sees it, drawn by
+// The route map's preview (games/design/README.md 2.6, 6.7): one chapter of the game's map as the player sees it, drawn by
 // the shell itself (../shell/LevelMap.jsx MapChapter) in the play page (studio.html?play, play.jsx) with every level
 // open. It is handed the content as the preview has it and, apart, the chapter's rows as the map editor leaves them,
 // its own pending moves in too. Making a game of the content takes the page (and the studio, on the same thread)

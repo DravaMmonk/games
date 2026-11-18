@@ -1,0 +1,54 @@
+{
+  "type": "obj",
+  "fields": {
+    "R": {
+      "type": "int",
+      "min": 1
+    },
+    "C": {
+      "type": "int",
+      "min": 1
+    },
+    "given": {
+      "type": "map",
+      "of": {
+        "type": "num"
+      },
+      "keys": "^\\d+,\\d+$",
+      "optional": true
+    },
+    "rocks": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "int"
+        },
+        "min": 2
+      },
+      "optional": true
+    },
+    "costs": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "num"
+        }
+      },
+      "view": "grid",
+      "optional": true
+    },
+    "coins": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "num"
+        }
+      },
+      "view": "grid",
+      "optional": true
+    }
+  }
+}

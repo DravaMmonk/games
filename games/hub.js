@@ -7,7 +7,7 @@ import { paintText } from './kit/bar.js';
 import { mountHubBar } from './hub-bar.jsx';
 import { applyTheme, currentTheme } from './kit/theme.js';
 import { solvedCount } from './kit/shell/progress.js';
-import { mountBoxy } from './boxy/boxy.js';
+import { mountBoxy } from '../packages/state-graph/view/boxy.js';
 import { mountPress } from './press/press.js';
 import { mountDetach } from 'qed/view';
 

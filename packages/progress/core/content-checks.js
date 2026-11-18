@@ -30,7 +30,7 @@ export function courseChecks({ spec, content }) {
   const lines = referenceGrantChecks(spec)
   if (content.packageTarget) return lines
   const fail = text => lines.push({ fail: true, text })
-  // A notes course is no machine growing level by level: its course is not audited (games/DESIGN.md 12.1).
+  // A notes course is no machine growing level by level: its course is not audited (games/design/README.md 12.1).
   // Trays are the package's: whether something on them is ever brought in is judged on a game placing the whole package.
   const whole = spec.levels.length >= content.levels.length
   const findings = spec.course.notes ? [] : [...audit(spec.course), ...(spec.audit?.() ?? [])].filter((f) => whole || f.rule !== 'tray-unmet')

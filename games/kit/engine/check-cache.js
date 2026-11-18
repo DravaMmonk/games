@@ -1,6 +1,6 @@
 // The author checks of a game kept between runs, level by level (games/PLAN.md B.2): what a domain's checks said of a
 // level is said again without running them while nothing they read has changed. Kept on this machine only, never in
-// the repository: trace-viewer/node_modules/.cache/games-check/<game>.json. npm run check and the operation set read it
+// the repository: site/node_modules/.cache/games-check/<game>.json. npm run check and the operation set read it
 // (`--fresh` does not); npm test never does.
 //
 //   checkCache(game, { fresh })  → { memo(content, spec), save() }
@@ -17,7 +17,7 @@ import { join, resolve } from 'node:path'
 import { isText, textKey } from './i18n.js'
 
 const KIT = resolve(import.meta.dirname, '..')
-const FOLDER = resolve(KIT, '../../trace-viewer/node_modules/.cache/games-check')
+const FOLDER = resolve(KIT, '../../site/node_modules/.cache/games-check')
 
 const digest = (...parts) => {
   const h = createHash('sha1')

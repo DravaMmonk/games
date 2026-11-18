@@ -1,0 +1,46 @@
+{
+  "type": "either",
+  "of": [
+    {
+      "type": "obj",
+      "fields": {
+        "cells": {
+          "type": "shape",
+          "name": "state-graph/scene-cells"
+        },
+        "edges": {
+          "type": "shape",
+          "name": "state-graph/scene-edges"
+        },
+        "texts": {
+          "type": "shape",
+          "name": "state-graph/scene-texts",
+          "optional": true
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "fields": {
+        "grid": {
+          "type": "shape",
+          "name": "state-graph/scene-grid"
+        },
+        "cells": {
+          "type": "shape",
+          "name": "state-graph/scene-cells",
+          "optional": true
+        },
+        "edges": {
+          "type": "shape",
+          "name": "state-graph/scene-edges"
+        },
+        "texts": {
+          "type": "shape",
+          "name": "state-graph/scene-texts",
+          "optional": true
+        }
+      }
+    }
+  ]
+}

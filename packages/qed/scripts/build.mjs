@@ -5,19 +5,18 @@
 // the goal's lamp lights (∎). The premises stay where they are: a rule reads its premises, it does not use them up.
 // Each loop proves another instance of the rule (live.js EXAMPLES): the cards' texts change while the press is idle.
 //
-//   node packages/qed/scripts/build.mjs                 writes detach.js (the hub's module) next to this file
+//   node packages/qed/scripts/build.mjs                 writes the shared Detach module in Q.E.D.’s view
 //   node packages/qed/scripts/build.mjs --page=x.html   also writes a standalone page for the kit's capture and line checks
 //   node packages/qed/scripts/build.mjs --audit         runs the kit audit
 //
-// The kit is read from the anatomy skill (ANATOMY_KIT, default ~/.agents/skills/anatomy/kit); only detach.js ships.
+// The generator uses the vendored anatomy kit.
 
 import { readFileSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const KIT = process.env.ANATOMY_KIT ?? join(homedir(), '.agents/skills/anatomy/kit');
+const KIT = join(HERE, '../../../tools/anatomy-kit');
 const load = (file) => import(pathToFileURL(join(KIT, file)).href);
 const k = await load('iso-kit.mjs');
 const G = await load('lathe.mjs');
@@ -285,7 +284,8 @@ const STROKE = ${STROKE};
 const SLIDE = ${SLIDE};
 const ROUTES = ${JSON.stringify(pulseRoutes)};
 ${readFileSync(join(HERE, 'live.js'), 'utf8')}`;
-writeFileSync(join(HERE, '../view/detach.js'), module);
+const output = argv.find((a) => a.startsWith('--output='))?.slice(9) ?? join(HERE, '../view/detach.js');
+writeFileSync(output, module);
 console.log(`wrote detach.js · ${(module.length / 1024).toFixed(0)} KB · ${R.items.length} items`);
 
 const page = argv.find((a) => a.startsWith('--page='))?.slice(7);

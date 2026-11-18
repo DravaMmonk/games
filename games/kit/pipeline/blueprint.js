@@ -1,4 +1,4 @@
-// The course blueprint (games/DIRECTION.md decision 1, games/DESIGN.md 7.2): the first of a game's three content
+// The course blueprint (games/DIRECTION.md decision 1, games/design/README.md 7.2): the first of a game's three content
 // products, written before any level. It is data (games/<id>/blueprint.json, written through the operation set's
 // blueprint.put / blueprint.set) and says what the course is made of and why it is in that order:
 //
@@ -34,8 +34,8 @@ import { T as t } from '../shell/i18n.js'
 const ID = S.str({ pattern: '^[A-Za-z][A-Za-z0-9_-]*$' })
 const SLOT_ID = S.str({ pattern: '^[A-Za-z0-9][A-Za-z0-9_-]*$', about: t('关卡 id（也是将来的文件名）') })
 
-/** The catalogue's mechanisms (games/DESIGN.md 6.5). */
-/** The practice dimensions (games/DESIGN.md 2.3). New numbers alone are no dimension: they are tests or tasks. */
+/** The catalogue's mechanisms (games/design/README.md 6.5). */
+/** The practice dimensions (games/design/README.md 2.3). New numbers alone are no dimension: they are tests or tasks. */
 export const DIMENSIONS = ['direction', 'depth', 'scaffold', 'combine', 'false']
 const ROLES = ['foundation', 'practice', 'intro', 'step', 'finale', 'challenge']
 const KINDS = ['foundation', 'practice', 'topic', 'challenge']

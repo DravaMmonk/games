@@ -38,7 +38,7 @@ export function taskStamps(vocabulary, content) {
   return Object.fromEntries(content.levels.flatMap((level) => {
     const texts = localizedFields(vocabulary.level, level)
     const puzzle = puzzleOf(vocabulary.level, level, vocabulary)
-    const contributed = Object.assign({}, ...meaningsOf(semantics).map(meaning => meaning.levelPuzzle?.({ content, level })))
+    const contributed = Object.assign({}, ...meaningsOf(semantics).map(meaning => meaning.levelPuzzle?.({ content, level, puzzle })))
     const own = plain({ ...puzzle, ...contributed }, texts)
     return level.tasks.map((task, k) => [task.id, { level: level.id, stamp: hash(`${own}${plain(puzzleOf(shapeAt(vocabulary.level, level, ['tasks', k], { vocabulary }), task, vocabulary), texts)}${dependencies}`) }])
   }))

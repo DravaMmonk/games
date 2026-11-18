@@ -13,7 +13,7 @@ import { insideAt } from '../../core/trace.js'
 
 
 // The board a packed part runs (a part the player built: engine/boards.js packed), opened on the board it sits on, the
-// same in every game (games/DESIGN.md 6.3, 封装件能打开看里面). It is read only and never drawn inside another board:
+// same in every game (games/design/README.md 6.3, 封装件能打开看里面). It is read only and never drawn inside another board:
 // the part's detail window (desktop) or sheet (phone) shows it as a schematic (InsideBoard, Schematic.jsx). Once the
 // part has run, every chip on it shows what it gives in the part's latest run so far (engine/trace.js insideAt), the
 // chip the current step is in or computing lit; a packed part on it opens its own window over this one.

@@ -1,12 +1,13 @@
 import { qualifyItems } from 'kernel';
-// The intro figures content calls (vocabulary.js figure): each item with its parameters → a board scene
+// The intro figures content calls (capabilities.json figure): each item with its parameters → a board scene
 // (../model/scene.js), which ui/svg.js draws.
 
 import { callOf } from 'kernel';
 import { E, circuitFig, gridScene, windowFig } from 'table';
+import { expandScene } from '../model/scene.js';
 
 const FIGURES = qualifyItems('state-graph', {
-  scene: p => p,
+  scene: expandScene,
   /** A grid: arrows right and down (or by `moves`, [dr, dc] each; none with arrows: false), cells and arrows written
    *  apart over the plain ones. */
   grid({ R, C, arrows = true, moves, cells = {}, edges = {}, robot }) {
@@ -31,4 +32,12 @@ const FIGURES = qualifyItems('state-graph', {
 export function figure(call) {
   const [name, params] = callOf(call);
   return FIGURES[name](params);
+}
+
+/** Project compact introduction scenes to the same cells used by the save stamp. */
+export function expandIntroScenes(pages) {
+  return pages.map(page => {
+    const scene = page.fig?.['state-graph/scene']
+    return scene?.grid ? { ...page, fig: { 'state-graph/scene': expandScene(scene) } } : page
+  })
 }

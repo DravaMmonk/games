@@ -9,62 +9,16 @@
       "t": "@level.edit.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "a0",
-              "x": 0,
-              "y": 0,
-              "w": 44,
-              "h": 44,
-              "value": "C",
-              "cls": "tile ok"
-            },
-            {
-              "id": "a1",
-              "x": 54,
-              "y": 0,
-              "w": 44,
-              "h": 44,
-              "value": "A",
-              "cls": "tile bad"
-            },
-            {
-              "id": "a2",
-              "x": 108,
-              "y": 0,
-              "w": 44,
-              "h": 44,
-              "value": "T",
-              "cls": "tile ok"
-            },
-            {
-              "id": "b0",
-              "x": 0,
-              "y": 110,
-              "w": 44,
-              "h": 44,
-              "value": "C",
-              "cls": "tile ok"
-            },
-            {
-              "id": "b1",
-              "x": 54,
-              "y": 110,
-              "w": 44,
-              "h": 44,
-              "value": "U",
-              "cls": "tile hot"
-            },
-            {
-              "id": "b2",
-              "x": 108,
-              "y": 110,
-              "w": 44,
-              "h": 44,
-              "value": "T",
-              "cls": "tile ok"
-            }
-          ],
+          "grid": {
+            "w": 44,
+            "h": 44,
+            "dx": 54,
+            "dy": 110,
+            "rows": [
+              [{"id": "a0", "value": "C", "cls": "tile ok"}, {"id": "a1", "value": "A", "cls": "tile bad"}, {"id": "a2", "value": "T", "cls": "tile ok"}],
+              [{"id": "b0", "value": "C", "cls": "tile ok"}, {"id": "b1", "value": "U", "cls": "tile hot"}, {"id": "b2", "value": "T", "cls": "tile ok"}]
+            ]
+          },
           "edges": [
             {
               "a": "a0",
@@ -95,44 +49,16 @@
       "t": "@level.edit.intro.2.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "ul",
-              "x": 0,
-              "y": 0,
-              "w": 96,
-              "h": 70,
-              "label": "@level.edit.intro.2.fig.scene.cells.ul.label",
-              "sub": "@level.edit.intro.2.fig.scene.cells.ul.sub"
-            },
-            {
-              "id": "u",
-              "x": 116,
-              "y": 0,
-              "w": 96,
-              "h": 70,
-              "label": "@level.edit.intro.2.fig.scene.cells.u.label",
-              "sub": "@level.edit.intro.2.fig.scene.cells.u.sub"
-            },
-            {
-              "id": "l",
-              "x": 0,
-              "y": 90,
-              "w": 96,
-              "h": 70,
-              "label": "@level.edit.intro.2.fig.scene.cells.l.label",
-              "sub": "@level.edit.intro.2.fig.scene.cells.l.sub"
-            },
-            {
-              "id": "c",
-              "x": 116,
-              "y": 90,
-              "w": 96,
-              "h": 70,
-              "label": "@level.edit.intro.2.fig.scene.cells.c.label",
-              "cls": "sel"
-            }
-          ],
+          "grid": {
+            "w": 96,
+            "h": 70,
+            "dx": 116,
+            "dy": 90,
+            "rows": [
+              [{"id": "ul", "label": "@level.edit.intro.2.fig.scene.cells.ul.label", "sub": "@level.edit.intro.2.fig.scene.cells.ul.sub"}, {"id": "u", "label": "@level.edit.intro.2.fig.scene.cells.u.label", "sub": "@level.edit.intro.2.fig.scene.cells.u.sub"}],
+              [{"id": "l", "label": "@level.edit.intro.2.fig.scene.cells.l.label", "sub": "@level.edit.intro.2.fig.scene.cells.l.sub"}, {"id": "c", "label": "@level.edit.intro.2.fig.scene.cells.c.label", "cls": "sel"}]
+            ]
+          },
           "edges": [
             {
               "a": "ul",

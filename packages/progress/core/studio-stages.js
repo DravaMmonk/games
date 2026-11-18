@@ -1,4 +1,4 @@
-// A part's stages as the studio shows them (games/DESIGN.md 6.8): the part itself, then each stage with what it
+// A part's stages as the studio shows them (games/design/README.md 6.8): the part itself, then each stage with what it
 // changes over the one before; at each step every setting with what the operation declares, what the part (or its
 // stages so far) narrows, and what holds there.
 import { stagePatch } from './part-stages.js'

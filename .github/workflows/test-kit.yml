@@ -1,4 +1,4 @@
-# The kit's unit tests, when kit code changes. They read no real game (games/DESIGN.md), so content changes never
+# The kit's unit tests, when kit code changes. They read no real game (games/design/README.md), so content changes never
 # run them, and they never hold up a deploy. No workflow replays a game: checking kit code against every game's
 # content (the compatibility corpus, games/DIRECTION.md decision 17) is the platform's to run.
 name: Test kit
@@ -8,7 +8,7 @@ on:
     branches: [main]
     paths:
       - 'games/kit/**'
-      - 'trace-viewer/**'
+      - 'site/**'
       - '.github/workflows/test-kit.yml'
   workflow_dispatch:
 
@@ -24,14 +24,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: trace-viewer
+        working-directory: site
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: trace-viewer/package-lock.json
+          cache-dependency-path: site/package-lock.json
       - run: npm ci
       # Plain mistakes and the layering: no domain imports another, the kernel imports none.
       - run: npm run lint:kit

@@ -5,7 +5,7 @@ import { PHONE, useMedia } from 'kernel/view'
 import { PickMark } from 'kernel/view'
 import './bench.css'
 
-// The parameter bench (games/DESIGN.md 6.4, the data in ../../core/bench.js): one screen for every bench. It keeps
+// The parameter bench (games/design/README.md 6.4, the data in ../../core/bench.js): one screen for every bench. It keeps
 // the knob values (one set per stage, one value per case for a per-case knob), the model's process and a running
 // repeat, judges the goal on what the model computes, steps through the stages, and lays out the display items the
 // bench's layout names, loaded through the module display registry.

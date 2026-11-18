@@ -1,5 +1,5 @@
 import { qualifyItems } from 'kernel';
-// The conditions content writes about a board (vocabulary.js condition): a task's step-by-step guide and its
+// The conditions content writes about a board (capabilities.json condition): a task's step-by-step guide and its
 // diagnosis of a failure are lists of them with what to say.
 
 import { srcNode } from 'circuit'

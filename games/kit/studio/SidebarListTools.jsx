@@ -1,4 +1,4 @@
-// The tools of every list in the studio's left column (games/DESIGN.md 6.7), one row that looks the same whatever the
+// The tools of every list in the studio's left column (games/design/README.md 6.7), one row that looks the same whatever the
 // list: a new item, a search, the list's view, and every group folded or unfolded. What a list has no use for is
 // greyed, never left out, so the row does not change as the lists are switched. Like things go together: one + makes
 // or copies an object of the list, or a group of any kind the list can be grouped by (a tag, a tray, a relation, a

@@ -1,4 +1,4 @@
-// A blind play of one game (games/DESIGN.md 6.6): what a player sees of the level they are on, and what the game says
+// A blind play of one game (games/design/README.md 6.6): what a player sees of the level they are on, and what the game says
 // to an attempt, as plain text, with every step recorded in the session (./session.js). The same for the CLI
 // (`npm run play`, ./cli.mjs) and the JSON tool an agent drives (./tool.mjs).
 //
@@ -22,7 +22,7 @@ import { plain, refsIn, side } from './words.js'
  * domain's play hook; record: the session (./session.js), changed in place as the player plays.
  */
 /** What a pass asks of the player: what they worked out, in the field's words (the pipeline compares it with the
- *  knowledge the level brings, games/DESIGN.md 7.2). */
+ *  knowledge the level brings, games/design/README.md 7.2). */
 const EXPLAIN = {
   en: 'In a sentence or two, in the field’s own terms: what did you work out on this level? (./play --explain "…")',
   zh: '用本领域的术语写一两句：这一关你弄明白了什么？（./play --explain "…"）',

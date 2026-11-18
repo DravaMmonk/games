@@ -9,56 +9,14 @@
       "t": "@level.stairs.intro.1.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "s0",
-              "x": 0,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 0
-            },
-            {
-              "id": "s1",
-              "x": 60,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 1
-            },
-            {
-              "id": "s2",
-              "x": 120,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 2
-            },
-            {
-              "id": "s3",
-              "x": 180,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 3
-            },
-            {
-              "id": "s4",
-              "x": 240,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 4
-            },
-            {
-              "id": "s5",
-              "x": 300,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 5
-            }
-          ],
+          "grid": {
+            "w": 50,
+            "h": 50,
+            "dx": 60,
+            "rows": [
+              [{"id": "s0", "corner": 0}, {"id": "s1", "corner": 1}, {"id": "s2", "corner": 2}, {"id": "s3", "corner": 3}, {"id": "s4", "corner": 4}, {"id": "s5", "corner": 5}]
+            ]
+          },
           "edges": []
         }
       }
@@ -67,60 +25,14 @@
       "t": "@level.stairs.intro.2.t",
       "fig": {
         "state-graph/scene": {
-          "cells": [
-            {
-              "id": "s0",
-              "x": 0,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 0
-            },
-            {
-              "id": "s1",
-              "x": 60,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 1
-            },
-            {
-              "id": "s2",
-              "x": 120,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 2
-            },
-            {
-              "id": "s3",
-              "x": 180,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 3,
-              "cls": "lit"
-            },
-            {
-              "id": "s4",
-              "x": 240,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "corner": 4,
-              "cls": "lit"
-            },
-            {
-              "id": "s5",
-              "x": 300,
-              "y": 0,
-              "w": 50,
-              "h": 50,
-              "value": "?",
-              "corner": 5,
-              "cls": "sel"
-            }
-          ],
+          "grid": {
+            "w": 50,
+            "h": 50,
+            "dx": 60,
+            "rows": [
+              [{"id": "s0", "corner": 0}, {"id": "s1", "corner": 1}, {"id": "s2", "corner": 2}, {"id": "s3", "corner": 3, "cls": "lit"}, {"id": "s4", "corner": 4, "cls": "lit"}, {"id": "s5", "value": "?", "corner": 5, "cls": "sel"}]
+            ]
+          },
           "edges": [
             {
               "a": "s4",

@@ -1,4 +1,4 @@
-// The studio's forms (games/DESIGN.md 6.7), from the schemas alone: a value and its schema (../engine/schema.js) read
+// The studio's forms (games/design/README.md 6.7), from the schemas alone: a value and its schema (../engine/schema.js) read
 // as a tree of fields, each the kind of control that edits it; and an edit of a field as the operation that makes it
 // (../engine/ops/operations.js). Nothing here knows a domain: what a field is, what it may hold and what it means
 // (`about`) all come from the vocabulary; where the shape alone does not say how a value reads, the schema's hints do

@@ -11,7 +11,7 @@ description: Design, extend or review the learning games in study-notes (games/ 
 
 工作前阅读相关内容。
 
-1. `games/DESIGN.md` 是当前架构的唯一手册。第 1、2、4 节讲课程和任务，第 5 节讲检查与开发规范，第 6 节讲实现，第 7 节讲作者流程。
+1. `games/design/README.md` 是当前架构的唯一手册。第 1、2、4 节讲课程和任务，第 5 节讲检查与开发规范，第 6 节讲实现，第 7 节讲作者流程。
 2. `games/DIRECTION.md`、`games/PLAN.md` 记录方向与待办。
 3. 对应游戏的 `DESIGN.md`、`CURRICULUM.md` 记录专题选择。
 4. 相关包与游戏数据、`vocabulary` 工具。选操作前读 `npm run op -- list`。
@@ -91,7 +91,7 @@ description: Design, extend or review the learning games in study-notes (games/ 
 - 任务内最后一次运行保存在内存，按任务和存档切换恢复；离关清除。兼容旧版 iOS Safari。
 - 按第 7.0 节选择验证范围。纯文档检查 diff 和引用；界面或交互变化检查桌面与手机实际流程。
 - 内核测试用测试现写的小内容，机制组合显式安装夹具；真实包与游戏分别 `check`。带代码的包提供核心、视图配对与跨包契约。
-- 内核改动运行 `npm test`、`npm run lint:kit`、`npm run words -- --check`。零内容验收运行 `npm run test:zero`，首次先 `npx playwright install chromium`。命令均在 `trace-viewer/`。
+- 内核改动运行 `npm test`、`npm run lint:kit`、`npm run words -- --check`。零内容验收运行 `npm run test:zero`，首次先 `npx playwright install chromium`。命令均在 `site/`。
 - 行为迁移运行 `npm run baseline -- compare`，保留锁定语料。报告检查范围、结果和未验证项。
 - 上线前版本保持 `0.0.0`，范围 `^0.0.0`。源目录哈希漂移允许继续工作，归档保持严格校验。`deps -- lock` 刷新快照，`deps -- upgrade` 显式升级。
 - 首发须明确执行 `publish -- <包|kernel> --launch`，自动定为 `1.0.0`。版本随后由公开面与依赖方检查观察计算，平台行为探测待补。`releases/` 排除在 Git 外。

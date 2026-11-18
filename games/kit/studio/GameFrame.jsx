@@ -1,4 +1,4 @@
-// The game's own page in the studio (games/DESIGN.md 6.7): an iframe of studio.html?play (play.jsx), the main view of
+// The game's own page in the studio (games/design/README.md 6.7): an iframe of studio.html?play (play.jsx), the main view of
 // a level. It is handed the content as the pending changeset leaves it each time it changes, the level staying open
 // as it is, so an edit shows at once where the player sees it. In edit mode (the default) it is the editor: a click on
 // a field on screen picks it for the side panel, a + adds an item, and the field picked is drawn so; in play mode it is

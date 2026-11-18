@@ -1,0 +1,17 @@
+{
+  "type": "obj",
+  "fields": {
+    "n": {
+      "type": "int",
+      "min": 0
+    },
+    "broken": {
+      "type": "list",
+      "of": {
+        "type": "int",
+        "min": 0
+      },
+      "optional": true
+    }
+  }
+}

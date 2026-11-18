@@ -1,11 +1,11 @@
-// The package workspace of the studio (games/DESIGN.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
+// The package workspace of the studio (games/design/README.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
 // and plays a package's levels without code, a level group at a time. It is a thin skin over the operation set (the
 // package's side of it, useChangeset.js): the tree, the forms, the copy table, the comparisons, the game played, the
 // audit and the review all show the one answer the preview tool gives; search and replace and bulk edits only ever add
 // operations to it. The package's levels are played in a game that plays the package, as its course sets them up; how
 // a game arranges them is the game workspace's (GameStudio.jsx).
 //
-// The page (games/DESIGN.md 6.7): lists on the left, one at a time (left-lists.js) — the levels, the parts and the
+// The page (games/design/README.md 6.7): lists on the left, one at a time (left-lists.js) — the levels, the parts and the
 // encyclopedia's entries, each grouped by the tags, relations, trays or sections that gather them (list-groups.js),
 // the kernel's capabilities, the overrides, search; in the middle what is picked: the level as the game shows it, which
 // is where it is edited (GameFrame.jsx: a click on a field on screen picks it, a + adds an item), a part with its
@@ -109,7 +109,7 @@ const editable = (el) => el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'S
 const paletteKey = (event) => (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k'
 
 /**
- * The package workspace, opened on one package (games/DESIGN.md 6.1, 6.7): `pkg` its id; `packages` every package,
+ * The package workspace, opened on one package (games/design/README.md 6.1, 6.7): `pkg` its id; `packages` every package,
  * { id, uses }; `onPackage` opens another; `space` the workspace switch. The levels play in the course the kernel
  * makes for the package.
  */

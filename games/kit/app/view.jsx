@@ -1,4 +1,4 @@
-import '../../../trace-viewer/src/index.css'
+import '../../../site/src/index.css'
 export { useState, useEffect, createElement } from 'react'
 export { WORDS } from '../shell/words.js'
 export { T } from '../shell/i18n.js'
@@ -91,7 +91,7 @@ export { qualifyItems } from '../engine/capabilities.js'
 
 export { isGrid } from '../engine/grid.js'
 
-export { createFigureHost } from '../../../trace-viewer/src/figures/host.js'
+export { createFigureHost } from '../../../site/src/figures/host.js'
 
 export { FigureHost, default as IntroFigure } from '../shell/IntroFigure.jsx'
 

@@ -7,7 +7,7 @@
   ],
   "see": [
     "@vision-complete/map",
-    "circuit/board",
+    "circuit-wiki/board",
     "image/bench"
   ]
 }

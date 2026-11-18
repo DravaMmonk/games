@@ -1,4 +1,4 @@
-import { progressMeaning } from '../../progress/core/index.js'
+import { progressMeaning } from '../../circuit-progress/core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { assembleCircuitFixture as assemble } from '../../qed/test/fixture.js'

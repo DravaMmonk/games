@@ -1,0 +1,13 @@
+{
+  "at": "state-graph/confluence",
+  "see": [
+    "circuit-wiki/board",
+    "circuit-wiki/parts",
+    "state-graph/countOpt"
+  ],
+  "body": [
+    "@circuit-wiki/glossary.entries.component.body.0",
+    "@circuit-wiki/glossary.entries.component.body.1",
+    "@glossary.entries.component.body.2"
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "package.desc": "按任务进度分阶段解锁电路元件。",
   "package.title": "学习进度",
-  "kind.tray.fields.includeUnlisted.about": "托盘之后继续显示本关其余已持有的元件"
+  "package.desc": "根据关卡和任务的通过记录，分阶段解锁课程中的对象。",
+  "kind.track.name": "进度轨迹"
 }

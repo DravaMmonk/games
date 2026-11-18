@@ -5,7 +5,5 @@
   "type": "module",
   "version": "0.0.0",
   "kernel": "^0.0.0",
-  "uses": {
-    "wiki": "^0.0.0"
-  }
+  "uses": {}
 }

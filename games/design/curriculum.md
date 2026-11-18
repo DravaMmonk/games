@@ -15,6 +15,22 @@
 }
 ```
 
+**对象进度。** `progress/track` 可以在包或游戏的 `progress-tracks/` 目录声明。每条轨迹用 `kind` 和 `target` 指定一个对象，同名的不同类型分开跟踪。阶段按顺序解锁，每个阶段用 `afterLevel` 或 `afterTask` 指定通过条件。首阶段省略条件时从开局可用。以通关记录计算当前阶段，无需额外存档。
+
+```json
+{
+  "title": "@progress.guide",
+  "kind": "entry",
+  "target": "guide",
+  "stages": [
+    { "id": "introduced", "afterTask": "first-task" },
+    { "id": "practised", "afterLevel": "practice" }
+  ]
+}
+```
+
+游戏通过 `game.objectProgress(progress).stage(kind, target)` 查询阶段。该方法返回当前阶段、待解锁时的 `null` 或未纳入轨迹时的 `undefined`。百科词条纳入轨迹后按该轨迹开放。其他对象的展示与行为由其使用包根据阶段决定。电路元件可继续用 `circuit-progress` 提供的专用阶段字段配置端口和设置。
+
 **先修来自关系。** 包的 `relations/<名>.json` 声明 `requires`；一条边两端都在课程里才生效。游戏要改变它，就覆盖这份关系，不另写一套依赖图。普通前置要求通过；来源关可跳过时，普通边改等它的前置，带 `required: true` 的边仍要求通过来源关。跨游戏边写 `{ "from": "qed/table", "game": "qed", "to": "…" }`，读取来源游戏的通过记录。参考解所需能力也参与技术依赖检查。关内任务的 `optional` 和课程的可选关分开。
 
 游戏只检查它选入的关；没选入的关和在那里打开的百科不进入这款游戏。托盘上的元件或阶段有没有关带来，只在完整选入相关包的游戏上判断。游戏用 `circuit/primitives` 标签选开局原始元件，用 `words` 选一套默认词表。`adds`、`local` 归关卡或任务，`replaces` 归包的关系。游戏可覆盖文案、先修边和标签成员。关卡机制、元件、阶段和托盘由包维护。

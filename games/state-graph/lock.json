@@ -3,47 +3,55 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "c197cff76d74d57bbfba7ce4a44ce6c92dcc6c28c022d1a7f1a2d1ca5d0ef54c"
-    },
-    "imglib": {
-      "version": "0.0.0",
-      "hash": "5e618d16c5fb692ff6c3b427c6918be91eaf14f4d4f770d0832f470ca1eee3d7"
-    },
-    "mllib": {
-      "version": "0.0.0",
-      "hash": "4623b9d49787a3bed86d207477c08c1522ff2eeb1bddc151bd0d9b550efe0666"
-    },
-    "cvlib": {
-      "version": "0.0.0",
-      "hash": "6197d7dadd95795d7144796d6fafd533b5b36aa3704f015c8313f729519a6d95"
-    },
-    "wiki": {
-      "version": "0.0.0",
-      "hash": "6116ff8c39833ce4cf8c3c95a082e2f635d8bce7ce58da0186eabc9879a05e90"
+      "hash": "a941befc4f1ecce7ae8aa6e2598624aa743b680ea6731abc6513baa34690a039"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "b3aa8399d06fe0249ad0b99d56892a0846887e34ab09a4471f84304b3f018242"
+      "hash": "01947ef80ec2f0cf0f1f7a70ac93bb74791268f3db1cd780cfa77e63b3795026"
     },
-    "image": {
+    "imglib": {
       "version": "0.0.0",
-      "hash": "79d03485333b068889ed6f0def93f554e21f4377fce7089295ae2362745fd810"
+      "hash": "758594ac3ce066dac3a42df24ad12f54101ffbe7968f965d85650fffcc7b92ed"
+    },
+    "mllib": {
+      "version": "0.0.0",
+      "hash": "1885ab4782069b98112ac4d9dd65532c1b1ab2e43a03ee82fc22b1c9b4bbbe5f"
+    },
+    "cvlib": {
+      "version": "0.0.0",
+      "hash": "fea59c767d5a3184cae6bcb3963482131130e2a08d3c6d86dadd0e3e9cd263e8"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "48c334c418f94107d4d0708d821d287485d3a247676f3d07e8167b054076d0c2"
+      "hash": "e7b87e82549cffadcfe693f309de527c2c1318601dbabd2e03bafb26fbb55e73"
+    },
+    "circuit-progress": {
+      "version": "0.0.0",
+      "hash": "adfb040dbe8746d48820fbbe22f8f1c0b0c5250a7f6c1982c270b7853a201d0a"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "479f4428654563b07515a7893bf6ae297fb414ec625d4323c7d1919fe2ebf9dc"
+    },
+    "circuit-wiki": {
+      "version": "0.0.0",
+      "hash": "2cc8bd9a310426d32de4c8b45fadd8b22add909b5d097bf58c442d05da969ed2"
+    },
+    "image": {
+      "version": "0.0.0",
+      "hash": "5bb2309c548f8911ee8a90313f53cf8333891693ef94018786c5e76664b0e8d6"
     },
     "table": {
       "version": "0.0.0",
-      "hash": "f37c5f70050e233a752b9500d469ab0d0b73dfafc840d3e748f217959f483d48"
+      "hash": "1257e1ceb92458713dc51e495eb33c143af088cc0a19299677d31f06d17072be"
     },
     "state-graph": {
       "version": "0.0.0",
-      "hash": "7cb03cc1d81ce283e846850ac38c91e002f8db35b84fd0b783add36bb2317071"
+      "hash": "51b3772fb8d83754e0efd1f49a4d665ce31847d328e9cb4fb97f933fdcdc67f3"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "6dc543076e806069ef9e2698c1659b633f36ef66be96a540d11ca12e097ebb4a"
+      "hash": "a952e903b8287f9b63ed79e7803df34b8b402af7ad4f67415dfb4a99c24a983f"
     }
   }
 }

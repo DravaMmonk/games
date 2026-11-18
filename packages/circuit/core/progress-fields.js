@@ -2,7 +2,7 @@
 export function progressFieldsProblems(content, vocabulary) {
   if (vocabulary.meanings?.some(meaning => meaning.circuitProgress)) return []
   const needs = (value, fields, at) => fields.filter(key => Object.hasOwn(value, key))
-    .map(key => ({ at: `${at}.${key}`, says: 'requires the progress package' }))
+    .map(key => ({ at: `${at}.${key}`, says: 'requires the circuit-progress package' }))
   const fields = ['adds', 'gives', 'withholds', 'opens', 'awards', 'local']
   return [
     ...content.levels.flatMap(level => [

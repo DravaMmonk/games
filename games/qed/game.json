@@ -4,10 +4,12 @@
     "qed": "^0.0.0",
     "circuit": "^0.0.0",
     "progress": "^0.0.0",
+    "circuit-progress": "^0.0.0",
     "logic": "^0.0.0",
     "numlib": "^0.0.0",
     "sentence": "^0.0.0",
     "wiki": "^0.0.0",
+    "circuit-wiki": "^0.0.0",
     "workshop": "^0.0.0"
   },
   "title": "@game.title",

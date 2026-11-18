@@ -2,7 +2,7 @@
   "at": "state-graph/copy",
   "see": [
     "@state-graph/robot",
-    "circuit/board",
+    "circuit-wiki/board",
     "table/dial"
   ]
 }

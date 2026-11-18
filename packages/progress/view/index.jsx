@@ -1,14 +1,14 @@
-import { installStageViews } from './game-stages.js'
-import './studio/stages.css'
-import { partAtStage } from '../core/studio-stages.js'
-import { partUnlocks } from '../core/unlocks.js'
-import StageChain from './studio/StageChain.jsx'
+import { LockOpen } from 'lucide-react'
+import { objectProgress } from '../core/index.js'
 
 export function register(kernel) {
-  kernel.game('progress/stages', (game) => {
-    game.partAtStage = partAtStage
-    installStageViews(game)
+  kernel.game('progress/tracks', (game, content) => { game.objectProgress = objectProgress(content) })
+  kernel.unlocks('progress/objects', (game, _level, before, after) => {
+    const previous = game.objectProgress({ ...before, all: false })
+    return game.objectProgress({ ...after, all: false }).reached()
+      .filter(({ kind, target, stage }) => previous.stage(kind, target)?.id !== stage.id)
+      .map(({ kind, target, title, stage }) => ({
+        key: JSON.stringify([kind, target]), kind: 'reward', label: stage.title ?? title, icon: LockOpen,
+      }))
   })
-  kernel.unlocks('progress/parts', partUnlocks)
-  kernel.editorExtension('progress/part', { type: 'circuit/part', stageChain: StageChain })
 }

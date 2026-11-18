@@ -2,7 +2,7 @@
   "title": "@tag.play.title",
   "values": [
     "logic/circuit",
-    "circuit/board",
+    "circuit-wiki/board",
     "logic/box"
   ]
 }

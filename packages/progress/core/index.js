@@ -1,76 +1,69 @@
-import { partProblems } from 'circuit'
-import { taskIdsOf, validate } from 'kernel'
-import { grantingFields } from './content-course.js'
-import { partStages } from './part-stages.js'
-import { progressCourse, RULE_TEXT } from './course.js'
-import { referenceDependencies, externalSupplies } from './course-links.js'
-import { courseChecks, referenceChecks } from './content-checks.js'
+import { completedTask } from 'kernel'
 
-export { partStages, stagePatch, requiredStage } from './part-stages.js'
-export { defineCourse, reach, met, audit, againstOpen, RULE_TEXT } from './course.js'
+export { grantingFields } from './content-course.js'
 
-const stagesOf = registries => partStages(registries['circuit/part'])
 export const levelMarks = { optional: 'progress/optional', skippable: 'progress/skippable' }
+const type = 'progress/track'
+const keyOf = (kind, target) => JSON.stringify([kind, target])
 
-export const progressMeaning = {
-  type: 'progress/part', read: value => value,
+export const trackMeaning = {
+  type,
+  read: value => value,
   vocabulary: vocabulary => ({ ...vocabulary, levelMarks }),
-  circuitProgress(course, parts, content, facts) {
-    Object.assign(course, grantingFields(content, facts))
-    if (content.standalone) {
-      const fallback = course.available
-      course.available = at => [...new Set(fallback(at).map(course.partOf))]
-      course.availableItems = at => {
-        const named = facts.task(at)?.tray ?? facts.level(at).tray
-        return named ? fallback(at) : [...course.stages.keys()]
+  contentChecks({ content }) {
+    const seen = new Set()
+    const problems = []
+    for (const [id, track] of Object.entries(content.registries?.[type] ?? {})) {
+      const key = keyOf(track.kind, track.target)
+      const at = `progress-tracks/${id}.json`
+      if (seen.has(key)) problems.push({ at: `${at}.target`, says: `more than one track for ${track.kind} ${track.target}` })
+      seen.add(key)
+      const stages = new Set()
+      for (const [index, stage] of (track.stages ?? []).entries()) {
+        const path = `${at}.stages[${index}]`
+        if (stages.has(stage.id)) problems.push({ at: `${path}.id`, says: `duplicate stage ${stage.id}` })
+        stages.add(stage.id)
+        if (stage.afterLevel && stage.afterTask) problems.push({ at: path, says: 'choose a level or a task for this stage' })
+        if (index > 0 && !stage.afterLevel && !stage.afterTask) problems.push({ at: path, says: 'a later stage needs a level or task to pass' })
       }
     }
-    return progressCourse(course, parts, content.registries?.['circuit/tray'] ?? course.trays)
+    return problems.map(({ at, says }) => ({ fail: true, text: `${at}: ${says}` }))
   },
-  studio: {
-    rules: RULE_TEXT,
-    member: (content, kind, name) => kind === 'circuit/part' ? stagesOf(content.registries ?? {}).get(name)?.definition : null,
-    owners: content => [...stagesOf(content.registries ?? {})].map(([id, { part }]) => [id, part]),
-  },
-  names: ({ name, vocabulary, objects, parts }) => ({
-    rewrite({ value, key, path }) {
-      if (key === 'id' && path.length === 3 && path[0] === 'stages') return { value: name(value) }
-      if (!['adds', 'local', 'gives', 'withholds', 'opens', 'awards'].includes(key) || !Array.isArray(value)) return undefined
-      if (path.length !== 1 && path.at(-3) !== 'tasks' && path.at(-2) !== 'reference') return undefined
-      const own = new Set([...parts ?? [], ...Object.keys(objects?.['circuit/part'] ?? {}).map(id => id.split('/').at(-1))])
-      return { value: value.map(id => (!own.has(id.split(/[.=]/)[0]) && vocabulary?.kinds.primitive?.[id]) ? id : name(id)) }
-    },
-  }),
-  identities: ({ kind, value }) => kind === 'circuit/part' ? (value.stages ?? []).map(stage => ({ kind, name: stage.id, value: stage })) : [],
-  indexes: ({ registries }) => [...stagesOf(registries)].filter(([, entry]) => entry.index > 0)
-    .map(([name, entry]) => ({ kind: 'circuit/part', name, value: entry.definition })),
-  relationProblems({ name, relation, edges, expand }) {
-    if (relation.kind !== 'replaces') return []
-    const stages = stagesOf(expand.registries)
-    return edges.flatMap(edge => [edge.from, edge.to].flatMap(endpoint =>
-      expand(endpoint, 'circuit/part').some(id => stages.get(id)?.index > 0)
-        ? [{ at: `relations/${name}`, says: 'replaces only links different base parts; stages upgrade in their declared order' }] : []))
-  },
-  dependencies: referenceDependencies,
-  plan: externalSupplies,
-  supplies: ({ plan, level }) => plan.externalAwardSources?.has(level),
-  validate({ content, vocabulary }) {
-    const tasks = taskIdsOf(content.levels)
-    const stageSchema = vocabulary.objectKinds?.['progress/part']?.fields.stages
-    const definitions = content.partDefs?.parts ?? content.registries?.['circuit/part'] ?? {}
-    const problems = stageSchema ? Object.entries(definitions).flatMap(([id, part]) =>
-      (part.stages === undefined ? [] : validate(stageSchema, part.stages, { vocabulary, tasks })).map(problem =>
-        ({ at: `parts/${id}.json.stages${problem.at === '(root)' ? '' : problem.at}`, says: problem.says }))) : []
-    if (problems.length) return problems
-    return [...partStages(definitions)].flatMap(([id, entry]) => entry.index ?
-      partProblems({ parts: { [entry.part]: entry.definition } }, vocabulary, { tasks })
-        .map(problem => ({ ...problem, at: `${problem.at} (stage ${id})` })) : [])
-  },
+}
+
+/** Read the highest consecutively reached stage of any tracked object from the existing task save. */
+export function objectProgress(content) {
+  const tracks = new Map(Object.values(content.registries?.[type] ?? {}).map(track => [keyOf(track.kind, track.target), track]))
+  const tasks = new Map(content.levels.flatMap(level => (level.tasks ?? []).map(task => [task.id, { level: level.id, optional: task.optional }])))
+  return progress => {
+    const solved = new Set(progress.solved)
+    const reached = ({ afterLevel, afterTask }) => {
+      if (progress.all) return true
+      if (afterLevel) return solved.has(afterLevel)
+      if (!afterTask) return true
+      const task = tasks.get(afterTask)
+      return Boolean(task && completedTask(progress, task.level, afterTask, task.optional))
+    }
+    const stage = (track) => {
+      const stages = track.stages ?? []
+      const locked = stages.findIndex(entry => !reached(entry))
+      return locked < 0 ? stages.at(-1) : stages[locked - 1]
+    }
+    return {
+      // Undefined is untracked; null is tracked but still locked.
+      stage(kind, target) {
+        const track = tracks.get(keyOf(kind, target))
+        return track && (stage(track) ?? null)
+      },
+      reached: () => [...tracks.values()].flatMap(track => {
+        const current = stage(track)
+        return current ? [{ ...track, stage: current }] : []
+      }),
+    }
+  }
 }
 
 export function register(kernel) {
   for (const name of Object.values(levelMarks)) kernel.tag(name, 'level')
-  kernel.kind('progress/part', progressMeaning)
-  kernel.check('progress/course', Object.assign(courseChecks, { phase: 'course' }))
-  kernel.check('progress/references', Object.assign(referenceChecks, { phase: 'references' }))
+  kernel.kind('progress/track', trackMeaning)
 }

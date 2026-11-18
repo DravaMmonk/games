@@ -19,3 +19,4 @@
 {"seq":19,"at":"2026-11-18T09:16:01.216Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[{"file":"packages/circuit/i18n/en.json","after":"6e69f2cf81f3a480"}]}
 {"seq":20,"at":"2026-11-18T09:51:09.114Z","why":"Move register-specific declarations into tick","adopt":true,"files":[{"file":"packages/circuit/kinds/part.json","after":"ef592ff2dfcaa745"},{"file":"packages/circuit/shapes/compiled-parts.json","after":"5b897421dea0ac2b"},{"file":"packages/circuit/capabilities/operation.json","after":"453704a1116b3a6f"}]}
 {"seq":21,"at":"2026-11-18T10:11:24.976Z","why":"Classify packages by functional responsibility","adopt":true,"files":[{"file":"packages/circuit/package.json","after":"a3ffabbb4db430a1"}]}
+{"seq":22,"at":"2026-11-18T12:49:13.558Z","why":"Separate generic learning progress and optional circuit encyclopedia content","adopt":true,"files":[{"file":"packages/circuit/package.json","after":"df7d7767f4ef9bc6"}]}

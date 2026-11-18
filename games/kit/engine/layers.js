@@ -12,8 +12,11 @@ export const folders = { level: 'levels', tag: 'tags', relation: 'relations', ch
 export const kindForFolder = Object.fromEntries(Object.entries(folders).map(([kind, folder]) => [folder, kind]))
 export const schemaForKind = (kind, schemas = {}, value) => {
   const schema = ({ level: schemas.level, game: schemas.game, ...kindSchemas(schemas), ...Object.fromEntries(Object.entries(OBJECT_SCHEMAS).map(([folder, schema]) => [kindForFolder[folder], schema])) })[kind]
-  if (!value || !['tag', 'relation'].includes(kind)) return schema
-  const reference = kind === 'tag' ? value.kind : value.kind === 'requires' ? 'level' : Object.values(schemas.objectKinds ?? {}).map(d => d.relations?.[value.kind]?.from).find(Boolean) ?? 'any'
+  if (!value || !schema) return schema
+  if (!['tag', 'relation'].includes(kind) && !Object.values(schema.fields ?? {}).some(field => field.reference === '$kind')) return schema
+  const reference = kind === 'relation'
+    ? (value.kind === 'requires' ? 'level' : Object.values(schemas.objectKinds ?? {}).map(d => d.relations?.[value.kind]?.from).find(Boolean) ?? 'any')
+    : value.kind
   const bind = s => s && { ...s, ...(s.reference?.startsWith('$') && { reference }), ...(s.of && { of: bind(s.of) }), ...(s.fields && { fields: Object.fromEntries(Object.entries(s.fields).map(([key, field]) => [key, bind(field)])) }) }
   return bind(schema)
 }

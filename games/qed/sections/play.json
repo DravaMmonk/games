@@ -3,7 +3,7 @@
   "values": [
     "@qed/map",
     "logic/circuit",
-    "circuit/board",
+    "circuit-wiki/board",
     "logic/box"
   ]
 }

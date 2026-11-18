@@ -35,19 +35,19 @@ test('progress fields name the required package and leave bench-local stages alo
   assert.deepEqual(problems.map(problem => problem.at), [
     'levels/level.json.adds', 'levels/level.json.tasks[0].opens', 'parts/part.json.stages', 'trays/tray.json.includeUnlisted',
   ])
-  assert.ok(problems.every(problem => problem.says.includes('progress package')))
+  assert.ok(problems.every(problem => problem.says.includes('circuit-progress package')))
   assert.deepEqual(progressFieldsProblems(content, { meanings: [progressMeaning] }), [])
 })
 
 test('progress registers its course, unlocks and Studio extensions through paired entries', async () => {
   try {
     const kernel = createPluginKernel()
-    register(kernel.forPackage('progress', 'core'))
+    register(kernel.forPackage('circuit-progress', 'core'))
     const view = await loadModule(new URL('../view/index.jsx', import.meta.url).pathname)
-    view.register(kernel.forPackage('progress', 'view'))
-    assert.equal(typeof kernel.tables.kind.get('progress/part').circuitProgress, 'function')
-    assert.equal(typeof kernel.tables.unlocks.get('progress/parts'), 'function')
-    assert.equal(typeof kernel.tables.editorExtension.get('progress/part').stageChain, 'function')
+    view.register(kernel.forPackage('circuit-progress', 'view'))
+    assert.equal(typeof kernel.tables.kind.get('circuit-progress/part').circuitProgress, 'function')
+    assert.equal(typeof kernel.tables.unlocks.get('circuit-progress/parts'), 'function')
+    assert.equal(typeof kernel.tables.editorExtension.get('circuit-progress/part').stageChain, 'function')
   } finally {
     await closeGames()
   }

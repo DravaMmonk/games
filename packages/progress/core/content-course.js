@@ -4,11 +4,11 @@ export function grantingFields(content, { level, tasks, task, local, additions, 
   const defaultAdds = (at) => unique([...(level(at).adds ?? []), ...tasks(at)
     .slice(0, at.task === undefined ? undefined : at.task + 1).flatMap((task) => task.adds ?? [])])
   const adds = (at) => additions?.(at) ?? defaultAdds(at)
-  const localAt = (part, at) => local.includes(part) || (level(at).local ?? []).includes(part)
-    || tasks(at).some((task, index) => (at.task === undefined || index === at.task) && (task.local ?? []).includes(part))
-  const isLocal = (part, at) => at ? localAt(part, at) : local.includes(part)
-    || content.levels.some((level) => localAt(part, level))
-      && !content.levels.some((level) => defaultAdds(level).includes(part) && !localAt(part, level))
+  const localAt = (item, at) => local.includes(item) || (level(at).local ?? []).includes(item)
+    || tasks(at).some((task, index) => (at.task === undefined || index === at.task) && (task.local ?? []).includes(item))
+  const isLocal = (item, at) => at ? localAt(item, at) : local.includes(item)
+    || content.levels.some((level) => localAt(item, level))
+      && !content.levels.some((level) => defaultAdds(level).includes(item) && !localAt(item, level))
 
   return {
     adds, local: isLocal,

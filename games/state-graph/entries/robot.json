@@ -7,7 +7,7 @@
   ],
   "at": "state-graph/copy",
   "see": [
-    "circuit/board",
+    "circuit-wiki/board",
     "table/testBoard",
     "@state-graph/models"
   ]

@@ -3,14 +3,14 @@
   "values": [
     "@vision-complete/game",
     "@vision-complete/map",
-    "circuit/board",
+    "circuit-wiki/board",
     "image/tests",
     "image/details",
     "@vision-complete/intro",
-    "circuit/layout",
-    "circuit/wiremode",
+    "circuit-wiki/layout",
+    "circuit-wiki/wiremode",
     "image/bench",
-    "circuit/parts",
+    "circuit-wiki/parts",
     "image/score",
     "image/views",
     "image/training"

@@ -274,8 +274,8 @@ packages/<包>/
 
 | 种类 | 是什么 | 包 |
 |---|---|---|
-| `feature` | 独立功能及其通用交互 | `circuit`、`sentence`、`text`、`wiki` |
-| `ext` | 依托已有功能提供特定场景的拓展 | `image`、`logic`、`table`、`tick`、`progress`、`workshop` |
+| `feature` | 独立功能及其通用交互 | `circuit`、`sentence`、`text`、`wiki`、`progress` |
+| `ext` | 依托已有功能提供特定场景的拓展 | `image`、`logic`、`table`、`tick`、`circuit-progress`、`circuit-wiki`、`workshop` |
 | `course` | 一款游戏自己的内容 | `qed`、`vision-complete`、`state-graph` |
 | `lib` | 可复用的数据结构、算法和底层能力 | `numlib`、`imglib`、`cvlib`、`mllib` |
 

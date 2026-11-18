@@ -1,15 +1,5 @@
 {
-  "package.desc": "Unlocks circuit parts and their stages as players complete tasks.",
   "package.title": "Learning progress",
-  "ui": {
-    "元件里写全": "In the part",
-    "固定": "fixed",
-    "收窄": "Narrowed",
-    "新的阶段": "New stage",
-    "生效": "In effect",
-    "设置": "Setting",
-    "运算声明": "Declared",
-    "阶段": "Stages"
-  },
-  "kind.tray.fields.includeUnlisted.about": "after this tray, show the other parts held in this level"
+  "package.desc": "Tracks the stages at which any course object becomes available.",
+  "kind.track.name": "Progress tracks"
 }

@@ -3,39 +3,47 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "c197cff76d74d57bbfba7ce4a44ce6c92dcc6c28c022d1a7f1a2d1ca5d0ef54c"
-    },
-    "numlib": {
-      "version": "0.0.0",
-      "hash": "4f6404ab3a404d21071cfeea7db88bdefb5447c7e8d5ea183081ae5852ced3f7"
-    },
-    "sentence": {
-      "version": "0.0.0",
-      "hash": "073433734a6e603521799b9d1d35de3f536735285909820817a5b041b04b7846"
-    },
-    "wiki": {
-      "version": "0.0.0",
-      "hash": "6116ff8c39833ce4cf8c3c95a082e2f635d8bce7ce58da0186eabc9879a05e90"
+      "hash": "a941befc4f1ecce7ae8aa6e2598624aa743b680ea6731abc6513baa34690a039"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "b3aa8399d06fe0249ad0b99d56892a0846887e34ab09a4471f84304b3f018242"
+      "hash": "01947ef80ec2f0cf0f1f7a70ac93bb74791268f3db1cd780cfa77e63b3795026"
     },
-    "logic": {
+    "numlib": {
       "version": "0.0.0",
-      "hash": "99b3d2b48ebfffd3e03dc75ce0b24b1c0f22e2f2d83faa12e6590583aa2f0a57"
+      "hash": "ce69be6241c5d3a2290a02af5323a498763c57a590bac31ed59df287f6de2490"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "48c334c418f94107d4d0708d821d287485d3a247676f3d07e8167b054076d0c2"
+      "hash": "e7b87e82549cffadcfe693f309de527c2c1318601dbabd2e03bafb26fbb55e73"
+    },
+    "circuit-progress": {
+      "version": "0.0.0",
+      "hash": "adfb040dbe8746d48820fbbe22f8f1c0b0c5250a7f6c1982c270b7853a201d0a"
+    },
+    "sentence": {
+      "version": "0.0.0",
+      "hash": "2b7730fc4920d6db18ab12e98e6f04aa30ed0c9e3fd208edc9ce11999c9c5109"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "479f4428654563b07515a7893bf6ae297fb414ec625d4323c7d1919fe2ebf9dc"
+    },
+    "circuit-wiki": {
+      "version": "0.0.0",
+      "hash": "2cc8bd9a310426d32de4c8b45fadd8b22add909b5d097bf58c442d05da969ed2"
+    },
+    "logic": {
+      "version": "0.0.0",
+      "hash": "f570a40a5796064e0c071feda27fd1031556af9e1b1b934daba9e7084126145b"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "6dc543076e806069ef9e2698c1659b633f36ef66be96a540d11ca12e097ebb4a"
+      "hash": "a952e903b8287f9b63ed79e7803df34b8b402af7ad4f67415dfb4a99c24a983f"
     },
     "qed": {
       "version": "0.0.0",
-      "hash": "1b94725fbb9f55b9c57011d3ca877a5e2a4e8da237d1d2b8ee2e77c76de42864"
+      "hash": "08790fab98cda3b655591c4a574cc0157836c8e08d16ee64e7b0dfe28a0bca41"
     }
   }
 }

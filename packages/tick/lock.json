@@ -3,23 +3,27 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "c197cff76d74d57bbfba7ce4a44ce6c92dcc6c28c022d1a7f1a2d1ca5d0ef54c"
-    },
-    "numlib": {
-      "version": "0.0.0",
-      "hash": "4f6404ab3a404d21071cfeea7db88bdefb5447c7e8d5ea183081ae5852ced3f7"
-    },
-    "wiki": {
-      "version": "0.0.0",
-      "hash": "6116ff8c39833ce4cf8c3c95a082e2f635d8bce7ce58da0186eabc9879a05e90"
+      "hash": "a941befc4f1ecce7ae8aa6e2598624aa743b680ea6731abc6513baa34690a039"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "b3aa8399d06fe0249ad0b99d56892a0846887e34ab09a4471f84304b3f018242"
+      "hash": "01947ef80ec2f0cf0f1f7a70ac93bb74791268f3db1cd780cfa77e63b3795026"
+    },
+    "numlib": {
+      "version": "0.0.0",
+      "hash": "ce69be6241c5d3a2290a02af5323a498763c57a590bac31ed59df287f6de2490"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "48c334c418f94107d4d0708d821d287485d3a247676f3d07e8167b054076d0c2"
+      "hash": "e7b87e82549cffadcfe693f309de527c2c1318601dbabd2e03bafb26fbb55e73"
+    },
+    "circuit-progress": {
+      "version": "0.0.0",
+      "hash": "adfb040dbe8746d48820fbbe22f8f1c0b0c5250a7f6c1982c270b7853a201d0a"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "479f4428654563b07515a7893bf6ae297fb414ec625d4323c7d1919fe2ebf9dc"
     }
   }
 }

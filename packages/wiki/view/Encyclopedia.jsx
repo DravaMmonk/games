@@ -39,7 +39,11 @@ export function useWiki(game, progress, solved, level) {
     const at = game.byId[id]
     return !at || progress.all || solved.has(id) || id === level?.id || game.isOpen(at, solved, progress.all)
   }
-  const isOpen = (entry) => !entry.at || reached(entry.at)
+  const tracks = game.objectProgress?.(progress)
+  const isOpen = (entry) => {
+    const stage = tracks?.stage('entry', entry.id)
+    return stage === undefined ? !entry.at || reached(entry.at) : stage !== null
+  }
   const unread = entries.filter((entry) => isOpen(entry) && !seen.has(entry.id))
   return { groups, entries, isOpen, unread, seen, markSeen }
 }
@@ -59,7 +63,8 @@ export function openedEntries(game, entries, level, before, after) {
   }
   const was = reachedIn(before, level.id)
   const now = reachedIn(after)
-  return entries.filter((entry) => entry.at && !was(entry.at) && now(entry.at))
+  const tracks = game.objectProgress?.(after)
+  return entries.filter((entry) => tracks?.stage('entry', entry.id) === undefined && entry.at && !was(entry.at) && now(entry.at))
 }
 
 export default function Encyclopedia({ game, wiki, level, phone, start, edit = null, onClose }) {

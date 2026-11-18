@@ -1,13 +1,13 @@
 {
   "at": "state-graph/copy",
   "see": [
-    "circuit/component",
+    "circuit-wiki/component",
     "@state-graph/robot",
-    "circuit/parts"
+    "circuit-wiki/parts"
   ],
   "body": [
-    "@circuit/glossary.entries.board.body.0",
-    "@circuit/glossary.entries.board.body.1",
+    "@circuit-wiki/glossary.entries.board.body.0",
+    "@circuit-wiki/glossary.entries.board.body.1",
     "@glossary.entries.board.body.2",
     "@glossary.entries.board.body.3"
   ]

@@ -2,12 +2,10 @@ import { lazy, Suspense, useMemo } from 'react'
 import { defineGame } from '../index.js'
 import { tr } from '../i18n.js'
 
-const ManualBoardPlay = lazy(() => import('./ManualBoardPlay.jsx'))
 const FieldRows = lazy(() => import('./FieldRows.jsx'))
 const ValueTables = lazy(() => import('./ValueTables.jsx'))
 
 const bind = {
-  board: (play, resource) => (screen) => <ManualBoardPlay screen={screen} play={play} resource={resource} />,
   values: (play, prepare) => resourceScreen(ValueTables, play, prepare),
   fields: (play, prepare) => resourceScreen(FieldRows, play, prepare),
 }

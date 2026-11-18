@@ -3,11 +3,11 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "e00529f9f7481a485bbe2a3120330577db37ec6c62d297554bd570fa633a5716"
+      "hash": "5cd1fdb1a105fc25de50cd1080aa211d6cb84b5a3a737b1cc3ba81e8d96fff75"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "854160fb95cac54297a110c6e267349696f5a902f0ba98ba00c394a72f281737"
+      "hash": "78ec3d3e177c0f8b7ff3c648ec43bdda7375736d259d5bbddd9c32c99784e2c7"
     }
   }
 }

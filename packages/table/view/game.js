@@ -1,3 +1,4 @@
+import { createElement, lazy } from 'react'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
 // A table game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
@@ -15,6 +16,9 @@ import { modelsOf } from '../core/model/parts.js'
 import { robotOf } from '../core/model/robots.js'
 import { T } from '../core/lang.js'
 import { tableWorks } from '../core/work.js'
+
+const ManualBoardPlay = lazy(() => import('./ManualBoardPlay.jsx'))
+const manualBoardScreen = (play, resource) => (screen) => createElement(ManualBoardPlay, { screen, play, resource })
 
 const { partDemo, lookIcon } = ui['catalog']
 
@@ -89,7 +93,7 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),
     intro: (level) => level.intro,
     IntroFigure: ui['introduction'],
-    kinds: playKinds(plays, { ...hand, robot: ui['circuit'](table) }, icons, { circuit: circuitScreen }),
+    kinds: playKinds(plays, { ...hand, robot: ui['circuit'](table) }, icons, { circuit: circuitScreen, board: manualBoardScreen }),
     unlocked: (level) => level.unlocks.map((k) => ({ part: k, label: PARTS[k].name })),
     core: (level) => isCore(course, level),
     parts: {

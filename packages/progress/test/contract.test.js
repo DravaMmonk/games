@@ -28,12 +28,12 @@ test('progress fields name the required package and leave bench-local stages alo
     levels: [{ id: 'level', adds: ['part'], tasks: [{ opens: ['upgraded'], setup: { stages: [] } }] }],
     registries: {
       'circuit/part': { part: { stages: [{ id: 'upgraded' }] } },
-      'circuit/tray': { tray: { workshop: false } },
+      'circuit/tray': { tray: { includeUnlisted: true } },
     },
   }
   const problems = progressFieldsProblems(content, {})
   assert.deepEqual(problems.map(problem => problem.at), [
-    'levels/level.json.adds', 'levels/level.json.tasks[0].opens', 'parts/part.json.stages', 'trays/tray.json.workshop',
+    'levels/level.json.adds', 'levels/level.json.tasks[0].opens', 'parts/part.json.stages', 'trays/tray.json.includeUnlisted',
   ])
   assert.ok(problems.every(problem => problem.says.includes('progress package')))
   assert.deepEqual(progressFieldsProblems(content, { meanings: [progressMeaning] }), [])
@@ -48,7 +48,6 @@ test('progress registers its course, unlocks and Studio extensions through paire
     assert.equal(typeof kernel.tables.kind.get('progress/part').circuitProgress, 'function')
     assert.equal(typeof kernel.tables.unlocks.get('progress/parts'), 'function')
     assert.equal(typeof kernel.tables.editorExtension.get('progress/part').stageChain, 'function')
-    assert.equal(typeof kernel.tables.editorExtension.get('progress/tray').workshop, 'function')
   } finally {
     await closeGames()
   }

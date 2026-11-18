@@ -1,10 +1,6 @@
 {
   "extends": "circuit/tray",
   "fields": {
-    "workshop": {
-      "type": "bool",
-      "optional": true
-    },
     "includeUnlisted": {
       "type": "bool",
       "optional": true,

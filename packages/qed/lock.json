@@ -19,15 +19,19 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "43f4a85ac80ace88d231d70bbc2fee54c86e9ab6c4b554580e415bb2e1020fb8"
+      "hash": "db9bd8ee0a94363bf8e54cb2ced2c793fadbd6077ce11a313cc165a2023bf367"
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "8df3cc6ca78c0cd79a9c8d59f9bb92e7d9ecc4544e0c953513fa6bb768794197"
+      "hash": "69e3396b7ec1559279d2781cab93d7d4fcf2ab9c80ac8c12e3650840df4748e7"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "f5a5f1f879bb4934980f5b018d93c7b79080e32ccdcc0d0a1a6694a5a6801f57"
+      "hash": "4a890b700d6dd4cd3faaca80c6f2b2557a2b0f7d9931959eea1e507a92bddb4a"
+    },
+    "workshop": {
+      "version": "0.0.0",
+      "hash": "6e72fb2331e74cf5a631340c0e9936c00ab41d1ad98f56b551ccdea4b0cf3df4"
     }
   }
 }

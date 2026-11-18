@@ -5,4 +5,5 @@ import * as play from '../core/run.js'
 // line, the inputs, and what the board gives against what it should, on one time axis (run.js entries).
 export const screen = {
   play,
+  timeline: { steps: run => run.ticks, count: test => test.ticks },
 }

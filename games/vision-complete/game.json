@@ -8,7 +8,8 @@
     "imglib": "^0.0.0",
     "cvlib": "^0.0.0",
     "mllib": "^0.0.0",
-    "wiki": "^0.0.0"
+    "wiki": "^0.0.0",
+    "workshop": "^0.0.0"
   },
   "title": "@game.title",
   "author": "DravaMmonk",

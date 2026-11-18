@@ -9,7 +9,7 @@ import { plainBoard } from '../../circuit/core/contracts.js'
 import { readStarter } from '../../qed/test/fixture.js';
 import { print, read } from '../../circuit/core/board/text.js'
 import { readLines } from 'circuit'
-import { workshopView } from 'progress'
+import { workshopView } from '../../workshop/core/workshop-view.js'
 import { tableWorks as prepareWorks } from '../../table/core/work.js';
 const tableWorks = content => prepareWorks(content.tableWorlds ? content : { ...content, tableWorlds: WORLDS });
 import { fitted, portsProblem } from '../../table/core/model/board.js'

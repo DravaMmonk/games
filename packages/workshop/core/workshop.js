@@ -76,7 +76,7 @@ export const workshopInTray = (part, tray, types) => part.tray === tray
 export function workshopIdentity(definitions, type) {
   const definition = definitions?.parts?.[type]
   if (!definition) return canonicalJson([type, null])
-  const { op, keeps, nulls, inputs, outputs, outputType, regions, checks } = operationPart(definition)
+  const { op, nulls, inputs, outputs, outputType, regions, checks } = operationPart(definition)
   // Resolve catalog references before comparing the settings used by the circuit.
   const settings = resolveSettings(definition).map((setting) => {
     const { key, control, optional, integer, min, max, options, from } = setting
@@ -84,7 +84,7 @@ export function workshopIdentity(definitions, type) {
       options: options?.map(({ value }) => value), from }
   })
   return canonicalJson([type, {
-    op, keeps, nulls, outputType, settings,
+    op, nulls, outputType, settings,
     inputs: inputs?.map(({ name, type, optional }) => [name, type, optional]),
     outputs: outputs?.map(({ name }) => name),
     regions: regions?.map(({ name, opens, closes, gives, when }) => [name, opens, closes, gives, when]),
@@ -221,7 +221,7 @@ export function workshopDefinitions(library) {
 }
 
 /** The same packed runner is used for a manually saved board and a published reward. */
-export function workshopParts(library, resolve, { ticks = false } = {}) {
+export function workshopParts(library, resolve, { pack = packed } = {}) {
   const definitions = new Map()
   const entries = workshopDefinitions(library)
   const partOf = (type) => {
@@ -230,8 +230,8 @@ export function workshopParts(library, resolve, { ticks = false } = {}) {
     if (!entries.has(type)) return resolve(type)
     if (!definitions.has(type)) {
       const { graph, inputs, outputs, name, description } = entries.get(type)
-      definitions.set(type, packed({
-        circuit: withBoardRuntime(graph, () => partOf), inputs, outputs, holds: ticks,
+      definitions.set(type, pack({
+        circuit: withBoardRuntime(graph, () => partOf), inputs, outputs,
         name, desc: description, anySize: true,
       }))
     }

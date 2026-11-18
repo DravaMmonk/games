@@ -60,7 +60,7 @@ export function courseWorkshop(game, load) {
 /** Add player-owned runtime parts without mutating the course's shared definitions. */
 export function workshopView(circuit, library, available, runtime) {
   const parts = Object.fromEntries(Object.entries(library.parts).filter(([, part]) => available(part)))
-  const partOf = workshopParts({ parts: library.parts }, runtime, { ticks: circuit.board.ticks })
+  const partOf = workshopParts({ parts: library.parts }, runtime, { pack: circuit.board.pack })
   const indexes = workshopDefinitions({ parts })
   const known = (type) => indexes.has(type)
   const own = (node) => known(node.type)
@@ -88,7 +88,6 @@ export function workshopView(circuit, library, available, runtime) {
             outputs: (node) => own(node) ? outputsOf(indexes.get(node.type)) : original.outputs(node),
             packed: (node) => own(node) || original.packed?.(node),
             portLabel: (node, port) => own(node) ? port : original.portLabel?.(node, port),
-            holds: (node) => own(node) ? Boolean(base.ticks) : original.holds?.(node),
           }
         },
       },

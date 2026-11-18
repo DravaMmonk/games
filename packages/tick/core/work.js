@@ -1,5 +1,5 @@
 import { readWorks } from 'circuit'
-import { operations, packRegisters } from './registers.js'
+import { operations } from './registers.js'
 // A tick game's course, from its course configuration and content package ( vocabulary.js says what may be
 // in it): the play order and level tree from its eras (kernel course layout); each level's tasks
 // (kernel task reader), each read with its tests on the line its world says and what its outputs must be
@@ -33,5 +33,5 @@ export function* prepareWorks(content) {
   }
   // A task's wants read; a built part keeps its own registers.
   // The parts are the game's parts.json over the domain's resources.
-  return yield* preparePartsWorks(content, operations, { board, read: (task) => ({ ...task, want: wantOf(task.want) }), test, pack: packRegisters })
+  return yield* preparePartsWorks(content, operations, { board, read: (task) => ({ ...task, want: wantOf(task.want) }), test })
 }

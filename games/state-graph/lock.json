@@ -23,23 +23,27 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "43f4a85ac80ace88d231d70bbc2fee54c86e9ab6c4b554580e415bb2e1020fb8"
+      "hash": "db9bd8ee0a94363bf8e54cb2ced2c793fadbd6077ce11a313cc165a2023bf367"
     },
     "image": {
       "version": "0.0.0",
-      "hash": "b5a4f5fb80ec53b8e26e541c34fa382a81a08fa66133a759051abc7d11039997"
+      "hash": "27fea2eb557baafd7ee511319b3da3b129308689c638ca267985d434e4436bfb"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "f5a5f1f879bb4934980f5b018d93c7b79080e32ccdcc0d0a1a6694a5a6801f57"
+      "hash": "4a890b700d6dd4cd3faaca80c6f2b2557a2b0f7d9931959eea1e507a92bddb4a"
     },
     "table": {
       "version": "0.0.0",
-      "hash": "54dcc4e9f120548c2bfcca41ad91d12a350dbce3db7b68df40ef7bdf965026b5"
+      "hash": "c41b3c940d1839e826473c92406307682bbf6115ce6979c11ef545e64c19ba42"
     },
     "state-graph": {
       "version": "0.0.0",
-      "hash": "9579536f6970ad6cb4ba0838490f9c48de191fc48621389f094ebcaecdbd4fcc"
+      "hash": "de9062e7e3a7ba745d0a6ea919c2e735f5d6c73b61647c6af779cf02bc676f82"
+    },
+    "workshop": {
+      "version": "0.0.0",
+      "hash": "6e72fb2331e74cf5a631340c0e9936c00ab41d1ad98f56b551ccdea4b0cf3df4"
     }
   }
 }

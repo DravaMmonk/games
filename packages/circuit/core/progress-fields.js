@@ -10,6 +10,6 @@ export function progressFieldsProblems(content, vocabulary) {
       ...(level.tasks ?? []).flatMap((task, index) => needs(task, fields, `levels/${level.id}.json.tasks[${index}]`)),
     ]),
     ...Object.entries(content.registries?.['circuit/part'] ?? {}).flatMap(([id, part]) => needs(part, ['stages'], `parts/${id}.json`)),
-    ...Object.entries(content.registries?.['circuit/tray'] ?? {}).flatMap(([id, tray]) => needs(tray, ['workshop'], `trays/${id}.json`)),
+    ...Object.entries(content.registries?.['circuit/tray'] ?? {}).flatMap(([id, tray]) => needs(tray, ['includeUnlisted'], `trays/${id}.json`)),
   ]
 }

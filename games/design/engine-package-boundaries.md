@@ -34,6 +34,8 @@
 
 库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `scalar` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `scalar/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if`。逐拍玩法 `tick` 提供 `tick/held` 和 `tick/keep`，管理每拍提交及封装元件的寄存器作用域。接线检查与封装求值接收玩法提供的扩展规则。
 
+可选包 `progress` 和 `workshop` 分别直接依赖 `circuit`。前者管理课程发放、阶段和解锁，后者管理玩家工坊、跨游戏复用与通关时的个人元件发布。个人元件和课程元件都使用各玩法提供的电路封装器。电路蓝图的读写归 `circuit`，课程蓝图归 Pipeline。
+
 `capabilities/<kind>.json` 提供 `name`、`studio.label`、可选的 `studio.order`、`items` 和 `implementation`。包用 `{ "extends": "<kind>", "items": { ... } }` 给自身或直接依赖的能力种类贡献项，项名仍归贡献包。内核提供通用的 `valueType`、`language` 和 `play`。`circuit` 定义 `operation`、`primitive`、`board`、`display` 等共享种类。逻辑、图像、表格和逐拍玩法各自定义专用种类，例如 `logic/want`、`image/scene`、`table/world` 和 `tick/want`。
 
 JSON 声明名字、字段、类型、默认值和对作者有用的双语说明。纯数据项直接使用，需要代码的项由种类的 `implementation.side` 指定入口，核心可以要求指定方法。用 `kernel.implement(kind, name, value)` 挂上行为。实现的名字须已声明，要求实现的名字须在对应入口登记，同类的重复登记会报错。要求无界面检查验证的视图能力在视图入口用字面量登记种类和全名。玩法可以在能力声明中列名，也可以用 `kinds/` 中的 `play` 字段随任务字段一起声明。

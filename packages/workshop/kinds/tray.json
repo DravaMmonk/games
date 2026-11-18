@@ -1,0 +1,18 @@
+{
+  "extends": "circuit/tray",
+  "fields": {
+    "workshop": {
+      "type": "bool",
+      "optional": true
+    }
+  },
+  "declares": "package",
+  "overrides": {
+    "package": [
+      "*"
+    ],
+    "game": [
+      "$text"
+    ]
+  }
+}

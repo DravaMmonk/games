@@ -1,9 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { packed, runBoard, sink, source } from 'circuit'
-import { captureWorkshop, draftWorkshop, featureWorkshop, loadWorkshop, publishWorkshop, removeWorkshopPart, workshopAvailable, workshopCompatible, workshopEntries, trayKey, workshopIdentity, workshopInTray, workshopParts } from '../core/index.js'
+import { captureWorkshop, draftWorkshop, featureWorkshop, loadWorkshop, publishWorkshop, removeWorkshopPart, workshopAvailable, workshopCompatible, workshopEntries, trayKey, workshopIdentity, workshopInTray, workshopParts } from '../core/workshop.js'
 
-import { addTerminalPort, addWorkshopTerminal, editWorkshopTerminal, flattenWorkshopTerminals, sideLabels, terminalPorts, workshopTerminalParts, WORKSHOP_OUTPUT } from '../core/index.js'
+import { addTerminalPort, addWorkshopTerminal, editWorkshopTerminal, flattenWorkshopTerminals, sideLabels, terminalPorts, workshopTerminalParts, WORKSHOP_OUTPUT } from '../core/workshop-terminals.js'
 
 const inNode = (id) => ({ id, type: 'in', params: { name: id } })
 const outNode = (id) => ({ id, type: 'out', params: { name: id } })

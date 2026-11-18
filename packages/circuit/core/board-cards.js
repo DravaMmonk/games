@@ -1,14 +1,15 @@
 // The board of a circuit task (games/design/README.md 6.3): the cards the task gives it, where they stand, how a saved board
 // still fits the task, and the board as blueprint text. A domain says which cards its tasks give:
 //
-//   circuitBoard({ cards, breaksCycle, right, gap, text }) → { FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf,
-//     sourceFor, fixedOf, startBoard, fits, carriedOnto, wiring, fromText, toText }
+//   circuitBoard({ cards, breaksCycle, pack = packed, right, gap, text }) → { FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf,
+//     sourceFor, fixedOf, startBoard, fits, carriedOnto, wiring, fromText, toText, pack }
 //       cards  [{ type, side: 'left' | 'right', of(task) → [{ name, label }], params?(port), part?, group?(task) }]
 //              in board order: the cards a level gives (its inputs, outputs, wires…), each a source on the left or a sink
 //              on the right unless it gives its own part (a line heard, a line driven); group(task) → [{ name, label,
 //              members: [port name] }] ports of a left card that stand on one card together, one output a member (a
 //              board reads it as `group.member`), while the task's ports, and a part its board becomes, stay one each
 //       breaksCycle(node, part)  whether the part can break an immediate dependency cycle
+//       pack   how to make a reusable part from a board; defaults to the circuit packer
 //       text   how a card's settings read from and spell as blueprint text ({ read(node, key, v), value(node, key, v) }:
 //              ../circuit/text.js); by default a setting is kept as the words it is written in
 //     A task that gives the board it opens on (`starter`, blueprint text read like its answer) starts on a copy of it.
@@ -20,7 +21,7 @@
 // blueprint (../circuit/text.js), read and checked there.
 import { sourceOf, srcNode } from "./wire-source.js"
 import { printLines, readLines } from "./board/text.js"
-import { sink, source } from "./boards.js"
+import { packed, sink, source } from "./boards.js"
 import { portsOf } from "./circuit.js"
 import { partRegions } from "./board/regions.js"
 import { boardFits, wirePortRefusal } from "./board/model.js"
@@ -35,7 +36,7 @@ export function fixedCardsFit(board, given, isFixed) {
   return signature(board.nodes) === signature(given)
 }
 
-export function circuitBoard({ cards, breaksCycle, right = 980, gap = 140, text = WORDS }) {
+export function circuitBoard({ cards, breaksCycle, pack = packed, right = 980, gap = 140, text = WORDS }) {
   const FIXED = cards.map((c) => c.type)
   // A left card that groups ports gives each member as an output of its own.
   const grouping = source({ outputs: (node) => node.params?.members?.split(',') ?? null, eval: (_, node, ctx, key) => ctx.bind?.[node.params.members ? key : node.params.name] })
@@ -116,7 +117,7 @@ export function circuitBoard({ cards, breaksCycle, right = 980, gap = 140, text 
   /** A board as blueprint lines, as content writes it (no header): what fromText reads back on the task. */
   const toText = (board, task, circuit) => printLines(board, wiring(task, circuit))
 
-  return { FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf, sourceFor, fixedOf, startBoard, fits, carriedOnto, wiring, fromText, toText }
+  return { FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf, sourceFor, fixedOf, startBoard, fits, carriedOnto, wiring, fromText, toText, pack }
 }
 
 /** A task's inputs down the left of its board, and its outputs down the right. */

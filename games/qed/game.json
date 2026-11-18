@@ -7,7 +7,8 @@
     "logic": "^0.0.0",
     "scalar": "^0.0.0",
     "sentence": "^0.0.0",
-    "wiki": "^0.0.0"
+    "wiki": "^0.0.0",
+    "workshop": "^0.0.0"
   },
   "title": "@game.title",
   "author": "DravaMmonk",

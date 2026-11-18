@@ -1,0 +1,17 @@
+{
+  "target": "workshop",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "77ea4f887cb0993ce5b6d3f3c5d500d565f4e3bfd288713b93059d98fbac932d"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "e45f7bdec9499fd17138531bab7e3dbbd1f9a7f29f30796ff40cb7681410f531"
+    },
+    "circuit": {
+      "version": "0.0.0",
+      "hash": "db9bd8ee0a94363bf8e54cb2ced2c793fadbd6077ce11a313cc165a2023bf367"
+    }
+  }
+}

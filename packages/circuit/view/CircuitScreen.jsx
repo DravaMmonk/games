@@ -151,14 +151,14 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, revealOnPass = false, showResults = true, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, revealOnPass = false, showResults = true, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
   const rawDefined = base.defined ?? gameDefined
   const { board: kind, BUILT, parts: builtDefinitions } = base
   const onPhone = useMedia(PHONE)
-  const timed = Boolean(kind.ticks) && !once?.(level)
+  const timed = Boolean(timeline) && !once?.(level)
   base.syncOwn(progress.built)
   const useParts = game.useCircuitParts ?? useBoardParts
   const partState = useParts({ screen, course, base, cards, portLabels, defined: gameDefined, defaults, settings, ready })
@@ -187,7 +187,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
     })),
     signature: circuitWorkStamp({ level, circuit: drawn, parts }, packed.open, course.runtimeReferences),
   }), [level, revealed, board.version, base, progress.built, library])
-  const stepsOf = (r) => (timed ? r.ticks.map((tick) => tick.failed ? { ...tick, failed: failureText(tick.failed) } : tick) : r.trace)
+  const stepsOf = (r) => (timed ? timeline.steps(r).map((tick) => tick.failed ? { ...tick, failed: failureText(tick.failed) } : tick) : r.trace)
   const run = useLevelRun(screen, board, {
     signature,
     tests: [...tests.map((t, k) => ({ label: L(t.label ?? testLabel?.(level, t, k) ?? words.label(k)), hidden: t.hidden })), ...(judged && level.sample ? [{ label: L(WORDS.sample), sample: true }] : [])],
@@ -222,7 +222,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const onView = tests[run.at] ?? null
   const show = (v) => showOf(v, { task: level, test: onView })
   const at = !run.run ? (timed ? 0 : -1) : shown.list.length ? (shown.at >= 0 ? shown.at : shown.list.length - 1) : -1
-  const tick = timed && at >= 0 ? runOf.ticks[at] : null
+  const tick = timed && at >= 0 ? timeline.steps(runOf)[at] : null
   const computed = timed ? tick ?? undefined : whole || !run.run ? runOf : viewAt(runOf.trace, at)
   const ended = whole ? run.over : Boolean(run.run && (run.run.test > run.at || run.run.over))
 
@@ -290,7 +290,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const tickDetail = (node, ctx) => {
     const lanes = ctx.path.length ? [] : lanesOf(node, ctx)
     if (!lanes.length) return body(node, ctx)
-    const seen = runOf.ticks.slice(0, at + 1)
+    const seen = timeline.steps(runOf).slice(0, at + 1)
     return (
       <div className="cs-card">
         {cardSettings(node, ctx)}
@@ -385,7 +385,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const final = judged
     ? ended && (checked.constraint || (run.hidden?.failed && run.hidden.note))
     : run.run?.over && run.run.final
-  const results = <><Results key={run.at} rows={rows} text={show} verdict={[verdict, final]} at={timed && run.run ? at : -1} count={test?.ticks ?? 0} marks={timed && ended && runOf.fail?.at?.tick !== undefined ? [runOf.fail.at.tick] : []} />{stepLog}</>
+  const results = <><Results key={run.at} rows={rows} text={show} verdict={[verdict, final]} at={timed && run.run ? at : -1} count={timed && test ? timeline.count(test) : 0} marks={timed && ended && runOf.fail?.at?.tick !== undefined ? [runOf.fail.at.tick] : []} />{stepLog}</>
   // A table of cases: a row a test, what the board gives on each as the run reaches it (before a run, on the row picked).
   const ins = kind.portsIn(level)
   const out = kind.portsOut(level)[0]?.name

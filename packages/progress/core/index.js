@@ -74,13 +74,3 @@ export function register(kernel) {
   kernel.check('progress/course', Object.assign(courseChecks, { phase: 'course' }))
   kernel.check('progress/references', Object.assign(referenceChecks, { phase: 'references' }))
 }
-
-export {
-  captureWorkshop, draftWorkshop, featureWorkshop, loadWorkshop, publishWorkshop, removeWorkshopPart,
-  trayKey, workshopAvailable, workshopCompatible, workshopEntries, workshopIdentity, workshopInTray, workshopParts,
-} from './workshop.js'
-export { courseWorkshop, workshopView } from './workshop-view.js'
-export {
-  addTerminalPort, addWorkshopTerminal, editWorkshopTerminal, flattenWorkshopTerminals,
-  sideLabels, terminalPorts, workshopTerminalParts, WORKSHOP_OUTPUT,
-} from './workshop-terminals.js'

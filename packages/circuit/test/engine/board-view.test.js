@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { flowBoard } from '../../core/board-cards.js'
 import { boardView } from '../../core/index.js'
-import { workshopView } from 'progress'
+import { workshopView } from '../../../workshop/core/workshop-view.js'
 import { fresh } from "../../../../games/kit/shell/progress.js"
 
 test('a circuit view opens on the previous task’s valid passing work with the new task’s terminals', () => {

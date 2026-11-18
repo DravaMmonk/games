@@ -10,6 +10,8 @@ import { board } from '../core/board.js'
 import { primitivesOnly } from '../../circuit/core/index.js'
 import { runLevel } from '../core/run.js'
 import { wantOf } from '../core/wants.js'
+import { captureWorkshop, publishWorkshop } from '../../workshop/core/workshop.js'
+import { workshopView } from '../../workshop/core/workshop-view.js'
 
 const { PARTS } = defineParts({ parts: {
   'sample/reg': { name: 'Register', desc: 'Read a register', icon: 'Box', family: 'memory', settings: { reg: { control: 'text', default: 'A' }, start: { control: 'number', default: 0 } }, op: 'tick/held' },
@@ -42,4 +44,43 @@ test('a board keeps a register and says it a tick late', () => {
 test('a board that says what it hears this very tick has a loop', () => {
   const level = { listens: true, talks: true, want: wantOf({ say: 'tick/line' }), tests: [{ line: bitsOf('01') }] }
   assert.ok(runLevel(level, fromText(['say <- line'], level, plain), partOf).runs[0].error)
+})
+
+test('a workshop part preserves independent register state for each instance', () => {
+  const task = {
+    inputs: [{ name: 'a' }, { name: 'b' }],
+    outputs: [{ name: 'first' }, { name: 'second' }],
+    want: wantOf({
+      first: { 'tick/delayed': { input: 'a', first: 0 } },
+      second: { 'tick/delayed': { input: 'b', first: 0 } },
+    }),
+    tests: [{ line: bitsOf('...'), inputs: { a: [1, 0, 1], b: [0, 1, 0] } }],
+  }
+  const innerTask = { inputs: [{ name: 'value' }], outputs: [{ name: 'out' }] }
+  const inner = fromText([
+    'r = sample/reg[reg=A, start=0]()',
+    'k = sample/keep[reg=A](value)',
+    'out <- r',
+  ], innerTask, plain)
+  const library = { parts: {} }
+  const delay = captureWorkshop(inner, {
+    parts: board.wiring(innerTask, plain), resolve: partOf, identity: type => type,
+    defaults: () => ({}), book: library, scope: 'user_delay',
+  })
+  const { view, resolve } = workshopView(plain, publishWorkshop(library, delay, { id: delay.id }), () => true, partOf)
+  const work = {
+    nodes: [...board.fixedOf(task), { id: 'x', type: delay.id }, { id: 'y', type: delay.id }],
+    wires: [
+      { from: 'a', to: 'x', port: 'value' }, { from: 'b', to: 'y', port: 'value' },
+      { from: 'x', to: 'first', port: 'in' }, { from: 'y', to: 'second', port: 'in' },
+    ],
+  }
+  assert.ok(view.board.wiring(task).breaksCycle({ type: delay.id }))
+  const result = runLevel(task, work, partOf, { workshopParts: resolve })
+  assert.equal(result.pass, true)
+  assert.deepEqual(result.runs[0].ticks.map(({ outputs }) => outputs), [
+    { first: 0, second: 0 },
+    { first: 1, second: 0 },
+    { first: 0, second: 1 },
+  ])
 })

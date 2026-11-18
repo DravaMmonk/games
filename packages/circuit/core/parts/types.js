@@ -22,7 +22,7 @@ export function typeProblems(file, vocabulary) {
     const ports = [...holesOf(part), ...regionsOf(part)]
     const outputs = outletsOf(part)
     for (const port of [...ports, ...outputs]) if (!types[port.type]) say(base, `port ${port.name} needs a registered value type, found ${port.type}`)
-    if (!outputs.length && !part.keeps && (!insideOf(part) || part.inputs) && !types[part.outputType]) say(`${base}.outputType`, `needs a registered value type, found ${part.outputType}`)
+    if (!outputs.length && (!insideOf(part) || part.inputs) && !types[part.outputType]) say(`${base}.outputType`, `needs a registered value type, found ${part.outputType}`)
     if (insideOf(part)) continue
     const settings = Object.fromEntries(resolveSettings(part, ops).map((s) => [s.key, s]))
     const infer = (tree, at) => {
@@ -35,7 +35,6 @@ export function typeProblems(file, vocabulary) {
       }
       if ('match' in tree) return [...new Set([...Object.values(tree.cases), ...(tree.other ? [tree.other] : [])].flatMap((branch) => alternatives(infer(branch, at))))]
       const args = tree.args.map((arg) => infer(arg, at))
-      if (tree.call === 'circuit/held') return args[1]
       if (tree.call === 'circuit/if') return [...new Set(args.slice(1).flatMap(alternatives))]
       const op = ops[tree.call]
       if (!op) return 'kernel/any'

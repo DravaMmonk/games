@@ -82,11 +82,11 @@ test('a preset may fix a part\'s settings, all of them or some', () => {
 
 test('a board run by ticks may loop only through a part that holds its value', () => {
   const board = { nodes: [{ id: 'a', type: 'not' }, { id: 'b', type: 'not' }, { id: 'h', type: 'held' }], wires: [{ from: 'a', to: 'b', port: 'in' }, { from: 'h', to: 'a', port: 'in' }] }
-  const parts = { role: () => 'part', inputs: () => ['in'], loops: true, holds: (n) => n.type === 'held' }
+  const parts = { role: () => 'part', inputs: () => ['in'], breaksCycle: (n) => n.type === 'held' }
   const backTo = (to) => ({ from: 'b', to, port: 'in' })
   assert.match(wireRefusal(board, parts, backTo('a')).en, /loop/, 'a loop of parts that answer at once')
   assert.equal(wireRefusal(board, parts, backTo('h')), null, 'a loop through a held part')
-  assert.match(wireRefusal(board, { ...parts, loops: false }, backTo('h')).en, /loop/, 'no loops on a board without ticks')
+  assert.match(wireRefusal(board, { ...parts, breaksCycle: undefined }, backTo('h')).en, /loop/, 'no loops on a board without ticks')
 })
 
 test('a new card on the board goes left of the outputs, clear of what is there', () => {
@@ -185,8 +185,7 @@ test('saved circuits reject unavailable, duplicate and cyclic wires while accept
   const parts = {
     role: () => 'part',
     inputs: () => ['in'],
-    loops: true,
-    holds: (node) => node.type === 'hold',
+    breaksCycle: (node) => node.type === 'hold',
   }
   const graph = {
     nodes: [{ id: 'a', type: 'hold' }, { id: 'b', type: 'plain' }, { id: 'c', type: 'plain' }],

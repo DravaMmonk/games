@@ -158,10 +158,8 @@ function wireProblem(graph, parts, wire) {
   if (locked) return locked
   const { edges, from: start } = parts.frames ? frameEdges(graph, parts) : { edges: wireEdges(graph.wires), from: srcNode }
   if (start(from) === to) return catalogText("一个元件不能读它自己。")
-  // A board run tick by tick may feed back (parts.loops), but only through a part that keeps what it is given for the
-  // next tick (parts.holds): a loop of parts that each answer at once has no tick to wait on.
-  const holds = parts.loops ? (id) => parts.holds?.(byId(graph, id) ?? {}) : undefined
-  if (wouldCycle(edges, start(from), to, holds)) return catalogText("这样会绕成一个圈：这个元件要等自己算完，才能算自己。")
+  const breaksCycle = parts.breaksCycle && (id => parts.breaksCycle(byId(graph, id) ?? {}))
+  if (wouldCycle(edges, start(from), to, breaksCycle)) return catalogText("这样会绕成一个圈：这个元件要等自己算完，才能算自己。")
   const scope = parts.frames ? scopeRefusal(graph, parts, from, to, port) : null
   return scope
 }

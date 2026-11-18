@@ -1,3 +1,4 @@
+import { collectWrites } from './registers.js'
 import { Halt } from 'circuit'
 import { runBoard } from 'circuit'
 
@@ -39,9 +40,9 @@ export function boardNode({ id, circuit, parts, bind = () => ({}), ctx = {}, tra
       const stores = new Map()
       const trace = traced ? [] : undefined
       const { values, errors } = runBoard(circuit, { parts, bind: bind(tick), ctx: { ...ctx, dependencyCache, half: 'hear', tick, line, held, stores, trace } })
-      for (const n of circuit.nodes) if (partOf(n.type)?.store && values.has(n.id)) stores.set(partOf(n.type).register(n), values.get(n.id))
+      collectWrites(circuit.nodes, partOf, values, stores)
       for (const [key, value] of stores) state.set(key, value)
-      const outputs = Object.fromEntries(circuit.nodes.filter((n) => partOf(n.type)?.sink && !partOf(n.type).store && !partOf(n.type).drive).map((n) => [n.params?.name, values.get(n.id)]))
+      const outputs = Object.fromEntries(circuit.nodes.filter((n) => partOf(n.type)?.sink && !partOf(n.type).register && !partOf(n.type).drive).map((n) => [n.params?.name, values.get(n.id)]))
       return { values, errors, outputs, ...(trace ? { trace } : {}) }
     },
   }

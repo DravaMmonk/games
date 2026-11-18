@@ -12,6 +12,5 @@
       "default": "A"
     }
   },
-  "keeps": { "input": "in", "register": "reg" },
-  "outputType": "kernel/number"
+  "op": "tick/keep"
 }

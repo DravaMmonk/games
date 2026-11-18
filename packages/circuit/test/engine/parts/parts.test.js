@@ -5,7 +5,7 @@ import { operations as scalar } from '../../../../scalar/core/index.js'
 import { BUILTIN_ITEMS, BUILTINS } from '../../../core/parts/builtins.js'
 import { applyRules, defineParts, partProblems } from '../../../core/index.js'
 import { evalSettings, failedCheck, partDesc, withParts } from '../../../core/parts/define.js'
-import { facesOf, holesOf, insideOf, keepsOf, regionsOf } from '../../../core/parts.js'
+import { facesOf, holesOf, insideOf, regionsOf } from '../../../core/parts.js'
 import { settingsOf } from '../../../core/index.js'
 import { S } from "../../../../../games/kit/engine/schema.js"
 import { evaluate as run } from '../../../core/index.js'
@@ -131,14 +131,12 @@ test('code and content parts share both the vocabulary and the running registry'
 
 test('the part readers expose the optional faces without renaming stored fields', () => {
   const part = { ...file.parts.scaled, regions: [{ name: 'body', opens: true }] }
-  const keeping = { keeps: { input: 'in', register: 'reg' } }
   const built = { name: { en: '做成的' }, desc: { en: 'The board that runs work.' }, inside: [{ id: 'base', reference: {} }, { id: 'better', reference: {} }] }
   assert.equal(holesOf(part), part.inputs)
   assert.deepEqual(settingsOf(part).map((s) => s.key), ['k', 'how', 'lock'])
   assert.equal(facesOf(part), part.views)
   assert.equal(regionsOf(part), part.regions)
   assert.equal(insideOf(built), built.inside)
-  assert.equal(keepsOf(keeping), keeping.keeps)
   assert.deepEqual(partProblems({ ...file, parts: { ...file.parts, scaled: part, made: built } }, vocabulary), [])
   // A part computes or has an inside, never both; a built part can declare its typed interface.
   assert.notDeepEqual(partProblems({ ...file, parts: { made: { ...built, op: 'add' } } }, vocabulary), [])
@@ -148,7 +146,7 @@ test('the part readers expose the optional faces without renaming stored fields'
   const coded = { ...vocabulary, kinds: { primitive: { wire: { about: 'a wire' } } } }
   assert.deepEqual(partProblems({ parts: { made: built } }, coded), [])
   assert.ok(partProblems({ parts: { scaled: file.parts.scaled } }, coded).some((p) => /circuit primitives in code/.test(p.says)))
-  assert.deepEqual([holesOf({}), settingsOf({}), regionsOf({}), insideOf({}), facesOf({}), keepsOf({})], [[], [], [], null, {}, null])
+  assert.deepEqual([holesOf({}), settingsOf({}), regionsOf({}), insideOf({}), facesOf({})], [[], [], [], null, {}])
 })
 
 
@@ -196,17 +194,6 @@ test('a part with regions is a frame: its resource sees the card and the region,
   const leak = { ...loop, wires: [...loop.wires.filter((w) => w.to !== 'd'), { from: 'i', to: 'd', port: 'x' }] }
   assert.match(run(leak, { parts, ctx: { graph: leak } }).errors.get('l').en, /only what the frame opens/)
   assert.equal(run({ nodes: [{ id: 'n', type: 'named' }], wires: [] }, { parts }).values.get('n'), 'n')
-})
-
-test('a part keeps an input in the register a setting names, or computes, never both', () => {
-  const settings = { register: { control: 'select', options: [{ value: 'A' }] } }
-  const keep = { name: { en: '存' }, desc: { en: 'Store it in the register.' }, icon: 'Box', family: 'value', inputs: [{ name: 'in' }], settings: { 'reg': settings['register'] }, keeps: { input: 'in', register: 'reg' } }
-  assert.deepEqual(partProblems({ parts: { keep } }, vocabulary), [])
-  assert.ok(partProblems({ parts: { keep: { ...keep, op: 'add' } } }, vocabulary).some((p) => /one of the two/.test(p.says)))
-  assert.ok(partProblems({ parts: { keep: { ...keep, keeps: { input: 'x', register: 'r' } } } }, vocabulary).length === 2)
-  const { PARTS } = defineParts({ parts: { keep } }, OPS)
-  assert.equal(PARTS.keep.sink && PARTS.keep.store, true)
-  assert.equal(PARTS.keep.register({ params: {} }), 'A')
 })
 
 test('an optional number left unset reads 「—」, and a new card starts from its default', () => {

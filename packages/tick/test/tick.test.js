@@ -1,3 +1,4 @@
+import { operations } from '../core/registers.js'
 // node --test (npm test) — the tick domain: the line's rule, what a level wants tick by tick, a board that talks
 // and keeps a register, boards as blueprint text, and its starter game (starter/, what npm run new-game copies)
 // passing its own checks.
@@ -11,9 +12,9 @@ import { runLevel } from '../core/run.js'
 import { wantOf } from '../core/wants.js'
 
 const { PARTS } = defineParts({ parts: {
-  'sample/reg': { name: 'Register', desc: 'Read a register', icon: 'Box', family: 'memory', settings: { reg: { control: 'text', default: 'A' }, start: { control: 'number', default: 0 } }, op: 'circuit/held' },
-  'sample/keep': { name: 'Keep', desc: 'Store an input', icon: 'Box', family: 'memory', inputs: [{ name: 'in' }], settings: { reg: { control: 'text', default: 'A' } }, keeps: { input: 'in', register: 'reg' } },
-} }, {})
+  'sample/reg': { name: 'Register', desc: 'Read a register', icon: 'Box', family: 'memory', settings: { reg: { control: 'text', default: 'A' }, start: { control: 'number', default: 0 } }, op: 'tick/held' },
+  'sample/keep': { name: 'Keep', desc: 'Store an input', icon: 'Box', family: 'memory', inputs: [{ name: 'in' }], settings: { reg: { control: 'text', default: 'A' } }, op: 'tick/keep' },
+} }, operations)
 const plain = primitivesOnly(board, PARTS)
 const { fromText, toText } = board
 const { partOf } = plain

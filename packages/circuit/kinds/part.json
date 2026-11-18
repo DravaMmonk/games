@@ -102,21 +102,6 @@
             "type": "shape",
             "name": "circuit/part-views"
           },
-          "keeps": {
-            "type": "obj",
-            "fields": {
-              "input": {
-                "type": "str",
-                "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
-              },
-              "register": {
-                "type": "str",
-                "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
-              }
-            },
-            "about": "@kind.part.schema.of.0.fields.keeps.about",
-            "optional": true
-          },
           "op": {
             "type": "either",
             "of": [

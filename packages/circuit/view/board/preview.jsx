@@ -117,7 +117,6 @@ export function Sheet({ part, game, edit, state = [undefined, () => {}] }) {
       {part.inside ? <Implementations def={part} edit={edit} /> : <Ports def={part} edit={edit} />}
       <Settings def={part} edit={edit} />
       {operations.map(([o, text]) => <Code key={o || 'out'} path={['op', ...(o ? [o] : [])]} label={o || null} text={text} picked={edit?.picked} />)}
-      {def.keeps && <Code path={['keeps']} label="keeps" text={`${def.keeps.input} → $${def.keeps.register}`} picked={edit?.picked} />}
       {(def.rules ?? []).map((r, k) => <Code key={`r${k}`} path={['rules', k]} label={r.on ? `on ${r.on}` : 'on *'} picked={edit?.picked} text={`${r.when ? `when ${r.when} → ` : ''}${Object.entries(r.set).map(([key, text]) => `${key} = ${text}`).join('; ')}`} />)}
       {(def.checks ?? []).map((c, k) => <Code key={`c${k}`} path={['checks', k]} label="check" picked={edit?.picked} text={c.holds} ok={Boolean(evalSettings(c.holds, def, params, defined.ops))} />)}
       {edit && (

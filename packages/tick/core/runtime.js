@@ -10,6 +10,7 @@ export default circuitRuntime({
   course: tickBusWorks,
   run: runLevel,
   entries,
+  summarize: reference => `, ${reference.runs.reduce((count, run) => count + run.ticks.length, 0)} ticks`,
   failure: (r) => (r.error ? '(a loop)' : r.fail ? `at tick ${r.fail.at?.tick} (${(r.fail.at?.id ?? r.fail.at)}: want ${r.fail.want}, got ${r.fail.got})` : ''),
   play,
 })

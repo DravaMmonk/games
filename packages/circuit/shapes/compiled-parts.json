@@ -1594,21 +1594,6 @@
                 "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.views.about",
                 "optional": true
               },
-              "keeps": {
-                "type": "obj",
-                "fields": {
-                  "input": {
-                    "type": "str",
-                    "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
-                  },
-                  "register": {
-                    "type": "str",
-                    "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
-                  }
-                },
-                "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.keeps.about",
-                "optional": true
-              },
               "op": {
                 "type": "either",
                 "of": [

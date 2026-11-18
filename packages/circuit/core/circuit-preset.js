@@ -39,12 +39,12 @@ import { cases } from 'kernel'
 
 
 /** A domain module on the preset: the kernel's spec and checks over the domain's course and runs. */
-export function circuitRuntime({ vocabulary, course, run, entries, failure, more, kinds, ...extensions }) {
+export function circuitRuntime({ vocabulary, course, run, entries, failure, summarize, more, kinds, ...extensions }) {
   return {
     vocabulary,
     names: circuitNames,
     spec: circuitSpec(course),
-    validate: ({ circuit, memo, mutants }) => checkCircuitTasks({ ...circuit, ...(mutants && { mutants }) }, { run, entries, failure, more, kinds, memo }),
+    validate: ({ circuit, memo, mutants }) => checkCircuitTasks({ ...circuit, ...(mutants && { mutants }) }, { run, entries, failure, summarize, more, kinds, memo }),
     ...extensions,
   }
 }
@@ -73,12 +73,11 @@ export const circuitSpec = (courseOf) => (content, circuit = courseOf(content)) 
  * one card on the left straight to everything on the right; the naive board, where there is one, fails; a part a level
  * builds, placed alone and wired to the task's cards, passes them; and the rows the task lays out its results in
  * (`results`, ./views.js) show what it offers, in views that draw it. `more(task, k, tasks, held)` adds a domain's
- * own problems (held: the parts the task holds); a task of another kind is the domain's to check (`kinds`). A tick
- * board's line says how many ticks the reference ran.
+ * own problems (held: the parts the task holds); a task of another kind is the domain's to check (`kinds`).
+ * `summarize(reference)` supplies an optional detail to append to the passing test count.
  */
-export function checkCircuitTasks(circuit, { run, entries, failure = () => '', more = () => [], kinds = {}, memo = (_id, _name, f) => f() }) {
+export function checkCircuitTasks(circuit, { run, entries, failure = () => '', summarize = () => '', more = () => [], kinds = {}, memo = (_id, _name, f) => f() }) {
   const { LEVELS, course, board } = circuit
-  const noted = (ref) => (board.ticks ? `, ${ref.runs.reduce((n, r) => n + (r.ticks?.length ?? 1), 0)} ticks` : '')
   const built = new Set(LEVELS.flatMap((L) => L.unlocks))
   const out = circuit.wrong.map((text) => ({ text, fail: true }))
   // The values a level's introduction pages and pass text show, its own and its tasks'.
@@ -159,7 +158,7 @@ export function checkCircuitTasks(circuit, { run, entries, failure = () => '', m
         if (score.made) mutated = `, mutants ${score.killed}/${score.made}${score.survivors.length ? ` (alive: ${score.survivors.join('; ')})` : ''}`
       }
       const hidden = task.hidden.length ? ` + ${task.hidden.length} hidden` : ''
-      return { problems, text: `${head}${problems.length ? problems.join('; ') : `answer PASS (${task.tests.length} tests${hidden}${noted(ref)})${naive}${mutated}${publishes.map((b) => `, part ${b.type} PASS`).join('')}`}` }
+      return { problems, text: `${head}${problems.length ? problems.join('; ') : `answer PASS (${task.tests.length} tests${hidden}${summarize(ref)})${naive}${mutated}${publishes.map((b) => `, part ${b.type} PASS`).join('')}`}` }
     })
     return { level: level.id, fail: said.some((x) => x.problems.length > 0), text: `${level.id} ${keyOf(level.title)}: ${said.map((x) => x.text).join(' · ')}` }
   }))

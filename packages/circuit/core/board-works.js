@@ -4,13 +4,13 @@ import { boardShape } from './board-shape.js'
 // their package reference board or the passed work supplied by a publishing task, and
 // game.json's `replaces` says which built parts supersede which. A domain says how its own fields and tests read:
 //
-//   circuitWorks(content, { board, parts, read?, test?, kinds?, holds?, unwanted? }) → { LEVELS, played, builtBy,
+//   circuitWorks(content, { board, parts, read?, test?, kinds?, pack?, unwanted? }) → { LEVELS, played, builtBy,
 //     CHAPTERS, course, partOf, BUILT, parts, types, blueprints, wrong, offerIn, introductions, carried, opening,
 //     syncOwn }
 //       board  its circuitBoard (./board-cards.js)
 //       parts  { type: part } the game's primitives; read(task, say) → the task's own fields read (what it wants…),
 //              test(test, task, say) → each of its tests and hidden tests read (its values…), each after checking what
-//              its schema cannot say; holds: a built part keeps its own registers; a task that says what its board's
+//              its schema cannot say; pack constructs a part from a circuit; a task that says what its board's
 //              right must give (`want`) names each port there once, but those unwanted(task) names
 //       kinds  { kind: read(task, say) → the task read } the tasks that are no board (a grid to fill in, a choice), by
 //              their `kind`: the domain reads them and plays them on screens of its own; every other task is a board
@@ -55,7 +55,7 @@ import { inheritedBoard } from './progress.js'
 
 export const circuitWorks = (content, options) => readWorks(content, (scope) => prepareCircuitWorks(scope, options))
 
-export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (task) => task, test: readTest = (t) => t, kinds = {}, holds = false, unwanted = () => [] }) {
+export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (task) => task, test: readTest = (t) => t, kinds = {}, pack = packed, unwanted = () => [] }) {
   const { eras, levels } = content
   const primitives = new Set(primitiveParts(content))
   const wrong = []
@@ -149,12 +149,11 @@ export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (t
       return referenceBoard
     }
     const running = () => own.board(context.taskId) ?? read()
-    const part = packed({
+    const part = pack({
       circuit: running,
       inputs: board.portsIn(artifact).map((p) => p.name),
       outputs: board.portsOut(artifact).map((p) => p.name),
       parts: partOf,
-      ...(holds ? { holds: true } : {}),
       opens: (params) => ({ circuit: part.board(params), level: context }),
     })
     readArtifacts.push(read)

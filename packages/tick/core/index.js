@@ -1,3 +1,5 @@
+import { registeredOperations } from 'kernel'
+import { operations } from './registers.js'
 import runtime from './runtime.js'
 import { meaning } from './vocabulary.js'
 import { board } from './board.js'
@@ -33,6 +35,8 @@ export const busPlay = {
 }
 
 export function register(kernel) {
+  Object.assign(registeredOperations, operations)
+  for (const [name, operation] of Object.entries(operations)) kernel.implement('operation', name, operation)
   kernel.kind('tick/board', meaning)
   kernel.play('tick/board', busPlay)
   kernel.check('tick/boards', ({ content }) => runtime.validate(runtime.spec(content)))

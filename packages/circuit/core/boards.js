@@ -48,10 +48,6 @@ export function runBoard(circuit, { parts, ctx = {}, bind = {}, prepare = null, 
   return { values, errors, outputs: outputsOf(circuit, parts, values), ...(ids ? { ids } : {}) }
 }
 
-/** The output key under which a packed part that holds registers runs the cards inside that keep them (circuit.js keys
- *  starting with '__' are the engine's own). */
-export const STATE = '__state'
-
 // The inputs (of `inputs`) that reach the nodes `ends` of a circuit, by its wires.
 function inputsReaching(circuit, inputs, ends, parts, ctx) {
   const partOf = parts && partFn(parts)
@@ -88,13 +84,9 @@ function inputsReaching(circuit, inputs, ends, parts, ctx) {
  * output reads only the inputs that reach it, so a part can give one output from some inputs and another from the
  * output it fed (a board can drive a line before hearing it); a traced run (circuit.js) sees each
  * card inside as a step of its own, its `path` the ids of the packed parts it is in, outermost first.
- *
- * A part that `holds` registers (a board run tick after tick, ticks.js) keeps them per instance: the cards inside run
- * with ctx.scope its path, so a register inside it is its own, and the output STATE runs the cards inside that keep a
- * register (a part with `store`, naming its register by `params.reg`, or a packed part that holds), putting what they
- * keep into ctx.stores.
+ * An effect is an internal evaluation target that a play can add to a packed part.
  */
-export function packed({ circuit, inputs, outputs, parts, holds = false, inside: around = (ctx) => ctx, ...extra }) {
+export function packed({ circuit, inputs, outputs, parts, effects = {}, inside: around = (ctx) => ctx, ...extra }) {
   const circuitOf = () => (typeof circuit === 'function' ? circuit() : circuit)
   const configure = (board, params, parts) => withSettings(board, extra.defaults ? { ...extra.defaults, ...params } : params, parts)
   // The circuit inside is evaluated once for each evaluation outside (one ctx), whichever of the part's outputs are
@@ -127,9 +119,8 @@ export function packed({ circuit, inputs, outputs, parts, holds = false, inside:
     return own
   }
   const dependencyKey = {}
-  const keys = [...(outputs.length === 1 ? [null] : outputs), ...(holds ? [STATE] : [])]
+  const keys = [...(outputs.length === 1 ? [null] : outputs), ...Object.keys(effects)]
   const many = keys.length > 1
-  const keepers = (inner, partOf) => inner.nodes.filter((n) => partOf(n.type)?.store || partOf(n.type)?.holds).map((n) => n.id)
   return {
     inputs,
     ...extra,
@@ -137,12 +128,11 @@ export function packed({ circuit, inputs, outputs, parts, holds = false, inside:
       const circuit = circuitOf()
       return configure(circuit, params, partsInBoard(circuit, references))
     },
-    ...(holds ? { holds: true } : {}),
     ...(many ? {
       outputs: () => keys,
-      // An output reads the inputs that reach it; the cards keeping registers may read any.
+      // An output reads the inputs that reach it. Effects can read all inputs.
       reads: (_node, key, ctx) => {
-        if (key === STATE) return inputs
+        if (Object.hasOwn(effects, key)) return inputs
         const inner = circuitOf()
         const cache = ctx?.dependencyCache
         const innerParts = partsInBoard(inner, parts ?? ctx?.engine?.parts)
@@ -157,12 +147,7 @@ export function packed({ circuit, inputs, outputs, parts, holds = false, inside:
     } : {}),
     eval: (ins, node, ctx, key) => {
       const { inner, run, partOf } = inside(ins, node, ctx)
-      const scope = `${ctx.scope ?? ''}${node.id}/`
-      if (key === STATE) {
-        const { values } = run(keepers(inner, partOf))
-        for (const n of inner.nodes) if (partOf(n.type)?.store && values.has(n.id)) ctx.stores?.set(`${scope}${partOf(n.type).register(n)}`, values.get(n.id))
-        return null
-      }
+      if (Object.hasOwn(effects, key)) return effects[key]({ inner, run, partOf, node, ctx })
       const name = key ?? outputs[0]
       // Only what reaches the output asked for runs, as on a board of its own (a frame that runs its regions itself runs them).
       const out = inner.nodes.find((n) => nameOf(n) === name && partOf(n.type)?.sink)

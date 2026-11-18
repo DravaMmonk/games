@@ -19,7 +19,7 @@ import { sideOf } from 'kernel'
 
 import { OperationError } from 'kernel'
 import { runRegion } from "../board/frames.js"
-import { facesOf, holesOf, insideOf, keepsOf, outletsOf, regionsOf, registerParts, resolveSettings, settingsOf } from "../parts.js"
+import { facesOf, holesOf, insideOf, outletsOf, regionsOf, registerParts, resolveSettings, settingsOf } from "../parts.js"
 import { validate } from 'kernel'
 
 
@@ -39,7 +39,7 @@ const OPTIONED = new Set(['select', 'buttons'])
 // The settings whose value is a list of options, and those holding a tree as text (a sentence the domain's language reads).
 const LISTED = new Set(['list'])
 const NUMERIC = new Set(['number', 'slider'])
-// A primitive of the circuit editor: it computes, or keeps an input.
+// A primitive of the circuit editor: it selects a computation.
 const circuitPrimitive = (part) => !insideOf(part)
 
 /** Whether a vocabulary's domain defines its parts as data: it gives engine resources. */
@@ -167,8 +167,6 @@ export function defineParts(file, ops, code = {}) {
 
 /** The ports of a defined part, including the regions its current settings open. */
 export function definitionPorts(def, ops) {
-  const kept = keepsOf(def)
-  if (kept) return { inputs: [kept.input] }
   const names = holesOf(def).map((port) => port.name)
   const outputs = outletsOf(def).map((port) => port.name)
   if (!regionsOf(def).length) return { inputs: names, ...(outputs.length && { outputs: () => outputs }) }
@@ -196,18 +194,11 @@ export function compileParts(parts, ops, code = {}) {
     }
     // An optional input left unwired reads 「—」 (undefined) and never makes the part give 「—」 by itself.
     const optional = new Set(holesOf(def).filter((p) => p.optional).map((p) => p.name))
-    // A part that keeps an input is a sink storing it in the register its setting names (../ticks.js).
-    const kept = keepsOf(def)
-    if (kept) {
-      const setting = def.setting[kept.register]
-      return [type, {
-        ...ports, sink: true, store: true, collect: (ins) => ins[kept.input], eval: () => undefined, register: (node) => coerce(setting, node?.params?.[kept.register]),
-        params: settingsOf(def).map((s) => s.key), defaults: Object.fromEntries(settingsOf(def).map((s) => [s.key, defaultOf(s)])),
-        settings: Object.fromEntries(settingsOf(def).filter((s) => OPTIONED.has(s.control) && s.options).map((s) => [s.key, s.options.map((o) => o.value)])),
-      }]
-    }
+    // An operation can specialize the compiled part, for example to act as an output sink.
+    const specialize = typeof def.op === 'string' && ops[def.op]?.circuitPart
     const part = {
       ...ports,
+      ...(specialize && specialize(node => settingsFor(def, node?.params))),
       ...(ports.outputs ? {} : { symmetric: (node) => symmetricIn(trees[''], settingsFor(def, node?.params), ops) }),
       ...(optional.size ? { optional: [...optional] } : {}),
       // A part registered by a course may run with none of its inputs, all optional, wired (`bare`).
@@ -357,15 +348,10 @@ export function partProblems(file, vocabulary, { tasks = null } = {}) {
     for (const [k, c] of (raw.checks ?? []).entries()) check(c.holds, `${at}.checks[${k}].holds`, [])
     // A primitive selects declared operations, while a built part runs its published work.
     const outputs = def.outputNames
-    if (raw.op && raw.keeps) say(at, 'a primitive selects an operation or keeps an input, one of the two')
     if (raw.op && !Object.keys(operationTrees(raw, ops)).length) say(`${at}.op`, 'an operation map needs at least one output')
-    if (!built && !raw.op && !raw.keeps) say(at, 'a circuit primitive selects an operation or keeps an input')
+    if (!built && !raw.op) say(at, 'a circuit primitive selects an operation')
     for (const name of typeof raw.op === 'string' ? [raw.op] : Object.values(raw.op ?? {})) {
       if (!ops[name]) say(`${at}.op`, `unknown operation ${name}`)
-    }
-    if (raw.keeps) {
-      if (!holesOf(raw).some((p) => p.name === raw.keeps.input)) say(`${at}.keeps.input`, `${raw.keeps.input} is no input of the part`)
-      if (!def.setting[raw.keeps.register]) say(`${at}.keeps.register`, `${raw.keeps.register} is no setting of the part`)
     }
     // The views: what each block names is there.
     for (const face of FACES) {

@@ -8,7 +8,6 @@ export const settingsOf = (part, operations) => Array.isArray(part.settings) ? p
 export const regionsOf = (part) => part.regions ?? []
 export const insideOf = (part) => part.inside ?? null
 export const facesOf = (part) => part.views ?? {}
-export const keepsOf = (part) => part.keeps ?? null
 // A built part run by an engine resource instead of its inside (the artifact still records its interface).
 export const cardOf = (part) => part.card ?? null
 

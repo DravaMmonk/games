@@ -32,27 +32,6 @@
           "type": "kernel/any"
         }
       ]
-    },
-    "held": {
-      "about": "@capability.operation.items.held.about",
-      "args": [],
-      "returns": "kernel/any",
-      "params": {
-        "type": "obj",
-        "fields": {
-          "reg": {
-            "type": "str",
-            "control": "tree",
-            "default": "A"
-          },
-          "start": {
-            "type": "any",
-            "control": "number",
-            "optional": true,
-            "default": null
-          }
-        }
-      }
     }
   }
 }

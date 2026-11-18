@@ -208,12 +208,12 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+        <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => setSide('games')} title={tr('在左栏选游戏', 'Pick a game in the left column')}>
+          <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
+        </button>
         <button type="button" className={`studio-open-name studio-play-toggle ${playing ? 'is-on' : ''}`} aria-pressed={playing}
           onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame())} title={`${playing ? tr('回到编排', 'Back to arranging') : tr('试玩这款游戏', 'Play the game')} (${MOD}+Enter)`}>
           <Play size={13} aria-hidden="true" /><span>{tr('试玩', 'Play')}</span>
-        </button>
-        <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => setSide('games')} title={tr('在左栏选游戏', 'Pick a game in the left column')}>
-          <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (

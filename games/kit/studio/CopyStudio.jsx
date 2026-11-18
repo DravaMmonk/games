@@ -5,7 +5,7 @@
 // findings; on the right the field a row goes to (Inspector.jsx); the check and the change log fold under the middle.
 import './studio.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BookOpen, FileText, Gamepad2, ListTree, Package, Search as SearchIcon } from 'lucide-react'
+import { BookOpen, FileText, Gamepad2, ListTree, Map as MapIcon, Package, Play, RotateCcw, Search as SearchIcon } from 'lucide-react'
 import { L, getLang, tr } from '../shell/i18n.js'
 import { objectTypes, listOfType } from './object-types.js'
 import { typeName } from './LeftTypes.jsx'
@@ -31,6 +31,9 @@ import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
 import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, gameJson, packageJson } from './ProjectLists.jsx'
 import { PackageName } from './PackageGroups.jsx'
+import GameFrame from './GameFrame.jsx'
+import { useWorkspaceKeys } from '../shell/useOverlay.js'
+import { MOD } from './Shortcuts.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
 const SETTLE = 700
@@ -67,6 +70,17 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const [file, setFile] = useState(() => QUERY.get('file'))
   const [query, setQuery] = useState('')
   const [picked, setPicked] = useState(null) // the field in the side panel: { at, path }
+  // The game played in the middle, as in Arrange (GameStudio.jsx): `playing` shows it instead of the copy table; `playAt`
+  // is where it opened ({ level }, or the map); once opened the frame stays loaded while hidden.
+  const [playing, setPlaying] = useState(false)
+  const [playAt, setPlayAt] = useState(null)
+  const [playOpened, setPlayOpened] = useState(false)
+  const playGame = (level = null) => {
+    setPlayAt(level ? { level } : { map: Date.now() })
+    setPlaying(true)
+    setPlayOpened(true)
+  }
+  const pickedLevel = picked?.at?.level ?? null
   const [drawerTab, setDrawerTab] = usePref('copy-drawer-tab', 'audit')
   const [layout, setLayout] = usePref('copy-layout', { tree: 240, audit: 200, side: 380, treeOpen: true, auditOpen: true, sideOpen: true })
   const [resize, setResize] = useState(null)
@@ -142,6 +156,12 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
   const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
   const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
+  // ⌘/Ctrl+Enter plays from the level of the text picked (else the map), as Arrange plays the level picked.
+  useWorkspaceKeys((event) => {
+    if (!(event.metaKey || event.ctrlKey) || event.key !== 'Enter' || !content) return
+    event.preventDefault()
+    playGame(pickedLevel)
+  })
   const ready = content && vocab
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
@@ -150,6 +170,10 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           title={opened.game ? tr('在左栏选游戏', 'Pick a game in the left column') : L(pkg.desc)}>
           {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
           {opened.game ? <span>{L(games.find((g) => g.id === opened.game)?.title) ?? opened.game}</span> : <PackageName info={pkg} />}
+        </button>
+        <button type="button" className={`studio-open-name studio-play-toggle ${playing ? 'is-on' : ''}`} aria-pressed={playing}
+          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame(pickedLevel))} title={`${playing ? tr('回到文案', 'Back to copy') : tr('试玩', 'Play')} (${MOD}+Enter)`}>
+          <Play size={13} aria-hidden="true" /><span>{tr('试玩', 'Play')}</span>
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
@@ -194,7 +218,14 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
           <main className="studio-main">
-            <div className="studio-scroll">
+            {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
+              onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
+              tools={<>
+                <button type="button" className="kit-btn is-label" onClick={() => setPlayAt({ map: Date.now() })} title={tr('回到这款游戏的地图', 'Back to the game’s map')}><MapIcon size={14} aria-hidden="true" />{tr('地图', 'Map')}</button>
+                {pickedLevel && <button type="button" className="kit-btn is-label" onClick={() => playGame(pickedLevel)} title={tr('从选中文字所在的这一关开始', 'Start at the level of the text picked')}><RotateCcw size={14} aria-hidden="true" />{pickedLevel}</button>}
+                <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr('回到文案', 'Back to copy')}</button>
+              </>} />}
+            <div className="studio-scroll" hidden={playing}>
               {shownList === 'games' ? <GameMeta games={games} packages={packages} id={pickedOpen.games} open={opened.game} disabled={saving} onOpen={(id) => openOther('game', id)} />
                 : shownList === 'packages' ? <PackageMeta packages={packages} games={games} id={pickedOpen.packages} open={opened.package} disabled={saving} onOpen={(id) => openOther('package', id)} />
                 : <article className="editor is-wide">

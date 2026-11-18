@@ -1,8 +1,8 @@
 // Scenes of checking a model (scenes/index.js): a street with a car, a linear classifier's weights for it (a weight
 // a cell: its score is the sum of weight × brightness), and a ViT's class token asking the street's patches.
 import { S } from 'kernel'
-import { attention } from 'image'
-import { fromFn, image } from 'image'
+import { patchAttention } from 'computer-vision'
+import { fromFn, image } from 'image-processing'
 import { T as t } from 'kernel'
 
 const num = (v) => image(1, 1, v)
@@ -91,7 +91,7 @@ export const EXPLAIN = {
     make: ({ street: s, query, patches }) => {
       const x = street(streetOf(s))
       const m = patchMask(patches)
-      return { inputs: { in: x, q: QUERIES[query], m }, expected: { out: num(sum(attention(QUERIES[query], x, m)) / 256) } }
+      return { inputs: { in: x, q: QUERIES[query], m }, expected: { out: num(sum(patchAttention(QUERIES[query], x, m)) / 256) } }
     },
   },
 }

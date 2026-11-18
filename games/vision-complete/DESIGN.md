@@ -441,20 +441,13 @@ Grad-CAM 本身没有单独做成关：在每格一个权重的线性分类器�
 
 ## 5. 技术结构
 
-游戏只有内容，全是数据（[`games/design/README.md`](../design/README.md) 第 6 节）；运行它的都在图像领域 `games/kit/domains/image/`，内容能写什么由它的词汇表定。
+游戏层通过 `game.json` 选择包，通过 `chapters/` 排列课程。课程序列、参考蓝图、测试场景和机关台参数集中在 [`vision-complete`](../../packages/vision-complete)。库的依赖与接口遵循[内核与包的边界](../design/engine-package-boundaries.md)。
 
-- 本文件夹：`game.json`（标题、上电台词、原始元件、取代关系、每种画法在哪关引入 `views`、各章 `eras` 和章节主题 `chapter.label`、存档迁移 `saves`、元件箱怎么试元件 `box`、名言）、`levels/<id>.json`（一关一个：玩法、文案、引言 `intro`、测试场景和测试、隐藏测试、预算、参考解和天真解，参考解写成蓝图文本）、`glossary.json`（百科）。
-- `vocabulary.js`：词汇表。内容能引用的项分十种：元件（`part`）、解锁（`unlock`）、画法（`view`）、图像生成器（`picture`，如 `disk`、`glyph`、`zonePlate`，带参数）、测试场景（`scene`：一关的测试从哪来，`filter` 是「给定输入图，按目标算期望」，其余是专门的场景，如 `stereo`、`classifier`）、目标（`target`：期望图怎么由输入算出，如 `gauss`、`sharpen`）、预算（`constraint`）、机关台的模型（`benchModel`）、机关台的显示项（`display`：内核的加上本领域的）、存档迁移（`migration`）。还有 `game.json` 和一关的 schema（按玩法分 `graph`、`board`、`probe`）。
-- `items/`：每一种项的实现：`pictures.js`、`targets.js`、`scenes/`（按主题分文件，每个场景造出测试和 `setup`）、`constraints.js`、`benches.js`（机关台的模型项，每项带 `verify`）、`displays.js`（本领域的显示项和它们的参数）、`migrations.js`。
-- `domain.js`：把内容交给 `npm run check`（`spec`、`validate`）；`game.jsx`：把内容交给共享外壳。
-- `engine/image.js`：小尺寸浮点图像（默认 16×16）、测试图库、比较与误差。
-- `engine/nodes.js` 和 `engine/parts/`：元件注册表（端口、参数、计算、计算量），各章带来的元件按主题放在 `parts/` 里。
-- `engine/board.js`：电路板和蓝图文本互转（π 的倍数写成 `pi/8`）；从文本读出的板按离输入的远近排成列。
-- `engine/graph.js`：图像元件在共享引擎（`kit/engine`）上的求值、测试判定、计分和训练；`engine/own.js`：通关的电路封装成元件，运行玩家自己通关的那份电路。
-- `course.js`：把每关的数据变成能玩的关卡，按 `eras` 排出游玩顺序、前置关系、调色板顺序、画法；`intros.js`：引言的配图；`validate.js`：`npm run check` 的图像检查（参考解通过、天真解失败、机关台的 `verify`、只放封装件能通过它的那一关）。
-- `benches/`：机关台的模型（暗箱、核速判、一道波、叠加、探针、采样、什么时候停、对比学习、霍夫投票、RANSAC、书封面、GAN），每个是一个模型项：由旋钮算出有名字的量，会自己走的还有状态和动作；`ui/benches/` 是本领域的显示项（暗箱的侧视图和屏幕、霍夫的点和累加器、RANSAC 的一次试验和每种比例一张卡、封面配点和点对列表、GAN 的分布图、嵌入圆和选择表、核速判的一轮和核卡），界面本身是内核的参数台。
-- `ui/`：电路关和探测关的界面、编辑器、测试面板、元件箱的试用台、图像画法。
-- 存档：浏览器 `localStorage`（已解决关卡、每关的图、最佳分数）。
+- `image` 定义图接线、机关台和探针玩法，负责元件的端口、设置和计算量，以及蓝图读写、图求值和关卡判定。测试生成器和元件通过库的核心入口调用底层算法。
+- `image-processing` 提供浮点像素、颜色通道、滤波、采样与频域变换。
+- `computer-vision` 在像素表示上提供角点、霍夫投票、RANSAC、单应变换、立体匹配、光照模型以及图块注意力、图像卷积和教学用的斑点自动编码器。
+- `machine-learning` 提供通用的向量注意力、激活、采样和数值优化。视觉模型负责在像素和向量之间转换。图接线玩法将可训练的元件参数整理成向量，交给优化器，并用关卡测试计算损失。
+- 预设图案、关卡专用模型和演示交互留在使用它们的玩法包或课程包。浏览器通过 `localStorage` 保存任务进度、作品与最佳成绩。
 
 ## 6. 盲玩基线（按专题重做时参考，原型不改）
 

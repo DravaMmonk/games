@@ -1,15 +1,6 @@
 // Parts that see the whole picture (视觉完备 chapter 5): attention over patches, a position code, and the fixed
 // encoder a contrastive bench trains (a picture as 64 features of length 1).
-import { correlate, downsample, gaussianKernel, map } from '../image.js'
-import { attention } from '../attention.js'
-
-export const features = (img) => {
-  const small = downsample(downsample(correlate(img, gaussianKernel(1.2), 'edge'), 2), 2)
-  const mean = small.data.reduce((s, v) => s + v, 0) / small.data.length
-  const centred = map(small, (v) => v - mean)
-  const norm = Math.sqrt(centred.data.reduce((s, v) => s + v * v, 0)) || 1
-  return map(centred, (v) => v / norm)
-}
+import { features, patchAttention } from 'computer-vision'
 
 export const GLOBAL = {
   attention: {
@@ -24,7 +15,7 @@ export const GLOBAL = {
       { key: 's', label: { zh: 'q 放大', en: 'q scale' }, kind: 'number', min: 0, max: 100, step: 1, default: 1 },
       { key: 'P', label: { zh: '图块边长', en: 'Patch size' }, kind: 'select', options: [[2, '2'], [4, '4'], [8, '8']], default: 4 },
     ],
-    eval: ({ Q, K, V }, p) => attention(Q, K ?? Q, V ?? K ?? Q, p.s ?? 1, p.P ?? 4),
+    eval: ({ Q, K, V }, p) => patchAttention(Q, K ?? Q, V ?? K ?? Q, p.s ?? 1, p.P ?? 4),
     // Every pixel is a weighted sum over all the patches: on a 16×16 picture, 256 / P² of them, twice over.
     cost: (p) => 512 / (p.P ?? 4) ** 2,
     unlock: 'attention',

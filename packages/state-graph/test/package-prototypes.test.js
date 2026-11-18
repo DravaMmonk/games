@@ -20,7 +20,7 @@ import { lockFixture, writeContentFixture, installTableFixture, installScalarFix
 
 after(closeGames)
 const text = en => ({ en })
-const arithmetic = Object.fromEntries([
+const numericParts = Object.fromEntries([
   ['add', 'plus'], ['subtract', 'minus'], ['multiply', 'times'], ['divide', 'over'],
 ].map(([name, operation]) => [name, {
   icon: 'Plus', name: text(name), desc: text(name), family: 'circuit/value',
@@ -64,8 +64,8 @@ test('a numeric library works in packages using image and table boards, with no 
     installTableFixture(root)
     installScalarFixture(root)
     const imageVocabulary = layerVocabulary(resolveLayers({ package: 'image', closure: true, root, unlocked: true }).layers)
-    writeContentFixture(root, 'arithmetic', { game: { vocabulary: 1 }, glossary: { groups: [], entries: [] }, partDefs: { parts: arithmetic }, levels: {} }, circuitVocabulary)
-    put('packages/arithmetic/package.json', { kind: 'lib', type: 'module', uses: { circuit: '^0.0.0', scalar: '^0.0.0' }, version: '0.0.0', kernel: '^0.0.0' })
+    writeContentFixture(root, 'numeric-parts', { game: { vocabulary: 1 }, glossary: { groups: [], entries: [] }, partDefs: { parts: numericParts }, levels: {} }, circuitVocabulary)
+    put('packages/numeric-parts/package.json', { kind: 'ext', type: 'module', uses: { circuit: '^0.0.0', scalar: '^0.0.0' }, version: '0.0.0', kernel: '^0.0.0' })
     const common = { title: text('Sample'), vocabulary: 1 }
     writeContentFixture(root, 'picture', {
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {
@@ -79,36 +79,36 @@ test('a numeric library works in packages using image and table boards, with no 
       game: common, glossary: { groups: [], entries: [] }, levels: { copy: {
         title: text('Copy'), short: text('Copy'), intro: [], mission: { goal: text('Copy cells.'), how: text('Read the previous cell.') },
         robot: 'state-graph/scout', debrief: { title: text('Copied'), body: [] }, tasks: [{ id: 'copy', play: 'state-graph/circuit',
-          hints: [text('Read the previous cell.')], world: 'state-graph/grid', tests: [{ R: 1, C: 2, given: { '0,0': 7 } }], expected: [14], solution: ['sum = arithmetic/add(view.left, view.left)', 'cell <- sum'],
+          hints: [text('Read the previous cell.')], world: 'state-graph/grid', tests: [{ R: 1, C: 2, given: { '0,0': 7 } }], expected: [14], solution: ['sum = numeric-parts/add(view.left, view.left)', 'cell <- sum'],
         }],
       } },
     }, layerVocabulary(resolveLayers({ package: 'state-graph', closure: true, root, unlocked: true }).layers))
-    for (const id of ['picture', 'cells']) put(`packages/${id}/package.json`, { kind: 'lib', uses: { 'arithmetic': '^0.0.0', ...(id === 'picture' ? { image: '^0.0.0' } : { 'state-graph': '^0.0.0', table: '^0.0.0' }) }, version: '1.0.0', kernel: '^0.0.0' })
-    for (const id of ['arithmetic', 'picture', 'cells']) rmSync(resolve(root, 'games', id), { recursive: true })
+    for (const id of ['picture', 'cells']) put(`packages/${id}/package.json`, { kind: 'lib', uses: { 'numeric-parts': '^0.0.0', ...(id === 'picture' ? { image: '^0.0.0' } : { 'state-graph': '^0.0.0', table: '^0.0.0' }) }, version: '1.0.0', kernel: '^0.0.0' })
+    for (const id of ['numeric-parts', 'picture', 'cells']) rmSync(resolve(root, 'games', id), { recursive: true })
     lockFixture(root)
-    for (const id of ['arithmetic', 'picture', 'cells']) {
+    for (const id of ['numeric-parts', 'picture', 'cells']) {
       const content = readPackage(id, root)
-      assert.equal(Object.keys(content.registries['circuit/part']).filter(name => name.startsWith('arithmetic/')).length, 4)
+      assert.equal(Object.keys(content.registries['circuit/part']).filter(name => name.startsWith('numeric-parts/')).length, 4)
       assert.deepEqual((await checkGame(content, { domain: await runtimeOf(content), root })).filter(line => line.fail), [], id)
       const { PARTS } = defineParts(content.partDefs, {})
-      assert.equal(PARTS['arithmetic/add'].eval({ a: 6, b: 3 }, {}), 9)
-      assert.equal(PARTS['arithmetic/subtract'].eval({ a: 6, b: 3 }, {}), 3)
-      assert.equal(PARTS['arithmetic/multiply'].eval({ a: 6, b: 3 }, {}), 18)
-      assert.equal(PARTS['arithmetic/divide'].eval({ a: 6, b: 3 }, {}), 2)
-      assert.throws(() => PARTS['arithmetic/divide'].eval({ a: 6, b: 0 }, {}))
+      assert.equal(PARTS['numeric-parts/add'].eval({ a: 6, b: 3 }, {}), 9)
+      assert.equal(PARTS['numeric-parts/subtract'].eval({ a: 6, b: 3 }, {}), 3)
+      assert.equal(PARTS['numeric-parts/multiply'].eval({ a: 6, b: 3 }, {}), 18)
+      assert.equal(PARTS['numeric-parts/divide'].eval({ a: 6, b: 3 }, {}), 2)
+      assert.throws(() => PARTS['numeric-parts/divide'].eval({ a: 6, b: 0 }, {}))
     }
-    put('packages/arithmetic/kinds/wordset.json', { folder: 'wordset', declares: 'package', overrides: { package: ['*'], game: ['$text'] }, schema: { type: 'map', of: { type: 'text' } } })
-    put('packages/arithmetic/wordset/numbers.json', { A: 'one' })
-    const ws = openPackage('arithmetic', root)
-    const result = await runChangeset(ws, { ops: [{ op: 'object.set', kind: 'arithmetic/wordset', name: 'arithmetic/numbers', path: 'A', value: text('two') }] }, { write: true })
+    put('packages/numeric-parts/kinds/wordset.json', { folder: 'wordset', declares: 'package', overrides: { package: ['*'], game: ['$text'] }, schema: { type: 'map', of: { type: 'text' } } })
+    put('packages/numeric-parts/wordset/numbers.json', { A: 'one' })
+    const ws = openPackage('numeric-parts', root)
+    const result = await runChangeset(ws, { ops: [{ op: 'object.set', kind: 'numeric-parts/wordset', name: 'numeric-parts/numbers', path: 'A', value: text('two') }] }, { write: true })
     assert.equal(result.ok, true, result.problems.join('\n'))
-    assert.equal(readPackage('arithmetic', root).registries['arithmetic/wordset']['arithmetic/numbers'].A.en, 'two')
-    const content = readPackage('arithmetic', root)
+    assert.equal(readPackage('numeric-parts', root).registries['numeric-parts/wordset']['numeric-parts/numbers'].A.en, 'two')
+    const content = readPackage('numeric-parts', root)
     const assets = contentAssets(content)
     const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', url => new Response(assets.get(url.pathname.slice(1))), circuitVocabulary)
-    assert.deepEqual(restored.registries['arithmetic/wordset'], content.registries['arithmetic/wordset'])
-    assert.equal((await undo(openPackage('arithmetic', root), { write: true })).ok, true)
-    assert.equal(JSON.parse(readFileSync(resolve(root, 'packages/arithmetic/wordset/numbers.json'), 'utf8')).A, 'one')
+    assert.deepEqual(restored.registries['numeric-parts/wordset'], content.registries['numeric-parts/wordset'])
+    assert.equal((await undo(openPackage('numeric-parts', root), { write: true })).ok, true)
+    assert.equal(JSON.parse(readFileSync(resolve(root, 'packages/numeric-parts/wordset/numbers.json'), 'utf8')).A, 'one')
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

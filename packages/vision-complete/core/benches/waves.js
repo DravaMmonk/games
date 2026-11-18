@@ -3,7 +3,7 @@
 // bench model (image/core/bench.js): what it computes from the knobs, for the bench's displays and its goal.
 import { S } from 'kernel'
 import { benchRun, limitOf, openKnobs, passingSettings, startValues } from 'image'
-import { aliasOf, cosine, maxDiff, sampleAt, sinusoid, throughSamples } from 'image'
+import { aliasOf, cosine, maxDiff, sampleAt, sinusoid, throughSamples } from 'image-processing'
 import { T as t } from 'kernel'
 
 const num = S.num()

@@ -3,8 +3,8 @@
 import { S } from 'kernel'
 import { benchRun } from 'image'
 import { keyOf, T as t } from 'kernel'
-import { approximateNormal, random } from 'image'
-import { lineGap, lineThrough, ransacLine } from 'image'
+import { approximateNormal, random } from 'image-processing'
+import { lineGap, lineThrough, ransacLine } from 'computer-vision'
 
 
 /** k ≥ log(1 − P) / log(1 − pⁿ), the number of rounds for a chance P of drawing n inliers at least once. */

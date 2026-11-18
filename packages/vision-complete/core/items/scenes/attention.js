@@ -2,7 +2,7 @@
 // pictures at once, a bright and a dark patch in reading order, patterns at several brightnesses, and photos to match
 // with their altered copies.
 import { S } from 'kernel'
-import { fromFn, image } from 'image'
+import { fromFn, image } from 'image-processing'
 import { TILES, picture } from 'image'
 import { T as t } from 'kernel'
 

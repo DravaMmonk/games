@@ -268,7 +268,7 @@ export function assembleCircuitFixture({ partDefs, trays = [], ...options }) {
 export function installImageFixture(root) {
   installCircuitFixture(root)
   cpSync(new URL('../../circuit/view', import.meta.url), join(root, 'packages/circuit/view'), { recursive: true })
-  for (const id of ['image', 'table']) {
+  for (const id of ['image', 'table', 'image-processing', 'computer-vision', 'machine-learning']) {
     const dir = join(root, 'packages', id)
     mkdirSync(dir, { recursive: true })
     for (const folder of ['core', 'view', 'kinds', 'shapes', 'capabilities'].filter(folder => existsSync(new URL(`../../${id}/${folder}`, import.meta.url)))) cpSync(new URL(`../../${id}/${folder}`, import.meta.url), join(dir, folder), { recursive: true })

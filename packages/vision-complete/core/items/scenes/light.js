@@ -2,10 +2,8 @@
 // cloths that match under one lamp only, paint and light split apart, coloured scenes under uneven light, and a
 // painted metal sheet photographed under three lamps (photometric stereo).
 import { S } from 'kernel'
-import { fromFn, image, map, random, zip, row } from 'image'
-import { gradientMagnitude } from 'image'
-import { CURVES, lambertShade, sensorReading } from 'image'
-import { compose } from 'image'
+import { compose, fromFn, gradientMagnitude, image, map, random, row, zip } from 'image-processing'
+import { CURVES, lambertShade, sensorReading } from 'computer-vision'
 import { picture } from 'image'
 import { T as t } from 'kernel'
 

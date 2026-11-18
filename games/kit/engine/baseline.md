@@ -7,7 +7,7 @@ Run from `site/`:
 npm run baseline -- save
 npm run baseline -- compare
 npm run baseline -- compare state-graph
-npm run baseline -- compare --package arithmetic
+npm run baseline -- compare --package vision-complete
 ```
 
 With no selector, comparison covers all installed targets present in the locked corpus. It lists installed targets without snapshots and snapshot targets absent from the current project.

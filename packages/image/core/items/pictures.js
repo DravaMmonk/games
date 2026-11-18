@@ -1,11 +1,12 @@
 import { qualifyItems } from 'kernel'
-// The pictures content names (vocabulary.js picture): the test-picture library (../engine/image.js patterns) with its
+// The pictures content names (vocabulary.js picture): the test-picture library (./patterns.js) with its
 // parameters by name, a few drawn at any size, and pictures made from another (a noisy copy, a blurred one). A
 // picture is written { name: params } or, with every parameter left at its default, by its name alone; a test, a
 // probe, an intro figure, a bench or a scene names one. Pictures are 16 × 16 unless they say their size.
 import { S, callOf } from 'kernel'
-import { GLYPHS, SIZE, addNoise, correlate, fromFn, gaussianKernel, map, patterns, random, zip } from '../engine/image.js'
-import { blob } from '../engine/parts/generative.js'
+import { GLYPHS, patterns } from './patterns.js'
+import { SIZE, addNoise, correlate, fromFn, gaussianKernel, map, random, zip } from 'image-processing'
+import { blob } from 'computer-vision'
 import { T as t } from 'kernel'
 
 const TAU = 2 * Math.PI

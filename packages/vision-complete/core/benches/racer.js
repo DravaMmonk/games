@@ -2,9 +2,8 @@
 // from. Rounds come from a seed (one per attempt), so a retry is a new set and a check can replay any of them. As a
 // bench it is a process: start, answer (or run out of time), a short look at the right card, the next round.
 import { S } from 'kernel'
-import { limitOf } from 'image'
-import { correlate, random } from 'image'
-import { picture } from 'image'
+import { limitOf, picture } from 'image'
+import { correlate, random } from 'image-processing'
 import { T as t } from 'kernel'
 
 const num = S.num()

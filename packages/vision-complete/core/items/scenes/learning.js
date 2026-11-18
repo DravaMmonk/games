@@ -2,10 +2,9 @@
 // erode, dots that move, X and O at different places and inks, colour pictures and their colour contrasts, street
 // scenes with red lights, scores into probabilities, and the parts on a sorting belt.
 import { S } from 'kernel'
-import { GLYPHS, addNoise, correlate, fromFn, image, map, maxPool, patterns, random, zip } from 'image'
+import { GLYPHS, patterns } from 'image'
+import { addNoise, boxBlur3, compose, correlate, fromFn, image, map, maxPool, random, zip } from 'image-processing'
 import { T as t } from 'kernel'
-import { boxBlur3 } from 'image'
-import { compose } from 'image'
 
 const num = (v) => image(1, 1, v)
 const PT = S.list(S.int(), { min: 2 })

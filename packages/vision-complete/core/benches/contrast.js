@@ -6,9 +6,8 @@
 // The first term pulls the positive pair together; the second (InfoNCE's denominator) pushes every other view away.
 // Dropping it leaves a loss that every collapsed encoder minimises.
 import { S } from 'kernel'
-import { limitOf } from 'image'
-import { correlate, downsample, gaussianKernel, map, random, shift } from 'image'
-import { picture } from 'image'
+import { limitOf, picture } from 'image'
+import { correlate, downsample, gaussianKernel, map, random, shift } from 'image-processing'
 import { T as t } from 'kernel'
 
 

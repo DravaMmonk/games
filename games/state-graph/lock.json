@@ -3,27 +3,39 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "6d5debe82f9303cbe84bf64b2561603b68e9cac22ec9985b742de0b7d123c57f"
+      "hash": "693efeae8a11d2f9c38b424dfe54915dc5093061bf1d9a4c315a51b0b1a7860f"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "e738bec7f150cb0717d6554361a16b0df2188c4a9b1a27868d1e297ffc81849f"
+      "hash": "0351b730abf4130f3b429eaf5400782aa9a56ae78c383323c2ecbecda225705b"
+    },
+    "image-processing": {
+      "version": "0.0.0",
+      "hash": "a4aca1b92e86798960a71dc871da4c75331d613d72a627bdca1f0ec5fa8c741c"
+    },
+    "machine-learning": {
+      "version": "0.0.0",
+      "hash": "dc1281f66850eb746cabf440fbcdbe9c45d1ead961649e55e00e0868a78f1091"
+    },
+    "computer-vision": {
+      "version": "0.0.0",
+      "hash": "5a79abee75292976240642a0a6ed4fa0481c59ad5380378af014b041b00baf0e"
     },
     "image": {
       "version": "0.0.0",
-      "hash": "f35da77e7e21da6083b3df6f1799b87d086b6bd98aaf7bd1a4cef5917f4bdf36"
+      "hash": "11d63b67462cbb9ffe89a7c929f7e5b115f23971cb60f5ae5170594489afc2a1"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "bcbf656ef9e644868077e1096a8253f0fd65f2a58e5cda2444ae411594c6b498"
+      "hash": "6d78dea77f9b166b77cdee2c6ccc21a202642da39094848b2ff6684398757541"
     },
     "table": {
       "version": "0.0.0",
-      "hash": "dd828e218ca8b4480f4cb6955a836b2916057b9e367137cfb9208f10bc1103e5"
+      "hash": "2b06e3645f73d24375fb08a2baa7eabc1cfcc3b8aaa7bb2705d0bb9bb73d4aea"
     },
     "state-graph": {
       "version": "0.0.0",
-      "hash": "f9933e00e8261277ba2527bbd2184db6463f5b67094a6071b0770a617d78bd6e"
+      "hash": "7aad5be564ae4566db2c758731c5c39422bfa7fda727944f6a4627dba18a627b"
     }
   }
 }

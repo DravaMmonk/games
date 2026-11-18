@@ -16,9 +16,13 @@ export function tableFixture() {
    tasks: [{ id: 'double', play: 'state-graph/circuit', world: 'state-graph/grid', tests: [{ R: 1, C: 2, given: { '0,0': 7 } }], expected: [14], solution: ['sum = table/add(view.left, view.left)', 'cell <- sum'], naive: ['cell <- view.left'] }],
   } },
  }, vocabulary)
- const update = (file, key) => { const data = JSON.parse(readFileSync(file)); data[key] = { ...data[key], 'state-graph': '^0.0.0', table: '^0.0.0', image: '^0.0.0' }; writeFileSync(file, JSON.stringify(data)) }
- update(join(root, 'packages/sample/package.json'), 'uses')
- update(join(root, 'games/sample/game.json'), 'packages')
+ const update = (file, key, ids) => {
+  const data = JSON.parse(readFileSync(file))
+  for (const id of ['state-graph', 'table', 'image', ...ids]) data[key][id] = '^0.0.0'
+  writeFileSync(file, JSON.stringify(data))
+ }
+ update(join(root, 'packages/sample/package.json'), 'uses', [])
+ update(join(root, 'games/sample/game.json'), 'packages', ['image-processing', 'computer-vision', 'machine-learning'])
  lockFixture(root)
  return { root, content: readContent('sample', root), cleanup: () => rmSync(root, { recursive: true, force: true }) }
 }

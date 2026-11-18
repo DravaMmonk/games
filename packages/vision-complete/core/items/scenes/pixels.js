@@ -1,7 +1,7 @@
 // Scenes of per-pixel work (scenes/index.js): a washed-out photo, an intruder against an empty scene, the inspection
 // station that compares a part with its reference.
 import { S } from 'kernel'
-import { fromFn, map } from 'image'
+import { fromFn, map } from 'image-processing'
 import { picture } from 'image'
 import { T as t } from 'kernel'
 

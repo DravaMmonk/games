@@ -2,8 +2,8 @@
 // when, in every scene, the two strongest peaks are the scene's two lines.
 import { S } from 'kernel'
 import { benchRun } from 'image'
-import { approximateNormal, random } from 'image'
-import { houghAccumulate, houghPeaks, lineGap, pointAlongLine, polarLine } from 'image'
+import { approximateNormal, random } from 'image-processing'
+import { houghAccumulate, houghPeaks, lineGap, pointAlongLine, polarLine } from 'computer-vision'
 import { T as t } from 'kernel'
 
 

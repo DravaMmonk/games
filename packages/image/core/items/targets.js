@@ -2,12 +2,9 @@ import { qualifyItems } from 'kernel'
 // What a circuit is asked to make of one picture (vocabulary.js target), for the scene of a picture in and the
 // picture a rule makes of it out (scenes/index.js filter). Each item is make(params) → (picture) → the expected one.
 import { S, callOf } from 'kernel'
-import { correlate, downsample, flipKernel, fromFn, gaussianKernel, image, map, row, shift, zip } from '../engine/image.js'
-import { boxBlur3, boxKernel, gradientMagnitude, harrisResponse, horizontalDifference, peaksOf, squaredGradient } from '../engine/filters.js'
-import { applyGain, highpass, lowpass, magnitudeSpectrum } from '../engine/fourier.js'
-import { cross3 } from '../engine/match.js'
-import { attentionWeights } from '../engine/attention.js'
-import { zeroUp } from '../engine/parts/segment.js'
+import { applyGain, boxBlur3, boxKernel, correlate, downsample, flipKernel, fromFn, gaussianKernel, gradientMagnitude, highpass, horizontalDifference, image, lowpass, magnitudeSpectrum, map, row, shift, squaredGradient, zeroUp, zip } from 'image-processing'
+import { cross3, harrisResponse, peaksOf } from 'computer-vision'
+import { attentionWeights } from 'machine-learning'
 import { T as t } from 'kernel'
 
 const SHAPE = S.oneOf(['disk', 'gauss'])

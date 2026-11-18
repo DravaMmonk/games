@@ -3,8 +3,8 @@
 // the cover.
 import { S } from 'kernel'
 import { limitOf } from 'image'
-import { random } from 'image'
-import { affineFit, homographyDLT, invert3, project } from 'image'
+import { random } from 'image-processing'
+import { affineFit, homographyDLT, invert3, project } from 'computer-vision'
 import { T as t } from 'kernel'
 
 const rectCorners = ([x0, y0, x1, y1]) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]

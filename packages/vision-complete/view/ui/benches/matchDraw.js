@@ -1,4 +1,4 @@
-import { pointAlongLine } from 'image'
+import { pointAlongLine } from 'computer-vision'
 
 export function linePath(line, from = -40) {
   const start = pointAlongLine(line, from).join(' ')

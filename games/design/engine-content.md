@@ -69,7 +69,7 @@
 
 ```sh
 # site/
-npm run deps -- lock --package arithmetic
+npm run deps -- lock --package scalar
 npm run deps -- lock --game qed
 npm run deps -- upgrade --game qed [package]
 ```

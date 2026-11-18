@@ -1,8 +1,8 @@
 // Scenes of the third dimension (scenes/index.js): stereo pairs of textured layers, disparity maps to turn into
 // distance, epipolar geometry of one camera pair, and a robot vacuum's view of a room with obstacles.
 import { S } from 'kernel'
-import { addNoise, fromFn, image, map, random, zip, row } from 'image'
-import { cross3 } from 'image'
+import { addNoise, fromFn, image, map, random, zip, row } from 'image-processing'
+import { cross3 } from 'computer-vision'
 import { T as t } from 'kernel'
 
 const num = S.num()

@@ -6,6 +6,9 @@
   "uses": {
     "circuit": "^0.0.0",
     "image": "^0.0.0",
-    "progress": "^0.0.0"
+    "progress": "^0.0.0",
+    "image-processing": "^0.0.0",
+    "computer-vision": "^0.0.0",
+    "machine-learning": "^0.0.0"
   }
 }

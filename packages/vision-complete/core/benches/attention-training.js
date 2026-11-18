@@ -1,5 +1,5 @@
 import { T as t } from 'kernel'
-import { attentionWeights } from 'image'
+import { attentionWeights } from 'machine-learning'
 
 const cross = [1,0,0,1, 0,1,1,0, 0,1,1,0, 1,0,0,1]
 const ring = [1,1,1,1, 1,0,0,1, 1,0,0,1, 1,1,1,1]

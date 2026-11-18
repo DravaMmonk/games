@@ -1,7 +1,8 @@
 import { MISSING } from 'circuit'
 import { OperationError } from 'kernel'
-import { correlate, downsample, fromFn, gaussianKernel, image, map, maxPool, shift, zip } from './image.js'
-import { boxBlur3, boxKernel, gradientMagnitude, harrisResponse, horizontalDifference, sobelX, sobelY } from './filters.js'
+import { boxBlur3, correlate, downsample, fromFn, gaussianKernel, gradientMagnitude, horizontalDifference, image, map, maxPool, shift, sobelX, sobelY, zeroUp, zip } from 'image-processing'
+import { disparityMap, harrisResponse } from 'computer-vision'
+import { relu } from 'machine-learning'
 import { FREQUENCY } from './parts/frequency.js'
 import { GENERATIVE } from './parts/generative.js'
 import { GLOBAL } from './parts/global.js'
@@ -127,12 +128,12 @@ const NATIVE_TYPES = {
   exp: { label: 'exp', inputs: ['in'], eval: ({ in: a }) => map(a, Math.exp), cost: 1 },
   square: { label: { zh: '平方', en: 'Square' }, inputs: ['in'], eval: ({ in: a }) => map(a, (v) => v * v), cost: 1, unlock: 'square' },
   sqrt: { label: { zh: '开方', en: 'Square root' }, inputs: ['in'], eval: ({ in: a }) => map(a, (v) => Math.sqrt(Math.max(0, v))), cost: 1, unlock: 'square' },
-  relu: { label: 'ReLU', inputs: ['in'], eval: ({ in: a }) => map(a, (v) => Math.max(0, v)), cost: 1, unlock: 'relu' },
+  relu: { label: 'ReLU', inputs: ['in'], eval: ({ in: a }) => map(a, relu), cost: 1, unlock: 'relu' },
   // Each pixel becomes a 2×2 block with the pixel in its top left and 0 elsewhere: twice the size, nothing invented.
   zeroUp: {
     label: { zh: '补零放大', en: 'Zero upsample' },
     inputs: ['in'],
-    eval: ({ in: a }) => fromFn(a.w * 2, a.h * 2, (x, y) => (x % 2 || y % 2 ? 0 : a.data[(y / 2) * a.w + x / 2])),
+    eval: ({ in: a }) => zeroUp(a),
     cost: 0,
   },
   fqMean: {
@@ -255,16 +256,6 @@ export const NODE_TYPES = Object.fromEntries(Object.entries(NATIVE_TYPES).map(([
   outputType: 'image/image',
   unlock: unlockName(spec.unlock),
 }]))
-
-export function disparityMap(left, right, window = 3, maxD = 4) {
-  const box = boxKernel(window)
-  const costs = Array.from({ length: maxD }, (_, d) => correlate(zip(left, shift(right, d, 0), (p, q) => (p - q) ** 2), box))
-  return fromFn(left.w, left.h, (x, y) => {
-    let best = 0
-    for (let d = 1; d < maxD; d++) if (costs[d].data[y * left.w + x] < costs[best].data[y * left.w + x] - 1e-9) best = d
-    return best
-  })
-}
 
 /**
  * What a course's part table says of each part (the course's table: NODE_TYPES and the parts its levels pack, own.js).

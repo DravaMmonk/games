@@ -1,0 +1,17 @@
+{
+  "target": "computer-vision",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "693efeae8a11d2f9c38b424dfe54915dc5093061bf1d9a4c315a51b0b1a7860f"
+    },
+    "image-processing": {
+      "version": "0.0.0",
+      "hash": "9a5f469eaf6bb5b4e50cc8b32a7759c74be7504c4aa60d430fec45e757b070c4"
+    },
+    "machine-learning": {
+      "version": "0.0.0",
+      "hash": "09fbf79afd0a8218b396d7b7861c462ee5952b480fedd62a401fe52bfee29537"
+    }
+  }
+}

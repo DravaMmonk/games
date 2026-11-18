@@ -1,7 +1,7 @@
 // Scenes of filters (scenes/index.js): a noisy step whose true edge is wanted, and the document scanner's scans.
 import { S } from 'kernel'
-import { addNoise, correlate, fromFn, gaussianKernel, map, patterns } from 'image'
-import { boxBlur3, horizontalDifference, squaredGradient } from 'image'
+import { addNoise, boxBlur3, correlate, fromFn, gaussianKernel, horizontalDifference, map, squaredGradient } from 'image-processing'
+import { patterns } from 'image'
 import { T as t } from 'kernel'
 
 // A 24×24 scan: a sheet of paper on a dark desk, a few lines of text on it, sometimes sensor noise.

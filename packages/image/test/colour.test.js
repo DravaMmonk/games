@@ -1,7 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { compose, channel } from '../core/engine/colour.js'
-import { image, zip, shift, correlate, downsample, maxPool, compare } from '../core/engine/image.js'
+import { channel, compare, compose, correlate, downsample, image, maxPool, shift, zip } from 'image-processing'
 import { NODE_TYPES } from '../core/engine/nodes.js'
 import { runnerOf } from '../core/engine/graph.js'
 

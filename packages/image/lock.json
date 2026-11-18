@@ -3,11 +3,23 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "6d5debe82f9303cbe84bf64b2561603b68e9cac22ec9985b742de0b7d123c57f"
+      "hash": "693efeae8a11d2f9c38b424dfe54915dc5093061bf1d9a4c315a51b0b1a7860f"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "e738bec7f150cb0717d6554361a16b0df2188c4a9b1a27868d1e297ffc81849f"
+      "hash": "0351b730abf4130f3b429eaf5400782aa9a56ae78c383323c2ecbecda225705b"
+    },
+    "image-processing": {
+      "version": "0.0.0",
+      "hash": "9a5f469eaf6bb5b4e50cc8b32a7759c74be7504c4aa60d430fec45e757b070c4"
+    },
+    "machine-learning": {
+      "version": "0.0.0",
+      "hash": "09fbf79afd0a8218b396d7b7861c462ee5952b480fedd62a401fe52bfee29537"
+    },
+    "computer-vision": {
+      "version": "0.0.0",
+      "hash": "5a79abee75292976240642a0a6ed4fa0481c59ad5380378af014b041b00baf0e"
     }
   }
 }

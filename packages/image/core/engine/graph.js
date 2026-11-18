@@ -2,8 +2,8 @@ import { workNodes } from 'circuit'
 import { OperationError } from 'kernel'
 import { runBoard, sink, source } from 'circuit'
 import { runOutputTests } from 'kernel'
-import { compare, image } from './image.js'
-import { channel, compose } from './colour.js'
+import { channel, compare, compose, image } from 'image-processing'
+import { gradientStep } from 'machine-learning'
 
 // A single number (1×1) meets a bigger input by filling its whole size; any other mismatch is an error, except for a
 // part whose inputs are different things by nature (`anySize`: a picture, a matrix and a canvas).
@@ -131,40 +131,28 @@ export function runnerOf(types, partsFor = (_task, parts) => parts) {
     }
     return sum / Math.max(1, count)
   }
-  // Finite-difference gradient descent on every learnable parameter, scored by mean squared error over the training
-  // tests. Normally a step that makes the loss worse is halved and retried; with `backtrack: false` the step is taken
-  // as it is, so a learning rate that is too large overshoots.
+  // Connect the optimizer's weight vector to the board's learnable parameter slots.
   function trainStep(level, graph, rate = 4, { backtrack = true, workshopParts } = {}) {
     const tests = trainingTests(level)
-    const loss = (g) => lossOn(tests, g, workshopParts)
-    const base = loss(graph)
-    const gradients = []
-    for (const node of graph.nodes) {
+    const slots = []
+    const weights = []
+    for (const [index, node] of graph.nodes.entries()) {
       for (const param of types[node.type]?.params ?? []) {
         if (!param.learnable) continue
-        node.params[param.key].forEach((_, i) => {
-          const probe = structuredClone(graph)
-          probe.nodes.find((n) => n.id === node.id).params[param.key][i] += 1e-4
-          gradients.push({ id: node.id, key: param.key, i, g: (loss(probe) - base) / 1e-4 })
+        node.params[param.key].forEach((weight, offset) => {
+          slots.push({ index, key: param.key, offset })
+          weights.push(weight)
         })
       }
     }
-    const stepBy = (step) => {
+    const applyWeights = values => {
+      if (values === weights) return graph
       const next = structuredClone(graph)
-      for (const { id, key, i, g } of gradients) next.nodes.find((n) => n.id === id).params[key][i] -= step * g
+      slots.forEach(({ index, key, offset }, i) => { next.nodes[index].params[key][offset] = values[i] })
       return next
     }
-    if (!backtrack) {
-      const next = stepBy(rate)
-      return { graph: next, loss: loss(next), rate }
-    }
-    let step = rate
-    for (let attempt = 0; attempt < 8; attempt++, step /= 2) {
-      const next = stepBy(step)
-      const after = loss(next)
-      if (after <= base) return { graph: next, loss: after, rate: step }
-    }
-    return { graph, loss: base, rate: step }
+    const result = gradientStep(weights, values => lossOn(tests, applyWeights(values), workshopParts), rate, { backtrack })
+    return { graph: applyWeights(result.weights), loss: result.loss, rate: result.rate }
   }
 
   const hasLearnable = (graph) => graph.nodes.some((node) => (types[node.type]?.params ?? []).some((param) => param.learnable))

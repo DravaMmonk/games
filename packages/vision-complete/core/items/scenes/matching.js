@@ -2,10 +2,8 @@
 // and its brightened partner, lanes on a road, a line among specks, one cell's gradient directions, and a book cover
 // pasted back onto a photo of it.
 import { S } from 'kernel'
-import { fromFn, image, map, random, zip, row } from 'image'
-import { peaksOf, sobelGradient } from 'image'
-import { homographyDLT, project } from 'image'
-import { houghGrid, pairsOf, warp } from 'image'
+import { fromFn, image, map, random, row, sobelGradient, zip } from 'image-processing'
+import { homographyDLT, houghGrid, pairsOf, peaksOf, project, warp } from 'computer-vision'
 import { picture } from 'image'
 import { T as t } from 'kernel'
 

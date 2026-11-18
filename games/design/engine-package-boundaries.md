@@ -23,10 +23,11 @@
 - 代码读取的标签归读者所有。内核登记 `kernel/studio-left`，成员类型为 `kind`；`kernel` 是保留命名空间，不能用作包名。包用 `kernel.tag("包/名字", "成员类型")` 登记，登记表 `kernel.tables.tag` 使用相同的复合键。自己声明写 `tags/<成员类型>/<名>.json`，贡献给读者或依赖标签写 `overrides/<命名空间>/tags/<成员类型>/<名>.json`。所有对象类型的目标都必须由所属包声明或由代码登记；标签还须匹配成员类型。不存在的目标统一由存在性检查报告。标签文案键使用 `@tag.<名>.title`、`@tag.<名>.desc`，托盘继续使用 `@tray.`。新对象复制任意已有对象或从 schema 起步；精选起点可用普通标签。Studio 的左栏、标签选择与地址均保留成员类型。
 - `plugin-boundaries.js` 用 AST 同时检查静态 import、re-export、动态 import 和 require，拒绝计算出的导入路径。核心只能引用公开无界面接口与本核心，禁止界面库、JSX、CSS、Node I/O；视图可读本核心。`npm run check` 加载代码前检查，`lint:kit` 使用同一规则覆盖包代码。`lint:kit` 同时检查内核的反向边界，包路径和包身份从安装清单识别。核心判定应保持确定性，只使用传入种子，不访问时间、文件或网络。
 
-库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `scalar` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `scalar/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if` 与寄存器读取 `circuit/held`。现成的四则接线元件由数据扩展 `arithmetic` 提供，同时引用两者。
+库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `scalar` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `scalar/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if` 与寄存器读取 `circuit/held`。
 
 `capabilities/<kind>.json` 提供 `name`、`studio.label`、可选的 `studio.order`、`items` 和 `implementation`。内核提供通用的 `valueType`、`language` 和玩法登记 `play`。`circuit` 定义 `operation`、`primitive`、`board`、`display` 等共享种类。逻辑、图像、表格和逐拍玩法各自定义专用种类，例如 `logic/want`、`image/scene`、`table/world` 和 `tick-bus/want`。实现要求由声明决定，`core` 可以要求指定方法，`view` 要求能力项所属包有视图入口。项名按种类独立登记，同类内重复时报错。
 
+图像玩法 `image` 负责图接线、探针、机关台和面向关卡的元件声明。`image-processing` 提供浮点像素、颜色通道、邻域滤波、重采样与频域运算。`machine-learning` 提供与领域无关的向量注意力、激活函数、采样和数值优化，可以独立用于机器学习课程和自然语言处理。`computer-vision` 负责特征检测、几何匹配、视差、成像模型和面向图像的学习模型。视觉计算只在需要时使用 `image-processing` 的像素表示和 `machine-learning` 的算法。`image` 和课程 `vision-complete` 通过公开核心接口使用这三个库，元件及任务继续使用现有的 `image/*` 身份。
 
 对象类型的含义由 `kind` 登记提供。内核依 schema 读取、覆盖、展开引用和检查字段，调用含义对象完成派生。`circuit/part` 解释元件和 `replaces`，`progress/part` 解释阶段和发放，`circuit/tray` 解释托盘及菜单，`circuit/quote` 读取引语。它们的文件类型分别是 `circuit/part`、`circuit/tray`、`circuit/quote`。`relations` 声明给出自定义关系的端点类型。
 

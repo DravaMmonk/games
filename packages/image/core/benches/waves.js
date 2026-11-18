@@ -2,7 +2,7 @@
 import { S } from 'kernel'
 import { benchRun, openKnobs, startValues } from '../bench.js'
 import { piText } from '../engine/pi.js'
-import { cosine, maxDiff, sampleAt } from '../engine/waves.js'
+import { cosine, maxDiff, sampleAt } from 'image-processing'
 import { T as t } from 'kernel'
 
 const num = S.num()

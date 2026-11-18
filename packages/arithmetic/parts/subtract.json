@@ -1,7 +1,0 @@
-{
-  "name": "@part.subtract.name",
-  "desc": "@part.subtract.desc",
-  "icon": "Minus",
-  "family": "circuit/value",
-  "op": "scalar/minus"
-}

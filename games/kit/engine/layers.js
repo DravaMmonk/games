@@ -76,10 +76,6 @@ export function composeLayers(layers, schemas) {
     registries[object.kind][object.name] = mergeFields(undefined, object.value, schema, collections, layer.id)
     sources[object.kind][object.name] = { declaration: layer.id, overrides: [], reader: layer.id, collections }
   }
-  for (const [key, reader] of readers) {
-    registries.tag[key] = { kind: reader.member, values: [] }
-    sources.tag[key] = { declaration: null, reader: reader.reader, overrides: [], collections: {} }
-  }
   const identity = (kind, name, value) => kind === 'tag' ? tagKey(value.kind, name) : name
   const dependencies = new Map(layers.map((layer) => [layer.id, dependencyIds(layer.config ?? {})]))
   const depends = (a, b, seen = new Set()) => {
@@ -87,9 +83,11 @@ export function composeLayers(layers, schemas) {
     seen.add(a)
     return (dependencies.get(a) ?? []).some((dep) => dep === b || depends(dep, b, seen))
   }
-  const record = (kind, name, value, layer, override, contribution) => {
+  const record = (kind, name, value, layer, override, contribution, previousValue) => {
     const key = identity(kind, name, value)
-    const before = registries[kind][key]
+    const before = previousValue ?? registries[kind][key]
+    const reader = kind === 'tag' ? readers.get(key) : undefined
+    if (reader) sources.tag[key] ??= { declaration: null, reader: reader.reader, overrides: [] }
     if (!override && before !== undefined && !(sources[kind][key]?.declaration === undefined || sources[kind][key]?.declaration === null)) throw new Error(`duplicate ${kind} ${name}`)
     if (override) {
       sources[kind][key] ??= { declaration: null, overrides: [] }
@@ -154,12 +152,15 @@ export function composeLayers(layers, schemas) {
     }
     for (const { kind, name: id, value } of layer.overrides ?? []) {
       name(id)
-      const before = registries[kind]?.[identity(kind, id, value)]
+      const key = identity(kind, id, value)
+      const reader = kind === 'tag' ? readers.get(key) : undefined
+      // A reader declares the identity. Build an empty merge base only for its first override.
+      const before = registries[kind]?.[key] ?? (reader ? { kind: reader.member, values: [] } : undefined)
       qualifiedLayer.overrides.push({ kind, name: id, value: { ...(['tag', 'relation'].includes(kind) && before?.kind && { kind: before.kind }), ...object(kind, value, before) } })
       const contribution = object(kind, value, before)
       const after = applyOverride(kind, before, contribution, schemas)
       policyProblems.push(...layerProblems(layer.id, kind, id, contribution, schemaForKind(kind, schemas, { ...before, ...contribution }), schemas, true, before))
-      record(kind, id, after, layer, true, contribution)
+      record(kind, id, after, layer, true, contribution, before)
     }
   }
   return { policyProblems, registries, qualifiedLayers, sources, overrideHistory: history, layerOrder: layers.map((l) => l.id), layerUses: Object.fromEntries(layers.map((l) => [l.id, l.id.startsWith('@') ? layers.filter((p) => !p.id.startsWith('@')).map((p) => p.id) : dependencyIds(l.config)])), configurations, catalogs }

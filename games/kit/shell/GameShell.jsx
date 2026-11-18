@@ -331,6 +331,7 @@ function GameShellInstance({ game, store, author = null }) {
             <span className="game-level-title">
               <b>{game.levelLabel(level)}</b>
               <span {...titleMark}>{L(level.title)}</span>
+              {game.kinds[level.kind]?.icon && <i className="game-level-kind" role="img" aria-label={L(game.kinds[level.kind].label)} title={L(game.kinds[level.kind].label)}>{createElement(game.kinds[level.kind].icon, { size: 14 })}</i>}
               {chapter && <small>{L(chapter.title)}</small>}
             </span>
           )}

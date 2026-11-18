@@ -97,7 +97,7 @@ test('colour scene variants expose RGB inputs without changing their targets', a
 
 test('image content and editor imports enforce the same task ports', async () => {
   const [{ imageKit }, { startBoard }, { read }] = await Promise.all([
-    import('../core/engine/kit.js'), import('../core/engine/board.js'), import('circuit'),
+    import('../core/engine/kit.js'), import('../core/engine/board.js'), import('../../circuit/core/board/text.js'),
   ])
   const kit = imageKit(NODE_TYPES)
   const grey = plane([0.2, 0.4])

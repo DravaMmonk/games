@@ -1,14 +1,11 @@
 // Scenes of learning (scenes/index.js): samples of a rule, letters reduced to two stroke features, bright blocks to
 // erode, dots that move, X and O at different places and inks, colour pictures and their colour contrasts, street
 // scenes with red lights, scores into probabilities, and the parts on a sorting belt.
-import { S } from 'kernel'
+
 import { GLYPHS, patterns } from 'image'
 import { addNoise, boxBlur3, compose, correlate, fromFn, image, map, maxPool, random, zip } from 'image-processing'
-import { T as t } from 'kernel'
 
 const num = (v) => image(1, 1, v)
-const PT = S.list(S.int(), { min: 2 })
-const RECT = S.list(S.int(), { min: 4, about: t('一个矩形：x0, y0, 宽, 高') })
 
 // Bright blocks on a dark, slightly noisy ground; 1 wherever the whole 7×7 window around a pixel is bright.
 function blocks(rects, notches = [], seed = 1) {
@@ -95,51 +92,33 @@ const SORT_ROWS = { X: GLYPHS.X, O: GLYPHS.O, P: ['..#..', '..#..', '#####', '..
 
 export const LEARNING = {
   samples: {
-    about: t('一个数进、一个数出：期望是 scale·x + offset'),
-    setup: S.obj({ scale: S.num(), offset: S.opt(S.num()) }),
-    test: S.obj({ x: S.num() }),
     make: ({ x }, { scale, offset }) => ({ inputs: { in: num(x) }, expected: { out: num(offset === undefined ? scale * x : scale * x + offset) } }),
   },
   strokes: {
-    about: t('一个字母化成两个数：斜笔画多少、弯笔画多少；期望 X 是 1，O 是 0'),
-    test: S.obj({ letter: S.oneOf(['X', 'O']), f1: S.num(), f2: S.num() }),
     make: ({ letter, f1, f2 }) => ({ inputs: { f1: num(f1), f2: num(f2) }, expected: { out: num(letter === 'X' ? 1 : 0) } }),
   },
   blocks: {
-    about: t('暗底上的亮块（有一点噪声）；期望是周围 7×7 全亮的格子'),
-    test: S.obj({ rects: S.list(RECT), notches: S.opt(S.list(PT, { about: t('亮块上缺的格子') })), seed: S.int() }),
     make: ({ rects, notches, seed }) => {
       const { scene, fits } = blocks(rects, notches, seed)
       return { inputs: { in: scene }, expected: { out: fits } }
     },
   },
   movedDots: {
-    about: t('几个亮点，从原位挪开一点；期望是原位的点做 2×2 最大池化'),
-    test: S.obj({ dots: S.list(PT), home: S.list(PT) }),
     make: ({ dots, home }) => ({ inputs: { in: dotsAt(dots) }, expected: { out: maxPool(dotsAt(home), 2) } }),
   },
   xo: {
-    about: t('一个 X 或 O，位置、墨色、噪点各不同；期望 X 是 1，O 是 0'),
-    test: S.obj({ letter: S.oneOf(['X', 'O']), ox: S.int(), oy: S.int(), ink: S.num(), seed: S.int({ about: t('噪点的种子，0 是没有噪点') }) }),
     make: ({ letter, ox, oy, ink, seed }) => ({ inputs: { in: glyphAt(GLYPHS[letter], ox, oy, ink, seed) }, expected: { out: image(1, 1, letter === 'X' ? 1 : 0) } }),
   },
   colour: {
-    about: t('一张彩色图的三个通道（各减 0.5）；期望是一种颜色对比（红对绿，或蓝对黄）的边'),
-    setup: S.obj({ mix: S.oneOf(Object.keys(MIXES)) }),
-    test: S.obj({ paint: S.opt(S.oneOf(Object.keys(PAINTS))), noise: S.opt(S.int({ about: t('彩色噪点的种子') })) }),
     make: ({ paint, noise }, { mix }) => colourScene(noise === undefined ? PAINTS[paint] : colourNoise(noise), MIXES[mix]),
   },
   street: {
-    about: t('街景的三个通道：红灯、阴影里的红车、白色路灯、绿灯；期望是红灯的掩膜'),
-    test: S.obj({ layout: S.oneOf(Object.keys(STREETS)) }),
     make: ({ layout }) => {
       const at = (x, y) => STREET[STREETS[layout](x, y)]
       return { inputs: { r: fromFn(16, 16, (x, y) => at(x, y)[0]), g: fromFn(16, 16, (x, y) => at(x, y)[1]), b: fromFn(16, 16, (x, y) => at(x, y)[2]) }, expected: { out: fromFn(16, 16, (x, y) => (STREETS[layout](x, y) === 'light' ? 1 : 0)) } }
     },
   },
   colourMix: {
-    about: t('一张彩色图；期望是模糊后的两种通道组合：R − G 和 R + G − 2B'),
-    test: S.obj({ paint: S.oneOf(Object.keys(MIX_PAINTS)) }),
     make: ({ paint }) => {
       const [r, g, b] = [0, 1, 2].map((c) => fromFn(16, 16, (x, y) => MIX_PAINTS[paint](x, y)[c]))
       const [R, G, B] = [boxBlur3(r), boxBlur3(g), boxBlur3(b)]
@@ -147,16 +126,12 @@ export const LEARNING = {
     },
   },
   binaryScores: {
-    about: t('两个分数；期望是 Softmax 给出的两个权重'),
-    test: S.obj({ s: S.list(S.num(), { min: 2, max: 2 }) }),
     make: ({ s }) => {
       const p = 1 / (1 + Math.exp(s[1] - s[0]))
       return { inputs: { a: num(s[0]), b: num(s[1]) }, expected: { pa: num(p), pb: num(1 - p) } }
     },
   },
   scores: {
-    about: t('三类的分数；期望是 softmax 给的三个概率'),
-    test: S.obj({ s: S.list(S.num(), { min: 3 }) }),
     make: ({ s }) => {
       const e = s.map(Math.exp)
       const total = e.reduce((a, b) => a + b, 0)
@@ -165,8 +140,6 @@ export const LEARNING = {
     },
   },
   sorter: {
-    about: t('分拣带上的零件：X、O 或 +，位置、墨色、噪点各不同；期望是它属于哪一类'),
-    test: S.obj({ part: S.oneOf(Object.keys(SORT_ROWS)), ox: S.int(), oy: S.int(), ink: S.num(), seed: S.int({ about: t('噪点的种子，0 是没有噪点') }) }),
     make: ({ part, ox, oy, ink, seed }) => {
       const clean = patterns.glyph(SORT_ROWS[part], 0.1, ink, ox, oy)
       return { inputs: { in: seed ? addNoise(clean, seed, 0.06) : clean }, expected: { px: num(part === 'X' ? 1 : 0), po: num(part === 'O' ? 1 : 0), pp: num(part === 'P' ? 1 : 0) } }
@@ -181,19 +154,12 @@ const asColourInput = (made, restore = false) => {
 }
 Object.assign(LEARNING, {
   rgbContrast: {
-    about: t('彩色图像；期望是一种颜色对比的边'),
-    setup: LEARNING.colour.setup,
-    test: LEARNING.colour.test,
     make: (test, setup) => asColourInput(LEARNING.colour.make(test, setup), true),
   },
   rgbStreet: {
-    about: t('彩色街景；期望是红灯的掩膜'),
-    test: LEARNING.street.test,
     make: (test) => asColourInput(LEARNING.street.make(test)),
   },
   rgbMix: {
-    about: t('彩色图像；期望是两种模糊通道组合'),
-    test: LEARNING.colourMix.test,
     make: (test) => asColourInput(LEARNING.colourMix.make(test)),
   },
 })

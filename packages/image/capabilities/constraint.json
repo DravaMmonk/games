@@ -6,5 +6,87 @@
       "zh": "约束",
       "en": "Constraints"
     }
+  },
+  "items": {
+    "cost": {
+      "about": {
+        "zh": "计算量不超过 max",
+        "en": "a cost of at most max"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "max": {
+            "type": "num"
+          }
+        }
+      }
+    },
+    "nodes": {
+      "about": {
+        "zh": "元件不超过 max 个",
+        "en": "at most max parts"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "max": {
+            "type": "int",
+            "min": 1
+          }
+        }
+      }
+    },
+    "transforms": {
+      "about": {
+        "zh": "频域的元件（频域低通、频域相乘）一共不超过 max 个",
+        "en": "at most max frequency-domain parts (frequency low-pass, multiply in frequency) in all"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "max": {
+            "type": "int",
+            "min": 0
+          }
+        }
+      }
+    },
+    "depth": {
+      "about": {
+        "zh": "最深的一条路上至少 min 个可训练的层",
+        "en": "at least min trainable layers on the deepest path"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "min": {
+            "type": "int",
+            "min": 1
+          }
+        }
+      }
+    },
+    "bottleneck": {
+      "about": {
+        "zh": "图像要经过编码器，瓶颈不超过 max 个数",
+        "en": "the picture passes through the encoder, a bottleneck of at most max numbers"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "max": {
+            "type": "int",
+            "min": 1
+          }
+        }
+      }
+    }
+  },
+  "implementation": {
+    "side": "core",
+    "methods": [
+      "check"
+    ]
   }
 }

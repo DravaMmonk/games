@@ -3,8 +3,9 @@ import { againstOpen, audit, defineCourse, reach } from '../core/index.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { eraLevels, layout, levelLabels, mapRows } from '../../../games/kit/course.js'
-import { holds, fresh, offer, usable } from '../../circuit/core/index.js'
-import { dependencies, dot, mermaid } from '../../circuit/core/index.js'
+import { holds, fresh, offer } from '../../circuit/core/index.js'
+import { usable } from '../../circuit/core/course.js'
+import { dependencies, dot, mermaid } from '../../circuit/core/dependencies.js'
 
 const wires = (...pairs) => pairs.map(([from, to, required]) => ({ from, to, ...(required && { required: true }) }))
 const serial = (...levels) => ({ levels: levels.map((id) => ({ id })), links: levels.slice(1).map((to, i) => ({ from: levels[i], to })) })

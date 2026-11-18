@@ -6,5 +6,64 @@
       "zh": "实验模型",
       "en": "Bench models"
     }
+  },
+  "items": {
+    "obscura": {
+      "about": {
+        "zh": "暗箱：旋钮 Z（孔板到箭头）、s（屏幕到箭头）、D（孔径）；算出像高 height、模糊 blur、亮度 light",
+        "en": "the camera obscura: knobs Z (plate from the arrow), s (screen from the arrow), D (the hole); computes the image height, blur and light"
+      },
+      "shape": "image/bench-obscura",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "arrow": {
+            "type": "num"
+          },
+          "shaft": {
+            "type": "num"
+          },
+          "table": {
+            "type": "num"
+          },
+          "gap": {
+            "type": "num"
+          }
+        }
+      }
+    },
+    "wave": {
+      "about": {
+        "zh": "一道波：c + A·cos(2π·k·x/N + φ·π/4)，旋钮 c、A、k、phi；每一步把它调到和目标重合",
+        "en": "one wave, c + A·cos(2π·k·x/N + φ·π/4), knobs c, A, k, phi: each step lays it on the target"
+      },
+      "shape": "image/bench-wave",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "N": {
+            "type": "int",
+            "min": 2
+          }
+        }
+      },
+      "stage": {
+        "type": "obj",
+        "fields": {
+          "target": {
+            "type": "map",
+            "of": {
+              "type": "num"
+            }
+          }
+        }
+      }
+    }
+  },
+  "implementation": {
+    "side": "core",
+    "methods": [
+      "make"
+    ]
   }
 }

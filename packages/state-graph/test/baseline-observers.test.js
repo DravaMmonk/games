@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { tableReports } from '../core/baseline.js'
+import { tableReports } from '../../table/core/baseline.js'
 import { imageReports } from '../../image/core/baseline.js'
 import { taskReports } from '../../../games/kit/engine/baseline-reports.js'
 

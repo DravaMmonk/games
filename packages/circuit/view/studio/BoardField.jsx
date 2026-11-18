@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil } from 'lucide-react'
 import { tr, Area, useDraft } from 'kernel/view'
-import { boardSvg } from '../../core/index.js'
+import { boardSvg } from '../../core/board/svg.js'
 
 /** A board: its drawing (open it in the game's circuit editor, in place), and its blueprint text. */
 export default function BoardField({ field, onSet, ctx, label }) {

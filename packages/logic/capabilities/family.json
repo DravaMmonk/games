@@ -1,0 +1,47 @@
+{
+  "extends": "family",
+  "items": {
+    "gate": {
+      "about": {
+        "zh": "逻辑门",
+        "en": "Logic gate"
+      }
+    },
+    "rule": {
+      "about": {
+        "zh": "推理规则",
+        "en": "Inference rule"
+      }
+    },
+    "box": {
+      "about": {
+        "zh": "带框的规则",
+        "en": "Rule with a box"
+      }
+    },
+    "lemma": {
+      "about": {
+        "zh": "证出的引理",
+        "en": "Proved lemma"
+      }
+    },
+    "tactic": {
+      "about": {
+        "zh": "证明助手的元件",
+        "en": "Proof assistant part"
+      }
+    },
+    "loop": {
+      "about": {
+        "zh": "带框的证明助手元件",
+        "en": "Proof assistant part with a frame"
+      }
+    },
+    "built": {
+      "about": {
+        "zh": "搭出的元件",
+        "en": "Built part"
+      }
+    }
+  }
+}

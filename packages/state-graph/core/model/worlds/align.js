@@ -1,8 +1,9 @@
 // Alignment tables: one word on top, one on the left.
 
-import { ORDERS } from '../algo.js';
-import { E, W } from '../scene.js';
-import { T, tr } from 'table';
+import { ORDERS } from 'table';
+import { sceneEdge, W } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, yes, num, DIR, THIS_CELL } from 'table';
 
 /* ---------- alignment table: one word on top, one on the left ---------- */
@@ -48,7 +49,7 @@ const alignDef = {
       cells.push({ id, x: j * sp, y: i * sp, w: sz, h: sz, value: g.val(id), corner: m.corner || '', cls: [m.cls, g.cls(id), path.has(id) ? 'path' : ''].filter(Boolean).join(' '), tap: g.tap(id), aria: this.name(id) });
     }
     const edges = g.arrows();
-    for (let q = 0; q + 1 < (o.path || []).length; q++) edges.push(E(o.path[q + 1], o.path[q], 'good'));
+    for (let q = 0; q + 1 < (o.path || []).length; q++) edges.push(sceneEdge(o.path[q + 1], o.path[q], 'good'));
     return { cells, edges, robot: g.robot };
   },
 };

@@ -1,25 +1,19 @@
 import { module as circuit } from 'circuit'
 import { OPS } from './ops.js'
 import { vocabulary } from './vocabulary.js'
+import display from '../capabilities/display.json' with { type: 'json' }
+import valueType from '../capabilities/valueType.json' with { type: 'json' }
+import board from '../capabilities/board.json' with { type: 'json' }
 
 export default {
   id: 'logic',
   register(registry) {
     if (!registry.schemas.circuit) circuit.register(registry)
     registry.vocabulary('logic', vocabulary)
-    registry.add('display', 'logic/proof-screen', { about: { zh: '证明卡片、读数和面板', en: 'Proof cards, readouts and panels' }, role: 'circuit' })
-    registry.add('display', 'logic/gates-screen', { about: { zh: '真值电路卡片、读数和面板', en: 'Truth circuit cards, readouts and panels' }, role: 'circuit' })
-    registry.add('display', 'logic/machine-screen', { about: { zh: '证明助手卡片、读数和面板', en: 'Proof assistant cards, readouts and panels' }, role: 'circuit' })
-    registry.add('display', 'logic/passed', { about: { zh: '通关窗口中的已声明规则', en: 'Declared rules in the pass dialog' }, role: 'passed' })
-    for (const name of ['proof-screen', 'gates-screen', 'machine-screen', 'passed']) registry.implement('display', `logic/${name}`, 'logic/view', 'view')
+    for (const declaration of [display, board, valueType]) {
+      for (const [name, item] of Object.entries(declaration.items)) registry.add(declaration.extends, `logic/${name}`, item)
+    }
+    for (const name of Object.keys(display.items)) registry.implement('display', `logic/${name}`, 'logic/view', 'view')
     for (const [name, item] of Object.entries(OPS)) registry.implement('operation', name, item, 'core')
-    for (const [name, about] of Object.entries({
-      judgment: { en: 'A proved formula with its open hypotheses and proof term', zh: '带开放假设与证明项的已证公式' },
-      'machine-value': { en: 'An equation set, proof state, rule, sentence or clause set', zh: '等式组、证明状态、规则、句子或子句集' },
-      options: { en: 'Labelled choices for a card parameter', zh: '元件参数的带标签选项' },
-    })) registry.add('valueType', `logic/${name}`, { about })
-    registry.add('board', 'logic/proof', { about: { en: 'An inference circuit with scoped assumption frames', zh: '带作用域假设框的推理电路' }, valueTypes: ['logic/judgment'] })
-    registry.add('board', 'logic/machine', { about: { en: 'A circuit over proof assistant values', zh: '处理证明助手值的电路' }, valueTypes: ['logic/machine-value'] })
-    registry.add('board', 'logic/gates', { about: { en: 'A truth-value circuit', zh: '真值电路' }, valueTypes: ['kernel/boolean'] })
   },
 }

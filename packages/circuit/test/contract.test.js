@@ -5,7 +5,8 @@ import { packageCodeProblems } from '../../../games/kit/engine/plugin-boundaries
 import { evaluatePlay } from '../../../games/kit/engine/plugin-runtime.js'
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 import { register as registerScalar } from '../../scalar/core/index.js'
-import { register, boardPlay } from '../core/index.js'
+import { register } from '../core/index.js'
+import { boardPlay } from '../core/board-play.js'
 
 const root = new URL('../../../', import.meta.url).pathname
 const fixture = () => {

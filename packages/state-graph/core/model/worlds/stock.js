@@ -5,7 +5,8 @@
 // t = { p: [price on day 1 …], cool?: true }: without `cool` you trade once (the last state is final); with it you may
 // trade again, but only a day after selling.
 
-import { T, tr } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, num, DIR, THIS_CELL } from 'table';
 
 /** The layers: [id, name, the layer a step comes from, what the step brings in]. */
@@ -19,6 +20,7 @@ const fromOf = (t, m) => { const f = layersOf(t)[m][2]; return f ? layersOf(t).f
 const gainOf = (t, m, d) => ({ buy: -t.p[d - 1], sell: t.p[d - 1], wait: 0 })[layersOf(t)[m][3]];
 
 export const stock = world({
+  layered: true,
   sensors: {
     left: cell(...DIR.left, [0, 0, -1]),
     gain: num(T('这一步的进账', 'what the step brings in'), T('进账', 'in'), 'gain'),

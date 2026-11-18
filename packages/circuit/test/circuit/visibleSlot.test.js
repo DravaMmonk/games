@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { visibleSlot } from '../../core/index.js'
+import { visibleSlot } from '../../core/board/visibleSlot.js'
 
 const outer = { slot: 0, region: null, top: 10, bottom: 30, left: 0, right: 40 }
 const inside = { slot: 0, region: 'frame/body', top: 100, bottom: 140, left: 10, right: 45 }

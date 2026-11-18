@@ -6,5 +6,12 @@
       "zh": "板",
       "en": "Boards"
     }
+  },
+  "items": {
+    "board": {
+      "valueTypes": [
+        "kernel/number"
+      ]
+    }
   }
 }

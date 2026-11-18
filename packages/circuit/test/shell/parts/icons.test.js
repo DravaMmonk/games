@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { ICON_NAMES } from '../../../core/index.js'
+import { ICON_NAMES } from '../../../core/parts/icons.js'
 
 // The shell's table imports lucide (resolved by the page's build, not under node): read it as text.
 const source = readFileSync(new URL('../../../view/parts/icons.js', import.meta.url), 'utf8')

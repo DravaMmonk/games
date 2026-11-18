@@ -1,9 +1,10 @@
 // node --test packages/circuit — a board as text: printed, read back to the same board, and what reading refuses.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { framePart } from '../../core/index.js'
-import { headOf, textParse as parse, textPrint as print, read } from '../../core/index.js'
-import { boardSvg } from '../../core/index.js'
+import { framePart } from '../../core/board/frames.js'
+import { headOf, print, read } from '../../core/board/text.js'
+import { textParse as parse } from '../../core/index.js'
+import { boardSvg } from '../../core/board/svg.js'
 import { withPreset } from '../../core/index.js'
 
 // A small game: two inputs and an output given by the level, gates with ports a and b, a constant with a value, a

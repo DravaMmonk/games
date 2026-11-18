@@ -1,7 +1,8 @@
 // Mazes with keys and doors, as tables stacked in layers.
 
-import { rcName } from '../algo.js';
-import { T, tr, lazy } from 'table';
+import { rcName } from 'table';
+import { tr } from 'kernel';
+import { T, lazy } from 'table';
 import { world, look, cell, yes, DIR } from 'table';
 import { inGrid } from './grid.js';
 
@@ -44,6 +45,7 @@ const fromLayer = (rem, set, k) => keyLayers(rem).findIndex(s => s.length === se
  * t = { R, C, keys: { colour: [r, c] }, doors: [{ at: [r, c], colour }] } (or one key: { R, C, key, doors }).
  */
 export const keysMaze = world({
+  layered: true,
   sensors: {
     up: cell(...DIR.up, [-1, 0]), left: cell(...DIR.left, [0, -1]),
     start: yes(T('是起点', 'is start'), T('起', 'start'), 'flag'), gain: yes(T('捡到钥匙', 'picks up key'), T('捡', 'pick'), 'keyget'), lose: yes(T('路线被带走', 'routes move on'), T('走', 'gone'), 'carry'), shut: yes(T('门关着', 'door shut'), T('关', 'shut'), 'door'),

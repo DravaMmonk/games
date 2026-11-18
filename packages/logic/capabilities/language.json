@@ -1,0 +1,23 @@
+{
+  "extends": "language",
+  "items": {
+    "formula": {
+      "about": {
+        "zh": "一句话（formula.js）",
+        "en": "a sentence (formula.js)"
+      }
+    },
+    "side": {
+      "about": {
+        "zh": "等式的一边：一样东西或一句话（schematic.js）",
+        "en": "a side of an equation: a thing or a sentence (schematic.js)"
+      }
+    },
+    "condition": {
+      "about": {
+        "zh": "一行定义的条件：一个等式（schematic.js）",
+        "en": "a row’s condition: an equation (schematic.js)"
+      }
+    }
+  }
+}

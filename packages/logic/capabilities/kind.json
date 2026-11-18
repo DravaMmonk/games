@@ -1,0 +1,71 @@
+{
+  "extends": "kind",
+  "items": {
+    "audit": {
+      "about": {
+        "zh": "用条例检验声明",
+        "en": "Check a declaration against cases"
+      }
+    },
+    "proof": {
+      "about": {
+        "zh": "证明板：规则即元件，从已知接到目标",
+        "en": "the proof board: rules as parts, wired from the givens to the goal"
+      }
+    },
+    "truth": {
+      "about": {
+        "zh": "真值表：一行一行填",
+        "en": "a truth table, filled in row by row"
+      }
+    },
+    "gates": {
+      "about": {
+        "zh": "真值电路：一块门电路在真值表的每一行上跑",
+        "en": "a truth circuit: a board of gates run on every row of a truth table"
+      }
+    },
+    "iso": {
+      "about": {
+        "zh": "规则板：声明一个连接词的引入规则，或用条例检验别人的声明",
+        "en": "the rule board: a connective’s introduction rules declared, or someone’s declaration checked by cases"
+      }
+    },
+    "define": {
+      "about": {
+        "zh": "定义：给每一行选一个右边",
+        "en": "a definition: a right side picked for every row"
+      }
+    },
+    "translate": {
+      "about": {
+        "zh": "翻译：把一句话拼成公式",
+        "en": "translating: a sentence built as a formula"
+      }
+    },
+    "query": {
+      "about": {
+        "zh": "查询：拼一句带 x 的话，在每个世界里选中答案",
+        "en": "a query: a sentence with x that picks out the answers in every world"
+      }
+    },
+    "model": {
+      "about": {
+        "zh": "造世界：让句子真假如所要",
+        "en": "building a world in which the sentences come out as asked"
+      }
+    },
+    "machine": {
+      "about": {
+        "zh": "证明助手：机器板上的一块电路，处理每组测试的输入",
+        "en": "a proof assistant: a machine board run on every test’s input"
+      }
+    },
+    "script": {
+      "about": {
+        "zh": "写脚本：一行一句，by 后面是证法",
+        "en": "writing a script: a row a statement, each with its by"
+      }
+    }
+  }
+}

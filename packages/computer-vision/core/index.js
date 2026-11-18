@@ -8,4 +8,9 @@ export * from './optics.js'
 export { patchAttention } from './patch-attention.js'
 export * from './stereo.js'
 
+/** Generate seeded line scenes and match the strongest Hough peaks to the reference lines. */
+export { houghScene, houghBench } from './hough-trials.js'
+/** Evaluate seeded consensus trials and compute the round budget from inlier probability. */
+export { ransacBench, ransacRounds } from './ransac-trials.js'
+
 export function register() {}

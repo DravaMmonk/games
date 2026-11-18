@@ -17,7 +17,7 @@ import { Legend } from './Plot.jsx'
 import { Rich } from './Rich.jsx'
 
 
-// The kernel's display items (../../core/bench.js KERNEL_DISPLAYS): each gets { params, ctx } from Bench.jsx.
+// The kernel's display items (capabilities/display.json): each gets { params, ctx } from Bench.jsx.
 // Text a param gives as { of: name } is what the model computed under that name.
 
 const textOf = (text, q) => (text && typeof text === 'object' && 'of' in text ? q[text.of] : text)

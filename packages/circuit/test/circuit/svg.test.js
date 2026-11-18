@@ -1,7 +1,7 @@
 // node --test packages/circuit — a board drawn headlessly from its blueprint text (svg.js).
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { boardSvg } from '../../core/index.js'
+import { boardSvg } from '../../core/board/svg.js'
 
 const nodes = (svg) => [...svg.matchAll(/data-node="([^"]+)"/g)].map((m) => m[1])
 const rect = (svg, id) => {

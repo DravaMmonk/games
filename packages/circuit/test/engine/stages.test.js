@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { stagesOf } from '../../core/index.js'
+import { stagesOf } from '../../core/stages.js'
 
 const n = (id, type = 'circuit/part', params = {}) => ({ id, type, params })
 const w = (from, to, port = 'in') => ({ from, to, port })

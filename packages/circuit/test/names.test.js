@@ -7,8 +7,11 @@ import { OPEN } from '../../../games/kit/engine/vocabulary.js'
 import { S, validate } from '../../../games/kit/engine/schema.js'
 import { createRegistries, expandNames, fullName } from '../../../games/kit/engine/names.js'
 import { isTextKey } from '../../../games/kit/engine/i18n.js'
-import { contentMeanings, NAME } from '../core/index.js'
-import { mapBlueprintNames, textParse as parse } from '../core/index.js'
+import { partMeaning, trayMeaning } from '../core/content-meaning.js'
+const contentMeanings = [partMeaning, trayMeaning]
+import { NAME } from '../core/parts/schema.js'
+import { mapBlueprintNames } from '../core/board/text.js'
+import { textParse as parse } from '../core/index.js'
 
 const schemas = {
   meanings: [...contentMeanings, progressMeaning],

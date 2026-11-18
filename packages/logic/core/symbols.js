@@ -1,13 +1,9 @@
 import { unasciiOf } from './formula.js'
 
-// Syntax is a domain resource. The game supplies the names, descriptions and IDs of the symbols that use it.
-export const symbolFor = Object.fromEntries(Object.entries({
-  formulaNot: '¬', formulaAnd: '∧', formulaOr: '∨', formulaImplies: '→', formulaIff: '↔',
-  formulaFalse: '⊥', formulaForall: '∀', formulaExists: '∃',
-}).map(([name, symbol]) => [`logic/${name}`, symbol]))
+import marks from '../capabilities/mark.json' with { type: 'json' }
 
-// The sentence strip's order is defined by the logic marks, independent of circuit trays.
-const stripOrder = ["logic/formulaForall", "logic/formulaExists", "logic/formulaNot", "logic/formulaAnd", "logic/formulaOr", "logic/formulaImplies", "logic/formulaIff", "logic/formulaFalse"]
+const stripOrder = Object.entries(marks.items).sort(([, a], [, b]) => a.order - b.order).map(([name]) => `logic/${name}`)
+export const symbolFor = Object.fromEntries(Object.entries(marks.items).map(([name, { symbol }]) => [`logic/${name}`, symbol]))
 
 export function symbolsAt(symbols, course, level, standalone = false) {
   const byMark = new Map(Object.values(symbols).map(symbol => [symbol.mark, symbol]))

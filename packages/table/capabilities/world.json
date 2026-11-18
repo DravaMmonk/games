@@ -6,5 +6,8 @@
       "zh": "世界",
       "en": "Worlds"
     }
+  },
+  "implementation": {
+    "side": "core"
   }
 }

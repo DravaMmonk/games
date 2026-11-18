@@ -6,5 +6,13 @@
       "zh": "元件族",
       "en": "Families"
     }
+  },
+  "items": {
+    "value": {
+      "about": {
+        "zh": "算数的元件",
+        "en": "parts that work on numbers"
+      }
+    }
   }
 }

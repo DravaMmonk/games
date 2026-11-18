@@ -1,0 +1,41 @@
+{
+  "extends": "port",
+  "items": {
+    "reads": {
+      "about": {
+        "zh": "读这一关的一个传感器，名字随它",
+        "en": "a sensor of the level, named as it is"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/sensor-name"
+      }
+    },
+    "way": {
+      "about": {
+        "zh": "第 n 条来路（a、b、c、d）：一个传感器，或板上一个只属于这一关的输入",
+        "en": "way in n (a, b, c, d): a sensor, or an input of the board of its own"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/port-way-params"
+      }
+    },
+    "start": {
+      "about": {
+        "zh": "「起点」：一个是 / 否传感器",
+        "en": "“start”: a yes / no sensor"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/port-start-params"
+      }
+    },
+    "named": {
+      "params": {
+        "type": "shape",
+        "name": "state-graph/port-named-params"
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cardColumns, slotColumns, slotWidth, traySize } from '../../core/index.js'
+import { cardColumns, slotColumns, slotWidth, traySize } from '../../core/board/card-size.js'
 
 const parts = {
   inputs: (node) => node.type === 'wide' ? ['a', 'b', 'c', 'd', 'e'] : [],

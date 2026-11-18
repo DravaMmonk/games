@@ -1,0 +1,63 @@
+{
+  "extends": "panel",
+  "items": {
+    "lcs": {
+      "about": {
+        "zh": "通过后：表格里藏着的连线",
+        "en": "once passed: the lines hidden in the table"
+      }
+    },
+    "edit": {
+      "about": {
+        "zh": "通过后：倒推出的改法",
+        "en": "once passed: the edits traced back"
+      }
+    },
+    "spell": {
+      "about": {
+        "zh": "全部通过后：候选词按步数排",
+        "en": "once every test passes: the candidates by number of steps"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/panel-spell"
+      }
+    },
+    "local": {
+      "about": {
+        "zh": "通过后：最像的一段",
+        "en": "once passed: the most alike stretch"
+      }
+    },
+    "tags": {
+      "about": {
+        "zh": "通过后：倒推出的标法（测试有 note 时加一句）",
+        "en": "once passed: the tagging traced back (and the test’s note)"
+      }
+    },
+    "knap": {
+      "about": {
+        "zh": "通过后：倒推出的装法",
+        "en": "once passed: the packing traced back"
+      }
+    },
+    "roll": {
+      "about": {
+        "zh": "物品一览，正在改写的那件亮起",
+        "en": "the items, the one being rewritten lit"
+      }
+    },
+    "dictionary": {
+      "about": {
+        "zh": "词典（和每个词的代价）",
+        "en": "the dictionary (and what each word costs)"
+      }
+    },
+    "robConflict": {
+      "about": {
+        "zh": "反例：一家一格时，两段历史落进同一个格子",
+        "en": "the counterexample: with one cell a house, two histories land in one cell"
+      }
+    }
+  }
+}

@@ -1,0 +1,453 @@
+{
+  "extends": "display",
+  "items": {
+    "attentionRoles": {
+      "about": {
+        "zh": "查询、键、值与注意力输出的图块",
+        "en": "query, key, value and attention output patches"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "separableKernels": {
+      "about": {
+        "zh": "并排比较两组目标和结果的空间核",
+        "en": "compare two target and output spatial kernels"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "appleDecision": {
+      "about": {
+        "zh": "检查苹果选择并解释错误",
+        "en": "check the apple selection and explain a wrong choice"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "appleChannels": {
+      "about": {
+        "zh": "两只苹果在白光下的 R、G、B 灰度图和数值",
+        "en": "grayscale R, G and B images and values for two apples under neutral light"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "houghPlanes": {
+      "about": {
+        "zh": "边缘点和找到的线，旁边是 (θ, ρ) 累加器，可放大",
+        "en": "the edge points and the lines found, beside the (θ, ρ) accumulator, which zooms"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "ransacTrial": {
+      "about": {
+        "zh": "一次试验：点、抽中的两点、门槛色带和找到的直线",
+        "en": "one trial: the points, the two drawn, the threshold band and the line found"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "ransacCases": {
+      "about": {
+        "zh": "每种外点比例一张卡：轮数旋钮和预算、成功率、每次试验（点一下看它）",
+        "en": "a card per outlier ratio: the rounds knob and budget, the success rate, each trial (tap one to see it)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "coverPairs": {
+      "about": {
+        "zh": "封面和照片：从一点拖到另一点（或先后点）连成一对（旋钮 pairs），贴回的封面画在照片上",
+        "en": "the cover and the photo: drag from a point to another (or tap both) to pair them (knob pairs); the pasted cover is drawn on the photo"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "coverPairList": {
+      "about": {
+        "zh": "已连的点对，可以逐对删除",
+        "en": "the pairs made, each removable"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "ganChart": {
+      "about": {
+        "zh": "真实数据和生成样本的直方图、鉴定员 D(x)、两支笔的历史位置，随回合动起来",
+        "en": "the histograms of real and generated samples, the judge’s D(x) and the pens’ history, moving turn by turn"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "embedding": {
+      "about": {
+        "zh": "嵌入平面：每个测验视图是单位圆上的一点，随训练滑动",
+        "en": "the embedding plane: each quiz view a point on the unit circle, gliding as it trains"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "choiceMatrix": {
+      "about": {
+        "zh": "每个视图在其余视图里选搭档的概率表",
+        "en": "the table of each view’s chances of picking each other view as its partner"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "kernelRound": {
+      "about": {
+        "zh": "这一轮的输入和输出，带倒计时",
+        "en": "this round’s input and output, with the clock"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "kernelChoices": {
+      "about": {
+        "zh": "四张核卡片，点一张（或按 1–4）作答",
+        "en": "four kernel cards: tap one (or press 1–4) to answer"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    }
+  }
+}

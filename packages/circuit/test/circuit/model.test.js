@@ -1,9 +1,11 @@
 // node --test packages/circuit — a level's preset on a board: locked parts and wires stay, the rest is the player's.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cardPorts, portNotes, portOnCard } from '../../core/index.js'
-import { boardFits, connectWire, editNodeSettings, hasPort, inPort, outPort, removeNode, spotIn, unplugWire, wireRefusal } from '../../core/index.js'
-import { keepLocked, presetOf, withPreset } from '../../core/index.js'
+import { cardPorts, portNotes, portOnCard } from '../../core/board/card-ports.js'
+import { boardFits } from '../../core/index.js'
+import { connectWire, editNodeSettings, hasPort, inPort, outPort, removeNode, spotIn, unplugWire, wireRefusal } from '../../core/board/model.js'
+import { keepLocked } from '../../core/board/presets.js'
+import { presetOf, withPreset } from '../../core/index.js'
 
 const board = { nodes: [{ id: 'in', type: 'in', x: 0, y: 0 }, { id: 'out', type: 'out', x: 400, y: 0 }], wires: [] }
 const preset = { nodes: [{ id: 'p', type: 'oracle', x: 200, y: 0 }], wires: [{ from: 'p', to: 'out', port: 'in' }] }

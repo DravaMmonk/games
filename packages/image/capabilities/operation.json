@@ -1,0 +1,1861 @@
+{
+  "extends": "operation",
+  "items": {
+    "mystery": {
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "mysteryGate": {
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "shift": {
+      "about": {
+        "zh": "平移",
+        "en": "Shift"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "dir": {
+            "type": "oneOf",
+            "values": [
+              "right",
+              "left",
+              "down",
+              "up"
+            ],
+            "control": "buttons",
+            "layout": "pad",
+            "default": "right",
+            "optional": true
+          },
+          "n": {
+            "type": "num",
+            "min": 1,
+            "max": 16,
+            "step": 1,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          },
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge",
+              "wrap"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "add": {
+      "about": {
+        "zh": "相加",
+        "en": "Add"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "sub": {
+      "about": {
+        "zh": "相减",
+        "en": "Subtract"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "mul": {
+      "about": {
+        "zh": "相乘",
+        "en": "Multiply"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "arith": {
+      "about": {
+        "zh": "四则运算",
+        "en": "Arithmetic"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "image/image",
+          "optional": true
+        },
+        {
+          "name": "b",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "op": {
+            "type": "oneOf",
+            "values": [
+              "add",
+              "sub",
+              "mul",
+              "div"
+            ],
+            "control": "buttons",
+            "layout": "grid",
+            "default": "add",
+            "optional": true
+          },
+          "constantSide": {
+            "type": "oneOf",
+            "values": [
+              "none",
+              "a",
+              "b"
+            ],
+            "control": "select",
+            "default": "none",
+            "optional": true
+          },
+          "constant": {
+            "type": "num",
+            "min": -100,
+            "max": 100,
+            "step": 0.01,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "softmax-p1": {
+      "about": {
+        "zh": "Softmax",
+        "en": "Softmax"
+      },
+      "args": [
+        {
+          "name": "s1",
+          "type": "image/image"
+        },
+        {
+          "name": "s2",
+          "type": "image/image"
+        },
+        {
+          "name": "s3",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "softmax-p2": {
+      "about": {
+        "zh": "Softmax",
+        "en": "Softmax"
+      },
+      "args": [
+        {
+          "name": "s1",
+          "type": "image/image"
+        },
+        {
+          "name": "s2",
+          "type": "image/image"
+        },
+        {
+          "name": "s3",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "softmax-p3": {
+      "about": {
+        "zh": "Softmax",
+        "en": "Softmax"
+      },
+      "args": [
+        {
+          "name": "s1",
+          "type": "image/image"
+        },
+        {
+          "name": "s2",
+          "type": "image/image"
+        },
+        {
+          "name": "s3",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "merge": {
+      "about": {
+        "zh": "汇合器",
+        "en": "Merger"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "image/image",
+          "optional": true
+        },
+        {
+          "name": "b",
+          "type": "image/image",
+          "optional": true
+        },
+        {
+          "name": "c",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "const": {
+      "about": {
+        "zh": "常数",
+        "en": "Constant"
+      },
+      "args": [],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "c": {
+            "type": "num",
+            "min": -100,
+            "max": 100,
+            "step": 0.01,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "threshold": {
+      "about": {
+        "zh": "阈值",
+        "en": "Threshold"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "t": {
+            "type": "num",
+            "min": -10,
+            "max": 10,
+            "step": 0.01,
+            "default": 0.5,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "invert": {
+      "about": {
+        "zh": "反相",
+        "en": "Invert"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "cos": {
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "exp": {
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "square": {
+      "about": {
+        "zh": "平方",
+        "en": "Square"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "sqrt": {
+      "about": {
+        "zh": "开方",
+        "en": "Square root"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "relu": {
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "zeroUp": {
+      "about": {
+        "zh": "补零放大",
+        "en": "Zero upsample"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "fqMean": {
+      "about": {
+        "zh": "求平均",
+        "en": "Average"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "globalMax": {
+      "about": {
+        "zh": "全图最大值",
+        "en": "Global max"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "blur3h": {
+      "about": {
+        "zh": "横向三点平均",
+        "en": "3-point horizontal average"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "line3": {
+      "about": {
+        "zh": "一维三点核",
+        "en": "1D 3-point kernel"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "axis": {
+            "type": "oneOf",
+            "values": [
+              "x",
+              "y"
+            ],
+            "control": "select",
+            "default": "x",
+            "optional": true
+          },
+          "a": {
+            "type": "num",
+            "min": -4,
+            "max": 4,
+            "step": 1,
+            "default": 0,
+            "control": "number",
+            "optional": true
+          },
+          "b": {
+            "type": "num",
+            "min": -4,
+            "max": 4,
+            "step": 1,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          },
+          "c": {
+            "type": "num",
+            "min": -4,
+            "max": 4,
+            "step": 1,
+            "default": 0,
+            "control": "number",
+            "optional": true
+          },
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "box3": {
+      "about": {
+        "zh": "3×3 平均",
+        "en": "3×3 average"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "gauss": {
+      "about": {
+        "zh": "高斯模糊",
+        "en": "Gaussian blur"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "sigma": {
+            "type": "num",
+            "min": 0.5,
+            "max": 2.5,
+            "step": 0.1,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          },
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "diffx": {
+      "about": {
+        "zh": "横向差分",
+        "en": "Horizontal difference"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "sobelx": {
+      "about": {
+        "zh": "Sobel x",
+        "en": "Sobel x"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "sobely": {
+      "about": {
+        "zh": "Sobel y",
+        "en": "Sobel y"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "kernel3": {
+      "about": {
+        "zh": "3×3 核",
+        "en": "3×3 kernel"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "optional": true
+          },
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "learn3": {
+      "about": {
+        "zh": "可学习 3×3 核",
+        "en": "Learnable 3×3 kernel"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "downsample": {
+      "about": {
+        "zh": "隔点取样",
+        "en": "Downsample"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "maxpool": {
+      "about": {
+        "zh": "2×2 最大池化",
+        "en": "2×2 max pool"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "gradmag": {
+      "about": {
+        "zh": "梯度幅值",
+        "en": "Gradient magnitude"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "border": {
+            "type": "oneOf",
+            "values": [
+              "zero",
+              "edge"
+            ],
+            "control": "select",
+            "default": "zero",
+            "optional": true
+          }
+        }
+      }
+    },
+    "harris": {
+      "about": {
+        "zh": "Harris 响应",
+        "en": "Harris response"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "num",
+            "min": 0.01,
+            "max": 0.2,
+            "step": 0.01,
+            "default": 0.05,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "argmin4": {
+      "about": {
+        "zh": "取最小者编号",
+        "en": "Index of minimum"
+      },
+      "args": [
+        {
+          "name": "c0",
+          "type": "image/image"
+        },
+        {
+          "name": "c1",
+          "type": "image/image"
+        },
+        {
+          "name": "c2",
+          "type": "image/image",
+          "optional": true
+        },
+        {
+          "name": "c3",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "disparity": {
+      "about": {
+        "zh": "视差搜索",
+        "en": "Disparity search"
+      },
+      "args": [
+        {
+          "name": "left",
+          "type": "image/image"
+        },
+        {
+          "name": "right",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "window": {
+            "type": "oneOf",
+            "values": [
+              "1",
+              "3",
+              "5",
+              "7"
+            ],
+            "control": "select",
+            "default": "3",
+            "optional": true
+          }
+        }
+      }
+    },
+    "fqWave": {
+      "about": {
+        "zh": "波",
+        "en": "Wave"
+      },
+      "args": [],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "num",
+            "min": 0,
+            "max": 16,
+            "step": 1,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          },
+          "form": {
+            "type": "oneOf",
+            "values": [
+              "cos",
+              "sin"
+            ],
+            "control": "select",
+            "default": "cos",
+            "optional": true
+          }
+        }
+      }
+    },
+    "fqSpectrum": {
+      "about": {
+        "zh": "频谱",
+        "en": "Spectrum"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "fqLowpass": {
+      "about": {
+        "zh": "频域低通",
+        "en": "Frequency low-pass"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "shape": {
+            "type": "oneOf",
+            "values": [
+              "disk",
+              "gauss"
+            ],
+            "control": "select",
+            "default": "disk",
+            "optional": true
+          },
+          "R": {
+            "type": "num",
+            "min": 0.5,
+            "max": 16,
+            "step": 0.5,
+            "default": 8,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "fqApply": {
+      "about": {
+        "zh": "频域相乘",
+        "en": "Multiply in frequency"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        },
+        {
+          "name": "gain",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "shade": {
+      "about": {
+        "zh": "朗伯着色",
+        "en": "Lambert shading"
+      },
+      "args": [
+        {
+          "name": "nx",
+          "type": "image/image"
+        },
+        {
+          "name": "ny",
+          "type": "image/image"
+        },
+        {
+          "name": "nz",
+          "type": "image/image"
+        },
+        {
+          "name": "albedo",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "lx": {
+            "type": "num",
+            "min": -1,
+            "max": 1,
+            "step": 0.05,
+            "default": 0,
+            "control": "number",
+            "optional": true
+          },
+          "ly": {
+            "type": "num",
+            "min": -1,
+            "max": 1,
+            "step": 0.05,
+            "default": 0,
+            "control": "number",
+            "optional": true
+          },
+          "lz": {
+            "type": "num",
+            "min": -1,
+            "max": 1,
+            "step": 0.05,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "sense": {
+      "about": {
+        "zh": "感光",
+        "en": "Sensor"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "channel": {
+            "type": "oneOf",
+            "values": [
+              "R",
+              "G",
+              "B"
+            ],
+            "control": "select",
+            "default": "R",
+            "optional": true
+          }
+        }
+      }
+    },
+    "lrnConv": {
+      "about": {
+        "zh": "卷积层",
+        "en": "Conv layer"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0.0076,
+              0.0109,
+              -0.0112,
+              0.0049,
+              -0.0166,
+              0.0037,
+              0.0088,
+              -0.0017,
+              0.0162
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "lrnDense": {
+      "about": {
+        "zh": "全连接 w·x + b",
+        "en": "Dense w·x + b"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "p": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              1,
+              0
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "lrnSigmoid": {
+      "about": {
+        "zh": "Sigmoid",
+        "en": "Sigmoid"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "lrnConst": {
+      "about": {
+        "zh": "可学习常数",
+        "en": "Learnable constant"
+      },
+      "args": [],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "p": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              1
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "max": {
+      "about": {
+        "zh": "取较大",
+        "en": "Larger"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "lrnRgb": {
+      "about": {
+        "zh": "多通道 3×3 核",
+        "en": "Multichannel 3×3 kernel"
+      },
+      "args": [
+        {
+          "name": "r",
+          "type": "image/image"
+        },
+        {
+          "name": "g",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "lrnRes": {
+      "about": {
+        "zh": "残差块",
+        "en": "Residual block"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0.0076,
+              0.0109,
+              -0.0112,
+              0.0049,
+              -0.0166,
+              0.0037,
+              0.0088,
+              -0.0017,
+              0.0162
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "attention": {
+      "about": {
+        "zh": "注意力",
+        "en": "Attention"
+      },
+      "args": [
+        {
+          "name": "Q",
+          "type": "image/image"
+        },
+        {
+          "name": "K",
+          "type": "image/image",
+          "optional": true
+        },
+        {
+          "name": "V",
+          "type": "image/image",
+          "optional": true
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "s": {
+            "type": "num",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          },
+          "P": {
+            "type": "oneOf",
+            "values": [
+              "2",
+              "4",
+              "8"
+            ],
+            "control": "select",
+            "default": "4",
+            "optional": true
+          }
+        }
+      }
+    },
+    "embed": {
+      "about": {
+        "zh": "对比编码器",
+        "en": "Contrastive encoder"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "hough": {
+      "about": {
+        "zh": "Hough 累加器",
+        "en": "Hough accumulator"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "ransac": {
+      "about": {
+        "zh": "RANSAC 找直线",
+        "en": "RANSAC line"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "num",
+            "min": 1,
+            "max": 200,
+            "step": 1,
+            "default": 10,
+            "control": "number",
+            "optional": true
+          },
+          "d": {
+            "type": "num",
+            "min": 0.25,
+            "max": 3,
+            "step": 0.25,
+            "default": 1,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "homography": {
+      "about": {
+        "zh": "求单应",
+        "en": "Solve homography"
+      },
+      "args": [
+        {
+          "name": "pairs",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "num",
+            "min": 0,
+            "max": 200,
+            "step": 10,
+            "default": 0,
+            "control": "number",
+            "optional": true
+          }
+        }
+      }
+    },
+    "warp": {
+      "about": {
+        "zh": "单应变形",
+        "en": "Homography warp"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        },
+        {
+          "name": "H",
+          "type": "image/image"
+        },
+        {
+          "name": "onto",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "dg-encode": {
+      "about": {
+        "zh": "编码器",
+        "en": "Encoder"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "oneOf",
+            "values": [
+              "1",
+              "2",
+              "3"
+            ],
+            "control": "select",
+            "default": "1",
+            "optional": true
+          },
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0.203,
+              -0.112,
+              -0.077,
+              0.033,
+              -0.296,
+              -0.183,
+              0.278,
+              0.217,
+              -0.156,
+              -0.147,
+              -0.274,
+              -0.195,
+              0.044,
+              0.263,
+              0.102,
+              0.067,
+              -0.213,
+              -0.128,
+              -0.266,
+              -0.113,
+              -0.254,
+              -0.199,
+              -0.209,
+              0.219,
+              0.188,
+              0.104,
+              -0.023,
+              -0.228,
+              -0.127,
+              0.247,
+              -0.251,
+              0.058,
+              -0.108,
+              -0.117,
+              0.066,
+              -0.024,
+              0.024,
+              0.064,
+              0.205,
+              0.055,
+              -0.22,
+              0.298,
+              0.058,
+              0.172,
+              -0.239,
+              0.264,
+              -0.054,
+              0.097
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "dg-decode": {
+      "about": {
+        "zh": "解码器",
+        "en": "Decoder"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0.155,
+              0.201,
+              0.015,
+              0.083,
+              0.003,
+              -0.08,
+              0,
+              0
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "dg-encoder": {
+      "about": {
+        "zh": "编码器（已训练）",
+        "en": "Encoder (trained)"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "dg-decoder": {
+      "about": {
+        "zh": "解码器（已训练）",
+        "en": "Decoder (trained)"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "dg-mu": {
+      "about": {
+        "zh": "μ",
+        "en": "μ"
+      },
+      "args": [],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              0,
+              0
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "dg-sigma": {
+      "about": {
+        "zh": "σ",
+        "en": "σ"
+      },
+      "args": [],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              1,
+              1
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "dg-sample": {
+      "about": {
+        "zh": "采样 z ~ N(μ, σ²)",
+        "en": "Sample z ~ N(μ, σ²)"
+      },
+      "args": [
+        {
+          "name": "mu",
+          "type": "image/image"
+        },
+        {
+          "name": "sigma",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "dg-reparam": {
+      "about": {
+        "zh": "重参数化 μ + σ·ε",
+        "en": "Reparameterization μ + σ·ε"
+      },
+      "args": [
+        {
+          "name": "mu",
+          "type": "image/image"
+        },
+        {
+          "name": "sigma",
+          "type": "image/image"
+        },
+        {
+          "name": "eps",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "tconv": {
+      "about": {
+        "zh": "转置卷积（步幅 2）",
+        "en": "Transposed convolution (stride 2)"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "returns": "image/image",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "w": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "control": "custom",
+            "widget": "image/imageKernel",
+            "default": [
+              1,
+              1,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "optional": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { defineCourse as defineCircuitCourse, usable } from 'circuit'
+import { defineCourse as defineCircuitCourse } from 'circuit'
+import { usable } from '../../circuit/core/course.js'
 import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 import { progressFieldsProblems } from '../../circuit/core/progress-fields.js'

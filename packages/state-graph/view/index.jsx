@@ -1,18 +1,12 @@
-import { progress } from 'circuit'
-import { tableContext } from '../core/index.js'
-import define from './game.js'
-import { plays } from '../core/plays.js'
-import { displays } from './ui/displays.js'
-export { displays }
-export { default } from './game.js'
-export function TablePlay({ context, work, onChange, phone }) {
- const { task, works } = tableContext(context)
- const game = define(context.content, works)
- const Screen = game.kinds[task.play].Screen
- return <Screen game={game} level={{ ...task, source: task }} saved={work} save={onChange}
-  solve={() => {}} fail={() => {}} progress={context.progress ?? progress.fresh()} phone={phone} />
-}
+import { registerTableViews, tableDisplays } from 'table/view'
+import plays from '../capabilities/play.json' with { type: 'json' }
+import Hero from './hero.jsx'
+
 export function register(kernel) {
- for (const name of Object.keys(plays)) kernel.play(name, { component: TablePlay, preview: TablePlay, define })
- for (const [name, display] of Object.entries(displays)) kernel.display(name, display)
+ kernel.implement('display', 'state-graph/hero', Hero)
+ kernel.implement('display', 'state-graph/introduction', tableDisplays.introduction)
+ kernel.implement('display', 'state-graph/circuit', tableDisplays.circuit)
+ kernel.implement('display', 'state-graph/manual', tableDisplays.manual)
+ kernel.implement('display', 'state-graph/catalog', tableDisplays.catalog)
+ registerTableViews(kernel, Object.keys(plays.items).map(name => `state-graph/${name}`), { Hero })
 }

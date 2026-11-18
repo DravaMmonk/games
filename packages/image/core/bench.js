@@ -13,66 +13,9 @@
 //            goal's readings and the pictures' results stay hidden until then, so a knob is not slid until green)
 //   layout   where the display items go: head, main (the bench's card), side (beside it), foot
 //
-// This module is node-safe: the schema, the judge and the number formats, shared by `npm run check` and the bench
+// This module is node-safe: the judge and the number formats, shared by `npm run check` and the bench
 // screen (../view/bench/).
 import { numberText } from 'kernel'
-import { S } from 'kernel'
-import { T as t } from 'kernel'
-
-const num = S.num()
-
-/** How a number is written: on a knob, in a goal row, in a table. */
-export const FORMATS = ['auto', 'raw', 'int', 'fixed1', 'fixed2', 'fixed3', 'fixed4', 'pct', 'pct1', 'exp', 'grouped', 'quarterPi', 'pow10', 'outOf']
-const FORMAT = S.oneOf(FORMATS)
-
-/** Text, or a text the model computes: { of: name }. */
-export const TEXT_OF = S.either(S.text(), S.obj({ of: S.str() }))
-
-// What every display item may carry besides its own parameters.
-const ITEM_COMMON = {
-  when: S.opt(S.str({ about: t('只在模型的这个量为真时显示') })),
-  unless: S.opt(S.str()),
-  with: S.opt(S.shape('image/nested-layout-blocks', { about: t('嵌进这一项里的项') })),
-}
-const LINE = S.obj({ of: S.str(), kind: S.oneOf(['target', 'yours', 'faint', 'error', 'seen']), label: S.opt(S.text()), legend: S.opt(S.text()) })
-const STAT = S.obj({ of: S.str(), label: S.text(), format: S.opt(FORMAT), unit: S.opt(S.str()), goal: S.opt(S.bool({ about: t('达到目标时标绿') })) })
-const LOOK = S.oneOf(['legend', 'label', 'note', 'caption', 'mono', 'serif', 'small', 'lede', 'title', 'line'])
-
-/** The display items every bench has (the kernel's); a domain adds its own pictures and interactions. */
-export const KERNEL_DISPLAYS = {
-  step: { about: t('这一步的标题和说明') },
-  knobs: { about: t('打开的旋钮'), params: S.obj({ only: S.opt(S.list(S.str())) }) },
-  actions: { params: S.obj({ only: S.opt(S.list(S.int())) }) },
-  verdict: { about: t('目标达到没有；分步的台子带「下一步」'), params: S.obj({ center: S.opt(S.bool()) }) },
-  goals: { about: t('目标的每一条和此刻的值'), params: S.obj({ phoneCols: S.opt(S.int({ min: 1, max: 2 })) }) },
-  stages: {},
-  cases: { about: t('切换情形，每个带对错'), params: S.obj({ passed: S.opt(S.text({ about: t('「n / m 」后面的字') })) }) },
-  plot: {
-    about: t('曲线图：指向一处读出各条线的值'),
-    params: S.obj({
-      of: S.opt(S.str({ about: t('模型给出的 { lines, dots, legend }') })),
-      lines: S.opt(S.list(LINE)), title: S.opt(TEXT_OF), legend: S.opt(S.bool()),
-      lo: S.opt(num), hi: S.opt(num), ticks: S.opt(S.list(num)), tickFormat: S.opt(FORMAT), span: S.opt(num), left: S.opt(num),
-      height: S.list(num, { min: 2, about: t('[桌面, 手机] 的高') }), mark: S.opt(S.str({ about: t('竖线的位置（0…1）') })),
-    }),
-  },
-  strips: { about: t('几行像素，最暗是 0，最亮是 1'), params: S.obj({ rows: S.list(S.obj({ of: S.str(), label: S.text() })) }) },
-  text: { about: t('一段字：写定的，或模型算出的'), params: S.obj({ text: S.opt(S.text()), of: S.opt(S.str()), look: S.opt(LOOK) }) },
-  stats: { params: S.obj({ of: S.list(STAT), phone: S.opt(S.oneOf(['line'])) }) },
-  chips: { about: t('一排小标签'), params: S.obj({ of: S.str(), look: S.opt(S.oneOf(['wave', 'plain'])) }) },
-  curve: { about: t('一条小曲线（损失）'), params: S.obj({ of: S.str(), caption: S.str() }) },
-  table: { params: S.obj({ of: S.str() }) },
-  progress: { about: t('一排进度点'), params: S.obj({ of: S.str() }) },
-}
-
-/** The display kind of a domain's vocabulary: the kernel's items and the domain's, each also taking when/unless/with. */
-export function displayItems(domainItems) {
-  const all = { ...KERNEL_DISPLAYS, ...domainItems }
-  return Object.fromEntries(Object.entries(all).map(([name, item]) => {
-    const own = item.params
-    return [name, { ...(item.about && { about: item.about }), params: S.obj({ ...(own?.fields ?? {}), ...ITEM_COMMON }) }]
-  }))
-}
 
 /* ---------- knobs ---------- */
 

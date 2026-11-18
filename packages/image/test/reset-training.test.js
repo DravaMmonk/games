@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { imageKit } from '../core/engine/kit.js'
 import { NODE_TYPES } from '../core/engine/nodes.js'
-import { read } from 'circuit'
+import { read } from '../../circuit/core/board/text.js'
 import { startBoard } from '../core/engine/board.js'
 
 test('reset restores learnable parameters without changing wiring or other settings', () => {

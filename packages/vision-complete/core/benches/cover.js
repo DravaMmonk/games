@@ -1,7 +1,6 @@
 // The book-cover bench: the player pairs points on a cover with the same points in a photo of it on a desk; the pairs
 // fix a homography (an affine map with three) and the cover is pasted back, judged by its mean error over a grid on
 // the cover.
-import { S } from 'kernel'
 import { limitOf } from 'image'
 import { random } from 'image-processing'
 import { affineFit, homographyDLT, invert3, project } from 'computer-vision'
@@ -125,18 +124,8 @@ export function coverBench({ cover, photo, title, logo, quad, clutter, seed, tol
   return { COVER: cover, PHOTO: photo, coverPoints, photoPoints, fit, tol, renderPhoto, renderCover, project, trueQuad: quad, trueH, overlayError, photoIndexOf }
 }
 
-const num = S.num()
-const pt = S.list(num, { min: 2 })
-const QUAD = S.list(pt, { min: 4 })
-
 /** The bench model: knob `pairs` (picked on the pictures) and `overlay`; quantities pairs (how many) and error. */
 export const cover = {
-  about: t('四个角：在封面和照片上连出对应点（旋钮 pairs），解出单应，把封面贴回照片；算出点对数 pairs 和误差 error'),
-  setup: S.obj({
-    cover: S.obj({ w: num, h: num }), photo: S.obj({ w: num, h: num }),
-    title: S.list(num, { min: 4 }), logo: S.list(num, { min: 4 }), quad: QUAD,
-    clutter: S.obj({ note: QUAD, paper: QUAD }), seed: S.int(),
-  }),
   make(setup, bench) {
     const m = coverBench({ ...setup, tol: limitOf(bench.goal, 'error').below })
     return {

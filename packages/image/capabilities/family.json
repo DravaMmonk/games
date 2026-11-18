@@ -1,0 +1,53 @@
+{
+  "extends": "family",
+  "items": {
+    "pixel": {
+      "about": {
+        "zh": "逐像素",
+        "en": "Per-pixel"
+      }
+    },
+    "neighbour": {
+      "about": {
+        "zh": "看邻居",
+        "en": "Neighbours"
+      }
+    },
+    "size": {
+      "about": {
+        "zh": "改尺寸",
+        "en": "Resize"
+      }
+    },
+    "search": {
+      "about": {
+        "zh": "搜索与比较",
+        "en": "Search and compare"
+      }
+    },
+    "frequency": {
+      "about": {
+        "zh": "频率",
+        "en": "Frequency"
+      }
+    },
+    "global": {
+      "about": {
+        "zh": "看全局",
+        "en": "Global"
+      }
+    },
+    "learned": {
+      "about": {
+        "zh": "可学习",
+        "en": "Learnable"
+      }
+    },
+    "other": {
+      "about": {
+        "zh": "元件",
+        "en": "Parts"
+      }
+    }
+  }
+}

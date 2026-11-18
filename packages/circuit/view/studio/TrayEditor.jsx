@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import { L, tr, getLang, Picker, TextField, confirmDelete, localName, namespaceOf, shownName, tagKeyOfRef, tagName, overridesIt, textWith, reordered, stageOwners, editorSlot, gatherWriter as writer, withoutId, Members, GatherHead as Head } from 'kernel/view'
-import { MENU_THRESHOLD } from '../../core/index.js'
+import { MENU_THRESHOLD } from '../../core/trays.js'
 
 /** The tray `full`: its members and menus, and the order the tray shows them in. */
 export function TrayEditor({ content, namespace, full, pending, onSelect, onEdit, onOps, onPick }) {

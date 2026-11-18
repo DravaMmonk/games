@@ -6,5 +6,921 @@
       "zh": "图片",
       "en": "Pictures"
     }
+  },
+  "items": {
+    "blank": {
+      "about": {
+        "zh": "一张同色的图",
+        "en": "a picture of one shade"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "v": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "impulse": {
+      "about": {
+        "zh": "黑底上的一个亮点",
+        "en": "one bright dot on black"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x": {
+            "type": "int",
+            "optional": true
+          },
+          "y": {
+            "type": "int",
+            "optional": true
+          },
+          "v": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "dots": {
+      "about": {
+        "zh": "黑底上的几个亮点：[x, y, 亮度] 各一个",
+        "en": "a few bright dots on black: one for each [x, y, brightness]"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "dots": {
+            "type": "list",
+            "of": {
+              "type": "list",
+              "of": {
+                "type": "num"
+              },
+              "min": 3
+            }
+          }
+        }
+      }
+    },
+    "diagonal": {
+      "about": {
+        "zh": "一条从左上到右下的对角线",
+        "en": "a diagonal line from the top left to the bottom right"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "stepX": {
+      "about": {
+        "zh": "左右两半一暗一亮的台阶",
+        "en": "a step: left half one shade, right half another"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "edge": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "stepY": {
+      "about": {
+        "zh": "上下两半一暗一亮的台阶",
+        "en": "a step: top half one shade, bottom half another"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "edge": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "rampX": {
+      "about": {
+        "zh": "从左到右由黑变白的斜坡",
+        "en": "a ramp from black on the left to white on the right"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "rampY": {
+      "about": {
+        "zh": "从上到下由黑变白的斜坡",
+        "en": "a ramp from black at the top to white at the bottom"
+      }
+    },
+    "ramp": {
+      "about": {
+        "zh": "按格子坐标变化的平滑渐变：c + x·dx + y·dy",
+        "en": "a smooth gradient over the cells: c + x·dx + y·dy"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "c": {
+            "type": "num",
+            "optional": true
+          },
+          "dx": {
+            "type": "num",
+            "optional": true
+          },
+          "dy": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "bar": {
+      "about": {
+        "zh": "一条竖线：一列亮，其余暗",
+        "en": "a vertical line: one column bright, the rest dark"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x": {
+            "type": "int"
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "square": {
+      "about": {
+        "zh": "一个方块",
+        "en": "a square"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x0": {
+            "type": "num",
+            "optional": true
+          },
+          "y0": {
+            "type": "num",
+            "optional": true
+          },
+          "s": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "rect": {
+      "about": {
+        "zh": "一个矩形：左上角 (x0, y0)，宽 w、高 h",
+        "en": "a rectangle: top left (x0, y0), w wide and h high"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x0": {
+            "type": "num"
+          },
+          "y0": {
+            "type": "num"
+          },
+          "w": {
+            "type": "num"
+          },
+          "h": {
+            "type": "num"
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "rects": {
+      "about": {
+        "zh": "几个矩形：[x0, y0, 宽, 高] 各一个",
+        "en": "a few rectangles: one for each [x0, y0, width, height]"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "rects": {
+            "type": "list",
+            "of": {
+              "type": "list",
+              "of": {
+                "type": "num"
+              },
+              "min": 4
+            }
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "disk": {
+      "about": {
+        "zh": "一个圆盘：圆心 (cx, cy)，半径 r",
+        "en": "a disc: centre (cx, cy), radius r"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "cx": {
+            "type": "num",
+            "optional": true
+          },
+          "cy": {
+            "type": "num",
+            "optional": true
+          },
+          "r": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "discs": {
+      "about": {
+        "zh": "几个圆盘：[cx, cy, r] 各一个",
+        "en": "a few discs: one for each [cx, cy, r]"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "discs": {
+            "type": "list",
+            "of": {
+              "type": "list",
+              "of": {
+                "type": "num"
+              },
+              "min": 3
+            }
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "checker": {
+      "about": {
+        "zh": "棋盘：每格 cell 宽",
+        "en": "a checkerboard, its squares cell wide"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "cell": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "stripes": {
+      "about": {
+        "zh": "条纹：period 格一个周期，默认竖条（axis: y 是横条）",
+        "en": "stripes, one cycle every period cells: upright, or across with axis y"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "period": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "w": {
+            "type": "int",
+            "optional": true
+          },
+          "h": {
+            "type": "int",
+            "optional": true
+          },
+          "axis": {
+            "type": "oneOf",
+            "values": [
+              "x",
+              "y"
+            ],
+            "optional": true
+          }
+        }
+      }
+    },
+    "corner": {
+      "about": {
+        "zh": "右下四分之一亮的角",
+        "en": "a corner: the bottom right bright"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x0": {
+            "type": "num",
+            "optional": true
+          },
+          "y0": {
+            "type": "num",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "speckle": {
+      "about": {
+        "zh": "斑点：每格 base + amp × 一个随机数，种子定下是哪一张",
+        "en": "speckles: base + amp × a random number a cell, the seed saying which"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "seed": {
+            "type": "int"
+          },
+          "base": {
+            "type": "num"
+          },
+          "amp": {
+            "type": "num"
+          }
+        }
+      }
+    },
+    "twoTone": {
+      "about": {
+        "zh": "两种亮度的颗粒：每格按它在不在形状里（圆 disc、右边 rightOf、斜纹 stripes）随机取亮或暗，各带一点抖动",
+        "en": "two shades with grain: each cell bright or dark at random by whether it is in a shape (a disc, right of a column, slanted stripes), each with a little jitter"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "seed": {
+            "type": "int"
+          },
+          "dark": {
+            "type": "num"
+          },
+          "bright": {
+            "type": "num"
+          },
+          "disc": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "min": 3,
+            "about": {
+              "zh": "圆：cx, cy, 半径的平方",
+              "en": "a disc: cx, cy, the radius squared"
+            },
+            "optional": true
+          },
+          "rightOf": {
+            "type": "int",
+            "about": {
+              "zh": "这一列右边",
+              "en": "right of this column"
+            },
+            "optional": true
+          },
+          "stripes": {
+            "type": "list",
+            "of": {
+              "type": "int"
+            },
+            "min": 2,
+            "about": {
+              "zh": "斜纹：(x + y) 除以 period 的余数小于 width",
+              "en": "slanted stripes: (x + y) mod period under width"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "noise": {
+      "about": {
+        "zh": "随机纹理：每格一个随机亮度，种子定下是哪一张",
+        "en": "a random texture: a random brightness a cell, the seed saying which"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "seed": {
+            "type": "int",
+            "optional": true
+          },
+          "amp": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "zonePlate": {
+      "about": {
+        "zh": "斑马板：圆心 (cx, cy) 起越往外越密的同心圆，0.5 ± A",
+        "en": "a zone plate: rings from (cx, cy) getting denser outwards, 0.5 ± A"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "k": {
+            "type": "num",
+            "optional": true
+          },
+          "cx": {
+            "type": "num",
+            "optional": true
+          },
+          "cy": {
+            "type": "num",
+            "optional": true
+          },
+          "A": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "fabric": {
+      "about": {
+        "zh": "布纹：period 格一个周期、朝 angle 度方向的斜条纹",
+        "en": "fabric: slanted stripes, one cycle every period cells, running at angle degrees"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "period": {
+            "type": "num"
+          },
+          "angle": {
+            "type": "num"
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "glyph": {
+      "about": {
+        "zh": "一个字母（或照样画的几行），可以挪开、放大",
+        "en": "a letter (or rows drawn the same way), moved and scaled"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "letter": {
+            "type": "oneOf",
+            "values": [
+              "T",
+              "L",
+              "X",
+              "O",
+              "F"
+            ],
+            "optional": true
+          },
+          "rows": {
+            "type": "list",
+            "of": {
+              "type": "str",
+              "pattern": "^[#.]+$"
+            },
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "ox": {
+            "type": "num",
+            "optional": true
+          },
+          "oy": {
+            "type": "num",
+            "optional": true
+          },
+          "scale": {
+            "type": "num",
+            "optional": true
+          },
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "row": {
+      "about": {
+        "zh": "一行数（一个点、一条线、一个向量……）",
+        "en": "a row of numbers (a point, a line, a vector …)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "values": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "min": 1
+          }
+        }
+      }
+    },
+    "blob": {
+      "about": {
+        "zh": "一个柔和的斑点，中心 (x, y)",
+        "en": "a soft blob centred on (x, y)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x": {
+            "type": "num"
+          },
+          "y": {
+            "type": "num"
+          }
+        }
+      }
+    },
+    "tile": {
+      "about": {
+        "zh": "一个 4 × 4 的图案（一个图块），亮度 hi",
+        "en": "a 4 × 4 pattern (one patch) at brightness hi"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "name": {
+            "type": "oneOf",
+            "values": [
+              "X",
+              "C",
+              "P",
+              "K",
+              "R",
+              "S"
+            ]
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          }
+        }
+      }
+    },
+    "radius": {
+      "about": {
+        "zh": "频率半径：每格离频谱中心（频率 (0, 0)）多远",
+        "en": "the frequency radius: how far each cell is from the spectrum’s centre, frequency (0, 0)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "size": {
+            "type": "int",
+            "min": 1,
+            "about": {
+              "zh": "边长（格）",
+              "en": "the side, in cells"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "offset": {
+      "about": {
+        "zh": "一张图每格加上 by（减 0.5 就是网络常用的居中）",
+        "en": "a picture with by added to every cell (less 0.5 centres it, as networks like)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          },
+          "by": {
+            "type": "num"
+          }
+        }
+      }
+    },
+    "scaled": {
+      "about": {
+        "zh": "一张 16 × 16 的图缩放成 size × size（取最近的格子）",
+        "en": "a 16 × 16 picture scaled to size × size (nearest cell)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          },
+          "size": {
+            "type": "int",
+            "min": 1
+          }
+        }
+      }
+    },
+    "margined": {
+      "about": {
+        "zh": "一张图四周涂黑 width 格宽的边",
+        "en": "a picture with a black margin width cells wide"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          },
+          "width": {
+            "type": "int",
+            "min": 0
+          }
+        }
+      }
+    },
+    "noisy": {
+      "about": {
+        "zh": "一张图加上随机噪声（三个随机数之和，种子定下是哪一份）",
+        "en": "a picture with random noise added (a sum of three random numbers, the seed saying which)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          },
+          "seed": {
+            "type": "int"
+          },
+          "amp": {
+            "type": "num"
+          }
+        }
+      }
+    },
+    "blurred": {
+      "about": {
+        "zh": "一张图的高斯模糊（σ，复制边缘；σ = 0 是原图）",
+        "en": "a picture under a Gaussian blur (σ, the edge replicated; σ = 0 is the picture itself)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          },
+          "sigma": {
+            "type": "num",
+            "min": 0
+          }
+        }
+      }
+    },
+    "screened": {
+      "about": {
+        "zh": "印刷品翻拍出的网纹：一张图叠上一道频率 (fx, fy) 的条纹",
+        "en": "a printed picture photographed with its screen: a picture with a grating of frequency (fx, fy) on it"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "call",
+            "kind": "picture"
+          },
+          "fx": {
+            "type": "int"
+          },
+          "fy": {
+            "type": "int"
+          }
+        }
+      }
+    }
+  },
+  "implementation": {
+    "side": "core",
+    "methods": [
+      "make"
+    ]
   }
 }

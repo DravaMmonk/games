@@ -8,21 +8,13 @@ import { qualifyItems } from 'kernel'
 //     { inputs: { name: picture }, expected: { name: picture } } }
 //
 // with the level's inputs and outputs named as the level names them (level.inputs, level.outputs).
-import { S } from 'kernel'
+
 import { picture } from '../pictures.js'
 import { targetOf } from '../targets.js'
-import { T as t } from 'kernel'
-
 
 const pictures = (calls) => Object.fromEntries(Object.entries(calls).map(([name, call]) => [name, picture(call)]))
 const FILTER = {
   filter: {
-    about: t('一张图（或几张）进，按一条规则算出的图出'),
-    setup: S.obj({
-      target: S.call('target', { about: t('输出怎样由测试的图算出（按关卡输入的顺序）') }),
-      given: S.opt(S.map(S.call('picture'), { about: t('每组测试都一样的输入（比如频率半径）') })),
-    }),
-    test: S.obj({ in: S.opt(S.call('picture')), inputs: S.opt(S.map(S.call('picture'), { about: t('有几个输入时，每个输入的图') })) }),
     make: (test, { target, given = {} }, level) => {
       const own = test.inputs ? pictures(test.inputs) : { [level.inputs[0]]: picture(test.in) }
       const args = level.inputs.filter((name) => name in own).map((name) => own[name])

@@ -1,6 +1,7 @@
 // A street of houses: the houses' numbers on top, the table in rows under them.
 
-import { T, tr, isEn } from 'table';
+import { tr } from 'kernel';
+import { T, isEn } from 'table';
 import { world, look, cell, num, seg } from 'table';
 
 /* ---------- street of houses: the houses on top, then one row, or three rows once the state remembers "robbed or not" ---------- */

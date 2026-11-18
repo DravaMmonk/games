@@ -1,0 +1,384 @@
+{
+  "type": "by",
+  "field": "judge",
+  "cases": {
+    "once": {
+      "type": "obj",
+      "fields": {
+        "editor": {
+          "type": "oneOf",
+          "values": [
+            "circuit"
+          ]
+        },
+        "judge": {
+          "type": "oneOf",
+          "values": [
+            "once"
+          ]
+        },
+        "resources": {
+          "type": "str"
+        },
+        "label": {
+          "type": "obj",
+          "fields": {
+            "zh": {
+              "type": "str"
+            },
+            "en": {
+              "type": "str"
+            }
+          },
+          "optional": true
+        },
+        "layout": {
+          "type": "str",
+          "optional": true
+        },
+        "results": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "output": {
+          "type": "oneOf",
+          "values": [
+            "target"
+          ],
+          "optional": true
+        },
+        "tileSettings": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "taskBoard": {
+          "type": "list",
+          "of": {
+            "type": "oneOf",
+            "values": [
+              "title",
+              "brief",
+              "tip",
+              "hints",
+              "statement",
+              "readouts",
+              "extras"
+            ]
+          },
+          "optional": true
+        }
+      }
+    },
+    "steps": {
+      "type": "obj",
+      "fields": {
+        "editor": {
+          "type": "oneOf",
+          "values": [
+            "circuit"
+          ]
+        },
+        "judge": {
+          "type": "oneOf",
+          "values": [
+            "steps"
+          ]
+        },
+        "resources": {
+          "type": "str"
+        },
+        "label": {
+          "type": "obj",
+          "fields": {
+            "zh": {
+              "type": "str"
+            },
+            "en": {
+              "type": "str"
+            }
+          },
+          "optional": true
+        },
+        "layout": {
+          "type": "str",
+          "optional": true
+        },
+        "results": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "output": {
+          "type": "oneOf",
+          "values": [
+            "target"
+          ],
+          "optional": true
+        },
+        "tileSettings": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "taskBoard": {
+          "type": "list",
+          "of": {
+            "type": "oneOf",
+            "values": [
+              "title",
+              "brief",
+              "tip",
+              "hints",
+              "statement",
+              "readouts",
+              "extras"
+            ]
+          },
+          "optional": true
+        }
+      }
+    },
+    "simulation": {
+      "type": "obj",
+      "fields": {
+        "editor": {
+          "type": "oneOf",
+          "values": [
+            "circuit"
+          ]
+        },
+        "judge": {
+          "type": "oneOf",
+          "values": [
+            "simulation"
+          ]
+        },
+        "resources": {
+          "type": "str"
+        },
+        "label": {
+          "type": "obj",
+          "fields": {
+            "zh": {
+              "type": "str"
+            },
+            "en": {
+              "type": "str"
+            }
+          },
+          "optional": true
+        },
+        "layout": {
+          "type": "str",
+          "optional": true
+        },
+        "results": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "output": {
+          "type": "oneOf",
+          "values": [
+            "target"
+          ],
+          "optional": true
+        },
+        "tileSettings": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "taskBoard": {
+          "type": "list",
+          "of": {
+            "type": "oneOf",
+            "values": [
+              "title",
+              "brief",
+              "tip",
+              "hints",
+              "statement",
+              "readouts",
+              "extras"
+            ]
+          },
+          "optional": true
+        }
+      }
+    },
+    "cases": {
+      "type": "obj",
+      "fields": {
+        "editor": {
+          "type": "oneOf",
+          "values": [
+            "circuit"
+          ]
+        },
+        "judge": {
+          "type": "oneOf",
+          "values": [
+            "cases"
+          ]
+        },
+        "resources": {
+          "type": "str"
+        },
+        "label": {
+          "type": "obj",
+          "fields": {
+            "zh": {
+              "type": "str"
+            },
+            "en": {
+              "type": "str"
+            }
+          },
+          "optional": true
+        },
+        "layout": {
+          "type": "str",
+          "optional": true
+        },
+        "results": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "output": {
+          "type": "oneOf",
+          "values": [
+            "target"
+          ],
+          "optional": true
+        },
+        "tileSettings": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "taskBoard": {
+          "type": "list",
+          "of": {
+            "type": "oneOf",
+            "values": [
+              "title",
+              "brief",
+              "tip",
+              "hints",
+              "statement",
+              "readouts",
+              "extras"
+            ]
+          },
+          "optional": true
+        },
+        "target": {
+          "type": "oneOf",
+          "values": [
+            "shown",
+            "hidden"
+          ]
+        }
+      }
+    },
+    "outputs": {
+      "type": "obj",
+      "fields": {
+        "editor": {
+          "type": "oneOf",
+          "values": [
+            "circuit"
+          ]
+        },
+        "judge": {
+          "type": "oneOf",
+          "values": [
+            "outputs"
+          ]
+        },
+        "resources": {
+          "type": "str"
+        },
+        "label": {
+          "type": "obj",
+          "fields": {
+            "zh": {
+              "type": "str"
+            },
+            "en": {
+              "type": "str"
+            }
+          },
+          "optional": true
+        },
+        "layout": {
+          "type": "str",
+          "optional": true
+        },
+        "results": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "output": {
+          "type": "oneOf",
+          "values": [
+            "target"
+          ],
+          "optional": true
+        },
+        "tileSettings": {
+          "type": "oneOf",
+          "values": [
+            "hidden"
+          ],
+          "optional": true
+        },
+        "taskBoard": {
+          "type": "list",
+          "of": {
+            "type": "oneOf",
+            "values": [
+              "title",
+              "brief",
+              "tip",
+              "hints",
+              "statement",
+              "readouts",
+              "extras"
+            ]
+          },
+          "optional": true
+        },
+        "checks": {
+          "type": "oneOf",
+          "values": [
+            "afterPass"
+          ]
+        }
+      }
+    }
+  }
+}

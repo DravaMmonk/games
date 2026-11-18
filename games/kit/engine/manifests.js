@@ -17,7 +17,10 @@ export function exportedNames(file, seen = new Set()) {
   const names = []
   for (const node of ast.body) {
     if (node.type === 'ExportDefaultDeclaration') names.push('default')
-    if (node.type === 'ExportAllDeclaration') names.push(...exportedNames(resolve(file, '..', node.source.value), seen))
+    if (node.type === 'ExportAllDeclaration') {
+      if (node.exported) names.push(node.exported.name)
+      else names.push(...exportedNames(resolve(file, '..', node.source.value), seen).filter(name => name !== 'default'))
+    }
     if (node.type === 'ExportNamedDeclaration') {
       names.push(...node.specifiers.map(specifier => specifier.exported.name))
       if (node.declaration?.id) names.push(node.declaration.id.name)
@@ -40,6 +43,11 @@ export function viewRegistrations(file) {
   const visit = node => {
     if (!node || typeof node !== 'object') return
     if (node.type === 'VariableDeclarator' && node.id.type === 'Identifier') constants.set(node.id.name, literal(node.init))
+    if (node.type === 'CallExpression' && node.callee.type === 'MemberExpression' && node.callee.property.name === 'implement') {
+      const kind = literal(node.arguments[0])
+      const name = literal(node.arguments[1])
+      if (typeof kind === 'string' && typeof name === 'string' && CODE_NAME.test(name)) registrations.push({ kind, name, value: {}, implementation: true })
+    }
     if (node.type === 'CallExpression' && node.callee.type === 'MemberExpression' && ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension'].includes(node.callee.property.name)) {
       const name = literal(node.arguments[0])
       if (typeof name === 'string' && CODE_NAME.test(name)) {

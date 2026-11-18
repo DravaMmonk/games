@@ -1,0 +1,1058 @@
+{
+  "extends": "operation",
+  "items": {
+    "mp": {
+      "about": {
+        "zh": "套用：由 A → B 和 A 得到 B",
+        "en": "Apply: from A → B and A, B"
+      },
+      "args": [
+        {
+          "name": "imp",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "a",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "impI": {
+      "about": {
+        "zh": "假设框：框里假设 A 证出 B，得到 A → B",
+        "en": "Assumption box: assume A inside, prove B, get A → B"
+      },
+      "args": [
+        {
+          "name": "body",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "A": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "andI": {
+      "about": {
+        "zh": "拼接：由 A 和 B 得到 A ∧ B",
+        "en": "Join: from A and B, A ∧ B"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "b",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "andE": {
+      "about": {
+        "zh": "拆解：由 A ∧ B 得到 A、B",
+        "en": "Split: from A ∧ B, A and B"
+      },
+      "args": [
+        {
+          "name": "ab",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "orI": {
+      "about": {
+        "zh": "补充：由 A 得到 A ∨ B",
+        "en": "Add alternative: from A, A ∨ B"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "other": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          },
+          "side": {
+            "type": "oneOf",
+            "values": [
+              "left",
+              "right"
+            ],
+            "control": "select",
+            "optional": true,
+            "default": "right"
+          }
+        }
+      }
+    },
+    "orE": {
+      "about": {
+        "zh": "分类讨论：由 A ∨ B 和两个框得到 C",
+        "en": "Case analysis: from A ∨ B and two boxes, C"
+      },
+      "args": [
+        {
+          "name": "ab",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "left",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "right",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "botE": {
+      "about": {
+        "zh": "爆炸：由 ⊥ 得到任意一句",
+        "en": "Explosion: from ⊥, anything"
+      },
+      "args": [
+        {
+          "name": "bot",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "C": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "raa": {
+      "about": {
+        "zh": "反证法：由 ¬¬A 得到 A",
+        "en": "By contradiction: from ¬¬A, A"
+      },
+      "args": [
+        {
+          "name": "nna",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "res": {
+      "about": {
+        "zh": "归结：两条子句消去一对文字",
+        "en": "Resolution: cancel one pair of literals"
+      },
+      "args": [
+        {
+          "name": "p0",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "p1",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "allI": {
+      "about": {
+        "zh": "任取框：框里证 P(a)，得到 ∀x. P(x)",
+        "en": "For-any box: prove P(a) inside, get ∀x. P(x)"
+      },
+      "args": [
+        {
+          "name": "body",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "allE": {
+      "about": {
+        "zh": "选定一例：由 ∀x. P(x) 得到 P(t)",
+        "en": "Choose an instance: from ∀x. P(x), P(t)"
+      },
+      "args": [
+        {
+          "name": "all",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "t": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "exI": {
+      "about": {
+        "zh": "概括：由 P(t) 得到 ∃x. P(x)",
+        "en": "Generalise: from P(t), ∃x. P(x)"
+      },
+      "args": [
+        {
+          "name": "a",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "target": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "exE": {
+      "about": {
+        "zh": "实例框：由 ∃x. P(x) 和框得到 C",
+        "en": "Witness box: from ∃x. P(x) and a box, C"
+      },
+      "args": [
+        {
+          "name": "ex",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "body",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "x": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "natInd": {
+      "about": {
+        "zh": "数学归纳法",
+        "en": "Induction"
+      },
+      "args": [
+        {
+          "name": "zero",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "step",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "P": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          },
+          "x": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "refl": {
+      "about": {
+        "zh": "自反律：t = t",
+        "en": "Reflexivity: t = t"
+      },
+      "args": [],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "t": {
+            "type": "str",
+            "control": "tree",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
+    "rewrite": {
+      "about": {
+        "zh": "等量代换：由 s = t 和 φ(s) 得到 φ(t)",
+        "en": "Rewrite: from s = t and φ(s), φ(t)"
+      },
+      "args": [
+        {
+          "name": "eq",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "p",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "at": {
+            "type": "list",
+            "of": {
+              "type": "str"
+            },
+            "control": "list",
+            "optional": true,
+            "default": []
+          }
+        }
+      }
+    },
+    "lemma": {
+      "about": {
+        "zh": "引理：照证出它的那段证明来推",
+        "en": "A lemma: runs the proof that proved it"
+      },
+      "args": [],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "anyR": {
+      "about": {
+        "zh": "任意结论",
+        "en": "Any conclusion"
+      },
+      "args": [],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "swapConcl": {
+      "about": {
+        "zh": "替换结论",
+        "en": "Swap conclusion"
+      },
+      "args": [
+        {
+          "name": "rule",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "to",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "consFront": {
+      "about": {
+        "zh": "添加首项",
+        "en": "Put first"
+      },
+      "args": [
+        {
+          "name": "first",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "rest",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "mkRule": {
+      "about": {
+        "zh": "构造规则",
+        "en": "Make a rule"
+      },
+      "args": [
+        {
+          "name": "premises",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "conclusion",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "eachOf": {
+      "about": {
+        "zh": "逐项处理",
+        "en": "For each"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "regions": [
+        {
+          "name": "body",
+          "type": "logic/machine-value"
+        }
+      ],
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "keepBound": {
+      "about": {
+        "zh": "保留⋀",
+        "en": "Keep ⋀"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "regions": [
+        {
+          "name": "body",
+          "type": "logic/machine-value"
+        }
+      ],
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uDelete": {
+      "about": {
+        "zh": "删除",
+        "en": "Delete"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uDecompose": {
+      "about": {
+        "zh": "分解",
+        "en": "Decompose"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uConflict": {
+      "about": {
+        "zh": "冲突",
+        "en": "Conflict"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uSwap": {
+      "about": {
+        "zh": "定向",
+        "en": "Orient"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uCheck": {
+      "about": {
+        "zh": "出现检查",
+        "en": "Occurs check"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uEliminate": {
+      "about": {
+        "zh": "消元",
+        "en": "Eliminate"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "uPattern": {
+      "about": {
+        "zh": "模式合一",
+        "en": "Pattern unification"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "repeat": {
+      "about": {
+        "zh": "重复框",
+        "en": "Repeat frame"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "body",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "rule": {
+      "about": {
+        "zh": "逆用规则",
+        "en": "Rule"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "rules",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "assumption": {
+      "about": {
+        "zh": "由假设得证",
+        "en": "Assumption"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "defer": {
+      "about": {
+        "zh": "目标后移",
+        "en": "Defer"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "append": {
+      "about": {
+        "zh": "依次尝试",
+        "en": "Alternatives"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "regions": [
+        {
+          "name": "first",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "second",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "third",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "fourth",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "fifth",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "sixth",
+          "type": "logic/machine-value"
+        }
+      ],
+      "params": {
+        "type": "obj",
+        "fields": {
+          "ways": {
+            "type": "oneOf",
+            "values": [
+              "2",
+              "3",
+              "4",
+              "5",
+              "6"
+            ],
+            "control": "select",
+            "optional": true,
+            "default": "2"
+          }
+        }
+      }
+    },
+    "search": {
+      "about": {
+        "zh": "回溯搜索",
+        "en": "Search"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "regions": [
+        {
+          "name": "body",
+          "type": "logic/machine-value"
+        }
+      ],
+      "params": {
+        "type": "obj",
+        "fields": {
+          "depth": {
+            "type": "oneOf",
+            "values": [
+              "any",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "8",
+              "10",
+              "12"
+            ],
+            "control": "select",
+            "optional": true,
+            "default": "any"
+          }
+        }
+      }
+    },
+    "each": {
+      "about": {
+        "zh": "逐个目标",
+        "en": "Every goal"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "regions": [
+        {
+          "name": "body",
+          "type": "logic/machine-value"
+        }
+      ],
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "rw": {
+      "about": {
+        "zh": "改写",
+        "en": "Rewrite"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        },
+        {
+          "name": "rules",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "at": {
+            "type": "oneOf",
+            "values": [
+              "goal",
+              "hyps"
+            ],
+            "control": "select",
+            "optional": true,
+            "default": "goal"
+          }
+        }
+      }
+    },
+    "skolem": {
+      "about": {
+        "zh": "Skolem 化",
+        "en": "Skolemise"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "toClauses": {
+      "about": {
+        "zh": "析出子句",
+        "en": "Into clauses"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "resolve": {
+      "about": {
+        "zh": "一轮归结",
+        "en": "A round of resolution"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "unit": {
+            "type": "oneOf",
+            "values": [
+              "any",
+              "unit"
+            ],
+            "control": "select",
+            "optional": true,
+            "default": "any"
+          }
+        }
+      }
+    },
+    "oracle": {
+      "about": {
+        "zh": "外部证明器",
+        "en": "Someone else’s prover"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "replay": {
+      "about": {
+        "zh": "重放",
+        "en": "Replay"
+      },
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "rules": {
+      "about": {
+        "zh": "规则元件：给出它的规则",
+        "en": "A rule part: the rules it gives"
+      },
+      "args": [
+        {
+          "name": "before",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "use": {
+            "type": "list",
+            "of": {
+              "type": "str"
+            },
+            "control": "list",
+            "optional": true,
+            "default": []
+          }
+        }
+      }
+    },
+    "names": {
+      "args": [],
+      "returns": "logic/options",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "things": {
+      "args": [],
+      "returns": "logic/options",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "instances": {
+      "about": {
+        "zh": "能代入的东西或句子",
+        "en": "Things or sentences to put in"
+      },
+      "args": [],
+      "returns": "logic/options",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "occurrences": {
+      "about": {
+        "zh": "φ 里 s 出现的每一处",
+        "en": "Each place s stands in φ"
+      },
+      "args": [
+        {
+          "name": "eq",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "p",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/options",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "ruleChoices": {
+      "about": {
+        "zh": "规则元件能给出的规则",
+        "en": "The rules a rule part can give"
+      },
+      "args": [],
+      "returns": "logic/options",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    }
+  }
+}

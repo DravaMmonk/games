@@ -6,5 +6,73 @@
       "zh": "目标条件",
       "en": "Goals"
     }
+  },
+  "items": {
+    "agree": {
+      "about": {
+        "zh": "声明与条例一致",
+        "en": "Declaration agrees with cases"
+      }
+    },
+    "expose": {
+      "about": {
+        "zh": "用条例揭示错误声明",
+        "en": "Expose an incorrect declaration with cases"
+      }
+    },
+    "proved": {
+      "about": {
+        "zh": "证明完毕：没有目标剩下",
+        "en": "proved: no goal left"
+      }
+    },
+    "becomes": {
+      "about": {
+        "zh": "变成测试列出的几种结果（每种是它的目标）；一种也没有：这一步失败",
+        "en": "the results the test lists, each its goals; none: the step fails"
+      }
+    },
+    "fails": {
+      "about": {
+        "zh": "证不出时停下，报告证不出",
+        "en": "to stop and report failure when the goal cannot be proved"
+      }
+    },
+    "answers": {
+      "about": {
+        "zh": "找出所有答案：?-字母取到的每一种",
+        "en": "every answer: each thing its ?-letters can become"
+      }
+    },
+    "unify": {
+      "about": {
+        "zh": "解完的等式（能合一时），或者失败",
+        "en": "the solved equations (when they unify), or a failure"
+      }
+    },
+    "elim": {
+      "about": {
+        "zh": "一份声明的消去规则",
+        "en": "a declaration’s elimination rule"
+      }
+    },
+    "clauses": {
+      "about": {
+        "zh": "拆成测试列出的子句",
+        "en": "the clauses the test lists"
+      }
+    },
+    "refuted": {
+      "about": {
+        "zh": "推出空子句 ⊥（测试有预算时，子句不超过预算）",
+        "en": "the empty clause ⊥ (within the test’s budget of clauses)"
+      }
+    },
+    "decide": {
+      "about": {
+        "zh": "能推出 ⊥ 时推出 ⊥；否则饱和",
+        "en": "⊥ when it follows; otherwise saturated"
+      }
+    }
   }
 }

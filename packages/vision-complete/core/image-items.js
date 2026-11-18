@@ -23,9 +23,7 @@ import { separable } from './benches/separable.js'
 import { attentionRoles } from './benches/attention-roles.js'
 import { attentionTraining } from './benches/attention-training.js'
 import { sum, probe, alias } from './benches/waves.js'
-import { DISPLAYS } from './items/displays.js'
 export const imageItems = {
   scenes: qualifyItems('vision-complete', Object.fromEntries(Object.entries({ ...PIXELS, ...FILTERS, ...FREQUENCY, ...LIGHT, ...LEARNING, ...ATTENTION, ...MATCHING, ...STEREO, ...GENERATIVE, ...SEGMENT, ...DETECT, ...EXPLAIN }).sort(([a], [b]) => a < b ? -1 : Number(a > b)))),
   benches: qualifyItems('vision-complete', { racer, sum, probe, alias, stop, contrast, hough, ransac, cover, gan, appleLight, separable, attentionRoles, attentionTraining }),
-  displays: DISPLAYS,
 }

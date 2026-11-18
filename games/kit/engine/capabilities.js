@@ -6,7 +6,7 @@ const PRIMITIVE_VALUE_TYPES = Object.fromEntries(
 )
 export const builtinCapabilityKinds = {
   valueType: { studio: { order: 2, label: { zh: '值类型', en: 'Value types' } } },
-  play: { studio: { order: 5, label: { zh: '玩法', en: 'Plays' } } },
+  play: { studio: { order: 5, label: { zh: '玩法', en: 'Plays' } }, implementation: { side: 'core' } },
   language: { studio: { order: 9, label: { zh: '语言', en: 'Languages' } } },
 }
 
@@ -80,7 +80,13 @@ export function assertCapabilityImplementation(kind, name, value, rule) {
 /** Compile package declarations before the schema consumes any of the items. */
 export function withCapabilityDeclarations(vocabulary, layers, { checkImplementations = false } = {}) {
   const definitions = { ...builtinCapabilityKinds }
+  const contributions = []
   for (const { id, capabilityDeclarations = {} } of layers) for (const [file, declaration] of Object.entries(capabilityDeclarations)) {
+    if (declaration.extends) {
+      if (!/^[A-Za-z][\w-]*$/.test(file) || Object.keys(declaration).some(key => !['extends', 'items'].includes(key))) throw new Error(`${id}/capabilities/${file}: invalid capability contribution`)
+      contributions.push({ id, kind: declaration.extends, items: qualifyItems(id, declaration.items ?? {}) })
+      continue
+    }
     const { name, studio, implementation, items = {} } = declaration
     if (!/^[A-Za-z][\w-]*$/.test(file) || (name !== file && name !== `${id}/${file}`)) throw new Error(`${id}/capabilities/${file}: invalid capability kind ${name}`)
     if (Object.hasOwn(definitions, name)) throw new Error(`duplicate capability kind ${name}`)
@@ -88,27 +94,54 @@ export function withCapabilityDeclarations(vocabulary, layers, { checkImplementa
     if (implementation && (!['core', 'view'].includes(implementation.side) || (implementation.methods !== undefined && (!Array.isArray(implementation.methods) || !implementation.methods.every(method => typeof method === 'string'))))) throw new Error(`${name}: invalid capability implementation contract`)
     definitions[name] = { ...declaration, items: qualifyItems(id, items), owner: id }
   }
+  for (const { id, kind } of contributions) {
+    if (!Object.hasOwn(definitions, kind)) throw new Error(`${id}: unknown capability kind ${kind}`)
+    const owner = definitions[kind].owner
+    const layer = layers.find(layer => layer.id === id)
+    if (checkImplementations && owner && owner !== id && !Object.hasOwn(layer.config?.uses ?? {}, owner)) {
+      throw new Error(`${id}: capability kind ${kind} requires a declared package dependency on ${owner}`)
+    }
+  }
   const registry = createCapabilityRegistry(definitions)
   for (const [kind, items] of Object.entries(vocabulary.capabilities ?? {})) for (const [name, item] of Object.entries(items)) {
     if (kind === 'valueType' && Object.hasOwn(PRIMITIVE_VALUE_TYPES, name)) continue
     registry.add(kind, name, item)
   }
   for (const [kind, { items }] of Object.entries(definitions)) for (const [name, item] of Object.entries(items ?? {})) registry.add(kind, name, item)
+  for (const { kind, items } of contributions) for (const [name, item] of Object.entries(items)) registry.add(kind, name, item)
+  // A scoped task schema already declares the play whose fields it owns.
+  for (const { id, objects = [] } of layers) for (const { kind, value } of objects) {
+    if (kind === 'kind' && value.extends === 'task' && value.play?.startsWith(`${id}/`) && !Object.hasOwn(registry.tables.play ?? {}, value.play)) registry.add('play', value.play, {})
+  }
   if (checkImplementations) {
     const owners = new Map(layers.map(layer => [layer.id, layer]))
+    for (const { capabilityImplementations = {} } of layers) {
+      for (const [kind, items] of Object.entries(capabilityImplementations)) {
+        for (const [name, { value, side }] of Object.entries(items)) {
+          if (!Object.hasOwn(registry.tables[kind] ?? {}, name)) throw new Error(`undeclared ${kind} ${name}`)
+          if (definitions[kind]?.implementation) registry.implement(kind, name, value, side)
+        }
+      }
+    }
+    for (const { id, codeObjects = [] } of layers) for (const { kind, name, implementation } of codeObjects) {
+      if (!implementation) continue
+      if (!name.startsWith(`${id}/`) || !Object.hasOwn(registry.tables[kind] ?? {}, name)) throw new Error(`undeclared ${kind} ${name}`)
+      if (definitions[kind]?.implementation) registry.implement(kind, name, `${id}/view`, 'view')
+    }
     for (const [kind, items] of Object.entries(registry.tables)) {
       const rule = definitions[kind]?.implementation
       if (!rule) continue
       for (const name of Object.keys(items)) {
         const owner = owners.get(name.split('/')[0])
         const entry = owner?.capabilityImplementations?.[kind]?.[name]
-        const value = rule.side === 'view' ? (owner?.hasView ? `${owner.id}/view` : undefined) : entry?.value
+        const value = rule.side === 'view' ? registry.implementations[kind]?.[name] : entry?.value
         if (rule.side === 'core' && entry?.side !== 'core') throw new Error(`${kind} ${name} needs a core implementation`)
         assertCapabilityImplementation(kind, name, value, rule)
       }
     }
   }
-  return { ...vocabulary, capabilityKinds: definitions, capabilities: registry.tables, kinds: { ...vocabulary.kinds, ...registry.tables } }
+  return { ...vocabulary, capabilityKinds: definitions, capabilities: registry.tables, kinds: { ...vocabulary.kinds, ...registry.tables },
+    languages: { ...vocabulary.languages, ...registry.tables.language } }
 }
 
 // Runtime implementations share the same qualified names as their declarations.

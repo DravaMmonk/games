@@ -3,11 +3,8 @@
 // Real data: two humps at ±mode (σ = width), n samples each at fixed quantiles. The generator G has two pens; each
 // draws half the samples as μ_k + width·q. The discriminator is D(x) = sigmoid(w₀ + w₁u + w₂u²)
 // with u = x/2. D climbs log D(real) + log(1 − D(fake)); G climbs log D(fake) (the non-saturating form).
-import { S } from 'kernel'
 import { judge, limitOf, startValues } from 'image'
 import { T as t } from 'kernel'
-
-const num = S.num()
 
 /**
  * The duel. n samples per hump at ±mode with spread `width`; rateD: the discriminator's step; start: the two pens'
@@ -83,11 +80,6 @@ export function ganBench({ n: N, mode: MODE, width: WIDTH, rateD: LR_D, start: S
 
 /** The bench model: knobs dSteps, gSteps, gRate (the rhythm); act turn and reset; streak counts turns the rest held. */
 export const gan = {
-  about: t('骗过鉴定员：两支笔的生成器对一个鉴定员，按旋钮 dSteps、gSteps、gRate 定的节奏轮流训练；算出 left、right（两堆各占多少）、accuracy、streak（其余目标连续达到的回合数）'),
-  setup: S.obj({
-    n: S.int({ min: 1 }), mode: num, width: num, rateD: num, start: S.list(num, { min: 2 }),
-    good: S.obj({ dSteps: S.int(), gSteps: S.int(), gRate: num }, { about: t('一个能过关的节奏') }),
-  }),
   make({ good: rhythm, ...p }, bench) {
     const rest = bench.goal.filter((l) => l.of !== 'streak')
     const m = ganBench({ ...p, good: (measure) => judge(rest, measure).pass })

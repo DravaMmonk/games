@@ -9,5 +9,10 @@
       "zh": "显示",
       "en": "Displays"
     }
+  },
+  "items": {
+    "screen": {
+      "role": "circuit"
+    }
   }
 }

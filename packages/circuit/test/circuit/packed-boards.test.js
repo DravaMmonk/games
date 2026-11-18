@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { circuitWorkStamp, lookupBoard, packedBoards } from '../../core/index.js'
+import { circuitWorkStamp, lookupBoard } from '../../core/board/packed-boards.js'
+import { packedBoards } from '../../core/index.js'
 
 test('nested packed boards and edit destinations resolve against their own parent task', () => {
   const inner = { level: 'inside', circuit: { nodes: [{ id: 'again', type: 'shared', params: { form: 'second' } }] } }

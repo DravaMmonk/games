@@ -1,7 +1,8 @@
 // Tables laid out in one row: a staircase, a pile of stones, an amount paid in coins, the letters of a word.
 // Cell i of the row is the small problem of size i; cell 0 is where every count starts.
 
-import { T, tr } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, yes, seg, THIS_CELL } from 'table';
 
 /**

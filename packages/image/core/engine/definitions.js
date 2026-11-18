@@ -1,4 +1,4 @@
-import { S } from 'kernel'
+import declarations from '../../capabilities/operation.json' with { type: 'json' }
 // Keep the image operations, scoring and course unlocks. Studio owns the parts' data and expressions.
 import { operationsOf } from 'circuit'
 import { applyRules, defineParts, shows } from 'circuit'
@@ -10,15 +10,6 @@ const nativeForResource = new Map(native.flatMap(([type, spec]) => {
   return outputs.map((output) => [`${type}${output ? `-${output}` : ''}`, { type, spec }])
 }))
 
-const parameterSchema = ({ kind, options, buttons, min, max, step, default: value }) => {
-  const control = options ? (buttons ? 'buttons' : 'select') : kind === 'kernel' ? 'custom' : kind
-  const presentation = { control, ...(buttons && { layout: buttons }), ...(kind === 'kernel' && { widget: 'image/imageKernel' }) }
-  const bounds = { ...(min !== undefined && { min }), ...(max !== undefined && { max }), ...(step !== undefined && { step }), ...(value !== undefined && { default: value }) }
-  if (options) return S.opt(S.oneOf(options.map(([option]) => String(option)), { ...presentation, default: String(value) }))
-  if (kind === 'kernel') return S.opt(S.list(S.num(), { ...presentation, default: value }))
-  return S.opt(S.num({ ...bounds, ...presentation }))
-}
-
 /** One resource for each result of an existing image operation. */
 export const IMAGE_OPS = Object.fromEntries(native.flatMap(([type, spec]) => {
   const settings = spec.params ?? []
@@ -26,10 +17,7 @@ export const IMAGE_OPS = Object.fromEntries(native.flatMap(([type, spec]) => {
   return outputs.map((output) => [
     `${type}${output ? `-${output}` : ''}`,
     {
-      about: spec.label,
-      args: spec.inputs.map((name) => ({ name, type: 'image/image', ...(spec.optional?.includes(name) && { optional: true }) })),
-      returns: 'image/image',
-      params: S.obj(Object.fromEntries(settings.map((setting) => [setting.key, parameterSchema(setting)]))),
+      ...declarations.items[`${type.split('/').at(-1)}${output ? `-${output}` : ''}`],
       run(args, namedParams, ctx) {
         const input = Object.fromEntries(spec.inputs.flatMap((name, index) => args[index] == null ? [] : [[name, args[index]]]))
         const params = { ...namedParams }

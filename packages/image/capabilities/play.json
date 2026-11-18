@@ -1,0 +1,32 @@
+{
+  "extends": "play",
+  "items": {
+    "graph": {
+      "configuration": {
+        "editor": "circuit",
+        "judge": "outputs",
+        "resources": "imageCircuit",
+        "checks": "afterPass",
+        "layout": "level-graph"
+      }
+    },
+    "board": {
+      "configuration": {
+        "editor": "workshop",
+        "judge": "parameters",
+        "resources": "parameters",
+        "layout": "level-board",
+        "pinOnPhone": true
+      }
+    },
+    "probe": {
+      "configuration": {
+        "editor": "workshop",
+        "judge": "gridProbe",
+        "resources": "probe",
+        "layout": "level-probe",
+        "pinOnPhone": true
+      }
+    }
+  }
+}

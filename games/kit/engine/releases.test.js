@@ -138,6 +138,7 @@ test('publication compares real dependent checks and reports a major behavioral 
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.0.0')
     put(root, 'packages/course/package.json', config({ library: '^1.0.0' }))
     put(root, 'packages/course/core/index.js', "import { answerValue } from 'library'; export function register(kernel) { kernel.play('course/probe', { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: () => ({ pass: true }), judge: report => report }); kernel.check('course/probe', () => [{ text: `probe ${answerValue}` }]) }")
+    put(root, 'packages/course/capabilities/play.json', { extends: 'play', items: { probe: {} } })
     put(root, 'packages/course/levels/sum.json', { title: 'Probe', tasks: [{ id: 'probe', play: 'course/probe', brief: 'Observe the public value.' }] })
     lockTarget({ id: 'course', kind: 'package' }, root)
     checkTarget({ id: 'course', kind: 'package' }, root)

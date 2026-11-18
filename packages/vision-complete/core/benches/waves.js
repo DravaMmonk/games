@@ -1,19 +1,13 @@
 // The wave benches of 视觉完备 chapter 2, on rows of N points: one wave tuned by its four numbers (wave), sine waves
 // stacked up (sum), a probe that multiplies the row by a wave and averages (probe), and sampling (alias). Each is a
 // bench model (image/core/bench.js): what it computes from the knobs, for the bench's displays and its goal.
-import { S } from 'kernel'
 import { benchRun, limitOf, openKnobs, passingSettings, startValues } from 'image'
 import { aliasOf, cosine, maxDiff, sampleAt, sinusoid, throughSamples } from 'image-processing'
 import { T as t } from 'kernel'
 
-const num = S.num()
-
 /* ---------- 叠加: 0.5 + Σ aₖ·sin(2π·k·x/N) ---------- */
 
 export const sum = {
-  about: t('叠加：频率 ks 各一道正弦波，振幅旋钮名为 k1、k2…，叠到目标上'),
-  setup: S.obj({ N: S.int({ min: 2 }), ks: S.list(S.int()) }),
-  stage: S.obj({ target: S.list(num) }),
   make({ N, ks }, bench) {
     const components = ks.map((k) => sinusoid(k, 'sin'))
     const curve = (amps) => (u) => 0.5 + amps.reduce((s, a, i) => s + a * components[i](u), 0)
@@ -64,7 +58,7 @@ export const sum = {
 /* ---------- 探针: a curve times a wave, averaged ---------- */
 
 // A wave on a middle line of c: the sum of cos waves of frequency k, amplitude A, `shift` degrees late (u ∈ [0, 1)).
-const WAVES = S.obj({ c: num, waves: S.list(S.obj({ k: S.int(), A: num, shift: S.opt(num) })) })
+
 const wavesAt = ({ c, waves }) => {
   const components = waves.map(({ k, A, shift = 0 }) => cosine({ k, A, phase: -shift }))
   return (u) => components.reduce((s, wave) => s + wave(u), c)
@@ -75,13 +69,6 @@ const COMBINE = { cos: (a) => a, sin: (a, b) => b, sum: (a, b) => a + b, mag: (a
 const readingText = (v) => (Math.abs(v) < 0.0005 ? '0.000' : v.toFixed(3))
 
 export const probe = {
-  about: t('探针：曲线乘一道波再平均，读出一个频率；旋钮 j（探针频率）、m（读数乘以）、shift（输入错开）、pick（两个读数的合法：cos、sin、sum、mag）'),
-  setup: S.obj({ N: S.int({ min: 2 }), wave: S.obj({ k: S.int(), A: num }, { about: t('可以错开的那道输入波（中线 0.5）') }) }),
-  stage: S.obj({
-    kind: S.oneOf(['find', 'read', 'blind', 'combine'], { about: t('find：转频率找到它；read：读出振幅；blind：错开到读不到；combine：合两个读数') }),
-    input: S.opt(WAVES), checks: S.opt(S.list(num, { about: t('合读数时试的几个错开角度') })),
-    answers: S.str({ about: t('这一步接受的全部答案，用逗号连起') }),
-  }),
   make({ N, wave: w }) {
     const reading = (product) => sampleAt(product, N).reduce((s, v) => s + v, 0) / N
     const shifted = (shift) => cosine({ ...w, c: 0.5, phase: -shift })
@@ -137,19 +124,7 @@ const pickName = (pick) => ({ cos: t('只看 a'), sin: t('只看 b'), sum: 'a + 
 
 /* ---------- 采样: a continuous wave turned into points ---------- */
 
-const PART = S.obj({ k: S.int(), A: num, phase: num })
-const COSINE = S.obj({ c: num, A: num, k: S.int(), phase: num })
-
 export const alias = {
-  about: t('采样台：连续的波变成一排点；每一步只开 k（冒名的频率）、M（采样点数）、K（采样前保留的最高频率）中的一个'),
-  setup: S.obj({
-    fine: S.int({ min: 2 }),
-    folds: S.list(S.list(S.int(), { min: 3 }), { about: t('不滤就采时，频率 k 采 M 个点后折回到哪里：[k, M, 折回的频率]') }),
-  }),
-  stage: S.obj({
-    samples: S.opt(S.int()), reference: S.opt(COSINE), wave: S.opt(COSINE), parts: S.opt(S.list(PART)),
-    answers: S.str({ about: t('这一步能过的全部值，用逗号连起') }),
-  }),
   make({ fine }) {
     const signalOf = (parts, keep = Infinity) => (u) => parts.filter((p) => p.k <= keep).reduce((s, p) => s + cosine({ ...p, c: 0 })(u), 0.5)
     // Can the wave be read back from M samples? The smoothest curve through them must be the wave.

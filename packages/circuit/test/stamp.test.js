@@ -1,7 +1,9 @@
 // node --test (npm test, from site) — task stamps (stamp.js), on a schema and content written here.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { contentMeanings, solutionStamp as boardStamp } from '../core/index.js'
+import { partMeaning, trayMeaning } from '../core/content-meaning.js'
+const contentMeanings = [partMeaning, trayMeaning]
+import { solutionStamp as boardStamp } from '../core/stamp.js'
 import { S } from '../../../games/kit/engine/schema.js'
 import { solutionStamp, taskStamps } from '../../../games/kit/engine/stamp.js'
 

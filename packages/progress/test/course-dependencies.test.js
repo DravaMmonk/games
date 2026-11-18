@@ -2,7 +2,10 @@ import { defineCourse, progressMeaning } from '../core/index.js'
 import { contentSchemas } from '../../../games/kit/engine/content.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { contentMeanings, holds, usable } from '../../circuit/core/index.js'
+import { holds } from '../../circuit/core/index.js'
+import { partMeaning, trayMeaning } from '../../circuit/core/content-meaning.js'
+const contentMeanings = [partMeaning, trayMeaning]
+import { usable } from '../../circuit/core/course.js'
 import { courseDependencies, courseLayout, projectDependencyProblems } from '../../../games/kit/engine/course-dependencies.js'
 
 const parts = { shift: { settings: { border: { control: 'select', options: [{ value: 'edge' }] } }, stages: [{ id: 'shift-wrap', settings: { border: { options: [{ value: 'edge' }, { value: 'wrap' }] } } }] }, adder: { stages: [{ id: 'adder-wide' }] } }

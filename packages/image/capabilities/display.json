@@ -1,0 +1,800 @@
+{
+  "extends": "display",
+  "items": {
+    "step": {
+      "about": {
+        "zh": "这一步的标题和说明",
+        "en": "the step’s title and note"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "knobs": {
+      "about": {
+        "zh": "打开的旋钮",
+        "en": "the open knobs"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "only": {
+            "type": "list",
+            "of": {
+              "type": "str"
+            },
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "actions": {
+      "params": {
+        "type": "obj",
+        "fields": {
+          "only": {
+            "type": "list",
+            "of": {
+              "type": "int"
+            },
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "verdict": {
+      "about": {
+        "zh": "目标达到没有；分步的台子带「下一步」",
+        "en": "whether the goal holds; a stepped bench adds “next step”"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "center": {
+            "type": "bool",
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "goals": {
+      "about": {
+        "zh": "目标的每一条和此刻的值",
+        "en": "each limit of the goal and its value now"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "phoneCols": {
+            "type": "int",
+            "min": 1,
+            "max": 2,
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "stages": {
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "cases": {
+      "about": {
+        "zh": "切换情形，每个带对错",
+        "en": "switch between the cases, each marked passed or not"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "passed": {
+            "type": "text",
+            "about": {
+              "zh": "「n / m 」后面的字",
+              "en": "the words after “n / m”"
+            },
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "plot": {
+      "about": {
+        "zh": "曲线图：指向一处读出各条线的值",
+        "en": "a line plot: point at a spot to read every line"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "str",
+            "about": {
+              "zh": "模型给出的 { lines, dots, legend }",
+              "en": "the model’s { lines, dots, legend }"
+            },
+            "optional": true
+          },
+          "lines": {
+            "type": "list",
+            "of": {
+              "type": "obj",
+              "fields": {
+                "of": {
+                  "type": "str"
+                },
+                "kind": {
+                  "type": "oneOf",
+                  "values": [
+                    "target",
+                    "yours",
+                    "faint",
+                    "error",
+                    "seen"
+                  ]
+                },
+                "label": {
+                  "type": "text",
+                  "optional": true
+                },
+                "legend": {
+                  "type": "text",
+                  "optional": true
+                }
+              }
+            },
+            "optional": true
+          },
+          "title": {
+            "type": "either",
+            "of": [
+              {
+                "type": "text"
+              },
+              {
+                "type": "obj",
+                "fields": {
+                  "of": {
+                    "type": "str"
+                  }
+                }
+              }
+            ],
+            "optional": true
+          },
+          "legend": {
+            "type": "bool",
+            "optional": true
+          },
+          "lo": {
+            "type": "num",
+            "optional": true
+          },
+          "hi": {
+            "type": "num",
+            "optional": true
+          },
+          "ticks": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "optional": true
+          },
+          "tickFormat": {
+            "type": "oneOf",
+            "values": [
+              "auto",
+              "raw",
+              "int",
+              "fixed1",
+              "fixed2",
+              "fixed3",
+              "fixed4",
+              "pct",
+              "pct1",
+              "exp",
+              "grouped",
+              "quarterPi",
+              "pow10",
+              "outOf"
+            ],
+            "optional": true
+          },
+          "span": {
+            "type": "num",
+            "optional": true
+          },
+          "left": {
+            "type": "num",
+            "optional": true
+          },
+          "height": {
+            "type": "list",
+            "of": {
+              "type": "num"
+            },
+            "min": 2,
+            "about": {
+              "zh": "[桌面, 手机] 的高",
+              "en": "[desktop, phone] height"
+            }
+          },
+          "mark": {
+            "type": "str",
+            "about": {
+              "zh": "竖线的位置（0…1）",
+              "en": "where the upright line goes (0…1)"
+            },
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "strips": {
+      "about": {
+        "zh": "几行像素，最暗是 0，最亮是 1",
+        "en": "rows of pixels, darkest at 0 and lightest at 1"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "rows": {
+            "type": "list",
+            "of": {
+              "type": "obj",
+              "fields": {
+                "of": {
+                  "type": "str"
+                },
+                "label": {
+                  "type": "text"
+                }
+              }
+            }
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "text": {
+      "about": {
+        "zh": "一段字：写定的，或模型算出的",
+        "en": "a line of words: written, or computed by the model"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "text": {
+            "type": "text",
+            "optional": true
+          },
+          "of": {
+            "type": "str",
+            "optional": true
+          },
+          "look": {
+            "type": "oneOf",
+            "values": [
+              "legend",
+              "label",
+              "note",
+              "caption",
+              "mono",
+              "serif",
+              "small",
+              "lede",
+              "title",
+              "line"
+            ],
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "stats": {
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "list",
+            "of": {
+              "type": "obj",
+              "fields": {
+                "of": {
+                  "type": "str"
+                },
+                "label": {
+                  "type": "text"
+                },
+                "format": {
+                  "type": "oneOf",
+                  "values": [
+                    "auto",
+                    "raw",
+                    "int",
+                    "fixed1",
+                    "fixed2",
+                    "fixed3",
+                    "fixed4",
+                    "pct",
+                    "pct1",
+                    "exp",
+                    "grouped",
+                    "quarterPi",
+                    "pow10",
+                    "outOf"
+                  ],
+                  "optional": true
+                },
+                "unit": {
+                  "type": "str",
+                  "optional": true
+                },
+                "goal": {
+                  "type": "bool",
+                  "about": {
+                    "zh": "达到目标时标绿",
+                    "en": "green once the goal holds"
+                  },
+                  "optional": true
+                }
+              }
+            }
+          },
+          "phone": {
+            "type": "oneOf",
+            "values": [
+              "line"
+            ],
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "chips": {
+      "about": {
+        "zh": "一排小标签",
+        "en": "a row of tags"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "str"
+          },
+          "look": {
+            "type": "oneOf",
+            "values": [
+              "wave",
+              "plain"
+            ],
+            "optional": true
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "curve": {
+      "about": {
+        "zh": "一条小曲线（损失）",
+        "en": "a small curve (a loss)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "str"
+          },
+          "caption": {
+            "type": "str"
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "table": {
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "str"
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "progress": {
+      "about": {
+        "zh": "一排进度点",
+        "en": "a row of progress dots"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "of": {
+            "type": "str"
+          },
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "obscura": {
+      "about": {
+        "zh": "暗箱的侧视图：拖动孔板和屏幕（旋钮 Z、s）",
+        "en": "the camera obscura from the side: drag the plate and the screen (knobs Z, s)"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "obscuraScreen": {
+      "about": {
+        "zh": "屏幕正面：像的大小、模糊和亮度，目标高度画成一条线",
+        "en": "the screen from the front: the image’s size, blur and brightness, with the goal height as a line"
+      },
+      "params": {
+        "type": "obj",
+        "fields": {
+          "when": {
+            "type": "str",
+            "about": {
+              "zh": "只在模型的这个量为真时显示",
+              "en": "shown only while this quantity of the model is true"
+            },
+            "optional": true
+          },
+          "unless": {
+            "type": "str",
+            "optional": true
+          },
+          "with": {
+            "type": "shape",
+            "name": "image/nested-layout-blocks",
+            "about": {
+              "zh": "嵌进这一项里的项",
+              "en": "items set inside this one"
+            },
+            "optional": true
+          }
+        }
+      }
+    }
+  }
+}

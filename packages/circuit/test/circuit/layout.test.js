@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { alignedLayout, flowSpots, layoutAt, pipelineLayout, reflowLayout, layoutMetrics } from '../../core/index.js'
+import { alignedLayout, flowSpots, layoutAt, pipelineLayout, reflowLayout, layoutMetrics } from '../../core/board/layout.js'
 const roleOf = (n) => n.type === 'in' ? 'source' : n.type === 'out' ? 'sink' : 'part'
 const sizeOf = () => ({w:100,h:64})
 const options = {roleOf,sizeOf,width:700,portY:(_id,key,side)=>side==='in'&&key==='b'?66:46}

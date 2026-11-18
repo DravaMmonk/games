@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { alignTerminals, spaceNodes } from '../../core/index.js'
+import { alignTerminals, spaceNodes } from '../../core/board/spacing.js'
 
 const card = (id, x, y, extra = {}) => ({ id, x, y, type: 'out', params: { name: id }, ...extra })
 

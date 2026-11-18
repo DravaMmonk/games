@@ -3,7 +3,8 @@
 // the facts "is the first house", "is the last house" and "is layer 甲". The answer is the best of both layers' last
 // column. t = { a: [money in house 1 …] }.
 
-import { T, tr } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, num, yes } from 'table';
 
 const SIDES = [T('甲', 'A'), T('乙', 'B')];

@@ -1,11 +1,7 @@
 // Scenes of the third dimension (scenes/index.js): stereo pairs of textured layers, disparity maps to turn into
 // distance, epipolar geometry of one camera pair, and a robot vacuum's view of a room with obstacles.
-import { S } from 'kernel'
 import { addNoise, fromFn, image, map, random, zip, row } from 'image-processing'
 import { cross3 } from 'computer-vision'
-import { T as t } from 'kernel'
-
-const num = S.num()
 
 // Layers painted back to front, each with its own random texture and disparity d: the right camera sees a surface d
 // pixels further left, left(x) = right(x − d). The background is a far wall at disparity `far`.
@@ -26,7 +22,7 @@ function stereo(seed, layers, { far = 0, noise = 0, gain = 1, offset = 0 } = {})
   return { left: jitter(left, seed + 50), right: map(jitter(right, seed + 90), (v) => v * gain + offset), truth }
 }
 const box = ([x0, y0, x1, y1]) => (x, y) => x >= x0 && x < x1 && y >= y0 && y < y1
-const LAYERS = S.list(S.obj({ box: S.list(S.int(), { min: 4, about: t('它占的矩形：x0, y0, x1, y1（不含 x1、y1）') }), d: S.int({ min: 0 }) }), { about: t('远墙前面的几层，从后往前') })
+
 const layersOf = (layers) => layers.map((l) => [box(l.box), l.d])
 const depthOf = (d, fb) => map(d, (v) => fb / v)
 
@@ -67,29 +63,21 @@ const ROOM_EXPECTS = {
 
 export const STEREO = {
   stereo: {
-    about: t('左右两台相机拍的一对图：远墙前有几层有纹理的东西；期望是视差图'),
-    test: S.obj({ seed: S.int(), layers: LAYERS, noise: S.opt(num) }),
     make: ({ seed, layers, noise }) => {
       const scene = stereo(seed, layersOf(layers), { noise })
       return { inputs: { left: scene.left, right: scene.right }, expected: { out: scene.truth } }
     },
   },
   depth: {
-    about: t('一张视差图（远墙视差 1）；期望是距离 f·b ÷ 视差。给了 f、b 时它们也是输入，否则 f·b = 3'),
-    test: S.obj({ seed: S.int(), layers: LAYERS, f: S.opt(num), b: S.opt(num) }),
     make: ({ seed, layers, f, b }) => {
       const d = stereo(seed, layersOf(layers), { far: 1 }).truth
       return f === undefined ? { inputs: { d }, expected: { out: depthOf(d, FB) } } : { inputs: { d, f: image(1, 1, f), b: image(1, 1, b) }, expected: { out: depthOf(d, f * b) } }
     },
   },
   epiline: {
-    about: t('一对相机的基础矩阵 F（按列）和左图的点 (x, y)；期望是右图里的极线 F·p'),
-    test: S.obj({ x: num, y: num }),
     make: ({ x, y }) => ({ inputs: { ...COLUMNS, px: image(1, 1, x), py: image(1, 1, y) }, expected: { out: epiline(x, y) } }),
   },
   onEpiline: {
-    about: t('同样的 F、左图的点和右图的点 q；期望是 q 在不在极线上（|q·l′| < 0.05）'),
-    test: S.obj({ x: num, y: num, q: S.list(num, { min: 2, about: t('右图的点 (x′, y′)') }) }),
     make: ({ x, y, q: [qx, qy] }) => {
       const l = epiline(x, y).data
       const v = l[0] * qx + l[1] * qy + l[2]
@@ -97,25 +85,18 @@ export const STEREO = {
     },
   },
   epipole: {
-    about: t('同样的 F 的三列（按给的顺序）和 (0, 0, 1)；期望是极点 e′'),
-    test: S.obj({ columns: S.list(S.int({ min: 0, max: 2 }), { min: 3 }) }),
     make: ({ columns }) => {
       const [c1, c2, c3] = columns.map(column)
       return { inputs: { c1, c2, c3, z: row([0, 0, 1]) }, expected: { out: EPIPOLE } }
     },
   },
   room: {
-    about: t('扫地机器人的双目：远墙、没有纹理的地面、障碍物，另给地面以上的区域；期望是区域里的距离，或 1.2 米内要停的地方'),
-    setup: S.obj({ expect: S.oneOf(Object.keys(ROOM_EXPECTS)) }),
-    test: S.obj({ seed: S.int(), obstacles: LAYERS }),
     make: ({ seed, obstacles }, { expect }) => {
       const r = room(seed, obstacles)
       return { inputs: { left: r.left, right: r.right, region: REGION }, expected: ROOM_EXPECTS[expect](r) }
     },
   },
   roomDepth: {
-    about: t('同样的房间，已经算好的距离（地面没有纹理，那里的距离是乱的）；期望是 1.2 米内要停的地方'),
-    test: S.obj({ seed: S.int(), obstacles: LAYERS, floorSeed: S.int({ about: t('地面上乱的距离的种子') }) }),
     make: ({ seed, obstacles, floorSeed }) => {
       const r = room(seed, obstacles)
       const next = random(floorSeed)

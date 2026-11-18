@@ -5,11 +5,10 @@
 //   ℓ_a = −sim(a, a⁺)/τ  +  log Σ_{k≠a} exp(sim(a, k)/τ)
 // The first term pulls the positive pair together; the second (InfoNCE's denominator) pushes every other view away.
 // Dropping it leaves a loss that every collapsed encoder minimises.
-import { S } from 'kernel'
+
 import { limitOf, picture } from 'image'
 import { correlate, downsample, gaussianKernel, map, random, shift } from 'image-processing'
 import { T as t } from 'kernel'
-
 
 /**
  * The bench's model. names, base: the base images and their names; tau: the temperature; rate: the step size; goal:
@@ -169,8 +168,6 @@ const QUIZ_SEED = 901
 
 /** The bench model: knob `push` (InfoNCE's denominator on or off); acts train (arg: steps) and reset. */
 export const contrast = {
-  about: t('拉近与推开：没有标签，训练编码器让每张图的两个变形版本互相认出；旋钮 push；算出 worst（认对搭档的最低概率）、negative（负对平均 sim）'),
-  setup: S.obj({ names: S.list(S.str()), base: S.list(S.call('picture')), tau: S.num(), rate: S.num(), testSeeds: S.list(S.int()) }),
   make({ base, ...p }, bench) {
     const m = contrastBench({ ...p, base: base.map(picture), goal: limitOf(bench.goal, 'worst').atLeast, collapse: limitOf(bench.goal, 'negative').atMost })
     const quiz = m.batch(QUIZ_SEED)

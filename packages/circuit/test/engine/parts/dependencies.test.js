@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { implementationProblems } from '../../../core/index.js'
+import { implementationProblems } from '../../../core/parts/dependencies.js'
 
 test('standalone part implementations cannot expand into themselves', () => {
   const part = (dependency) => ({ inside: [{ reference: { solution: [`x = ${dependency}()`, 'out <- x'] } }] })

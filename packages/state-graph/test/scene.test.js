@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import { S, registerPlugins } from 'kernel'
 import { taskStamps } from '../../../games/kit/engine/stamp.js'
 import { register } from '../core/index.js'
-import { expandScene } from '../core/model/scene.js'
+import { expandScene } from '../../table/core/model/robot-scene.js'
 
 test('compact and positioned intro cells produce the same saved task stamp', async () => {
   const positioned = { id: 'label', x: 0, y: -20, w: 10, h: 10, value: 'label' }

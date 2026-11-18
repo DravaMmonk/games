@@ -2,7 +2,8 @@
 // no long jump lands here); the telescopic arm reaches that stone. With t.p, each stone also has a chance of holding
 // the frog (the bank always holds).
 
-import { T, tr } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, yes, num, THIS_CELL } from 'table';
 
 const last = t => t.k.length - 1;

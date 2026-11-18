@@ -4,7 +4,6 @@ const vocabularyProjection = Symbol.for('games.qed-vocabulary')
 
 /** QED selects named reading dictionaries; logic also accepts inline dictionaries. */
 export function register(kernel) {
-  kernel.capability('display', 'qed/hero', { about: { zh: '证明完毕的地图插图', en: 'QED map illustration' }, role: 'hero' })
   kernel.kind('qed/readings', {
     type: 'qed/wordset', read: value => value,
     derived: ['wordSets'],

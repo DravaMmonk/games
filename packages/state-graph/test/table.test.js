@@ -5,23 +5,25 @@ import { resolve } from 'node:path'
 // stages moves to its tasks.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { plainBoard } from 'circuit';
+import { plainBoard } from '../../circuit/core/contracts.js'
 import { readStarter } from '../../qed/test/fixture.js';
-import { textPrint as print, read, readLines } from 'circuit'
+import { print, read } from '../../circuit/core/board/text.js'
+import { readLines } from 'circuit'
 import { workshopView } from 'progress'
-import { tableWorks } from '../core/work.js';
-import { fitted, portsProblem } from 'table';
-import { modelOf } from 'table';
-import { partsOf } from 'table';
-import { restoreRobotBoard } from '../core/model/wiring.js'
-import { robotBlueprint, wiring } from 'table';
+import { tableWorks as prepareWorks } from '../../table/core/work.js';
+const tableWorks = content => prepareWorks(content.tableWorlds ? content : { ...content, tableWorlds: WORLDS });
+import { fitted, portsProblem } from '../../table/core/model/board.js'
+import { modelOf } from '../../table/core/model/run.js'
+import { partsOf } from '../../table/core/model/parts.js'
+import { restoreRobotBoard } from '../../table/core/model/robot-wiring.js'
+import { robotBlueprint, wiring } from '../../table/core/model/wiring.js'
 import { WORLDS } from '../core/model/worlds.js';
-import { ROBOTS } from '../core/model/robots.js';
+import { robotOf } from '../../table/core/model/robots.js';
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 import { after } from 'node:test'
 after(closeGames)
-import { inspectRobotCase, robotConstraint } from '../core/model/verdict.js';
-import { validate } from '../core/validate.js';
+import { inspectRobotCase, robotConstraint } from '../../table/core/model/verdict.js';
+import { validate } from '../../table/core/validate.js';
 
 const given = { offers: { view: ['up', 'left'], facts: ['start', 'rock'] }, inputs: [], outs: ['cell'] };
 
@@ -46,10 +48,10 @@ test('author checks use intermediate cells when the task grades the entire table
 });
 
 test('the robot window shows intrinsic sweep values and recorded table values', async () => {
-  const { robotWindow } = await loadModule(resolve(import.meta.dirname, '../view/ui/robotDrawing.js'))
+  const { robotWindow } = await loadModule(resolve(import.meta.dirname, '../../table/view/ui/robotDrawing.js'))
   const world = WORLDS['state-graph/parts'];
   const picture = robotWindow({
-    world, test: { s: 'cats', dict: { cats: 0, ats: 2 } }, robot: ROBOTS['state-graph/broom'],
+    world, test: { s: 'cats', dict: { cats: 0, ats: 2 } }, robot: robotOf('state-graph/broom'),
     task: { facts: [], given: { offers: { view: ['seg', 'cost'], facts: [] } } },
     cell: { i: 4, id: '4' }, shown: new Map([['0', 5], ['1', null]]), reads: new Set(['0', '2']),
     empty: new Set(['2']), lit: ['cost'],
@@ -225,7 +227,6 @@ test('the parts box lists only choices open on its selected robot', () => {
 });
 
 test('carried boards use the reference until the prerequisite has passed', async () => {
-  const { tableWorks } = await import('../core/work.js');
   const content = twoLevels();
   content.levels[1].carry = 'build';
   const table = tableWorks(content), source = table.played.get('build')[0], target = table.played.get('reuse')[0];
@@ -237,8 +238,7 @@ test('carried boards use the reference until the prerequisite has passed', async
 });
 
 test('a task’s answers are written, and the reference board is checked against them', async () => {
-  const { tableWorks } = await import('../core/work.js');
-  const { validate } = await import('../core/validate.js');
+  const { validate } = await import('../../table/core/validate.js');
   const course = twoLevels();
   course.levels[1].tasks[0].expected = [8, 12, 11];
   const table = tableWorks(course);
@@ -250,7 +250,6 @@ test('a task’s answers are written, and the reference board is checked against
 });
 
 test('a built part runs the board its level’s last task was passed with, when that board reads exactly the part’s ports', async () => {
-  const { tableWorks } = await import('../core/work.js');
   const { WORLDS } = await import('../core/model/worlds.js');
   const { played, wrong, syncOwn, run } = tableWorks(twoLevels());
   assert.deepEqual(wrong, []);
@@ -282,8 +281,8 @@ test('a built part runs the board its level’s last task was passed with, when 
 /** Every game on the table domain, and the starter a new one is copied from: [id, dir]. */
 test('reading a course never writes into its content', async () => {
   const { deepFreeze } = await import('../../../games/kit/engine/content.js');
-  const { default: domain } = await import('../core/runtime.js');
-  const spec = domain.spec(deepFreeze(readStarter(resolve(import.meta.dirname))));
+  const { default: domain } = await import('../../table/core/runtime.js');
+  const spec = domain.spec(deepFreeze({ ...readStarter(resolve(import.meta.dirname)), tableWorlds: WORLDS }));
   assert.deepEqual(spec.table.wrong, []);
   assert.ok(domain.validate(spec).every(l => !l.fail));
   spec.syncOwn({});

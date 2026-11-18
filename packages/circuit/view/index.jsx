@@ -1,25 +1,9 @@
+import './board/wires.css'
+import { displays } from './mechanism/displays.js'
 import './studio/studio.css'
 import { tr } from 'kernel/view'
 import defineCircuit from './game.js'
 import './board/circuit.css'
-
-export { partsFor } from './board/board-parts.js'
-export { iconOf } from './parts/icons.js'
-export { default as WeightGrid } from './parts/WeightGrid.jsx'
-export { definedGame } from './circuit-game.js'
-export { default as PartsBook } from './PartsBook.jsx'
-export { levelOf } from './PartsBook.jsx'
-export { useParts } from './PartsBook.jsx'
-export { default as CircuitLevel } from './CircuitLevel.jsx'
-export { useLevelBoard } from './CircuitLevel.jsx'
-export { useLevelRun } from './CircuitLevel.jsx'
-export { circuitScreen } from './CircuitScreen.jsx'
-export { useRunHistory } from './useLevelRuns.js'
-export { DEFAULT_VIEWS } from './parts/PartFace.jsx'
-export { ICONS } from './parts/icons.js'
-export { picker } from './parts/PartSheet.jsx'
-export { SCENES } from './parts/previews.js'
-export { editorFor } from './parts/previews.js'
 
 import PartStudioPreview from './studio/PartStudioPreview.jsx'
 import PartObjectEditor from './studio/PartObjectEditor.jsx'
@@ -32,6 +16,7 @@ import { onPartPage } from './studio/part-page.js'
 import BoardPlay from './BoardPlay.jsx'
 import { useCircuitShell } from './shell.jsx'
 export function register(kernel) {
+  kernel.implement('display', 'circuit/screen', displays['circuit/screen'])
   kernel.shell('circuit/parts', useCircuitShell)
   kernel.editor('circuit/part', { type: 'circuit/part', listKey: 'parts', route: { type: 'circuit/part', selector: 'part', file: 'parts', root: 'parts' }, component: PartObjectEditor, page: PartEditor, list: PartsList, preview: PartStudioPreview,
     name: ['元件', 'Parts'], groupings: ['tag', 'circuit/tray', 'relation'], relations: [['replaces', '取代', 'Replaces']],
@@ -41,20 +26,18 @@ export function register(kernel) {
   kernel.play('circuit/board', { component: BoardPlay, preview: BoardPlay, define: defineCircuit })
 }
 
-export { displays as circuitDisplays } from './mechanism/displays.js'
-export { default } from './game.js'
+/** Shared play composition and board editor components. */
+export { definedGame } from './circuit-game.js'
+export { default as CircuitLevel } from './CircuitLevel.jsx'
+export { circuitScreen } from './CircuitScreen.jsx'
 export { defineGame } from './game-definition.js'
-
-export { cardAt, enableDrag } from './drag.js'
-export { default as TracePanel } from './TracePanel.jsx'
-import './board/wires.css'
-export { centerIn, pointIn } from './coordinates.js'
-
-import { displays as screenDisplays } from './mechanism/displays.js'
-export const displays = { ...screenDisplays }
-export { default as PartFace } from './parts/PartFace.jsx'
 export { circuitSettings } from './settings.js'
-
 export { default as CircuitEditor } from './CircuitLevel.jsx'
+
+/** Component cards, icons, editors and views reused by board adapters. */
+export { partsFor } from './board/board-parts.js'
+export { iconOf } from './parts/icons.js'
+export { default as WeightGrid } from './parts/WeightGrid.jsx'
+export { default as PartFace } from './parts/PartFace.jsx'
 export { default as Glyph } from './board/Glyph.jsx'
 export { packedView } from './board/board-parts.js'

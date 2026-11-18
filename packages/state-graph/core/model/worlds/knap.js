@@ -1,7 +1,8 @@
 // Knapsack tables: a full table, and one row rewritten in place.
 
-import { E, W } from '../scene.js';
-import { T, tr } from 'table';
+import { sceneEdge, W } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { signal } from 'table';
 import { world, look, cell, num, yes, THIS_CELL } from 'table';
 
@@ -119,7 +120,7 @@ const roll = world({
         const cls = [self ? 'self' : b.shown.has(id) ? 'lit' : '', b.reads.has(id) && !self ? (b.empty.has(id) ? 'bad' : 'pred') : '', b.typed.has(id) ? 'typed' : '', b.sel === id ? 'sel' : ''];
         cells.push({ id, x: w * sp, y: 0, w: sz, h: sz, value: b.shown.has(id) ? signal(b.shown.get(id)) : '', cls: cls.filter(Boolean).join(' '), tap: true, aria: `dp[${w}]` });
       }
-      [...b.reads].filter(r => !b.at.includes(r)).forEach(r => edges.push(E(r, b.at[0], b.empty.has(r) ? 'bad' : 'hot', -36)));
+      [...b.reads].filter(r => !b.at.includes(r)).forEach(r => edges.push(sceneEdge(r, b.at[0], b.empty.has(r) ? 'bad' : 'hot', -36)));
       return { cells, edges, texts, robot: b.at[0] };
     }
     const rows = [];
@@ -136,7 +137,7 @@ const roll = world({
     rows.forEach((row, r) => {
       texts.push({ x: -sz / 2 - 10, y: r * rowH + 5, t: row.lb, anchor: 'end', cls: row.head ? 'hd' : '' });
       row.vals.forEach((v, w) => cells.push({ id: `${r}:${w}`, x: w * sp, y: r * rowH, w: sz, h: sz, value: signal(v), cls: row.cls(w) }));
-      if (row.arrow) edges.push(E(`${r}:${row.arrow[0]}`, `${r}:${row.arrow[1]}`, row.arrow[2] ? 'bad' : 'hot', -36));
+      if (row.arrow) edges.push(sceneEdge(`${r}:${row.arrow[0]}`, `${r}:${row.arrow[1]}`, row.arrow[2] ? 'bad' : 'hot', -36));
     });
     // Keep room for the longest row label from the start, so the board does not shift when a label changes.
     const longest = t.items.map(it => String(it.n)).reduce((a, n) => (n.length > a.length ? n : a), '');

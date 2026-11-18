@@ -6,5 +6,186 @@
       "zh": "模式",
       "en": "Modes"
     }
+  },
+  "implementation": {
+    "side": "core",
+    "methods": [
+      "run"
+    ]
+  },
+  "items": {
+    "robot-board": {
+      "configuration": {
+        "editor": "circuit",
+        "judge": "simulation",
+        "resources": "robot",
+        "label": {
+          "zh": "电路板",
+          "en": "Circuit board"
+        },
+        "layout": "sg-level is-circuit sg-shared-circuit"
+      }
+    },
+    "hand-fill": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "fill",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    },
+    "hand-trace": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "trace",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    },
+    "hand-link": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "link",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    },
+    "hand-pack": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "pack",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    },
+    "hand-breach": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "breach",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    },
+    "hand-policy": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "policy",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    },
+    "hand-seam": {
+      "configuration": {
+        "editor": "board",
+        "judge": "hand",
+        "resources": "seam",
+        "label": {
+          "zh": "棋盘",
+          "en": "Board"
+        },
+        "layout": {
+          "boardLabel": {
+            "zh": "棋盘",
+            "en": "Board"
+          },
+          "cardClass": "bcard",
+          "noteClass": "bnote",
+          "afterClass": "sg-after",
+          "phoneClass": "sg-level",
+          "desktopClass": "sg-level",
+          "panelClass": "panel"
+        }
+      }
+    }
   }
 }

@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { containerUnderPointer } from '../../core/index.js'
+import { containerUnderPointer } from '../../core/board/dropTarget.js'
 
 test('containers use pointer bounds, include their edges and ignore a dragged frame’s own regions',()=>{
  const items=[],layer={querySelectorAll:()=>items},excluded=new Set()

@@ -96,6 +96,7 @@ test('Node core imports and paired Vite entries compose two dependent plugins in
   try {
     put('packages/alpha/package.json', { kind: 'lib', uses: {  }, version: '1.0.0', kernel: '^0.0.0' })
     put('packages/beta/package.json', { kind: 'lib', uses: { 'alpha': '^1.0.0' }, version: '1.0.0', kernel: '^0.0.0' })
+    for (const id of ['alpha', 'beta']) put(`packages/${id}/capabilities/play.json`, { extends: 'play', items: { answer: {} } })
     put('packages/alpha/core/index.js', `
       export const answer = { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: x => x, judge: x => ({ pass: x === 'ok' }) }
       export function register(k) { k.play('alpha/answer', answer); k.agent('alpha/answer', { observe: () => ({ brief: 'Answer' }), act: (_, x) => answer.judge(x) }) }

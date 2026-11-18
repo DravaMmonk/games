@@ -1,13 +1,13 @@
+import { TAGS, TAG } from 'table'
 // Tagging a sentence: rows are parts of speech, columns are the words; one cell before the first word is the start.
 // A cell holds the cheapest explanation of the words so far that gives this word this tag (costs), or, with o.prob,
 // how likely the words so far are with this word in this tag (probabilities, summed over every way to get here).
 
-import { E } from 'table';
-import { T, tr, lazy } from 'table';
+import { sceneEdge } from 'table';
+import { tr } from 'kernel';
+import { T, lazy } from 'table';
 import { world, look, cell, num, THIS_CELL } from 'table';
 
-export const TAGS = ['N', 'V', 'A'];
-export const TAG = { N: { n: T('名词', 'noun'), s: T('名', 'N') }, V: { n: T('动词', 'verb'), s: T('动', 'V') }, A: { n: T('形容词', 'adjective'), s: T('形', 'A') } };
 /** 「a noun」, 「an adjective」. */
 export const aTag = g => `${/^[aeiou]/.test(String(TAG[g].n)) ? 'an' : 'a'} ${TAG[g].n}`;
 
@@ -63,18 +63,10 @@ export const tags = world({
       }
     });
     const edges = g.arrows();
-    for (let q = 0; q + 1 < path.length; q++) edges.push(E(path[q], path[q + 1], 'good'));
+    for (let q = 0; q + 1 < path.length; q++) edges.push(sceneEdge(path[q], path[q + 1], 'good'));
     return { cells, edges, texts, robot: g.robot };
   },
 });
 
 const TAG_START = T('句首', 'start');
 /** Every way to tag a sentence, with its total cost: the cheapest one is what the table finds. */
-export function bestTags(t) {
-  let best = null;
-  (function go(k, prev, acc, cost) {
-    if (k === t.words.length) { if (!best || cost < best.cost) best = { tags: acc, cost }; return; }
-    TAGS.forEach(g => { const e = t.emit[k][g]; if (e === undefined) return; go(k + 1, g, [...acc, g], cost + e + (k ? t.trans[prev][g] : t.start[g])); });
-  })(0, null, [], 0);
-  return best;
-}

@@ -3,11 +3,11 @@ import { withProgressFixture } from '../../../qed/test/fixture.js'
 // one of its settings, one value of a setting, by the course's progress and by what the task gives or withholds.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { checkCircuitTasks } from '../../core/index.js'
-import { definedWorks } from '../../core/index.js'
-import { flowBoard } from '../../core/index.js'
+import { checkCircuitTasks } from '../../core/circuit-preset.js'
+import { definedWorks } from '../../core/board-works.js'
+import { flowBoard } from '../../core/board-cards.js'
 import { S } from "../../../../games/kit/engine/schema.js"
-import { onceRun } from '../../core/index.js'
+import { onceRun } from '../../core/circuit-run.js'
 
 const text = (zh) => ({ zh })
 const OPS = {

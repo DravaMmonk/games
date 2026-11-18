@@ -8,7 +8,7 @@ import { deepFreeze } from '../../../games/kit/engine/content.js'
 import { captureWorkshop, publishWorkshop, workshopIdentity } from 'progress'
 import { packedBoards } from 'circuit'
 import { courseWorkshop } from 'progress'
-import { progress as circuitProgress } from 'circuit'
+import { freshBoardProgress } from 'circuit'
 import { at, boxBlur3, fromFn, gradientMagnitude, horizontalDifference, sobelGradient, squaredGradient } from 'image-processing'
 import { ransacLine, robustHomography } from 'computer-vision'
 import { MATCHING } from '../core/engine/parts/matching.js'
@@ -160,7 +160,7 @@ test('image text play opens on the same valid inherited board as the editor', ()
   const circuit = imageBoards(image)
   const context = (board) => ({
     game: { image, circuit }, level: { ...task, source: task }, flags: new Set(['shift']),
-    progress: { ...circuitProgress.fresh(), passed: [previous.key], built: { [previous.key]: board } },
+    progress: { ...freshBoardProgress(), passed: [previous.key], built: { [previous.key]: board } },
   })
   assert.match(play.open(context(previous.solution)).start, /shift/)
   const corrupt = { ...previous.solution, wires: previous.solution.wires.map((wire) => wire.from === 'in' ? { ...wire, from: 'in#r' } : wire) }
@@ -173,7 +173,7 @@ test('image text play preserves the three channels of each pixel', () => {
   const output = { w: 1, h: 1, c: 3, data: [0, 0.5, 1] }
   const source = { ...task, tests: [{ label: 'colour', inputs: { in: rgb }, expected: { out: output } }] }
   const opened = play.open({
-    game: { image, circuit: imageBoards(image) }, level: { ...source, source }, flags: new Set(), progress: circuitProgress.fresh(),
+    game: { image, circuit: imageBoards(image) }, level: { ...source, source }, flags: new Set(), progress: freshBoardProgress(),
   })
   assert.equal(opened.tests[0].text, 'in:\n2×1 · RGB\n(0.13,0.25,0.5) (1,0,0.75)\nout (target):\n1×1 · RGB\n(0,0.5,1)')
 })

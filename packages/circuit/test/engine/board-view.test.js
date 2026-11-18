@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { flowBoard } from '../../core/index.js'
+import { flowBoard } from '../../core/board-cards.js'
 import { boardView } from '../../core/index.js'
 import { workshopView } from 'progress'
 import { fresh } from "../../../../games/kit/shell/progress.js"

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { handExamples, judgeHand } from '../core/model/hand-verdict.js'
+import { handExamples, judgeHand } from '../../table/core/model/hand-verdict.js'
 
 const street = { cells: [{ id: 's' }, { id: 'a' }, { id: 'b' }, { id: 'e' }], edges: [['s', 'a'], ['s', 'b'], ['a', 'e'], ['b', 'e']], start: 's', end: 'e' }
 const fixtures = {

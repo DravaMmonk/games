@@ -1,0 +1,11 @@
+{
+  "extends": "explain",
+  "items": {
+    "roll": {
+      "about": {
+        "zh": "压成一行时，改写方向错了会把一件物品放两次",
+        "en": "in one row, rewriting the wrong way packs an item twice"
+      }
+    }
+  }
+}

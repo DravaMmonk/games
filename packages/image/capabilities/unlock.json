@@ -6,5 +6,238 @@
       "zh": "解锁项",
       "en": "Unlocks"
     }
+  },
+  "items": {
+    "shift": {
+      "about": {
+        "zh": "平移",
+        "en": "Shift"
+      }
+    },
+    "softmax": {},
+    "threshold": {
+      "about": {
+        "zh": "阈值",
+        "en": "Threshold"
+      }
+    },
+    "invert": {
+      "about": {
+        "zh": "反相",
+        "en": "Invert"
+      }
+    },
+    "wave": {
+      "about": {
+        "zh": "波",
+        "en": "Wave"
+      }
+    },
+    "square": {
+      "about": {
+        "zh": "开方",
+        "en": "Square root"
+      }
+    },
+    "relu": {},
+    "mean": {
+      "about": {
+        "zh": "求平均",
+        "en": "Average"
+      }
+    },
+    "blur3h": {
+      "about": {
+        "zh": "横向三点平均",
+        "en": "3-point horizontal average"
+      }
+    },
+    "line3": {
+      "about": {
+        "zh": "一维三点核",
+        "en": "1D 3-point kernel"
+      }
+    },
+    "box3": {
+      "about": {
+        "zh": "3×3 平均",
+        "en": "3×3 average"
+      }
+    },
+    "gauss": {
+      "about": {
+        "zh": "高斯模糊",
+        "en": "Gaussian blur"
+      }
+    },
+    "diffx": {
+      "about": {
+        "zh": "横向差分",
+        "en": "Horizontal difference"
+      }
+    },
+    "sobel": {
+      "about": {
+        "zh": "Sobel y",
+        "en": "Sobel y"
+      }
+    },
+    "kernel3": {
+      "about": {
+        "zh": "3×3 核",
+        "en": "3×3 kernel"
+      }
+    },
+    "learn3": {
+      "about": {
+        "zh": "可学习 3×3 核",
+        "en": "Learnable 3×3 kernel"
+      }
+    },
+    "downsample": {
+      "about": {
+        "zh": "隔点取样",
+        "en": "Downsample"
+      }
+    },
+    "maxpool": {
+      "about": {
+        "zh": "2×2 最大池化",
+        "en": "2×2 max pool"
+      }
+    },
+    "gradmag": {
+      "about": {
+        "zh": "梯度幅值",
+        "en": "Gradient magnitude"
+      }
+    },
+    "harris": {
+      "about": {
+        "zh": "Harris 响应",
+        "en": "Harris response"
+      }
+    },
+    "argmin": {
+      "about": {
+        "zh": "取最小者编号",
+        "en": "Index of minimum"
+      }
+    },
+    "disparity": {
+      "about": {
+        "zh": "视差搜索",
+        "en": "Disparity search"
+      }
+    },
+    "spectrum": {
+      "about": {
+        "zh": "频谱",
+        "en": "Spectrum"
+      }
+    },
+    "freq-filter": {
+      "about": {
+        "zh": "频域低通",
+        "en": "Frequency low-pass"
+      }
+    },
+    "lambert": {
+      "about": {
+        "zh": "朗伯着色",
+        "en": "Lambert shading"
+      }
+    },
+    "sense": {
+      "about": {
+        "zh": "感光",
+        "en": "Sensor"
+      }
+    },
+    "dense": {
+      "about": {
+        "zh": "全连接 w·x + b",
+        "en": "Dense w·x + b"
+      }
+    },
+    "sigmoid": {},
+    "max": {
+      "about": {
+        "zh": "取较大",
+        "en": "Larger"
+      }
+    },
+    "lrn-rgb": {
+      "about": {
+        "zh": "多通道 3×3 核",
+        "en": "Multichannel 3×3 kernel"
+      }
+    },
+    "lrn-res": {
+      "about": {
+        "zh": "残差块",
+        "en": "Residual block"
+      }
+    },
+    "attention": {
+      "about": {
+        "zh": "注意力",
+        "en": "Attention"
+      }
+    },
+    "embed": {
+      "about": {
+        "zh": "对比编码器",
+        "en": "Contrastive encoder"
+      }
+    },
+    "hough": {
+      "about": {
+        "zh": "Hough 累加器",
+        "en": "Hough accumulator"
+      }
+    },
+    "ransac": {
+      "about": {
+        "zh": "RANSAC 找直线",
+        "en": "RANSAC line"
+      }
+    },
+    "homography": {
+      "about": {
+        "zh": "求单应",
+        "en": "Solve homography"
+      }
+    },
+    "dg-autoencoder": {
+      "about": {
+        "zh": "解码器",
+        "en": "Decoder"
+      }
+    },
+    "dg-decoder": {
+      "about": {
+        "zh": "解码器（已训练）",
+        "en": "Decoder (trained)"
+      }
+    },
+    "dg-latent": {
+      "about": {
+        "zh": "采样 z ~ N(μ, σ²)",
+        "en": "Sample z ~ N(μ, σ²)"
+      }
+    },
+    "dg-reparam": {
+      "about": {
+        "zh": "重参数化 μ + σ·ε",
+        "en": "Reparameterization μ + σ·ε"
+      }
+    },
+    "tconv": {
+      "about": {
+        "zh": "转置卷积（步幅 2）",
+        "en": "Transposed convolution (stride 2)"
+      }
+    }
   }
 }

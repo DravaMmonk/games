@@ -1,3 +1,3 @@
 # Table declarations
 
-Table reuses circuit/part and the kernel level/task kinds. Its primitive and signal declarations are projected by core/vocabulary.js. World- and robot-specific task extensions belong to state-graph/kinds.
+Table reuses `circuit/part` and the kernel level and task kinds. Its signal types, robot models and play modes are declared in `capabilities/`. Courses declare their own concrete worlds and task fields, then register their play names against the shared modes.

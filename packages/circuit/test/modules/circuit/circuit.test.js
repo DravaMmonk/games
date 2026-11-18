@@ -8,10 +8,10 @@ import { readStarter } from "../../../../qed/test/fixture.js"
 import { defineParts, partProblems } from '../../../core/index.js'
 import { operations as OPS } from '../../../../scalar/core/index.js'
 import { contentSchemas } from '../../../../../games/kit/engine/content.js'
-import { board } from '../../../core/index.js'
+import { board } from '../../../core/mechanism/board.js'
 import { primitivesOnly } from '../../../core/index.js'
-import { runLevel } from '../../../core/index.js'
-import { runtime as domain } from '../../../core/index.js'
+import { runLevel } from '../../../core/mechanism/run.js'
+import domain from '../../../core/mechanism/runtime.js'
 
 const level = { inputs: [{ name: 'a', label: 'a' }, { name: 'b', label: 'b' }], outputs: [{ name: 'sum', label: 'Sum' }], tests: [{ inputs: { a: 2, b: 3 }, expect: { sum: 5 } }] }
 const content = readStarter(resolve(import.meta.dirname, '../..'))

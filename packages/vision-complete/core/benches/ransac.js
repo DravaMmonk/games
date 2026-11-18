@@ -1,60 +1,12 @@
 // The RANSAC bench: fit a line to points with outliers by k rounds of drawing 2 points and counting those within δ;
 // the player picks δ, and k per outlier ratio, and is judged over many seeded trials.
-import { S } from 'kernel'
+
 import { benchRun } from 'image'
-import { keyOf, T as t } from 'kernel'
-import { approximateNormal, random } from 'image-processing'
-import { lineGap, lineThrough, ransacLine } from 'computer-vision'
-
-
-/** k ≥ log(1 − P) / log(1 − pⁿ), the number of rounds for a chance P of drawing n inliers at least once. */
-export const ransacRounds = (p, n = 2, P = 0.99) => Math.ceil(Math.log(1 - P) / Math.log(1 - p ** n))
-
-/**
- * The trials. A stage is { label, outliers, budget }; n points per trial with noise `sigma`; `trials` seeded trials
- * per setting; tol: { theta, rho } how close the fit must come to the true line.
- */
-export function ransacBench({ n, sigma, trials, tol }) {
-  function data(stage, trial) {
-    const next = random(trial * 7919 + Math.round(stage.outliers * 1000))
-    const angle = next() * Math.PI
-    const dx = Math.cos(angle)
-    const dy = Math.sin(angle)
-    const off = (next() - 0.5) * 10
-    const inliers = Math.round(n * (1 - stage.outliers))
-    const points = []
-    const truth = lineThrough([-dy * off, dx * off], [-dy * off + dx, dx * off + dy])
-    for (let i = 0; i < inliers; i++) {
-      const s = (next() - 0.5) * 34
-      const e = approximateNormal(next) * sigma
-      points.push([-dy * off + dx * s - dy * e, dx * off + dy * s + dx * e])
-    }
-    while (points.length < n) points.push([(next() - 0.5) * 44, (next() - 0.5) * 44])
-    return { points, truth, inliers }
-  }
-  function trial(stage, t, k, delta) {
-    const d = data(stage, t)
-    const result = ransacLine(d.points, k, delta, random(1000 + t))
-    const gap = result && lineGap(result.line, d.truth)
-    return { ...d, result, ok: Boolean(gap && gap.dTheta <= tol.theta && gap.dRho <= tol.rho) }
-  }
-  function rate(stage, k, delta) {
-    const outcomes = []
-    for (let t = 0; t < trials; t++) outcomes.push(trial(stage, t + 1, k, delta).ok)
-    const wins = outcomes.filter(Boolean).length
-    return { outcomes, wins, rate: wins / trials, overBudget: k - stage.budget }
-  }
-  return { trials, rate, trial }
-}
+import { keyOf } from 'kernel'
+import { ransacBench, ransacRounds } from 'computer-vision'
 
 /** The bench model: knobs delta (the threshold, shared) and k (rounds, one per case); each case an outlier ratio. */
 export const ransac = {
-  about: t('共识：每轮随机抽两点连线、数支持它的点；旋钮 delta（门槛）和每个情形的 k（轮数）；每个情形是一种外点比例，算出几百次试验的成功率 rate 和超出预算的轮数 overBudget'),
-  setup: S.obj({
-    n: S.int(), sigma: S.num(), trials: S.int(), tol: S.obj({ theta: S.num(), rho: S.num() }),
-    solution: S.obj({ delta: S.num(), k: S.list(S.int()) }, { about: t('一组能过的设定：门槛 δ 和每一种外点比例的轮数') }),
-  }),
-  case: S.obj({ outliers: S.num(), budget: S.int() }),
   make({ solution, ...p }, bench) {
     const m = ransacBench(p)
     const caches = bench.cases.map(() => new Map())

@@ -1,0 +1,3645 @@
+{
+  "type": "obj",
+  "fields": {
+    "title": {
+      "type": "text"
+    },
+    "intro": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "t": {
+            "type": "text"
+          }
+        }
+      },
+      "optional": true
+    },
+    "after": {
+      "type": "text",
+      "about": {
+        "zh": "通关后的一句（只说这一关，不剧透做法）",
+        "en": "the pass text (this level only, never the way it is solved)"
+      },
+      "optional": true
+    },
+    "adds": {
+      "type": "list",
+      "of": {
+        "type": "str",
+        "reference": "circuit/part"
+      },
+      "section": "course",
+      "about": {
+        "zh": "这一关新带来的元件",
+        "en": "the parts this level brings in"
+      },
+      "optional": true
+    },
+    "tray": {
+      "type": "name",
+      "kind": "circuit/tray",
+      "optional": true
+    },
+    "without": {
+      "type": "list",
+      "of": {
+        "type": "ref",
+        "kind": "primitive",
+        "reference": "circuit/part",
+        "about": {
+          "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+          "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+        }
+      },
+      "section": "course",
+      "about": {
+        "zh": "这一关不给的元件（一段证明不许用框）",
+        "en": "parts the level holds back (a proof without boxes)"
+      },
+      "optional": true
+    },
+    "brief": {
+      "type": "text",
+      "optional": true
+    },
+    "words": {
+      "type": "list",
+      "of": {
+        "type": "either",
+        "of": [
+          {
+            "type": "str"
+          },
+          {
+            "type": "map",
+            "of": {
+              "type": "text"
+            }
+          }
+        ]
+      },
+      "about": {
+        "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+        "en": "the word sets to use (named or written inline), merged in order"
+      },
+      "optional": true
+    },
+    "consts": {
+      "type": "list",
+      "of": {
+        "type": "str"
+      },
+      "about": {
+        "zh": "这一关的名字（特定的东西）",
+        "en": "the names (particular things) the level reads"
+      },
+      "optional": true
+    },
+    "propertyWords": {
+      "type": "bool",
+      "optional": true
+    },
+    "symbolicWords": {
+      "type": "map",
+      "of": {
+        "type": "text"
+      },
+      "about": {
+        "zh": "最后一个测试（字母）里，这些词怎么读",
+        "en": "how these words read in the last test, the letters"
+      },
+      "optional": true
+    },
+    "declare": {
+      "type": "text",
+      "about": {
+        "zh": "声明的是什么词",
+        "en": "the word declared"
+      },
+      "optional": true
+    },
+    "target": {
+      "type": "syntax",
+      "lang": "logic/formula",
+      "about": {
+        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+      },
+      "optional": true
+    },
+    "sentences": {
+      "type": "list",
+      "of": {
+        "type": "syntax",
+        "lang": "logic/formula",
+        "about": {
+          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+        }
+      },
+      "optional": true
+    },
+    "tests": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "given": {
+            "type": "list",
+            "of": {
+              "type": "syntax",
+              "lang": "logic/formula",
+              "about": {
+                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+              }
+            }
+          },
+          "goal": {
+            "type": "syntax",
+            "lang": "logic/formula",
+            "about": {
+              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+            },
+            "optional": true
+          },
+          "make": {
+            "type": "bool"
+          },
+          "uses": {
+            "type": "list",
+            "of": {
+              "type": "syntax",
+              "lang": "logic/formula",
+              "about": {
+                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+              }
+            },
+            "optional": true
+          }
+        }
+      },
+      "optional": true
+    },
+    "solution": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "binds": {
+            "type": "list",
+            "of": {
+              "type": "str"
+            }
+          },
+          "needs": {
+            "type": "list",
+            "of": {
+              "type": "syntax",
+              "lang": "logic/formula",
+              "about": {
+                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+              }
+            }
+          }
+        }
+      },
+      "about": {
+        "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
+        "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
+      },
+      "optional": true
+    },
+    "naive": {
+      "type": "either",
+      "of": [
+        {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "binds": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                }
+              },
+              "needs": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                }
+              }
+            }
+          },
+          "about": {
+            "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
+            "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
+          }
+        },
+        {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "given": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                }
+              },
+              "goal": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              },
+              "make": {
+                "type": "bool"
+              },
+              "uses": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        }
+      ],
+      "optional": true
+    },
+    "things": {
+      "type": "list",
+      "of": {
+        "type": "str"
+      },
+      "optional": true
+    },
+    "thing": {
+      "type": "bool",
+      "optional": true
+    },
+    "play": {
+      "type": "oneOf",
+      "values": [
+        "logic/audit"
+      ],
+      "about": {
+        "zh": "用条例检验别人的声明",
+        "en": "checking someone’s declarations by test cases"
+      },
+      "optional": true
+    },
+    "want": {
+      "type": "ref",
+      "kind": "logic/want",
+      "values": [
+        "logic/agree",
+        "logic/expose"
+      ],
+      "optional": true
+    },
+    "boards": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "label": {
+            "type": "text",
+            "optional": true
+          },
+          "rules": {
+            "type": "list",
+            "of": {
+              "type": "obj",
+              "fields": {
+                "binds": {
+                  "type": "list",
+                  "of": {
+                    "type": "str"
+                  }
+                },
+                "needs": {
+                  "type": "list",
+                  "of": {
+                    "type": "syntax",
+                    "lang": "logic/formula",
+                    "about": {
+                      "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                      "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                    }
+                  }
+                }
+              }
+            },
+            "about": {
+              "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
+              "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
+            }
+          }
+        }
+      },
+      "optional": true
+    },
+    "answer": {
+      "type": "list",
+      "of": {
+        "type": "obj",
+        "fields": {
+          "given": {
+            "type": "list",
+            "of": {
+              "type": "syntax",
+              "lang": "logic/formula",
+              "about": {
+                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+              }
+            }
+          },
+          "goal": {
+            "type": "syntax",
+            "lang": "logic/formula",
+            "about": {
+              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+            },
+            "optional": true
+          },
+          "make": {
+            "type": "bool"
+          },
+          "uses": {
+            "type": "list",
+            "of": {
+              "type": "syntax",
+              "lang": "logic/formula",
+              "about": {
+                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+              }
+            },
+            "optional": true
+          }
+        }
+      },
+      "optional": true
+    },
+    "slots": {
+      "type": "either",
+      "of": [
+        {
+          "type": "int",
+          "min": 1
+        },
+        {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "given": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "goal": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              },
+              "make": {
+                "type": "bool",
+                "optional": true
+              },
+              "keep": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "fixed": {
+                "type": "list",
+                "of": {
+                  "type": "oneOf",
+                  "values": [
+                    "given",
+                    "goal",
+                    "make"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "optional": true
+    },
+    "caseGoal": {
+      "type": "syntax",
+      "lang": "logic/formula",
+      "about": {
+        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+      },
+      "optional": true
+    },
+    "binder": {
+      "type": "str",
+      "optional": true
+    },
+    "take": {
+      "type": "obj",
+      "fields": {
+        "premises": {
+          "type": "list",
+          "of": {
+            "type": "str"
+          }
+        },
+        "conclusion": {
+          "type": "str"
+        }
+      },
+      "optional": true
+    },
+    "datatype": {
+      "type": "obj",
+      "fields": {
+        "type": {
+          "type": "str"
+        },
+        "ctors": {
+          "type": "list",
+          "of": {
+            "type": "str"
+          }
+        },
+        "args": {
+          "type": "map",
+          "of": {
+            "type": "str"
+          }
+        }
+      },
+      "optional": true
+    },
+    "ways": {
+      "type": "list",
+      "of": {
+        "type": "list",
+        "of": {
+          "type": "str"
+        }
+      },
+      "optional": true
+    },
+    "carry": {
+      "type": "level",
+      "optional": true
+    },
+    "cases": {
+      "type": "list",
+      "of": {
+        "type": "map",
+        "of": {
+          "type": "syntax",
+          "lang": "logic/formula",
+          "about": {
+            "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+            "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+          }
+        }
+      },
+      "section": "tests",
+      "about": {
+        "zh": "每组测试把字母换成哪些句子",
+        "en": "the sentences each test puts in place of the letters"
+      },
+      "optional": true
+    },
+    "requires": {
+      "type": "list",
+      "of": {
+        "type": "level"
+      },
+      "section": "course",
+      "about": {
+        "zh": "这关固有的知识前置",
+        "en": "Knowledge prerequisites for this level"
+      },
+      "optional": true
+    },
+    "tasks": {
+      "type": "list",
+      "of": {
+        "type": "by",
+        "field": "kind",
+        "cases": {
+          "logic/proof": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "tests": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "premises": {
+                      "type": "map",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "about": {
+                        "zh": "已知：名字 → 句子",
+                        "en": "the givens: name → sentence"
+                      },
+                      "optional": true
+                    },
+                    "goal": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      }
+                    },
+                    "term": {
+                      "type": "str",
+                      "optional": true
+                    }
+                  }
+                },
+                "min": 1,
+                "section": "tests",
+                "about": {
+                  "zh": "一个模式（用字母写）",
+                  "en": "one pattern, written in letters"
+                }
+              },
+              "cases": {
+                "type": "list",
+                "of": {
+                  "type": "map",
+                  "of": {
+                    "type": "syntax",
+                    "lang": "logic/formula",
+                    "about": {
+                      "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                      "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                    }
+                  }
+                },
+                "section": "tests",
+                "about": {
+                  "zh": "每组测试把字母换成哪些句子",
+                  "en": "the sentences each test puts in place of the letters"
+                }
+              },
+              "solution": {
+                "type": "board",
+                "about": {
+                  "zh": "一块电路板的蓝图文本，每行一个字符串",
+                  "en": "a board as blueprint text, one string a line"
+                }
+              },
+              "naive": {
+                "type": "board",
+                "about": {
+                  "zh": "一块电路板的蓝图文本，每行一个字符串",
+                  "en": "a board as blueprint text, one string a line"
+                },
+                "optional": true
+              },
+              "sentences": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "terms": {
+                "type": "bool",
+                "optional": true
+              },
+              "script": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "k": {
+                      "type": "oneOf",
+                      "values": [
+                        "show",
+                        "assume",
+                        "fix",
+                        "obtain",
+                        "have"
+                      ]
+                    },
+                    "stmt": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "by": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "using": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "thing": {
+                      "type": "str",
+                      "optional": true
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "briefNote": {
+                "type": "text",
+                "optional": true
+              }
+            }
+          },
+          "logic/truth": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "ask": {
+                "type": "oneOf",
+                "values": [
+                  "fill",
+                  "valid",
+                  "counter",
+                  "sat"
+                ]
+              },
+              "formulas": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                }
+              }
+            }
+          },
+          "logic/gates": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "target": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                }
+              },
+              "hideTarget": {
+                "type": "bool",
+                "optional": true
+              },
+              "blind": {
+                "type": "bool",
+                "optional": true
+              },
+              "budget": {
+                "type": "int",
+                "min": 1,
+                "optional": true
+              },
+              "solution": {
+                "type": "board",
+                "about": {
+                  "zh": "一块电路板的蓝图文本，每行一个字符串",
+                  "en": "a board as blueprint text, one string a line"
+                }
+              },
+              "naive": {
+                "type": "board",
+                "about": {
+                  "zh": "一块电路板的蓝图文本，每行一个字符串",
+                  "en": "a board as blueprint text, one string a line"
+                },
+                "optional": true
+              }
+            }
+          },
+          "logic/iso": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "declare": {
+                "type": "text",
+                "about": {
+                  "zh": "声明的是什么词",
+                  "en": "the word declared"
+                },
+                "optional": true
+              },
+              "target": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              },
+              "sentences": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "tests": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "given": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      }
+                    },
+                    "goal": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "make": {
+                      "type": "bool"
+                    },
+                    "uses": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "solution": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "binds": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      }
+                    },
+                    "needs": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      }
+                    }
+                  }
+                },
+                "about": {
+                  "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
+                  "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
+                },
+                "optional": true
+              },
+              "naive": {
+                "type": "either",
+                "of": [
+                  {
+                    "type": "list",
+                    "of": {
+                      "type": "obj",
+                      "fields": {
+                        "binds": {
+                          "type": "list",
+                          "of": {
+                            "type": "str"
+                          }
+                        },
+                        "needs": {
+                          "type": "list",
+                          "of": {
+                            "type": "syntax",
+                            "lang": "logic/formula",
+                            "about": {
+                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "about": {
+                      "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
+                      "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
+                    }
+                  },
+                  {
+                    "type": "list",
+                    "of": {
+                      "type": "obj",
+                      "fields": {
+                        "given": {
+                          "type": "list",
+                          "of": {
+                            "type": "syntax",
+                            "lang": "logic/formula",
+                            "about": {
+                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                            }
+                          }
+                        },
+                        "goal": {
+                          "type": "syntax",
+                          "lang": "logic/formula",
+                          "about": {
+                            "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                            "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                          },
+                          "optional": true
+                        },
+                        "make": {
+                          "type": "bool"
+                        },
+                        "uses": {
+                          "type": "list",
+                          "of": {
+                            "type": "syntax",
+                            "lang": "logic/formula",
+                            "about": {
+                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                            }
+                          },
+                          "optional": true
+                        }
+                      }
+                    }
+                  }
+                ],
+                "optional": true
+              },
+              "things": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              },
+              "thing": {
+                "type": "bool",
+                "optional": true
+              },
+              "play": {
+                "type": "oneOf",
+                "values": [
+                  "logic/audit"
+                ],
+                "about": {
+                  "zh": "用条例检验别人的声明",
+                  "en": "checking someone’s declarations by test cases"
+                },
+                "optional": true
+              },
+              "want": {
+                "type": "ref",
+                "kind": "logic/want",
+                "values": [
+                  "logic/agree",
+                  "logic/expose"
+                ],
+                "optional": true
+              },
+              "boards": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "label": {
+                      "type": "text",
+                      "optional": true
+                    },
+                    "rules": {
+                      "type": "list",
+                      "of": {
+                        "type": "obj",
+                        "fields": {
+                          "binds": {
+                            "type": "list",
+                            "of": {
+                              "type": "str"
+                            }
+                          },
+                          "needs": {
+                            "type": "list",
+                            "of": {
+                              "type": "syntax",
+                              "lang": "logic/formula",
+                              "about": {
+                                "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                                "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "about": {
+                        "zh": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
+                        "en": "a declaration: one introduction rule a row, the things it takes and its premises (as the rule table writes it)"
+                      }
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "answer": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "given": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      }
+                    },
+                    "goal": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "make": {
+                      "type": "bool"
+                    },
+                    "uses": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "slots": {
+                "type": "either",
+                "of": [
+                  {
+                    "type": "int",
+                    "min": 1
+                  },
+                  {
+                    "type": "list",
+                    "of": {
+                      "type": "obj",
+                      "fields": {
+                        "given": {
+                          "type": "list",
+                          "of": {
+                            "type": "syntax",
+                            "lang": "logic/formula",
+                            "about": {
+                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                            }
+                          },
+                          "optional": true
+                        },
+                        "goal": {
+                          "type": "syntax",
+                          "lang": "logic/formula",
+                          "about": {
+                            "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                            "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                          },
+                          "optional": true
+                        },
+                        "make": {
+                          "type": "bool",
+                          "optional": true
+                        },
+                        "keep": {
+                          "type": "list",
+                          "of": {
+                            "type": "syntax",
+                            "lang": "logic/formula",
+                            "about": {
+                              "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                              "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                            }
+                          },
+                          "optional": true
+                        },
+                        "fixed": {
+                          "type": "list",
+                          "of": {
+                            "type": "oneOf",
+                            "values": [
+                              "given",
+                              "goal",
+                              "make"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "optional": true
+              },
+              "caseGoal": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              },
+              "binder": {
+                "type": "str",
+                "optional": true
+              },
+              "take": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "optional": true
+              },
+              "datatype": {
+                "type": "obj",
+                "fields": {
+                  "type": {
+                    "type": "str"
+                  },
+                  "ctors": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "args": {
+                    "type": "map",
+                    "of": {
+                      "type": "str"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "ways": {
+                "type": "list",
+                "of": {
+                  "type": "list",
+                  "of": {
+                    "type": "str"
+                  }
+                },
+                "optional": true
+              },
+              "carry": {
+                "type": "level",
+                "optional": true
+              },
+              "cases": {
+                "type": "list",
+                "of": {
+                  "type": "map",
+                  "of": {
+                    "type": "syntax",
+                    "lang": "logic/formula",
+                    "about": {
+                      "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                      "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                    }
+                  }
+                },
+                "section": "tests",
+                "about": {
+                  "zh": "每组测试把字母换成哪些句子",
+                  "en": "the sentences each test puts in place of the letters"
+                },
+                "optional": true
+              }
+            }
+          },
+          "logic/define": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "fn": {
+                "type": "str"
+              },
+              "on": {
+                "type": "either",
+                "of": [
+                  {
+                    "type": "int",
+                    "min": 0
+                  },
+                  {
+                    "type": "oneOf",
+                    "values": [
+                      null
+                    ]
+                  }
+                ],
+                "optional": true
+              },
+              "rows": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "lhs": {
+                      "type": "syntax",
+                      "lang": "logic/side"
+                    },
+                    "when": {
+                      "type": "syntax",
+                      "lang": "logic/condition",
+                      "optional": true
+                    },
+                    "choices": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/side"
+                      }
+                    }
+                  }
+                }
+              },
+              "tests": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "term": {
+                      "type": "syntax",
+                      "lang": "logic/side"
+                    },
+                    "value": {
+                      "type": "syntax",
+                      "lang": "logic/side"
+                    }
+                  }
+                },
+                "section": "tests"
+              },
+              "solution": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/side"
+                },
+                "section": "answers"
+              },
+              "naive": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/side"
+                },
+                "optional": true
+              },
+              "defs": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              }
+            }
+          },
+          "logic/translate": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "say": {
+                "type": "text"
+              },
+              "target": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                }
+              },
+              "decoys": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              }
+            }
+          },
+          "logic/query": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "say": {
+                "type": "text"
+              },
+              "target": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                }
+              },
+              "decoys": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "worlds": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "title": {
+                      "type": "text"
+                    },
+                    "things": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      }
+                    },
+                    "preds": {
+                      "type": "map",
+                      "of": {
+                        "type": "list",
+                        "of": {
+                          "type": "either",
+                          "of": [
+                            {
+                              "type": "str"
+                            },
+                            {
+                              "type": "list",
+                              "of": {
+                                "type": "str"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "about": {
+                        "zh": "每个谓词对哪些东西成立（一样东西，或几样一组）",
+                        "en": "what each predicate holds of (a thing, or a tuple of things)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "logic/model": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "say": {
+                "type": "text",
+                "optional": true
+              },
+              "meant": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              },
+              "wrong": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              },
+              "answer": {
+                "type": "obj",
+                "fields": {
+                  "size": {
+                    "type": "int",
+                    "min": 1
+                  },
+                  "preds": {
+                    "type": "map",
+                    "of": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      }
+                    }
+                  },
+                  "consts": {
+                    "type": "map",
+                    "of": {
+                      "type": "int",
+                      "min": 0
+                    },
+                    "optional": true
+                  }
+                }
+              },
+              "given": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "goal": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                },
+                "optional": true
+              }
+            }
+          },
+          "logic/machine": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "want": {
+                "type": "ref",
+                "kind": "logic/want"
+              },
+              "inputs": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "name": {
+                      "type": "str"
+                    },
+                    "label": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "single": {
+                "type": "bool",
+                "optional": true
+              },
+              "tests": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "eqs": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "goal": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "hyps": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "answers": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "becomes": {
+                      "type": "list",
+                      "of": {
+                        "type": "list",
+                        "of": {
+                          "type": "str"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "rules": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "clauses": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "budget": {
+                      "type": "int",
+                      "min": 1,
+                      "optional": true
+                    },
+                    "want": {
+                      "type": "ref",
+                      "kind": "logic/want",
+                      "optional": true
+                    },
+                    "it": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "ways": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "elim": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    }
+                  }
+                },
+                "min": 1,
+                "section": "tests"
+              },
+              "hidden": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "eqs": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "goal": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "hyps": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "answers": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "becomes": {
+                      "type": "list",
+                      "of": {
+                        "type": "list",
+                        "of": {
+                          "type": "str"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "rules": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "clauses": {
+                      "type": "list",
+                      "of": {
+                        "type": "syntax",
+                        "lang": "logic/formula",
+                        "about": {
+                          "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                          "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                        }
+                      },
+                      "optional": true
+                    },
+                    "budget": {
+                      "type": "int",
+                      "min": 1,
+                      "optional": true
+                    },
+                    "want": {
+                      "type": "ref",
+                      "kind": "logic/want",
+                      "optional": true
+                    },
+                    "it": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "ways": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "elim": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    }
+                  }
+                },
+                "section": "tests",
+                "optional": true
+              },
+              "solution": {
+                "type": "board",
+                "about": {
+                  "zh": "一块电路板的蓝图文本，每行一个字符串",
+                  "en": "a board as blueprint text, one string a line"
+                }
+              },
+              "naive": {
+                "type": "board",
+                "about": {
+                  "zh": "一块电路板的蓝图文本，每行一个字符串",
+                  "en": "a board as blueprint text, one string a line"
+                },
+                "optional": true
+              },
+              "budget": {
+                "type": "int",
+                "min": 1,
+                "optional": true
+              },
+              "backtrack": {
+                "type": "bool",
+                "optional": true
+              },
+              "rules": {
+                "type": "map",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "name": {
+                      "type": "text"
+                    },
+                    "premises": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      }
+                    },
+                    "conclusion": {
+                      "type": "str"
+                    }
+                  }
+                },
+                "about": {
+                  "zh": "这一关自带的规则（元件）",
+                  "en": "rules the level states, each a part"
+                },
+                "optional": true
+              },
+              "preset": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "参考解里预先放在板上的元件（锁住）",
+                  "en": "cards of the reference answer the board starts with, locked"
+                },
+                "optional": true
+              },
+              "defs": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              },
+              "types": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              },
+              "stated": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              }
+            }
+          },
+          "logic/script": {
+            "type": "obj",
+            "fields": {
+              "id": {
+                "type": "str",
+                "pattern": "^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$",
+                "about": {
+                  "zh": "任务的 id：整款游戏里唯一，玩家存下的板跟着它走（只有一个任务的关通常就用关的 id）",
+                  "en": "the task’s id, unique in the game; what a player keeps of it goes by it (a level’s one task usually has the level’s id)"
+                }
+              },
+              "step": {
+                "type": "text",
+                "about": {
+                  "zh": "这个任务的名字，写在任务条上（一关只有一个任务时不显示）",
+                  "en": "the task’s name on the strip of tasks (not shown when the level has one task)"
+                },
+                "optional": true
+              },
+              "kind": {
+                "type": "ref",
+                "kind": "kind"
+              },
+              "brief": {
+                "type": "text",
+                "optional": true
+              },
+              "words": {
+                "type": "list",
+                "of": {
+                  "type": "either",
+                  "of": [
+                    {
+                      "type": "str"
+                    },
+                    {
+                      "type": "map",
+                      "of": {
+                        "type": "text"
+                      }
+                    }
+                  ]
+                },
+                "about": {
+                  "zh": "用哪几套词（词表的名字，或直接写出），按顺序合并",
+                  "en": "the word sets to use (named or written inline), merged in order"
+                },
+                "optional": true
+              },
+              "consts": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "about": {
+                  "zh": "这一关的名字（特定的东西）",
+                  "en": "the names (particular things) the level reads"
+                },
+                "optional": true
+              },
+              "propertyWords": {
+                "type": "bool",
+                "optional": true
+              },
+              "symbolicWords": {
+                "type": "map",
+                "of": {
+                  "type": "text"
+                },
+                "about": {
+                  "zh": "最后一个测试（字母）里，这些词怎么读",
+                  "en": "how these words read in the last test, the letters"
+                },
+                "optional": true
+              },
+              "hint": {
+                "type": "list",
+                "of": {
+                  "type": "text"
+                },
+                "optional": true
+              },
+              "intro": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "t": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "after": {
+                "type": "text",
+                "about": {
+                  "zh": "通关后的一句（只说这一关，不剧透做法）",
+                  "en": "the pass text (this level only, never the way it is solved)"
+                },
+                "optional": true
+              },
+              "adds": {
+                "type": "list",
+                "of": {
+                  "type": "str",
+                  "reference": "circuit/part"
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关新带来的元件",
+                  "en": "the parts this level brings in"
+                },
+                "optional": true
+              },
+              "tray": {
+                "type": "name",
+                "kind": "circuit/tray",
+                "optional": true
+              },
+              "without": {
+                "type": "list",
+                "of": {
+                  "type": "ref",
+                  "kind": "primitive",
+                  "reference": "circuit/part",
+                  "about": {
+                    "zh": "一个元件：词汇表里的元件，或 game.json 里的引理、门、等式",
+                    "en": "a part: one of the vocabulary’s, or a lemma, gate or equation of game.json"
+                  }
+                },
+                "section": "course",
+                "about": {
+                  "zh": "这一关不给的元件（一段证明不许用框）",
+                  "en": "parts the level holds back (a proof without boxes)"
+                },
+                "optional": true
+              },
+              "rule": {
+                "type": "obj",
+                "fields": {
+                  "premises": {
+                    "type": "list",
+                    "of": {
+                      "type": "str"
+                    }
+                  },
+                  "conclusion": {
+                    "type": "str"
+                  }
+                },
+                "about": {
+                  "zh": "这个任务证出的等式进规则书时的样子（不写就是等式本身）",
+                  "en": "how the equation this task proves enters the rule book (when not said, the equation itself)"
+                },
+                "optional": true
+              },
+              "carries": {
+                "type": "bool",
+                "about": {
+                  "zh": "接着上一个任务的电路往下做",
+                  "en": "goes on from the last task’s board"
+                },
+                "optional": true
+              },
+              "premises": {
+                "type": "map",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "about": {
+                  "zh": "已知：名字 → 句子",
+                  "en": "the givens: name → sentence"
+                },
+                "optional": true
+              },
+              "goal": {
+                "type": "syntax",
+                "lang": "logic/formula",
+                "about": {
+                  "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                  "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                }
+              },
+              "answer": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "k": {
+                      "type": "oneOf",
+                      "values": [
+                        "show",
+                        "assume",
+                        "fix",
+                        "obtain",
+                        "have"
+                      ]
+                    },
+                    "stmt": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "by": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "using": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "thing": {
+                      "type": "str",
+                      "optional": true
+                    }
+                  }
+                }
+              },
+              "naive": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "k": {
+                      "type": "oneOf",
+                      "values": [
+                        "show",
+                        "assume",
+                        "fix",
+                        "obtain",
+                        "have"
+                      ]
+                    },
+                    "stmt": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "by": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "using": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "thing": {
+                      "type": "str",
+                      "optional": true
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "given": {
+                "type": "list",
+                "of": {
+                  "type": "obj",
+                  "fields": {
+                    "k": {
+                      "type": "oneOf",
+                      "values": [
+                        "show",
+                        "assume",
+                        "fix",
+                        "obtain",
+                        "have"
+                      ]
+                    },
+                    "stmt": {
+                      "type": "syntax",
+                      "lang": "logic/formula",
+                      "about": {
+                        "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                        "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                      },
+                      "optional": true
+                    },
+                    "by": {
+                      "type": "str",
+                      "optional": true
+                    },
+                    "using": {
+                      "type": "list",
+                      "of": {
+                        "type": "str"
+                      },
+                      "optional": true
+                    },
+                    "thing": {
+                      "type": "str",
+                      "optional": true
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "locked": {
+                "type": "bool",
+                "optional": true
+              },
+              "simp": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              },
+              "things": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              },
+              "sentences": {
+                "type": "list",
+                "of": {
+                  "type": "syntax",
+                  "lang": "logic/formula",
+                  "about": {
+                    "zh": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
+                    "en": "a sentence as formula.js reads it: Rain → Wet, ∀x. Human(x), ?A ∧ ?B"
+                  }
+                },
+                "optional": true
+              },
+              "types": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              },
+              "defs": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
+                "optional": true
+              }
+            }
+          }
+        }
+      },
+      "min": 1,
+      "section": "tasks",
+      "about": {
+        "zh": "依次做的任务，最后一个通过就通过这一关",
+        "en": "the tasks done in turn; passing the last passes the level"
+      }
+    }
+  }
+}

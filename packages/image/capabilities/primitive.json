@@ -1,0 +1,879 @@
+{
+  "extends": "primitive",
+  "items": {
+    "mystery": {
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "mysteryGate": {
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "shift": {
+      "about": {
+        "zh": "平移",
+        "en": "Shift"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "add": {
+      "about": {
+        "zh": "相加",
+        "en": "Add"
+      },
+      "inputs": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "sub": {
+      "about": {
+        "zh": "相减",
+        "en": "Subtract"
+      },
+      "inputs": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "mul": {
+      "about": {
+        "zh": "相乘",
+        "en": "Multiply"
+      },
+      "inputs": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "arith": {
+      "about": {
+        "zh": "四则运算",
+        "en": "Arithmetic"
+      },
+      "inputs": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "softmax": {
+      "inputs": [
+        {
+          "name": "s1",
+          "type": "image/image"
+        },
+        {
+          "name": "s2",
+          "type": "image/image"
+        },
+        {
+          "name": "s3",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "merge": {
+      "about": {
+        "zh": "汇合器",
+        "en": "Merger"
+      },
+      "inputs": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        },
+        {
+          "name": "c",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "const": {
+      "about": {
+        "zh": "常数",
+        "en": "Constant"
+      },
+      "inputs": [],
+      "outputType": "image/image"
+    },
+    "threshold": {
+      "about": {
+        "zh": "阈值",
+        "en": "Threshold"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "invert": {
+      "about": {
+        "zh": "反相",
+        "en": "Invert"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "cos": {
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "exp": {
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "square": {
+      "about": {
+        "zh": "平方",
+        "en": "Square"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "sqrt": {
+      "about": {
+        "zh": "开方",
+        "en": "Square root"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "relu": {
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "zeroUp": {
+      "about": {
+        "zh": "补零放大",
+        "en": "Zero upsample"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "fqMean": {
+      "about": {
+        "zh": "求平均",
+        "en": "Average"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "globalMax": {
+      "about": {
+        "zh": "全图最大值",
+        "en": "Global max"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "blur3h": {
+      "about": {
+        "zh": "横向三点平均",
+        "en": "3-point horizontal average"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "line3": {
+      "about": {
+        "zh": "一维三点核",
+        "en": "1D 3-point kernel"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "box3": {
+      "about": {
+        "zh": "3×3 平均",
+        "en": "3×3 average"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "gauss": {
+      "about": {
+        "zh": "高斯模糊",
+        "en": "Gaussian blur"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "diffx": {
+      "about": {
+        "zh": "横向差分",
+        "en": "Horizontal difference"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "sobelx": {
+      "about": {
+        "zh": "Sobel x",
+        "en": "Sobel x"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "sobely": {
+      "about": {
+        "zh": "Sobel y",
+        "en": "Sobel y"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "kernel3": {
+      "about": {
+        "zh": "3×3 核",
+        "en": "3×3 kernel"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "learn3": {
+      "about": {
+        "zh": "可学习 3×3 核",
+        "en": "Learnable 3×3 kernel"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "downsample": {
+      "about": {
+        "zh": "隔点取样",
+        "en": "Downsample"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "maxpool": {
+      "about": {
+        "zh": "2×2 最大池化",
+        "en": "2×2 max pool"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "gradmag": {
+      "about": {
+        "zh": "梯度幅值",
+        "en": "Gradient magnitude"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "harris": {
+      "about": {
+        "zh": "Harris 响应",
+        "en": "Harris response"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "argmin4": {
+      "about": {
+        "zh": "取最小者编号",
+        "en": "Index of minimum"
+      },
+      "inputs": [
+        {
+          "name": "c0",
+          "type": "image/image"
+        },
+        {
+          "name": "c1",
+          "type": "image/image"
+        },
+        {
+          "name": "c2",
+          "type": "image/image"
+        },
+        {
+          "name": "c3",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "disparity": {
+      "about": {
+        "zh": "视差搜索",
+        "en": "Disparity search"
+      },
+      "inputs": [
+        {
+          "name": "left",
+          "type": "image/image"
+        },
+        {
+          "name": "right",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "fqWave": {
+      "about": {
+        "zh": "波",
+        "en": "Wave"
+      },
+      "inputs": [],
+      "outputType": "image/image"
+    },
+    "fqSpectrum": {
+      "about": {
+        "zh": "频谱",
+        "en": "Spectrum"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "fqLowpass": {
+      "about": {
+        "zh": "频域低通",
+        "en": "Frequency low-pass"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "fqApply": {
+      "about": {
+        "zh": "频域相乘",
+        "en": "Multiply in frequency"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        },
+        {
+          "name": "gain",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "shade": {
+      "about": {
+        "zh": "朗伯着色",
+        "en": "Lambert shading"
+      },
+      "inputs": [
+        {
+          "name": "nx",
+          "type": "image/image"
+        },
+        {
+          "name": "ny",
+          "type": "image/image"
+        },
+        {
+          "name": "nz",
+          "type": "image/image"
+        },
+        {
+          "name": "albedo",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "sense": {
+      "about": {
+        "zh": "感光",
+        "en": "Sensor"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "lrnConv": {
+      "about": {
+        "zh": "卷积层",
+        "en": "Conv layer"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "lrnDense": {
+      "about": {
+        "zh": "全连接 w·x + b",
+        "en": "Dense w·x + b"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "lrnSigmoid": {
+      "about": {
+        "zh": "Sigmoid",
+        "en": "Sigmoid"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "lrnConst": {
+      "about": {
+        "zh": "可学习常数",
+        "en": "Learnable constant"
+      },
+      "inputs": [],
+      "outputType": "image/image"
+    },
+    "max": {
+      "about": {
+        "zh": "取较大",
+        "en": "Larger"
+      },
+      "inputs": [
+        {
+          "name": "a",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "lrnRgb": {
+      "about": {
+        "zh": "多通道 3×3 核",
+        "en": "Multichannel 3×3 kernel"
+      },
+      "inputs": [
+        {
+          "name": "r",
+          "type": "image/image"
+        },
+        {
+          "name": "g",
+          "type": "image/image"
+        },
+        {
+          "name": "b",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "lrnRes": {
+      "about": {
+        "zh": "残差块",
+        "en": "Residual block"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "attention": {
+      "about": {
+        "zh": "注意力",
+        "en": "Attention"
+      },
+      "inputs": [
+        {
+          "name": "Q",
+          "type": "image/image"
+        },
+        {
+          "name": "K",
+          "type": "image/image"
+        },
+        {
+          "name": "V",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "embed": {
+      "about": {
+        "zh": "对比编码器",
+        "en": "Contrastive encoder"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "hough": {
+      "about": {
+        "zh": "Hough 累加器",
+        "en": "Hough accumulator"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "ransac": {
+      "about": {
+        "zh": "RANSAC 找直线",
+        "en": "RANSAC line"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "homography": {
+      "about": {
+        "zh": "求单应",
+        "en": "Solve homography"
+      },
+      "inputs": [
+        {
+          "name": "pairs",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "warp": {
+      "about": {
+        "zh": "单应变形",
+        "en": "Homography warp"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        },
+        {
+          "name": "H",
+          "type": "image/image"
+        },
+        {
+          "name": "onto",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "dg-encode": {
+      "about": {
+        "zh": "编码器",
+        "en": "Encoder"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "dg-decode": {
+      "about": {
+        "zh": "解码器",
+        "en": "Decoder"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "dg-encoder": {
+      "about": {
+        "zh": "编码器（已训练）",
+        "en": "Encoder (trained)"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "dg-decoder": {
+      "about": {
+        "zh": "解码器（已训练）",
+        "en": "Decoder (trained)"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "dg-mu": {
+      "about": {
+        "zh": "μ",
+        "en": "μ"
+      },
+      "inputs": [],
+      "outputType": "image/image"
+    },
+    "dg-sigma": {
+      "about": {
+        "zh": "σ",
+        "en": "σ"
+      },
+      "inputs": [],
+      "outputType": "image/image"
+    },
+    "dg-sample": {
+      "about": {
+        "zh": "采样 z ~ N(μ, σ²)",
+        "en": "Sample z ~ N(μ, σ²)"
+      },
+      "inputs": [
+        {
+          "name": "mu",
+          "type": "image/image"
+        },
+        {
+          "name": "sigma",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "dg-reparam": {
+      "about": {
+        "zh": "重参数化 μ + σ·ε",
+        "en": "Reparameterization μ + σ·ε"
+      },
+      "inputs": [
+        {
+          "name": "mu",
+          "type": "image/image"
+        },
+        {
+          "name": "sigma",
+          "type": "image/image"
+        },
+        {
+          "name": "eps",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    },
+    "tconv": {
+      "about": {
+        "zh": "转置卷积（步幅 2）",
+        "en": "Transposed convolution (stride 2)"
+      },
+      "inputs": [
+        {
+          "name": "in",
+          "type": "image/image"
+        }
+      ],
+      "outputType": "image/image"
+    }
+  }
+}

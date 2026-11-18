@@ -1,0 +1,631 @@
+{
+  "type": "by",
+  "field": "control",
+  "cases": {
+    "select": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "select"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "options": {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "value": {
+                "type": "str",
+                "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
+                "about": {
+                  "zh": "ASCII 值：写进蓝图文本",
+                  "en": "an ASCII value, as blueprint text writes it"
+                }
+              },
+              "label": {
+                "type": "text",
+                "optional": true
+              },
+              "icon": {
+                "type": "str",
+                "view": "icon",
+                "about": {
+                  "zh": "内核图标表里的一个名字",
+                  "en": "a name in the kernel’s icon table"
+                },
+                "optional": true
+              },
+              "about": {
+                "type": "text",
+                "about": {
+                  "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
+                  "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
+                },
+                "optional": true
+              }
+            }
+          },
+          "min": 1,
+          "optional": true
+        },
+        "from": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：由元件的输入算出选项",
+            "en": "an expression: the options worked out of the part’s inputs"
+          },
+          "optional": true
+        }
+      }
+    },
+    "list": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "list"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "options": {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "value": {
+                "type": "str",
+                "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
+                "about": {
+                  "zh": "ASCII 值：写进蓝图文本",
+                  "en": "an ASCII value, as blueprint text writes it"
+                }
+              },
+              "label": {
+                "type": "text",
+                "optional": true
+              },
+              "icon": {
+                "type": "str",
+                "view": "icon",
+                "about": {
+                  "zh": "内核图标表里的一个名字",
+                  "en": "a name in the kernel’s icon table"
+                },
+                "optional": true
+              },
+              "about": {
+                "type": "text",
+                "about": {
+                  "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
+                  "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
+                },
+                "optional": true
+              }
+            }
+          },
+          "min": 1,
+          "optional": true
+        },
+        "from": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：由元件的输入算出选项",
+            "en": "an expression: the options worked out of the part’s inputs"
+          },
+          "optional": true
+        }
+      }
+    },
+    "tree": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "tree"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "optional": {
+          "type": "bool",
+          "about": {
+            "zh": "可以不填",
+            "en": "may be left empty"
+          },
+          "optional": true
+        }
+      }
+    },
+    "buttons": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "buttons"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "options": {
+          "type": "list",
+          "of": {
+            "type": "obj",
+            "fields": {
+              "value": {
+                "type": "str",
+                "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
+                "about": {
+                  "zh": "ASCII 值：写进蓝图文本",
+                  "en": "an ASCII value, as blueprint text writes it"
+                }
+              },
+              "label": {
+                "type": "text",
+                "optional": true
+              },
+              "icon": {
+                "type": "str",
+                "view": "icon",
+                "about": {
+                  "zh": "内核图标表里的一个名字",
+                  "en": "a name in the kernel’s icon table"
+                },
+                "optional": true
+              },
+              "about": {
+                "type": "text",
+                "about": {
+                  "zh": "这个选项做什么，一句完整的话：选项开放后接在元件说明后面",
+                  "en": "what the option does, one whole sentence: added to the part’s description once the option opens"
+                },
+                "optional": true
+              }
+            }
+          },
+          "min": 1,
+          "optional": true
+        },
+        "from": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：由元件的输入算出选项",
+            "en": "an expression: the options worked out of the part’s inputs"
+          },
+          "optional": true
+        },
+        "layout": {
+          "type": "oneOf",
+          "values": [
+            "row",
+            "column",
+            "grid",
+            "pad"
+          ],
+          "about": {
+            "zh": "row 一行，column 一列，grid 两两一行，pad 上下左右四向（选项 up、left、right、down）",
+            "en": "row, column, grid (two a row), pad (four ways: options up, left, right, down)"
+          },
+          "optional": true
+        }
+      }
+    },
+    "number": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "number"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "min": {
+          "type": "num",
+          "optional": true
+        },
+        "max": {
+          "type": "num",
+          "optional": true
+        },
+        "step": {
+          "type": "num",
+          "min": 0,
+          "optional": true
+        },
+        "unit": {
+          "type": "text",
+          "optional": true
+        },
+        "integer": {
+          "type": "bool",
+          "optional": true
+        },
+        "stepper": {
+          "type": "bool",
+          "about": {
+            "zh": "两边加 − / + 按钮",
+            "en": "− / + buttons on either side"
+          },
+          "optional": true
+        },
+        "optional": {
+          "type": "bool",
+          "about": {
+            "zh": "没写时读到「—」（新元件仍从 default 起）",
+            "en": "reads 「—」 when not written (a new part still starts from default)"
+          },
+          "optional": true
+        }
+      }
+    },
+    "slider": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "slider"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "min": {
+          "type": "num"
+        },
+        "max": {
+          "type": "num"
+        },
+        "step": {
+          "type": "num",
+          "min": 0,
+          "optional": true
+        },
+        "unit": {
+          "type": "text",
+          "optional": true
+        },
+        "marks": {
+          "type": "list",
+          "of": {
+            "type": "num"
+          },
+          "optional": true
+        }
+      }
+    },
+    "toggle": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "toggle"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "on": {
+          "type": "text",
+          "optional": true
+        },
+        "off": {
+          "type": "text",
+          "optional": true
+        }
+      }
+    },
+    "custom": {
+      "type": "obj",
+      "fields": {
+        "control": {
+          "type": "oneOf",
+          "values": [
+            "custom"
+          ]
+        },
+        "label": {
+          "type": "text",
+          "optional": true
+        },
+        "about": {
+          "type": "text",
+          "about": {
+            "zh": "悬停和详情里的一行说明",
+            "en": "one line shown on hover and in the detail"
+          },
+          "optional": true
+        },
+        "default": {
+          "type": "any",
+          "about": {
+            "zh": "新元件的值",
+            "en": "the value a new part starts with"
+          },
+          "optional": true
+        },
+        "when": {
+          "type": "str",
+          "view": "expr",
+          "about": {
+            "zh": "式子：为真时才出现（只读设置）",
+            "en": "an expression: shown only while it is true (reads settings only)"
+          },
+          "optional": true
+        },
+        "fixed": {
+          "type": "bool",
+          "about": {
+            "zh": "只显示，玩家不能改",
+            "en": "shown, not changed by the player"
+          },
+          "optional": true
+        },
+        "widget": {
+          "type": "ref",
+          "kind": "widget"
+        },
+        "params": {
+          "type": "any",
+          "optional": true
+        }
+      }
+    }
+  }
+}

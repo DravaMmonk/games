@@ -7,10 +7,10 @@ import { L, tr, validate, usePickerPopup, useDraft } from 'kernel/view'
 import { useMemo, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
-import { ExprError, parse, problemsOf } from '../../core/index.js'
+import { ExprError, parse, problemsOf } from '../../core/parts/expr.js'
 import { resolveSettings } from '../../core/index.js'
-import { BUILTIN_ITEMS } from '../../core/index.js'
-import { ICON_NAMES } from '../../core/index.js'
+import { BUILTIN_ITEMS } from '../../core/parts/builtins.js'
+import { ICON_NAMES } from '../../core/parts/icons.js'
 
 import { ICONS } from '../parts/icons.js'
 

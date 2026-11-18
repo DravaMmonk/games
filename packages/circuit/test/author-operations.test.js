@@ -16,7 +16,7 @@ import { OPERATIONS, operationsFor } from '../../../games/kit/engine/ops/operati
 import { openGame as openWorkspace, openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { adopt, runChangeset, readLog, undo } from '../../../games/kit/engine/ops/changeset.js'
 import { driftOf, hashOf } from '../../../games/kit/engine/ops/log.js'
-import { withParts } from '../core/index.js'
+import { withParts } from '../core/parts/define.js'
 import { taskLevel } from '../../../games/kit/engine/tasks.js'
 
 import { textKey } from '../../../games/kit/engine/i18n.js'

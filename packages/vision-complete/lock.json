@@ -3,35 +3,35 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "9c2a2fb11f8a5b44c5aac7b2b8bfbdde115fb9eef7ccf8a854c858712fa6dcaf"
+      "hash": "b921f0e687994311502c20a06226f978809266dd8d377bd68571e61d4cd7edfb"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "b6becbbfc5fcb4f3ce97aac9dd555a59d7f573032a2792ddbccb54d53c2ecf5c"
+      "hash": "fd85d2b5cc5c7da62d2e6fa0ab1ac1c0c42e7a7f2f39fb3f274624767fdb2987"
     },
     "encyclopedia": {
       "version": "0.0.0",
-      "hash": "8322c2250dd92429d9670d69797e43d0ab2341f9a3325e083d4c77d0727dba58"
+      "hash": "3c2e5a188de6cfe9d2ffe984a120af720b75db2a1bb172a709b8aef485f0be00"
     },
     "image-processing": {
       "version": "0.0.0",
-      "hash": "2ab389580c2c2f8853fe0cd2b46a63337cfa322baea10774b4a7764ed5ece0e6"
+      "hash": "f4db2b7d81f4c998598a26ad1f98c73c027d0f52218e9ded5a3cfa287bbafaa6"
     },
     "machine-learning": {
       "version": "0.0.0",
-      "hash": "31514ef04ddb5503f67fb5dfe2f2652253022e5c00c397069afadbd4084cba33"
+      "hash": "a4f15997c6d94a74e77ba6a96b8f0bcb050d1ee05614806b7ffc2d4244dddd53"
     },
     "computer-vision": {
       "version": "0.0.0",
-      "hash": "991da34af020387cdf143706d9d1735a90bdceb6ee109b9e50d40aa310beb701"
+      "hash": "4e13de87d5f22090bb468e54971e97d23ae05b0dec3eae1476be4b4b4bbf2725"
     },
     "image": {
       "version": "0.0.0",
-      "hash": "bb9f19a1ae658dbeceb5d57d752eb6db1357779653f93fe03d7f37184476bf23"
+      "hash": "85a9c0e430aaae0e746fad4b9812a475038aa14e7c5356b9d7a379d147de8121"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "ed374d52636ca317a1938a893cea54012b1415f4b9030cb7e21f4e17ca412d1e"
+      "hash": "af9a09ba24cc7655ec66d429eacbbe3d8f401340d762d4800bc94fae06cc11c6"
     }
   }
 }

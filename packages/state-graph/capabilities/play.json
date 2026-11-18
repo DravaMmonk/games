@@ -1,0 +1,57 @@
+{
+  "extends": "play",
+  "items": {
+    "circuit": {
+      "about": {
+        "zh": "拼电路板：机器人在每一格上跑它",
+        "en": "wiring a board the robot runs on every cell"
+      },
+      "mode": "table/robot-board"
+    },
+    "fill": {
+      "about": {
+        "zh": "亲手填表：每个地点的路线数",
+        "en": "filling the table by hand: the routes to every place"
+      },
+      "mode": "table/hand-fill"
+    },
+    "trace": {
+      "about": {
+        "zh": "一条条找出所有路线",
+        "en": "tracing every route one by one"
+      },
+      "mode": "table/hand-trace"
+    },
+    "link": {
+      "about": {
+        "zh": "连线不交叉：两串字相同的字母连起来",
+        "en": "lines that never cross between equal letters of two strings"
+      },
+      "mode": "table/hand-link"
+    },
+    "pack": {
+      "mode": "table/hand-pack"
+    },
+    "breach": {
+      "about": {
+        "zh": "找反例：画两条路线，落进同一个格子",
+        "en": "finding the counterexample: two routes into one cell"
+      },
+      "mode": "table/hand-breach"
+    },
+    "policy": {
+      "about": {
+        "zh": "顺着价值画出箭头",
+        "en": "drawing the arrows along the values"
+      },
+      "mode": "table/hand-policy"
+    },
+    "seam": {
+      "about": {
+        "zh": "一条条剪掉图里的缝",
+        "en": "cutting seams out of a picture one by one"
+      },
+      "mode": "table/hand-seam"
+    }
+  }
+}

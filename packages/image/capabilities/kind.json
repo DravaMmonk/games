@@ -1,0 +1,23 @@
+{
+  "extends": "kind",
+  "items": {
+    "graph": {
+      "about": {
+        "zh": "图像电路",
+        "en": "Image circuit"
+      }
+    },
+    "probe": {
+      "about": {
+        "zh": "探针",
+        "en": "Probe"
+      }
+    },
+    "board": {
+      "about": {
+        "zh": "参数台",
+        "en": "Parameter bench"
+      }
+    }
+  }
+}

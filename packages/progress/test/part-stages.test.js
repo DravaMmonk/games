@@ -1,5 +1,6 @@
 import { withProgressFixture } from '../../qed/test/fixture.js'
-import { contentMeanings } from 'circuit'
+import { partMeaning, trayMeaning } from '../../circuit/core/content-meaning.js'
+const contentMeanings = [partMeaning, trayMeaning]
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { registeredOperations } from "../../../games/kit/engine/capabilities.js"
@@ -8,7 +9,7 @@ import { partStages, requiredStage, progressMeaning } from '../core/index.js'
 import { partDefinition, holds } from 'circuit'
 import { defineParts, partProblems } from 'circuit'
 import { audit, defineCourse } from '../core/index.js'
-import { contentCourse } from 'circuit'
+import { contentCourse } from '../../circuit/core/course-model.js'
 import { boardView } from 'circuit'
 import { referenceResolver, expandRelations } from "../../../games/kit/engine/objects.js"
 

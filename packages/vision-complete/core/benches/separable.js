@@ -1,7 +1,5 @@
 // Compare one-input, two-output convolution kernels. A separable layer has one shared spatial kernel;
 // pointwise weights are fixed at one in this experiment, while the ordinary layer has two independent kernels.
-import { S } from 'kernel'
-import { T as t } from 'kernel'
 
 const kernels = {
   horizontal: [0, 0, 0, 1, 1, 1, 0, 0, 0],
@@ -11,8 +9,6 @@ const kernels = {
 const difference = (a, b) => a.reduce((sum, x, i) => sum + Math.abs(x - b[i]), 0)
 
 export const separable = {
-  about: t('比较普通卷积与单输入通道的深度可分离卷积'),
-  stage: S.obj({ target: S.oneOf(['shared', 'different']) }),
   make() {
     return {
       view(v, { stage }) {

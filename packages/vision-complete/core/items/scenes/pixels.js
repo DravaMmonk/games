@@ -1,11 +1,9 @@
 // Scenes of per-pixel work (scenes/index.js): a washed-out photo, an intruder against an empty scene, the inspection
 // station that compares a part with its reference.
-import { S } from 'kernel'
+
 import { fromFn, map } from 'image-processing'
 import { picture } from 'image'
-import { T as t } from 'kernel'
 
-const RECT = S.list(S.int(), { min: 4, about: t('一个矩形：x0, y0, 宽, 高') })
 const box = (x0, y0, w, h) => (x, y) => x >= x0 && x < x0 + w && y >= y0 && y < y0 + h
 const inRects = (rects) => (x, y) => rects.some(([x0, y0, w, h]) => box(x0, y0, w, h)(x, y))
 const maskOf = (inside) => fromFn(16, 16, (x, y) => (inside(x, y) ? 1 : 0))
@@ -28,16 +26,12 @@ const DEFECT = 0.15
 
 export const PIXELS = {
   washedOut: {
-    about: t('灰蒙蒙的照片：亮度挤进 0.25 … 0.75，期望是原来的照片'),
-    test: S.obj({ photo: S.call('picture') }),
     make: ({ photo }) => {
       const img = picture(photo)
       return { inputs: { in: map(img, (v) => 0.25 + 0.5 * v) }, expected: { out: img } }
     },
   },
   intruder: {
-    about: t('闯入者：现场比空场多一个 4×4 的东西，光照不均；期望是它的掩膜'),
-    test: S.obj({ x: S.int(), y: S.int(), seed: S.int() }),
     make: ({ x: x0, y: y0, seed }) => {
       const bg = unevenFloor(seed)
       const scene = fromFn(16, 16, (x, y) => bg.data[y * 16 + x] + (box(x0, y0, 4, 4)(x, y) ? 0.3 : 0))
@@ -45,8 +39,6 @@ export const PIXELS = {
     },
   },
   outline: {
-    about: t('闯入者的外圈：任意形状的闯入者站在花砖地面上；期望是它挨着地面的那一圈格子（图外算地面）'),
-    test: S.obj({ shape: S.list(RECT, { min: 1, about: t('闯入者：几个矩形的并') }), seed: S.int() }),
     make: ({ shape, seed }) => {
       const inside = inRects(shape)
       const bg = tiledFloor(seed)
@@ -57,8 +49,6 @@ export const PIXELS = {
     },
   },
   station: {
-    about: t('质检台：标准件的照片和传送带上的实物，实物上有凹坑（偏暗）和划痕（偏亮），灯可能老了；期望是缺陷的掩膜'),
-    test: S.obj({ part: S.oneOf(Object.keys(PARTS)), dents: S.opt(S.list(RECT)), scratches: S.opt(S.list(RECT)), lamp: S.opt(S.num({ about: t('灯还剩原来亮度的几成') })) }),
     make: ({ part, dents = [], scratches = [], lamp = 1 }) => {
       const ref = fromFn(16, 16, PARTS[part])
       const dent = inRects(dents)

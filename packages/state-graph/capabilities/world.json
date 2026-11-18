@@ -1,0 +1,364 @@
+{
+  "extends": "table/world",
+  "items": {
+    "grid": {
+      "about": {
+        "zh": "棋盘城市：只往右或往下走，每格可以有石头、体力或金币",
+        "en": "the grid city: right or down only, a cell may hold a rock, energy or coins"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-grid-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-grid-test"
+      }
+    },
+    "gridYes": {
+      "about": {
+        "zh": "棋盘城市，每格存「是 / 否」：能不能走到这里",
+        "en": "the grid city holding yes / no: can a route get here"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-grid-yes-test"
+      },
+      "variant": {
+        "cellType": "kernel/boolean"
+      }
+    },
+    "piles": {
+      "about": {
+        "zh": "两堆石子：(a, b) 是两堆各剩几颗，存轮到的人能不能赢",
+        "en": "two piles of stones: (a, b) the stones left, holding whether the player to move wins"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-piles-test"
+      }
+    },
+    "tri": {
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-tri-test"
+      }
+    },
+    "lawn": {
+      "about": {
+        "zh": "铺草坪：一块地上有树，找最大的空正方形",
+        "en": "a lawn to lay: a field with trees, the biggest open square"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-lawn-test"
+      }
+    },
+    "strip": {
+      "about": {
+        "zh": "一段楼梯：一次上一级或两级，坏台阶踩不得",
+        "en": "a flight of stairs: one or two steps at a time, broken steps not to be stood on"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-strip-test"
+      }
+    },
+    "pile": {
+      "about": {
+        "zh": "一堆石子：一次拿一颗或两颗，拿走最后一颗的赢",
+        "en": "a pile of stones: take one or two, whoever takes the last wins"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-pile-test"
+      }
+    },
+    "coins": {
+      "about": {
+        "zh": "凑零钱：每格是一个钱数，扫描臂退回每种硬币",
+        "en": "making change: a cell is an amount, the sweep arm steps back by every coin"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-coins-test"
+      }
+    },
+    "parts": {
+      "about": {
+        "zh": "切词：一串字母切成词典里的词，每块有代价",
+        "en": "cutting a string into dictionary words, each part at a cost"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-parts-test"
+      }
+    },
+    "rob1": {
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-rob1-test"
+      }
+    },
+    "rob2": {
+      "about": {
+        "zh": "一排房子，每家三个格子：没偷、偷了、最多",
+        "en": "a row of houses, three cells a house: skipped, robbed, most so far"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-rob1-test"
+      }
+    },
+    "ring": {
+      "about": {
+        "zh": "环形的街：第一家和最后一家相邻",
+        "en": "a street in a ring: the first house and the last are neighbours"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-rob1-test"
+      }
+    },
+    "prefix": {
+      "about": {
+        "zh": "一排房子，每格是到这一家为止的总数",
+        "en": "a row of houses, each cell the total so far"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-rob1-test"
+      }
+    },
+    "heights": {
+      "about": {
+        "zh": "一排柱子：以这一根结尾，最长连几根越来越高",
+        "en": "a row of posts: the longest rising run ending on this one"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-heights-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-rob1-test"
+      }
+    },
+    "gains": {
+      "about": {
+        "zh": "每天的收支：以这一天结尾的一段最多赚多少",
+        "en": "daily gains: the best run of days ending today"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-rob1-test"
+      }
+    },
+    "keys": {
+      "about": {
+        "zh": "有钥匙和门的迷宫，状态记住的每组钥匙是一层",
+        "en": "a maze of keys and doors, one layer for every set of keys the state remembers"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-keys-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-keys-test"
+      }
+    },
+    "river": {
+      "about": {
+        "zh": "过河的青蛙：每块石头写着往回能跳多远",
+        "en": "a frog crossing a river: each stone says how far back a jump reaches"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-river-test"
+      }
+    },
+    "stock": {
+      "about": {
+        "zh": "股价：每天三种状态，空手、持有、刚卖掉",
+        "en": "share prices: three states a day, flat, holding, just sold"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-stock-test"
+      }
+    },
+    "align": {
+      "about": {
+        "zh": "对齐表：一个词在上面，一个词在左边",
+        "en": "an alignment table: one word along the top, one down the left"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-align-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-align-test"
+      }
+    },
+    "local": {
+      "about": {
+        "zh": "局部对齐：两串字最像的一段",
+        "en": "local alignment: the most alike stretch of two strings"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-align-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-align-test"
+      }
+    },
+    "knap": {
+      "about": {
+        "zh": "背包表：行是物品，列是容量",
+        "en": "the knapsack table: rows are items, columns capacities"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-knap-test"
+      }
+    },
+    "roll": {
+      "about": {
+        "zh": "压成一行的背包：只留一行，原地改写",
+        "en": "the knapsack in one row, rewritten in place"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-roll-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-roll-test"
+      }
+    },
+    "interval": {
+      "about": {
+        "zh": "区间表：一段 i..j 的答案，切点扫一遍",
+        "en": "the interval table: the answer for a run i..j, every split point swept"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-interval-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-interval-test"
+      }
+    },
+    "vgrid": {
+      "about": {
+        "zh": "格子世界：宝藏、陷阱和墙，扫到不再变",
+        "en": "the grid world: treasure, traps and walls, scanned until it settles"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-vgrid-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-vgrid-test"
+      }
+    },
+    "tags": {
+      "about": {
+        "zh": "给句子标词性：每一列一个词，每一行一种词性",
+        "en": "tagging a sentence: a word a column, a part of speech a row"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/world-tags-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-tags-test"
+      }
+    },
+    "pic": {
+      "about": {
+        "zh": "一张图：每格的能量，找一条最不起眼的缝",
+        "en": "a picture: each cell’s energy, the least noticeable seam"
+      },
+      "params": {
+        "type": "shape",
+        "name": "state-graph/empty-options"
+      },
+      "test": {
+        "type": "shape",
+        "name": "state-graph/world-pic-test"
+      }
+    }
+  }
+}

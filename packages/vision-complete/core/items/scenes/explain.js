@@ -1,9 +1,8 @@
 // Scenes of checking a model (scenes/index.js): a street with a car, a linear classifier's weights for it (a weight
 // a cell: its score is the sum of weight × brightness), and a ViT's class token asking the street's patches.
-import { S } from 'kernel'
+
 import { patchAttention } from 'computer-vision'
 import { fromFn, image } from 'image-processing'
-import { T as t } from 'kernel'
 
 const num = (v) => image(1, 1, v)
 const at = (img, x, y) => (x < 0 || y < 0 || x >= img.w || y >= img.h ? null : img.data[y * img.w + x])
@@ -21,7 +20,7 @@ const street = ({ cx = 5, house = null, sky = 0.2 } = {}) =>
     return sky
   })
 const carMask = ({ cx = 5 } = {}) => fromFn(16, 16, (x, y) => ((y >= 7 && y <= 10 && x >= cx && x < cx + 6) || (y === 11 && (x === cx + 1 || x === cx + 4)) ? 1 : 0))
-const STREET = S.obj({ cx: S.int({ about: t('车的左边在第几列') }), house: S.opt(S.int({ about: t('房子的左边在第几列') })) })
+
 const streetOf = ({ cx, house }) => ({ cx, house: house ?? null })
 
 // Weights a classifier might have learnt: on the car, on the road (every car photo had road in it), on both, on the
@@ -71,12 +70,6 @@ const patchMask = (patches) => fromFn(16, 16, (x, y) => (patches.some(([px, py])
 
 export const EXPLAIN = {
   classifier: {
-    about: t('一条有车的街和一个线性分类器的权重（可以另给车的掩膜）；期望是每格的贡献、遮挡图、落在车上的分数比例、热图落在车上的比例，或体检的热图和判定'),
-    setup: S.obj({
-      check: S.oneOf(Object.keys(CHECKS)),
-      cover: S.opt(S.obj({ v: S.opt(S.num()), r: S.opt(S.int({ min: 1 })) }, { about: t('遮挡用的块：亮度 v，r × r（默认黑的 3 × 3）') })),
-    }),
-    test: S.obj({ street: STREET, weights: S.oneOf(Object.keys(WEIGHTS)) }),
     make: (test, { check, cover }) => {
       const scene = streetOf(test.street)
       const x = street(scene)
@@ -86,8 +79,6 @@ export const EXPLAIN = {
     },
   },
   classToken: {
-    about: t('一条街、ViT 类别 token 的查询和车所在的图块；期望是注意力落在车上的比例'),
-    test: S.obj({ street: STREET, query: S.oneOf(Object.keys(QUERIES)), patches: S.list(S.list(S.int(), { min: 2 }), { about: t('车所在的图块 [列, 行]') }) }),
     make: ({ street: s, query, patches }) => {
       const x = street(streetOf(s))
       const m = patchMask(patches)

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { workSignature } from '../core/index.js'
+import { workSignature } from '../core/stamp.js'
 import { completedRun, markForWork } from '../../../games/kit/shell/run-marks.js'
 
 test('a run mark follows the judged wiring and settings across changes to board presentation', () => {

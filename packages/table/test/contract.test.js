@@ -1,7 +1,10 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
-import { register, modelOf, partsOf, fitted, blank } from '../core/index.js'
+import { register } from '../core/index.js'
+import { modelOf } from '../core/model/run.js'
+import { partsOf } from '../core/model/parts.js'
+import { fitted, blank } from '../core/model/board.js'
 import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 const world = {
  outs: [['cell', 'Cell', null, 'kernel/number']],

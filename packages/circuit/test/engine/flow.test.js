@@ -2,7 +2,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { defineCourse } from 'progress'
-import { partFlow } from '../../core/index.js'
+import { partFlow } from '../../core/flow.js'
 
 test('a part’s flow: from the start, brought in, given and withheld, superseded, and each step of its chains', () => {
   const content = {

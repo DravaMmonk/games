@@ -195,9 +195,8 @@ export function circuitVocabulary(vocabulary) {
   const own = capabilityRegistry.schemas.circuit
   vocabulary = { ...vocabulary,
     level: vocabulary.level ?? own.level,
+    kinds: { ...vocabulary.kinds, valueType: { ...registeredValueTypes, ...vocabulary.kinds.valueType } },
     game: S.obj({ ...Object.fromEntries(Object.entries(own.game.fields).map(([key, field]) => [key, S.opt(field)])), ...vocabulary.game.fields }),
-    kinds: Object.fromEntries([...new Set([...Object.keys(vocabulary.kinds), ...Object.keys(capabilityRegistry.kinds)])].map(kind => [kind, { ...capabilityRegistry.kinds[kind], ...vocabulary.kinds[kind] }])),
-    capabilities: { ...vocabulary.capabilities, ...Object.fromEntries(Object.entries(capabilityRegistry.tables).map(([kind, items]) => [kind, { ...items, ...vocabulary.capabilities?.[kind] }])) },
   }
   const grantFields = new Set(['tray', 'adds', 'gives', 'withholds', 'opens', 'awards', 'local', 'featuredParts', 'publishes'])
   const strip = schema => {

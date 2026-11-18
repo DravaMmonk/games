@@ -1,11 +1,7 @@
 // A shared row-of-pixels wave bench, judged by the same parameter-bench runner as its view.
-import { S } from 'kernel'
 import { benchRun, openKnobs, startValues } from '../bench.js'
 import { piText } from '../engine/pi.js'
 import { cosine, maxDiff, sampleAt } from 'image-processing'
-import { T as t } from 'kernel'
-
-const num = S.num()
 
 /* ---------- 一道波: c + A·cos(2π·k·x/N + φ·π/4) ---------- */
 
@@ -13,9 +9,6 @@ const fmt = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(2))
 const phaseText = (q) => (q === 0 ? '0' : piText((q * Math.PI) / 4))
 
 export const wave = {
-  about: t('一道波：c + A·cos(2π·k·x/N + φ·π/4)，旋钮 c、A、k、phi；每一步把它调到和目标重合'),
-  setup: S.obj({ N: S.int({ min: 2 }) }),
-  stage: S.obj({ target: S.map(num) }),
   make({ N }) {
     const curve = (p) => cosine({ ...p, phase: p.phi * 45 })
     return {

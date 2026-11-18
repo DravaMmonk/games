@@ -2,7 +2,8 @@ import { withProgressFixture } from '../../../qed/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { resolve } from 'node:path'
-import { contentCourse, publicationEvents, readWorkSet } from '../../core/index.js'
+import { contentCourse, readWorkSet } from '../../core/course-model.js'
+import { publicationEvents } from '../../core/index.js'
 import { holds, met, offer } from '../../core/index.js'
 import { readStarter } from "../../../qed/test/fixture.js"
 import { runtimeOf } from "../../../../games/kit/engine/runtime.js"

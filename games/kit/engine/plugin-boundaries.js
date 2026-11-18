@@ -1,5 +1,6 @@
 import { dependencyIds } from './release-data.js'
-import { packageDirectory, packageConfig } from './resolver.js'
+import { packageDirectory, packageConfig, packageIds } from './resolver.js'
+import { exportedNames } from './manifests.js'
 // Import policy is shared by ESLint and the headless content checker.
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import { dirname, extname, relative, resolve, sep } from 'node:path'
@@ -33,8 +34,8 @@ export function importProblem(specifier, file, root, uses) {
     if (!target.startsWith(location(id, root) + sep) && !target.startsWith(base + sep)) return 'packages may only import public kernel and dependency exports'
     const actual = existsSync(target) ? realpathSync(target) : target
     const allowed = [resolve(base, side) + sep, ...(side === 'view' ? [resolve(base, 'core') + sep] : [])]
-    const ownCapability = dirname(actual) === resolve(base, 'capabilities') && extname(actual) === '.json'
-    if (!ownCapability && !allowed.some(path => actual.startsWith(path))) return `${side} cannot import ${specifier}`
+    const ownDeclaration = ['kinds', 'shapes', 'capabilities'].some(folder => dirname(actual) === resolve(base, folder)) && extname(actual) === '.json'
+    if (!ownDeclaration && !allowed.some(path => actual.startsWith(path))) return `${side} cannot import ${specifier}`
     if (side === 'core' && !['.js', '.mjs', '.json'].includes(extname(target))) return 'core cannot import JSX, CSS or view assets'
     return null
   }
@@ -49,7 +50,7 @@ const parsedImports = new Map()
 function parseCode(source, jsx) {
   const require = createRequire(resolve(KIT, '../../site/package.json'))
   const { parse } = require('espree')
-  const sources = []
+  const sources = [], imports = []
   try {
     const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx } })
     const visit = node => {
@@ -59,13 +60,20 @@ function parseCode(source, jsx) {
       if (node.type === 'ImportExpression') source = node.source
       if (node.type === 'CallExpression' && node.callee?.name === 'require') source = node.arguments[0] ?? {}
       if (source) sources.push(source.type === 'Literal' ? source.value : null)
+      if (source?.type === 'Literal' && typeof source.value === 'string') {
+        const names = node.type === 'ImportDeclaration' ? node.specifiers.map(specifier =>
+          specifier.type === 'ImportDefaultSpecifier' ? 'default' : specifier.imported?.name ?? '*')
+          : node.type === 'ExportNamedDeclaration' ? node.specifiers.map(specifier => specifier.local.name)
+            : ['*']
+        imports.push({ from: source.value, names })
+      }
       for (const value of Object.values(node)) if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') visit(value)
     }
     visit(ast)
   } catch (error) {
     return { error: `${error.lineNumber}:${error.column} ${error.message}` }
   }
-  return { sources }
+  return { sources, imports }
 }
 
 function fileProblems(file, root, uses, side, parsed) {
@@ -100,6 +108,30 @@ export function packageCodeProblems(id, root) {
     for (const says of fileProblems(file, root, uses, side, entry.parsed)) problems.push({ at: relative(root, file), says })
   }
   return problems
+}
+
+/** Find entry exports without a production consumer or an explicit extension-point declaration. */
+export function packageExportWarnings(root) {
+  const ids = packageIds(root)
+  const used = new Map()
+  for (const id of ids) for (const side of ['core', 'view']) {
+    for (const file of walkFiles(resolve(packageDirectory(id, root), side)).filter(file => /\.(js|jsx|mjs)$/.test(file))) {
+      const parsed = parsedImports.get(file)?.parsed ?? parseCode(readFileSync(file, 'utf8'), side === 'view')
+      for (const { from, names } of parsed.imports ?? []) {
+        const [owner] = from.split('/')
+        if (owner === id || !ids.includes(owner)) continue
+        const namesUsed = used.get(from) ?? new Set()
+        for (const name of names) namesUsed.add(name)
+        used.set(from, namesUsed)
+      }
+    }
+  }
+  return ids.flatMap(id => Object.entries({ core: id, view: `${id}/view` }).flatMap(([side, entry]) => {
+    const consumers = used.get(entry) ?? new Set()
+    const extensionPoints = packageConfig(id, root).extensionPoints?.[side] ?? []
+    return exportedNames(exportPath(entry, root)).filter(name => name !== 'register' && !consumers.has('*') && !consumers.has(name) && !extensionPoints.includes(name))
+      .map(name => `${id}/${side}: unused export ${name}`)
+  }))
 }
 
 // Node's hooks keep bare package names identical to the Vite public export map.

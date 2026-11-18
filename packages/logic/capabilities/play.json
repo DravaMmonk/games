@@ -1,0 +1,168 @@
+{
+  "extends": "play",
+  "items": {
+    "gates": {
+      "configuration": {
+        "editor": "circuit",
+        "judge": "cases",
+        "resources": "gates",
+        "target": "shown",
+        "tileSettings": "hidden",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "proof": {
+      "configuration": {
+        "editor": "circuit",
+        "judge": "once",
+        "resources": "proof",
+        "results": "hidden",
+        "output": "target",
+        "tileSettings": "hidden",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "machine": {
+      "configuration": {
+        "editor": "circuit",
+        "judge": "steps",
+        "resources": "machine",
+        "tileSettings": "hidden",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "truth": {
+      "configuration": {
+        "editor": "values",
+        "judge": "table",
+        "checks": "shown",
+        "resources": "truth",
+        "stage": "vt-stage",
+        "layout": "lg-truth-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "translate": {
+      "configuration": {
+        "editor": "tree",
+        "judge": "check",
+        "checks": "hidden",
+        "resources": "translation",
+        "stage": "fo-stage",
+        "layout": "fo-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "query": {
+      "configuration": {
+        "editor": "tree",
+        "judge": "check",
+        "checks": "shown",
+        "resources": "query",
+        "stage": "fo-stage",
+        "layout": "fo-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "script": {
+      "configuration": {
+        "editor": "fields",
+        "judge": "rows",
+        "checks": "hidden",
+        "resources": "script",
+        "stage": "fo-stage sc-stage",
+        "layout": "fo-level sc-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "model": {
+      "configuration": {
+        "editor": "scenario",
+        "judge": "steps",
+        "checks": "shown",
+        "resources": "worldCheck",
+        "stage": "fo-stage",
+        "layout": "fo-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "define": {
+      "configuration": {
+        "editor": "tree",
+        "judge": "once",
+        "checks": "hidden",
+        "resources": "definition",
+        "stage": "lg-define",
+        "layout": "lg-define-level",
+        "gives": "reference",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "iso": {
+      "configuration": {
+        "editor": "tree",
+        "judge": "once",
+        "checks": "hidden",
+        "resources": "declaration",
+        "stage": "fo-stage",
+        "layout": "fo-level lg-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "audit": {
+      "configuration": {
+        "editor": "checks",
+        "judge": "boards",
+        "checks": "shown",
+        "resources": "audit",
+        "stage": "fo-stage",
+        "layout": "fo-level lg-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    }
+  }
+}

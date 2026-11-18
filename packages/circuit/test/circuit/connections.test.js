@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { labelledConnections, wireKey } from '../../core/index.js'
+import { labelledConnections, wireKey } from '../../core/board/connections.js'
 const nodes = ['i','a','b','c','d','e','o'].map((id) => ({id}))
 const w = (from,to) => ({from,to,port:'in'})
 const graph = {nodes,wires:[w('i','a'),w('a','b'),w('a','c'),w('b','c'),w('c','d'),w('d','e'),w('e','o')]}

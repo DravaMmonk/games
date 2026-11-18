@@ -5,9 +5,10 @@ import { copyWithoutTextKeys, freeName } from 'kernel/view'
 import { iconOf } from '../parts/icons.js'
 
 import { partGroups } from '../../core/studio-parts.js'
-import { builtPart, partCreationOptions, primitiveParts } from '../../core/index.js'
+import { builtPart, partCreationOptions } from '../../core/parts/schema.js'
+import { primitiveParts } from '../../core/primitive-parts.js'
 
-import { partReference } from '../../core/index.js'
+import { partReference } from '../../core/parts.js'
 
 /**
  * The package's parts (games/design/README.md 6.7), in the order the course first gives them, grouped by their tags, the

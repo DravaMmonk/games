@@ -26,8 +26,10 @@ import { GLOSSARY as GLOSSARY_SCHEMA } from '../../encyclopedia/core/schema.js'
 import { glossarySchemas } from '../../encyclopedia/test/fixture.js'
 import { installGlossaryFixture } from '../../../games/kit/engine/test-fixture.js'
 import { OBJECT_SCHEMAS } from '../../../games/kit/engine/objects.js'
-import { PARTS_FILE } from '../../circuit/core/index.js'
-import { contentMeanings, withParts } from '../../circuit/core/index.js'
+import { PARTS_FILE } from '../../circuit/core/parts/schema.js'
+import { partMeaning, trayMeaning } from '../../circuit/core/content-meaning.js'
+const contentMeanings = [partMeaning, trayMeaning]
+import { withParts } from '../../circuit/core/parts/define.js'
 import { expandNames } from '../../../games/kit/engine/names.js'
 import { readCatalogs, contentVocabulary } from '../../../games/kit/engine/resolver.js'
 

@@ -2,7 +2,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { evaluate } from '../../core/index.js'
-import { mutants, mutationScore } from '../../core/index.js'
+import { mutants, mutationScore } from '../../core/mutate.js'
 
 const two = (f) => ({ inputs: ['a', 'b'], settings: [], defaults: {}, eval: ({ a, b }) => f(a, b) })
 const PARTS = {

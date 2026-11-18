@@ -6,5 +6,13 @@
       "zh": "控件",
       "en": "Widgets"
     }
+  },
+  "items": {
+    "imageKernel": {
+      "about": {
+        "zh": "图像运算的权重表",
+        "en": "Weight grid for image operations"
+      }
+    }
   }
 }

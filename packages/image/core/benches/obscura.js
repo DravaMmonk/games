@@ -2,11 +2,7 @@
 // (`arrow` tall); the pinhole plate is Z from it, the screen f behind the plate. Similar triangles give the image
 // x = −f·X/Z. A hole of diameter D lets every object point through as a cone, which lands on the screen as a disc
 // D·(Z + f)/Z wide; the screen's brightness goes as (D / f)².
-import { S } from 'kernel'
 import { benchRun, knobValues, openKnobs, startValues } from '../bench.js'
-import { T as t } from 'kernel'
-
-const num = S.num()
 
 /**
  * The optics. arrow, shaft: the arrow's height and shaft width; table: arrow to the far end of the table; plate:
@@ -30,8 +26,6 @@ export function obscuraBench({ arrow, shaft, table, plate, gap }) {
 
 /** The bench model: knobs Z (the plate), s (the screen) and D (the hole); quantities height, blur and light. */
 export const obscura = {
-  about: t('暗箱：旋钮 Z（孔板到箭头）、s（屏幕到箭头）、D（孔径）；算出像高 height、模糊 blur、亮度 light'),
-  setup: S.obj({ arrow: num, shaft: num, table: num, gap: num }),
   make(setup, bench) {
     const optics = obscuraBench({ ...setup, plate: [bench.knobs.Z.min, bench.knobs.Z.max] })
     return { ...optics, view: (v) => optics.view(v) }

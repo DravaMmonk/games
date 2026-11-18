@@ -6,9 +6,9 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { vocabulary } from '../../../games/kit/engine/kernel.js'
 import { createCapabilityRegistry } from '../../../games/kit/engine/capabilities.js'
-import { typeProblems } from '../core/index.js'
+import { typeProblems } from '../core/parts/types.js'
 import { S } from '../../../games/kit/engine/schema.js'
-import { parse, print } from '../core/index.js'
+import { parse, print } from '../core/parts/expr.js'
 
 test('each kind rejects duplicate names and permits a name shared across kinds', () => {
   const registry = createCapabilityRegistry()

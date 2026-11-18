@@ -1,13 +1,17 @@
 // node --test packages/circuit — frames: which wires a box lets through, moving cards in and out, taking one off.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { framePart, moveInto } from '../../core/index.js'
-import { movePhonePart, phoneBlockBoard, placeInPhoneSlot } from '../../core/index.js'
-import { flowBoard, primitivesOnly } from '../../core/index.js'
-import { frameTree, regionsFit } from '../../core/index.js'
-import { keepLocked, lockedCards, presetOf, withPreset } from '../../core/index.js'
-import { boardFits, clearSpot, rowSpot, placement, removeNode, wireRefusal } from '../../core/index.js'
-import { traySize } from '../../core/index.js'
+import { framePart, moveInto } from '../../core/board/frames.js'
+import { movePhonePart, phoneBlockBoard, placeInPhoneSlot } from '../../core/board/blocks.js'
+import { flowBoard } from '../../core/board-cards.js'
+import { primitivesOnly } from '../../core/index.js'
+import { frameTree } from '../../core/index.js'
+import { regionsFit } from '../../core/board/regions.js'
+import { keepLocked, lockedCards } from '../../core/board/presets.js'
+import { presetOf, withPreset } from '../../core/index.js'
+import { boardFits, placement } from '../../core/index.js'
+import { clearSpot, rowSpot, removeNode, wireRefusal } from '../../core/board/model.js'
+import { traySize } from '../../core/board/card-size.js'
 
 // A box `f` with one region that opens a value, and a card `m` inside it; `p` and `g` on the board.
 const parts = {

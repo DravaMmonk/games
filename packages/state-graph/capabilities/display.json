@@ -1,0 +1,20 @@
+{
+  "extends": "display",
+  "items": {
+    "hero": {
+      "role": "hero"
+    },
+    "introduction": {
+      "role": "figure"
+    },
+    "circuit": {
+      "role": "circuit"
+    },
+    "manual": {
+      "role": "board"
+    },
+    "catalog": {
+      "role": "catalog"
+    }
+  }
+}

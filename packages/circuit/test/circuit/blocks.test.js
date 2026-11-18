@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { blockSlots, assignBlock, translateBlock, blocksOf, blockPreset, editBlock, createBlock, rectangleMembers, rowMembers, blockRows, withNewSlots, phoneBlockBoard, blockAtSlot, blockOfPart, transferBlockMembers, movePhonePart } from '../../core/index.js'
-import { textPrint as print } from '../../core/index.js'
+import { blockSlots, assignBlock, translateBlock, blocksOf, blockPreset, editBlock, createBlock, rectangleMembers, rowMembers, blockRows, withNewSlots, phoneBlockBoard, blockAtSlot, blockOfPart, transferBlockMembers, movePhonePart } from '../../core/board/blocks.js'
+import { print } from '../../core/board/text.js'
 import { placement } from '../../core/index.js'
 const parts={role:n=>n.type==='in'?'source':n.type==='out'?'sink':'part',inputs:()=>['in'],outputs:()=>null}
 const graph={nodes:[{id:'input',type:'in',x:0,y:0},{id:'a',x:100,y:0},{id:'b',x:220,y:0},{id:'c',x:340,y:0},{id:'out',type:'out',x:500,y:0}],wires:[{from:'input',to:'a',port:'in'},{from:'a',to:'b',port:'in'},{from:'b',to:'c',port:'in'},{from:'c',to:'out',port:'in'}]}

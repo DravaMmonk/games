@@ -69,3 +69,5 @@
 {"seq":69,"at":"2026-11-18T02:03:19.559Z","why":"Migrate scalar operations and primitive value types","adopt":true,"files":[{"file":"games/qed/game.json","after":"9374c1f4a0594b24"},{"file":"games/qed/course.json","after":null}]}
 {"seq":70,"at":"2026-11-18T02:59:14.195Z","why":"Enable the optional encyclopedia package","adopt":true,"files":[{"file":"games/qed/game.json","after":"044c26994daef47a"}]}
 {"seq":71,"at":"2026-11-18T03:04:51.199Z","why":"Move optional and skippable level tags to progress","adopt":true,"files":[{"file":"games/qed/overrides/progress/tags/level/optional.json","after":"b4a5f5e7ed31cea5"},{"file":"games/qed/overrides/kernel/tags/level/optional.json","after":null}]}
+{"seq":72,"at":"2026-11-18T07:54:54.298Z","why":"Record the Step 22 package declarations used by the game","adopt":true,"files":[{"file":"games/qed/capabilities/display.json","after":"3c80441ee4ee2cbd"}]}
+{"seq":73,"at":"2026-11-18T08:03:40.586Z","why":"Record the final shared shape declarations","adopt":true,"files":[]}

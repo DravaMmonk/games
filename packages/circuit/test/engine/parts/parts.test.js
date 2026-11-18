@@ -1,10 +1,12 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { exprEvaluate as evaluate, parse, print, problemsOf } from '../../../core/index.js'
+import { evaluate, parse, print, problemsOf } from '../../../core/parts/expr.js'
 import { operations as scalar } from '../../../../scalar/core/index.js'
-import { BUILTIN_ITEMS, BUILTINS } from '../../../core/index.js'
-import { applyRules, defineParts, evalSettings, failedCheck, partDesc, partProblems, withParts } from '../../../core/index.js'
-import { facesOf, holesOf, insideOf, keepsOf, regionsOf, settingsOf } from '../../../core/index.js'
+import { BUILTIN_ITEMS, BUILTINS } from '../../../core/parts/builtins.js'
+import { applyRules, defineParts, partProblems } from '../../../core/index.js'
+import { evalSettings, failedCheck, partDesc, withParts } from '../../../core/parts/define.js'
+import { facesOf, holesOf, insideOf, keepsOf, regionsOf } from '../../../core/parts.js'
+import { settingsOf } from '../../../core/index.js'
 import { S } from "../../../../../games/kit/engine/schema.js"
 import { evaluate as run } from '../../../core/index.js'
 

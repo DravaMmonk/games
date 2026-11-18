@@ -39,6 +39,7 @@ export function createPluginKernel() {
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)
         if (['check', 'state', 'game', 'shell', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
+        if (type === 'play' && side === 'core') register(capabilityImplementations, 'play', name, { side, value })
       }]))
       api.object = (kind, name, value = {}) => {
         if (side !== 'core' || !name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: objects register their own full name in core`)
@@ -55,6 +56,7 @@ export function createPluginKernel() {
       api.implement = (kind, name, value) => {
         own(name)
         register(capabilityImplementations, kind, name, { side, value })
+        if (side === 'view' && kind === 'display') api.display(name, value)
       }
       if (side === 'core') api.reference = (name, definition) => {
         registerReferenceKind(name, definition)
@@ -107,6 +109,16 @@ export function pluginMeanings(kernel, order) {
     vocabulary(base) {
       const merge = prior => ({ ...prior, ...Object.fromEntries(tables.map(([kind, items]) => [kind, { ...prior[kind], ...items }])) })
       return { ...base, kinds: merge(base.kinds), capabilities: merge(base.capabilities) }
+    },
+  })
+  const implementations = [...(kernel?.capabilityImplementations ?? [])].map(([kind, items]) => [
+    kind, Object.fromEntries(selected([...items]).map(([name, { value }]) => [name, value])),
+  ])
+  if (implementations.length) meanings.push({
+    vocabulary(base) {
+      const merged = { ...base.capabilityImplementations }
+      for (const [kind, items] of implementations) merged[kind] = { ...merged[kind], ...items }
+      return { ...base, capabilityImplementations: merged }
     },
   })
   if (kernel?.references.size) {

@@ -1,0 +1,43 @@
+{
+  "type": "obj",
+  "fields": {
+    "editor": {
+      "type": "oneOf",
+      "values": [
+        "workshop"
+      ]
+    },
+    "judge": {
+      "type": "oneOf",
+      "values": [
+        "parameters",
+        "gridProbe"
+      ]
+    },
+    "resources": {
+      "type": "str"
+    },
+    "layout": {
+      "type": "str"
+    },
+    "pinOnPhone": {
+      "type": "bool"
+    },
+    "taskBoard": {
+      "type": "list",
+      "of": {
+        "type": "oneOf",
+        "values": [
+          "title",
+          "brief",
+          "tip",
+          "hints",
+          "statement",
+          "readouts",
+          "extras"
+        ]
+      },
+      "optional": true
+    }
+  }
+}

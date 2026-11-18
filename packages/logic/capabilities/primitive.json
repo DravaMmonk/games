@@ -1,0 +1,31 @@
+{
+  "extends": "primitive",
+  "items": {
+    "hyp": {
+      "about": {
+        "zh": "已知里的等式",
+        "en": "An equation given"
+      },
+      "inputs": [
+        {
+          "name": "before",
+          "type": "logic/machine-value"
+        }
+      ],
+      "outputType": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "use": {
+            "type": "list",
+            "of": {
+              "type": "str"
+            },
+            "default": [],
+            "optional": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "extends": "board",
+  "items": {
+    "robot": {
+      "about": {
+        "zh": "同一电路在表格各格运行并读写格值。",
+        "en": "The same circuit runs at every cell, reading and writing table values."
+      },
+      "valueTypes": [
+        "kernel/number",
+        "kernel/boolean",
+        "table/category",
+        "table/numbers",
+        "table/booleans"
+      ],
+      "primitives": [
+        "table/msum",
+        "table/mmin",
+        "table/mmax",
+        "table/many",
+        "table/not",
+        "table/add",
+        "table/mul",
+        "table/const",
+        "table/pass",
+        "table/block"
+      ]
+    }
+  }
+}

@@ -9,6 +9,15 @@
 - 数据经操作集、MCP、Studio 修改；代码经提交和审查修改。
 - 带代码的包提供 Node 核心契约、视图配对及跨包组装契约。参考解、naive 解和玩家作品使用同一份运行与判定报告。
 
+| 包种类 | 入口公开接口 |
+|---|---|
+| `lib` | 有说明的纯算法和数据结构。 |
+| `play` | 能力扩展点、搭建玩法所需的作品和派生数据读写、可复用的界面组件。 |
+| `ext` | 通过登记接入，必要时提供一小组查询函数。 |
+| `course` | 只有平台调用的 `register(kernel)`。代码实现课程独有的世界、场景、模型或图示。 |
+
+入口逐项转出共用接口，接口旁注明用途。依赖包优先在 JSON 中按全名选用已登记的能力，算法组合和界面复用可通过入口导入。全工作区 `npm run check` 会提醒公开入口里缺少其他包生产代码消费者的名字。尚无消费者的有意扩展点在本包的 `package.json` 中用 `extensionPoints.core` 或 `extensionPoints.view` 的字符串数组列出，名称采用入口实际导出的拼写。平台调用的 `register` 自动豁免。
+
 **零内容验收。** `site/` 执行 `npm run test:zero`。首次需 `npx playwright install chromium`。脚本创建临时内容根，通过 `GAMES_ROOT` 运行全部内核测试文件和空工作区 `check`，无头 Chromium 打开空 Studio；随后仅安装文字玩法代码和测试现写的一关，检查包、打开无游戏的包工作区，再检查游戏并在桌面与手机尺寸作答通关。测试结束关闭服务器和浏览器、删除临时目录。真实内容由每个包和游戏的独立 `check` 验证。
 
 ### 6.3.1 包插件协议
@@ -25,9 +34,13 @@
 
 库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `scalar` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `scalar/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if` 与寄存器读取 `circuit/held`。
 
-`capabilities/<kind>.json` 提供 `name`、`studio.label`、可选的 `studio.order`、`items` 和 `implementation`。内核提供通用的 `valueType`、`language` 和玩法登记 `play`。`circuit` 定义 `operation`、`primitive`、`board`、`display` 等共享种类。逻辑、图像、表格和逐拍玩法各自定义专用种类，例如 `logic/want`、`image/scene`、`table/world` 和 `tick-bus/want`。实现要求由声明决定，`core` 可以要求指定方法，`view` 要求能力项所属包有视图入口。项名按种类独立登记，同类内重复时报错。
+`capabilities/<kind>.json` 提供 `name`、`studio.label`、可选的 `studio.order`、`items` 和 `implementation`。包用 `{ "extends": "<kind>", "items": { ... } }` 给自身或直接依赖的能力种类贡献项，项名仍归贡献包。内核提供通用的 `valueType`、`language` 和 `play`。`circuit` 定义 `operation`、`primitive`、`board`、`display` 等共享种类。逻辑、图像、表格和逐拍玩法各自定义专用种类，例如 `logic/want`、`image/scene`、`table/world` 和 `tick-bus/want`。
+
+JSON 声明名字、字段、类型、默认值和对作者有用的双语说明。纯数据项直接使用，需要代码的项由种类的 `implementation.side` 指定入口，核心可以要求指定方法。用 `kernel.implement(kind, name, value)` 挂上行为。实现的名字须已声明，要求实现的名字须在对应入口登记，同类的重复登记会报错。要求无界面检查验证的视图能力在视图入口用字面量登记种类和全名。玩法可以在能力声明中列名，也可以用 `kinds/` 中的 `play` 字段随任务字段一起声明。
 
 图像玩法 `image` 负责图接线、探针、机关台和面向关卡的元件声明。`image-processing` 提供浮点像素、颜色通道、邻域滤波、重采样与频域运算。`machine-learning` 提供与领域无关的向量注意力、激活函数、采样和数值优化，可以独立用于机器学习课程和自然语言处理。`computer-vision` 负责特征检测、几何匹配、视差、成像模型和面向图像的学习模型。视觉计算只在需要时使用 `image-processing` 的像素表示和 `machine-learning` 的算法。`image` 和课程 `vision-complete` 通过公开核心接口使用这三个库，元件及任务继续使用现有的 `image/*` 身份。
+
+`table` 持有机器人板、世界构造与扫描、接线、运行与判定、场景绘制及七种手动模式。课程 `state-graph` 提供具体世界生成器、关卡声明与地图图示，并在 `state-graph/<play>` 下登记 `table` 的玩法实现。旧存档按这些玩法名计算任务印记。`vision-complete` 的场景和机关模型按声明的全名接入 `image`，课程专用显示留在课程视图。霍夫投票和 RANSAC 的实验计算由 `computer-vision` 提供，曲线拟合计算由 `machine-learning` 提供。
 
 对象类型的含义由 `kind` 登记提供。 `progress` 通过词汇表的 `levelMarks` 提供关卡标记及其标签 ID，组装与 Studio 编排使用同一份声明。内核依 schema 读取、覆盖、展开引用和检查字段，调用含义对象完成派生。`circuit/part` 解释元件和 `replaces`，`progress/part` 解释阶段和发放，`circuit/tray` 解释托盘及菜单，`circuit/quote` 读取引语。它们的文件类型分别是 `circuit/part`、`circuit/tray`、`circuit/quote`。`relations` 声明给出自定义关系的端点类型。
 

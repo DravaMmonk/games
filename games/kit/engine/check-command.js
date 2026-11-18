@@ -12,12 +12,16 @@ import { deepFreeze } from './content.js'
 import { openGame, openPackage } from './ops/workspace.js'
 import { driftOf } from './ops/log.js'
 import { checkCache } from './check-cache.js'
+import { packageExportWarnings } from './plugin-boundaries.js'
 
 const root = contentRoot()
 let problems = 0
 const mutants = process.argv.includes('--mutants')
 const fresh = process.argv.includes('--fresh')
 const asked = process.argv.slice(2).filter((arg) => !['--mutants', '--fresh', '--package', '--game'].includes(arg))
+if (!asked.length && !process.argv.includes('--package') && !process.argv.includes('--game')) {
+  for (const warning of packageExportWarnings(root)) console.warn(`WARN ${warning}`)
+}
 // One game whose domain throws is reported as such; the others are still checked.
 for (const { id, kind } of contentTargets(asked, root, { package: process.argv.includes('--package'), game: process.argv.includes('--game') })) {
   const packaged = kind === 'package'

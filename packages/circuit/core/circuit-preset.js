@@ -4,7 +4,7 @@ import { failureOf } from 'kernel'
 
 // The circuit preset (games/design/README.md 6.3, games/DIRECTION.md decision 24): a way to play made of the kernel's
 // parts — the board of fixed cards (./board-cards.js), the course read with its built parts (./board-works.js), the
-// level's schema (./level-schema.js) and the author checks below over the judge (./authoring.js, ./judge.js). A domain
+// level's schema (shapes/level.json) and the author checks below over the judge (./authoring.js, ./judge.js). A domain
 // on it gives its vocabulary, its course and how a task runs, and gets its domain module:
 //
 //   circuitRuntime({ vocabulary, course, run, entries, failure?, more?, kinds?, …extensions }) → runtime.js's

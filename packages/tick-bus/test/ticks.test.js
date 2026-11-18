@@ -118,7 +118,7 @@ test('parts defined as data read and keep registers, and two packed counters cou
   const one = boardNode({ id: 'b', circuit: counter, parts })
   assert.deepEqual([0, 1, 2].map((t) => one.hear(t).outputs.out), [0, 1, 2])
   // A register kept 「—」 holds it; unkept, its start; with none, 「—」.
-  const { BUILTINS } = await import('../../circuit/core/index.js')
+  const { BUILTINS } = await import('../../circuit/core/parts/builtins.js')
   assert.equal(BUILTINS['circuit/held'].run([], { reg: 'A', start: 5 }, { held: () => null }), null)
   assert.equal(BUILTINS['circuit/held'].run([], { reg: 'A', start: 5 }, { held: () => undefined }), 5)
   assert.equal(PARTS.read.eval({}, { params: { reg: 'B', start: '' } }, {}), null)

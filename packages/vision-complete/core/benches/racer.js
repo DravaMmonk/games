@@ -1,12 +1,9 @@
 // The kernel sprint: each round shows an input and what one 3×3 kernel made of it, with four kernel cards to choose
 // from. Rounds come from a seed (one per attempt), so a retry is a new set and a check can replay any of them. As a
 // bench it is a process: start, answer (or run out of time), a short look at the right card, the next round.
-import { S } from 'kernel'
 import { limitOf, picture } from 'image'
 import { correlate, random } from 'image-processing'
 import { T as t } from 'kernel'
-
-const num = S.num()
 
 export const maxAbsDiff = (a, b) => a.data.reduce((worst, v, i) => Math.max(worst, Math.abs(v - b.data[i])), 0)
 
@@ -42,13 +39,6 @@ export function racerRounds({ kernels, inputs, racer }, seed) {
 
 /** The bench model: knob `untimed`; acts start, answer (arg: the card, or null when time is up), next; quantity right. */
 export const racer = {
-  about: t('核速判：看输入和输出，限时选出是哪个 3×3 核；旋钮 untimed（不限时）；一局结束后 final 是答对的轮数'),
-  setup: S.obj({
-    kernels: S.list(S.obj({ id: S.str(), cells: S.list(num, { min: 9, view: 'grid' }), div: num }), { about: t('核按 3×3 核元件的读法：权重是 cells ÷ div') }),
-    inputs: S.list(S.call('picture')),
-    rounds: S.int({ min: 1 }), minGap: num,
-    time: S.obj({ start: num, step: num, min: num }, { about: t('第 n 轮（从 0 数）的秒数：max(min, start − step·n)') }),
-  }),
   make({ kernels, inputs, rounds: total, minGap, time }, bench) {
     const weighted = kernels.map((k) => ({ ...k, w: k.cells.map((c) => c / k.div) }))
     const pictures = inputs.map(picture)

@@ -1,5 +1,5 @@
 import { creationChoices, blank, getAt, showPath, shapeAt } from 'kernel/view'
-import { partFileSchema } from '../../core/index.js'
+import { partFileSchema } from '../../core/parts/schema.js'
 import { DEFAULT_VIEWS } from '../parts/PartFace.jsx'
 
 export function onPartPage(m, { content, ops, shown, edit, pickField, vocabulary, playOrder }) {

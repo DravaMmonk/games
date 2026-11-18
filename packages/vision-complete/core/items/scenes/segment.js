@@ -1,10 +1,8 @@
 // Scenes of labelling every pixel (scenes/index.js): a picture before and after max pooling, two-means on a
 // picture's brightness, and cells under a microscope.
-import { S } from 'kernel'
+
 import { fromFn, image, maxPool, random } from 'image-processing'
 import { picture } from 'image'
-import { T as t } from 'kernel'
-
 
 // 2 × 2 blocks, one cell of each clearly the brightest.
 function blocky(seed) {
@@ -61,27 +59,15 @@ function cells(seed, inside, { cell = 0.8, back = 0.2, grain = 0.4 } = {}) {
 
 export const SEGMENT = {
   pooled: {
-    about: t('一张 16 × 16 的图和它 2 × 2 最大池化后的 8 × 8；期望是反池化：每个值放回它原来的那一格，其余为 0'),
-    test: S.obj({ seed: S.int() }),
     make: ({ seed }) => ({ inputs: { small: maxPool(blocky(seed), 2), big: blocky(seed) }, expected: { out: unpooled(blocky(seed)) } }),
   },
   kmeans: {
-    about: t('一张图和一个分界 m；期望是 k 均值的一步给出的新分界（step），或走三步后按分界分出的掩膜（segment）'),
-    setup: S.obj({ expect: S.oneOf(Object.keys(KMEANS_EXPECTS)) }),
-    test: S.obj({ img: S.call('picture'), m: S.num() }),
     make: ({ img, m }, { expect }) => {
       const pic = picture(img)
       return { inputs: { img: pic, m: image(1, 1, m) }, expected: KMEANS_EXPECTS[expect](pic, m) }
     },
   },
   cells: {
-    about: t('显微镜下的细胞：亮的细胞、暗一些的底、颗粒，挨着的细胞之间留一格缝；期望是细胞的掩膜'),
-    test: S.obj({
-      rects: S.list(S.list(S.int(), { min: 4, about: t('细胞：x0, y0, x1, y1（不含 x1、y1）') })),
-      gapX: S.opt(S.list(S.int(), { about: t('竖缝所在的列') })),
-      gapY: S.opt(S.list(S.int(), { about: t('横缝所在的行') })),
-      seed: S.int(), cell: S.opt(S.num()), back: S.opt(S.num()), grain: S.opt(S.num()),
-    }),
     make: ({ rects, gapX = [], gapY = [], seed, cell, back, grain }) => {
       const inside = (x, y) => rects.some(([x0, y0, x1, y1]) => x >= x0 && x < x1 && y >= y0 && y < y1) && !gapX.includes(x) && !gapY.includes(y)
       const made = cells(seed, inside, { cell, back, grain })

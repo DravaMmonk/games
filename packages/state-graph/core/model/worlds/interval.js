@@ -3,7 +3,8 @@
 // whole row's answer is in the top-right corner. A level may fill the diagonal (single items, o.diag) and the empty
 // segments just under it (o.empty0) before the robot starts.
 
-import { T, tr } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, yes, num, seg, DIR, THIS_CELL } from 'table';
 
 const items = t => [...(t.s || t.w || t.words)];
@@ -19,6 +20,7 @@ const span = (i, j) => (i === j ? tr(`第 ${i + 1} 个`, `item ${i + 1}`) : tr(`
 const short = (i, j) => (i === j ? `${i + 1}` : `${i + 1}–${j + 1}`);
 
 export const interval = world({
+  customOrder: true,
   sensors: {
     left: cell(...DIR.left, [0, 0, -1]), down: cell(...DIR.down, [0, 1, 0]), dl: cell(...DIR.dl, [0, 1, -1]),
     same: { ...yes(T('两端相同', 'ends match'), T('同', '='), 'ends'), heads: true }, weight: num(T('这段总重', 'run weight'), T('重', 'wt'), 'weight'),

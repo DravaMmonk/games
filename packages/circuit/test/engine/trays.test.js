@@ -1,7 +1,8 @@
 import { circuitFixtureSchema } from '../../../qed/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { trayDisplay, trayMembers } from '../../core/index.js'
+import { trayDisplay } from '../../core/trays.js'
+import { trayMembers } from '../../core/index.js'
 
 test('tray menus show only available parts; every folded part in a menu goes into it', () => {
   const menu = { id: 'or', title: '∨', items: ['orI', 'orE', 'locked'] }

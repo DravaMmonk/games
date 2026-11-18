@@ -1,8 +1,10 @@
 // Street-map grids: right/down routes, the same board holding 是 / 否, and two piles of stones laid out as a grid.
 
-import { ORDERS, rcName } from '../algo.js';
-import { W } from '../scene.js';
-import { T, tr } from 'table';
+import { ORDERS, rcName } from 'table';
+import worlds from '../../../capabilities/world.json' with { type: 'json' };
+import { W } from 'table';
+import { tr } from 'kernel';
+import { T } from 'table';
 import { world, look, cell, num, yes, DIR, THIS_CELL } from 'table';
 
 export const inGrid = (t, r, c) => r >= 0 && r < t.R && c >= 0 && c < t.C;
@@ -64,7 +66,7 @@ export const gridDef = {
 export const grid = world(gridDef);
 
 /** The same map, but every cell holds 是 or 否: can a route get here at all? */
-export const gridYes = world({ ...gridDef, cellType: 'kernel/boolean' });
+export const gridYes = world({ ...gridDef, ...worlds.items.gridYes.variant });
 
 /**
  * Two piles of stones: cell (a, b) is the position with a stones left in pile A and b in pile B, and holds whether the

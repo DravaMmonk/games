@@ -6,5 +6,39 @@
       "zh": "图记",
       "en": "Marks"
     }
+  },
+  "items": {
+    "formulaNot": {
+      "symbol": "¬",
+      "order": 2
+    },
+    "formulaAnd": {
+      "symbol": "∧",
+      "order": 3
+    },
+    "formulaOr": {
+      "symbol": "∨",
+      "order": 4
+    },
+    "formulaImplies": {
+      "symbol": "→",
+      "order": 5
+    },
+    "formulaIff": {
+      "symbol": "↔",
+      "order": 6
+    },
+    "formulaFalse": {
+      "symbol": "⊥",
+      "order": 7
+    },
+    "formulaForall": {
+      "symbol": "∀",
+      "order": 0
+    },
+    "formulaExists": {
+      "symbol": "∃",
+      "order": 1
+    }
   }
 }

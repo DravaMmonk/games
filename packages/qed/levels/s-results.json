@@ -24,20 +24,19 @@
       "backtrack": true,
       "tests": [
         {
-          "goal": "∃x. Human(x) ∧ Likes(x, i)",
+          "goal": "Slip",
           "hyps": [
-            "Human(k)",
-            "Human(j)",
-            "Likes(j, i)"
+            "Rain → Slip",
+            "Wet → Slip",
+            "Wet"
           ]
         },
         {
-          "goal": "∃x. Likes(x, i) ∧ Likes(x, j)",
+          "goal": "Awake",
           "hyps": [
-            "Likes(k, i)",
-            "Likes(m, j)",
-            "Likes(l, j)",
-            "Likes(l, i)"
+            "Alarm → Awake",
+            "Coffee → Awake",
+            "Coffee"
           ]
         }
       ],
@@ -46,20 +45,17 @@
         "@level.s-results.tasks.s-results.hint.0"
       ],
       "solution": [
-        "c0r0 = exI()",
-        "c1r0 = andI()",
+        "c0r0 = mp[use=[mp]]()",
         "c0 = rule(in, c0r0)",
-        "c1 = rule(c0, c1r0)",
+        "c1 = assumption(c0)",
         "c2 = assumption(c1)",
-        "c3 = assumption(c2)",
-        "out <- c3"
+        "out <- c2"
       ]
     }
   ],
   "opens": [
     "repeat-s-results-desc",
     "assumption-s-results-desc",
-    "append-s-results-desc",
-    "erule-s-results-desc"
+    "append-s-results-desc"
   ]
 }

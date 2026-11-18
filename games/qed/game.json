@@ -18,6 +18,7 @@
     "@qed/paper",
     "@qed/circuits",
     "@qed/kernel",
+    "@qed/assistant",
     "@qed/packing",
     "@qed/boxes",
     "@qed/quantifiers",

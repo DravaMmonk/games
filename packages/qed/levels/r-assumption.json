@@ -31,7 +31,7 @@
           "goal": "Wet → (Slip → Wet)"
         },
         {
-          "goal": "¬Rain → (Rain → ¬Rain)"
+          "goal": "(Rain → Wet) → (Wind → (Rain → Wet))"
         }
       ],
       "brief": "@level.r-assumption.tasks.r-assumption.brief",

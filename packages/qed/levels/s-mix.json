@@ -19,13 +19,13 @@
       ],
       "tests": [
         {
-          "goal": "Rain → (Wind → Rain ∧ Wind)"
+          "goal": "Rain → ((Rain → Wet) → Wet)"
         },
         {
-          "goal": "(Rain → Rain) ∧ (Wind → (Rain → Wind))"
+          "goal": "(Rain → Wet) → ((Wet → Slip) → (Rain → Slip))"
         },
         {
-          "goal": "Rain → (Wind → Wind ∧ (Rain ∧ Wind))"
+          "goal": "Rain → (Wind → Rain)"
         }
       ],
       "brief": "@level.s-mix.tasks.s-mix.brief",
@@ -45,7 +45,7 @@
         "        c3 = rule(c1.second, c3r0)",
         "      }",
         "      third {",
-        "        c4r0 = andI()",
+        "        c4r0 = mp[use=[mp]]()",
         "        c4 = rule(c1.third, c4r0)",
         "      }",
         "    }",

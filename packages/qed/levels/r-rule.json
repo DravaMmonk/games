@@ -41,10 +41,10 @@
           ]
         },
         {
-          "goal": "Rain ∧ Wet → Slip",
+          "goal": "(Rain → Wet) → Slip",
           "becomes": [
             [
-              "Rain ∧ Wet ⊢ Slip"
+              "Rain → Wet ⊢ Slip"
             ]
           ]
         }

@@ -23,37 +23,44 @@
       ],
       "tests": [
         {
-          "goal": "Wind ∨ Rain",
-          "hyps": [
-            "Wind"
-          ]
-        },
-        {
           "goal": "Rain → Rain"
         },
         {
-          "goal": "Slip ∨ Wet",
+          "goal": "Wet",
           "hyps": [
-            "Slip"
+            "Rain → Wet",
+            "Rain"
+          ]
+        },
+        {
+          "goal": "Slip",
+          "hyps": [
+            "Wet → Slip",
+            "Wet"
           ]
         }
       ],
       "brief": "@level.s-orelse.tasks.s-orelse.brief",
       "hint": [
-        "@level.s-orelse.tasks.s-orelse.hint.0"
+        "@level.s-orelse.tasks.s-orelse.hint.0",
+        "@level.s-orelse.tasks.s-orelse.hint.1"
       ],
       "solution": [
         "c0 = append(in, first: c1, second: c2) {",
         "  first {",
-        "    c1r0 = orI[use=[disjI1]]()",
+        "    c1r0 = impI()",
         "    c1 = rule(c0.first, c1r0)",
         "  }",
         "  second {",
-        "    c2r0 = impI()",
+        "    c2r0 = mp[use=[mp]]()",
         "    c2 = rule(c0.second, c2r0)",
         "  }",
         "}",
-        "c3 = assumption(c0)",
+        "c3 = repeat(c0, body: c4) {",
+        "  body {",
+        "    c4 = assumption(c3.body)",
+        "  }",
+        "}",
         "out <- c3"
       ]
     }

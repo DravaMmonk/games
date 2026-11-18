@@ -1,4 +1,6 @@
 {
+  "course.eras.assistant.chapter.question": "With only Apply and the assumption box, can a proof assistant find a proof by working back from the goal?",
+  "course.eras.assistant.chapter.title": "A simple proof assistant",
   "course.eras.automation.chapter.question": "Can a proof assistant be left to find proofs, and why believe what it finds?",
   "course.eras.automation.chapter.title": "Automation and certificates",
   "course.eras.boxes.chapter.question": "With “and”, “or” and “not” declared, what can be proved?",

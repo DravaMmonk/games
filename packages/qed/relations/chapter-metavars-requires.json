@@ -34,30 +34,6 @@
       "to": "qed/r-unifier"
     },
     {
-      "from": "qed/r-unifier",
-      "to": "qed/r-rule"
-    },
-    {
-      "from": "qed/r-rule",
-      "to": "qed/r-assumption"
-    },
-    {
-      "from": "qed/r-assumption",
-      "to": "qed/r-subgoals"
-    },
-    {
-      "from": "qed/r-subgoals",
-      "to": "qed/r-meta"
-    },
-    {
-      "from": "qed/r-meta",
-      "to": "qed/r-lemma"
-    },
-    {
-      "from": "qed/r-lemma",
-      "to": "qed/r-elim"
-    },
-    {
       "from": "qed/r-elim",
       "to": "qed/r-cases"
     },
@@ -109,6 +85,14 @@
     {
       "from": "qed/r-exE",
       "to": "qed/r-order"
+    },
+    {
+      "from": "qed/r-unifier",
+      "to": "qed/r-subgoals"
+    },
+    {
+      "from": "qed/r-subgoals",
+      "to": "qed/r-elim"
     }
   ]
 }

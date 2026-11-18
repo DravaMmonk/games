@@ -44,7 +44,18 @@
         "}",
         "c2 = assumption(c0)",
         "out <- c2"
+      ],
+      "naive": [
+        "c0r0 = impI()",
+        "c1r0 = impI()",
+        "c0 = rule(in, c0r0)",
+        "c1 = rule(c0, c1r0)",
+        "c2 = assumption(c1)",
+        "out <- c2"
       ]
     }
+  ],
+  "adds": [
+    "repeat"
   ]
 }

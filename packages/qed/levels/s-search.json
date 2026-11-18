@@ -12,6 +12,7 @@
       "t": "@level.s-search.intro.1.t"
     }
   ],
+  "after": "@level.s-search.after",
   "tasks": [
     {
       "id": "s-search",
@@ -26,28 +27,26 @@
       "backtrack": true,
       "tests": [
         {
-          "goal": "Rain ∨ (Wind ∨ Wet)",
+          "goal": "Slip",
           "hyps": [
-            "Wet"
-          ]
-        },
-        {
-          "goal": "Rain ∨ (Wind ∨ Wet)",
-          "hyps": [
+            "Rain → Slip",
+            "Wet → Slip",
+            "Wind → Wet",
             "Wind"
           ]
         },
         {
-          "goal": "(Rain ∨ Wind) ∨ Wet",
-          "hyps": [
-            "Wind"
-          ]
+          "goal": "(Rain → Wet) → ((Wet → Slip) → ((Slip → Fall) → (Rain → Fall)))"
+        },
+        {
+          "goal": "(Wind → Slip) → ((Rain → Slip) → ((Wet → Rain) → (Wet → Slip)))"
         }
       ],
       "brief": "@level.s-search.tasks.s-search.brief",
       "hint": [
         "@level.s-search.tasks.s-search.hint.0",
-        "@level.s-search.tasks.s-search.hint.1"
+        "@level.s-search.tasks.s-search.hint.1",
+        "@level.s-search.tasks.s-search.hint.2"
       ],
       "solution": [
         "c0 = search(in, body: c1) {",
@@ -57,11 +56,32 @@
         "        c2 = assumption(c1.first)",
         "      }",
         "      second {",
-        "        c3r0 = orI[use=[disjI1]]()",
+        "        c3r0 = impI()",
         "        c3 = rule(c1.second, c3r0)",
         "      }",
         "      third {",
-        "        c4r0 = orI[use=[disjI2]]()",
+        "        c4r0 = mp[use=[mp]]()",
+        "        c5 = rule(c1.third, c4r0)",
+        "        c4 = assumption(c5)",
+        "      }",
+        "    }",
+        "  }",
+        "}",
+        "out <- c0"
+      ],
+      "naive": [
+        "c0 = search(in, body: c1) {",
+        "  body {",
+        "    c1 = append[ways=\"3\"](c0.body, first: c2, second: c3, third: c4) {",
+        "      first {",
+        "        c2 = assumption(c1.first)",
+        "      }",
+        "      second {",
+        "        c3r0 = impI()",
+        "        c3 = rule(c1.second, c3r0)",
+        "      }",
+        "      third {",
+        "        c4r0 = mp[use=[mp]]()",
         "        c4 = rule(c1.third, c4r0)",
         "      }",
         "    }",

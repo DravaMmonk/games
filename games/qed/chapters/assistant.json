@@ -1,0 +1,18 @@
+{
+  "machine": "prover",
+  "chapter": {
+    "title": "@course.eras.assistant.chapter.title",
+    "question": "@course.eras.assistant.chapter.question"
+  },
+  "levels": [
+    "qed/r-rule",
+    "qed/r-assumption",
+    "qed/r-meta",
+    "qed/r-lemma",
+    "qed/s-repeat",
+    "qed/s-orelse",
+    "qed/s-mix",
+    "qed/s-results",
+    "qed/s-search"
+  ]
+}

@@ -8,10 +8,6 @@
     {
       "from": "s-orelse",
       "to": "s-mix"
-    },
-    {
-      "from": "s-mix",
-      "to": "s-try"
     }
   ]
 }

@@ -34,9 +34,9 @@
           ]
         },
         {
-          "goal": "Wind ∧ Wet",
+          "goal": "Wind → Wet",
           "hyps": [
-            "Rain → Wind ∧ Wet",
+            "Rain → (Wind → Wet)",
             "Rain"
           ]
         }

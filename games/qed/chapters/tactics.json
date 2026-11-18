@@ -5,15 +5,10 @@
     "question": "@course.eras.tactics.chapter.question"
   },
   "levels": [
-    "qed/s-repeat",
-    "qed/s-defer",
-    "qed/s-orelse",
-    "qed/s-results",
-    "qed/s-mix",
     "qed/s-try",
+    "qed/s-defer",
     "qed/s-append",
     "qed/s-intro",
-    "qed/s-search",
     "qed/s-elim",
     "qed/s-auto",
     "qed/pl-grand",

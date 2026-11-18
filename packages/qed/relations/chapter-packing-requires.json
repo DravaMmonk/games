@@ -2,7 +2,7 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/mergeUse",
+      "from": "qed/s-search",
       "to": "qed/decl-and"
     },
     {

@@ -227,7 +227,9 @@
     "新的阶段": "New stage",
     "生效": "In effect",
     "设置": "Setting",
-    "运算声明": "Declared"
+    "运算声明": "Declared",
+    "「{subject}」应当是 {want}，这块板给出 {got}。": "“{subject}” should be {want}; the board gives {got}.",
+    "请用列表中的新增或删除按钮管理件和设置。": "Use the list controls to add or delete parts and settings."
   },
   "capability.board.studio.label": "Boards",
   "capability.display.studio.label": "Displays",

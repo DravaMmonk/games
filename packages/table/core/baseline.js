@@ -1,9 +1,7 @@
+import { exampleReports } from 'kernel'
 import { handExamples, judgeHand } from './model/hand-verdict.js'
 import { robotReport } from './model/verdict.js'
-const examples = (task, run, reference = task.solution, naive = task.naive) => ({
- reference: reference === undefined ? { absent: true } : { work: reference, report: run(reference) },
- naive: naive == null ? { absent: true } : { work: naive, report: run(naive) },
-})
+const examples = (task, run, reference = task.solution, naive = task.naive) => exampleReports(reference, naive, run)
 export function tableReports({ spec }) {
  if (!spec.table) return null
  const works = spec.table

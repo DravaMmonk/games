@@ -1,3 +1,4 @@
+import { referenceCatalog } from './reference-catalog.js'
 import { definitionOfKind } from '../engine/plugin-kinds.js'
 // The package workspace of the studio (games/design/README.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
 // and plays a package's levels without code, a level group at a time. It is a thin skin over the operation set (the
@@ -16,7 +17,7 @@ import { definitionOfKind } from '../engine/plugin-kinds.js'
 // prefs.js); the command palette (Ctrl/⌘+K) reaches every place and action, ? lists the keys.
 import './studio.css'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { BookOpen, Cpu, FileBox, FileCode2, Flag, Layers, ListTree, Package, Search as SearchIcon } from 'lucide-react'
+import { Cpu, FileBox, FileCode2, Flag, Layers, ListTree, Package, Search as SearchIcon } from 'lucide-react'
 import { L, T, getLang, sideOf, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { find, shapeAt } from '../engine/schema.js'
@@ -26,7 +27,7 @@ import { blank, copyLevelData, creationChoices, placesOf, referenceFor } from '.
 import { findTask, tasksSchema } from '../engine/tasks.js'
 import { addFor, markOf, markPath } from './marks.js'
 import { contentVocabulary } from './editors.js'
-import { editorForType, editorRoute, registeredEditors, registeredPlayCapabilities } from './editors.js'
+import { editorForType, editorRoute, registeredEditors, registeredPlayCapabilities, navigableProjections } from './editors.js'
 import { freeName } from './names.js'
 import { itemOf, problemPlace } from './worklist.js'
 import { paletteIndex } from './palette.js'
@@ -35,7 +36,7 @@ import { confirmDelete } from './delete.js'
 import PanelResizer from './PanelResizer.jsx'
 import Tree from './Tree.jsx'
 import Search from './Search.jsx'
-import Editor from './Editor.jsx'
+import Bulk from './Bulk.jsx'
 import Compare from './Compare.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
@@ -76,7 +77,7 @@ const SAVED_VIEW = window.history.state?.studio
 const OPENED = readOpen(QUERY)
 // The left column's switcher (left-lists.js PACKAGE_LISTS): each list's icon and name.
 const LISTS = {
-  packages: [Package, T("包")], tree: [ListTree, T("关卡")], entries: [BookOpen, T("词条")],
+  packages: [Package, T("包")], tree: [ListTree, T("关卡")],
   kernel: [Cpu, T("能力")], overrides: [Layers, T("覆盖")], search: [SearchIcon, T("搜索")],
 }
 // The kind of object each build list holds, and the relations a new group of it can be.
@@ -87,6 +88,10 @@ const SCOPE = 'package'
 
 const selectionName = at => { const route = editorRoute(at); return at?.[route?.selector] }
 const objectPathOf = at => { const route = editorRoute(at); return selectionName(at) !== undefined ? [route.root, selectionName(at)] : null }
+const projectionSelection = query => {
+  const found = navigableProjections().find(([name]) => query.has(name))
+  return found ? { [found[0]]: true } : null
+}
 const selectionPath = (at) => objectPathOf(at) ?? (at ? [] : null)
 
 /** Keep the selection in the address and the editor details in the same history entry. */
@@ -94,13 +99,13 @@ const remember = (pkg, at, field, playLevel, task, opened, heading) => {
   const url = new URL(window.location.href)
   url.searchParams.set('package', pkg)
   url.searchParams.set('space', 'build')
-  for (const k of ['game', 'scope', 'file', 'level', 'group', 'era', ...registeredEditors().map(editor => editor.route?.type).filter(Boolean), 'glossary', 'object', ...Object.values(OBJECT_LISTS), ...HEADING_KINDS]) url.searchParams.delete(k)
+  for (const k of ['game', 'scope', 'file', 'level', 'group', 'era', ...registeredEditors().map(editor => editor.route?.type).filter(Boolean), ...navigableProjections().map(([name]) => name), 'object', ...Object.values(OBJECT_LISTS), ...HEADING_KINDS]) url.searchParams.delete(k)
   for (const [k, v] of opened) url.searchParams.set(k, v)
   if (heading && at?.group === undefined) url.searchParams.set(...headingParam(heading))
   if (at?.level) url.searchParams.set('level', at.level)
   if (at?.group !== undefined) url.searchParams.set('group', at.group)
   if (selectionName(at) !== undefined) url.searchParams.set(editorRoute(at).type, selectionName(at))
-  if (at?.glossary) url.searchParams.set('glossary', '1')
+  for (const [name] of navigableProjections()) if (at?.[name]) url.searchParams.set(name, '1')
   url.searchParams.delete('tab')
   const inspector = field?.path ? { path: field.path, ...(field.trail && { trail: field.trail }) } : field?.missing ? { missing: field.missing } : null
   window.history.replaceState({ studio: { inspector, playLevel, task, gameRoot: Boolean(at?.game) } }, '', url)
@@ -124,11 +129,11 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const [objectStage, setObjectStage] = useState(null) // the stage of the part shown that the page previews
   const [levelsBy, setLevelsBy] = usePref('level-by', 'tag')
   const [partsBy, setPartsBy] = usePref('part-by', 'tag')
-  const [entriesBy, setEntriesBy] = usePref('entry-by', 'tag')
+  const [sidebarGroups, setSidebarGroups] = usePref('sidebar-groups', {})
   const [objectField, setObjectField] = useState(null) // the field of the object open shown on the right: { of, path }
   const { ops, redo, why, setWhy, shown, last, checked, base, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
   const [rawNames, setRawNames] = useState(null)
-  const [at, setAt] = useState(() => (QUERY.get('level') ? { level: QUERY.get('level') } : QUERY.get('group') ? { group: QUERY.get('group') } : registeredEditors().some(editor => editor.route && QUERY.has(editor.route.type)) ? Object.fromEntries(registeredEditors().filter(editor => editor.route && QUERY.has(editor.route.type)).map(editor => [editor.route.selector, QUERY.get(editor.route.type)])) : QUERY.get('glossary') ? { glossary: true } : SAVED_VIEW?.gameRoot ? { game: true } : null))
+  const [at, setAt] = useState(() => (QUERY.get('level') ? { level: QUERY.get('level') } : QUERY.get('group') ? { group: QUERY.get('group') } : registeredEditors().some(editor => editor.route && QUERY.has(editor.route.type)) ? Object.fromEntries(registeredEditors().filter(editor => editor.route && QUERY.has(editor.route.type)).map(editor => [editor.route.selector, QUERY.get(editor.route.type)])) : projectionSelection(QUERY) ?? (SAVED_VIEW?.gameRoot ? { game: true } : null)))
   const [picked, setPicked] = useState(() => new Set(at?.level ? [at.level] : []))
   const [drawerTab, setDrawerTab] = usePref('drawer-tab', 'audit') // the fold bar's tab (Drawer.jsx)
   const [play, setPlay] = useState(() => {
@@ -207,7 +212,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   useEffect(() => {
     if (!loaded) return undefined
     const no = ++namesSeq.current
-    const timer = window.setTimeout(() => call('names', { ...target, scope: SCOPE, changeset: { ops: JSON.parse(naming) } }).then((r) => no === namesSeq.current && setRawNames({ ...r, stamp: no })).catch(() => {}), naming === '[]' ? 0 : SETTLE)
+    const timer = window.setTimeout(() => call('names', { ...target, scope: SCOPE, changeset: { ops: JSON.parse(naming) } }).then((r) => no === namesSeq.current && setRawNames(r)).catch(() => {}), naming === '[]' ? 0 : SETTLE)
     return () => window.clearTimeout(timer)
   }, [game, naming, rev, loaded])
 
@@ -223,17 +228,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   // A list no longer shown (another package's types, or the author's choice) falls back to the first one listed.
   useEffect(() => { if (leftKeys.length && side !== 'packages' && !leftKeys.includes(side)) setSide(leftKeys[0]) }, [leftKeys, side]) // eslint-disable-line react-hooks/exhaustive-deps
   const items = useMemo(() => lines.map(itemOf), [lines])
-  const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? []), [lines, checked, shown])
-  const names = useMemo(() => rawNames && {
-    level: new Map(rawNames.levels.map((l) => [l.id, l])),
-    part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
-    wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    stamp: rawNames.stamp,
-    onLevel: (id) => select({ level: id }),
-  }, [rawNames]) // eslint-disable-line react-hooks/exhaustive-deps
+  const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
+  const names = useMemo(() => referenceCatalog(rawNames, id => select({ level: id })), [rawNames]) // eslint-disable-line react-hooks/exhaustive-deps
   const playOrder = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
-  // Where the course first gives each part (the names tool reads it off the components box): its type → a level.
-  const earnedAt = useMemo(() => new Map((rawNames?.parts ?? []).filter((p) => p.at).map((p) => [p.part, p.at])), [rawNames])
   const levelOptions = useMemo(() => {
     if (!content) return null
     const label = new Map((rawNames?.levels ?? []).map((l) => [l.id, l]))
@@ -280,7 +277,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const select = (next, keep = false) => {
     leaveObjects()
     setHeading(null)
-    const other = next?.level !== at?.level || next?.group !== at?.group || Boolean(next?.game) !== Boolean(at?.game) || Boolean(next?.glossary) !== Boolean(at?.glossary) || selectionName(next) !== selectionName(at)
+    const other = next?.level !== at?.level || next?.group !== at?.group || Boolean(next?.game) !== Boolean(at?.game) || navigableProjections().some(([name]) => Boolean(next?.[name]) !== Boolean(at?.[name])) || selectionName(next) !== selectionName(at)
     setAt(next)
     setMoving(null)
     const root = objectPathOf(next)
@@ -306,6 +303,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   /** An object named somewhere (a tag, a relation, a tray, a section) opened in the build list it belongs in. */
   const openNamed = (kind, full) => {
+    if (openProjectedObject(kind, full)) return
     const of = kind === 'tag' ? content?.registries?.tag?.[full]?.kind : kind === 'relation' ? relationOf(full) : null
     openHeading({ kind, full }, listOfHeading(kind, of))
   }
@@ -361,14 +359,30 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     select(null)
     if (play?.level === level) { setPlay(null); setPageTask(0); setGo(null) }
   }
+  const projections = navigableProjections(vocab?.vocabulary)
+  const openProjection = (file, path, keep = false) => {
+    const projection = projections.find(([name]) => name === file)?.[1]
+    if (!projection) return false
+    const fieldPath = projection.fieldPath(projection.read(content), path)
+    if (fieldPath === null) return true
+    select({ [file]: true }, keep)
+    if (fieldPath.length) pickField(fieldPath, !keep)
+    else setField(null)
+    return true
+  }
+
+  const openProjectedObject = (kind, full, tail = []) => {
+    for (const [name, projection] of projections) {
+      const path = projection.objectPath?.(projection.read(content), kind, full)
+      if (path) return openProjection(name, [...path, ...tail])
+    }
+    return false
+  }
+
   /** Find a field in the side panel: the file it is in picked, the field in it. */
   const jump = (level, path, file = null) => {
     const keys = path ? parsePath(path) : []
-    if (file === 'glossary') {
-      select({ glossary: true })
-      if (keys.length) pickField(keys, true)
-      return
-    }
+    if (openProjection(file, keys)) return
     if (level) select({ level })
     else if (file?.endsWith('.json')) {
       const declaration = Object.entries(content.objectKinds ?? {}).find(([, type]) => type.folder && file.startsWith(`${type.folder}/`))
@@ -385,9 +399,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     else setField(null)
   }
   /** A field into the side panel (opened if folded); a field of another task has the page play that task. */
-  const pickField = (path, focus = false, pendingFace = null, trail = null) => {
+  const pickField = (path, focus = false, pendingValue = null, trail = null) => {
     setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
-    setField({ path, ...(focus && { focus }), ...(pendingFace && { pendingFace }), ...(trail && { trail }) })
+    setField({ path, ...(focus && { focus }), ...(pendingValue && { pendingValue }), ...(trail && { trail }) })
     if (path[0] === 'tasks' && Number.isInteger(path[1])) setGo({ task: path[1] })
   }
   const inspectorSelection = at ?? { game: true }
@@ -418,14 +432,16 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
       if (named.kind === 'level') return jump(named.full, named.path || null)
       const route = editorForType(named.kind)?.route
       if (route) return select({ [route.selector]: named.full })
-      if (named.kind === 'entry') return jump(null, `entries[${named.full}]`, 'glossary')
+      if (openProjectedObject(named.kind, named.full, parsePath(named.path ?? []))) return
       if (content.registries?.[named.kind]?.[named.full]) return openNamed(named.kind, named.full)
     }
     const place = places.find((p) => item.levels.includes(p.level) && p.path && item.text.endsWith(p.says))
     if (place) return jump(place.level, place.path)
     const game = /^content: game\.json((?:\.[^\s:[]+|\[\d+\])*): /.exec(item.text)
     if (game) return jump(null, game[1].replace(/^\./, ''), 'game')
-    if (/^content: glossary\.json/.test(item.text)) return jump(null, null, 'glossary')
+    for (const [name] of projections) {
+      if (item.text.startsWith(`content: ${name}.json`)) return openProjection(name, [])
+    }
     if (item.levels[0]) select({ level: item.levels[0] })
   }
   // Play a level, opened on one of its boards (path) when given; `take`: the board is being edited there.
@@ -473,13 +489,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     const at = [...(value.tasks ? ['tasks', task] : []), side, own[side].findIndex((p) => p.name === port), 'view']
     edit({ op: 'level.set', level, path: at, value: view })
   }
-  // A field of game.json (on the map) or of the glossary (in the encyclopedia; an entry goes by its id) picked on the page.
+  // A field picked on the map or a package-owned page.
   const onFilePage = ({ file, path }) => {
-    if (file === 'glossary') {
-      const k = path[0] === 'entries' ? content.glossary.entries.findIndex((e) => e.id === path[1]) : -1
-      select({ glossary: true }, true)
-      return pickField(path[0] === 'entries' ? ['entries', k, ...path.slice(2)] : path)
-    }
+    if (openProjection(file, path, true)) return
     select({ game: true }, true)
     return pickField(path)
   }
@@ -606,12 +618,19 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   const togglePanel = (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] }))
   // The side panel's field: its control's context (as the forms had it), and the mark the page draws it with.
-  const sideFile = at?.level ? { level: at.level } : objectRoot ? { [editorRoute(at)?.file]: true, root: objectRoot } : at?.glossary ? { glossary: true } : at ? { game: true } : null
-  const pendingFace = field?.pendingFace && ops.some((op) => op.op === `${editorRoute()?.file}.set` && op.value === field.pendingFace && !shown?.ops.includes(op)) ? field.pendingFace : null
+  const selectedProjection = projections.find(([name]) => at?.[name])
+  const projectionMark = content && field?.path && selectedProjection?.[1].pagePath(selectedProjection[1].read(content), field.path)
+  const sideFile = at?.level ? { level: at.level } : objectRoot ? { [editorRoute(at)?.file]: true, root: objectRoot } : selectedProjection ? { [selectedProjection[0]]: true } : at ? { game: true } : null
+  const selectedRoute = at && editorRoute(at)
+  const selectedEditor = selectedRoute && editorForType(selectedRoute.type)
+  const pendingValue = field?.pendingValue
+  const draft = pendingValue && ops.some(op => op.op === `${selectedRoute?.file}.set` && op.value === pendingValue && !shown?.ops.includes(op))
+    ? selectedEditor?.inspectorDraft?.(content, field.path, pendingValue)
+    : null
   const pageMark = field?.path && sideFile?.level && sideFile.level === play?.level ? { ...markOf(levelValue(sideFile.level), field.path), level: sideFile.level }
     : field?.path && selectionName(at) !== undefined && field.path[0] === editorRoute(at)?.root && field.path[1] === selectionName(at) ? JSON.stringify(field.path.slice(2))
     : field?.path && sideFile?.game ? { file: 'game', path: JSON.stringify(field.path) }
-    : field?.path && sideFile?.glossary ? { file: 'glossary', path: JSON.stringify(field.path[0] === 'entries' && Number.isInteger(field.path[1]) ? ['entries', content.glossary.entries[field.path[1]]?.id, ...field.path.slice(2)] : field.path) }
+    : projectionMark ? { file: selectedProjection[0], path: JSON.stringify(projectionMark) }
     : null
 
   const sideCtx = vocab && content && {
@@ -675,13 +694,13 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     }).slice(0, 8)
   }, [ops])
   const paletteItems = overlay === 'palette' && content
-    ? paletteIndex({ content, labels: rawNames?.levels, level, fields, items, recent, actions: ACTIONS, lang })
+    ? paletteIndex({ content, labels: rawNames?.levels, level, fields, items, recent, actions: ACTIONS, lang, projections })
     : []
   const runItem = (item, word) => {
     if (item.kind === 'action') return ACTIONS.find((a) => a.id === item.action)?.run(word)
     if (item.kind === 'level') { select({ level: item.level }); return undefined }
     if (item.kind === 'field' || item.kind === 'recent') return jump(item.level, item.path, item.level ? null : 'game')
-    if (item.kind === 'entry') { select({ glossary: true }); return undefined }
+    if (item.kind === 'projected') return openProjection(item.file, item.path)
     if (item.kind === 'finding') return jumpTo(item.finding)
     return undefined
   }
@@ -716,22 +735,6 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     ...(levelChoices.length ? [{ value: levelChoices.length === 1 ? levelChoices[0].value : 'blank', label: tr("新建关卡"), ...(levelChoices.length > 1 && { children: levelChoices }) }] : []),
     { value: 'copy', label: tr("复制所选关卡"), disabled: !(at?.level && content.levels.some((level) => level.id === at.level)) },
   ]
-  // A new entry of the encyclopedia, or a copy of the one open (greyed when none is).
-  const entryAt = at?.glossary && field?.path?.[0] === 'entries' ? content?.glossary?.entries?.[field.path[1]]?.id ?? null : null
-  const entryAdds = [
-    { value: 'blank', label: tr("新建词条") },
-    { value: 'copy', label: tr("复制所选词条"), disabled: !entryAt },
-  ]
-  const addEntry = (action) => {
-    if (saving) return
-    const source = action === 'copy' ? entryAt : null
-    const name = freeObjectName(ownNames(content, 'entry', namespace), source ? source.slice(source.indexOf('/') + 1) : 'entry')
-    const data = source ? copyWithoutTextKeys(ownObjectData(namespace, objectValue(content, 'entry', source))) : { title: T("新词条"), body: [] }
-    const { id: _, ...rest } = data
-    edit({ op: 'entry.put', entry: name, data: rest })
-    const k = (content.glossary?.entries ?? []).length
-    jump(null, `entries[${k}]`, 'glossary')
-  }
   // The packages first: the one open, and the others to open (the bar's name opens this list too).
   const lists = ['packages', ...leftKeys]
   // The package picked in that list: its meta goes in the right column; opening it is a double click or Open there.
@@ -760,7 +763,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   const GroupEditor = heading && (editorForType(heading.kind)?.component ?? { tag: TagEditor, relation: RelationBoard }[heading.kind] ?? ObjectSummary)
   const PageEditor = selectionName(at) !== undefined ? editorForType(editorRoute(at)?.type)?.page ?? ObjectSummary : GameFrame
-  const EntryList = editorForType('entry')?.list
+  const Sidebar = editorForType(otherType)?.sidebar
   const OtherList = editorForType(otherType)?.list ?? GroupedList
   // The middle: an object list's object (above), several levels picked at once, a group's own object, or the page.
   const middle = side === 'packages' ? 'package' : objectList ? 'objects' : pickedIds.length > 1 ? 'bulk' : heading ? 'group' : 'page'
@@ -812,10 +815,10 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
             {side === 'packages' ? <PackageList packages={packages} current={pkg} picked={pickedPackage} disabled={saving} onPick={setPickedPackage} onOpen={openPackage} onCreate={makePackage} />
               : side === 'kernel' ? <CapabilityList capabilities={capabilities} definitions={capabilityKinds} namespace={namespace} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
               : side === 'overrides' ? <OverrideList events={events} layer={namespace} current={openKey} onOpen={(key) => openIn('overrides', key)} />
-              : side === 'entries' && EntryList ? <EntryList content={content} namespace={namespace} game={game} current={at?.glossary && field?.path?.[0] === 'entries' ? field.path[1] : null}
-                heading={heading} onHeading={(next) => openHeading(next)} {...grouping('entry', entriesBy, setEntriesBy)} onOpen={(k) => jump(null, `entries[${k}]`, 'glossary')}
-                addOptions={entryAdds} onAdd={addEntry} />
-              : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={earnedAt} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}
+              : Sidebar ? <Sidebar content={content} namespace={namespace} game={game} at={at} field={field}
+                heading={heading} onHeading={openHeading} {...grouping(otherType, sidebarGroups[otherType] ?? 'tag', value => setSidebarGroups(previous => ({ ...previous, [otherType]: value })))}
+                onNavigate={openProjection} onEdit={edit} saving={saving} />
+              : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={names?.introducedAt.get(otherType)} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}
                 items={objectsOfType(content, otherType)} label={(id) => L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name) || ''}
                 heading={heading} onHeading={openHeading} {...grouping(otherType, partsBy, setPartsBy)}
                 addOptions={addObjectOptions(otherType)} addLabel={L(typeName(types.find(({ type }) => type === otherType)) || otherType)} onAdd={(action) => addObject(otherType, action)}
@@ -849,7 +852,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
             )}
             {middle === 'bulk' && (
               <div className="studio-scroll">
-                <Editor side={SCOPE} content={content} base={base} vocab={vocab} at={at} picked={pickedIds} field={field} places={places} names={names} levelOptions={levelOptions} playOrder={playOrder} onEdit={edit} onOps={addOps} onSelect={select} onPick={(path) => pickField(path)} onPlay={playFrom} onMove={setMoving} onRemoveLevel={removeLevel} />
+                <Bulk content={content} vocabulary={vocab.vocabulary} ids={pickedIds} ctx={sideCtx}
+                  onAdd={addOps} onMove={setMoving} onSelect={select} />
               </div>
             )}
             {middle === 'group' && (
@@ -874,7 +878,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               ? <Inspector content={content} vocab={vocab} at={objectFile} field={objectFile.object || objectFile.capability || objectFile.override ? { path: objectPath } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickObjectField} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => {}}
                 tabs={inspectorTabs} selection={objectFile} onToggleTab={() => {}} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}
                 onNavigate={(path) => pickObjectField(path)} />
-              : <Inspector content={content} vocab={vocab} at={sideFile} field={field} pendingFace={pendingFace} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={(path) => pickField(path)} onLevel={(lvl, path) => { select({ level: lvl }); pickField(path) }} onRemoveLevel={removeLevel} onRemoveSelection={() => select(null)}
+              : <Inspector content={content} vocab={vocab} at={sideFile} field={field} draft={draft} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={(path) => pickField(path)} onLevel={(lvl, path) => { select({ level: lvl }); pickField(path) }} onRemoveLevel={removeLevel} onRemoveSelection={() => select(null)}
                 tabs={inspectorTabs} selection={inspectorSelection} onToggleTab={toggleInspectorTab} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}
                 onNavigate={(path, trail) => pickField(path, false, null, trail)} />)}
           </aside>

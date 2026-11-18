@@ -26,17 +26,17 @@ export function obscuraBench({ arrow, shaft, table, plate, gap }) {
 
 /** The bench model: knobs Z (the plate), s (the screen) and D (the hole); quantities height, blur and light. */
 export const obscura = {
+  startsUnsolved: true,
   make(setup, bench) {
     const optics = obscuraBench({ ...setup, plate: [bench.knobs.Z.min, bench.knobs.Z.max] })
     return { ...optics, view: (v) => optics.view(v) }
   },
   verify(model, bench) {
-    // A stepped bench: every step starts unsolved and some setting of the knobs it opens solves it.
+    // Some setting of the available knobs must solve each step.
     if (bench.stages) {
       for (const [i, stage] of bench.stages.entries()) {
         const start = startValues(bench, stage)
         const solves = (v) => benchRun(bench, model, v, { stageIndex: i }).pass
-        if (solves(start)) return `step ${i + 1} already passes as it starts`
         const open = openKnobs(bench, stage)
         const range = (knob, lo, hi) => (open.includes(knob) ? Array.from({ length: hi - lo + 1 }, (_, k) => lo + k) : [start[knob]])
         let found = false
@@ -46,7 +46,6 @@ export const obscura = {
       return ''
     }
     const solved = (v) => benchRun(bench, model, v).pass
-    if (solved(startValues(bench))) return 'the starting setting already passes'
     const holes = knobValues(bench.knobs.D)
     const good = []
     for (const D of holes) for (let Z = model.PLATE[0]; Z <= model.PLATE[1]; Z++) for (let s = Z + model.GAP; s <= model.TABLE; s++) if (solved({ Z, s, D })) good.push({ Z, s, D })

@@ -1,3 +1,4 @@
+import { ruleImplementations } from './rule-implementations.js'
 import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 // Proofs as circuits (《证明完毕》). A wire carries a proved judgment:
@@ -270,34 +271,7 @@ const BODIES = {
   },
 }
 
-const ABOUT = {
-  mp: T("套用：由 A → B 和 A 得到 B"),
-  impI: T("假设框：框里假设 A 证出 B，得到 A → B"),
-  andI: T("拼接：由 A 和 B 得到 A ∧ B"),
-  andE: T("拆解：由 A ∧ B 得到 A、B"),
-  orI: T("补充：由 A 得到 A ∨ B"),
-  orE: T("分类讨论：由 A ∨ B 和两个框得到 C"),
-  botE: T("爆炸：由 ⊥ 得到任意一句"),
-  raa: T("反证法：由 ¬¬A 得到 A"),
-  res: T("归结：两条子句消去一对文字"),
-  allI: T("任取框：框里证 P(a)，得到 ∀x. P(x)"),
-  allE: T("选定一例：由 ∀x. P(x) 得到 P(t)"),
-  exI: T("概括：由 P(t) 得到 ∃x. P(x)"),
-  exE: T("实例框：由 ∃x. P(x) 和框得到 C"),
-  natInd: T("数学归纳法"),
-  refl: T("自反律：t = t"),
-  rewrite: T("等量代换：由 s = t 和 φ(s) 得到 φ(t)"),
-}
-/**
- * The proof rules as engine resources (a game's parts.json makes each a part, games/design/README.md 6.8): a resource's
- * arguments are its part's inputs, a box's regions included, in order; the card it runs on and the region whose value
- * it gives come with ctx (../../engine/parts/define.js).
- */
-export const RULES = Object.fromEntries(Object.entries(BODIES).map(([type, b]) => [type, {
-  about: ABOUT[type],
-  args: b.inputs.map((name) => ({ name })),
-  run: (values, _named, ctx) => b.eval(Object.fromEntries(b.inputs.map((name, k) => [name, values[k]])), ctx.node, ctx, ctx.key ?? undefined),
-}]))
+export const RULES = ruleImplementations(BODIES)
 
 /* ---------- lemmas: rules the player proved ---------- */
 

@@ -1,3 +1,4 @@
+import { ruleImplementations } from './rule-implementations.js'
 import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 // The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
@@ -400,26 +401,7 @@ const BODIES = {
   // A rule part: the rules wired in before it, then its own (machine.js ruleParts).
   rules: RULE_PART,
 }
-const ABOUT = {
-  anyR: T("任意结论"), swapConcl: T("替换结论"), consFront: T("添加首项"), mkRule: T("构造规则"),
-  eachOf: T("逐项处理"), keepBound: T("保留⋀"), repeat: T("重复框"),
-  uDelete: T("删除"), uDecompose: T("分解"), uConflict: T("冲突"), uSwap: T("定向"),
-  uCheck: T("出现检查"), uEliminate: T("消元"), uPattern: T("模式合一"),
-  rule: T("逆用规则"), assumption: T("由假设得证"), defer: T("目标后移"), append: T("依次尝试"),
-  search: T("回溯搜索"), each: T("逐个目标"), rw: T("改写"), skolem: T("Skolem 化"),
-  toClauses: T("析出子句"), resolve: T("一轮归结"), oracle: T("外部证明器"),
-  replay: T("重放"), rules: T("规则元件：给出它的规则"),
-}
-/**
- * The machine board's parts as engine resources (a game's parts.json makes each a part, games/design/README.md 6.8): a
- * resource's arguments are its part's inputs, in order; the card it runs on, the region whose value it gives and the
- * regions to run come with ctx (../../engine/parts/define.js).
- */
-export const MACHINE_PARTS = Object.fromEntries(Object.entries(BODIES).map(([type, b]) => [type, {
-  about: ABOUT[type],
-  args: b.inputs.map((name) => ({ name })),
-  run: (values, _named, ctx) => b.eval(Object.fromEntries(b.inputs.map((name, k) => [name, values[k]])), ctx.node, ctx, ctx.key ?? undefined),
-}]))
+export const MACHINE_PARTS = ruleImplementations(BODIES)
 
 // The fixed things Skolem's ∃ out of a hypothesis may name, in order.
 const FRESH = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'k', 'm', 'n']

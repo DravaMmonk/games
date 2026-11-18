@@ -2,6 +2,7 @@ import { S, assertStableIds, mergePatch, refsIn, sideOf } from "kernel"
 import { T } from 'kernel/words'
 import { encyclopedia } from './glossary.js'
 import { GLOSSARY } from './schema.js'
+import { glossaryProjection } from './studio.js'
 import { termRegistry, termUsage } from './terminology.js'
 
 const REFERENCE = 'wiki'
@@ -28,7 +29,19 @@ export function register(kernel) {
     selector: 'entry',
     read: value => value,
     derived: ['glossary', 'sections'],
-    studio: { schemas: { glossary: GLOSSARY } },
+    studio: { projections: { glossary: glossaryProjection } },
+    referencesForTool({ content, game }) {
+      const items = ((game ?? content).glossary?.entries ?? []).map(({ id, title }) => ({ id, title }))
+      return [{ kind: REFERENCE, targetKind: 'entry', label: T('百科'), items }]
+    },
+    search({ content, texts, identifier, schemaOf }) {
+      const schema = schemaOf('entry')
+      for (const { id, group: _group, ...entry } of content.glossary?.entries ?? []) {
+        const location = { file: `entries/${id}.json`, entry: id }
+        texts(entry, schema, location)
+        identifier(id, location)
+      }
+    },
     terminology: { termRegistry, termUsage },
     blindText,
     assemble({ game, id, packageId, registries, resolve }) {

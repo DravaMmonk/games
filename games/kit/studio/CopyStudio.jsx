@@ -1,3 +1,4 @@
+import { referenceCatalog } from './reference-catalog.js'
 import { T } from '../shell/i18n.js'
 // The copy workspace (games/design/README.md 6.7): the writer's. It opens a package or a game and audits and edits every
 // text of that layer in every language — terms, references, and a game's own wording over its packages' texts. On the
@@ -6,18 +7,16 @@ import { T } from '../shell/i18n.js'
 // findings; on the right the field a row goes to (Inspector.jsx); the check and the change log fold under the middle.
 import './studio.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { BookOpen, FileText, Gamepad2, ListTree, Map as MapIcon, Package, Play, RotateCcw, Search as SearchIcon } from 'lucide-react'
+import { FileText, Gamepad2, ListTree, Map as MapIcon, Package, Play, RotateCcw, Search as SearchIcon } from 'lucide-react'
 import { L, getLang, tr } from '../shell/i18n.js'
-import { objectTypes, listOfType } from './object-types.js'
-import { typeName } from './LeftTypes.jsx'
-import { contentVocabulary } from './editors.js'
+import { contentVocabulary, navigableProjections, registeredEditors } from './editors.js'
 import { parsePath } from '../engine/ops/edit.js'
 import { call } from './api.js'
 import { placesOf } from './form.js'
 import { itemOf } from './worklist.js'
 import { usePref } from './prefs.js'
 import { confirmDelete } from './delete.js'
-import { allCopyRows, copyFieldOf, copyFiles } from './copy.js'
+import { allCopyRows, copyFieldOf, copyFiles, copyScopes } from './copy.js'
 import { groupTree } from './groups.js'
 import { sidebarSearch } from './sidebar-list.js'
 import { useChangeset } from './useChangeset.js'
@@ -44,7 +43,7 @@ const LISTS = { games: [Gamepad2, T("游戏")], packages: [Package, T("包")], o
 const remember = (opened, scope, file) => {
   const url = new URL(window.location.href)
   url.searchParams.set('space', 'copy')
-  for (const k of ['package', 'game', 'scope', 'file', 'tab', 'level', 'group', 'era', 'glossary']) url.searchParams.delete(k)
+  for (const k of ['package', 'game', 'scope', 'file', 'tab', 'level', 'group', 'era', ...navigableProjections().map(([name]) => name)]) url.searchParams.delete(k)
   url.searchParams.set(opened.game ? 'game' : 'package', opened.game ?? opened.package)
   if (file !== null) url.searchParams.set('file', file)
   else url.searchParams.set('scope', String(scope))
@@ -105,16 +104,11 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     return () => window.clearTimeout(timer)
   }, [opened.game, opened.package, side, naming, rev, loaded])
   const vocab = useMemo(() => domainVocab && { ...domainVocab, vocabulary: contentVocabulary(domainVocab.vocabulary, content) }, [domainVocab, content])
-  const names = useMemo(() => rawNames && {
-    level: new Map(rawNames.levels.map((l) => [l.id, l])),
-    part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
-    wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    onLevel: () => {},
-  }, [rawNames])
+  const names = useMemo(() => referenceCatalog(rawNames), [rawNames])
   const order = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
   const items = useMemo(() => lines.map(itemOf), [lines])
-  const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? []), [lines, checked, shown])
+  const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
   const files = useMemo(() => (content && vocab ? copyFiles(allCopyRows(content, vocab.vocabulary, order, side)) : []), [content, vocab, order, side])
 
   const openDrawer = (next) => {
@@ -147,9 +141,8 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     ...(side === 'game'
       ? (content.eras ?? []).map((era, k) => [k, `${era.id} ${L(era.title ?? era.chapter?.title) ?? ''}`.trim()])
       : groupTree(content, order).sections.filter((s) => s.group !== null).map((s) => [`group:${s.group}`, L(content.tags?.[s.group]?.title) || s.group])),
-    ['glossary', tr('百科')],
     ...(side === 'package' ? [['ui', tr('界面文案')]] : []),
-    ...objectTypes(content).filter(({ type }) => content.objectKinds?.[type] && Object.keys(content.registries?.[type] ?? {}).length).map(info => [listOfType(info.type), L(typeName(info))]),
+    ...copyScopes(content, vocab?.vocabulary).map(([name, title]) => [name, L(title)]),
   ]
   const matches = sidebarSearch(query)
   const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
@@ -196,7 +189,14 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
               : shownList === 'search'
               ? <Search content={content} vocabulary={vocab.vocabulary} onAdd={addOps} onJump={(level, path, kind) => {
                 const keys = path ? parsePath(path) : []
-                pick(level ? { at: { level }, path: keys } : kind === 'glossary' ? { at: { glossary: true }, path: keys } : kind === 'parts' ? { at: { parts: true, root: keys.slice(0, 2) }, path: keys } : { at: { game: true }, path: keys })
+                const route = registeredEditors().find(editor => editor.route?.file === kind)?.route
+                const projection = navigableProjections(vocab.vocabulary).find(([name]) => name === kind)?.[1]
+                if (level) pick({ at: { level }, path: keys })
+                else if (route) pick({ at: { [kind]: true, root: keys.slice(0, 2) }, path: keys })
+                else if (projection) {
+                  const fieldPath = projection.fieldPath(projection.read(content), keys)
+                  if (fieldPath) pick({ at: { [kind]: true }, path: fieldPath })
+                } else pick({ at: { game: true }, path: keys })
               }} />
               : (
                 <nav className="parts-list" aria-label={L(LISTS[shownList][1])}>
@@ -204,7 +204,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
                   {shownList === 'objects'
                     ? scopes.filter(([, label]) => matches(label)).map(([id, label]) => (
                       <button key={String(id)} type="button" className={`parts-row is-object ${file === null && scope === id ? 'is-on' : ''}`} aria-current={file === null && scope === id ? 'true' : undefined} onClick={() => showScope(id)}>
-                        <i className="family-chip">{id === 'glossary' ? <BookOpen size={12} aria-hidden="true" /> : <ListTree size={12} aria-hidden="true" />}</i>
+                        <i className="family-chip"><ListTree size={12} aria-hidden="true" /></i>
                         <span>{label}</span><i />
                       </button>
                     ))

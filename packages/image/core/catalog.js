@@ -1,4 +1,4 @@
-import { S, contentSchemas } from 'kernel'
+import { S, contentSchemas, extendLevelSchema } from 'kernel'
 import { imageReports } from './baseline.js'
 import levelSchemaSource from '../shapes/level.json' with { type: 'json' }
 import { SCENES } from './items/scenes/index.js'
@@ -27,16 +27,7 @@ export const meaning = {
     }
   },
   vocabulary(base) {
-    const fields = { ...base.level?.fields, ...levelSchema.fields }
-    if (base.level) for (const key of Object.keys(levelSchema.fields).filter(key => key !== 'tasks')) {
-      const previous = base.level.fields[key]
-      if (!previous) fields[key] = S.opt(fields[key])
-      else {
-        const alternatives = S.either(previous, fields[key])
-        fields[key] = previous.optional || fields[key].optional ? S.opt(alternatives) : alternatives
-      }
-    }
-    const level = base.level ? S.obj({ ...fields, tasks: S.list(S.either(base.level.fields.tasks.of, levelSchema.fields.tasks.of), { min: 1 }) }) : levelSchema
+    const level = extendLevelSchema(base.level, levelSchema)
     const gameFields = { ...base.game.fields }
     const ownGame = { box: S.opt(S.name('image/box')), power: S.opt(S.name('image/power')) }
     for (const [key, schema] of Object.entries(ownGame)) gameFields[key] = gameFields[key] ? S.opt(S.either(gameFields[key], schema)) : schema

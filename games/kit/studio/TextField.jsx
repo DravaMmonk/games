@@ -7,28 +7,20 @@
 //
 //   <TextField value onSet names compact? />   onSet(text): the text typed into the selected language; compact: the findings
 //                                                    a count on the text, listed while it is being edited
-//   names: { level: Map(id → { label, title }), part: Map(key → name), wiki: Map(id → title), onLevel(id) }
+//   names: the reference catalog assembled from the registered groups.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link2 } from 'lucide-react'
-import { getLang, sideOf, tr } from '../shell/i18n.js'
-import { REF, refProblems } from '../engine/text.js'
+import { getLang, L, sideOf, tr } from '../shell/i18n.js'
+import { REF, referenceTag, refProblems } from '../engine/text.js'
 import { OptionList } from './Picker.jsx'
 import { MOD } from './Shortcuts.jsx'
 import { textIn } from '../engine/i18n.js'
 
-const HAS_REF = /<(level|part|wiki)-ref to="[^"]+"><\/\1-ref>/
-const tag = (kind, to) => `<${kind}-ref to="${to}"></${kind}-ref>`
 const TRIGGERS = ['[[', '【【']
 
-/** What a chip says: a level's number and title, a part's name, an entry's title (in the side's language). */
 function chipText(names, kind, id, lang) {
-  const pick = (v) => sideOf(v, lang)
-  if (kind === 'level') {
-    const l = names?.level.get(id)
-    return l ? `${l.label} ${pick(l.title) ?? ''}`.trim() : null
-  }
-  const name = names?.[kind].get(id)
-  return name ? pick(name) : null
+  const item = names?.byKind[kind]?.get(id)
+  return item ? [item.label, sideOf(item.title, lang)].filter(Boolean).join(' ') : null
 }
 
 /* ---------- a side as DOM: text nodes and chips; and back ---------- */
@@ -58,7 +50,7 @@ function draw(el, value, names, lang) {
 /** The text a node stands for: text as it is, a chip as its tag, a line break as \n. */
 function textOf(node) {
   if (node.nodeType === Node.TEXT_NODE) return node.nodeValue.replace(/​/g, '')
-  if (node.dataset?.ref) return tag(node.dataset.ref, node.dataset.to)
+  if (node.dataset?.ref) return referenceTag(node.dataset.ref, node.dataset.to)
   if (node.nodeName === 'BR') return '\n'
   const inner = [...node.childNodes].map(textOf).join('')
   return ['DIV', 'P'].includes(node.nodeName) && node.previousSibling ? `\n${inner}` : inner
@@ -119,17 +111,17 @@ const select = (range) => {
 function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, onLink }) {
   const el = useRef(null)
   const composing = useRef(false)
+  const drawn = useRef(null)
   const saved = useRef(null) // the selection when the side last lost focus
   const keep = () => { saved.current = spanOf(el.current) ?? saved.current }
   // Drawn again only when the text is not what the side shows already (typing never redraws it under the caret).
   useLayoutEffect(() => {
-    const stamp = String(names?.stamp)
-    if (el.current.dataset.names === stamp && serialize(el.current) === value) return
+    if (drawn.current?.names === names && drawn.current?.lang === lang && serialize(el.current) === value) return
     // Drawn again under the caret (a title typed renames its chips): the selection stays where it was.
     const span = document.activeElement === el.current ? spanOf(el.current) : null
     draw(el.current, value, names, lang)
     if (span) placeSpan(el.current, ...span)
-    el.current.dataset.names = stamp
+    drawn.current = { names, lang }
   }, [value, names, lang])
 
   const changed = () => {
@@ -140,7 +132,7 @@ function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, 
     const trigger = caret !== null && TRIGGERS.includes(text.slice(caret - 2, caret))
     if (trigger) text = text.slice(0, caret - 2) + text.slice(caret)
     // A tag typed or pasted as text becomes its chip.
-    if (trigger || [...el.current.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && HAS_REF.test(n.nodeValue))) {
+    if (trigger || [...el.current.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && !n.nodeValue.matchAll(REF).next().done)) {
       draw(el.current, text, names, lang)
       if (caret !== null) placeSpan(el.current, trigger ? caret - 2 : caret)
       text = serialize(el.current)
@@ -206,7 +198,7 @@ function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, 
 
 export function textFindings(pair, names) {
   if (!names) return []
-  return [...new Set(refProblems(pair, '', names).map((problem) => problem.trim()))]
+  return [...new Set(refProblems(pair, '', names.byKind).map((problem) => problem.trim()))]
 }
 
 export function TextField({ value, onSet, label, names, findings = [], compact = false, lang = getLang(), placeholder, onFocus, onBlur }) {
@@ -229,11 +221,9 @@ export function TextField({ value, onSet, label, names, findings = [], compact =
     onSet(text)
   }, [onSet])
   const pickerOpen = linking !== null
-  const options = useMemo(() => (names && pickerOpen ? [
-    ...[...names.level].map(([id, l]) => ({ value: `level:${id}`, label: l.label, title: l.title, group: tr('关卡') })),
-    ...[...names.part].map(([k, n]) => ({ value: `part:${k}`, label: k, title: n, group: tr("元件") })),
-    ...[...names.wiki].map(([k, n]) => ({ value: `wiki:${k}`, label: k, title: n, group: tr('百科') })),
-  ] : []), [names, pickerOpen])
+  const options = useMemo(() => pickerOpen
+    ? (names?.options ?? []).map(option => ({ ...option, group: L(option.group) }))
+    : [], [names, pickerOpen, lang])
   const close = () => { setLinking(null); box.current?.focus() }
   const all = [...new Set([...textFindings({ [lang]: draft }, names), ...findings])]
   return (

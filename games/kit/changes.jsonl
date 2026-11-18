@@ -1,3 +1,8 @@
 {"seq":1,"at":"2026-11-18T09:10:31.085Z","why":"Move interface and declaration copy into owned language catalogs","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"726ebbead64aad66"}]}
 {"seq":2,"at":"2026-11-18T09:16:00.855Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"f36cafff89fb6d1e"}]}
 {"seq":3,"at":"2026-11-18T12:35:24.278Z","why":"Finish localization step 24: move inline capability copy to catalog keys and remove unused UI translations","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"ac102a79ffce2907"}]}
+{"seq":4,"at":"2026-11-18T13:37:06.823Z","why":"Move component editor text into the circuit package","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"983fb1758b7a5a4b"}]}
+{"seq":5,"at":"2026-11-18T13:41:45.180Z","why":"Move projection editor text into its owning packages","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"8a5021cc6a49193e"}]}
+{"seq":6,"at":"2026-11-18T13:47:45.048Z","why":"Move projection editor text into its owning packages","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"995c1ea81e849b79"}]}
+{"seq":7,"at":"2026-11-18T13:59:16.281Z","why":"Move failure wording to the judging packages","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"7e6626334508b05e"}]}
+{"seq":8,"at":"2026-11-18T20:39:19.850Z","why":"Reconcile package ownership and main language catalogs","adopt":true,"files":[{"file":"games/kit/i18n/en.json","after":"7e85c5cfdb043b95"}]}

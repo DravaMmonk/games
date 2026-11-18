@@ -111,18 +111,26 @@ test('assembled registries stay outside the editable course fields', () => {
 })
 
 test('encyclopedia form and copy edits target entry and tag objects', async () => {
-  const { opFor, glossaryFile } = await import('./form.js')
-  const { copyRows, copyEdit } = await import('./copy.js')
+  const { fileForm, opFor } = await import('./form.js')
+  const { copyRows, copyEdit, allCopyRows, copyScopes } = await import('./copy.js')
   const glossary = { groups: [{ id: 'toy/terms', title: { en: 'Terms' }, values: ['toy/term'] }], entries: [{ id: 'toy/term', group: 'toy/terms', title: { en: 'Term' }, body: [] }] }
-  const file = { glossary }
+  const { glossarySchemas } = await import('../../../packages/wiki/test/fixture.js')
+  const vocabulary = glossarySchemas({ game: { type: 'obj', fields: {} }, level: { type: 'obj', fields: {} } })
+  const { file } = fileForm({ glossary }, vocabulary, { glossary: true }, [])
   assert.deepEqual(opFor(file, ['entries', 0, 'title'], { set: 'New', lang: 'en' }, 'text'), { op: 'text.set', entry: 'toy/term', path: ['title'], lang: 'en', value: 'New' })
   assert.deepEqual(opFor(file, ['groups', 0, 'title'], { set: 'New', lang: 'en' }, 'text'), { op: 'text.set', tag: 'toy/terms', member: 'entry', path: ['title'], lang: 'en', value: 'New' })
-  assert.equal(glossaryFile(glossary, ['entries', 0, 'body']), 'entries/term.json')
-  assert.equal(glossaryFile(glossary, ['groups', 0, 'title']), 'tags/entry/terms.json')
-  const { glossarySchemas } = await import('../../../packages/wiki/test/fixture.js')
-  const rows = copyRows({ glossary }, glossarySchemas({ game: { type: 'obj', fields: {} } }), 'glossary', [])
+  assert.equal(file.projection.sourceFile(file.value, ['entries', 0, 'body']), 'entries/term.json')
+  assert.equal(file.projection.sourceFile(file.value, ['groups', 0, 'title']), 'tags/entry/terms.json')
+  const rows = copyRows({ glossary }, vocabulary, 'glossary', [])
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/term'), 'en', 'New'), { op: 'text.set', entry: 'toy/term', path: ['title'], lang: 'en', value: 'New' })
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/terms'), 'en', 'New', 'game'), { op: 'text.override', tag: 'toy/terms', member: 'entry', path: ['title'], lang: 'en', value: 'New' })
+  const entryType = Object.entries(vocabulary.objectKinds).find(([, kind]) => kind.objectKind === 'entry')?.[0]
+  assert.ok(entryType)
+  const content = { levels: [], glossary, objectKinds: vocabulary.objectKinds, registries: { entry: { 'toy/term': glossary.entries[0] } } }
+  assert.equal(copyScopes(content, vocabulary).some(([name]) => name === 'glossary'), true)
+  assert.equal(allCopyRows(content, vocabulary, []).filter(row => row.name === 'toy/term').length, 1)
+  assert.deepEqual(file.projection.fieldPath(glossary, ['entries', 'toy/term', 'title']), ['entries', 0, 'title'])
+  assert.deepEqual(file.projection.pagePath(glossary, ['entries', 0, 'title']), ['entries', 'toy/term', 'title'])
 })
 
 test('an edit stands for the last only when both edit the same object: two new objects of one kind both stay', () => {

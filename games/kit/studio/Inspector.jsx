@@ -1,4 +1,3 @@
-import { glossaryFile } from './form.js'
 // The side panel (games/design/README.md 6.7): the one field picked — on the game's page (a click on a text, a test, a task's
 // name), in the rows of a file (Rows.jsx), by a finding, the palette or a search — with its control from the schema
 // (Fields.jsx, the same controls the forms used), what it means, the findings on it and its undo. Above it the way to
@@ -16,7 +15,7 @@ import { useEffect, useRef } from 'react'
 import { ArrowDown, ArrowUp, ArrowRightLeft, Braces, ChevronRight, Copy, MousePointerClick, Pin, Trash2 } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
 import { copyWithoutTextKeys, sourceValue } from '../engine/catalogs.js'
-import { getAt, setAt, showPath } from '../engine/ops/edit.js'
+import { getAt, showPath } from '../engine/ops/edit.js'
 import { fieldAt, fileForm, moved, opFor, placeFindings, taskListOps } from './form.js'
 import { Field } from './Fields.jsx'
 import { AddFields } from './AddFields.jsx'
@@ -28,21 +27,14 @@ import { confirmDelete, removesContent } from './delete.js'
 import InspectorTabs, { inspectorTabKey } from './InspectorTabs.jsx'
 import { objectFileName, overrideFileName, overrideOp } from './object-file.js'
 
-export default function Inspector({ content, vocab, at, field, pendingFace, ctx, places, tabs, selection,
+export default function Inspector({ content, vocab, at, field, draft, ctx, places, tabs, selection,
   onEdit, onOps, onPick, onNavigate, onLevel, onRemoveLevel, onRemoveSelection, onToggleTab, onOpenTab, onCloseTab }) {
   const [json, setJson] = usePref('inspector-json', false)
   const { vocabulary } = vocab
   const order = ctx.levels
   const root = at?.root ?? []
-  const pathToFace = pendingFace && field.path.slice(0, 4)
-  const partDefs = content.partDefs
-  const part = pathToFace && partDefs?.parts?.[pathToFace[1]]
-  const face = pathToFace && pathToFace[3]
-  const preview = part && (part.views?.[face]?.length ?? -1) < pendingFace.length
-    ? { ...content, partDefs: setAt(partDefs, pathToFace.slice(0, 3), { ...part.views, [face]: pendingFace }) }
-    : content
-  const shown = field?.path && fileForm(preview, vocabulary, at, order)
-  const file = at?.object ? { object: { ...at.object, value: shown?.value, tagKind: content.registries?.tag?.[at.object.full]?.kind } } : at?.level ? { level: at.level } : at?.parts ? { parts: true } : at?.glossary ? { glossary: content.glossary } : { game: true }
+  const shown = field?.path && fileForm(draft ?? content, vocabulary, at, order)
+  const file = at?.object ? { object: { ...at.object, value: shown?.value, tagKind: content.registries?.tag?.[at.object.full]?.kind } } : at?.level ? { level: at.level } : shown?.file ?? { game: true }
   // Another layer's object is read here only: it is overridden from the middle.
   const readOnly = Boolean(at?.object && !at.object.own)
   const asJson = json || readOnly
@@ -138,8 +130,8 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
   const isTask = tasked && path.length === 2 && path[0] === 'tasks'
   const list = typeof last === 'number' && !isTask ? getAt(shown.value, parent) : null
   const optional = !list && hit.entry?.optional
-  const { at: findings } = placeFindings(shown.form, places.filter((p) => (at?.object ? false : at?.level ? p.level === at.level : at?.parts ? p.file === 'parts' : at?.glossary ? p.file === 'glossary' : !p.level && !p.file)))
-  const ctxHere = { ...ctx, findings, partDefs }
+  const { at: findings } = placeFindings(shown.form, places.filter((p) => (at?.object ? false : at?.level ? p.level === at.level : file.projection ? p.file === file.name : !p.level && !p.file)))
+  const ctxHere = { ...ctx, findings, content }
   return (
     <div className="insp">
       {header}
@@ -259,13 +251,10 @@ function longConfig(value) {
 
 /** Breadcrumbs always start at the original JSON file. */
 function Head({ content, path, trail, file, root, onPick, json, onToggleJson, about, pinned, onPin, onRemove }) {
-  // A part is a file of its own (parts/<name>.json): its crumbs start at the part.
-  const part = file.parts && root?.length === 2 && root.every((key, i) => key === path[i] && key === trail[i]) ? root : null
-  const base = part ?? []
+  const base = file.projection && root?.every((key, i) => key === path[i] && key === trail[i]) ? root : []
   const name = file.object ? objectFileName(file.object.kind, file.object.full, file.object.tagKind, file.object.namespace, file.object.declared)
     : file.level ? `levels/${file.level.slice(file.level.indexOf('/') + 1)}.json`
-    : part ? `parts/${part[1].slice(part[1].indexOf('/') + 1)}.json` : file.parts ? 'parts/'
-    : file.glossary ? glossaryFile(file.glossary, path) : content.packageTarget ? 'package.json' : 'game.json'
+    : file.projection ? file.projection.sourceFile(file.value, path) : content.packageTarget ? 'package.json' : 'game.json'
   const atRoot = path.length === base.length
   const canOpenRoot = name !== 'package.json'
   const jsonLabel = tr("JSON 源码")

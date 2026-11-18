@@ -1,4 +1,4 @@
-import { withHidden } from 'kernel'
+import { exampleReports, withHidden } from 'kernel'
 import { runProof } from './proof.js'
 import { runMachine } from './machine.js'
 import { runGates, gateTests } from './gates.js'
@@ -14,10 +14,7 @@ import { parse } from './formula.js'
 import { say } from './notation.js'
 
 const judged = (judge, work) => { const fail = judge(work); return { pass: !fail, fail, steps: [{ pass: !fail, fail }] } }
-const examples = (task, run, reference = task.solution ?? task.answer, naive = task.naive) => ({
-  reference: reference === undefined ? { absent: true } : { work: reference, report: run(reference) },
-  naive: naive == null ? { absent: true } : { work: naive, report: run(naive) },
-})
+const examples = (task, run, reference = task.solution ?? task.answer, naive = task.naive) => exampleReports(reference, naive, run)
 
 function logicReport(task) {
   const words = sentence => say(sentenceOf(task, sentence), task.notation)

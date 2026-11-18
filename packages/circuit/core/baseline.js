@@ -1,5 +1,5 @@
 import { runLevel } from './mechanism/run.js'
-import { withHidden } from 'kernel'
+import { exampleReports, withHidden } from 'kernel'
 import { usable, offer, holds } from './course.js'
 
 export function availabilityRecords({ fragment }) {
@@ -29,9 +29,6 @@ export function circuitReports({ spec }, runBoard = runLevel) {
   const works = spec.circuit
   return spec.levels.flatMap(level => (works.played?.get(level.id) ?? level.tasks).map(task => {
     const run = work => runBoard(withHidden(task), work, works.forTask(task).partOf, { traced: true })
-    return { level: level.id, task: task.taskId ?? task.key ?? task.id, kind: task.mode ?? task.kind, report: {
-      reference: task.solution === undefined ? { absent: true } : { work: task.solution, report: run(task.solution) },
-      naive: task.naive == null ? { absent: true } : { work: task.naive, report: run(task.naive) },
-    } }
+    return { level: level.id, task: task.taskId ?? task.key ?? task.id, kind: task.mode ?? task.kind, report: exampleReports(task.solution, task.naive, run) }
   }))
 }

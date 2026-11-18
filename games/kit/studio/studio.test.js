@@ -1,3 +1,5 @@
+import { referenceCatalog } from './reference-catalog.js'
+import { refProblems } from '../engine/text.js'
 // node --test games/kit/studio — the studio's pure parts: forms from schemas (form.js), the control each value takes by
 // its shape and hints, cells typed and read back, a level's sections, the check's findings on their fields, each edit as
 // its operation and a pending changeset's coalescing, the package's group tree and its drop slots (groups.js), the game workspace's course edits (course-edit.js), a changed file read
@@ -338,4 +340,15 @@ test('a task is picked from the tasks of the game, grouped by level in course or
   const calls = { kinds: { operation: { add: { params: S.obj({ n: S.int() }) } } } }
   assert.equal(formOf(S.call('operation'), undefined, { vocabulary: calls }).kind, 'call')
   assert.equal(formOf(S.task(), 'a_2', { vocabulary: null }).of, 'task')
+})
+
+test('registered reference kinds supply the picker and validator from one catalog', () => {
+  const references = [{ kind: 'topic', targetKind: 'sample/topic', label: 'Topics', items: [
+    { id: 'sample/one', title: 'One', object: 'sample/one', at: 'sample/intro' },
+  ] }]
+  const catalog = referenceCatalog({ references })
+  assert.deepEqual(catalog.options, [{ value: 'topic:sample/one', label: 'sample/one', title: 'One', group: 'Topics' }])
+  assert.deepEqual(refProblems({ en: '<topic-ref to="sample/one"></topic-ref>' }, 'title', catalog.byKind), [])
+  assert.match(refProblems({ en: '<topic-ref to="sample/missing"></topic-ref>' }, 'title', catalog.byKind)[0], /missing topic/)
+  assert.equal(catalog.introducedAt.get('sample/topic').get('sample/one'), 'sample/intro')
 })

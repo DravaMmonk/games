@@ -269,6 +269,7 @@ button.field-key { padding: 0; border: 0; background: none; text-align: left; cu
 .ref-chip.is-part::before { content: '◇'; }
 .ref-chip.is-wiki::before { content: '¶'; }
 .text-tools { position: absolute; top: 2px; right: -22px; }
+.li-head .field-text:has(> .text-tools) { margin-inline-end: 22px; }
 .text-link { width: 20px; height: 20px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 5px; color: var(--faint); background: none; cursor: pointer; opacity: 0; }
 .field-text:focus-within .text-link, .text-link:focus-visible, .text-tools:has(.pick-pop) .text-link { opacity: 1; }
 .text-link:hover { color: var(--ink); background: var(--hover); }
@@ -563,6 +564,7 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
   .editor-head { margin: 0 calc(-1 * var(--gutter)) 8px; padding: 6px var(--gutter); }
   .diff-text { grid-template-columns: 1fr; }
   .text-tools { top: -22px; right: 0; }
+  .li-head .field-text:has(> .text-tools) { margin-inline-end: 0; }
   .text-link { opacity: 1; }
   .studio-scroll { height: auto; overflow: visible; }
   .studio-body > .studio-main { overflow: visible; }

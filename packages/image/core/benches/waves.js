@@ -1,5 +1,5 @@
 // A shared row-of-pixels wave bench, judged by the same parameter-bench runner as its view.
-import { benchRun, openKnobs, startValues } from '../bench.js'
+import { openKnobs, startValues } from '../bench.js'
 import { piText } from '../engine/pi.js'
 import { cosine, maxDiff, sampleAt } from 'imglib'
 
@@ -9,6 +9,7 @@ const fmt = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(2))
 const phaseText = (q) => (q === 0 ? '0' : piText((q * Math.PI) / 4))
 
 export const wave = {
+  startsUnsolved: true,
   make({ N }) {
     const curve = (p) => cosine({ ...p, phase: p.phi * 45 })
     return {
@@ -27,10 +28,9 @@ export const wave = {
       },
     }
   },
-  verify(model, bench) {
+  verify(_model, bench) {
     for (const [i, s] of bench.stages.entries()) {
       const start = startValues(bench, s)
-      if (benchRun(bench, model, start, { stageIndex: i }).pass) return `第 ${i + 1} 步一开始就算完成`
       for (const [knob, { min, max, step }] of Object.entries(bench.knobs)) {
         for (const v of [start[knob], s.target[knob]]) {
           if (v < min || v > max || Math.abs(min + Math.round((v - min) / step) * step - v) > 1e-9) return `第 ${i + 1} 步的 ${knob} = ${v} 不在刻度上`

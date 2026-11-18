@@ -1,12 +1,10 @@
 // Inline references use registered display metadata and shell actions.
 import { referenceKinds } from '../engine/markup.js'
+import { REF } from '../engine/text.js'
 import { tr } from './i18n.js'
 
 const KINDS = new Set()
 const displays = new Map()
-/** Every reference in a text: its kind and what it points to. */
-export const REF = /<([a-z][a-z0-9-]*)-ref to="([^"]+)"><\/\1-ref>/g
-
 let hooks = null // { name(kind, id) → { label?, title } | null, open(kind, id) } from the shell
 
 const svg = (d) => `<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`

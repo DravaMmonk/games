@@ -1,4 +1,4 @@
-import { S } from 'kernel'
+import { extendLevelSchema } from 'kernel'
 import { expandIntroScenes, registerTablePlays } from 'table'
 import playsSource from '../capabilities/play.json' with { type: 'json' }
 import levelSchemaSource from '../shapes/level.json' with { type: 'json' }
@@ -15,13 +15,7 @@ const meaning = {
   if (puzzle.intro) return { intro: expandIntroScenes(puzzle.intro) }
  },
  vocabulary(base) {
-  const fields = { ...base.level?.fields, ...levelSchema.fields }
-  if (base.level) for (const key of Object.keys(levelSchema.fields).filter(key => key !== 'tasks')) {
-   const previous = base.level.fields[key]
-   if (!previous) fields[key] = S.opt(fields[key])
-   else { const alternatives = S.either(previous, fields[key]); fields[key] = previous.optional || fields[key].optional ? S.opt(alternatives) : alternatives }
-  }
-  const level = base.level ? S.obj({ ...fields, tasks: S.list(S.either(levelSchema.fields.tasks.of, base.level.fields.tasks.of), { min: 1 }) }) : levelSchema
+  const level = extendLevelSchema(base.level, levelSchema, { extensionTasksFirst: true })
   return { ...base, level }
  },
 }

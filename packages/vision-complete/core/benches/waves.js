@@ -8,6 +8,7 @@ import { T as t } from 'kernel/words'
 /* ---------- 叠加: 0.5 + Σ aₖ·sin(2π·k·x/N) ---------- */
 
 export const sum = {
+  startsUnsolved: true,
   make({ N, ks }, bench) {
     const components = ks.map((k) => sinusoid(k, 'sin'))
     const curve = (amps) => (u) => 0.5 + amps.reduce((s, a, i) => s + a * components[i](u), 0)
@@ -38,7 +39,6 @@ export const sum = {
     const passes = (stageIndex, v) => benchRun(bench, model, v, { stageIndex }).pass
     for (const [i, s] of bench.stages.entries()) {
       const start = startValues(bench, s)
-      if (passes(i, start)) return `第 ${i + 1} 步一开始就算完成`
       const open = openKnobs(bench, s)
       const nearest = s.target.map((a, index) => {
         const name = names[index]
@@ -69,6 +69,7 @@ const COMBINE = { cos: (a) => a, sin: (a, b) => b, sum: (a, b) => a + b, mag: (a
 const readingText = (v) => (Math.abs(v) < 0.0005 ? '0.000' : v.toFixed(3))
 
 export const probe = {
+  startsUnsolved: true,
   make({ N, wave: w }) {
     const reading = (product) => sampleAt(product, N).reduce((s, v) => s + v, 0) / N
     const shifted = (shift) => cosine({ ...w, c: 0.5, phase: -shift })
@@ -109,11 +110,9 @@ export const probe = {
       },
     }
   },
-  // Every step must start unsolved and be solved by exactly the answers it means.
+  // Each step must be solved by exactly its declared answers.
   verify(model, bench) {
     for (const [i, s] of bench.stages.entries()) {
-      const start = startValues(bench, s)
-      if (benchRun(bench, model, start, { stageIndex: i }).pass) return `第 ${i + 1} 步一开始就算完成`
       const answers = passingSettings(bench, model, i, s.kind === 'combine' ? ['pick'] : undefined)
       if (answers.join() !== s.answers) return `第 ${i + 1} 步的答案是 ${answers.join('、')}，不是 ${s.answers}`
     }
@@ -125,6 +124,7 @@ const pickName = (pick) => ({ cos: t('只看 a'), sin: t('只看 b'), sum: 'a + 
 /* ---------- 采样: a continuous wave turned into points ---------- */
 
 export const alias = {
+  startsUnsolved: true,
   make({ fine }) {
     const signalOf = (parts, keep = Infinity) => (u) => parts.filter((p) => p.k <= keep).reduce((s, p) => s + cosine({ ...p, c: 0 })(u), 0.5)
     // Can the wave be read back from M samples? The smoothest curve through them must be the wave.
@@ -197,8 +197,6 @@ export const alias = {
   },
   verify(model, bench) {
     for (const [i, s] of bench.stages.entries()) {
-      const start = startValues(bench, s)
-      if (benchRun(bench, model, start, { stageIndex: i }).pass) return '有一步一开始就算完成'
       const found = passingSettings(bench, model, i)
       if (found.join() !== s.answers) return `第 ${i + 1} 步的答案是 ${found.join('、')}`
     }

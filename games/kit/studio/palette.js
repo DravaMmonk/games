@@ -18,7 +18,7 @@ const one = (value, lang) => String(sideOf(value, lang) ?? '')
  * in play order), level (the id being edited) and fields ([path text]: its fields), items (the worklist), recent
  * ([{ level, path }] newest first), actions ([{ id, label, keys?, ask? }]), lang (the side titles show in).
  */
-export function paletteIndex({ content, labels = [], level = null, fields = [], items = [], recent = [], actions = [], lang = getLang() }) {
+export function paletteIndex({ content, labels = [], level = null, fields = [], items = [], recent = [], actions = [], lang = getLang(), projections = [] }) {
   const out = []
   const byId = new Map(content.levels.map((l) => [l.id, l]))
   const label = new Map(labels.map((l) => [l.id, l.label]))
@@ -31,7 +31,11 @@ export function paletteIndex({ content, labels = [], level = null, fields = [], 
   }
   ;(content.eras ?? []).forEach((era, e) => out.push({ kind: 'era', key: `era ${e}`, label: `${era.id} ${one(era.title ?? era.chapter?.title, lang)}`.trim(), detail: '', words: plain(era.title ?? era.chapter?.title), era: e }))
   for (const path of fields) out.push({ kind: 'field', key: `field ${path}`, label: path, detail: level, words: path, level, path })
-  for (const entry of content.glossary?.entries ?? []) out.push({ kind: 'entry', key: `entry ${entry.id}`, label: one(entry.title, lang), detail: entry.id, words: `${entry.id} ${plain(entry.title)}`, entry: entry.id })
+  for (const [file, projection] of projections) {
+    for (const { id, title, path } of projection.objects?.(projection.read(content)) ?? []) {
+      out.push({ kind: 'projected', key: `${file} ${id}`, label: one(title, lang), detail: id, words: `${id} ${plain(title)}`, file, path, groupLabel: projection.copyLabel })
+    }
+  }
   items.filter((it) => it.severity !== 'pass').forEach((it, k) => out.push({ kind: 'finding', key: `finding ${k}`, label: it.text, detail: it.rule, words: `${it.rule} ${it.levels.join(' ')}`, finding: it }))
   return out
 }

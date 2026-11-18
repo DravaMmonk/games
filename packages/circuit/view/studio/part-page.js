@@ -1,6 +1,14 @@
 import { creationChoices, blank, getAt, showPath, shapeAt } from 'kernel/view'
+import { setAt } from 'kernel'
 import { partFileSchema } from '../../core/parts/schema.js'
 import { DEFAULT_VIEWS } from '../parts/PartFace.jsx'
+
+export function previewPartFace(content, path, pending) {
+  const part = getAt(content?.partDefs, path.slice(0, 2))
+  const face = path[3]
+  if (!part || (part.views?.[face]?.length ?? -1) >= pending.length) return content
+  return { ...content, partDefs: setAt(content.partDefs, path.slice(0, 3), { ...part.views, [face]: pending }) }
+}
 
 export function onPartPage(m, { content, ops, shown, edit, pickField, vocabulary, playOrder }) {
   const base = ['parts', m.part]

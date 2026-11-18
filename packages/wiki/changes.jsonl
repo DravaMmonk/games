@@ -5,3 +5,5 @@
 {"seq":5,"at":"2026-11-18T09:16:04.991Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[{"file":"packages/wiki/i18n/en.json","after":"f12e768ca95fda09"}]}
 {"seq":6,"at":"2026-11-18T09:56:07.963Z","why":"Step 25: place encyclopedia entries with their subject or play provider","adopt":true,"files":[{"file":"packages/wiki/kinds/entry.json","after":"59b887cb81d2b816"},{"file":"packages/wiki/kinds/section.json","after":"9b4d1a357da68036"}]}
 {"seq":7,"at":"2026-11-18T10:11:25.008Z","why":"Classify packages by functional responsibility","adopt":true,"files":[{"file":"packages/wiki/package.json","after":"df7d7767f4ef9bc6"}]}
+{"seq":8,"at":"2026-11-18T13:41:45.189Z","why":"Move projection editor text into its owning packages","adopt":true,"files":[{"file":"packages/wiki/i18n/en.json","after":"b7dd887cb0859331"}]}
+{"seq":9,"at":"2026-11-18T13:46:47.438Z","why":"Move projection editor text into its owning packages","adopt":true,"files":[{"file":"packages/wiki/i18n/en.json","after":"0dc80e3d29f448d6"}]}

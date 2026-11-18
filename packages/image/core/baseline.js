@@ -1,4 +1,4 @@
-import { withHidden } from 'kernel'
+import { exampleReports, withHidden } from 'kernel'
 import { startValues, benchRun, openKnobs } from './bench.js'
 function benchReport(task, value) {
   const { bench, model } = task
@@ -23,16 +23,12 @@ function benchReport(task, value) {
 }
 
 
-const examples = (task, run) => ({
-  reference: task.solution === undefined ? { absent: true } : { work: task.solution, report: run(task.solution) },
-  naive: task.naive == null ? { absent: true } : { work: task.naive, report: run(task.naive) },
-})
 export function imageReports({ spec, value }) {
   if (!spec.kit) return null
   return spec.levels.flatMap(level => level.tasks.map(task => {
     const kind = task.kind
     const report = kind === 'image/graph' ? {
-      ...examples(task, work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
+      ...exampleReports(task.solution, task.naive, work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
       alsoFails: (task.alsoFails ?? []).map(work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
     } : kind === 'image/board' ? benchReport(task, value) : {
       verify: task.verify(), examples: task.probe.examples.map(example => ({ ...example, output: task.probe.run(example.input) })),

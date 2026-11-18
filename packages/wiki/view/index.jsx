@@ -29,7 +29,7 @@ function useEncyclopedia({ game, progress, solved, level, phone, setSheet, autho
 }
 
 export function register(kernel) {
-  kernel.editor('wiki/entry', { type: 'entry', listKey: 'entries', component: EntryList, list: EntryList, name: T('词条', {}, 'studio-editor'), groupings })
+  kernel.editor('wiki/entry', { type: 'entry', listKey: 'entries', component: EntryList, sidebar: EntryList, name: T('词条', {}, 'studio-editor'), groupings })
   kernel.editor('wiki/section', { type: 'section', component: SectionEditor, group: { listType: 'entry', name: T('百科分组', {}, 'studio-editor'), createLabel: T('新的分组', {}, 'studio-editor'), initial: () => ({ title: T("新的分组"), values: [] }) } })
   kernel.shell('wiki/wiki', useEncyclopedia)
   kernel.unlocks('wiki/entries', (game, level, before, after) =>

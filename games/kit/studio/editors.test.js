@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { registerPlugins } from '../engine/plugins.js'
-import { editorForType, fieldEditor, fileSchema, contentVocabulary, installStudioPlugins } from './editors.js'
+import { editorForType, fieldEditor, projectionFile, contentVocabulary, installStudioPlugins } from './editors.js'
 import { browserVocabulary } from './api.js'
 
 test('Studio mounts editors and lists by full object type and keeps unknown types generic', async () => {
@@ -10,7 +10,7 @@ test('Studio mounts editors and lists by full object type and keeps unknown type
   const control = () => null
   const kernel = await registerPlugins([{ id: 'sample', core: { register(k) {
     k.kind('sample/scene', { type: 'sample/scene', read: value => value,
-      studio: { schemas: { scenes: { type: 'any' } } },
+      studio: { projections: { scenes: { schema: { type: 'any' }, read: content => content.scenes } } },
       vocabulary: value => ({ ...value, projected: true }),
       validationVocabulary: ({ vocabulary, content }) => ({ ...vocabulary, sceneCount: content.count }),
     })
@@ -22,7 +22,9 @@ test('Studio mounts editors and lists by full object type and keeps unknown type
   assert.equal(fieldEditor('scene'), control)
   const vocabulary = browserVocabulary({ layerOrder: ['sample'], legacyModules: [], packageCode: true, kindDeclarations: {} })
   assert.equal(vocabulary.projected, true)
-  assert.deepEqual(fileSchema(vocabulary, 'scenes'), { type: 'any' })
+  const projected = projectionFile({ scenes: ['yard'] }, vocabulary, { scenes: true })
+  assert.deepEqual(projected.schema, { type: 'any' })
+  assert.deepEqual(projected.value, ['yard'])
   assert.equal(contentVocabulary(vocabulary, { count: 2 }).sceneCount, 2)
   assert.equal(contentVocabulary(vocabulary, null), vocabulary)
   installStudioPlugins(null)

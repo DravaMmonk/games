@@ -3,9 +3,8 @@ import { textKey, withTextKey } from '../engine/i18n.js'
 import { sameJson } from '../engine/json-value.js'
 import { getAt, showPath } from '../engine/ops/edit.js'
 import { setAt } from '../engine/ops/identity.js'
-import { fileSchema } from './editors.js'
+import { studioProjections } from './editors.js'
 import { find, validate } from '../engine/schema.js'
-import { fileSchema as projectionSchema } from './editors.js'
 import { tr } from '../shell/i18n.js'
 import { changesType, gameFields, opFor, taskListOps } from './form.js'
 import { namespaceOf } from './objects-edit.js'
@@ -22,14 +21,14 @@ export function sourceNamespace(file, content) {
 }
 
 /** Resolve selected keys against the pending preview's catalog and keep their identity for the op tool. */
-function sourceTexts(file, content, owner) {
+function sourceTexts(file, content, owner, vocabulary) {
   const texts = new Map()
   const visit = (value) => {
     const key = textKey(value)
     if (key) texts.set(key, value)
     else if (value && typeof value === 'object') Object.values(value).forEach(visit)
   }
-  visit(file.game ? gameFields(content) : file.object ? content.registries : [content.levels, content.glossary, content.partDefs])
+  visit(file.game ? gameFields(content) : file.object ? content.registries : [content.levels, ...Object.values(studioProjections(vocabulary)).map(projection => projection.read(content))])
   return (key) => {
     const full = owner && !key.includes('/') ? `${owner}/${key}` : key
     let copy = texts.get(full)
@@ -51,7 +50,7 @@ export function sourceOps(file, before, path, value, vocabulary, content) {
   const source = sourceValue(before, owner)
   const edited = setAt(source, path, value)
   if (sameJson(source, edited)) return []
-  const schema = file.object ? objectSchema(file.object.kind, file.object) : file.level ? vocabulary.level : file.parts ? fileSchema(vocabulary, 'partDefs') : file.glossary ? projectionSchema(vocabulary, 'glossary') : vocabulary.game
+  const schema = file.object ? objectSchema(file.object.kind, file.object) : file.level ? vocabulary.level : file.schema ?? vocabulary.game
   const existingLiterals = new Set(find(schema, before, 'text', { vocabulary })
     .map(({ value }) => value).filter((value) => typeof value === 'string'))
   const inline = find(schema, edited, 'text', { vocabulary }).find(({ path, value }) =>
@@ -60,7 +59,7 @@ export function sourceOps(file, before, path, value, vocabulary, content) {
     const at = showPath(inline.path)
     throw new Error(tr("{at}：请在文案页编辑各语言的文字。", {at}))
   }
-  const read = sourceTexts(file, content, owner)
+  const read = sourceTexts(file, content, owner, vocabulary)
   let after = edited
   for (const { path, value } of find(schema, edited, 'text', { vocabulary })) {
     const key = referenceKey(value)
@@ -74,34 +73,8 @@ export function sourceOps(file, before, path, value, vocabulary, content) {
   if (invalid) throw new Error(`${invalid.at}: ${invalid.says}`)
   const op = (keys, next) => opFor(file, keys, next === undefined ? { unset: true } : { set: next })
 
-  if (file.glossary) {
-    const old = Object.fromEntries(before.entries.map(({ id, group: _group, ...entry }) => [id, entry]))
-    const next = Object.fromEntries(after.entries.map(({ id, group: _group, ...entry }) => [id, entry]))
-    const ops = changedKeys(old, next).map((entry) => next[entry] === undefined ? { op: 'entry.remove', entry } : { op: 'entry.put', entry, data: next[entry] })
-    const oldGroups = Object.fromEntries(before.groups.filter((g) => g.id).map((g) => [g.id, g]))
-    const newGroups = Object.fromEntries(after.groups.filter((g) => g.id).map((g) => [g.id, g]))
-    for (const tag of changedKeys(oldGroups, newGroups)) {
-      const group = newGroups[tag]
-      if (!group) ops.push({ op: 'tag.remove', tag, member: 'entry' })
-      else ops.push({ op: 'tag.put', tag, member: 'entry', data: { ...sourceValue(content.tags?.[`entry:${tag}`]), title: group.title, values: group.values ?? after.entries.filter((e) => e.group === tag).map((e) => e.id) } })
-    }
-    if (after.entries.some((entry) => before.entries.find((old) => old.id === entry.id)?.group !== entry.group)) throw new Error(tr("请通过词条标签修改分组。"))
-    return ops
-  }
-  if (file.parts) {
-    const edits = []
-    for (const group of ['parts', 'settings']) {
-      const old = before[group] ?? {}
-      const next = after[group] ?? {}
-      for (const id of changedKeys(old, next)) {
-        if (!Object.hasOwn(old, id) || !Object.hasOwn(next, id)) {
-          throw new Error(tr("请用列表中的新增或删除按钮管理件和设置。"))
-        }
-        for (const key of changedKeys(old[id], next[id])) edits.push(op([group, id, key], next[id][key]))
-      }
-    }
-    return edits
-  }
+  if (file.projection?.sourceOps) return file.projection.sourceOps({ before, after, content, changedKeys, op })
+
   if (file.level && path.length === 1 && path[0] === 'tasks') return taskListOps(file.level, before.tasks ?? [], after.tasks, content.levels)
   if (path.length) return [op(path, getAt(after, path))]
   return changedKeys(source, edited).flatMap((key) => file.level && key === 'tasks'

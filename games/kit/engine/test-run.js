@@ -25,3 +25,11 @@ export function runOutputTests(domain, task, work, options) {
   const constraint = task.constraint?.(score, work) ?? ''
   return reportRuns(runs, { score, constraint })
 }
+
+/** Record both authored examples with the same absence and report shape. */
+export function exampleReports(reference, naive, run) {
+  return {
+    reference: reference === undefined ? { absent: true } : { work: reference, report: run(reference) },
+    naive: naive == null ? { absent: true } : { work: naive, report: run(naive) },
+  }
+}

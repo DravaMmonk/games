@@ -1,13 +1,9 @@
 import { Fragment, useRef } from 'react'
 import { Trash2 } from 'lucide-react'
-import { CheckIcon, Dock, SkipIcon } from '../RunControls.jsx'
-import TestTabs from '../TestTabs.jsx'
-import InteractiveDrawing from '../InteractiveDrawing.jsx'
-import { Brief, PhonePage, TaskNavigation } from '../Layout.jsx'
-import { Markup } from '../Markup.jsx'
-import { default as Workbench } from '../Workbench.jsx'
-import { L } from '../i18n.js'
-import { useToast } from '../useInteraction.jsx'
+import {
+  Brief, CheckIcon, Dock, InteractiveDrawing, L, Markup, PhonePage, SkipIcon, TaskNavigation,
+  TestTabs, Workbench, useToast,
+} from 'kernel/view'
 
 const icons = { check: CheckIcon, skip: SkipIcon, trash: Trash2 }
 

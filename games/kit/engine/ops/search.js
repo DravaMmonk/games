@@ -2,8 +2,8 @@ import { kindSchemas } from '../plugin-kinds.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tagName } from '../tag-identity.js'
 // Search across a game's content, and replace as operations (games/design/README.md 7.1). What is searched: every localized text
-// of the levels, game.json and the encyclopedia (each side on its own; a link tag is never matched inside, so a
-// replace cannot break one), every line of every board, and the ids of levels and entries. A replace is never an edit
+// of the levels, game.json and registered objects (each side on its own; a link tag is never matched inside, so a
+// replace cannot break one), every line of every board, and the ids of supported objects. A replace is never an edit
 // of its own: it is the operations that make it — text.set for each language it changes, level.blueprint with the board's
 // new text — for a changeset to preview, check and apply like any other. Ids are found, never replaced (ids cannot change). Node-safe and browser-safe: the studio searches as one types with this
 // module, and the MCP's search and replace tools (tools.js) are this module too.
@@ -54,7 +54,11 @@ function spansIn(re, text, tags = true, word = false) {
  */
 export function searchable(content, vocabulary, kinds = KINDS) {
   const out = []
+  const identifier = (id, at) => {
+    if (kinds.includes('id')) out.push({ ...at, path: [], kind: 'id', text: id })
+  }
   const texts = (value, schema, at, prefix = []) => {
+    if (!kinds.includes('text')) return
     for (const { path: ownPath, value: v } of find(schema, value, 'text', { vocabulary })) {
       const path = [...prefix, ...ownPath]
       const { annotations, ...location } = at
@@ -63,26 +67,31 @@ export function searchable(content, vocabulary, kinds = KINDS) {
       else for (const [side, text] of textEntries(v)) out.push({ ...annotated, path, kind: 'text', side, text })
     }
   }
-  const { id: _g, levels, glossary, vocabulary: _v, open: _o, blueprint: _b, ...configuration } = content
-  const game = Object.fromEntries(Object.entries(configuration).filter(([key]) => !derivedFields(contentSchemas.get(content)).includes(key)))
+  const { id: _g, levels, vocabulary: _v, open: _o, blueprint: _b, ...configuration } = content
+  const schemas = contentSchemas.get(content) ?? vocabulary
+  const derived = new Set(derivedFields(schemas))
+  const game = Object.fromEntries(Object.entries(configuration).filter(([key]) => !derived.has(key)))
   for (const { id, ...level } of levels) {
     const at = { file: `levels/${id}.json`, level: id }
-    if (kinds.includes('id')) out.push({ ...at, path: [], kind: 'id', text: id })
-    if (kinds.includes('text')) texts(level, vocabulary.level, at)
+    identifier(id, at)
+    texts(level, vocabulary.level, at)
     if (kinds.includes('board')) {
       for (const { path, value } of find(vocabulary.level, level, 'board', { vocabulary })) {
         value.forEach((line, k) => out.push({ ...at, path, kind: 'board', line: k, text: line }))
       }
     }
   }
-  if (kinds.includes('text')) {
-    texts(game, vocabulary.game, { file: 'game.json', in: 'game' })
-    for (const { id, group: _group, ...entry } of glossary?.entries ?? []) texts(entry, kindSchemas(vocabulary).entry, { file: `entries/${id}.json`, entry: id })
-    for (const [key, tag] of Object.entries(content.tags ?? {})) texts(tag, OBJECT_SCHEMAS.tags, { file: `tags/${tag.kind}/${tagName(key)}.json`, tag: tagName(key), member: tag.kind })
-    for (const meaning of meaningsOf(contentSchemas.get(content))) meaning.search?.({ content, texts })
+  texts(game, vocabulary.game, { file: 'game.json', in: 'game' })
+  for (const [key, tag] of Object.entries(content.tags ?? {})) {
+    const id = tagName(key)
+    const at = { file: `tags/${tag.kind}/${id}.json`, tag: id, member: tag.kind }
+    texts(tag, OBJECT_SCHEMAS.tags, at)
+    identifier(id, at)
   }
-  if (kinds.includes('id')) for (const [key, tag] of Object.entries(content.tags ?? {})) out.push({ file: `tags/${tag.kind}/${tagName(key)}.json`, tag: tagName(key), member: tag.kind, path: [], kind: 'id', text: tagName(key) })
-  if (kinds.includes('id')) glossary?.entries.forEach((e) => out.push({ file: `entries/${e.id}.json`, entry: e.id, path: [], kind: 'id', text: e.id }))
+  const objectSchemas = kindSchemas(vocabulary)
+  for (const meaning of meaningsOf(schemas)) {
+    meaning.search?.({ content, texts, identifier, schemaOf: kind => objectSchemas[kind] })
+  }
   return out
 }
 

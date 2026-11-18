@@ -1,5 +1,5 @@
 // A judge reads a work and returns null or its first failure: { at?, check?, want?, got?, why }.
-// Case indexes are zero-based. For a board, at is a card id or { tick, id? }.
+// Case indexes are zero-based. The package defines its own failure locations.
 const equal = (want, got) => want === got
 
 export function firstFailure(checks, inspect) {
@@ -12,22 +12,6 @@ export function firstFailure(checks, inspect) {
 
 export const cases = (checks, inspect) =>
   Object.assign((work) => firstFailure(checks, (example, check) => inspect(work, example, check)), { checks })
-
-export function ticks({ checked, want, got = (tick, id) => tick.outputs[id] ?? null, same = equal, why }) {
-  return (steps) => {
-    for (const step of steps) {
-      for (const port of checked) {
-        const expected = want(port.name)?.[step.tick]
-        if (expected === undefined) continue
-        const actual = got(step, port.name)
-        if (!same(expected, actual)) {
-          return { at: { tick: step.tick, id: port.name }, want: expected, got: actual, why: why(port, expected, actual, step.tick) }
-        }
-      }
-    }
-    return null
-  }
-}
 
 export const property = (holds, failure) => (work) => holds(work) ? null : failure(work)
 

@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import { sink, source } from '../../circuit/core/index.js'
 import { boardNode, drive, hearing, runTicks } from '../core/ticks.js'
 import { defineParts } from '../../circuit/core/index.js'
+import { judgeTicks } from '../core/tick-report.js'
 import { operations, packRegisters } from '../core/registers.js'
 
 // The registers as parts defined as data: reg reads one (0 until kept), bit too (1), set keeps one.
@@ -132,4 +133,17 @@ test('parts defined as data read and keep registers, and two packed counters cou
   const two = { nodes: [{ id: 'one', type: 'by', params: { value: 1 } }, { id: 'two', type: 'by', params: { value: 2 } }, { id: 'p', type: 'count', params: {} }, { id: 'q', type: 'count', params: {} }, { id: 'x', type: 'out', params: { name: 'x' } }, { id: 'y', type: 'out', params: { name: 'y' } }], wires: [{ from: 'one', to: 'p', port: 'n' }, { from: 'two', to: 'q', port: 'n' }, { from: 'p', to: 'x', port: 'in' }, { from: 'q', to: 'y', port: 'in' }] }
   const board = boardNode({ id: 'b2', circuit: two, parts: { ...all, count } })
   assert.deepEqual([0, 1, 2, 3].map((t) => board.hear(t).outputs), [{ x: 0, y: 0 }, { x: 1, y: 2 }, { x: 2, y: 4 }, { x: 3, y: 6 }])
+})
+
+test('ticks skip unconstrained values and report the first wrong port in tick order', () => {
+  const judge = judgeTicks({
+    checked: [{ name: 'x' }, { name: 'y' }],
+    want: (name) => ({ x: [undefined, 2], y: [null, 3] })[name],
+    why: (port) => port.name,
+  })
+  const first = { tick: 0, outputs: { x: 9 } }
+  assert.equal(judge([first, { tick: 1, outputs: { x: 2, y: 3 } }]), null)
+  assert.deepEqual(judge([first, { tick: 1, outputs: { x: 4, y: 5 } }]), {
+    at: { tick: 1, id: 'x' }, want: 2, got: 4, why: 'x',
+  })
 })

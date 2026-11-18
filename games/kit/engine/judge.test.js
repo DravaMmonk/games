@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cases, hidden, inOrder, property, sameAs, ticks } from './judge.js'
+import { cases, hidden, inOrder, property, sameAs } from './judge.js'
 
 test('reference comparisons read a work and report the wanted and actual values', () => {
   const judge = sameAs(2, {
@@ -22,19 +22,6 @@ test('case judging stops at the first failure and identifies the case', () => {
   assert.deepEqual(judge((want) => want / 2 + 1), { check: 1, want: 4, got: 3, why: 'wrong answer' })
   assert.deepEqual(checked, [2, 4])
   assert.equal(judge((want) => want), null)
-})
-
-test('ticks skip unconstrained values and report the first wrong port in tick order', () => {
-  const judge = ticks({
-    checked: [{ name: 'x' }, { name: 'y' }],
-    want: (name) => ({ x: [undefined, 2], y: [null, 3] })[name],
-    why: (port) => port.name,
-  })
-  const first = { tick: 0, outputs: { x: 9 } }
-  assert.equal(judge([first, { tick: 1, outputs: { x: 2, y: 3 } }]), null)
-  assert.deepEqual(judge([first, { tick: 1, outputs: { x: 4, y: 5 } }]), {
-    at: { tick: 1, id: 'x' }, want: 2, got: 4, why: 'x',
-  })
 })
 
 test('ordered checks stop at a property failure before attempting the next check', () => {

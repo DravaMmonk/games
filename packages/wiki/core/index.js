@@ -30,6 +30,17 @@ export function register(kernel) {
     read: value => value,
     derived: ['glossary', 'sections'],
     studio: { projections: { glossary: glossaryProjection } },
+    namesForTool({ content, game }) {
+      return { entries: ((game ?? content).glossary?.entries ?? []).map(({ id, title }) => ({ id, title })) }
+    },
+    search({ content, texts, identifier, schemaOf }) {
+      const schema = schemaOf('entry')
+      for (const { id, group: _group, ...entry } of content.glossary?.entries ?? []) {
+        const location = { file: `entries/${id}.json`, entry: id }
+        texts(entry, schema, location)
+        identifier(id, location)
+      }
+    },
     terminology: { termRegistry, termUsage },
     blindText,
     assemble({ game, id, packageId, registries, resolve }) {

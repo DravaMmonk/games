@@ -308,17 +308,15 @@ const tools = {
     async run({ game, changeset = null, scope }) {
       const content = await contentAfter(game, changeset, scope)
       const tags = Object.entries(content.registries.tag).map(([key, tag]) => ({ key, name: tagName(key), member: tag.kind }))
-      if (content.packageTarget) return {
-        tags,
-        levels: packageLevelOrder(content).map(id => ({ id, label: id, title: levelIn(content, id).title })),
-        ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.namesForTool?.({ content }))),
-      }
-      const shown = await gameOf(content)
-      return {
-        tags,
-        levels: shown.levels.map((l) => ({ id: l.id, label: String(shown.levelLabel(l)), title: l.title })),
-        ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.namesForTool?.({ content, game: shown }))),
-      }
+      const shown = content.packageTarget ? null : await gameOf(content)
+      const levels = shown
+        ? shown.levels.map(level => ({ id: level.id, label: String(shown.levelLabel(level)), title: level.title }))
+        : packageLevelOrder(content).map(id => ({ id, label: id, title: levelIn(content, id).title }))
+      const references = [
+        { kind: 'level', targetKind: 'level', label: catalogText('关卡'), items: levels },
+        ...meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.referencesForTool?.({ content, game: shown }) ?? []),
+      ]
+      return { tags, levels, references }
     },
   },
   run_tests: {

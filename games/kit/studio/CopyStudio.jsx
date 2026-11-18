@@ -1,3 +1,4 @@
+import { referenceCatalog } from './reference-catalog.js'
 import { T } from '../shell/i18n.js'
 // The copy workspace (games/design/README.md 6.7): the writer's. It opens a package or a game and audits and edits every
 // text of that layer in every language — terms, references, and a game's own wording over its packages' texts. On the
@@ -103,12 +104,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     return () => window.clearTimeout(timer)
   }, [opened.game, opened.package, side, naming, rev, loaded])
   const vocab = useMemo(() => domainVocab && { ...domainVocab, vocabulary: contentVocabulary(domainVocab.vocabulary, content) }, [domainVocab, content])
-  const names = useMemo(() => rawNames && {
-    level: new Map(rawNames.levels.map((l) => [l.id, l])),
-    part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
-    wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    onLevel: () => {},
-  }, [rawNames])
+  const names = useMemo(() => referenceCatalog(rawNames), [rawNames])
   const order = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
   const items = useMemo(() => lines.map(itemOf), [lines])

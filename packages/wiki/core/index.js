@@ -30,8 +30,9 @@ export function register(kernel) {
     read: value => value,
     derived: ['glossary', 'sections'],
     studio: { projections: { glossary: glossaryProjection } },
-    namesForTool({ content, game }) {
-      return { entries: ((game ?? content).glossary?.entries ?? []).map(({ id, title }) => ({ id, title })) }
+    referencesForTool({ content, game }) {
+      const items = ((game ?? content).glossary?.entries ?? []).map(({ id, title }) => ({ id, title }))
+      return [{ kind: REFERENCE, targetKind: 'entry', label: T('百科'), items }]
     },
     search({ content, texts, identifier, schemaOf }) {
       const schema = schemaOf('entry')

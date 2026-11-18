@@ -6,6 +6,8 @@ import { isText, textEntries } from './i18n.js'
 const SKIP = new Set(['solution', 'naive', 'alsoFails'])
 
 export const REF = /<([a-z][a-z0-9-]*)-ref to="([^"]+)"><\/\1-ref>/g
+export const referenceTag = (kind, id) => `<${kind}-ref to="${id}"></${kind}-ref>`
+
 /** Every reference of `kind` in a text (both sides), in order, once each. */
 export function refsIn(v, kind) {
   const out = []

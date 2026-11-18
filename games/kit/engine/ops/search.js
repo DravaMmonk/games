@@ -12,10 +12,10 @@ import { tagName } from '../tag-identity.js'
 //   a hit: { file, level?, in?, path, kind, side?, line?, text (the string searched), at: [[start, end]…] }
 import { meaningsOf, derivedFields } from '../kind-meanings.js'
 import { contentSchemas } from '../content.js'
+import { REF } from '../text.js'
 import { find } from '../schema.js'
 import { textEntries } from '../i18n.js'
 
-const REF_TAG = /<([a-z][a-z0-9-]*)-ref to="[^"]+"><\/\1-ref>/g
 const KINDS = ['text', 'board', 'id']
 
 /** The query as a global regular expression, or null when there is nothing to find (or the pattern does not read). */
@@ -33,7 +33,7 @@ const WORD = /[\p{L}\p{N}_]/u
 const whole = (text, start, end, word) => !word || (!WORD.test(text[start - 1] ?? '') && !WORD.test(text[end] ?? ''))
 
 /** The spans of `text` that are link tags: a match overlapping one is not a match. */
-const tagSpans = (text) => [...text.matchAll(REF_TAG)].map((m) => [m.index, m.index + m[0].length])
+const tagSpans = (text) => [...text.matchAll(REF)].map((m) => [m.index, m.index + m[0].length])
 const inTag = (spans, start, end) => spans.some(([a, b]) => start < b && end > a)
 
 /** The matches of `re` in `text` outside link tags: [[start, end]…]. */
@@ -90,7 +90,7 @@ export function searchable(content, vocabulary, kinds = KINDS) {
   }
   const objectSchemas = kindSchemas(vocabulary)
   for (const meaning of meaningsOf(schemas)) {
-    meaning.search?.({ content, texts, identifier, schemaOf: kind => objectSchemas[kind] })
+    meaning.search?.({ content, texts, identifier, vocabulary, schemaOf: kind => objectSchemas[kind] })
   }
   return out
 }

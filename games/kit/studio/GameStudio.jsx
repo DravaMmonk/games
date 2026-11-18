@@ -1,3 +1,4 @@
+import { referenceCatalog } from './reference-catalog.js'
 import { PackageDependencies, PackageName, packageKindLabel, packageSidebarGroups } from './PackageGroups.jsx'
 // The game workspace of the studio (games/design/README.md 6.7): where a course designer makes a game on a package and
 // arranges its learning route. On the left a list (left-lists.js GAME_LISTS): the game's settings and its chapters, or
@@ -115,12 +116,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const vocab = useMemo(() => domainVocab && { ...domainVocab, vocabulary: contentVocabulary(domainVocab.vocabulary, content) }, [domainVocab, content])
   // The course as game.json writes it: the forms and the side panel edit it so.
   const course = useMemo(() => content && { ...content, chapters: content.sourceChapters ?? [] }, [content])
-  const names = useMemo(() => rawNames && {
-    level: new Map(rawNames.levels.map((l) => [l.id, l])),
-    part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
-    wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    onLevel: () => {},
-  }, [rawNames])
+  const names = useMemo(() => referenceCatalog(rawNames), [rawNames])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
   const items = useMemo(() => lines.map(itemOf), [lines])
   const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])

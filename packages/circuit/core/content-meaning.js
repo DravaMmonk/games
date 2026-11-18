@@ -1,3 +1,4 @@
+import { T } from 'kernel/words'
 import circuitModule from './mechanism/module.js'
 import { contentSchemas, createCapabilityRegistry, registeredOperations, registeredValueTypes } from 'kernel'
 let capabilityRegistry
@@ -78,8 +79,16 @@ export const partMeaning = {
   dependencyGraph: ({ course, dot: asDot, levels }) => (asDot ? dot : mermaid)(dependencies(course), { levels }),
   renderWork: ({ text, title }) => boardSvg(text, { title }),
   renderFields: ({ value }) => value.adds ? [`brings in: ${value.adds.join(', ')}`] : [],
-  namesForTool({ content, game }) {
-    return { parts: game ? (game.parts?.all ?? []).map(part => ({ key: part.key, name: part.name, part: part.part ?? (part.key.startsWith('part:') ? part.key.slice(5) : part.key), at: part.at?.[0] ?? game.levels.find(level => (level.unlocks ?? []).includes(part.key))?.id ?? null })) : Object.entries(content.partDefs?.parts ?? {}).map(([key, part]) => ({ key: `part:${key}`, name: part.name, part: key, at: null })) }
+  referencesForTool({ content, game }) {
+    const items = game ? (game.parts?.all ?? []).map(part => ({
+      id: part.key,
+      title: part.name,
+      object: part.part ?? (part.key.startsWith('part:') ? part.key.slice(5) : part.key),
+      at: part.at?.[0] ?? game.levels.find(level => (level.unlocks ?? []).includes(part.key))?.id ?? null,
+    })) : Object.entries(content.partDefs?.parts ?? {}).map(([object, part]) => ({
+      id: `part:${object}`, title: part.name, object,
+    }))
+    return [{ kind: 'part', targetKind: 'circuit/part', label: T('元件'), items }]
   },
   contract: { spec: specProblems, validate: validateProblems },
   operations: circuitOperations,

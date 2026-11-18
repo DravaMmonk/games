@@ -1,3 +1,4 @@
+import { referenceCatalog } from './reference-catalog.js'
 import { definitionOfKind } from '../engine/plugin-kinds.js'
 // The package workspace of the studio (games/design/README.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
 // and plays a package's levels without code, a level group at a time. It is a thin skin over the operation set (the
@@ -210,7 +211,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   useEffect(() => {
     if (!loaded) return undefined
     const no = ++namesSeq.current
-    const timer = window.setTimeout(() => call('names', { ...target, scope: SCOPE, changeset: { ops: JSON.parse(naming) } }).then((r) => no === namesSeq.current && setRawNames({ ...r, stamp: no })).catch(() => {}), naming === '[]' ? 0 : SETTLE)
+    const timer = window.setTimeout(() => call('names', { ...target, scope: SCOPE, changeset: { ops: JSON.parse(naming) } }).then((r) => no === namesSeq.current && setRawNames(r)).catch(() => {}), naming === '[]' ? 0 : SETTLE)
     return () => window.clearTimeout(timer)
   }, [game, naming, rev, loaded])
 
@@ -227,16 +228,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   useEffect(() => { if (leftKeys.length && side !== 'packages' && !leftKeys.includes(side)) setSide(leftKeys[0]) }, [leftKeys, side]) // eslint-disable-line react-hooks/exhaustive-deps
   const items = useMemo(() => lines.map(itemOf), [lines])
   const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
-  const names = useMemo(() => rawNames && {
-    level: new Map(rawNames.levels.map((l) => [l.id, l])),
-    part: new Map((rawNames.parts ?? []).map((p) => [p.key, p.name])),
-    wiki: new Map((rawNames.entries ?? []).map((e) => [e.id, e.title])),
-    stamp: rawNames.stamp,
-    onLevel: (id) => select({ level: id }),
-  }, [rawNames]) // eslint-disable-line react-hooks/exhaustive-deps
+  const names = useMemo(() => referenceCatalog(rawNames, id => select({ level: id })), [rawNames]) // eslint-disable-line react-hooks/exhaustive-deps
   const playOrder = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
-  // Where the course first gives each part (the names tool reads it off the components box): its type → a level.
-  const earnedAt = useMemo(() => new Map((rawNames?.parts ?? []).filter((p) => p.at).map((p) => [p.part, p.at])), [rawNames])
   const levelOptions = useMemo(() => {
     if (!content) return null
     const label = new Map((rawNames?.levels ?? []).map((l) => [l.id, l]))
@@ -823,7 +816,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               : Sidebar ? <Sidebar content={content} namespace={namespace} game={game} at={at} field={field}
                 heading={heading} onHeading={openHeading} {...grouping(otherType, sidebarGroups[otherType] ?? 'tag', value => setSidebarGroups(previous => ({ ...previous, [otherType]: value })))}
                 onNavigate={openProjection} onEdit={edit} saving={saving} />
-              : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={earnedAt} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}
+              : otherType ? <OtherList vocabulary={vocab.vocabulary} levelOptions={levelOptions} order={playOrder} earned={names?.introducedAt.get(otherType)} at={at} found={type => places.filter(p => p.file === editorForType(otherType)?.route?.file && p.path?.[1] === type).length} onSelect={select} onOps={addOps} kind={otherType} name={typeName(types.find(({ type }) => type === otherType))} content={content} namespace={namespace} game={game}
                 items={objectsOfType(content, otherType)} label={(id) => L(content.registries[otherType][id]?.title ?? content.registries[otherType][id]?.name) || ''}
                 heading={heading} onHeading={openHeading} {...grouping(otherType, partsBy, setPartsBy)}
                 addOptions={addObjectOptions(otherType)} addLabel={L(typeName(types.find(({ type }) => type === otherType)) || otherType)} onAdd={(action) => addObject(otherType, action)}

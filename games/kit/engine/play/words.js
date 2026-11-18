@@ -2,7 +2,7 @@
 // domain's own self-rendering text, ../../shell/i18n.js), often HTML with links to levels, parts and encyclopedia
 // entries (../../shell/refs.js). A player reads a link as the thing's name, which is what the page shows.
 
-import { REF } from '../../shell/refs.js'
+import { REF } from '../text.js'
 
 /** One side of a text: a pair's `lang` side, a domain's own text object as it renders, a string or number as it is. */
 export function side(v, lang) {

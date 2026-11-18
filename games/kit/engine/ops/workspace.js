@@ -9,10 +9,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, w
 import { dirname, relative, resolve } from 'node:path'
 import { assemble, contentRoots, deepFreeze } from '../content.js'
 import { contentRoot, resolveLayers, publicLayerFiles, packageDirectory, readPackageLayers, assembleLayers, layerVocabulary, catalogFiles, gameDirectory, objectFiles, gameDeclarationProblems, levelFiles, splitGameConfig } from '../resolver.js'
-import { catalogReader, declarationReader, sourceValue } from '../catalogs.js'
+import { catalogReader, declarationReader, resolveReferences, sourceValue } from '../catalogs.js'
+import { textKey } from '../i18n.js'
 import { catalogsOf, normalizeText } from '../content-text.js'
-import { folders } from '../layers.js'
-import { orderPackages } from '../layers.js'
+import { folders, orderPackages, schemaForKind } from '../layers.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { BLUEPRINT } from '../../pipeline/blueprint.js'
 import { kitDirectory } from '../release-data.js'
@@ -33,6 +33,23 @@ const COURSE_I18N = 'i18n'
 const PACKAGE_I18N = 'package/i18n'
 const OVERRIDES = 'overrides'
 const overridePaths = (dir, prefix = '') => existsSync(dir) ? readdirSync(dir, { withFileTypes: true }).flatMap((entry) => entry.isDirectory() ? overridePaths(resolve(dir, entry.name), `${prefix}${entry.name}/`) : entry.name.endsWith('.json') ? [`${prefix}${entry.name}`] : []) : []
+const overrideScope = file => file.startsWith('package/') ? 'package' : 'course'
+const overridePath = file => file.replace(/^package\//, '').slice(0, -5).split('/')
+const overridePrefix = file => ['override', ...overridePath(file).slice(1)].join('.')
+const readOverride = (file, value, read) => resolveReferences(value, key => {
+  const ref = `@${key}`
+  return key.startsWith(`${overridePrefix(file)}.`) ? read(ref) : ref
+})
+const objectOverrideFiles = ws => [...ws.overrideFiles].filter(([file]) => overridePath(file)[2] !== 'i18n')
+const overrideValues = (ws, scope) => objectOverrideFiles(ws).filter(([file]) => overrideScope(file) === scope)
+function overrideCopy(ws, scope) {
+  const collect = (value, prefix) => {
+    if (!value || typeof value !== 'object') return []
+    const key = textKey(value)
+    return key ? (key.startsWith(prefix) ? [value] : []) : Object.values(value).flatMap(child => collect(child, prefix))
+  }
+  return overrideValues(ws, scope).flatMap(([file, value]) => collect(value, `${overridePrefix(file)}.`))
+}
 const CONFIG = ['game.json', 'package.json']
 const inGame = (file) => file === 'game.json' || file === 'blueprint.json'
 
@@ -189,7 +206,11 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
     contentObjects: Object.fromEntries(Object.entries(kindSchemas(schemas)).map(([kind, schema]) => [kind, new Map((Object.hasOwn(visibleFolders(schemas), kind) ? packageObjects(packageDir, kindFolders[kind] ?? kind) : []).map(([name]) => [name, (['kind', 'shape'].includes(kind) ? declarationReader(packageCatalog)(load(`${kindFolders[kind] ?? kind}/${name}.json`)) : readers[objectScope(kind, schemas, scope) === 'game' ? 'course' : 'package'](load(`${kindFolders[kind] ?? kind}/${name}.json`), pathFor(`${kindFolders[kind] ?? kind}/${name}.json`), schema, schemas))]))])),
     capabilities: new Map(packageObjects(packageDir, 'capabilities').map(([name]) => [name, declarationReader(packageCatalog)(load(`capabilities/${name}.json`))])),
     declarationProblems: [...resolved.lockStatus.problems, ...(packaged ? [] : gameDeclarationProblems(dir, schemas))],
-    overrideFiles: new Map(extraOverridePaths().map((file) => [file, load(file)])),
+    overrideFiles: new Map(extraOverridePaths().map((file) => {
+      const value = load(file)
+      if (overridePath(file)[2] === 'i18n') return [file, value]
+      return [file, readOverride(file, value, ref => readers[overrideScope(file)](ref, pathFor(file)))]
+    })),
     reservations: { course: keyed(courseCatalog), package: keyed(packageCatalog) },
     original,
   }
@@ -297,14 +318,14 @@ const fileNames = (levels, objects, packaged = false) => [...CONFIG, 'blueprint.
 const ownCatalogs = (ws, catalogs) => Object.fromEntries(Object.entries(catalogs).map(([lang, entries]) => [lang, Object.fromEntries(Object.entries(entries).filter(([key]) => !key.includes('/') || key.startsWith(`${ws.packageId}/`)))]))
 
 function courseCatalogs(ws) {
-  const authored = catalogsOf(COURSE_I18N, ws.game, ws.blueprint, ...layerObjects(ws, 'game').map(({ value }) => value))
+  const authored = catalogsOf(COURSE_I18N, ws.game, ws.blueprint, ...layerObjects(ws, 'game').map(({ value }) => value), ...overrideCopy(ws, 'course'))
   // Structural overrides can contribute paragraphs with keys declared by the game.
   const keys = new Set()
   const visit = value => {
     if (typeof value === 'string' && value.startsWith('@')) keys.add(value.slice(1).replace(`${ws.layer}/`, ''))
     else if (value && typeof value === 'object') Object.values(value).forEach(visit)
   }
-  for (const [file, value] of ws.overrideFiles) if (file.startsWith('overrides/') && !file.includes('/i18n/')) visit(value)
+  for (const [, value] of overrideValues(ws, 'course')) visit(sourceValue(value))
   for (const [lang, entries] of Object.entries(ws.courseCatalog)) {
     const overrides = Object.fromEntries(Object.entries(entries).filter(([key]) => keys.has(key)))
     if (Object.keys(overrides).length) authored[lang] = { ...overrides, ...authored[lang] }
@@ -313,7 +334,7 @@ function courseCatalogs(ws) {
 }
 
 function packageValues(ws) {
-  return [...ws.levels.values(), ...ws.capabilities.values(), ...Object.keys(OBJECT_SCHEMAS).flatMap(kind => [...ws[kind].values()]), ...layerObjects(ws, 'package').map(({ value }) => value)]
+  return [...ws.levels.values(), ...ws.capabilities.values(), ...Object.keys(OBJECT_SCHEMAS).flatMap(kind => [...ws[kind].values()]), ...layerObjects(ws, 'package').map(({ value }) => value), ...overrideCopy(ws, 'package')]
 }
 
 function normalize(ws, vocabulary, previous) {
@@ -328,6 +349,24 @@ function normalize(ws, vocabulary, previous) {
   for (const [kind, schema] of Object.entries(OBJECT_SCHEMAS)) for (const [name, value] of ws[kind]) ws[kind].set(name, assign(value, previous[kind].get(name), schema, `${kind === 'tags' ? 'tag' : kind}.${kind === 'tags' ? tagName(name) : name.split('/').at(-1)}`, 'package'))
   for (const [kind, schema] of Object.entries(kindSchemas(vocabulary))) for (const [name, value] of ws.contentObjects[kind] ?? []) ws.contentObjects[kind].set(name, assign(value, previous.contentObjects[kind]?.get(name), schema, `${meaningsOf(vocabulary).find(meaning => meaning.type === kind)?.textPrefix ?? (objectScope(kind, vocabulary, ws.scope) === 'game' ? kind.split('/').at(-1) : kind)}.${name}`, objectScope(kind, vocabulary, ws.scope) === 'game' ? 'course' : 'package', ['kind', 'shape'].includes(kind)))
   for (const [name, value] of ws.capabilities) ws.capabilities.set(name, assign(value, previous.capabilities.get(name), null, `capability.${name}`, 'package', true))
+  for (const [file, value] of objectOverrideFiles(ws)) {
+    const was = previous.overrideFiles.get(file)
+    if (value === was) continue
+    const [, namespace, folder, ...rest] = overridePath(file)
+    const kind = Object.keys(ws.kindFolders).find(kind => ws.kindFolders[kind] === folder)
+    const declaration = ws.packageLayers.find(layer => layer.id === namespace)?.objects.find(object =>
+      object.kind === kind && object.name === rest.at(-1) && (kind !== 'tag' || object.value.kind === rest.slice(0, -1).join('/')))
+    const schema = schemaForKind(kind, vocabulary, { ...declaration?.value, ...value })
+    const scope = overrideScope(file)
+    const catalogs = scope === 'course' ? ws.courseCatalog : ws.packageCatalog
+    const current = catalogsOf(file, value)
+    const previousCopy = catalogsOf(file, was)
+    const locales = Object.fromEntries([...new Set([...Object.keys(catalogs), ...Object.keys(previousCopy), ...Object.keys(current)])]
+      .map(lang => [lang, { ...catalogs[lang], ...previousCopy[lang], ...current[lang] }]))
+    const read = catalogReader(locales, file)
+    const draft = readOverride(file, sourceValue(value), read)
+    ws.overrideFiles.set(file, assign(draft, was, schema, overridePrefix(file), scope, kind === 'kind'))
+  }
   ws.reservations = reservations
 }
 

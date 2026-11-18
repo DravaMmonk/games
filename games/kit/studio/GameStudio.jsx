@@ -30,7 +30,7 @@ import Review from './Review.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
-import { GameList, GameMeta, JsonFile, PackageUsers, gameJson, surfaceCounts, surfaceLabels, surfaceName } from './ProjectLists.jsx'
+import { GameList, GameMeta, JsonFile, PackageUsers, surfaceCounts, surfaceLabels, surfaceName } from './ProjectLists.jsx'
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarGrouping from './SidebarGrouping.jsx'
 import ListRow from './ListRow.jsx'
@@ -271,7 +271,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
             {/* The right column is the file: the open game's game.json edited here, another game's read as JSON. */}
-            {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={gameJson(games.find((g) => g.id === pickedGame))} note={tr("打开这款游戏后在这里编辑")} />
+            {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={games.find((g) => g.id === pickedGame)?.file} note={tr("打开这款游戏后在这里编辑")} />
               : gamesShown ? sideCtx && <Inspector content={course} vocab={vocab} at={{ game: true }} field={at?.game && field ? field : { path: [] }} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
                 onPick={(path) => { if (!at?.game) setAt({ game: true }); pickField(path) }} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setField(null)}
                 tabs={[]} selection={{ game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}

@@ -3,39 +3,39 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "6b3ebabb367a207d5a808794fda3c67701b8e49c4615b289ad78c2a226fb2d53"
+      "hash": "9d4bca914edaff947984e60775c6cc50fcaf7cf9a44b1efb2a3884bd6318074d"
     },
     "numlib": {
       "version": "0.0.0",
-      "hash": "db6b864417d74be4815f2d4d9b4d27bcc0f4632dd72f63e99705b42b01a223fb"
+      "hash": "4020bb2807d97f23ce6eef25659551118d1aada865522c7370f7aab9d33bc529"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "0af1f73e6ce821fce84ad0ec540ad1c7f9d59b0f11076fae13059cbefa5fe77a"
+      "hash": "aec6133e3ccc3703e1deb4aba14d8d2c97b4cd2a0a3c9f692c9e9568ed0d8a44"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "36e07924a795d7bdfdd82e82c7ed95a10fda4a69dac4fe4d8a2874eb9b5ccf0d"
+      "hash": "346743406b5abb6150863f008ecbe369ad9758c20a9a9d9009d3dfc68c96a8db"
     },
     "sentence": {
       "version": "0.0.0",
-      "hash": "b3bc34447e77319bfe2c6170d993096ea713332b9856ae2f6ebefe60b5366f78"
+      "hash": "d86d1be5639e22271807cf4533f6e0d147de5c1043b95f1551889c6791d02493"
     },
     "wiki": {
       "version": "0.0.0",
-      "hash": "d218a11d3b41a9e1664d45617cf63ff6e1ac54cadc6b840e3911a7a79224cc22"
+      "hash": "51221318dd49be8eebe7777321604191a50bc63ef96410f9e99f0620a3acc8d6"
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "b05f07858ad6668eb46637059b63f24646f5f31ce8669e96d94e8786ae34df79"
+      "hash": "fa50f6f3d4d81091e2b541a0afeb16905cd6a18d9469959cc83ec74da2740006"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "63813dc91bba8d69e2e6dac902cd31b8ec9989c8ddae19c94765c2e9b5aabef1"
+      "hash": "383b650ad56d6b60c64413312f9dd0d8dd2ec9904df6573f90cf68c2730e60cb"
     },
     "qed": {
       "version": "0.0.0",
-      "hash": "4d9eac83bfdce3d21743778ae71af741ef54752b037e1877af21ff810f749a8f"
+      "hash": "6d7c7fc8ff1ec98d95f143dc6eecefe514746848268dd50543e164954f5522c1"
     }
   }
 }

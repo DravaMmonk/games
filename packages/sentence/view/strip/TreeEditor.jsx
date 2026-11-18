@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useMemo } from 'react'
-import { L, tr, useHistory } from 'kernel/view'
+import { L, useHistory } from 'kernel/view'
+import { tr } from 'kernel/words'
 import { Chips, Strip } from './Strip.jsx'
 import { StripTools } from './StripTools.jsx'
 import { useStrip } from './useStrip.js'

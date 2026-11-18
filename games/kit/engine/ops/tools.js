@@ -9,12 +9,11 @@ import { runtimeIds } from '../runtime.js'
 // own: a change is always a changeset (changeset.js). params: each argument's JSON type, '?' when it may be left out.
 import { existsSync, readFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
-import { dirname, join, relative, resolve } from 'node:path'
+import { relative, resolve } from 'node:path'
 import { find, shapeAt } from '../schema.js'
 import { describe } from '../vocabulary.js'
 import { checkGame } from '../checks.js'
 import { checkCache } from '../check-cache.js'
-import { catalogReader } from '../catalogs.js'
 import { packageWords } from '../manifests.js'
 import { visibleOverrides } from '../layers.js'
 import { workspaceCheckCache, contentRoot, runtimeOf, isDataGame, readContent, readPackage, packageIds, resolveLayers, layerVocabulary, contentTargets, packageDirectory } from '../resolver.js'
@@ -131,7 +130,7 @@ const tools = {
       return Promise.all(packageIds(ROOT).map(async (id) => {
         const resolved = resolveLayers({ package: id, closure: true, root: ROOT })
         const layer = resolved.layers.find(layer => layer.id === id)
-        return { id, ...layer.config, ...packageWords(layer), source: layer.source, manifest: layer.manifest, lock: resolved.lock, lockStatus: resolved.lockStatus }
+        return { id, ...layer.config, ...packageWords(layer), file: layer.config, source: layer.source, manifest: layer.manifest, lock: resolved.lock, lockStatus: resolved.lockStatus }
       }))
     },
   },
@@ -167,7 +166,7 @@ const tools = {
       return dataGames().map((id) => {
         const resolved = resolveLayers({ game: id, root: ROOT })
         const content = readContent(id, ROOT, { resolution: resolved })
-        return { id, title: content.title, package: resolved.packageId, kernel: resolved.game.kernel, packages: resolved.packageRanges, lock: resolved.lock, lockStatus: resolved.lockStatus }
+        return { id, title: content.title, file: resolved.layers.at(-1).config, package: resolved.packageId, kernel: resolved.game.kernel, packages: resolved.packageRanges, lock: resolved.lock, lockStatus: resolved.lockStatus }
       })
     },
   },
@@ -292,8 +291,12 @@ const tools = {
       // Copy problems count levels in play order, which only a content that fits its vocabulary has (and only the whole
       // check reports them: a quick preview does without the order).
       const ids = !content ? [] : content.packageTarget ? packageLevelOrder(content) : !check || r.lines.some((l) => l.text.startsWith('content: ')) ? content.levels.map((l) => l.id) : (await runtimeOf(content)).spec(content).levels.map((l) => l.id)
+      // JSON editing can select catalog entries that no field currently uses.
+      const copy = !omit.includes('content') && content?.resolvedDependencies?.copy
       const answer = {
-        ok: r.ok, says: r.says, problems: r.problems, failed: r.failed, content, order: ids,
+        ok: r.ok, says: r.says, problems: r.problems, failed: r.failed,
+        content: copy ? { ...content, registries: { ...content.registries, i18n: copy } } : content,
+        order: ids,
         lines: r.lines.map((l) => ({ ...l, levels: levelsOfLine(l, ids) })),
         changes: r.changes, ...logOf(game, scope, layer, ws, omit),
       }
@@ -405,15 +408,7 @@ const tools = {
         const tree = git('rev-parse', '--verify', '--end-of-options', `${rev}^{tree}`).trim()
         const text = git('show', `${tree}:${path}`)
         if (!name.endsWith('.json')) return { found: true, rev, file: name, text }
-        let value = JSON.parse(text)
-        const isObject = Object.values(ws.kindFolders).some(folder => fileName.startsWith(`${folder}/`))
-        if (isObject || ['game.json', 'blueprint.json'].includes(fileName)) {
-          const scope = join(isObject ? path.slice(0, -fileName.length) : dirname(path), 'i18n')
-          const files = git('ls-tree', '-r', '--name-only', '-z', tree, '--', `${scope}/`).split('\0').filter((file) => file.endsWith('.json'))
-          const catalogs = Object.fromEntries(files.map((file) => [file.slice(scope.length + 1, -'.json'.length), JSON.parse(git('show', `${tree}:${file}`))]))
-          value = catalogReader(catalogs, scope)(value, path)
-        }
-        return { found: true, rev, file: name, text, value }
+        return { found: true, rev, file: name, text, value: JSON.parse(text) }
       } catch (error) {
         return { found: false, rev, file: name, why: String(error.stderr ?? error.message).trim().split('\n')[0] }
       }

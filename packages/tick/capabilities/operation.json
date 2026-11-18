@@ -2,10 +2,7 @@
   "extends": "operation",
   "items": {
     "held": {
-      "about": {
-        "zh": "寄存器 register 此刻存的值；还没存过时给 start",
-        "en": "what register `register` holds now; `start` until something is kept in it"
-      },
+      "about": "@capability.operation.items.held.about",
       "args": [],
       "returns": "kernel/any",
       "params": {
@@ -26,10 +23,7 @@
       }
     },
     "keep": {
-      "about": {
-        "zh": "把输入存入指定的寄存器，从下一拍起读到。",
-        "en": "Save the input in the selected register so it can be read from the next tick."
-      },
+      "about": "@capability.operation.items.keep.about",
       "args": [
         {
           "name": "in",

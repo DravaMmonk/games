@@ -3,7 +3,7 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "6b3ebabb367a207d5a808794fda3c67701b8e49c4615b289ad78c2a226fb2d53"
+      "hash": "9d4bca914edaff947984e60775c6cc50fcaf7cf9a44b1efb2a3884bd6318074d"
     },
     "imglib": {
       "version": "0.0.0",

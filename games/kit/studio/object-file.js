@@ -5,16 +5,13 @@ import { definitionOfKind } from '../engine/plugin-kinds.js'
 // `<kind>.set` for a field, `<kind>.put` for the whole object (and for a field taken out). Another layer's object is
 // read here only: it is overridden from the middle (SourceMark.jsx). An override picked has its file here too, as the
 // override operation writes it.
-import { collectionProvider } from './editors.js'
 import { folders } from '../engine/layers.js'
 import { OBJECT_SCHEMAS } from '../engine/objects.js'
 import { CHAPTER } from '../engine/course-schema.js'
 import { isText, textKey } from '../engine/i18n.js'
 import { getAt, parsePath, unsetAt } from '../engine/ops/edit.js'
 import { localName, namespaceOf, splitTagKey, tagTarget } from './objects-edit.js'
-import { edgesOf, relationPatch, tagPatch } from './override-edit.js'
 import { textWith } from './tag-edit.js'
-import { objectOverride } from './collection-edit.js'
 
 export const OBJECT_KINDS = { tag: 'tags', relation: 'relations', chapter: 'chapters' }
 // A tag's kind is in its file's path (tags/<kind>/<name>.json), not in the file.
@@ -87,32 +84,21 @@ export function objectOp(object, path, edit, type = null) {
   return set(ownObjectData(namespace, edit.set))
 }
 
-const withoutIds = (value) => without(value, ['id'])
-const without = (value, keys) => Object.fromEntries(Object.entries(value ?? {}).filter(([k]) => !keys.includes(k)))
-const changed = (before, after, skip) => Object.fromEntries(Object.entries(without(after, skip)).filter(([k, v]) => JSON.stringify(before?.[k]) !== JSON.stringify(v)))
-
-/**
- * An override's file, as the override operation writes it, from the event the loader keeps ({ kind, before, after }):
- * a tag by the members it adds and takes out (and the fields it changes), a relation by its edges added and taken
- * out, anything else whole.
- */
-export function overrideFileOf(event) {
-  if (event.kind === 'tag') return { ...changed(event.before, event.after, ['kind', 'values']), ...tagPatch(event.before, event.after?.values ?? []) }
-  if (event.kind === 'relation') return { ...changed(event.before, event.after, ['edges', 'sequence']), ...relationPatch(event.before, edgesOf(event.after)) }
-  // A gathering object's lists go as patches too (games/MODULES.md 5.3.1); anything else whole.
-  if (event.kind === 'section' || collectionProvider(event.kind)) return objectOverride(withoutIds(event.before), withoutIds(event.after), { values: 'list', menus: 'list' }) ?? {}
-  return event.after ?? {}
-}
-
 /** Where an override's file is, in the layer that made it. */
 export function overrideFileName(event, content = null) {
+  if (event.kind === 'i18n') {
+    const [lang, key] = event.name.split(':')
+    return `${event.layer}/overrides/${namespaceOf(key)}/i18n/${lang}.json`
+  }
   const [namespace, name] = [namespaceOf(event.name) ?? '', event.name.slice(event.name.indexOf('/') + 1)]
-  const folder = event.kind === 'i18n' ? 'i18n' : event.kind === 'tag' ? `tags/${event.after?.kind ?? event.before?.kind ?? 'level'}` : definitionOfKind(content?.objectKinds, event.kind)?.folder ?? OBJECT_KINDS[event.kind] ?? folders[event.kind] ?? event.kind
+  const folder = event.kind === 'tag' ? `tags/${event.after?.kind ?? event.before?.kind ?? 'level'}` : definitionOfKind(content?.objectKinds, event.kind)?.folder ?? OBJECT_KINDS[event.kind] ?? folders[event.kind] ?? event.kind
   return `${event.layer}/overrides/${namespace}/${folder}/${name}.json`
 }
 
 /** The operation an override's file edited as raw JSON makes, in the layer that owns it; null in another layer. */
 export function overrideOp(event, layer, data) {
   if (event.layer !== layer) return null
-  return { op: 'override.put', layer, kind: event.kind, ...(event.member && { member: event.member }), name: event.name, data }
+  const [lang, key] = event.kind === 'i18n' ? event.name.split(':') : []
+  const name = key ? `${namespaceOf(key)}/${lang}` : event.name
+  return { op: 'override.put', layer, kind: event.kind, ...(event.member && { member: event.member }), name, data }
 }

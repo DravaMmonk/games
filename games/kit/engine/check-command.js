@@ -4,10 +4,12 @@
 // --mutants adds, for each supported task, how many mutants of its answer the tests tell from it (mutate.js).
 // The domain's checks of a level that has not changed are read from the game's kept checks (check-cache.js); --fresh
 // runs them all.
+import { resolve } from 'node:path'
+import { sourceJsonProblems } from './source-json.js'
 import { firstText } from './i18n.js'
 import { checkGame } from './checks.js'
 import { closeGames } from './games.mjs'
-import { workspaceCheckCache, contentRoot, runtimeOf, readContent, readPackage, contentTargets } from './resolver.js'
+import { workspaceCheckCache, contentRoot, runtimeOf, readContent, readPackage, contentTargets, packageDirectory, gameDirectory } from './resolver.js'
 import { deepFreeze } from './content.js'
 import { openGame, openPackage } from './ops/workspace.js'
 import { driftOf } from './ops/log.js'
@@ -20,11 +22,21 @@ let problems = 0
 const mutants = process.argv.includes('--mutants')
 const fresh = process.argv.includes('--fresh')
 const asked = process.argv.slice(2).filter((arg) => !['--mutants', '--fresh', '--package', '--game'].includes(arg))
-if (!asked.length && !process.argv.includes('--package') && !process.argv.includes('--game')) {
+const selection = { package: process.argv.includes('--package'), game: process.argv.includes('--game') }
+const targets = contentTargets(asked, root, selection)
+const all = !asked.length && !selection.package && !selection.game
+const directories = all
+  ? ['games', 'packages', 'templates', 'scaffolds', '.agents', 'site', 'tools'].map(dir => resolve(root, dir))
+  : targets.map(({ id, kind }) => (kind === 'package' ? packageDirectory : gameDirectory)(id, root))
+for (const problem of sourceJsonProblems(root, directories)) {
+  console.log(`FAIL ${problem}`)
+  problems++
+}
+if (all) {
   for (const warning of packageExportWarnings(root)) console.warn(`WARN ${warning}`)
 }
 // One game whose domain throws is reported as such; the others are still checked.
-for (const { id, kind } of contentTargets(asked, root, { package: process.argv.includes('--package'), game: process.argv.includes('--game') })) {
+for (const { id, kind } of targets) {
   const packaged = kind === 'package'
   let lines
   let head = id

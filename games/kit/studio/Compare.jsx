@@ -5,11 +5,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { tr } from '../shell/i18n.js'
 import { call } from './api.js'
+import { sourceValue } from '../engine/catalogs.js'
 import { fieldDiff } from './diff.js'
 import { DiffFields } from './DiffView.jsx'
 import { Picker } from './Picker.jsx'
 
-const bare = (level) => (level ? (({ id: _, ...v }) => v)(level) : undefined)
+function bare(level) {
+  if (!level) return undefined
+  const { id, ...value } = level
+  return sourceValue(value, id.split('/')[0])
+}
 
 /**
  * `file`: { name (its path in the package), now, before (its value as written, undefined when new), git: whether git can
@@ -66,7 +71,7 @@ function FileCompare({ target, file, onPath }) {
     return () => { live = false }
   }, [target, file.name, right])
   const theirs = right.kind === 'base' ? file.before : held?.found ? held.value : undefined
-  const rows = useMemo(() => (file.now && theirs ? fieldDiff(theirs, file.now) : []), [file.now, theirs])
+  const rows = useMemo(() => (file.now && theirs ? fieldDiff(sourceValue(theirs, file.owner), sourceValue(file.now, file.owner)) : []), [file.now, theirs])
   return (
     <article className="compare">
       <div className="compare-bar">

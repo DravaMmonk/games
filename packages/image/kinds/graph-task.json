@@ -86,9 +86,9 @@
   "schema": {
     "type": "by",
     "field": "scene",
-    "casesFrom": "scene"
+    "casesFrom": "image/scene"
   },
   "declares": "package",
   "overrides": { "package": ["*"], "game": ["$text"] },
-  "caseGroups": "scene"
+  "caseGroups": "image/scene"
 }

@@ -2,7 +2,7 @@ import { BUILTIN_KIND_NAMES } from './plugin-kinds.js'
 // Content names are resolved at the file boundary. Ports, settings keys, variant ids and domain resources stay local.
 import { meaningsOf } from './kind-meanings.js'
 import { textEntries, textKey, withTextKey } from './i18n.js'
-import { shapeAt } from './schema.js'
+import { caseOf, shapeAt } from './schema.js'
 
 export const OBJECT_KINDS = ['level', 'entry', 'tag', 'relation', 'section', 'chapter', 'game']
 
@@ -41,14 +41,15 @@ export function expandNames(value, namespace, { resolve, textKeys = true, schema
     const replacement = readers.map(reader => reader.rewrite?.({ value: v, schema: { type: 'ref', kind, reference: kind }, path: [] })).find(result => result && Object.hasOwn(result, 'value'))
     if (replacement) return replacement.value
     if (kind === 'kind' && BUILTIN_KIND_NAMES.includes(v)) return v
+    if (vocabulary?.capabilityKinds?.[kind]) return name(v)
     return ['entry', 'group', 'tag', 'relation', 'section', 'chapter', ...Object.keys(vocabulary?.objectKinds ?? {}), 'kind'].includes(kind) ? name(v) : v
   }
   const walk = (v, s, path = []) => {
     if (v === undefined || v === null) return v
     if (s?.type === 'either') {
-      return walk(v, shapeAt(s, v, [], { vocabulary }), path)
+      return walk(v, shapeAt(s, v, [], { vocabulary, qualify: name }), path)
     }
-    if (s?.type === 'by') return walk(v, s.cases[v[s.field]], path)
+    if (s?.type === 'by') return walk(v, caseOf(s, v, name), path)
     if (['set', 'list', 'edges'].includes(s?.type) && v && !Array.isArray(v) && typeof v === 'object') {
       return Object.fromEntries(Object.entries(v).map(([key, values]) => [key, key === 'insert' ? values.map(item => ({ ...item, ...(item.before && { before: walk(item.before, s.of) }), ...(item.after && { after: walk(item.after, s.of) }), values: item.values.map(value => walk(value, s.of)) })) : values.map(value => walk(value, s.of))]))
     }
@@ -63,8 +64,11 @@ export function expandNames(value, namespace, { resolve, textKeys = true, schema
     if (s?.type === 'level' || s?.type === 'task') return name(v)
     if (s?.type === 'ref' || s?.type === 'name') return ref(s.kind, v)
     if (s?.type === 'call') {
-      if (typeof v === 'string') return v
-      return Object.fromEntries(Object.entries(v).map(([key, child]) => [key, walk(child, vocabulary?.kinds[s.kind]?.[key]?.params, [...path, key])]))
+      if (typeof v === 'string') return ref(s.kind, v)
+      return Object.fromEntries(Object.entries(v).map(([key, child]) => {
+        const target = ref(s.kind, key)
+        return [target, walk(child, vocabulary?.kinds[s.kind]?.[target]?.params, [...path, key])]
+      }))
     }
     if (Array.isArray(v)) return v.map((child, index) => walk(child, s?.of, [...path, index]))
     if (typeof v !== 'object') return v

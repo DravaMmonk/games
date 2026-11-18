@@ -46,7 +46,7 @@
         }
       }
     },
-    "world": {
+    "table/world": {
       "state-graph/grid": {
         "about": {
           "zh": "棋盘城市：只往右或往下走，每格可以有石头、体力或金币",

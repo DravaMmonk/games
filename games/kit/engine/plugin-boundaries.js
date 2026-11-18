@@ -33,7 +33,8 @@ export function importProblem(specifier, file, root, uses) {
     if (!target.startsWith(location(id, root) + sep) && !target.startsWith(base + sep)) return 'packages may only import public kernel and dependency exports'
     const actual = existsSync(target) ? realpathSync(target) : target
     const allowed = [resolve(base, side) + sep, ...(side === 'view' ? [resolve(base, 'core') + sep] : [])]
-    if (!allowed.some(path => actual.startsWith(path))) return `${side} cannot import ${specifier}`
+    const ownCapability = dirname(actual) === resolve(base, 'capabilities') && extname(actual) === '.json'
+    if (!ownCapability && !allowed.some(path => actual.startsWith(path))) return `${side} cannot import ${specifier}`
     if (side === 'core' && !['.js', '.mjs', '.json'].includes(extname(target))) return 'core cannot import JSX, CSS or view assets'
     return null
   }

@@ -1,0 +1,10 @@
+{
+  "name": "target",
+  "studio": {
+    "order": 16,
+    "label": {
+      "zh": "目标",
+      "en": "Targets"
+    }
+  }
+}

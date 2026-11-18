@@ -7,7 +7,7 @@ import { resolve, dirname } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { contentRoot, readPackage, readContent } from './resolver.js'
 import { openGame } from './ops/workspace.js'
-import { proofsRoot, lockFixture } from './ops/fixture.js'
+import { storyRoot, lockFixture } from './test-fixture.js'
 
 const put = (root, name, value) => {
   const file = resolve(root, name)
@@ -16,7 +16,7 @@ const put = (root, name, value) => {
 }
 
 test('a package without games and a game with only its selected packages check independently from another cwd', () => {
-  const { root, id } = proofsRoot()
+  const { root, id } = storyRoot()
   const library = mkdtempSync(resolve(tmpdir(), 'independent-library-'))
   try {
     put(library, 'packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
@@ -30,7 +30,7 @@ test('a package without games and a game with only its selected packages check i
 })
 
 test('game authoring consumes resolved public content and never opens dependency files or directories', () => {
-  const { root, id } = proofsRoot()
+  const { root, id } = storyRoot()
   const originals = { readFileSync: fs.readFileSync, readdirSync: fs.readdirSync }
   try {
     for (const method of Object.keys(originals)) fs[method] = function (file, ...args) {

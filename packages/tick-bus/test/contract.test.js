@@ -61,3 +61,18 @@ test('tick-bus core and view compose with circuit through public entries', async
     assert.equal(typeof Object.values(game.kinds)[0].Screen, 'function')
   } finally { await closeGames() }
 })
+
+test('standalone baseline uses the tick runner for each packaged level', async () => {
+  const { readPackage, runtimeOf } = await import('../../../games/kit/engine/resolver.js')
+  const { contentSchemas } = await import('../../../games/kit/engine/content.js')
+  const { packageLevel } = await import('../../../games/kit/engine/package-play.js')
+  const { taskReports } = await import('../../../games/kit/engine/baseline-reports.js')
+  const root = new URL('../../../', import.meta.url).pathname
+  const content = readPackage('tick-bus', root)
+  const runtime = await runtimeOf(content, root)
+  for (const level of content.levels) {
+    const records = await taskReports(runtime.spec(packageLevel(content, level.id)), contentSchemas.get(content).meanings)
+    assert.equal(records.length, level.tasks.length)
+    assert.ok(records.every(record => record.report.reference.report.pass), level.id)
+  }
+})

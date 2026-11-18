@@ -26,7 +26,7 @@ export function ExprField({ field, onSet, ctx, label }) {
   const [draft = '', setDraft, bind] = useDraft(field.value ?? '')
   const box = useRef(null)
   const [open, setOpen] = useState(false)
-  const ops = useMemo(() => ({ ...(ctx.vocabulary?.kinds.op ?? {}), ...BUILTIN_ITEMS }), [ctx.vocabulary])
+  const ops = useMemo(() => ({ ...(ctx.vocabulary?.kinds.operation ?? {}), ...BUILTIN_ITEMS }), [ctx.vocabulary])
   const part = partAt(ctx.partDefs, field.path)
   const said = useMemo(() => {
     try {

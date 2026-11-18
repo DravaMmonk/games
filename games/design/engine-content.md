@@ -4,6 +4,11 @@
 
 每种对象和能力各有一张注册表，名字在同种里唯一。字段通过 schema 指定要查的种类，例如图片字段中的 `image/glyph`。字段接受几种能力时，同名报歧义。标签的成员种类写进路径；标签身份是「成员类型 + 全名」，不同成员类型可以同名。组装后用 `registries.tag[tagKey(member, fullName)]`（键为 `<成员类型>:<全名>`）读取；`content.tags`、`sources.tag` 同键，`overrideHistory` 的标签事件携带 `member`。引用仍写 `#<命名空间>/<名>`，在字段期望的成员类型里查找；不限成员类型时，同名多类型报歧义。元件和它的阶段也共用名字空间。
 
+包在 `capabilities/<kind>.json` 定义一类能力。文件给出种类名、Studio 的双语名称和顺序，以及可选的实现要求和数据项。字段用 `{ "type": "ref", "kind": "image/scene" }` 声明引用。组装按这个种类补齐作者的短名、查公开身份，并把同一张登记表交给 Studio。需要从能力项选择结构时，`by.casesFrom` 读取各项的 `shape`，分支可用 `ref.values` 限定具体项。
+
+正文引用写成 `<level-ref to="…"></level-ref>`。核心用 `kernel.reference(kind, { target, label })` 声明标记和目标对象类型，平台按已组装的名称校验目标。需要专门交互的包同时提供视图登记。内核通过同一接口安装 `level` 与 `wiki`，后者仍指向百科词条。
+
+
 | 对象 | 包内文件 | 职责 |
 |---|---|---|
 | 关卡 `level` | `levels/<名>.json` | 关卡与有独立 id 的任务 |

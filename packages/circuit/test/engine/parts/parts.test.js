@@ -20,7 +20,7 @@ const OPS = {
 const vocabulary = {
   domain: 'toy',
   version: 1,
-  kinds: { op: Object.fromEntries(Object.entries(OPS).map(([k, { run: _, ...item }]) => [k, item])), family: { value: { about: 'numbers' } } },
+  kinds: { operation: Object.fromEntries(Object.entries(OPS).map(([k, { run: _, ...item }]) => [k, item])), family: { value: { about: 'numbers' } } },
 }
 const file = {
 
@@ -44,14 +44,14 @@ test('an expression reads, prints back, and says what it names wrong', () => {
   assert.throws(() => parse('add(a, '), /expected a name/)
   assert.throws(() => parse('add(k=1, a)'), /positional argument after a named one/)
   const settings = { op: { control: 'select', options: [{ value: 'add' }, { value: 'sub' }] } }
-  const said = problemsOf(parse('match $op { add: add(a), mul: c }'), { ops: vocabulary.kinds.op, inputs: ['a', 'b'], settings, fits: () => true })
+  const said = problemsOf(parse('match $op { add: add(a), mul: c }'), { ops: vocabulary.kinds.operation, inputs: ['a', 'b'], settings, fits: () => true })
   assert.deepEqual(said, ['add takes 2 arguments (a, b), given 1', 'c is no input of the part (its inputs: a, b)', 'match $op has no case for sub', 'match $op: mul is none of its options'])
 })
 
 test('if works out only the branch it takes; a builtin’s numbers are plain numbers', () => {
   const env = { ins: {}, settings: { a: 6, b: 0 }, run: (name, args, named) => ({ ...BUILTINS, ...scalar })[name].run(args, named) }
   assert.equal(evaluate(parse("circuit/if(scalar/eq($b, 0), $a, scalar/over($a, $b))"), env), 6, 'no division by 0 on the branch not taken')
-  const ops = { ...BUILTIN_ITEMS, ...vocabulary.kinds.op }
+  const ops = { ...BUILTIN_ITEMS, ...vocabulary.kinds.operation }
   const said = (text) => problemsOf(parse(text), { ops, inputs: ['a'], settings: { k: { control: 'slider' } }, fits: () => true })
   assert.deepEqual(said("scalar/round(a)"), ['scalar/round(a): the input a is no plain number'])
   assert.deepEqual(said("scalar/plus(add(a, a), 1)"), ['scalar/plus(a): what add gives is no plain number'])
@@ -113,14 +113,14 @@ test('a parts.json that holds together has no problems; one that does not says w
     'parts/scaled.json.rules[0].set.z: z is no setting of the part',
     'parts/scaled.json.views.tile[0].text: {nope} is no setting of the part',
   ])
-  assert.deepEqual(Object.keys(withParts(vocabulary, file).kinds.part), ['sum', 'scaled', 'split'])
+  assert.deepEqual(Object.keys(withParts(vocabulary, file).kinds.primitive), ['sum', 'scaled', 'split'])
 })
 
 test('code and content parts share both the vocabulary and the running registry', () => {
   const code = { fixed: { inputs: [], eval: () => 4 } }
-  const mixed = { ...vocabulary, kinds: { ...vocabulary.kinds, part: { fixed: { about: 'a fixed number' } } } }
+  const mixed = { ...vocabulary, kinds: { ...vocabulary.kinds, primitive: { fixed: { about: 'a fixed number' } } } }
   const data = { parts: { sum: file.parts.sum } }
-  assert.deepEqual(Object.keys(withParts(mixed, data).kinds.part), ['fixed', 'sum'])
+  assert.deepEqual(Object.keys(withParts(mixed, data).kinds.primitive), ['fixed', 'sum'])
   assert.deepEqual(partProblems(data, mixed), [])
   const { PARTS } = defineParts(data, OPS, code)
   const board = { nodes: [{ id: 'f', type: 'fixed' }, { id: 's', type: 'sum' }], wires: [{ from: 'f', to: 's', port: 'a' }, { from: 'f', to: 's', port: 'b' }] }
@@ -143,7 +143,7 @@ test('the part readers expose the optional faces without renaming stored fields'
   assert.deepEqual(partProblems({ ...file, parts: { made: { ...built, inputs: [] } } }, vocabulary), [])
   assert.deepEqual(Object.keys(defineParts({ ...file, parts: { ...file.parts, made: built } }, OPS).defs), Object.keys(file.parts))
   // A domain with its primitives in code keeps its built parts alone in parts/<name>.json.
-  const coded = { ...vocabulary, kinds: { part: { wire: { about: 'a wire' } } } }
+  const coded = { ...vocabulary, kinds: { primitive: { wire: { about: 'a wire' } } } }
   assert.deepEqual(partProblems({ parts: { made: built } }, coded), [])
   assert.ok(partProblems({ parts: { scaled: file.parts.scaled } }, coded).some((p) => /circuit primitives in code/.test(p.says)))
   assert.deepEqual([holesOf({}), settingsOf({}), regionsOf({}), insideOf({}), facesOf({}), keepsOf({})], [[], [], [], null, {}, null])
@@ -227,7 +227,7 @@ test('inline settings inherit operation parameters for every output', () => {
 
 test('settings reject incomplete standalone definitions, wider ranges, invalid defaults and added options', () => {
   const op = { args: [{ name: 'a' }], params: S.obj({ gain: S.num({ min: 1, max: 4, default: 2 }), mode: S.oneOf(['up', 'down'], { default: 'up' }) }) }
-  const vocabulary = { kinds: { op: { scale: op }, family: { value: {} } } }
+  const vocabulary = { kinds: { operation: { scale: op }, family: { value: {} } } }
   const make = (settings) => ({ parts: { scaled: { ...file.parts.sum, settings, op: 'scale' } } })
   assert.deepEqual(partProblems(make({ gain: {}, mode: {} }), vocabulary), [])
   assert.deepEqual(partProblems(make({ gain: { min: 2, max: 3, default: 3 }, mode: { remove: ['down'] } }), vocabulary), [])

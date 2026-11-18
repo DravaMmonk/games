@@ -18,7 +18,7 @@
     },
     "part": {
       "type": "ref",
-      "kind": "part",
+      "kind": "primitive",
       "reference": "circuit/part"
     },
     "question": { "type": "text" },

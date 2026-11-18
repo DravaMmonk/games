@@ -62,6 +62,7 @@ export const probePlay = {
 }
 export function register(kernel) {
   Object.assign(registeredOperations, IMAGE_OPS)
+  for (const [name, item] of Object.entries(IMAGE_OPS)) kernel.implement('operation', name, item)
   registeredValueTypes['image/image'] = { about: { en: 'An image or scalar image with named colour channels', zh: '带颜色通道的图像或标量图像' } }
   kernel.kind('image/level', meaning)
   kernel.play('image/graph', graphPlay)

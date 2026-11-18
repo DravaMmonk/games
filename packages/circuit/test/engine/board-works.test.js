@@ -1,4 +1,4 @@
-import { withProgressFixture } from '../../../../games/kit/engine/ops/fixture.js'
+import { withProgressFixture } from '../../../qed/test/fixture.js'
 // node --test (npm test) — what a task on the circuit preset holds (board-works.js over ../course.js holds): a part,
 // one of its settings, one value of a setting, by the course's progress and by what the task gives or withholds.
 import { test } from 'node:test'

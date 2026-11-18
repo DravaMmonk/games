@@ -166,11 +166,11 @@ export function moduleProblems(module, registry, runtime = null) {
       if (item.outputType && !declaredType(item.outputType)) out.push(`${name}: unknown output type ${item.outputType}`)
     }
     if (kind === 'display' && (item.role || ['display', 'widget'].includes(item.kind))) {
-      const entry = registry.displayLoaders[name]
+      const entry = registry.implementations.display?.[name]
       if (!entry) out.push(`${name}: no display implementation`)
       else if (entry !== `${module.id}/view`) out.push(`${name}: display implementation is outside its module UI`)
     }
-    if (kind === 'operation' && !registry.operations[name]) out.push(`${name}: no runtime implementation`)
+    if (kind === 'operation' && !registry.implementations.operation?.[name]) out.push(`${name}: no runtime implementation`)
     if (kind === 'operation' && item.signatures && !item.signatures.length) out.push(`${name}: no signatures`)
     if (kind === 'operation') for (const signature of item.signatures ?? [item]) {
       if (!Array.isArray(signature.args)) out.push(`${name}: no argument signature`)

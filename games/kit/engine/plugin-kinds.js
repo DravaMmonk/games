@@ -92,7 +92,7 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
     }
     if (d.extends ? !d.fields || d.folder || d.schema && !d.play : !d.schema || !d.folder || d.fields) throw new Error(`${name}: declare folder + schema, or extends + fields`)
     if (!d.extends && Object.entries(definitions).some(([otherName, other]) => other.folder === d.folder && other.declares === d.declares && otherName.split('/')[0] === name.split('/')[0])) throw new Error(`${name}: duplicate object folder ${d.folder}`)
-    if (!d.extends && ['levels', 'tasks', 'entries', 'tags', 'relations', 'sections', 'chapters', 'kinds', 'shapes', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
+    if (!d.extends && ['levels', 'tasks', 'entries', 'tags', 'relations', 'sections', 'chapters', 'kinds', 'shapes', 'capabilities', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
     const owner = schemaOwner(name)
     const compiled = group => {
       const resolve = schema => {

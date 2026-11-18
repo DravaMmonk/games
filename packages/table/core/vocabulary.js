@@ -1,7 +1,7 @@
 export const vocabulary = {
   "module": "table",
   "kinds": {
-    "part": {
+    "primitive": {
       "table/msum": {
         "about": {
           "zh": "汇合器 · 加起来",

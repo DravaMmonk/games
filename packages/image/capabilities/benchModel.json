@@ -1,0 +1,10 @@
+{
+  "name": "benchModel",
+  "studio": {
+    "order": 18,
+    "label": {
+      "zh": "实验模型",
+      "en": "Bench models"
+    }
+  }
+}

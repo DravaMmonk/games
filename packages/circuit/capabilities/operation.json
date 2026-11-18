@@ -1,0 +1,16 @@
+{
+  "name": "operation",
+  "implementation": {
+    "side": "core",
+    "methods": [
+      "run"
+    ]
+  },
+  "studio": {
+    "order": 0,
+    "label": {
+      "zh": "运算",
+      "en": "Operations"
+    }
+  }
+}

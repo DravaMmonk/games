@@ -11,7 +11,18 @@
 // A `<` that does not start a tag (a < b, x <- y) is plain text.
 
 export const TAGS = ['b', 'i', 'strong', 'code']
-const REF_KINDS = ['level', 'wiki']
+export const referenceKinds = new Map()
+
+/** Register a markup tag and the object registry its targets come from. */
+export function registerReferenceKind(kind, { target, label = kind, quoteOrder = 0 } = {}) {
+  if (!/^[a-z][a-z0-9-]*$/.test(kind)) throw new Error(`invalid reference kind ${kind}`)
+  const previous = referenceKinds.get(kind)
+  if (previous && (previous.target !== target || previous.label !== label || previous.quoteOrder !== quoteOrder)) throw new Error(`duplicate reference kind ${kind}`)
+  referenceKinds.set(kind, { target, label, quoteOrder })
+}
+
+registerReferenceKind('level', { target: 'level', quoteOrder: 1 })
+registerReferenceKind('wiki', { target: 'entry', label: 'encyclopedia entry' })
 const TOKEN = /\\\(([\s\S]*?)\\\)|\\\[([\s\S]*?)\\\]|(\\\(|\\\[)|<([a-z][a-z0-9-]*)-ref to="([^"<>]+)"><\/\4-ref>|<(\/?)([A-Za-z][A-Za-z0-9-]*)([^<>]*)>/g
 
 /**
@@ -39,13 +50,13 @@ export function markupOf(text) {
       else put({ math: inlineMath ?? displayMath, display: displayMath !== undefined })
       continue
     }
-    if (refKind) {
+    if (refKind && referenceKinds.has(refKind)) {
       put({ ref: refKind, to: refTo })
       continue
     }
-    const name = tag.toLowerCase()
+    const name = tag?.toLowerCase()
     if (!TAGS.includes(name)) {
-      problems.push(`${whole} is no markup a text may carry (${[...TAGS.map((t) => `<${t}>`), ...REF_KINDS.map((k) => `<${k}-ref to="…">`)].join(' ')})`)
+      problems.push(`${whole} is no markup a text may carry (${[...TAGS.map((t) => `<${t}>`), ...[...referenceKinds.keys()].map((k) => `<${k}-ref to="…">`)].join(' ')})`)
       put(whole)
       continue
     }

@@ -6,22 +6,22 @@ import { capabilities } from './kernel.js'
 
 
 test('display implementations require declarations and reject duplicate registration', () => {
-  const registry = createCapabilityRegistry()
-  assert.throws(() => registry.implementDisplays(['toy/card'], 'toy/view'), /undeclared display/)
+  const registry = createCapabilityRegistry({ display: { implementation: { side: 'view' } } })
+  assert.throws(() => registry.implement('display', 'toy/card', 'toy/view', 'view'), /undeclared display/)
   registry.add('display', 'toy/card', { about: 'A card' })
-  assert.throws(() => registry.implementDisplays(['toy/card'], null), /needs a module UI entry/)
-  registry.implementDisplays(['toy/card'], 'toy/view')
-  assert.throws(() => registry.implementDisplays(['toy/card'], 'toy/view'), /duplicate display/)
+  assert.throws(() => registry.implement('display', 'toy/card', null, 'view'), /needs its package view entry/)
+  registry.implement('display', 'toy/card', 'toy/view', 'view')
+  assert.throws(() => registry.implement('display', 'toy/card', 'toy/view', 'view'), /duplicate display/)
 })
 
 test('display resolution mixes modules, loads each bundle once and rejects missing implementations', async () => {
-  const registry = createCapabilityRegistry()
+  const registry = createCapabilityRegistry({ display: { implementation: { side: 'view' } } })
   let loads = 0
   const card = () => null
   const load = async () => { loads++; return { 'toy/card': card, 'toy/panel': { text: 'panel' } } }
   for (const name of ['toy/card', 'toy/panel', 'toy/missing', 'other/figure']) registry.add('display', name, { about: name })
-  registry.implementDisplays(['toy/card', 'toy/panel', 'toy/missing'], 'toy/view')
-  registry.implementDisplays(['other/figure'], 'other/view')
+  for (const name of ['toy/card', 'toy/panel', 'toy/missing']) registry.implement('display', name, 'toy/view', 'view')
+  registry.implement('display', 'other/figure', 'other/view', 'view')
   const resolve = createDisplayResolver(registry, (entry) => entry === 'toy/view' ? load() : { 'other/figure': card })
   const [first, second] = await Promise.all([resolve(['toy/card', 'other/figure']), resolve(['toy/panel'])])
   assert.equal(first['toy/card'], card)
@@ -33,6 +33,6 @@ test('display resolution mixes modules, loads each bundle once and rejects missi
 })
 
 test('the kernel installs no gameplay display implementations', () => {
-  assert.deepEqual(Object.keys(capabilities.displayLoaders), [])
-  assert.deepEqual(Object.keys(capabilities.tables.display), [])
+  assert.deepEqual(Object.keys(capabilities.implementations), [])
+  assert.deepEqual(capabilities.tables.display, undefined)
 })

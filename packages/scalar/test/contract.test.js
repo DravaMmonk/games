@@ -24,5 +24,5 @@ test('scalar registers executable operations and their signatures without circui
   assert.equal(operations['scalar/eq'].run([1, '1']), true)
   assert.equal(operations['scalar/and'].run([true, false]), false)
   assert.throws(() => operations['scalar/over'].run([1, 0]), /divided by 0|除以 0/)
-  assert.equal(projectVocabulary({ ...base, meanings: pluginMeanings(kernel, []) }).kinds.op?.['scalar/add'], undefined)
+  assert.equal(projectVocabulary({ ...base, meanings: pluginMeanings(kernel, []) }).kinds.operation?.['scalar/add'], undefined)
 })

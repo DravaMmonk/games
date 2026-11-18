@@ -1,4 +1,4 @@
-import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { withProgressFixture } from '../../qed/test/fixture.js'
 import { contentMeanings } from 'circuit'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -81,7 +81,7 @@ test('part tags expand stages while replaces accepts only distinct base parts', 
 })
 
 test('all stage settings are checked against their operation and empty output maps fail', () => {
-  const vocabulary = { kinds: { op: operations, family: { 'toy/family': {} } } }
+  const vocabulary = { kinds: { operation: operations, family: { 'toy/family': {} } } }
   const stages = definition => progressMeaning.validate({ content: { levels: [], partDefs: { parts: { scale: definition } } }, vocabulary })
   assert.deepEqual(stages(part), [])
   const invalid = { ...part, stages: [{ id: 'invalid', settings: { gain: { max: 9 } } }] }

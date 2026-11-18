@@ -1,0 +1,10 @@
+{
+  "name": "panel",
+  "studio": {
+    "order": 25,
+    "label": {
+      "zh": "面板",
+      "en": "Panels"
+    }
+  }
+}

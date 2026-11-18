@@ -1,0 +1,10 @@
+{
+  "name": "unlock",
+  "studio": {
+    "order": 19,
+    "label": {
+      "zh": "解锁项",
+      "en": "Unlocks"
+    }
+  }
+}

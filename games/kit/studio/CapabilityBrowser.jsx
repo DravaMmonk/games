@@ -10,26 +10,17 @@ import SidebarListTools from './SidebarListTools.jsx'
 import ListRow from './ListRow.jsx'
 import { Cpu } from 'lucide-react'
 
-const KINDS = [
-  ['operation', '运算', 'Operations'], ['primitive', '原始元件', 'Primitive parts'], ['valueType', '值类型', 'Value types'],
-  ['board', '板', 'Boards'], ['kind', '任务种类', 'Task kinds'], ['play', '玩法', 'Plays'],
-  ['mode', '模式', 'Modes'], ['want', '目标条件', 'Goals'], ['display', '显示', 'Displays'], ['language', '语言', 'Languages'],
-  ['family', '元件族', 'Families'], ['mark', '图记', 'Marks'], ['widget', '控件', 'Widgets'],
-  ['view', '视图', 'Views'], ['picture', '图片', 'Pictures'], ['scene', '场景', 'Scenes'],
-  ['target', '目标', 'Targets'], ['constraint', '约束', 'Constraints'], ['benchModel', '实验模型', 'Bench models'],
-  ['unlock', '解锁项', 'Unlocks'], ['world', '世界', 'Worlds'], ['robot', '机器人', 'Robots'],
-  ['figure', '图示', 'Figures'], ['condition', '条件', 'Conditions'], ['trace', '轨迹', 'Traces'],
-  ['panel', '面板', 'Panels'], ['explain', '讲解', 'Explanations'], ['port', '端口', 'Ports'],
-]
 const ALL = ''
-const kindsOf = capabilities => [...KINDS, ...Object.keys(capabilities ?? {}).filter(kind => !KINDS.some(([key]) => key === kind)).map(kind => [kind, kind, kind])]
+const kindsOf = (capabilities, definitions) => Object.keys(capabilities ?? {}).sort((a, b) =>
+  (definitions?.[a]?.studio.order ?? Infinity) - (definitions?.[b]?.studio.order ?? Infinity) || a.localeCompare(b),
+)
 export const moduleOf = (name) => name.split('/')[0]
 
 /** The capability `key` names (left-lists.js capabilityKey), else the first listed: { kind, name, it }, or null. */
-export function currentCapability(capabilities, key) {
+export function currentCapability(capabilities, key, definitions) {
   const picked = capabilityOf(key)
   if (picked && capabilities?.[picked.kind]?.[picked.name]) return { ...picked, it: capabilities[picked.kind][picked.name] }
-  const kind = kindsOf(capabilities).map(([k]) => k).find((k) => Object.keys(capabilities?.[k] ?? {}).length)
+  const kind = kindsOf(capabilities, definitions).find((k) => Object.keys(capabilities?.[k] ?? {}).length)
   if (!kind) return null
   const [name, it] = Object.entries(capabilities[kind])[0]
   return { kind, name, it }
@@ -39,9 +30,9 @@ export function currentCapability(capabilities, key) {
  * The left list of capabilities (`capabilities`: { kind: { '<package>/<name>': description } }, the vocabulary's index),
  * narrowed by kind, module and a search. `current`: { kind, name } open; `onOpen(kind, name)` opens one.
  */
-export function CapabilityList({ capabilities, current, onOpen }) {
-  const kinds = kindsOf(capabilities).filter(([kind]) => Object.keys(capabilities?.[kind] ?? {}).length)
-  const [kind, setKind] = useState(current?.kind ?? kinds[0]?.[0] ?? 'operation')
+export function CapabilityList({ capabilities, definitions, current, onOpen }) {
+  const kinds = kindsOf(capabilities, definitions).filter(kind => Object.keys(capabilities?.[kind] ?? {}).length)
+  const [kind, setKind] = useState(current?.kind ?? kinds[0] ?? ALL)
   const [module, setModule] = useState(ALL)
   const [query, setQuery] = useState('')
   const entries = useMemo(() => Object.entries(capabilities?.[kind] ?? {}), [capabilities, kind])
@@ -51,7 +42,7 @@ export function CapabilityList({ capabilities, current, onOpen }) {
   return (
     <nav className="parts-list capabilities" aria-label={tr('能力', 'Capabilities')}>
       <SidebarListTools query={query} onQuery={setQuery} choices={[
-        { label: tr('能力的种类', 'Kind of capability'), value: kind, onPick: setKind, options: kinds.map(([id, zh, en]) => ({ value: id, label: `${tr(zh, en)} · ${Object.keys(capabilities[id]).length}` })) },
+        { label: tr('能力的种类', 'Kind of capability'), value: kind, onPick: setKind, options: kinds.map(id => ({ value: id, label: `${L(definitions?.[id]?.studio.label) ?? id} · ${Object.keys(capabilities[id]).length}` })) },
         { label: tr('模块', 'Module'), value: module, onPick: setModule, options: [{ value: ALL, label: tr('全部模块', 'All modules') }, ...modules.map((m) => ({ value: m, label: m }))] },
       ]} />
       <ul className="capabilities-list">

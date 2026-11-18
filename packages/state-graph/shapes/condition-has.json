@@ -3,7 +3,7 @@
   "of": [
     {
       "type": "ref",
-      "kind": "part",
+      "kind": "primitive",
       "reference": "circuit/part"
     },
     {
@@ -11,7 +11,7 @@
       "fields": {
         "part": {
           "type": "ref",
-          "kind": "part",
+          "kind": "primitive",
           "reference": "circuit/part"
         },
         "value": {

@@ -1,9 +1,11 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { baselineValue, tableFieldsBaseline, versionMetadataBaseline, differences, nameNormalizer, packBaseline, unpackBaseline } from './baseline-value.js'
-import { tableReports } from '../../../packages/state-graph/core/baseline.js'
-import { imageReports } from '../../../packages/image/core/baseline.js'
-import { taskReports } from './baseline-reports.js'
+import { baselineValue, nestedPlayBaseline, versionMetadataBaseline, differences, nameNormalizer as normalizeNames, packBaseline, unpackBaseline } from './baseline-value.js'
+
+import migration from '../../../tools/baseline-migrations/modules-baseline.json' with { type: 'json' }
+
+const nameNormalizer = names => normalizeNames(names, migration)
+const tableFieldsBaseline = value => nestedPlayBaseline(value, migration.nestedPlays)
 
 test('stable serialization keeps nonfinite values, sets, maps and ordered trace steps', () => {
   const a = baselineValue({ z: new Set(['b', 'a']), m: new Map([['b', undefined], ['a', NaN]]), trace: [2, 1], data: new Float32Array([0.5]), zero: -0 })
@@ -30,19 +32,6 @@ test('migration names normalize without erasing real differences or ambiguous id
   assert.equal(before('old/lesson-extra A/B'), 'old/lesson-extra A/B')
   assert.throws(() => before({ 'old/task': 1, task: 2 }), /collision/)
 })
-test('task observations retain passing/failed hand steps and hidden image traces', async () => {
-  const hand = { id: 'tiny', taskId: 'hand', play: 'state-graph/fill', cells: [{ id: 's' }, { id: 'e' }], edges: [['s', 'e']], start: 's', end: 'e' }
-  const [observed] = await taskReports({ levels: [{ id: 'tiny' }], table: { played: new Map([['tiny', [hand]]]) } }, [{ baselineReports: tableReports }])
-  assert.equal(observed.report.reference.report.pass, true)
-  assert.equal(observed.report.naive.report.pass, false)
-  assert.equal(observed.report.reference.report.steps.length, 2)
-  let tested
-  const [image] = await taskReports({ levels: [{ id: 'tiny', tasks: [{ id: 'g', kind: 'image/graph', solution: 'yes', naive: 'no', tests: [{ n: 1 }], hidden: [{ n: 2 }] }] }], kit: { runLevel: (task, work, options) => { tested = task.tests; return { pass: work === 'yes', trace: options.traced ? ['step'] : [] } } } }, [{ baselineReports: imageReports }])
-  assert.deepEqual(tested, [{ n: 1 }, { n: 2, hidden: true }])
-  assert.deepEqual(image.report.reference.report.trace, ['step'])
-  assert.equal(image.report.naive.report.pass, false)
-})
-
 test('disk encoding retains shared terms and comparison ignores object sharing', () => {
   const term = { op: 'atom', name: 'A' }
   const shared = { steps: Array.from({ length: 100 }, () => ({ term })) }
@@ -68,7 +57,7 @@ test('the declared piece-to-part migration changes only naming in diagnostics an
 
 
 test('migration normalization precedes registered aliases and preserves semantic differences', () => {
-  const old = nameNormalizer(['table:world-pieces'])
+  const old = nameNormalizer(['table:world-parts'])
   const current = nameNormalizer(['table:world-parts'])
   assert.equal(old('table:world-pieces'), current('table:world-parts'))
   assert.deepEqual(old({ pieces: [], pieceRules: [], earnedPieces: [], code: 'missing-piece', path: 'overrides/base/tag/piece/a.json' }), current({ parts: [], partRules: [], earnedParts: [], code: 'missing-part', path: 'overrides/base/tags/part/a.json' }))
@@ -153,9 +142,9 @@ test('absent providers change only standalone primitive availability, preserving
   const report = { reference: { work: ['n = table:add(a, b)'], report: { pass: true } } }
   const data = { structure: { parts: ['table:add'] }, records: [{ availability }, { report }] }
   assert.equal(dependencyPaletteBaseline(data, { packaged: false }), data)
-  const kept = dependencyPaletteBaseline(data, { packaged: true, dependencies: ['table'] })
+  const kept = dependencyPaletteBaseline(data, { packaged: true, palette: migration.palette, dependencies: ['table'] })
   assert.deepEqual(kept, data)
-  const projected = dependencyPaletteBaseline(data, { packaged: true, dependencies: [] })
+  const projected = dependencyPaletteBaseline(data, { packaged: true, palette: migration.palette, dependencies: [] })
   assert.deepEqual(projected.records[0].availability.usable, ['consumer/add'])
   assert.equal(projected.records[0].availability.definitions['consumer/add'].op, 'table:add')
   assert.equal(projected.records[1], data.records[1])

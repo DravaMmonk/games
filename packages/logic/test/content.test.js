@@ -1,6 +1,6 @@
-import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { withProgressFixture } from '../../qed/test/fixture.js'
 import { resolve } from 'node:path'
-import { starterParts } from '../../../games/kit/engine/ops/fixture.js'
+import { starterParts } from '../../qed/test/fixture.js'
 // The logic domain on its content: boards as blueprint text both ways, a course's data read into its levels (test
 // cases, words), and the parts the player builds running the player's board; on a course written here.
 import { test } from 'node:test'
@@ -16,7 +16,7 @@ import { primitivesOnly } from 'circuit'
 import { PROOF_BOARD, runProof, startProof } from '../core/proof.js'
 import { GATE_BOARD, checkGates, gateParts, rowsFor, startGates } from '../core/gates.js'
 import { deepFreeze } from '../../../games/kit/engine/content.js'
-import { readStarter } from '../../../games/kit/engine/ops/fixture.js'
+import { readStarter } from '../../qed/test/fixture.js'
 import { openPackedPart, packedBoards } from 'circuit'
 import { trayDisplay } from 'circuit'
 import domain from '../core/runtime.js'

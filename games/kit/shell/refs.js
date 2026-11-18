@@ -1,7 +1,8 @@
 // Inline references use registered display metadata and shell actions.
+import { referenceKinds } from '../engine/markup.js'
 import { tr } from './i18n.js'
 
-const KINDS = new Set(['level', 'wiki'])
+const KINDS = new Set()
 /** Every reference in a text: its kind and what it points to. */
 export const REF = /<([a-z][a-z0-9-]*)-ref to="([^"]+)"><\/\1-ref>/g
 
@@ -40,12 +41,13 @@ function registerReference(kind, { icon = '', action = name => name } = {}) {
     })
   }
 }
-for (const kind of KINDS) registerReference(kind)
+for (const kind of referenceKinds.keys()) registerReference(kind)
 
 /** The shell's side: what a reference shows and what clicking it does. References already on the page redraw. */
 export function setRefs(next) {
   hooks = next
   for (const display of next.displays ?? []) if (display?.reference) registerReference(display.reference, display)
+  for (const kind of referenceKinds.keys()) if (!KINDS.has(kind)) registerReference(kind)
   if (typeof document !== 'undefined') for (const el of document.querySelectorAll([...KINDS].map((k) => `${k}-ref`).join(','))) el.render?.()
 }
 

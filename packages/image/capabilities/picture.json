@@ -1,0 +1,10 @@
+{
+  "name": "picture",
+  "studio": {
+    "order": 14,
+    "label": {
+      "zh": "图片",
+      "en": "Pictures"
+    }
+  }
+}

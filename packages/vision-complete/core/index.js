@@ -7,7 +7,7 @@ export function register(kernel) {
     vocabulary(base) {
       const items = (all, schema) => Object.fromEntries(Object.entries(all).map(([name, item]) => [name, schema(item, name.split('/')[1])]))
       return extendVocabulary(base, { module: 'vision-complete', kinds: {
-        scene: items(imageItems.scenes, (item, name) => ({ about: item.about, shape: `vision-complete/graph-${name}`, params: item.setup, test: item.test })),
+        'image/scene': items(imageItems.scenes, (item, name) => ({ about: item.about, shape: `vision-complete/graph-${name}`, params: item.setup, test: item.test })),
         benchModel: items(imageItems.benches, (item, name) => ({ about: item.about, shape: `vision-complete/bench-${name}`, params: item.setup, stage: item.stage, case: item.case })),
         display: Object.fromEntries(Object.entries(displayItems(imageItems.displays)).filter(([name]) => name.startsWith('vision-complete/'))),
       } })

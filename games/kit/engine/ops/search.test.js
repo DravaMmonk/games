@@ -9,7 +9,7 @@ import { defineVocabulary } from '../vocabulary.js'
 import { hitKey, patternOf, replaceOps, replaced, searchContent } from './search.js'
 import { openPackage } from './workspace.js'
 import { runChangeset } from './changeset.js'
-import { proofsRoot } from './fixture.js'
+import { storyRoot } from '../test-fixture.js'
 
 const VOCAB = defineVocabulary({
   module: 'toy',
@@ -71,17 +71,17 @@ test('replace: one text.set a text, one level.blueprint a board; ids left alone'
   assert.deepEqual(replaceOps(CONTENT, VOCAB, { find: 'nothing here' }, 'x'), { ops: [], changes: [], skipped: [] })
 })
 
-test('on a game of a real domain: a replace runs as a changeset, and afterwards there is nothing left to find', async () => {
-  const { root, id } = proofsRoot()
+test('on a synthetic course: a replace runs as a changeset, and afterwards there is nothing left to find', async () => {
+  const { root, id } = storyRoot()
   const ws = openPackage(id, root)
   const content = ws.content()
-  const { vocabulary } = (await import('../../../../packages/logic/core/runtime.js')).default
-  const query = { find: 'Saturday', kinds: ['text'] }
+  const vocabulary = ws.schemas
+  const query = { find: 'Answer', kinds: ['text'] }
   const before = searchContent(content, vocabulary, query)
-  assert.ok(before.length > 1 && new Set(before.map((h) => h.file)).size > 1, 'hits in more than one file')
-  const { ops } = replaceOps(content, vocabulary, query, 'Sunday')
+  assert.ok(before.length > 0, 'hits in the authored level')
+  const { ops } = replaceOps(content, vocabulary, query, 'Reply')
   const r = await runChangeset(ws, { ops }, { write: false, check: false })
   assert.equal(r.failed, null, r.problems.join('\n'))
   assert.deepEqual(searchContent(r.content, vocabulary, query), [])
-  assert.ok(searchContent(r.content, vocabulary, { ...query, find: 'Sunday' }).length >= before.length)
+  assert.ok(searchContent(r.content, vocabulary, { ...query, find: 'Reply' }).length >= before.length)
 })

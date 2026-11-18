@@ -1,7 +1,7 @@
 import { existsSync, mkdtempSync, mkdirSync, cpSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
-import { installImageFixture, lockFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { installImageFixture, lockFixture } from '../../qed/test/fixture.js'
 import { readPackage } from '../../../games/kit/engine/resolver.js'
 import { packageLevel } from '../../../games/kit/engine/package-play.js'
 

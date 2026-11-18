@@ -10,7 +10,7 @@
       "type": "list",
       "of": {
         "type": "ref",
-        "kind": "part",
+        "kind": "primitive",
         "reference": "circuit/part"
       },
       "optional": true
@@ -22,7 +22,7 @@
         "fields": {
           "part": {
             "type": "ref",
-            "kind": "part",
+            "kind": "primitive",
             "reference": "circuit/part"
           },
           "variant": {

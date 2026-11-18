@@ -1,6 +1,6 @@
 # 空壳内核：机制全部进包
 
-第 1–12 步已完成，设计已写回 `design/README.md`；第 13 步（平台独立成仓库）待定；第 14 步（进度层出 `circuit`，5.1.2）已完成；第 15 步（内核功能按需启用，5.8）方案已定，排在第 19 步之后；第 16 步（包的种类和名字里的符号，5.6）及第 17 步（游戏配置整理）、第 18 步（game.json 瘦身）已完成。 第 19 步（能力的种类由包声明，5.7）方案已定，待实施。第 20 步（schema 去重与 `about` 精简）与第 21 步（仓库结构整理）已完成。
+第 1–12 步已完成，设计已写回 `design/README.md`；第 13 步（平台独立成仓库）待定；第 14 步（进度层出 `circuit`，5.1.2）已完成；第 15 步（内核功能按需启用，5.8）方案已定，排在第 19 步之后；第 16 步（包的种类和名字里的符号，5.6）及第 17 步（游戏配置整理）、第 18 步（game.json 瘦身）已完成。 第 19 步（能力的种类由包声明，5.7）已完成。第 20 步（schema 去重与 `about` 精简）与第 21 步（仓库结构整理）已完成。
 
 **这份文档是这项开发的唯一依据。** `games/design/README.md` 里关于内核、模块、能力、元件和阶段、托盘、Studio 编辑器的说法，凡是和本文冲突的，以本文为准。全部做完后，把结果写回 `games/design/README.md`，删掉这份文档。
 
@@ -305,7 +305,7 @@ packages/<包>/
 
 ### 5.7 能力的种类由包声明，内核不认识包（第 19 步）
 
-**现状。** 内核里写死了三类本该属于包的东西：
+**实施前。** 内核里写死了三类本该属于包的东西：
 
 - **能力的种类**（`games/kit/engine/capabilities.js`）：`BUILTIN_CAPABILITY_KINDS` 写死了 `valueType`、`operation`、`primitive`、`board`、`display`、`language`，其中 `board`、`primitive`、`display` 是电路类玩法的概念；`discriminators` 按字段名（`kind`、`mode`、`scene`、`world`、`want`）猜字段引用哪种能力，`scene` 是 image 的、`world` 是 table 的、`want` 是 logic 的；`registryKind` 写死了 `op → operation`、`part → primitive` 的别名。新玩法要加一种能力就得改内核，字段改名内核就认不出。
 - **内核代码直接认识具体的包**：`games/kit/engine/ops/fixture.js` 直接 import `qed`、`logic`、`circuit`、`progress`，被内核的十几个测试用，违反第 12 节「内核测试只用测试里现写的小内容」；`games/kit/engine/baseline-value.js` 把历次迁移的旧名映射（qed 公式名、table 世界名、各玩法名）写死在内核里，每次改名都长一截。
@@ -330,7 +330,7 @@ packages/<包>/
 **百科是第一个拆出去的功能：包 `encyclopedia`，种类 `ext`。**
 
 - **对象类型由它声明**：词条 `entry`、百科分组 `section` 从内核自带的 `OBJECT_KINDS` 移到百科包的 `kinds/`，用数据声明，和别的对象类型一样；对象仍在各内容包的 `entries/`、`sections/`，文案键不变。
-- **引用种类由它登记**：`games/kit/engine/markup.js` 的 `REF_KINDS = ['level', 'wiki']` 改为包登记引用种类（内核只自带 `level`）；`<wiki-ref to="…">` 的写法不变，改由百科包认、检查目标存在、点开跳到词条。
+- **引用种类由它登记**：将第 19 步已通过登记接口安装的 `wiki` 交给百科包（内核只自带 `level`）；`<wiki-ref to="…">` 的写法不变，改由百科包认、检查目标存在、点开跳到词条。
 - **界面由它提供**：百科页（`Encyclopedia.jsx`）、未读标记、地图上的「百科」按钮、关卡里打开百科的入口、通关窗口里「解锁了哪些词条」（`openedEntries`），都由百科包的视图登记。列表加文章页的通用界面 `Library.jsx` 留在内核（元件册、工坊也用它）。
 - **游戏配置**：`game.json` 的 `encyclopedia`（分组顺序）成为百科包登记的游戏字段；没装百科包的游戏写了它，检查报错。
 - **谁依赖它**：有词条的包（`qed`、`vision-complete`、`state-graph`，以及带一两个词条的 `rows`、`tick-bus`）在 `uses` 里加 `encyclopedia`；三款主力游戏在 `packages` 里加它；`comp90086` 不加。
@@ -434,7 +434,7 @@ packages/<包>/
 
 17. **游戏配置整理**：game.json 一个文件；首页读 game.json；box、power 由 image 声明；borrow 只在 state-graph。
 18. **game.json 瘦身**：可选、可跳过、原始元件改为游戏层标签；`views` 写在关卡上，`borrow` 写在元件上。
-19. **能力的种类由包声明，内核不认识包**（5.7，待实施）。能力种类用数据声明，字段靠 schema 的 `ref` 说明引用什么；内核测试不用真实的包；基线的旧名映射是数据；`lint:kit` 禁止内核引用包。
+19. **能力的种类由包声明，内核不认识包**（5.7，已完成）。能力种类用数据声明，字段靠 schema 的 `ref` 说明引用什么；内核测试不用真实的包；基线的旧名映射是数据；`lint:kit` 禁止内核引用包。
 20. **schema 去重与 `about` 精简**：schema 可声明、引用命名形状；每种玩法的任务 schema 只由一个包声明，内容包只加自己的情形；`about` 只留字段名说不出的含义，约束改成 schema 规则，中英文都留。
 
 21. **仓库结构整理**：改动日志只记变化；生成文件一份、可在仓库内重建；`trace-viewer` 改名 `site`，只留游戏用到的插图；State Graph 的 schema 改为数据；关卡里的场景用紧凑写法；设计文档按章拆分。

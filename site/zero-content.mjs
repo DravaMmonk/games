@@ -1,7 +1,7 @@
 // Exercise the installed platform against an isolated content workspace.
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
@@ -60,7 +60,35 @@ try {
   console.log('Empty Studio opened without browser errors')
 
   // Install only the text mechanism, with one freshly authored level and no circuit provider.
-  for (const side of ['core', 'view', 'kinds']) cpSync(resolve(app, '../packages/text', side), resolve(root, 'packages/text', side), { recursive: true })
+  const sourceFile = (path, text) => {
+    const file = resolve(root, 'packages/text', path)
+    mkdirSync(dirname(file), { recursive: true })
+    writeFileSync(file, text)
+  }
+  sourceFile('core/index.js', `
+    const same = value => value
+    export function register(kernel) {
+      kernel.play('text/answer', {
+        initial: () => '', read: same, write: same, normalize: same,
+        run: (answer, { task }) => ({ pass: answer === task.answerRule.answer }),
+        judge: report => ({ pass: report.pass, score: Number(report.pass) }),
+      })
+    }
+  `)
+  sourceFile('view/index.jsx', `
+    function Answer({ work, onChange, onSubmit }) {
+      return <form onSubmit={event => { event.preventDefault(); onSubmit() }}>
+        <input aria-label="Answer" value={work} onChange={event => onChange(event.target.value)} />
+      </form>
+    }
+    export function register(kernel) {
+      kernel.play('text/answer', { component: Answer, preview: Answer })
+    }
+  `)
+  put('packages/text/kinds/task.json', {
+    extends: 'task', play: 'text/answer', declares: 'package', overrides: { package: ['*'], game: ['$text'] },
+    fields: { answerRule: { type: 'any' }, referenceAnswer: { type: 'str' }, wrongAnswers: { type: 'list', of: { type: 'str' } } },
+  })
   put('packages/text/package.json', { kind: 'lib', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {} })
   put('packages/text/levels/hello.json', { title: 'Hello', after: 'Correct.', tasks: [{ id: 'hello', play: 'text/answer', brief: 'Type hello.', answerRule: { type: 'exact', answer: 'hello' }, referenceAnswer: 'hello', wrongAnswers: ['no'] }] })
   await command([resolve(kit, 'engine/deps.js'), 'lock', '--package', 'text'])
@@ -97,7 +125,11 @@ try {
   await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
   await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
   await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
-  await page.getByRole('alert').filter({ hasText: expectedRecoveryError }).waitFor()
+  assert.match(readFileSync(resolve(root, 'packages/text/core/index.js'), 'utf8'), /Studio source recovery test/)
+  await page.getByRole('alert').filter({ hasText: expectedRecoveryError }).waitFor().catch(async error => {
+    console.error(await page.locator('body').innerText(), errors)
+    throw error
+  })
   await page.getByRole('link', { name: /^(打开包源码|Open package source)$/ }).click()
   await editor.waitFor()
   await editor.fill(original)

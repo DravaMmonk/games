@@ -10,16 +10,16 @@ npm run baseline -- compare state-graph
 npm run baseline -- compare --package arithmetic
 ```
 
-With no selector, both commands include every installed game and every package (including libraries).
+With no selector, comparison covers all installed targets present in the locked corpus. It lists installed targets without snapshots and snapshot targets absent from the current project.
 Packages run each level independently through `packageLevel`; no synthetic course is created.
 `GAMES_ROOT` can select an isolated project containing `games/` and `packages/`.
 
 `save` replaces the selected snapshots in `output/modules-baseline/`. Preserve this directory across
 migration steps; use `compare`, not `save`, after a move. Output is local and must not be committed. As mechanisms move, update collector imports to call the relocated
 production runners; keep the saved observations unchanged.
-A missing snapshot, interrupted check, unknown play or failed collector aborts instead of silently skipping it.
+An interrupted check, unknown play or failed collector aborts the comparison.
 `compare` exits 1 on differences, prints the first 30 per target, and writes every difference with a JSON
-pointer to `<kind>-<id>.diff.json` (the same shared-node encoding as snapshots). Check failures are captured with their exit status, even if already present
+pointer to `<kind>-<id>.diff.json` in the local output directory (the same shared-node encoding as snapshots, written in chunks). Check failures are captured with their exit status, even if already present
 in a saved baseline. Zero differences does not turn an existing check failure into a pass.
 
 Each target stores:
@@ -51,6 +51,22 @@ interned, and the JSON uses shared-node references, so long search traces do not
 repeated proof states. `unpackBaseline` in `baseline-value.js` reads it. Comparison ignores object sharing.
 No clock, timestamps, absolute project paths, machine timings or random identifiers are added. Physical
 quantities such as a bench's configured countdown seconds remain part of its behaviour.
+
+Migration rules are inputs to comparison. Put `migration.json` next to the locked corpus,
+or pass `--migration <file>` explicitly. The historical modules corpus uses
+`tools/baseline-migrations/modules-baseline.json` in this checkout.
+
+```sh
+GAMES_BASELINE_ROOT=/path/to/modules-baseline npm run baseline -- compare --migration ../tools/baseline-migrations/modules-baseline.json
+```
+
+Unique local names ignore their namespaces. Ambiguous names keep qualified identities, and
+normalized key collisions fail explicitly. The migration data supplies the retired aliases,
+prefixes, name inventory, and narrowly scoped rewrites used to compare old observations.
+
+## Historical migration records
+
+These notes describe the corpus and validation at the time of each migration. Step 19 moved the retired capability names and package-specific mappings into the migration input.
 
 Only registered instance object, task and vocabulary names are normalized before comparing. Unique local names
 ignore their namespace/module and existing world/robot/port/want/family prefixes. Ambiguous local names keep

@@ -1,4 +1,4 @@
-import { lockFixture } from './ops/fixture.js'
+import { lockFixture } from './test-fixture.js'
 // node --test games/kit/engine — the content contract: schemas, vocabularies, data games assembled from their files.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'

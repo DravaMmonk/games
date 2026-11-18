@@ -1,0 +1,13 @@
+{
+  "name": "display",
+  "implementation": {
+    "side": "view"
+  },
+  "studio": {
+    "order": 8,
+    "label": {
+      "zh": "显示",
+      "en": "Displays"
+    }
+  }
+}

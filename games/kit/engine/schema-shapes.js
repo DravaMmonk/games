@@ -1,5 +1,5 @@
 // Named schemas expand once during assembly, so all content readers see the same fields and hints.
-import { CODE_NAME } from './object-name.js'
+import { CODE_NAME, fullName } from './object-name.js'
 
 export function mapSchemaChildren(schema, map) {
   const result = { ...schema }
@@ -50,7 +50,14 @@ export function shapeCompiler(shapes, vocabulary, authorize = () => {}) {
       const { cases, ...rest } = schema
       return { ...mapSchemaChildren(rest, child => compile(child, owner, group, active)), cases }
     }
-    return mapSchemaChildren(schema, child => compile(child, owner, group, active))
+    if (schema.type === 'ref' && schema.values) schema.values = schema.values.map(value => fullName(owner, value))
+    const result = mapSchemaChildren(schema, child => compile(child, owner, group, active))
+    if (result.type === 'by' && result.cases) {
+      result.cases = Object.fromEntries(Object.entries(result.cases).map(([value, branch]) => [
+        branch.fields?.[result.field]?.type === 'ref' ? fullName(owner, value) : value, branch,
+      ]))
+    }
+    return result
   }
   return { compile, resolve: name => lookup(name, []) }
 }

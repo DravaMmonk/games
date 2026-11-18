@@ -5,7 +5,7 @@
 //   defineParts(file, ops)       → { PARTS, defs, defaultsOf(type) }   of its circuit primitives; a built part (an
 //                                inside, no compute) is the course's to make (../board-works.js, ../parts.js builtParts)
 //   partProblems(file, vocabulary, { tasks? }) → [{ at, says }]   tasks: the game's task ids (a reference to none fails)
-//   withParts(vocabulary, file)  the vocabulary with both code and file parts in its `part` kind (content's S.ref('part', { reference: 'circuit/part' }))
+//   withParts(vocabulary, file)  the vocabulary with both code and file parts in its `part` kind (content's S.ref('primitive', { reference: 'circuit/part' }))
 //   evalSettings(text, def, params, ops)   a settings-only expression (a readout, a rule, a check) on a node's settings
 //   applyRules(def, params, changed, ops)  a node's settings once the player changed one: the part's rules followed
 //   failedCheck(def, params, ops)          what the first check its settings fail says, or null
@@ -42,7 +42,7 @@ const NUMERIC = new Set(['number', 'slider'])
 const circuitPrimitive = (part) => !insideOf(part)
 
 /** Whether a vocabulary's domain defines its parts as data: it gives engine resources. */
-export const definesParts = (vocabulary) => Boolean(vocabulary?.kinds?.op)
+export const definesParts = (vocabulary) => Boolean(vocabulary?.kinds?.operation)
 
 /** The value a setting starts with. */
 export function defaultOf(s) {
@@ -258,13 +258,13 @@ export function partDesc(def, allowed = () => null) {
   return Object.fromEntries((langs.length ? langs : ['en']).map((lang) => [lang, texts.map((text) => sideOf(text, lang)).filter(Boolean).join(lang === 'zh' ? '' : ' ')]))
 }
 
-/** The vocabulary with a parts/<name>.json's parts as its `part` kind: what content's S.ref('part', { reference: 'circuit/part' }) names. */
+/** The vocabulary with a parts/<name>.json's parts as its `part` kind: what content's S.ref('primitive', { reference: 'circuit/part' }) names. */
 export function withParts(vocabulary, file) {
   // A domain with its circuit primitives in code has only its other parts in parts/<name>.json.
   const parts = Object.fromEntries(Object.entries(file?.parts ?? {}).filter(([, part]) => definesParts(vocabulary) || !circuitPrimitive(part)))
   if (!file) return vocabulary
   const part = Object.fromEntries(Object.entries(parts).map(([type, def]) => [type, { ...(def.desc?.zh && def.desc?.en && { about: def.desc }) }]))
-  return { ...vocabulary, kinds: { ...vocabulary.kinds, valueType: { ...registeredValueTypes, ...vocabulary.kinds.valueType }, part: registerParts(vocabulary.kinds.part, part) } }
+  return { ...vocabulary, kinds: { ...vocabulary.kinds, valueType: { ...registeredValueTypes, ...vocabulary.kinds.valueType }, primitive: registerParts(vocabulary.kinds.primitive, part) } }
 }
 
 /** Every place a parts/<name>.json does not hold together, as [{ at, says }] (at: parts/<name>.json and the path in it). */
@@ -277,7 +277,7 @@ export function partProblems(file, vocabulary, { tasks = null } = {}) {
   for (const p of validate(PARTS_FILE, file, { vocabulary: vocab, tasks })) say(p.at === '(root)' ? '' : p.at, p.says)
   if (out.length) return out
   if (vocabulary.capabilities || vocabulary.kinds.valueType) out.push(...typeProblems(file, vocabulary))
-  const ops = { ...BUILTIN_ITEMS, ...vocabulary.kinds.op }
+  const ops = { ...BUILTIN_ITEMS, ...vocabulary.kinds.operation }
   const fits = (schema, v) => validate(schema, v, { vocabulary: vocab }).length === 0
   const settingProblems = (s, at) => {
     if ((OPTIONED.has(s.control) || LISTED.has(s.control)) && !s.options === !s.from) say(at, 'a setting with options gives them, or works them out (from), not both')
@@ -301,9 +301,9 @@ export function partProblems(file, vocabulary, { tasks = null } = {}) {
   }
   for (const [type, declaration] of Object.entries(file.parts)) {
     const at = `.parts.${type}`
-    const raw = operationPart(declaration, vocabulary.kinds.op)
-    const parameters = settingParameters(raw, vocabulary.kinds.op)
-    const resolved = resolveSettings(raw, vocabulary.kinds.op)
+    const raw = operationPart(declaration, vocabulary.kinds.operation)
+    const parameters = settingParameters(raw, vocabulary.kinds.operation)
+    const resolved = resolveSettings(raw, vocabulary.kinds.operation)
     for (const setting of resolved) {
       const where = `${at}.settings.${setting.key}`
       const { key: _key, ...definition } = setting
@@ -327,7 +327,7 @@ export function partProblems(file, vocabulary, { tasks = null } = {}) {
     if (new Set(keys).size !== keys.length) say(`${at}.settings`, 'a setting key is written twice')
     if (new Set(holesOf(raw).map((p) => p.name)).size !== holesOf(raw).length) say(`${at}.inputs`, 'an input is named twice')
     if (new Set(outletsOf(raw).map((p) => p.name)).size !== outletsOf(raw).length) say(`${at}.outputs`, 'an output is named twice')
-    const def = indexPart({ ...raw, settings: resolveSettings(raw, vocabulary.kinds.op) }, type)
+    const def = indexPart({ ...raw, settings: resolveSettings(raw, vocabulary.kinds.operation) }, type)
     const check = (text, where, inputs) => {
       let tree
       try {

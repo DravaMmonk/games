@@ -1,0 +1,10 @@
+{
+  "name": "mode",
+  "studio": {
+    "order": 6,
+    "label": {
+      "zh": "模式",
+      "en": "Modes"
+    }
+  }
+}

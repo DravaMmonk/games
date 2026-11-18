@@ -1,0 +1,10 @@
+{
+  "name": "robot",
+  "studio": {
+    "order": 21,
+    "label": {
+      "zh": "机器人",
+      "en": "Robots"
+    }
+  }
+}

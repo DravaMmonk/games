@@ -37,23 +37,26 @@ export function baselineValue(input) {
   return project(input)
 }
 
-// The eight QED connectives changed object ownership, retaining their exact identities and values.
-const FORMULA_NAMES = ['formulaAnd', 'formulaOr', 'formulaNot', 'formulaImplies', 'formulaIff', 'formulaForall', 'formulaExists', 'formulaFalse']
-const mixedFormulaSources = new Set(['certificate-certificate', 'gIff', 'machine-certificate', 'natInd', 'res'])
-const mixedFormulaEdge = edge => /^(?:qed\/)?formulaForall$/.test(edge?.to) && mixedFormulaSources.has(edge?.from?.replace(/^qed\//, '')) && (edge.of === 'grant' || edge.of === undefined)
-const formulaName = name => typeof name === 'string' && FORMULA_NAMES.includes(name.replace(/^qed\//, ''))
-const formulaCopy = new RegExp(`(?<![\\w/])((?:qed/)?)part\\.(${FORMULA_NAMES.join('|')})(?=\\.)`, 'g')
-const formulaFile = new RegExp(`(?<![\\w/])((?:packages/qed/|qed/)?)parts/(${FORMULA_NAMES.join('|')})(?=\\.json\\b)`, 'g')
+const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-export function formulaSymbolBaseline(input) {
+export function movedSymbolBaseline(input, move) {
+  if (!move) return input
+  const { owner, names, edgeTarget, edgeSources, fromField, toField } = move
+  const prefix = new RegExp(`^${escape(owner)}/`)
+  const local = name => typeof name === 'string' ? name.replace(prefix, '') : name
+  const mixedEdge = edge => local(edge?.to) === edgeTarget && edgeSources.includes(local(edge?.from)) && (edge.of === 'grant' || edge.of === undefined)
+  const formulaName = name => names.includes(local(name))
+  const member = names.map(escape).join('|')
+  const formulaCopy = new RegExp(`(?<![\\w/])((?:${escape(owner)}/)?)part\\.(${member})(?=\\.)`, 'g')
+  const formulaFile = new RegExp(`(?<![\\w/])((?:packages/${escape(owner)}/|${escape(owner)}/)?)parts/(${member})(?=\\.json\\b)`, 'g')
   const memo = new WeakMap()
   const walk = (value, identity = null) => {
     if (typeof value === 'string') return value.replace(formulaCopy, '$1symbol.$2').replace(formulaFile, '$1symbols/$2')
     if (!value || typeof value !== 'object') return value
     if (memo.has(value)) return memo.get(value)
     if (Array.isArray(value)) {
-      const owner = formulaName(value[0]) ? value[0] : identity
-      let out = value.map(child => walk(child, owner))
+      const identityOwner = formulaName(value[0]) ? value[0] : identity
+      let out = value.map(child => walk(child, identityOwner))
       // Ownership changes the typed order edges for these names. Preserve every unrelated edge's order.
       if (value.some(edge => edge && typeof edge === 'object' && ['part', 'symbol', 'grant'].includes(edge.of) && (formulaName(edge.from) || formulaName(edge.to)))) {
         const affected = edge => ['part', 'symbol', 'grant'].includes(edge?.of) && (formulaName(edge?.from) || formulaName(edge?.to))
@@ -62,15 +65,15 @@ export function formulaSymbolBaseline(input) {
       memo.set(value, out)
       return out
     }
-    const owner = formulaName(value.part) ? value.part : formulaName(value.type) ? value.type : identity
-    const out = Object.fromEntries(Object.entries(value).filter(([key, child]) => !(formulaName(owner) && key === 'editor' && child === 'strip'))
-      .map(([key, child]) => [key, walk(child, formulaName(key) ? key : owner)]))
-    if (out.formulaParts && Object.keys(out.formulaParts).length && Object.values(out.formulaParts).every(symbol => formulaName(symbol.type))) {
-      out.formulaSymbols = out.formulaParts
-      delete out.formulaParts
+    const identityOwner = formulaName(value.part) ? value.part : formulaName(value.type) ? value.type : identity
+    const out = Object.fromEntries(Object.entries(value).filter(([key, child]) => !(formulaName(identityOwner) && key === 'editor' && child === 'strip'))
+      .map(([key, child]) => [key, walk(child, formulaName(key) ? key : identityOwner)]))
+    if (out[fromField] && Object.keys(out[fromField]).length && Object.values(out[fromField]).every(symbol => formulaName(symbol.type))) {
+      out[toField] = out[fromField]
+      delete out[fromField]
     }
     if ((formulaName(out.from) || formulaName(out.to)) && ['symbol', 'grant'].includes(out.of)) out.of = 'part'
-    // Move only these eight definitions into the canonical symbol inventory on either side.
+    // Move only the declared definitions into the canonical symbol inventory on either side.
     if (out.structure?.parts?.parts) {
       const parts = { ...out.structure.parts.parts }
       const symbols = { ...out.structure.symbols }
@@ -84,33 +87,19 @@ export function formulaSymbolBaseline(input) {
     memo.set(value, out)
     return out
   }
-  // Only the five authored cross-type QED edges retired `of: grant`.
+  // Normalize the declared cross-type grant edges.
   const order = input?.structure?.relations?.order
-  if (Array.isArray(order)) input = { ...input, structure: { ...input.structure, relations: { ...input.structure.relations, order: order.map(edge => mixedFormulaEdge(edge) ? { ...edge, of: 'part' } : edge) } } }
+  if (Array.isArray(order)) input = { ...input, structure: { ...input.structure, relations: { ...input.structure.relations, order: order.map(edge => mixedEdge(edge) ? { ...edge, of: 'part' } : edge) } } }
   return walk(input)
 }
 
 /** Only registered names are aliases; prose, formulas and arbitrary slashes stay meaningful. */
-export function nameNormalizer(names) {
-  // MODULES.md §10.3 explicitly makes these kind/path/key spellings equivalent.
-  const tableNames = new Set(["world-grid", "world-gridYes", "world-piles", "world-tri", "world-lawn", "world-strip", "world-pile", "world-coins", "world-parts", "world-rob1", "world-rob2", "world-ring", "world-prefix", "world-heights", "world-gains", "world-keys", "world-river", "world-stock", "world-align", "world-local", "world-knap", "world-roll", "world-interval", "world-vgrid", "world-tags", "world-pic", "robot-scout", "robot-ranger", "robot-reach", "robot-broom", "robot-stack", "robot-loop", "circuit", "fill", "trace", "link", "pack", "breach", "policy", "seam", "figure-scene", "figure-grid", "figure-circuit", "figure-window", "condition-reads", "condition-uses", "condition-has", "condition-feeds", "condition-placed", "condition-wired", "condition-wiredOut", "condition-all", "condition-any", "condition-not", "trace-lcs", "trace-edit", "trace-local", "trace-knap", "trace-seam", "trace-tags", "panel-lcs", "panel-edit", "panel-spell", "panel-local", "panel-tags", "panel-knap", "panel-roll", "panel-dictionary", "panel-robConflict", "explain-roll", "port-reads", "port-way", "port-start", "port-named"])
-  const kindNames = text => text
-    .replace(/(?<![\w/-])state-graph:([A-Za-z][A-Za-z0-9_-]*)(?![\w-])/g, (name, local) => tableNames.has(local) ? `table:${local}` : name)
-    .replace(/(overrides\/[^/\s]+\/)tag\//g, '$1tags/')
-    .replace(/\bpieced it together\b/g, 'assembled it')
-    .replace(/\bpieced\b/g, 'assembled')
-    .replace(/\btags\/(?:piece|circuit\/part)\//g, 'tags/part/')
-    .replace(/\bpieces(?=\/|\.json\b)/g, 'parts')
-    .replace(/\bpiece\//g, 'parts/')
-    .replace(/\blogic\/symbol\b/g, 'symbol')
-    .replace(/\bcircuit\/part\b/g, 'part')
-    .replace(/\btags\/circuit\/tray\//g, 'tags/tray/')
-    .replace(/\bcircuit\/tray\b/g, 'tray')
-    .replace(/pieces/g, 'parts').replace(/Pieces/g, 'Parts').replace(/PIECES/g, 'PARTS')
-    .replace(/piece/g, 'part').replace(/Piece/g, 'Part').replace(/PIECE/g, 'PART')
-  // Preserve the exact retired bus and image collisions in the frozen native vocabulary inventory.
-  names = [...new Set([...names, 'tick-bus:family-value', 'tick-bus:family-memory', 'image:add', 'image:board', 'image:const', 'image:family-search', 'image:merge', 'image:mul', 'image:sub', 'table:not', 'table:robot-loop', 'table:circuit', 'table:const', 'table:add', 'table:mul', 'logic:allE', 'logic:allI', 'logic:andE', 'logic:andI', 'logic:anyR', 'logic:append', 'logic:assumption', 'logic:audit', 'logic:botE', 'logic:consFront', 'logic:defer', 'logic:define', 'logic:each', 'logic:eachOf', 'logic:exE', 'logic:exI', 'logic:family-box', 'logic:family-built', 'logic:family-gate', 'logic:family-lemma', 'logic:family-loop', 'logic:family-rule', 'logic:family-tactic', 'logic:gates', 'logic:hyp', 'logic:impI', 'logic:instances', 'logic:iso', 'logic:judgment', 'logic:keepBound', 'logic:lemma', 'logic:machine', 'logic:machine-value', 'logic:mark-formulaAnd', 'logic:mark-formulaExists', 'logic:mark-formulaFalse', 'logic:mark-formulaForall', 'logic:mark-formulaIff', 'logic:mark-formulaImplies', 'logic:mark-formulaNot', 'logic:mark-formulaOr', 'logic:mkRule', 'logic:model', 'logic:mp', 'logic:names', 'logic:natInd', 'logic:occurrences', 'logic:options', 'logic:orE', 'logic:orI', 'logic:oracle', 'logic:proof', 'logic:query', 'logic:raa', 'logic:refl', 'logic:repeat', 'logic:replay', 'logic:res', 'logic:resolve', 'logic:rewrite', 'logic:rule', 'logic:ruleChoices', 'logic:rules', 'logic:rw', 'logic:script', 'logic:search', 'logic:skolem', 'logic:swapConcl', 'logic:things', 'logic:toClauses', 'logic:translate', 'logic:truth', 'logic:uCheck', 'logic:uConflict', 'logic:uDecompose', 'logic:uDelete', 'logic:uEliminate', 'logic:uPattern', 'logic:uSwap', 'logic:want-agree', 'logic:want-answers', 'logic:want-becomes', 'logic:want-clauses', 'logic:want-decide', 'logic:want-elim', 'logic:want-expose', 'logic:want-fails', 'logic:want-proved', 'logic:want-refuted', 'logic:want-unify'].map(name => kindNames(name.replace(/^[^:]+:(@?[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9_-]*)$/, '$1'))))]
-  const local = name => kindNames(name).replace(/^@?[^/:]+[/:]/, '').replace(/^(world|robot|port|want|family)-/, '')
+export function nameNormalizer(names, { replacements = [], inventory = [], stripPrefixes = [], symbolMove } = {}) {
+  const rules = replacements.map(({ pattern, flags, replacement }) => [new RegExp(pattern, flags), replacement])
+  const kindNames = text => rules.reduce((result, [pattern, replacement]) => result.replace(pattern, replacement), text)
+  names = [...new Set([...names, ...inventory.map(name => kindNames(name.replace(/^[^:]+:(@?[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9_-]*)$/, '$1')))])]
+  const prefix = stripPrefixes.length ? new RegExp(`^(?:${stripPrefixes.map(escape).join('|')})-`) : /$^/
+  const local = name => kindNames(name).replace(/^@?[^/:]+[/:]/, '').replace(prefix, '')
   const aliases = new Map()
   for (const name of names) {
     const short = local(name)
@@ -120,7 +109,6 @@ export function nameNormalizer(names) {
   }
   // Ambiguous local names keep their qualified identity; never merge two independent objects.
   const pairs = [...new Set(names)].filter(name => local(name) !== name && aliases.get(local(name)).size === 1).sort((a, b) => b.length - a.length || a.localeCompare(b, 'en'))
-  const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const pattern = pairs.length ? new RegExp(`(?<![\\w/-])(${pairs.map(escape).join('|')})(?![\\w-])`, 'g') : null
   const normalize = text => {
     const named = kindNames(text)
@@ -140,7 +128,7 @@ export function nameNormalizer(names) {
       memo.set(value, out)
       return out
     }
-    return formulaSymbolBaseline(walk(input))
+    return movedSymbolBaseline(walk(input), symbolMove)
   }
 }
 
@@ -215,7 +203,7 @@ export function existenceBaseline(input) {
 }
 
 /** Normalize only the initial version-format migration inside named configuration files. */
-export function versionMetadataBaseline(input) {
+export function versionMetadataBaseline(input, retiredDependency) {
   const memo = new WeakMap()
   const walk = (value, file) => {
     if (!value || typeof value !== 'object') return value
@@ -224,9 +212,9 @@ export function versionMetadataBaseline(input) {
     if (file === 'package.json') {
       const old = Number.isInteger(value.vocabulary) && Object.keys(value).every(key => ['vocabulary', 'uses'].includes(key))
       const current = ['0.0.0', '1.0.0'].includes(value.version) && ['^0.0.0', '^1.0.0', '^2.0.0'].includes(value.kernel) && value.uses && !Array.isArray(value.uses) && Object.keys(value).every(key => ['version', 'kernel', 'uses'].includes(key)) && Object.values(value.uses).every(range => ['^0.0.0', '^1.0.0'].includes(range))
-      if (old || current) entries = [['uses', old ? value.uses ?? [] : Object.keys(value.uses).filter(id => id !== 'circuit')]]
+      if (old || current) entries = [['uses', old ? value.uses ?? [] : Object.keys(value.uses).filter(id => id !== retiredDependency)]]
     }
-    if (file === 'game.json' && ['^0.0.0', '^1.0.0', '^2.0.0'].includes(value.kernel) && value.packages && !Array.isArray(value.packages) && Object.values(value.packages).every(range => ['^0.0.0', '^1.0.0'].includes(range))) entries = entries.filter(([key]) => key !== 'kernel').map(([key, child]) => [key, key === 'packages' ? Object.keys(child).filter(id => id !== 'circuit') : child])
+    if (file === 'game.json' && ['^0.0.0', '^1.0.0', '^2.0.0'].includes(value.kernel) && value.packages && !Array.isArray(value.packages) && Object.values(value.packages).every(range => ['^0.0.0', '^1.0.0'].includes(range))) entries = entries.filter(([key]) => key !== 'kernel').map(([key, child]) => [key, key === 'packages' ? Object.keys(child).filter(id => id !== retiredDependency) : child])
     const out = Array.isArray(value) ? value.map(child => walk(child)) : Object.fromEntries(entries.map(([key, child]) => [key, walk(child, key)]))
     memo.set(value, out)
     return out
@@ -255,10 +243,10 @@ export function collectionFieldsBaseline(value) {
   return result
 }
 
-/** The three image task discriminators move from native kind to the package play protocol. */
-export function imageFieldsBaseline(value) {
+/** Selected task discriminators move from native kind to the package play protocol. */
+export function levelPlayBaseline(value, names = []) {
   if (!value.structure?.levels) return value
-  const plays = new Set(['image:graph', 'image:board', 'image:probe'])
+  const plays = new Set(names)
   return { ...value, structure: { ...value.structure, levels: value.structure.levels.map(level => ({ ...level,
     tasks: level.tasks.map(task => {
       if (task.kind !== undefined || !plays.has(task.play)) return task
@@ -268,9 +256,9 @@ export function imageFieldsBaseline(value) {
   })) } }
 }
 
-/** Only former table tasks/references use the renamed play and panel fields. */
-export function tableFieldsBaseline(value) {
- const plays = new Set(['circuit', 'fill', 'trace', 'link', 'pack', 'breach', 'policy', 'seam'].flatMap(name => [`table:${name}`, `state-graph:${name}`]))
+/** Selected tasks and references use the renamed play and panel fields. */
+export function nestedPlayBaseline(value, names = []) {
+ const plays = new Set(names)
  const memo = new WeakMap()
  const walk = input => {
   if (!input || typeof input !== 'object') return input
@@ -285,12 +273,9 @@ export function tableFieldsBaseline(value) {
 }
 
 /** Standalone palettes contain only primitives installed by the selected package closure. */
-export function dependencyPaletteBaseline(input, { packaged, dependencies = [] } = {}) {
+export function dependencyPaletteBaseline(input, { packaged, dependencies = [], palette = {} } = {}) {
   if (!packaged) return input
-  const absent = new Set([
-    ...(!dependencies.includes('table') ? ['table:msum', 'table:mmin', 'table:mmax', 'table:many', 'table:not', 'table:add', 'table:mul', 'table:const', 'table:pass', 'table:block'] : []),
-    ...(!dependencies.includes('logic') ? ['logic:hyp'] : []),
-  ])
+  const absent = new Set(Object.entries(palette).flatMap(([owner, names]) => dependencies.includes(owner) ? [] : names))
   const keep = name => !absent.has(name)
   return { ...input, records: input.records.map(record => {
     if (!record.availability) return record

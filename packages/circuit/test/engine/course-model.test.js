@@ -1,10 +1,10 @@
-import { withProgressFixture } from '../../../../games/kit/engine/ops/fixture.js'
+import { withProgressFixture } from '../../../qed/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { resolve } from 'node:path'
 import { contentCourse, publicationEvents, readWorkSet } from '../../core/index.js'
 import { holds, met, offer } from '../../core/index.js'
-import { readStarter } from "../../../../games/kit/engine/ops/fixture.js"
+import { readStarter } from "../../../qed/test/fixture.js"
 import { runtimeOf } from "../../../../games/kit/engine/runtime.js"
 
 const sample = () => withProgressFixture({

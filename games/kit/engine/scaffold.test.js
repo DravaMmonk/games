@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { newPackage, gameOnPackage } from './scaffold.js'
-import { proofsRoot } from './ops/fixture.js'
+import { storyRoot } from './test-fixture.js'
 import { readPackage, readContent, packageConfig } from './resolver.js'
 
 const roots = []
@@ -26,7 +26,7 @@ test('packages start empty or copy installed objects without a template catalog'
 })
 
 test('games copy installed selections and settings with an empty chapter', () => {
-  const { root, id } = proofsRoot()
+  const { root, id } = storyRoot()
   roots.push(root)
   gameOnPackage({ root, id: 'sample', from: id, title: 'Sample' })
   const content = readContent('sample', root)

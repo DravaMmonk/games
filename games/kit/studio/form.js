@@ -51,7 +51,7 @@ const itemsOf = (vocabulary, kind) => Object.entries(vocabulary?.kinds[kind] ?? 
 /** The choices a schema offers (oneOf, ref, level), or null. */
 function choicesOf(schema, ctx) {
   if (schema.type === 'oneOf') return { options: schema.values.map((v) => ({ value: v })) }
-  if (schema.type === 'ref') return { options: itemsOf(ctx.vocabulary, schema.kind), of: schema.kind }
+  if (schema.type === 'ref') return { options: itemsOf(ctx.vocabulary, schema.kind).filter(({ value }) => !schema.values || schema.values.includes(value)), of: schema.kind }
   if (schema.type === 'level') return { options: (ctx.levels ?? []).map((id) => ({ value: id })), of: 'level' }
   if (schema.type === 'task') return { options: (ctx.levels ?? []).map((id) => ({ value: id })), of: 'task' }
   return null
@@ -123,6 +123,8 @@ export function formOf(schema, value, ctx, path = []) {
       if (schema.values.length === 1) return { ...base, kind: 'fixed' }
       return { ...base, kind: 'choice', ...choicesOf(schema, ctx) }
     case 'ref':
+      if (schema.values?.length === 1) return { ...base, kind: 'fixed' }
+      return { ...base, kind: 'choice', ...choicesOf(schema, ctx) }
     case 'level':
     case 'task':
       return { ...base, kind: 'choice', ...choicesOf(schema, ctx) }
@@ -181,7 +183,7 @@ export function blank(schema, ctx) {
     case 'syntax':
     case 'name': return ''
     case 'oneOf': return schema.values[0]
-    case 'ref': return Object.keys(vocabulary?.kinds[schema.kind] ?? {})[0] ?? ''
+    case 'ref': return schema.values?.[0] ?? Object.keys(vocabulary?.kinds[schema.kind] ?? {})[0] ?? ''
     case 'level': return levels[0] ?? ''
     case 'task': return ''
     case 'list': return Array.from({ length: schema.min ?? 0 }, () => blank(schema.of, ctx))
@@ -218,10 +220,14 @@ export function creationChoices(schema, ctx) {
   const walk = (shape, labels = []) => {
     switch (shape.type) {
       case 'by':
-        return Object.entries(shape.cases).flatMap(([tag, spec]) =>
-          walk(spec, [...labels, tag]).map((choice) => ({
-            ...choice, make: () => ({ ...choice.make(), [shape.field]: tag }),
-          })))
+        return Object.entries(shape.cases).flatMap(([tag, spec]) => {
+          const field = spec.fields?.[shape.field]
+          const item = field?.type === 'ref' ? ctx.vocabulary?.kinds[field.kind]?.[tag] : undefined
+          if (field?.type === 'ref' && !item) return []
+          return walk(spec, [...labels, tag]).map(choice => ({
+            ...choice, about: item?.about ?? choice.about, make: () => ({ ...choice.make(), [shape.field]: tag }),
+          }))
+        })
       case 'either':
         return shape.of.flatMap((spec) => walk(spec, spec.type === 'by' ? labels : [...labels, shapeName(spec, shape.of)]))
       case 'call':

@@ -11,8 +11,8 @@ export default {
     registry.add('display', 'logic/gates-screen', { about: { zh: '真值电路卡片、读数和面板', en: 'Truth circuit cards, readouts and panels' }, role: 'circuit' })
     registry.add('display', 'logic/machine-screen', { about: { zh: '证明助手卡片、读数和面板', en: 'Proof assistant cards, readouts and panels' }, role: 'circuit' })
     registry.add('display', 'logic/passed', { about: { zh: '通关窗口中的已声明规则', en: 'Declared rules in the pass dialog' }, role: 'passed' })
-    registry.implementDisplays(['logic/proof-screen', 'logic/gates-screen', 'logic/machine-screen', 'logic/passed'], 'logic/view')
-    registry.implementOperations(OPS)
+    for (const name of ['proof-screen', 'gates-screen', 'machine-screen', 'passed']) registry.implement('display', `logic/${name}`, 'logic/view', 'view')
+    for (const [name, item] of Object.entries(OPS)) registry.implement('operation', name, item, 'core')
     for (const [name, about] of Object.entries({
       judgment: { en: 'A proved formula with its open hypotheses and proof term', zh: '带开放假设与证明项的已证公式' },
       'machine-value': { en: 'An equation set, proof state, rule, sentence or clause set', zh: '等式组、证明状态、规则、句子或子句集' },

@@ -1,11 +1,11 @@
-import { registeredOperations } from './capabilities.js'
+import { registerReferenceKind } from './markup.js'
 import { CODE_NAME } from './object-name.js'
 import { tagKey, kernelTags } from './tag-identity.js'
 // Environment-neutral package registration. Each assembly owns its registry.
 const PACKAGE_OBJECT = /^[a-z][a-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9-]*$/
-const CORE = ['play', 'kind', 'state', 'check', 'agent', 'operation']
+const CORE = ['play', 'kind', 'state', 'check', 'agent']
 const VIEW = ['play', 'editor', 'display', 'game', 'unlocks', 'editorExtension']
-const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'], operation: ['run'] }
+const REQUIRED = { play: ['initial', 'read', 'write', 'normalize', 'run', 'judge'], agent: ['observe', 'act'], kind: ['read'] }
 
 export function createPluginKernel() {
   const tables = Object.fromEntries([...new Set([...CORE, ...VIEW]), 'playView', 'tag'].map(key => [key, new Map()]))
@@ -16,8 +16,15 @@ export function createPluginKernel() {
   // These names are consumed by Studio, including in headless author checks.
   for (const [key, reader] of kernelTags) add('tag', key, reader)
   const objects = []
+  const capabilities = new Map(), capabilityImplementations = new Map()
+  const register = (registry, kind, name, value) => {
+    const items = registry.get(kind) ?? new Map()
+    if (items.has(name)) throw new Error(`duplicate ${kind} ${name}`)
+    items.set(name, value)
+    registry.set(kind, items)
+  }
   return {
-    tables, objects,
+    tables, objects, capabilities, capabilityImplementations,
     forPackage(id, side) {
       const api = Object.fromEntries((side === 'core' ? CORE : VIEW).map(type => [type, (name, value) => {
         if (!name.startsWith(`${id}/`) || !CODE_NAME.test(name)) throw new Error(`${id}: invalid ${type} name ${name}`)
@@ -31,13 +38,24 @@ export function createPluginKernel() {
         if (['kind', 'editor'].includes(type) && typeof value?.type !== 'string') throw new Error(`${name}: ${type} needs an object type`)
         if (['check', 'state', 'game', 'unlocks'].includes(type) && typeof value !== 'function') throw new Error(`${name}: ${type} needs a function`)
         add(type === 'play' && side === 'view' ? 'playView' : type, name, value)
-        if (type === 'operation') registeredOperations[name] = value
       }]))
       api.object = (kind, name, value = {}) => {
         if (side !== 'core' || !name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: objects register their own full name in core`)
         if (objects.some(object => object.kind === kind && object.name === name && object.value.kind === value.kind)) throw new Error(`duplicate ${kind} ${name}`)
         objects.push({ kind, name, value })
       }
+      const own = name => {
+        if (!name.startsWith(`${id}/`) || !CODE_NAME.test(name)) throw new Error(`${id}: invalid capability name ${name}`)
+      }
+      if (side === 'core') api.capability = (kind, name, value) => {
+        own(name)
+        register(capabilities, kind, name, value)
+      }
+      api.implement = (kind, name, value) => {
+        own(name)
+        register(capabilityImplementations, kind, name, { side, value })
+      }
+      if (side === 'core') api.reference = registerReferenceKind
       api.tag = (name, member) => {
         if (side !== 'core') throw new Error('tag readers register in core')
         if (!name.startsWith(`${id}/`) || !PACKAGE_OBJECT.test(name)) throw new Error(`${id}: tag reader needs its own full name`)
@@ -76,29 +94,21 @@ export async function registerPlugins(entries, { view = false, tasks = [] } = {}
   return kernel
 }
 
-/** Project the selected layers’ kind meanings and operation signatures into the vocabulary. */
+/** Project the selected layers’ kind meanings and capability contributions into the vocabulary. */
 export function pluginMeanings(kernel, order) {
-  const selected = table => {
-    const entries = [...(kernel?.tables[table] ?? [])]
-    return order ? order.flatMap(id => entries.filter(([name]) => name.startsWith(`${id}/`))) : entries
-  }
-  const meanings = selected('kind').map(([, meaning]) => meaning)
-  const operations = selected('operation').map(([name, { run: _run, ...item }]) => [name, item])
-  if (operations.length) {
-    const items = Object.fromEntries(operations)
-    const capabilities = Object.fromEntries(operations.map(([name, item]) => [name, { kind: 'op', ...item }]))
-    meanings.push({
-      vocabulary: base => ({
-        ...base,
-        kinds: { ...base.kinds, op: { ...base.kinds.op, ...items } },
-        capabilities: { ...base.capabilities, operation: { ...base.capabilities.operation, ...capabilities } },
-      }),
-    })
-  }
+  const selected = entries => order ? order.flatMap(id => entries.filter(([name]) => name.startsWith(`${id}/`))) : entries
+  const meanings = selected([...(kernel?.tables.kind ?? [])]).map(([, meaning]) => meaning)
+  const tables = [...(kernel?.capabilities ?? [])].map(([kind, items]) => [kind, Object.fromEntries(selected([...items]))])
+  if (tables.length) meanings.push({
+    vocabulary(base) {
+      const merge = prior => ({ ...prior, ...Object.fromEntries(tables.map(([kind, items]) => [kind, { ...prior[kind], ...items }])) })
+      return { ...base, kinds: merge(base.kinds), capabilities: merge(base.capabilities) }
+    },
+  })
   return meanings
 }
 
 /** Public identities registered by code, shared by Node and browser assembly. */
 export function pluginObjects(kernel) {
-  return [...kernel.objects, ...Object.entries(kernel.tables).filter(([kind]) => kind !== 'tag' && kind !== 'operation').flatMap(([kind, table]) => [...table].map(([name, value]) => ({ kind: ({ kind: 'kindMeaning', game: 'gameHook' })[kind] ?? kind, name, value: value?.type ? { type: value.type } : {} })))]
+  return [...kernel.objects, ...Object.entries(kernel.tables).filter(([kind]) => kind !== 'tag').flatMap(([kind, table]) => [...table].map(([name, value]) => ({ kind: ({ kind: 'kindMeaning', game: 'gameHook' })[kind] ?? kind, name, value: value?.type ? { type: value.type } : {} })))]
 }

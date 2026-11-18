@@ -19,6 +19,7 @@ import { packageIds } from '../engine/resolver.js'
 // seconds), a run of a level's tests — go to a second worker lane with its own copy of the tools, so a quick
 // preview never waits behind them; a call that writes waits for both lanes. GAMES_ROOT points the tools at a copy of
 // the games folder.
+import { realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { Worker } from 'node:worker_threads'
 import { eraLevels } from '../course.js'
@@ -137,7 +138,13 @@ export function studioApp() {
     resolveId: (id) => (id === MODULE ? `\0${id}` : packages.resolveId(id)),
     load(id) {
       if (id !== `\0${MODULE}`) return null
-      const code = packageEntries(packageIds(root).map(id => ({ id })), root)
+      let code
+      try {
+        code = packageEntries(packageIds(root).map(id => ({ id })), root)
+      } catch (error) {
+        // Preserve the loader diagnostic for the browser's source-recovery view.
+        return `throw new Error(${JSON.stringify(error.message)})`
+      }
       return `import { loadGame } from ${JSON.stringify(resolve(import.meta.dirname, 'load-game.js'))}
 export const PACKAGES = { ${code.filter(entry => entry.core || entry.view).map(entry => `${JSON.stringify(entry.id)}: async () => ({ ${['core', 'view'].filter(side => entry[side]).map(side => `${side}: await import(${JSON.stringify(entry[side])})`).join(', ')} })`).join(', ')} }
 export const defineContent = content => loadGame(content, PACKAGES)`
@@ -147,12 +154,16 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       let fast
       let lane
       const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, { ...tool, run: args => (fast ??= worker()).run(name, args) }]))
-      const refreshCode = async () => {
+      const refreshCode = async file => {
+        const timestamp = Date.now()
+        for (const path of new Set([file, realpathSync(file)])) {
+          for (const module of server.moduleGraph.getModulesByFile(path) ?? []) server.moduleGraph.invalidateModule(module, new Set(), timestamp, true)
+        }
         const old = [fast, lane].filter(Boolean)
         fast = lane = undefined
         for (const id of [MODULE, 'virtual:package-displays']) {
           const module = server.moduleGraph.getModuleById(`\0${id}`)
-          if (module) server.moduleGraph.invalidateModule(module)
+          if (module) server.moduleGraph.invalidateModule(module, new Set(), timestamp, true)
         }
         await Promise.all(old.map(worker => worker.close()))
       }

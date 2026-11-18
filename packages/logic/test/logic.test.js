@@ -1,4 +1,4 @@
-import { starterParts } from '../../../games/kit/engine/ops/fixture.js'
+import { starterParts } from '../../qed/test/fixture.js'
 // node --test packages/logic/test — formulas, rules as parts, boxes, and countermodels. Boards are written short,
 // by the helpers below.
 import { test } from 'node:test'

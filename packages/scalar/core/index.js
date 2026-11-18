@@ -1,3 +1,4 @@
+import { registeredOperations } from 'kernel'
 import { OperationError, qualifyItems, S, T as t } from 'kernel'
 
 const args = (...names) => names.map(name => ({ name, type: 'kernel/any' }))
@@ -40,5 +41,9 @@ export const operations = qualifyItems('scalar', {
 for (const operation of Object.values(operations)) operation.params ??= S.obj({})
 
 export function register(kernel) {
-  for (const [name, operation] of Object.entries(operations)) kernel.operation(name, operation)
+  Object.assign(registeredOperations, operations)
+  for (const [name, { run, ...signature }] of Object.entries(operations)) {
+    kernel.capability('operation', name, signature)
+    kernel.implement('operation', name, { run })
+  }
 }

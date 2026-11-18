@@ -1,0 +1,10 @@
+{
+  "name": "constraint",
+  "studio": {
+    "order": 17,
+    "label": {
+      "zh": "约束",
+      "en": "Constraints"
+    }
+  }
+}

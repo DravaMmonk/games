@@ -23,14 +23,14 @@ import { taskIdsOf } from '../engine/tasks.js'
 const VOCAB = defineVocabulary({
   module: 'toy',
   version: 1,
-  kinds: { part: { add: { about: { en: '加' } }, sub: { about: 'subtracts' } }, gen: { rows: { about: 'rows', params: S.obj({ n: S.int({ min: 1 }), wide: S.opt(S.bool()) }) }, none: { about: 'nothing' } } },
+  kinds: { primitive: { add: { about: { en: '加' } }, sub: { about: 'subtracts' } }, gen: { rows: { about: 'rows', params: S.obj({ n: S.int({ min: 1 }), wide: S.opt(S.bool()) }) }, none: { about: 'nothing' } } },
   game: S.obj({ title: S.text(), eras: S.list(S.any()) }),
   level: S.by('kind', {
     board: S.obj({
       kind: S.oneOf(['board', 'hand']),
       title: S.text({ about: 'what the map shows' }),
       hint: S.opt(S.list(S.text())),
-      adds: S.opt(S.list(S.ref('part', { reference: 'circuit/part' }))),
+      adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))),
       tests: S.list(S.obj({ input: S.num({ min: 0, max: 9 }), from: S.opt(S.level()) })),
       gen: S.call('gen'),
       pick: S.either(S.str(), S.list(S.str())),
@@ -235,7 +235,7 @@ test('a level falls into sections: what the player reads, the puzzle, tests, ans
   assert.equal(sectionOf(S.list(S.obj({ name: S.str(), label: S.text() }))), 'puzzle', 'ports: names with labels')
   assert.equal(sectionOf(S.board()), 'answers')
   assert.equal(sectionOf(S.opt(S.level())), 'course')
-  assert.equal(sectionOf(S.list(S.ref('part', { reference: 'circuit/part' }), { section: 'course' })), 'course', 'the hint wins')
+  assert.equal(sectionOf(S.list(S.ref('primitive', { reference: 'circuit/part' }), { section: 'course' })), 'course', 'the hint wins')
   const form = formOf(S.obj({ title: S.text(), n: S.int(), tests: S.list(S.int(), { section: 'tests' }), solution: S.board(), carry: S.opt(S.level()) }), { title: 'T', n: 1, tests: [], solution: [] }, ctx)
   assert.deepEqual(sectionsOf(form).map((s) => [s.section, s.fields.map((f) => f.key)]), [['read', ['title']], ['puzzle', ['n']], ['tests', ['tests']], ['answers', ['solution']], ['course', ['carry']]])
   assert.equal(sectionsOf(formOf(VOCAB.level, LEVEL, ctx)).flatMap((s) => s.fields.map((f) => f.key)).includes('kind'), false, 'the shape field is in the head')
@@ -347,7 +347,7 @@ test('a task is picked from the tasks of the game, grouped by level in course or
   assert.deepEqual(options.map((o) => [o.value, o.label, o.group]), [['b', '1-1', '1-1 B'], ['a', '1-2 · 1', '1-2 A'], ['a_2', '1-2 · 2', '1-2 A']])
   assert.deepEqual(formOf(S.task(), 'a_2', { vocabulary: null }).kind, 'choice')
   // A call names an item of a kind and its parameters, shown by the item's own parameter form.
-  const calls = { kinds: { op: { add: { params: S.obj({ n: S.int() }) } } } }
-  assert.equal(formOf(S.call('op'), undefined, { vocabulary: calls }).kind, 'call')
+  const calls = { kinds: { operation: { add: { params: S.obj({ n: S.int() }) } } } }
+  assert.equal(formOf(S.call('operation'), undefined, { vocabulary: calls }).kind, 'call')
   assert.equal(formOf(S.task(), 'a_2', { vocabulary: null }).of, 'task')
 })

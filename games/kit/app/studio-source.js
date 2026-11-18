@@ -105,7 +105,7 @@ export function sourceTools(root, onSave = () => {}) {
         } finally {
           rmSync(temporary, { force: true })
         }
-        await onSave()
+        await onSave(file)
         return { text, revision: revision(text) }
       },
     },

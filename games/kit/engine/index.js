@@ -112,3 +112,5 @@ export { reportedFailure } from './failure-text.js'
 export { hidden } from './judge.js'
 
 export { treeKey } from '../strip/tree.js'
+
+export { registerReferenceKind } from './markup.js'

@@ -1,0 +1,10 @@
+{
+  "name": "view",
+  "studio": {
+    "order": 13,
+    "label": {
+      "zh": "视图",
+      "en": "Views"
+    }
+  }
+}

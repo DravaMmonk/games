@@ -1,0 +1,10 @@
+{
+  "name": "table/world",
+  "studio": {
+    "order": 20,
+    "label": {
+      "zh": "世界",
+      "en": "Worlds"
+    }
+  }
+}

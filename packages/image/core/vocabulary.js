@@ -44,13 +44,13 @@ export const vocabulary = qualifyVocabulary('image', defineVocabulary({
   version: 1,
   kinds: {
     valueType: { 'image/image': { about: { en: 'An image or scalar image with named colour channels', zh: '带颜色通道的图像或标量图像' } } },
-    part: PARTS,
+    primitive: PARTS,
     kind: {
       graph: { about: t('图像电路', 'Image circuit') },
       probe: { about: t('探针', 'Probe') },
       board: { about: t('参数台', 'Parameter bench') },
     },
-    op: Object.fromEntries(Object.entries(IMAGE_OPS).map(([name, { about, args, returns, params }]) => [name, { about, args, returns, params }])),
+    operation: Object.fromEntries(Object.entries(IMAGE_OPS).map(([name, { about, args, returns, params }]) => [name, { about, args, returns, params }])),
     family: {
       pixel: { about: t('逐像素', 'Per-pixel') },
       neighbour: { about: t('看邻居', 'Neighbours') },
@@ -65,7 +65,7 @@ export const vocabulary = qualifyVocabulary('image', defineVocabulary({
     unlock: UNLOCKS,
     view: VIEWS,
     picture: items(PICTURES),
-    scene: Object.fromEntries(Object.entries(SCENES).map(([name, s]) => [name, { about: s.about, shape: `image/graph-${name.split('/')[1]}`, ...(s.setup ? { params: s.setup } : {}), test: s.test }])),
+    'image/scene': Object.fromEntries(Object.entries(SCENES).map(([name, s]) => [name, { about: s.about, shape: `image/graph-${name.split('/')[1]}`, ...(s.setup ? { params: s.setup } : {}), test: s.test }])),
     target: items(TARGETS),
     constraint: items(CONSTRAINTS),
     benchModel: Object.fromEntries(Object.entries(BENCH_MODELS).map(([name, m]) => [name, { about: m.about, shape: `image/bench-${name.split('/')[1]}`, ...(m.setup ? { params: m.setup } : {}), ...(m.stage ? { stage: m.stage } : {}), ...(m.case ? { case: m.case } : {}) }])),

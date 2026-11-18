@@ -50,7 +50,7 @@ export const levelSchema = {
                 "fields": {
                   "part": {
                     "type": "ref",
-                    "kind": "part",
+                    "kind": "primitive",
                     "reference": "circuit/part"
                   },
                   "params": {

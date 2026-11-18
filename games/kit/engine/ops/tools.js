@@ -454,6 +454,7 @@ const tools = {
         packageCode: Boolean(vocabulary.packageCode),
         layerOrder: content.layerOrder,
         shapeDeclarations: content.registries.shape ?? {},
+        capabilityDeclarations: content.capabilityDeclarations ?? {},
         objectKinds: vocabulary.objectKinds ?? {},
         kindDeclarations: Object.fromEntries(Object.keys(vocabulary.objectKinds ?? {}).map(name => [name, content.registries.kind[name]])),
         kindPolicies: Object.fromEntries(Object.entries({ ...BUILTIN_POLICIES, ...vocabulary.objectKinds }).map(([name, { declares, overrides, variants }]) => [name, { declares, overrides, ...(variants && { variants }) }])),

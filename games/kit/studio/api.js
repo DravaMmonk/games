@@ -1,3 +1,4 @@
+import { withCapabilityDeclarations } from '../engine/capabilities.js'
 // The studio's one way to the games: a tool of the kernel (../engine/ops/tools.js) over the dev server's bridge
 // (../app/studio.js). A tool that cannot run throws its error.
 import { projectVocabulary } from '../engine/kind-meanings.js'
@@ -32,7 +33,9 @@ async function send(tool, args, retries = 0) {
 }
 
 /** The vocabulary the server checked against, rebuilt with its schemas: kernel modules plus declared object types. */
-export function browserVocabulary({ legacyModules, packageCode, kindDeclarations, shapeDeclarations, layerOrder }) {
+export function browserVocabulary({ packageCode, kindDeclarations, shapeDeclarations, capabilityDeclarations = {}, layerOrder }) {
   const layers = schemaLayers(layerOrder, { kind: kindDeclarations, shape: shapeDeclarations }, { resolved: true })
-  return withKindDeclarations(projectVocabulary({ ...vocabularyFor(legacyModules), meanings: registeredMeanings(layerOrder) }), layers, packageCode, { checked: true })
+  for (const layer of layers) layer.capabilityDeclarations = capabilityDeclarations[layer.id]
+  const projected = projectVocabulary({ ...vocabularyFor(), meanings: registeredMeanings(layerOrder) })
+  return withKindDeclarations(withCapabilityDeclarations(projected, layers), layers, packageCode, { checked: true })
 }

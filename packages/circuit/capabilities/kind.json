@@ -1,0 +1,10 @@
+{
+  "name": "kind",
+  "studio": {
+    "order": 4,
+    "label": {
+      "zh": "任务种类",
+      "en": "Task kinds"
+    }
+  }
+}

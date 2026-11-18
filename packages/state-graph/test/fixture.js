@@ -1,7 +1,7 @@
 import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { installTableFixture, writeContentFixture, lockFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { installTableFixture, writeContentFixture, lockFixture } from '../../qed/test/fixture.js'
 import { readContent, resolveLayers, layerVocabulary } from '../../../games/kit/engine/resolver.js'
 export function tableFixture() {
  const root = mkdtempSync(join(tmpdir(), 'table-contract-'))

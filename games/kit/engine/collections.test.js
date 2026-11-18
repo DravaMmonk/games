@@ -112,12 +112,12 @@ test('chapter object identities preserve explicitly authored numeric level label
 })
 
 test('game-layer declared objects persist through public authoring operations and source paths', async () => {
-  const { proofsRoot, lockFixture } = await import('./ops/fixture.js')
+  const { storyRoot, lockFixture } = await import('./test-fixture.js')
   const { mkdirSync, writeFileSync, readFileSync } = await import('node:fs')
   const { join } = await import('node:path')
   const { openGame } = await import('./ops/workspace.js')
   const { runChangeset } = await import('./ops/changeset.js')
-  const { root, id } = proofsRoot()
+  const { root, id } = storyRoot()
   mkdirSync(join(root, 'packages/provider/kinds'), { recursive: true })
   writeFileSync(join(root, 'packages/provider/package.json'), JSON.stringify({ kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} }))
   writeFileSync(join(root, 'packages/provider/kinds/settings.json'), JSON.stringify({ folder: 'settings', declares: 'game', overrides: { game: ['*'] }, schema: S.obj({ title: S.text() }) }))
@@ -126,7 +126,7 @@ test('game-layer declared objects persist through public authoring operations an
   const result = await runChangeset(workspace, { why: 'Exercise game kind creation after package selection', ops: [
     { op: 'game.package.add', package: 'provider', range: '^0.0.0' },
     { op: 'object.put', kind: 'provider/settings', name: `@${id}/main`, data: { title: { en: 'Settings' } } },
-    { op: 'chapter.set', chapter: `@${id}/ground`, path: 'levels', value: [`${id}/given`] },
+    { op: 'chapter.set', chapter: `@${id}/ground`, path: 'levels', value: [] },
     { op: 'text.set', chapter: `@${id}/ground`, path: 'chapter.title', lang: 'en', value: 'Foundation' },
   ] }, { check: false, write: true })
   assert.equal(result.ok, true, result.problems.join('\n'))
@@ -134,7 +134,7 @@ test('game-layer declared objects persist through public authoring operations an
   assert.ok(result.files.includes(`games/${id}/settings/main.json`))
   assert.ok(result.files.includes(`games/${id}/chapters/ground.json`))
   assert.equal(openGame(id, root).content().registries['provider/settings'][`@${id}/main`].title.en, 'Settings')
-  assert.deepEqual(JSON.parse(readFileSync(join(root, `games/${id}/chapters/ground.json`))).levels, [`${id}/given`])
+  assert.deepEqual(JSON.parse(readFileSync(join(root, `games/${id}/chapters/ground.json`))).levels, [])
 })
 
 test('independent list and edge patches compose by field type across arbitrary kinds', () => {

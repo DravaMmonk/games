@@ -16,6 +16,7 @@ import { partProblems, withParts } from './parts/define.js'
 import { shapeAt } from 'kernel'
 import { mapBlueprintNames } from './board/text.js'
 import { progressFieldsProblems } from './progress-fields.js'
+import { primitiveParts } from './primitive-parts.js'
 import { partFileSchema } from './parts/schema.js'
 
 // Presentation-only part fields are validated as objects and do not affect board checks or saved work.
@@ -34,7 +35,7 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
   const part = value => {
     if (typeof value !== 'string') return value
     if (value.includes('/')) return name(value)
-    return parts.has(value.split(/[.=]/)[0]) || !vocabulary?.kinds.part?.[value.split(/[.=]/)[0]] ? name(value) : value
+    return parts.has(value.split(/[.=]/)[0]) || !vocabulary?.kinds.primitive?.[value.split(/[.=]/)[0]] ? name(value) : value
   }
   const rule = value => typeof value === 'string' && (value.includes('/') || partRules.has(value.split('.')[0])) ? name(value) : value
   return {
@@ -44,7 +45,7 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
       return `${target.slice(0, colon + 1)}${part(target.slice(colon + 1))}`
     },
     rewrite({ value, schema, key, object }) {
-      if (schema?.reference === 'circuit/part' || ['part', 'unlock', 'circuit/part'].includes(schema?.kind) && ['ref', 'name'].includes(schema?.type)) return { value: part(value) }
+      if (schema?.reference === 'circuit/part' || ['primitive', 'unlock', 'circuit/part'].includes(schema?.kind) && ['ref', 'name'].includes(schema?.type)) return { value: part(value) }
       if (schema?.type === 'board' || schema?.view === 'board') return { value: Array.isArray(value) && value.every(line => typeof line === 'string') ? mapBlueprintNames(value, type => type.includes('/') || parts.has(type) ? name(type) : type, rule) : value }
       if (['rules', 'using', 'simp'].includes(key) && Array.isArray(value)) return { value: value.map(rule) }
       if (key === 'tray') return { value: Array.isArray(value) ? value.map(name) : name(value) }
@@ -56,7 +57,7 @@ export function circuitNames({ name, vocabulary, objects = {}, parts = new Set()
 }
 
 export const partMeaning = {
-  capability: 'part',
+  capability: 'primitive',
   studio: {
     schemas: { partDefs: partFileSchema },
     relations: { replaces: 'circuit/part' },
@@ -68,6 +69,7 @@ export const partMeaning = {
   catalogKey: ({ prefix, path: [field, id, ...rest], segment }) => prefix === 'parts' && field === 'parts' ? ['part', id, ...rest].map(segment).join('.') : null,
   baselineCourse: ({ fragment }) => ({ publications: fragment.course.publications, stages: fragment.course.stages }),
   baselineStructure: ({ content }) => ({ parts: content.partDefs, trays: content.trays }),
+  blueprintPrimitives: content => ({ values: primitiveParts(content), path: 'overrides/circuit/tags/circuit/part/primitives.json' }),
   baselineRecords: availabilityRecords,
   baselineReports: circuitReports,
   search({ content, texts, vocabulary }) {
@@ -144,7 +146,7 @@ export const partMeaning = {
   source: ({ content }) => ({ 'circuit/part': content.partDefs?.parts ?? {} }),
   assemble({ registries, relationEdges, resolve, problems, schemas }) {
     const parts = registries['circuit/part'] ?? {}
-    registries['circuit/part'] = { ...schemas.kinds?.part, ...parts }
+    registries['circuit/part'] = { ...schemas.kinds?.primitive, ...parts }
     const replaces = {}
     for (const { from, to } of relationEdges.replaces ?? []) (replaces[from] ??= []).push(to)
     const trays = {}
@@ -187,7 +189,7 @@ export function circuitVocabulary(vocabulary) {
   if (!capabilityRegistry) {
     capabilityRegistry = createCapabilityRegistry()
     circuitModule.register(capabilityRegistry)
-    Object.assign(registeredOperations, capabilityRegistry.operations)
+    Object.assign(registeredOperations, capabilityRegistry.implementations.operation)
     Object.assign(registeredValueTypes, capabilityRegistry.tables.valueType)
   }
   const own = capabilityRegistry.schemas.circuit

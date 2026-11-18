@@ -42,7 +42,7 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
   const vocabulary = { ...baseVocabulary, kinds: { ...baseVocabulary.kinds, ...Object.fromEntries(Object.entries(domainVocabulary.objectKinds ?? {}).filter(([, definition]) => !definition.extends).map(([kind]) => [kind, content.registries?.[kind] ?? {}])) } }
   const add = (problems, file) => out.push(...problems.map((p) => ({ at: `${file}${p.at === '(root)' ? '' : p.at}`, says: p.says })))
   // Audit findings remain optional. Chapters retain their authored tag references.
-  const { objectKinds: _objectKinds, packageTarget, id: ID, levels, glossary, vocabulary: _version, open, blueprint, tags = {}, relations = {}, sections = {}, relationEdges: _edges, objectProblems = [], sourceChapters: _sourceChapters, eras, overridden = {}, registries: _registries, sources: _sources, overrideHistory: _history, layerOrder: _layerOrder, layerUses: _layerUses, ...played } = content
+  const { objectKinds: _objectKinds, packageTarget, id: ID, levels, glossary, vocabulary: _version, open, blueprint, tags = {}, relations = {}, sections = {}, relationEdges: _edges, objectProblems = [], sourceChapters: _sourceChapters, eras, overridden = {}, registries: _registries, sources: _sources, overrideHistory: _history, layerOrder: _layerOrder, layerUses: _layerUses, capabilityDeclarations: _capabilityDeclarations, ...played } = content
   const configuration = Object.fromEntries(Object.entries(played).filter(([key]) => !derivedFields(domainVocabulary).includes(key)))
   const game = configuration
   out.push(...objectProblems.filter(problem => problem.rule !== 'exists'), ...contentExistenceProblems(content, vocabulary))

@@ -1,3 +1,4 @@
+import { withCapabilityDeclarations } from '../engine/capabilities.js'
 import { kindSchemas, schemaLayers, withKindDeclarations } from '../engine/plugin-kinds.js'
 import { vocabularyFor } from '../engine/kernel.js'
 import { ENTRY } from '../engine/vocabulary.js'
@@ -24,13 +25,15 @@ export async function pageContent(manifest, base, fetcher = fetch, vocabulary) {
   if (vocabulary.packageCode !== undefined) {
     const order = [...new Set([...Object.keys(contentObjects.kind ?? {}), ...Object.keys(contentObjects.shape ?? {})].map(name => name.split('/')[0]))]
     const layers = schemaLayers(order, { kind: contentObjects.kind, shape: contentObjects.shape }, { catalogs: packageCatalogs })
-    vocabulary = withKindDeclarations(projectVocabulary({ ...vocabularyFor(), codeObjects: vocabulary.codeObjects, meanings: vocabulary.meanings }), layers, vocabulary.packageCode, { checked: true })
+    const declarations = manifest.capabilityDeclarations ?? {}
+    const capabilityLayers = Object.entries(declarations).map(([id, capabilityDeclarations]) => ({ id, capabilityDeclarations }))
+    vocabulary = withKindDeclarations(withCapabilityDeclarations(projectVocabulary({ ...vocabularyFor(), codeObjects: vocabulary.codeObjects, meanings: vocabulary.meanings }), capabilityLayers), layers, vocabulary.packageCode, { checked: true })
   }
 
   // The published content was checked when it was built, against every package's registrations, view ones (a
   // game's hero display) included; the page holds only what it plays, so it does not check existence again.
   return assemble({
-    id, schemas: vocabulary, existenceChecked: true,
+    id, schemas: vocabulary, existenceChecked: true, provenance: manifest.capabilityDeclarations && { capabilityDeclarations: manifest.capabilityDeclarations },
     contentObjects: Object.fromEntries(Object.entries(contentObjects).map(([kind, values]) => [kind, Object.fromEntries(Object.entries(values).map(([name, value]) => [name, (kind === 'chapter' ? courseText : packageText)(value, `${kind}/${name}.json`, kindSchemas(vocabulary)[kind], vocabulary)]))])),
     game: courseText(game, 'game.json', vocabulary.game, vocabulary),
     levels: levels.map(([level, value]) => [level, packageText(value, `levels/${level}.json`, vocabulary.level, vocabulary)]),

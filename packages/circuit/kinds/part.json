@@ -125,13 +125,13 @@
             "of": [
               {
                 "type": "ref",
-                "kind": "op"
+                "kind": "operation"
               },
               {
                 "type": "map",
                 "of": {
                   "type": "ref",
-                  "kind": "op"
+                  "kind": "operation"
                 }
               }
             ],
@@ -328,7 +328,7 @@
           },
           "card": {
             "type": "ref",
-            "kind": "op",
+            "kind": "operation",
             "about": {
               "zh": "不跑内部的作品，照这个引擎资源跑（它能做的比证出的更多）；内部仍说它是什么、在哪里得到",
               "en": "runs this engine resource instead of the work inside (it can do more than what was proved); the inside still says what the part is and where it is earned"

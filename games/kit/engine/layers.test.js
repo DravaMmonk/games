@@ -1,4 +1,4 @@
-import { lockFixture } from './ops/fixture.js'
+import { lockFixture } from './test-fixture.js'
 import { existenceProblems } from './existence.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -244,19 +244,19 @@ test('game package selection previews, writes, reopens and undoes without writin
   assert.equal(preview.ok, true, preview.problems.join('\n'))
   assert.ok(preview.content.registries.level['library/new'])
   assert.deepEqual(ws.content(), before)
-  assert.deepEqual(ws.packageIds, ['extra', 'base', 'circuit'])
+  assert.deepEqual(ws.packageIds, ['extra', 'base'])
   assert.equal(readFileSync(resolve(root, 'games/demo/game.json'), 'utf8'), original)
   const written = await runChangeset(ws, change, { ...options, write: true })
   assert.equal(written.ok, true, written.problems.join('\n'))
   assert.deepEqual(written.files, ['games/demo/game.json'])
-  assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(root, 'games/demo/game.json'))).packages), ['extra', 'base', 'circuit', 'library'])
+  assert.deepEqual(Object.keys(JSON.parse(readFileSync(resolve(root, 'games/demo/game.json'))).packages), ['extra', 'base', 'library'])
   assert.ok(openGame('demo', root, { vocabulary: schemas }).content().registries.level['library/new'])
   assert.equal((await undo(openGame('demo', root, { vocabulary: schemas }), { ...options, write: true })).ok, true)
   assert.equal(readFileSync(resolve(root, 'games/demo/game.json'), 'utf8'), original)
 
   const removed = await runChangeset(openGame('demo', root, { vocabulary: schemas }), { ops: [{ op: 'game.package.remove', package: 'extra' }] }, { ...options, write: true })
   assert.equal(removed.ok, true, removed.problems.join('\n'))
-  assert.deepEqual(removed.content.layerOrder, ['base', 'circuit', '@demo'])
+  assert.deepEqual(removed.content.layerOrder, ['base', '@demo'])
   const restored = await undo(openGame('demo', root, { vocabulary: schemas }), { ...options, write: true })
   assert.equal(restored.ok, true, restored.problems.join('\n'))
   assert.equal(readFileSync(resolve(root, 'games/demo/game.json'), 'utf8'), original)
@@ -281,14 +281,14 @@ test('package selection refuses missing dependencies, duplicate selection and re
     const result = await runChangeset(ws, { ops: [{ op: `game.package.${op}`, package: id, ...(op === 'add' && { range: '^1.0.0' }) }] }, options)
     assert.equal(result.ok, false)
     assert.match(result.problems.join('\n'), pattern)
-    assert.deepEqual(ws.packageIds, ['extra', 'base', 'circuit'])
+    assert.deepEqual(ws.packageIds, ['extra', 'base'])
   }
   const result = await runChangeset(ws, { ops: [{ op: 'game.package.add', package: 'library', range: '^1.0.0' }, { op: 'game.package.add', package: 'child', range: '^1.0.0' }] }, options)
   assert.equal(result.ok, true, result.problems.join('\n'))
-  assert.deepEqual(ws.packageIds, ['extra', 'base', 'circuit'])
+  assert.deepEqual(ws.packageIds, ['extra', 'base'])
   const failed = await runChangeset(ws, { ops: [{ op: 'game.package.add', package: 'library', range: '^1.0.0' }, { op: 'game.package.add', package: 'base', range: '^1.0.0' }] }, options)
   assert.equal(failed.ok, false)
-  assert.deepEqual(ws.packageIds, ['extra', 'base', 'circuit'])
+  assert.deepEqual(ws.packageIds, ['extra', 'base'])
   const packaged = await runChangeset(openPackage('base', root, { vocabulary: schemas }), { ops: [{ op: 'game.package.add', package: 'library', range: '^1.0.0' }] }, options)
   assert.equal(packaged.ok, false)
   assert.match(packaged.problems.join('\n'), /game workspace/)

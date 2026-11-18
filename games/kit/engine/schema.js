@@ -159,7 +159,8 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
           const shape = resolveShape(option, vocabulary)
           return shape.type !== 'obj' || Object.entries(shape.fields).every(([key, field]) => {
             const f = resolveShape(field, vocabulary)
-            return f.type !== 'oneOf' || v[key] === undefined || f.values.includes(v[key])
+            const values = f.type === 'oneOf' || f.type === 'ref' ? f.values : undefined
+            return !values || v[key] === undefined || values.includes(v[key])
           })
         }) : s.of
         for (const option of candidates) {
@@ -185,7 +186,8 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
         return
       }
       case 'ref':
-        if (typeof v !== 'string' || !item(s.kind, v)) say(where, `${show(v)} is no ${s.kind} of the vocabulary`)
+        if (s.values && !s.values.includes(v)) say(where, `expected one of ${s.values.map(show).join(', ')}, found ${show(v)}`)
+        else if (typeof v !== 'string' || !item(s.kind, v)) say(where, `${show(v)} is no ${s.kind} of the vocabulary`)
         return
       case 'level':
         if (typeof v !== 'string') say(where, `expected a level id, found ${show(v)}`)
@@ -238,16 +240,30 @@ export function validate(schema, value, { vocabulary = null, levels = null, task
   return out
 }
 
+// Case keys can be qualified only when the case field explicitly references a capability.
+export function caseOf(schema, value, qualify) {
+  if (!isObj(value)) return null
+  const key = value[schema.field]
+  if (Object.hasOwn(schema.cases, key)) return schema.cases[key]
+  if (!qualify || typeof key !== 'string') return null
+  const candidate = schema.cases[qualify(key)]
+  return candidate?.fields?.[schema.field]?.type === 'ref' ? candidate : null
+}
+
 // Of an either's shapes, the first of the kind of `v` that has all its fields.
-const sameShape = (schema, v, vocabulary) => {
+const sameShape = (schema, v, vocabulary, qualify) => {
   const s = resolveShape(schema, vocabulary)
   if (v === undefined) return true
-  if (s.type === 'either') return s.of.some(option => sameShape(option, v, vocabulary))
-  if (s.type === 'by') return isObj(v) && Boolean(s.cases[v[s.field]]) && sameShape(s.cases[v[s.field]], v, vocabulary)
-  if (s.type === 'obj') return isObj(v) && Object.entries(v).every(([key, value]) => s.fields[key] && sameShape(s.fields[key], value, vocabulary))
-  if (['list', 'set', 'edges'].includes(s.type)) return Array.isArray(v) && v.every(value => sameShape(s.of, value, vocabulary))
+  if (s.type === 'either') return s.of.some(option => sameShape(option, v, vocabulary, qualify))
+  if (s.type === 'by') {
+    const branch = caseOf(s, v, qualify)
+    return Boolean(branch) && sameShape(branch, v, vocabulary, qualify)
+  }
+  if (s.type === 'obj') return isObj(v) && Object.entries(v).every(([key, value]) => s.fields[key] && sameShape(s.fields[key], value, vocabulary, qualify))
+  if (['list', 'set', 'edges'].includes(s.type)) return Array.isArray(v) && v.every(value => sameShape(s.of, value, vocabulary, qualify))
   if (s.type === 'map') return isObj(v)
   if (s.type === 'oneOf') return s.values.includes(v)
+  if (s.type === 'ref' && s.values) return s.values.includes(v) || (qualify && typeof v === 'string' && s.values.includes(qualify(v)))
   if (s.type === 'text') return typeof v === 'string' || isText(v)
   if (['str', 'ref', 'name', 'level', 'task', 'syntax'].includes(s.type)) return typeof v === 'string'
   if (['num', 'int'].includes(s.type)) return typeof v === 'number'
@@ -255,7 +271,7 @@ const sameShape = (schema, v, vocabulary) => {
   if (s.type === 'board') return Array.isArray(v)
   return true
 }
-const kin = (s, v, vocabulary) => s.of.find(option => sameShape(option, v, vocabulary))
+const kin = (s, v, vocabulary, qualify) => s.of.find(option => sameShape(option, v, vocabulary, qualify))
 
 
 /**
@@ -320,7 +336,7 @@ export function find(schema, value, type, { vocabulary = null } = {}) {
  * The schema of what is at `path` (a list of keys) in `value`, read as find reads it, or null where the schema says
  * nothing. A value that fits none of an either's shapes is read as the first shape of its kind that has all its fields.
  */
-export function shapeAt(schema, value, path, { vocabulary = null } = {}) {
+export function shapeAt(schema, value, path, { vocabulary = null, qualify } = {}) {
   let s = schema
   let v = value
   const resolve = () => {
@@ -328,8 +344,8 @@ export function shapeAt(schema, value, path, { vocabulary = null } = {}) {
       s = resolveShape(s, vocabulary)
       if (s?.type === 'either') {
         const fit = s.of.find((x) => validate(x, v, { vocabulary }).length === 0)
-        s = fit ?? kin(s, v, vocabulary) ?? null
-      } else if (s?.type === 'by') s = isObj(v) ? s.cases[v[s.field]] ?? null : null
+        s = fit ?? kin(s, v, vocabulary, qualify) ?? null
+      } else if (s?.type === 'by') s = caseOf(s, v, qualify)
       else return
     }
   }

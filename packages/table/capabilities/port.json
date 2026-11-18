@@ -1,0 +1,10 @@
+{
+  "name": "port",
+  "studio": {
+    "order": 27,
+    "label": {
+      "zh": "端口",
+      "en": "Ports"
+    }
+  }
+}

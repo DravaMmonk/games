@@ -14,6 +14,7 @@ import { contentSchemas } from './content.js'
 // entry is a link, ../shell/refs.js);
 // `audit` adds the game's own course problems to the shared audit's. game.json may leave findings open (`open`, the
 // work list in its design doc): they are listed, not failed, and one met since fails until it is dropped.
+import { referenceKinds } from './markup.js'
 import { REF, refProblems } from './text.js'
 import { gameOf } from './games.mjs'
 import { GLOSSARY, checkContent } from './vocabulary.js'
@@ -24,13 +25,19 @@ import { noMemo } from './check-cache.js'
 import { dependencyProblemsInProject } from './project-dependencies.js'
 import { packageLevel } from './package-play.js'
 
+const registeredReferenceNames = (content, selections = {}) => Object.fromEntries([...referenceKinds].flatMap(([kind, { target }]) => {
+  if (!target) return []
+  const objects = selections[target] ?? Object.entries(content.registries[target] ?? {}).map(([id, value]) => ({ ...value, id }))
+  return [[kind, new Map(objects.map(({ id, title, name }) => [id, String(firstText(title ?? name))]))]]
+}))
+
 /** Packages check objects and implementations once, then each level independently of any learning route. */
 export async function checkPackage(content, { domain, root, mutants = false }) {
   const wrong = checkContent(domain, content)
   if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, root))
   const lines = wrong.map(problem => ({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(['exists', 'dependency'].includes(problem.rule) && { problem }) }))
   if (wrong.length) return lines
-  const names = { level: new Map(Object.entries(content.registries.level ?? {}).map(([id, value]) => [id, String(firstText(value.title))])), wiki: new Map(Object.entries(content.registries.entry ?? {}).map(([id, value]) => [id, String(firstText(value.title))])), ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, vocabulary: domain.vocabulary }))) }
+  const names = { ...registeredReferenceNames(content), ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, vocabulary: domain.vocabulary }))) }
   const quotes = meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.quotes?.({ content }) ?? [])
   for (const [name, value] of Object.entries({ levels: content.levels, entries: content.glossary.entries, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
     for (const problem of refProblems(value, name, names, quotes)) lines.push({ fail: true, text: `text ${problem}` })
@@ -78,9 +85,8 @@ export async function checkGame(content, { domain, mutants = false, cache = null
   // References to levels, parts and entries: the names come from the game as the shell gets it.
   const game = await gameOf(content)
   const names = {
-    level: new Map(game.levels.map((l) => [l.id, String(firstText(l.title))])),
+    ...registeredReferenceNames(content, { level: game.levels, entry: game.glossary?.entries ?? [] }),
     ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, game, vocabulary: domain.vocabulary }))),
-    wiki: new Map((game.glossary?.entries ?? []).map((e) => [e.id, String(firstText(e.title))])),
   }
   const extraTexts = Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content, game })))
   // A game plays the levels its course places; the rest of its package, and the encyclopedia entries that open at them,

@@ -1,0 +1,10 @@
+{
+  "name": "trace",
+  "studio": {
+    "order": 24,
+    "label": {
+      "zh": "轨迹",
+      "en": "Traces"
+    }
+  }
+}

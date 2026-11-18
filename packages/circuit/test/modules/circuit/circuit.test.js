@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 // new-game copies) passes its own checks.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readStarter } from "../../../../../games/kit/engine/ops/fixture.js"
+import { readStarter } from "../../../../qed/test/fixture.js"
 import { defineParts, partProblems } from '../../../core/index.js'
 import { operations as OPS } from '../../../../scalar/core/index.js'
 import { contentSchemas } from '../../../../../games/kit/engine/content.js'

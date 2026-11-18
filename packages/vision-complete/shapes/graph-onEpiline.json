@@ -2,7 +2,8 @@
   "type": "obj",
   "fields": {
     "scene": {
-      "type": "oneOf",
+      "type": "ref",
+      "kind": "image/scene",
       "values": [
         "vision-complete/onEpiline"
       ]

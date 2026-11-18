@@ -108,7 +108,7 @@ export const PRIMITIVE = S.obj({
   regions: S.opt(S.list(REGION)),
   ...PAINT,
   keeps: S.opt(S.obj({ input: LOCAL_NAME, register: LOCAL_NAME }, { about: t('把这个输入存进设置 register 说的寄存器，下一拍起读得到（held）；存的件不写 compute') })),
-  op: S.opt(S.either(S.ref('op'), S.map(S.ref('op')))),
+  op: S.opt(S.either(S.ref('operation'), S.map(S.ref('operation')))),
   nulls: S.opt(S.oneOf(['give', 'pass'], { about: t('give：任何输入是「—」就给「—」（默认）；pass：交给运算') })),
 })
 /**
@@ -130,7 +130,7 @@ export const BUILT = S.obj({
   outputs: HOLES.outputs,
   outputType: S.opt(S.ref('valueType')),
   inside: INSIDE,
-  card: S.opt(S.ref('op', { about: t('不跑内部的作品，照这个引擎资源跑（它能做的比证出的更多）；内部仍说它是什么、在哪里得到') })),
+  card: S.opt(S.ref('operation', { about: t('不跑内部的作品，照这个引擎资源跑（它能做的比证出的更多）；内部仍说它是什么、在哪里得到') })),
   ...SETTINGS,
   icon: S.opt(ICON),
   family: S.opt(S.ref('family')),
@@ -143,7 +143,7 @@ export const PART = S.either(...Object.values(EDITORS).flatMap((shape) => (shape
 
 /** A new part of each editor, ready to fill in, where the domain's vocabulary gives what it is made of (null: not). */
 export const BLANKS = {
-  circuit: (vocabulary) => (vocabulary?.kinds.op ? { name: { en: 'New part' }, desc: { en: '' }, icon: 'Box', family: Object.keys(vocabulary.kinds.family ?? {})[0] ?? 'value', op: Object.keys(vocabulary.kinds.op)[0] } : null),
+  circuit: (vocabulary) => (vocabulary?.kinds.operation ? { name: { en: 'New part' }, desc: { en: '' }, icon: 'Box', family: Object.keys(vocabulary.kinds.family ?? {})[0] ?? 'value', op: Object.keys(vocabulary.kinds.operation)[0] } : null),
 }
 /** Whether a domain's games make parts of some editor out of what its vocabulary gives: their content names them as parts. */
 export const makesParts = (vocabulary) => Object.values(BLANKS).some((blank) => blank(vocabulary))

@@ -116,11 +116,11 @@ export function deepFreeze(value) {
 /** File-shaped assembly inputs for publishers and pending-course validation. */
 export function assemblySource(content) {
   const schemas = contentSchemas.get(content) ?? { objectKinds: content.objectKinds }
-  const { objectKinds: _objectKinds, id, levels, glossary: _glossary, blueprint, overridden, registries, objectProblems: _problems, relationEdges: _edges, eras: _eras, sourceChapters: _sourceChapters, sources: _sources, overrideHistory: _history, layerOrder: _layerOrder, layerUses: _layerUses, tags = {}, relations = {}, sections = {}, ...configuration } = content
+  const { objectKinds: _objectKinds, id, levels, glossary: _glossary, blueprint, overridden, registries, objectProblems: _problems, relationEdges: _edges, eras: _eras, sourceChapters: _sourceChapters, sources: _sources, overrideHistory: _history, layerOrder: _layerOrder, layerUses: _layerUses, capabilityDeclarations, tags = {}, relations = {}, sections = {}, ...configuration } = content
   const game = Object.fromEntries(Object.entries(configuration).filter(([key]) => !derivedFields(schemas).includes(key)))
   const sourceObjects = Object.assign({}, registries, ...meaningsOf(schemas).map(meaning => meaning.source?.({ content })))
   return {
-    id, game, contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, kind === 'kind' ? Object.fromEntries(Object.entries(registries?.kind ?? {}).filter(([name]) => _objectKinds?.[name])) : sourceObjects?.[kind] ?? {}])),
+    id, game, ...(capabilityDeclarations && { capabilityDeclarations }), contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, kind === 'kind' ? Object.fromEntries(Object.entries(registries?.kind ?? {}).filter(([name]) => _objectKinds?.[name])) : sourceObjects?.[kind] ?? {}])),
     glossary: { groups: [], entries: Object.entries(registries?.entry ?? {}).map(([id, entry]) => ({ id, ...entry })) }, blueprint, overridden,
     levels: levels.map(({ id, ...level }) => [id, level]),
     ...Object.fromEntries(Object.entries({ tags, relations, sections }).map(([kind, objects]) => [kind, Object.entries(objects).map(([name, object]) => [kind === 'tags' ? tagName(name) : name, object, (kind === 'tags' ? tagName(name) : name).split('/')[0]])])),

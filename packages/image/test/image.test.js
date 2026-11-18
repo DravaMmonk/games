@@ -1,4 +1,4 @@
-import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { withProgressFixture } from '../../qed/test/fixture.js'
 // The image board as content and saves hold it: blueprint text both ways (a course's references too), how a board
 // read from text is laid out, and a packed part running the player's own circuit, on a course written here; and a
 // course read, of that course and of every image game, writing nothing into its content.

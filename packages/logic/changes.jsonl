@@ -3,3 +3,5 @@
 {"seq":3,"at":"2026-11-17T22:11:59.019Z","why":"Apply step 16 package kinds and qualified names","adopt":true,"files":[{"file":"packages/logic/package.json","after":"052fc96810ea6ef0"}]}
 {"seq":4,"at":"2026-11-18T01:47:28.528Z","why":"Declare the package JavaScript as ES modules","adopt":true,"files":[{"file":"packages/logic/package.json","after":"98ee829bf6b8ecc7"}]}
 {"seq":5,"at":"2026-11-18T02:03:19.273Z","why":"Migrate scalar operations and primitive value types","adopt":true,"files":[{"file":"packages/logic/package.json","after":"c0608ca20d71ec71"}]}
+{"seq":6,"at":"2026-11-18T02:18:31.218Z","why":"Declare capability kinds and migrate typed schema references","adopt":true,"files":[{"file":"packages/logic/capabilities/kind.json","after":"c21e37c0e7841eda"},{"file":"packages/logic/capabilities/mark.json","after":"2d80291efbb97272"},{"file":"packages/logic/capabilities/want.json","after":"0fce3cfad1679a50"}]}
+{"seq":7,"at":"2026-11-18T02:24:58.688Z","why":"Assign the shared task kind declaration to its mechanism package","adopt":true,"files":[{"file":"packages/logic/capabilities/kind.json","after":null}]}

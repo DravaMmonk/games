@@ -1,89 +1,68 @@
-import { CODE_NAME } from './object-name.js'
-// Modules contribute closed, qualified capabilities. Packages only refer to these names.
+import { CODE_NAME, fullName } from './object-name.js'
+import { mapSchemaChildren } from './schema-shapes.js'
+
 const PRIMITIVE_VALUE_TYPES = Object.fromEntries(
   ['number', 'boolean', 'string', 'list', 'any'].map(name => [`kernel/${name}`, {}]),
 )
-const BUILTIN_CAPABILITY_KINDS = ['valueType', 'operation', 'primitive', 'board', 'display', 'language']
-
-const capabilityName = (id, name) => name.includes('/') ? name : `${id}/${name}`
-export const qualifyItems = (id, items) => Object.fromEntries(Object.entries(items).map(([name, value]) => [capabilityName(id, name), value]))
-
-/** Qualify the names declared by a module, including typed schema references and discriminators. */
-export function qualifyVocabulary(id, raw) {
-  const discriminators = { kind: 'kind', mode: 'mode', scene: 'scene', world: 'world', want: 'want' }
-  const declared = (kind, name) => Boolean(raw.kinds[kind]?.[name])
-  const schema = (value, field) => {
-    if (!value || typeof value !== 'object') return value
-    if (Array.isArray(value)) return value.map((v) => schema(v))
-    const out = { ...value }
-    if (out.type === 'shape' || typeof out.shape === 'string') {
-      const key = out.type === 'shape' ? 'name' : 'shape'
-      out[key] = capabilityName(id, out[key])
-    }
-    if (out.type === 'syntax') out.lang = capabilityName(id, out.lang)
-    if (out.fields) out.fields = Object.fromEntries(Object.entries(out.fields).map(([key, s]) => [key, schema(s, key)]))
-    if (out.of) out.of = schema(out.of)
-    if (out.params) out.params = schema(out.params)
-    if (out.key) out.key = schema(out.key)
-    if (out.test) out.test = schema(out.test)
-    if (out.stage) out.stage = schema(out.stage)
-    if (out.case) out.case = schema(out.case)
-    if (out.cases) out.cases = Object.fromEntries(Object.entries(out.cases).map(([key, s]) => [discriminators[out.field] && declared(discriminators[out.field], key) ? capabilityName(id, key) : key, schema(s)]))
-    if (out.type === 'oneOf' && discriminators[field]) out.values = out.values.map((v) => declared(discriminators[field], v) ? capabilityName(id, v) : v)
-    return out
-  }
-  return { ...raw, version: 1, kinds: Object.fromEntries(Object.entries(raw.kinds).map(([kind, items]) => [kind, qualifyItems(id, Object.fromEntries(Object.entries(items).map(([name, item]) => [name, schema(item)])))])), shapes: qualifyItems(id, Object.fromEntries(Object.entries(raw.shapes ?? {}).map(([name, shape]) => [name, schema(shape)]))), game: schema(raw.game), level: schema(raw.level), languages: qualifyItems(id, raw.languages ?? {}) }
+export const builtinCapabilityKinds = {
+  valueType: { studio: { order: 2, label: { zh: '值类型', en: 'Value types' } } },
+  play: { studio: { order: 5, label: { zh: '玩法', en: 'Plays' } } },
+  language: { studio: { order: 9, label: { zh: '语言', en: 'Languages' } } },
 }
 
-const registryKind = kind => ({ op: 'operation', part: 'primitive' })[kind] ?? kind
+export function qualifyItems(id, items) {
+  const entries = Object.entries(items).map(([name, value]) => [fullName(id, name), value])
+  const result = Object.fromEntries(entries)
+  if (Object.keys(result).length !== entries.length) throw new Error(`${id}: duplicate qualified capability name`)
+  return result
+}
 
-/** A registry is assembled once, and rejects ambiguous capability declarations. */
-export function createCapabilityRegistry() {
-  const tables = Object.assign(Object.create(null), Object.fromEntries(BUILTIN_CAPABILITY_KINDS.map(kind => [kind, Object.create(null)])))
-  Object.assign(tables.valueType, PRIMITIVE_VALUE_TYPES)
-  const kinds = Object.assign(Object.create(null), { valueType: Object.assign(Object.create(null), PRIMITIVE_VALUE_TYPES) })
-  const schemas = Object.create(null)
-  const languages = Object.create(null)
-  const operations = Object.create(null)
-  const displayLoaders = Object.create(null)
+/** Qualify explicit schema identities and the literal bounds of typed references. */
+export function qualifyVocabulary(id, raw) {
+  const schema = (value) => {
+    if (!value || typeof value !== 'object') return value
+    const out = mapSchemaChildren(value, schema)
+    if (out.type === 'shape') out.name = fullName(id, out.name)
+    if (typeof out.shape === 'string') out.shape = fullName(id, out.shape)
+    if (out.type === 'syntax') out.lang = fullName(id, out.lang)
+    for (const key of ['params', 'test', 'stage', 'case']) if (out[key]) out[key] = schema(out[key])
+    if (out.type === 'ref' && out.values) out.values = out.values.map(name => fullName(id, name))
+    return out
+  }
+  const items = values => qualifyItems(id, Object.fromEntries(Object.entries(values).map(([name, item]) => [name, schema(item)])))
+  return { ...raw, version: 1, kinds: Object.fromEntries(Object.entries(raw.kinds).map(([kind, values]) => [kind, items(values)])), shapes: items(raw.shapes ?? {}), game: schema(raw.game), level: schema(raw.level), languages: qualifyItems(id, raw.languages ?? {}) }
+}
+
+/** Each assembly owns its capability kinds and data and implementation tables. */
+export function createCapabilityRegistry(definitions = {}) {
+  const kinds = { ...builtinCapabilityKinds, ...definitions }
+  const tables = Object.assign(Object.create(null), { valueType: { ...PRIMITIVE_VALUE_TYPES } })
+  const implementations = Object.create(null)
+  const schemas = Object.create(null), languages = Object.create(null)
   return {
-    tables, kinds, schemas, languages, operations, displayLoaders, meanings: [],
+    definitions: kinds, tables, kinds: tables, implementations, schemas, languages, meanings: [],
     kind(_name, meaning) { this.meanings.push(meaning) },
     add(kind, name, value) {
       if (!CODE_NAME.test(name)) throw new Error(`invalid capability name ${name}`)
       const table = tables[kind] ??= Object.create(null)
       if (Object.hasOwn(table, name)) throw new Error(`duplicate ${kind} ${name}`)
       table[name] = value
-      if (kind === 'valueType') {
-        (kinds.valueType ??= Object.create(null))[name] = value
-      }
     },
-    implementDisplays(names, load) {
-      for (const name of names) {
-        if (!tables.display[name]) throw new Error(`undeclared display ${name}`)
-        if (displayLoaders[name]) throw new Error(`duplicate display implementation ${name}`)
-        if (typeof load !== 'string' || !/^[a-z][a-z0-9-]*\/view$/.test(load)) throw new Error(`display ${name} needs a module UI entry`)
-        displayLoaders[name] = load
-      }
-    },
-    implementOperations(items) {
-      for (const [name, item] of Object.entries(items)) {
-        if (!tables.operation[name]) throw new Error(`undeclared operation ${name}`)
-        if (operations[name]) throw new Error(`duplicate operation implementation ${name}`)
-        if (typeof item.run !== 'function') throw new Error(`operation ${name} needs an implementation`)
-        operations[name] = item
-      }
+    implement(kind, name, value, side) {
+      if (!Object.hasOwn(tables[kind] ?? {}, name)) throw new Error(`undeclared ${kind} ${name}`)
+      const rule = kinds[kind]?.implementation
+      if (!rule || rule.side !== side) throw new Error(`${kind} ${name} has no ${side} implementation contract`)
+      assertCapabilityImplementation(kind, name, value, rule)
+      const table = implementations[kind] ??= Object.create(null)
+      if (Object.hasOwn(table, name)) throw new Error(`duplicate ${kind} implementation ${name}`)
+      table[name] = value
     },
     vocabulary(id, vocabulary) {
       if (schemas[id]) throw new Error(`duplicate module ${id}`)
       schemas[id] = { game: vocabulary.game, level: vocabulary.level }
       for (const [kind, items] of Object.entries(vocabulary.kinds)) {
-        const target = kinds[kind] ??= Object.create(null)
-        for (const [name, item] of Object.entries(items)) {
-          if (Object.hasOwn(target, name)) throw new Error(`duplicate ${kind} ${name}`)
-          target[name] = item
-          this.add(registryKind(kind), name, { kind, ...item })
-        }
+        tables[kind] ??= Object.create(null)
+        for (const [name, item] of Object.entries(items)) this.add(kind, name, item)
       }
       for (const [name, item] of Object.entries(vocabulary.languages ?? {})) {
         this.add('language', name, item)
@@ -91,6 +70,45 @@ export function createCapabilityRegistry() {
       }
     },
   }
+}
+
+export function assertCapabilityImplementation(kind, name, value, rule) {
+  if (rule.methods?.some(method => typeof value?.[method] !== 'function')) throw new Error(`${kind} ${name} needs implementation methods ${rule.methods.join(', ')}`)
+  if (rule.side === 'view' && (typeof value !== 'string' || value !== `${name.split('/')[0]}/view`)) throw new Error(`${kind} ${name} needs its package view entry`)
+}
+
+/** Compile package declarations before the schema consumes any of the items. */
+export function withCapabilityDeclarations(vocabulary, layers, { checkImplementations = false } = {}) {
+  const definitions = { ...builtinCapabilityKinds }
+  for (const { id, capabilityDeclarations = {} } of layers) for (const [file, declaration] of Object.entries(capabilityDeclarations)) {
+    const { name, studio, implementation, items = {} } = declaration
+    if (!/^[A-Za-z][\w-]*$/.test(file) || (name !== file && name !== `${id}/${file}`)) throw new Error(`${id}/capabilities/${file}: invalid capability kind ${name}`)
+    if (Object.hasOwn(definitions, name)) throw new Error(`duplicate capability kind ${name}`)
+    if (!studio?.label?.en || !studio.label.zh || (studio.order !== undefined && !Number.isFinite(studio.order))) throw new Error(`${name}: capability kind needs Studio labels`)
+    if (implementation && (!['core', 'view'].includes(implementation.side) || (implementation.methods !== undefined && (!Array.isArray(implementation.methods) || !implementation.methods.every(method => typeof method === 'string'))))) throw new Error(`${name}: invalid capability implementation contract`)
+    definitions[name] = { ...declaration, items: qualifyItems(id, items), owner: id }
+  }
+  const registry = createCapabilityRegistry(definitions)
+  for (const [kind, items] of Object.entries(vocabulary.capabilities ?? {})) for (const [name, item] of Object.entries(items)) {
+    if (kind === 'valueType' && Object.hasOwn(PRIMITIVE_VALUE_TYPES, name)) continue
+    registry.add(kind, name, item)
+  }
+  for (const [kind, { items }] of Object.entries(definitions)) for (const [name, item] of Object.entries(items ?? {})) registry.add(kind, name, item)
+  if (checkImplementations) {
+    const owners = new Map(layers.map(layer => [layer.id, layer]))
+    for (const [kind, items] of Object.entries(registry.tables)) {
+      const rule = definitions[kind]?.implementation
+      if (!rule) continue
+      for (const name of Object.keys(items)) {
+        const owner = owners.get(name.split('/')[0])
+        const entry = owner?.capabilityImplementations?.[kind]?.[name]
+        const value = rule.side === 'view' ? (owner?.hasView ? `${owner.id}/view` : undefined) : entry?.value
+        if (rule.side === 'core' && entry?.side !== 'core') throw new Error(`${kind} ${name} needs a core implementation`)
+        assertCapabilityImplementation(kind, name, value, rule)
+      }
+    }
+  }
+  return { ...vocabulary, capabilityKinds: definitions, capabilities: registry.tables, kinds: { ...vocabulary.kinds, ...registry.tables } }
 }
 
 // Runtime implementations share the same qualified names as their declarations.

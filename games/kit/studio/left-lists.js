@@ -68,8 +68,8 @@ export const currentOf = (entries, selected) => entries.find(([key]) => key === 
 export const capabilityKey = (kind, name) => `${kind}/${name}`
 export function capabilityOf(key) {
   if (typeof key !== 'string' || !key.includes('/')) return null
-  const at = key.indexOf('/')
-  return { kind: key.slice(0, at), name: key.slice(at + 1) }
+  const at = key.lastIndexOf('/', key.lastIndexOf('/') - 1)
+  return at > 0 ? { kind: key.slice(0, at), name: key.slice(at + 1) } : null
 }
 
 /** An override event's key: its layer, the kind overridden and the object's name. */

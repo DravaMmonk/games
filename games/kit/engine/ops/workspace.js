@@ -83,7 +83,7 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
   }
   const onDisk = (file) => {
     const local = file.replace(/^package\//, '')
-    if (!gameFolder(local.split('/')[0]) && Object.values(kindFolders).includes(local.split('/')[0]) || file.startsWith('package/') || file === 'package.json') return packaged && !archived ? read(resolve(packageDir, local)) : packageFiles.get(local) ?? null
+    if (!gameFolder(local.split('/')[0]) && Object.values(kindFolders).includes(local.split('/')[0]) || file.startsWith('package/') || file === 'package.json' || local.startsWith('capabilities/')) return packaged && !archived ? read(resolve(packageDir, local)) : packageFiles.get(local) ?? null
     return packaged && inGame(file) ? null : read(resolve(root, pathFor(file)))
   }
   const load = (file, optional = false) => {
@@ -188,7 +188,7 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
     diff: (changes = ws.changes()) => changes.map((c) => unified(c.file, c.before, c.after)).join('\n'),
     write: () => write(ws, localeFiles),
     /** The course and package files, keyed by their project-relative paths. */
-    onDisk: () => new Map([...new Set([...fileNames(levels(), objectPaths(), ws.packaged), ...localeFiles(), ...extraOverridePaths(), ...ws.original.keys()])]
+    onDisk: () => new Map([...new Set([...fileNames(levels(), objectPaths(), ws.packaged), ...localeFiles(), ...extraOverridePaths(), ...[...packageFiles.keys()].filter(file => file.startsWith('capabilities/')), ...ws.original.keys()])]
       .map((file) => [pathFor(file), onDisk(file)]).filter(([file]) => ws.owns(file))),
   })
 }
@@ -207,7 +207,7 @@ const layerObjects = (ws, layer) => Object.entries(ws.contentObjects).filter(([k
 function contentOf(ws) {
   const packaged = ownCatalogs(ws, catalogsOf(PACKAGE_I18N, ...packageValues(ws)))
   const own = {
-    id: ws.packageId, codeObjects: ws.packageLayers.find(layer => layer.id === ws.packageId)?.codeObjects ?? [], tagReaders: ws.packageLayers.find(layer => layer.id === ws.packageId)?.tagReaders ?? [], config: ws.packageConfig, catalogs: { ...ws.packageCatalog, ...packaged },
+    id: ws.packageId, capabilityDeclarations: ws.packageLayers.find(layer => layer.id === ws.packageId)?.capabilityDeclarations, codeObjects: ws.packageLayers.find(layer => layer.id === ws.packageId)?.codeObjects ?? [], tagReaders: ws.packageLayers.find(layer => layer.id === ws.packageId)?.tagReaders ?? [], config: ws.packageConfig, catalogs: { ...ws.packageCatalog, ...packaged },
     objects: [
       ...layerObjects(ws, 'package'),
       ...[...ws.levels].map(([name, value]) => ({ kind: 'level', name, value })),

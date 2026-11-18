@@ -1,5 +1,4 @@
-import { logicVocabulary as circuitVocabulary } from './ops/fixture.js'
-import { lockFixture } from './ops/fixture.js'
+import { lockFixture } from './test-fixture.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
@@ -84,7 +83,7 @@ test('data kinds use the normal operation, namespace, copy, tag, relation and ov
 
 test('kind declarations cannot change built-in structure or hide malformed schemas', () => {
   const layer = data => [{ id: 'story', objects: [{ kind: 'kind', name: 'thing', value: data }] }]
-  const base = circuitVocabulary
+  const base = { ...vocabularyFor(), level: { type: 'obj', fields: { title: { type: 'text' } } } }
   assert.throws(() => withKindDeclarations(base, layer({ declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'levels', schema: { type: 'str' } })), /reserved/)
   assert.throws(() => withKindDeclarations(base, layer({ declares: 'package', overrides: { package: ['*'], game: ['$text'] }, extends: 'level', fields: { title: { type: 'str' } } })), /redefine/)
   assert.throws(() => withKindDeclarations(base, layer({ declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'scenes', schema: { type: 'invalid' } })), /schema/)
@@ -191,4 +190,53 @@ test('scoped task declarations retain common fields from nested schema alternati
  const branch = projected.level.fields.tasks.of.of.find(shape => shape.fields?.play?.values?.[0] === 'sample/answer')
  assert.equal(branch.fields.brief.optional, true)
  assert.equal(branch.fields.answer.type, 'str')
+})
+
+test('a standalone package declares a new capability kind and a level references it by schema', async () => {
+  const { testProject } = await import('./test-fixture.js')
+  const { runtimeOf } = await import('./resolver.js')
+  const { formOf } = await import('../studio/form.js')
+  const { markupOf } = await import('./markup.js')
+  const { root, put } = testProject('capability-kind-')
+  try {
+    put('packages/sample/package.json', { kind: 'play', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+    const declaration = {
+      name: 'sample/prompt',
+      studio: { label: { en: 'Prompts', zh: '提示' } },
+      implementation: { side: 'core', methods: ['read'] },
+      items: { greeting: { about: { en: 'A greeting', zh: '一句问候' } } },
+    }
+    put('packages/sample/capabilities/prompt.json', declaration)
+    const reference = { type: 'ref', kind: 'sample/prompt' }
+    put('packages/sample/kinds/task.json', { extends: 'task', play: 'sample/answer', declares: 'package', overrides: { package: ['*'], game: ['$text'] }, fields: { material: reference } })
+    const core = `
+      const same = value => value
+      export function register(kernel) {
+        kernel.reference('sample-level', { target: 'level' })
+        kernel.implement('sample/prompt', 'sample/greeting', { read: same })
+        kernel.play('sample/answer', { initial: () => '', read: same, write: same, normalize: same, run: same, judge: value => ({ pass: !!value }) })
+      }
+    `
+    const level = {
+      title: 'One',
+      tasks: [{ id: 'one', play: 'sample/answer', brief: 'See <sample-level-ref to="one"></sample-level-ref>.', material: 'greeting' }],
+    }
+    put('packages/sample/core/index.js', core)
+    put('packages/sample/levels/one.json', level)
+    lockFixture(root)
+
+    const content = readPackage('sample', root)
+    const runtime = await runtimeOf(content, root)
+    assert.deepEqual(checkContent(runtime, content), [])
+    assert.equal(content.levels[0].tasks[0].material, 'sample/greeting')
+    assert.equal(runtime.vocabulary.capabilityKinds['sample/prompt'].studio.label.en, 'Prompts')
+    assert.deepEqual(formOf(reference, 'sample/greeting', { vocabulary: runtime.vocabulary }).options.map(item => item.value), ['sample/greeting'])
+    assert.deepEqual(markupOf(content.levels[0].tasks[0].brief).nodes[1], { ref: 'sample-level', to: 'sample/one' })
+    assert.match(markupOf('<unregistered-ref to="one"></unregistered-ref>').problems[0], /no markup/)
+
+    put('packages/sample/levels/one.json', { ...level, tasks: [{ ...level.tasks[0], material: 'absent' }] })
+    assert.ok(readPackage('sample', root).objectProblems.some(problem => problem.kind === 'sample/prompt' && problem.target === 'sample/absent'))
+    put('packages/sample/capabilities/prompt.json', { ...declaration, items: { ...declaration.items, present: {} } })
+    assert.throws(() => readPackage('sample', root), /sample\/present needs a core implementation/)
+  } finally { rmSync(root, { recursive: true, force: true }) }
 })

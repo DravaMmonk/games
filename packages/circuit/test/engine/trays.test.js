@@ -1,4 +1,4 @@
-import { circuitFixtureSchema } from '../../../../games/kit/engine/ops/fixture.js'
+import { circuitFixtureSchema } from '../../../qed/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { trayDisplay, trayMembers } from '../../core/index.js'
@@ -71,7 +71,7 @@ test('tray overrides use generic collection patches and nested identified lists'
 })
 
 test('tray lists retain menu and grant order', async () => {
-  const { assembleCircuitFixture: assemble } = await import('../../../../games/kit/engine/ops/fixture.js')
+  const { assembleCircuitFixture: assemble } = await import('../../../qed/test/fixture.js')
   const { S } = await import('../../../../games/kit/engine/schema.js')
   const content = assemble({ id: 'sample', schemas: circuitFixtureSchema({ game: S.obj({}), level: S.obj({}), kinds: {} }), game: {}, levels: [],
     partDefs: { parts: { one: {}, two: {}, last: {} } },

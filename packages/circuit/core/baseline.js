@@ -24,11 +24,11 @@ export function availabilityRecords({ fragment }) {
   return records
 }
 
-export function circuitReports({ spec }) {
+export function circuitReports({ spec }, runBoard = runLevel) {
   if (!spec.circuit) return null
   const works = spec.circuit
   return spec.levels.flatMap(level => (works.played?.get(level.id) ?? level.tasks).map(task => {
-    const run = work => runLevel(withHidden(task), work, works.forTask(task).partOf, { traced: true })
+    const run = work => runBoard(withHidden(task), work, works.forTask(task).partOf, { traced: true })
     return { level: level.id, task: task.taskId ?? task.key ?? task.id, kind: task.mode ?? task.kind, report: {
       reference: task.solution === undefined ? { absent: true } : { work: task.solution, report: run(task.solution) },
       naive: task.naive == null ? { absent: true } : { work: task.naive, report: run(task.naive) },

@@ -1,0 +1,10 @@
+{
+  "name": "widget",
+  "studio": {
+    "order": 12,
+    "label": {
+      "zh": "控件",
+      "en": "Widgets"
+    }
+  }
+}

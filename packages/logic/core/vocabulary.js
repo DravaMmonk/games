@@ -35,7 +35,7 @@ const SIDE = S.syntax('side')
 const SIDES = S.list(SIDE)
 /** Blueprint text (../../circuit/text.js), one line a string: a reference board, a naive one. */
 const BOARD = S.board({ about: t('一块电路板的蓝图文本，每行一个字符串') })
-const PART = S.ref('part', { reference: 'circuit/part', about: t('一个元件：词汇表里的元件，或 game.json 里的引理、门、等式') })
+const PART = S.ref('primitive', { reference: 'circuit/part', about: t('一个元件：词汇表里的元件，或 game.json 里的引理、门、等式') })
 const PARTS = S.list(PART)
 const WORDS = S.list(S.either(S.str(), S.map(S.text())), { about: t('用哪几套词（词表的名字，或直接写出），按顺序合并') })
 
@@ -123,14 +123,14 @@ const SLOT = S.obj({ given: S.opt(SENTENCES), goal: S.opt(SENTENCE), make: S.opt
 const ROW = S.obj({ k: S.oneOf(['show', 'assume', 'fix', 'obtain', 'have']), stmt: S.opt(SENTENCE), by: S.opt(S.str()), using: S.opt(ids), thing: S.opt(S.str()) })
 const MTEST = S.obj({
   eqs: S.opt(S.list(S.str())), goal: S.opt(SENTENCE), hyps: S.opt(SENTENCES), answers: S.opt(ids), becomes: S.opt(S.list(S.list(S.str()))),
-  rules: S.opt(ids), clauses: S.opt(SENTENCES), budget: S.opt(S.int({ min: 1 })), want: S.opt(S.ref('want')),
+  rules: S.opt(ids), clauses: S.opt(SENTENCES), budget: S.opt(S.int({ min: 1 })), want: S.opt(S.ref('logic/want')),
   it: S.opt(S.str()), ways: S.opt(S.list(S.str())), elim: S.opt(S.list(S.str())),
 })
 const WORLD = S.obj({ size: S.int({ min: 1 }), preds: S.map(ids), consts: S.opt(S.map(S.int({ min: 0 }))) })
 const ISO = {
   declare: S.opt(S.text({ about: t('声明的是什么词') })), target: S.opt(SENTENCE), sentences: S.opt(SENTENCES), tests: S.opt(S.list(CASE)),
   solution: S.opt(RULE_ROWS), naive: S.opt(S.either(RULE_ROWS, S.list(CASE))), things: S.opt(ids), thing: S.opt(S.bool()),
-  play: S.opt(S.oneOf(['logic/audit'], { about: t('用条例检验别人的声明') })), want: S.opt(S.oneOf(['agree', 'expose'])),
+  play: S.opt(S.oneOf(['logic/audit'], { about: t('用条例检验别人的声明') })), want: S.opt(S.ref('logic/want', { values: ['agree', 'expose'] })),
   boards: S.opt(S.list(S.obj({ label: S.opt(S.text()), rules: RULE_ROWS }))), answer: S.opt(S.list(CASE)), slots: S.opt(S.either(S.int({ min: 1 }), S.list(SLOT))),
   caseGoal: S.opt(SENTENCE), binder: S.opt(S.str()), take: S.opt(S.obj({ premises: S.list(S.str()), conclusion: S.str() })),
   datatype: S.opt(S.obj({ type: S.str(), ctors: ids, args: S.map(S.str()) })), ways: S.opt(S.list(S.list(S.str()))), carry: S.opt(S.level()),
@@ -154,7 +154,7 @@ const BY_KIND = {
   query: { say: S.text(), target: SENTENCE, decoys: S.opt(SENTENCES), worlds: S.list(S.obj({ title: S.text(), things: ids, preds: S.map(S.list(S.either(S.str(), ids)), { about: t('每个谓词对哪些东西成立（一样东西，或几样一组）') }) })) },
   model: { say: S.opt(S.text()), meant: S.opt(SENTENCE), wrong: S.opt(SENTENCE), answer: WORLD, given: S.opt(SENTENCES), goal: S.opt(SENTENCE) },
   machine: {
-    want: S.ref('want'), inputs: S.opt(S.list(S.obj({ name: S.str(), label: S.text() }))), single: S.opt(S.bool()), tests: S.list(MTEST, { min: 1, section: 'tests' }), hidden: S.opt(S.list(MTEST, { section: 'tests' })),
+    want: S.ref('logic/want'), inputs: S.opt(S.list(S.obj({ name: S.str(), label: S.text() }))), single: S.opt(S.bool()), tests: S.list(MTEST, { min: 1, section: 'tests' }), hidden: S.opt(S.list(MTEST, { section: 'tests' })),
     solution: BOARD, naive: S.opt(BOARD), budget: S.opt(S.int({ min: 1 })), backtrack: S.opt(S.bool()),
     rules: S.opt(S.map(S.obj({ name: S.text(), premises: S.list(S.str()), conclusion: S.str() }), { about: t('这一关自带的规则（元件）') })),
     preset: S.opt(S.list(S.str(), { about: t('参考解里预先放在板上的元件（锁住）') })),
@@ -167,7 +167,7 @@ const BY_KIND = {
 }
 const opts = (fields) => Object.fromEntries(Object.entries(fields).map(([k, s]) => [k, s.optional ? s : S.opt(s)]))
 // A task: the puzzle of its kind.
-const TASK = S.by('kind', Object.fromEntries(Object.entries(BY_KIND).map(([kind, fields]) => [kind, S.obj({
+const TASK = S.by('kind', Object.fromEntries(Object.entries(BY_KIND).map(([kind, fields]) => [`logic/${kind}`, S.obj({
   kind: S.ref('kind'), ...ANY, carries: S.opt(S.bool({ about: t('接着上一个任务的电路往下做') })), ...fields,
 })])))
 // A level: its title, introduction and pass text, its place in the course, what its tasks share (how they read, a
@@ -189,12 +189,12 @@ export const vocabulary = qualifyVocabulary('logic', defineVocabulary({
   module: 'logic',
   version: 1,
   kinds: {
-    part: PART_ITEMS,
+    primitive: PART_ITEMS,
     // The engine resources parts.json calls beyond the kernel's builtins (../../engine/parts/builtins.js).
-    op: OP_ITEMS,
+    operation: OP_ITEMS,
     family: FAMILIES,
     kind: KINDS,
-    want: WANTS,
+    'logic/want': WANTS,
     mark: Object.fromEntries(Object.entries(symbolFor).map(([mark, symbol]) => [mark, { symbol }])),
   },
   game: GAME,

@@ -1,3 +1,4 @@
+import { withCapabilityDeclarations } from './capabilities.js'
 import { memoResolution } from './read-cache.js'
 import { projectVocabulary } from './kind-meanings.js'
 import { validateConfig, kernelIdentity, readJSON, dependencyProblem, satisfies } from './release-data.js'
@@ -48,7 +49,7 @@ export const contentVocabulary = () => vocabularyFor()
 export const layerVocabulary = layers => {
   const meanings = layers.flatMap(layer => layer.meanings ?? [])
   const packageCode = layers.some(layer => layer.hasCore || layer.objects.some(object => object.kind === 'level' && object.value.tasks?.some(task => task.play)))
-  return { ...withKindDeclarations(projectVocabulary({ ...vocabularyFor(), meanings }), layers, packageCode), packageCode }
+  return { ...withKindDeclarations(withCapabilityDeclarations(projectVocabulary({ ...vocabularyFor(), meanings }), layers, { checkImplementations: true }), layers, packageCode), packageCode }
 }
 
 const json = (file) => {
@@ -155,6 +156,7 @@ function readLayerUncached(id, dir, config, declarations) {
     } })
     if (result?.then) throw new Error(`${id}: register(kernel) must register declarations synchronously`)
   }
+  const capabilityDeclarations = Object.fromEntries(objectFiles(dir, 'capabilities').map(([name, file]) => [name, json(file)]))
   const objects = levelFiles(dir).map(([name, file]) => ({ kind: 'level', name, value: json(file) }))
   for (const folder of ['tags', 'relations', 'sections', 'chapters', 'shapes']) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind: kindForFolder[folder], name: folder === 'tags' ? name.split('/').at(-1) : name, value: folder === 'tags' ? tagValue(name, json(file)) : json(file) })
   for (const [name, file] of objectFiles(dir, 'entries')) objects.push({ kind: 'entry', name, value: entryValue(name, json(file)) })
@@ -166,7 +168,7 @@ function readLayerUncached(id, dir, config, declarations) {
     for (const [kind, folder] of Object.entries({ ...Object.fromEntries(Object.entries(folders).filter(([kind]) => kind !== 'shape')), kind: 'kinds', ...objectFoldersFor(namespace, declarations) })) for (const [name, file] of objectFiles(resolve(overrideDir, namespace), folder)) overrides.push({ kind, name: `${namespace}/${kind === 'tag' ? name.split('/').at(-1) : name}`, value: kind === 'tag' ? tagValue(name, json(file)) : json(file) })
     for (const [lang, entries] of Object.entries(readCatalogs(resolve(overrideDir, namespace, 'i18n')))) textOverrides.push({ namespace, lang, entries })
   }
-  return { id, config, entryPaths: Object.fromEntries([['core', 'core/index.js'], ['view', 'view/index.jsx']].filter(([, path]) => existsSync(resolve(dir, path))).map(([side, path]) => [side, resolve(dir, path)])), tagReaders, meanings: pluginMeanings(kernel), codeObjects: [...viewRegistrations(existsSync(resolve(dir, 'view/index.jsx')) ? resolve(dir, 'view/index.jsx') : null), ...pluginObjects(kernel)], objects, overrides, textOverrides, hasCore: existsSync(resolve(dir, 'core/index.js')), hasView: existsSync(resolve(dir, 'view/index.jsx')), catalogs: readCatalogs(resolve(dir, 'i18n')) }
+  return { id, config, capabilityDeclarations, capabilityImplementations: Object.fromEntries([...kernel.capabilityImplementations].map(([kind, items]) => [kind, Object.fromEntries(items)])), entryPaths: Object.fromEntries([['core', 'core/index.js'], ['view', 'view/index.jsx']].filter(([, path]) => existsSync(resolve(dir, path))).map(([side, path]) => [side, resolve(dir, path)])), tagReaders, meanings: pluginMeanings(kernel), codeObjects: [...viewRegistrations(existsSync(resolve(dir, 'view/index.jsx')) ? resolve(dir, 'view/index.jsx') : null), ...pluginObjects(kernel)], objects, overrides, textOverrides, hasCore: existsSync(resolve(dir, 'core/index.js')), hasView: existsSync(resolve(dir, 'view/index.jsx')), catalogs: readCatalogs(resolve(dir, 'i18n')) }
 }
 
 /** Resolve locked dependencies into a single layer representation for every consumer. */
@@ -275,7 +277,7 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
   const content = assemble({ id, schemas, packageId: packageId ?? layers[0].id, game, qualified: true,
     levels: entries('level'), tags: entries('tag'), relations: entries('relation'), sections: entries('section'),
     contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, r[kind]])), glossary: { groups: [], entries: Object.entries(r.entry).map(([id, value]) => ({ id, ...value })) },
-    blueprint, declarationProblems, existenceChecked: true, overridden, fromDisk: true, objectKinds: schemas.objectKinds, ...(packageId && { packageTarget: { id: packageId } }), provenance: { sources, overrideHistory, layerOrder, layerUses },
+    blueprint, declarationProblems, existenceChecked: true, overridden, fromDisk: true, objectKinds: schemas.objectKinds, ...(packageId && { packageTarget: { id: packageId } }), provenance: { sources, overrideHistory, layerOrder, layerUses, capabilityDeclarations: Object.fromEntries(layers.filter(layer => Object.keys(layer.capabilityDeclarations ?? {}).length).map(layer => [layer.id, layer.capabilityDeclarations])) },
   })
   Object.defineProperty(content, 'resolvedDependencies', { value: { layers: result.qualifiedLayers, surfaces: publicSurfaces(result.qualifiedLayers, schemas) } })
   return content
@@ -335,6 +337,7 @@ export function publicLayerFiles(layer, schemas) {
   const paths = { ...folders, kind: 'kinds', ...Object.fromEntries(Object.entries(schemas.objectKinds ?? {}).filter(([, d]) => !d.extends).map(([kind, d]) => [kind, d.folder])) }
   const objectPath = object => `${paths[object.kind]}/${object.kind === 'tag' ? `${object.value.kind}/` : ''}${object.name.split('/').at(-1)}.json`
   const files = new Map([['package.json', JSON.stringify(layer.config)]])
+  for (const [name, declaration] of Object.entries(layer.capabilityDeclarations ?? {})) files.set(`capabilities/${name}.json`, JSON.stringify(declaration))
   for (const object of layer.objects) files.set(objectPath(object), JSON.stringify(object.kind === 'tag' ? Object.fromEntries(Object.entries(object.value).filter(([key]) => key !== 'kind')) : object.value))
   for (const [lang, entries] of Object.entries(layer.catalogs ?? {})) files.set(`i18n/${lang}.json`, JSON.stringify(entries))
   for (const object of layer.overrides ?? []) files.set(`overrides/${object.name.split('/')[0]}/${objectPath(object)}`, JSON.stringify(object.kind === 'tag' ? Object.fromEntries(Object.entries(object.value).filter(([key]) => key !== 'kind')) : object.value))

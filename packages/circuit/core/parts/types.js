@@ -12,7 +12,7 @@ const scalar = (type) => ({ num: 'kernel/number', int: 'kernel/number', str: 'ke
 export function typeProblems(file, vocabulary) {
   const out = []
   const types = vocabulary.kinds.valueType ?? {}
-  const ops = vocabulary.kinds.op ?? {}
+  const ops = vocabulary.kinds.operation ?? {}
   const compatible = (expected, actual) => acceptsType(expected, actual, types)
   const say = (at, says) => out.push({ at: partPath(at), says })
   for (const [name, declaration] of Object.entries(file.parts ?? {})) {

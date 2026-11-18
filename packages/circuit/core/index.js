@@ -1,3 +1,4 @@
+import { BUILTINS as circuitOperations } from './parts/builtins.js'
 import { PRIMITIVE_TAG } from './primitive-parts.js'
 import { circuitVocabulary } from './content-meaning.js'
 import circuitRuntime from './mechanism/runtime.js'
@@ -191,6 +192,8 @@ export { boardPlay, boardContext } from './board-play.js'
 export function register(kernel) {
   // Install operations before any consumer compiles its part definitions.
   circuitVocabulary({ kinds: {}, capabilities: {}, game: { fields: {} } })
+  for (const [name, item] of Object.entries(circuitOperations)) kernel.implement('operation', name, item)
+  kernel.reference('part')
   kernel.tag(PRIMITIVE_TAG, 'circuit/part')
   kernel.kind('circuit/part', partMeaning)
   kernel.kind('circuit/tray', trayMeaning)
@@ -231,3 +234,5 @@ export { circuitPlaySchema } from './play-schema.js'
 
 export { boardShape } from './board-shape.js'
 export { VIRTUAL_INPUT, VIRTUAL_OUTPUT } from './board/virtual-terminals.js'
+
+export { circuitReports } from './baseline.js'

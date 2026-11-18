@@ -1,5 +1,6 @@
 // References inside the text a player reads (../shell/refs.js). Work fields (solution, naive, alsoFails…) hold no text
 // and are skipped.
+import { referenceKinds } from './markup.js'
 import { isText, textEntries } from './i18n.js'
 
 const SKIP = new Set(['solution', 'naive', 'alsoFails'])
@@ -19,7 +20,7 @@ export function lacking(other, text) {
 }
 // Ways of pointing at another level without a link: by position, or 「its title」 followed by 那一关.
 const POINTING = { zh: /上一关|下一关|前一关|(?<!最)后一关|前两关|前几关|」那一?关/, en: /\b(the last|previous|next|earlier) levels?\b|\blevel on how\b/i }
-const WHAT = { level: 'level', wiki: 'encyclopedia entry' }
+const label = kind => referenceKinds.get(kind)?.label ?? kind
 
 /**
  * Problems with references inside `value` (../shell/refs.js), each as '<path> …'. A reference is written
@@ -32,20 +33,20 @@ const WHAT = { level: 'level', wiki: 'encyclopedia entry' }
  */
 export function refProblems(value, path, names, quotes = [], out = [], visited = new Set()) {
   const byName = new Map()
-  for (const kind of ['wiki', 'level', ...Object.keys(names).filter(kind => !['wiki', 'level'].includes(kind))]) for (const [id, name] of names[kind] ?? []) byName.set(name, { kind, id })
+  for (const kind of Object.keys(names).sort((a, b) => (referenceKinds.get(a)?.quoteOrder ?? 2) - (referenceKinds.get(b)?.quoteOrder ?? 2))) for (const [id, name] of names[kind] ?? []) byName.set(name, { kind, id })
   const own = new Set(Object.values(names).flatMap((m) => [...m.keys()]))
   const refs = (s) => [...String(s).matchAll(REF)].map((m) => `${m[1]}:${m[2]}`).sort().join(' ')
   const check = (text, lang, at, owner) => {
     for (const r of refs(text).split(' ').filter(Boolean)) {
       const [kind, id] = [r.slice(0, r.indexOf(':')), r.slice(r.indexOf(':') + 1)]
-      if (!names[kind]?.has(id)) out.push(`${at} refers to a missing ${WHAT[kind] ?? kind}: ${id}`)
+      if (!names[kind]?.has(id)) out.push(`${at} refers to a missing ${label(kind)}: ${id}`)
     }
     const pointing = POINTING[lang] && text.match(POINTING[lang])?.[0]
     if (pointing) out.push(`${at} points at a level without a link (${pointing}): ${text.slice(0, 50)}`)
     if (lang !== 'zh') return
     for (const m of text.matchAll(/「([^」]{1,24})」/g)) {
       const it = byName.get(m[1])
-      if (it && it.id !== owner && !quotes.includes(m[1])) out.push(`${at} quotes the name of ${WHAT[it.kind] ?? it.kind} ${it.id} instead of linking it: 「${m[1]}」`)
+      if (it && it.id !== owner && !quotes.includes(m[1])) out.push(`${at} quotes the name of ${label(it.kind)} ${it.id} instead of linking it: 「${m[1]}」`)
     }
   }
   const walk = (v, at, mine) => {

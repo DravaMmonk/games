@@ -1,4 +1,4 @@
-import { withProgressFixture } from '../../../games/kit/engine/ops/fixture.js'
+import { withProgressFixture } from '../../qed/test/fixture.js'
 import { resolve } from 'node:path'
 // The table board as content and saves hold it: blueprint text both ways, fitting a board to its task, the checks on
 // a board that becomes a part; a course read of every table game leaves its content as it was; a save of a level's
@@ -6,7 +6,7 @@ import { resolve } from 'node:path'
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { plainBoard } from 'circuit';
-import { readStarter } from '../../../games/kit/engine/ops/fixture.js';
+import { readStarter } from '../../qed/test/fixture.js';
 import { textPrint as print, read, readLines } from 'circuit'
 import { workshopView } from 'progress'
 import { tableWorks } from '../core/work.js';

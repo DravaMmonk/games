@@ -1,0 +1,10 @@
+{
+  "name": "image/scene",
+  "studio": {
+    "order": 15,
+    "label": {
+      "zh": "场景",
+      "en": "Scenes"
+    }
+  }
+}

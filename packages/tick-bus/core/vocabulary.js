@@ -1,7 +1,10 @@
+import { circuitReports } from 'circuit'
+import { runLevel } from './run.js'
+
 export const vocabulary = {
   "module": "tick-bus",
   "kinds": {
-    "op": {},
+    "operation": {},
     "family": {
       "tick-bus/value": {
         "about": {
@@ -16,7 +19,7 @@ export const vocabulary = {
         }
       }
     },
-    "want": {
+    "tick-bus/want": {
       "tick-bus/line": {
         "about": {
           "zh": "这一拍线上的位",
@@ -47,9 +50,11 @@ export const vocabulary = {
 
 export const meaning = {
   type: 'level', read: value => value,
+  baselineReportPriority: 1,
+  baselineReports: context => circuitReports(context, runLevel),
   vocabulary(base) {
     const kinds = { ...base.kinds }
     for (const [kind, items] of Object.entries(vocabulary.kinds)) kinds[kind] = { ...kinds[kind], ...items }
-    return { ...base, kinds, languages: { ...base.languages, ...vocabulary.languages } }
+    return { ...base, kinds, capabilities: { ...base.capabilities, ...Object.fromEntries(Object.keys(vocabulary.kinds).map(kind => [kind, kinds[kind]])) }, languages: { ...base.languages, ...vocabulary.languages } }
   },
 }

@@ -1,0 +1,267 @@
+{
+  "replacements": [
+    {
+      "pattern": "(?<![\\w/-])state-graph:(world-grid|world-gridYes|world-piles|world-tri|world-lawn|world-strip|world-pile|world-coins|world-parts|world-rob1|world-rob2|world-ring|world-prefix|world-heights|world-gains|world-keys|world-river|world-stock|world-align|world-local|world-knap|world-roll|world-interval|world-vgrid|world-tags|world-pic|robot-scout|robot-ranger|robot-reach|robot-broom|robot-stack|robot-loop|circuit|fill|trace|link|pack|breach|policy|seam|figure-scene|figure-grid|figure-circuit|figure-window|condition-reads|condition-uses|condition-has|condition-feeds|condition-placed|condition-wired|condition-wiredOut|condition-all|condition-any|condition-not|trace-lcs|trace-edit|trace-local|trace-knap|trace-seam|trace-tags|panel-lcs|panel-edit|panel-spell|panel-local|panel-tags|panel-knap|panel-roll|panel-dictionary|panel-robConflict|explain-roll|port-reads|port-way|port-start|port-named)(?![\\w-])",
+      "flags": "g",
+      "replacement": "table:$1"
+    },
+    {
+      "pattern": "(overrides\\/[^/\\s]+\\/)tag\\/",
+      "flags": "g",
+      "replacement": "$1tags/"
+    },
+    {
+      "pattern": "\\bpieced it together\\b",
+      "flags": "g",
+      "replacement": "assembled it"
+    },
+    {
+      "pattern": "\\bpieced\\b",
+      "flags": "g",
+      "replacement": "assembled"
+    },
+    {
+      "pattern": "\\btags\\/(?:piece|circuit\\/part)\\/",
+      "flags": "g",
+      "replacement": "tags/part/"
+    },
+    {
+      "pattern": "\\bpieces(?=\\/|\\.json\\b)",
+      "flags": "g",
+      "replacement": "parts"
+    },
+    {
+      "pattern": "\\bpiece\\/",
+      "flags": "g",
+      "replacement": "parts/"
+    },
+    {
+      "pattern": "\\blogic\\/symbol\\b",
+      "flags": "g",
+      "replacement": "symbol"
+    },
+    {
+      "pattern": "\\bcircuit\\/part\\b",
+      "flags": "g",
+      "replacement": "part"
+    },
+    {
+      "pattern": "\\btags\\/circuit\\/tray\\/",
+      "flags": "g",
+      "replacement": "tags/tray/"
+    },
+    {
+      "pattern": "\\bcircuit\\/tray\\b",
+      "flags": "g",
+      "replacement": "tray"
+    },
+    {
+      "pattern": "pieces",
+      "flags": "g",
+      "replacement": "parts"
+    },
+    {
+      "pattern": "Pieces",
+      "flags": "g",
+      "replacement": "Parts"
+    },
+    {
+      "pattern": "PIECES",
+      "flags": "g",
+      "replacement": "PARTS"
+    },
+    {
+      "pattern": "piece",
+      "flags": "g",
+      "replacement": "part"
+    },
+    {
+      "pattern": "Piece",
+      "flags": "g",
+      "replacement": "Part"
+    },
+    {
+      "pattern": "PIECE",
+      "flags": "g",
+      "replacement": "PART"
+    }
+  ],
+  "inventory": [
+    "tick-bus:family-value",
+    "tick-bus:family-memory",
+    "image:add",
+    "image:board",
+    "image:const",
+    "image:family-search",
+    "image:merge",
+    "image:mul",
+    "image:sub",
+    "table:not",
+    "table:robot-loop",
+    "table:circuit",
+    "table:const",
+    "table:add",
+    "table:mul",
+    "logic:allE",
+    "logic:allI",
+    "logic:andE",
+    "logic:andI",
+    "logic:anyR",
+    "logic:append",
+    "logic:assumption",
+    "logic:audit",
+    "logic:botE",
+    "logic:consFront",
+    "logic:defer",
+    "logic:define",
+    "logic:each",
+    "logic:eachOf",
+    "logic:exE",
+    "logic:exI",
+    "logic:family-box",
+    "logic:family-built",
+    "logic:family-gate",
+    "logic:family-lemma",
+    "logic:family-loop",
+    "logic:family-rule",
+    "logic:family-tactic",
+    "logic:gates",
+    "logic:hyp",
+    "logic:impI",
+    "logic:instances",
+    "logic:iso",
+    "logic:judgment",
+    "logic:keepBound",
+    "logic:lemma",
+    "logic:machine",
+    "logic:machine-value",
+    "logic:mark-formulaAnd",
+    "logic:mark-formulaExists",
+    "logic:mark-formulaFalse",
+    "logic:mark-formulaForall",
+    "logic:mark-formulaIff",
+    "logic:mark-formulaImplies",
+    "logic:mark-formulaNot",
+    "logic:mark-formulaOr",
+    "logic:mkRule",
+    "logic:model",
+    "logic:mp",
+    "logic:names",
+    "logic:natInd",
+    "logic:occurrences",
+    "logic:options",
+    "logic:orE",
+    "logic:orI",
+    "logic:oracle",
+    "logic:proof",
+    "logic:query",
+    "logic:raa",
+    "logic:refl",
+    "logic:repeat",
+    "logic:replay",
+    "logic:res",
+    "logic:resolve",
+    "logic:rewrite",
+    "logic:rule",
+    "logic:ruleChoices",
+    "logic:rules",
+    "logic:rw",
+    "logic:script",
+    "logic:search",
+    "logic:skolem",
+    "logic:swapConcl",
+    "logic:things",
+    "logic:toClauses",
+    "logic:translate",
+    "logic:truth",
+    "logic:uCheck",
+    "logic:uConflict",
+    "logic:uDecompose",
+    "logic:uDelete",
+    "logic:uEliminate",
+    "logic:uPattern",
+    "logic:uSwap",
+    "logic:want-agree",
+    "logic:want-answers",
+    "logic:want-becomes",
+    "logic:want-clauses",
+    "logic:want-decide",
+    "logic:want-elim",
+    "logic:want-expose",
+    "logic:want-fails",
+    "logic:want-proved",
+    "logic:want-refuted",
+    "logic:want-unify"
+  ],
+  "stripPrefixes": [
+    "world",
+    "robot",
+    "port",
+    "want",
+    "family"
+  ],
+  "symbolMove": {
+    "owner": "qed",
+    "names": [
+      "formulaAnd",
+      "formulaOr",
+      "formulaNot",
+      "formulaImplies",
+      "formulaIff",
+      "formulaForall",
+      "formulaExists",
+      "formulaFalse"
+    ],
+    "edgeTarget": "formulaForall",
+    "edgeSources": [
+      "certificate-certificate",
+      "gIff",
+      "machine-certificate",
+      "natInd",
+      "res"
+    ],
+    "fromField": "formulaParts",
+    "toField": "formulaSymbols"
+  },
+  "retiredDependency": "circuit",
+  "levelPlays": [
+    "image:graph",
+    "image:board",
+    "image:probe"
+  ],
+  "nestedPlays": [
+    "table:circuit",
+    "state-graph:circuit",
+    "table:fill",
+    "state-graph:fill",
+    "table:trace",
+    "state-graph:trace",
+    "table:link",
+    "state-graph:link",
+    "table:pack",
+    "state-graph:pack",
+    "table:breach",
+    "state-graph:breach",
+    "table:policy",
+    "state-graph:policy",
+    "table:seam",
+    "state-graph:seam"
+  ],
+  "palette": {
+    "table": [
+      "table:msum",
+      "table:mmin",
+      "table:mmax",
+      "table:many",
+      "table:not",
+      "table:add",
+      "table:mul",
+      "table:const",
+      "table:pass",
+      "table:block"
+    ],
+    "logic": [
+      "logic:hyp"
+    ]
+  }
+}

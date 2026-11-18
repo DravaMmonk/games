@@ -3,12 +3,12 @@
   "fields": {
     "from": {
       "type": "ref",
-      "kind": "part",
+      "kind": "primitive",
       "reference": "circuit/part"
     },
     "to": {
       "type": "ref",
-      "kind": "part",
+      "kind": "primitive",
       "reference": "circuit/part"
     }
   }

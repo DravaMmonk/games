@@ -16,7 +16,7 @@ const namesItem = (value, name, namespace) => [name, `${namespace}/${name}`].som
 
 /**
  * Every place naming part `type` (parts/<name>.json, ../parts/): [{ file, path, how: 'field' | 'link' | 'board' | 'open' }] —
- * a field (or a map's key) its domain's schema types as a part (S.ref('part', { reference: 'circuit/part' })), a <part-ref> link in a text, a board
+ * a field (or a map's key) its domain's schema types as a part (S.ref('primitive', { reference: 'circuit/part' })), a <part-ref> link in a text, a board
  * placing it, an audit finding game.json leaves open ({ part, level }).
  */
 export function partRefs(ws, vocabulary, type) {

@@ -10,7 +10,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/grid"
             ]
@@ -53,7 +54,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/gridYes"
             ]
@@ -73,7 +75,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/piles"
             ]
@@ -93,7 +96,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/tri"
             ]
@@ -113,7 +117,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/lawn"
             ]
@@ -133,7 +138,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/strip"
             ]
@@ -153,7 +159,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/pile"
             ]
@@ -173,7 +180,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/coins"
             ]
@@ -193,7 +201,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/parts"
             ]
@@ -213,7 +222,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/rob1"
             ]
@@ -233,7 +243,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/rob2"
             ]
@@ -253,7 +264,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/ring"
             ]
@@ -273,7 +285,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/prefix"
             ]
@@ -293,7 +306,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/heights"
             ]
@@ -321,7 +335,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/gains"
             ]
@@ -341,7 +356,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/keys"
             ]
@@ -373,7 +389,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/river"
             ]
@@ -393,7 +410,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/stock"
             ]
@@ -413,7 +431,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/align"
             ]
@@ -437,7 +456,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/local"
             ]
@@ -461,7 +481,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/knap"
             ]
@@ -494,7 +515,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/roll"
             ]
@@ -550,7 +572,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/interval"
             ]
@@ -589,7 +612,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/vgrid"
             ]
@@ -617,7 +641,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/tags"
             ]
@@ -641,7 +666,8 @@
         "type": "obj",
         "fields": {
           "world": {
-            "type": "oneOf",
+            "type": "ref",
+            "kind": "table/world",
             "values": [
               "state-graph/pic"
             ]

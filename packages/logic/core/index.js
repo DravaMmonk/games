@@ -43,7 +43,8 @@ const identity = value => value
 const judged = (judge, work) => { const fail = judge(work); return { pass: !fail, fail } }
 
 export function register(kernel) {
-  Object.assign(registeredOperations, registry.operations)
+  Object.assign(registeredOperations, registry.implementations.operation)
+  for (const [name, item] of Object.entries(registry.implementations.operation)) if (name.startsWith('logic/')) kernel.implement('operation', name, item)
   Object.assign(registeredValueTypes, registry.tables.valueType)
   kernel.kind('logic/level', meaning)
   kernel.kind('logic/symbol', {

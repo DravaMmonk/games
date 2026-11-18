@@ -231,7 +231,7 @@
       "type": "map",
       "of": {
         "type": "call",
-        "kind": "want"
+        "kind": "tick-bus/want"
       },
       "about": {
         "zh": "每个输出（和 say）每一拍应当是什么",

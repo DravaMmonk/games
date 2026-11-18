@@ -1,0 +1,10 @@
+{
+  "name": "board",
+  "studio": {
+    "order": 3,
+    "label": {
+      "zh": "板",
+      "en": "Boards"
+    }
+  }
+}

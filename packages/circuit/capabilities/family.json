@@ -1,0 +1,10 @@
+{
+  "name": "family",
+  "studio": {
+    "order": 10,
+    "label": {
+      "zh": "元件族",
+      "en": "Families"
+    }
+  }
+}

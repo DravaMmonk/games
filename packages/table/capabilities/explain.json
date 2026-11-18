@@ -1,0 +1,10 @@
+{
+  "name": "explain",
+  "studio": {
+    "order": 26,
+    "label": {
+      "zh": "讲解",
+      "en": "Explanations"
+    }
+  }
+}

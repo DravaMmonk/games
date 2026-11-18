@@ -26,7 +26,8 @@
 // series that do not depend on each other branched, abstraction rising. conformance(bp, content, spec) checks
 // a game's levels against its blueprint once they exist. erasOf(bp) is the course's eras as the blueprint lays them out.
 import { firstText, isText, textEntries } from '../engine/i18n.js'
-import { readTag } from '../engine/objects.js'
+import { contentSchemas } from '../engine/content.js'
+import { meaningsOf } from '../engine/kind-meanings.js'
 import { S, validate } from '../engine/schema.js'
 import { layout } from '../course.js'
 import { T as t } from '../shell/i18n.js'
@@ -462,7 +463,10 @@ export function conformance(bp, content, spec) {
   const plain = (v) => JSON.stringify(v, (_key, value) => isText(value) ? Object.fromEntries(textEntries(value)) : value)
   if (plain(erasOf(bp)) !== plain(content.eras)) say('bp-eras', 'game.json', 'its eras differ from the blueprint’s')
   const prims = bp.primitives.map((p) => p.part).sort()
-  if (plain(prims) !== plain(readTag(content.registries, 'circuit/part', 'circuit/primitives').sort())) say('bp-primitives', 'overrides/circuit/tags/circuit/part/primitives.json', `the blueprint has ${prims.join(', ')}`)
+  for (const meaning of meaningsOf(contentSchemas.get(content))) {
+    const primitives = meaning.blueprintPrimitives?.(content)
+    if (primitives && plain(prims) !== plain([...primitives.values].sort())) say('bp-primitives', primitives.path, `the blueprint has ${prims.join(', ')}`)
+  }
   const parts = new Set([...bp.primitives.map((p) => p.part), ...bp.built.map((b) => b.part)])
   const course = spec.course
   for (const s of slots) {

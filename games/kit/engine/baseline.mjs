@@ -1,13 +1,14 @@
-import { packageDirectory } from './resolver.js'
 // Save/compare a migration corpus. Kept data belongs in output/, never in content or git.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs'
+import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { contentRoot, readContent, readPackage, runtimeOf, contentTargets, packageIds } from './resolver.js'
 import { packageLevel } from './package-play.js'
 import { closeGames } from './games.mjs'
-import { baselineValue, dependencyPaletteBaseline, tableFieldsBaseline, imageFieldsBaseline, collectionFieldsBaseline, existenceBaseline, versionMetadataBaseline, differences, nameNormalizer, packBaseline, unpackBaseline } from './baseline-value.js'
+import { baselineValue, dependencyPaletteBaseline, nestedPlayBaseline, levelPlayBaseline, collectionFieldsBaseline, existenceBaseline, versionMetadataBaseline, differences, nameNormalizer, packBaseline, unpackBaseline } from './baseline-value.js'
 import { taskReports } from './baseline-reports.js'
 import { contentSchemas } from './content.js'
 import { meaningsOf } from './kind-meanings.js'
@@ -17,19 +18,44 @@ const folder = resolve(root, 'output/modules-baseline')
 const sourceFolder = process.env.GAMES_BASELINE_ROOT ? resolve(process.env.GAMES_BASELINE_ROOT) : folder
 const preview = value => value && typeof value === 'object' ? (Array.isArray(value) ? `[${value.length} items]` : `{${Object.keys(value).slice(0, 4).join(', ')}}`) : JSON.stringify(value)
 const [action, ...args] = process.argv.slice(2)
-if (!['save', 'compare'].includes(action)) throw new Error('usage: npm run baseline -- save|compare [<game>|--package <package>]')
+const mapIndex = args.indexOf('--migration')
+if (mapIndex >= 0 && (!args[mapIndex + 1] || action !== 'compare')) throw new Error('--migration requires a file and compare mode')
+const mapFile = mapIndex < 0 ? resolve(sourceFolder, 'migration.json') : resolve(args.splice(mapIndex, 2)[1])
+const migration = action === 'compare' && (mapIndex >= 0 || existsSync(mapFile)) ? JSON.parse(readFileSync(mapFile, 'utf8')) : {}
+if (!['save', 'compare'].includes(action)) throw new Error('usage: npm run baseline -- save|compare [<game>|--package <package>] [--migration <file>]')
 const asPackage = args.includes('--package')
 const ids = args.filter(arg => arg !== '--package')
 const targets = ids.length || asPackage ? contentTargets(ids, root, { package: asPackage })
   : [...contentTargets([], root, { game: true }), ...packageIds(root).map(id => ({ id, kind: 'package' }))]
+if (action === 'compare' && !ids.length && !asPackage) {
+  const installed = new Set(targets.map(({ kind, id }) => `${kind}-${id}.json`))
+  for (const file of readdirSync(sourceFolder).filter(name => /^(game|package)-[^.]+[.]json$/.test(name))) {
+    if (!installed.has(file)) console.log(`compare ${file.slice(0, -5)}: snapshot has no installed target`)
+  }
+}
+
+async function writeReport(file, value) {
+  const { encoding, root, nodes } = packBaseline(value)
+  function* chunks() {
+    yield JSON.stringify({ encoding, root }).slice(0, -1) + ',"nodes":['
+    let chunk = ''
+    for (const [index, node] of nodes.entries()) {
+      chunk += (index ? ',' : '') + JSON.stringify(node)
+      if (chunk.length >= 1024 * 1024) { yield chunk; chunk = '' }
+    }
+    yield chunk + ']}\n'
+  }
+  await pipeline(Readable.from(chunks()), createWriteStream(file))
+}
+
 mkdirSync(folder, { recursive: true })
 let total = 0
 try {
   for (const target of targets) {
     const { id, kind } = target
     const packaged = kind === 'package'
-    if (action === 'compare' && packaged && !existsSync(resolve(sourceFolder, `${kind}-${id}.json`)) && existsSync(resolve(packageDirectory(id, root), 'core/index.js'))) {
-      console.log(`compare package ${id}: new plugin outside the locked corpus (covered by package contracts)`)
+    if (action === 'compare' && !existsSync(resolve(sourceFolder, `${kind}-${id}.json`))) {
+      console.log(`compare ${kind} ${id}: outside the locked corpus`)
       continue
     }
     const content = (packaged ? readPackage : readContent)(id, root)
@@ -62,17 +88,21 @@ try {
     })
     const file = resolve(folder, `${kind}-${id}.json`)
     let changeCount = 0
-    if (action === 'save') writeFileSync(file, JSON.stringify(packBaseline(snapshot)) + '\n')
+    if (action === 'save') await writeReport(file, snapshot)
     else {
       const before = unpackBaseline(JSON.parse(readFileSync(resolve(sourceFolder, `${kind}-${id}.json`), 'utf8')))
-      const palette = data => dependencyPaletteBaseline(data, { packaged, dependencies: content.layerOrder })
-      const normalizeBefore = nameNormalizer(before.names), normalizeAfter = nameNormalizer(snapshot.names)
+      const normalize = (data, names) => {
+        const palette = dependencyPaletteBaseline(data, { packaged, dependencies: content.layerOrder, palette: migration.palette })
+        const plays = levelPlayBaseline(nestedPlayBaseline(palette, migration.nestedPlays), migration.levelPlays)
+        const named = nameNormalizer(names, migration)(plays)
+        return collectionFieldsBaseline(versionMetadataBaseline(existenceBaseline(named), migration.retiredDependency))
+      }
       // The inventory itself describes migration locations, not behaviour.
-      const { names: _old, ...oldData } = before, { names: _new, ...newData } = snapshot
-      const changes = differences(collectionFieldsBaseline(versionMetadataBaseline(existenceBaseline(normalizeBefore(imageFieldsBaseline(tableFieldsBaseline(palette(oldData))))))), collectionFieldsBaseline(versionMetadataBaseline(existenceBaseline(normalizeAfter(imageFieldsBaseline(tableFieldsBaseline(palette(newData))))))))
+      const { names: oldNames, ...oldData } = before, { names: newNames, ...newData } = snapshot
+      const changes = differences(normalize(oldData, oldNames), normalize(newData, newNames))
       changeCount = changes.length
       total += changeCount
-      writeFileSync(resolve(folder, `${kind}-${id}.diff.json`), JSON.stringify(packBaseline(changes)) + '\n')
+      await writeReport(resolve(folder, `${kind}-${id}.diff.json`), changes)
       for (const change of changes.slice(0, 30)) console.log(`${kind} ${id} ${change.path}: ${preview(change.before)} -> ${preview(change.after)}`)
       if (changes.length > 30) console.log(`  ${changes.length - 30} more differences in output/modules-baseline/${kind}-${id}.diff.json`)
     }

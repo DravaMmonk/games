@@ -44,6 +44,7 @@ export function register(kernel) {
 }
 
 /** Shared play composition and board editor components. */
+export { BoardPlay }
 export { definedGame } from './circuit-game.js'
 export { default as CircuitLevel } from './CircuitLevel.jsx'
 export { circuitScreen } from './CircuitScreen.jsx'

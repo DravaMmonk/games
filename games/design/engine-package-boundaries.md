@@ -32,7 +32,7 @@
 - 代码读取的标签归读者所有。内核登记 `kernel/studio-left`，成员类型为 `kind`；`kernel` 是保留命名空间，不能用作包名。包用 `kernel.tag("包/名字", "成员类型")` 登记，登记表 `kernel.tables.tag` 使用相同的复合键。登记只授权标签身份和成员类型，标签内容由声明或覆盖贡献创建。自己声明写 `tags/<成员类型>/<名>.json`，贡献给读者或依赖标签写 `overrides/<命名空间>/tags/<成员类型>/<名>.json`。所有对象类型的目标都必须由所属包声明或由代码登记；标签还须匹配成员类型。不存在的目标统一由存在性检查报告。标签文案键使用 `@tag.<名>.title`、`@tag.<名>.desc`，托盘继续使用 `@tray.`。新对象复制任意已有对象或从 schema 起步；精选起点可用普通标签。Studio 的左栏、标签选择与地址均保留成员类型。
 - `plugin-boundaries.js` 用 AST 同时检查静态 import、re-export、动态 import 和 require，拒绝计算出的导入路径。核心只能引用公开无界面接口与本核心，禁止界面库、JSX、CSS、Node I/O；视图可读本核心。`npm run check` 加载代码前检查，`lint:kit` 使用同一规则覆盖包代码。`lint:kit` 同时检查内核的反向边界，包路径和包身份从安装清单识别。核心判定应保持确定性，只使用传入种子，不访问时间、文件或网络。
 
-库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `numlib` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `numlib/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if`。逐拍玩法 `tick` 提供 `tick/held` 和 `tick/keep`，管理每拍提交及封装元件的寄存器作用域。接线检查与封装求值接收玩法提供的扩展规则。
+库包提供可独立组合的代码内容、数据结构声明、算法和底层能力。通用数值与布尔运算由 `numlib` 通过 `kernel.capability(kind, name, signature)` 与 `kernel.implement(kind, name, implementation)` 登记，消费者按需写入 `uses` 并引用 `numlib/add` 等全名。基础值类型和可本地化的运算错误属于共享内核协议。接线玩法 `circuit` 持有板、端口和求值器，保留惰性分支 `circuit/if`。逐拍玩法 `tick` 提供 `tick/held` 和 `tick/keep`，管理每拍提交及封装元件的寄存器作用域。接线检查与封装求值接收玩法提供的扩展规则。 电路试玩和预览共用 `circuit` 的板适配器。拓展包传入求值器、作品读者和专用卡片。内核统一初始化关卡与前置关系，`circuit` 再接入元件箱与电路存档。
 
 `progress` 是独立功能包，按任务和关卡完成记录计算对象阶段。课程包用 `progress/policy` 选择对象类型、解锁提示及检查规则。`circuit` 使用通用进度，并负责托盘、接线和元件阶段的具体行为。`workshop` 依赖 `circuit`，管理玩家工坊、跨游戏复用与通关时的个人元件发布。个人元件和课程元件都使用各玩法提供的电路封装器。电路蓝图的读写归 `circuit`，课程蓝图归 Pipeline。
 

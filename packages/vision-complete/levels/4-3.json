@@ -23,7 +23,6 @@
     }
   ],
   "adds": ["learn3"],
-  "tray": "pipeline",
   "unlocks": ["image/learn3"],
   "tasks": [
     {

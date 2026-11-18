@@ -1,0 +1,63 @@
+{
+  "title": "@tray.components.title",
+  "includeUnlisted": true,
+  "values": [],
+  "menus": [
+    {
+      "id": "pixels",
+      "title": "@tray.components.menu.pixels.title",
+      "values": [
+        "#pixels"
+      ]
+    },
+    {
+      "id": "spatial",
+      "title": "@tray.components.menu.spatial.title",
+      "values": [
+        "#spatial"
+      ]
+    },
+    {
+      "id": "frequency",
+      "title": "@tray.components.menu.frequency.title",
+      "values": [
+        "#frequency"
+      ]
+    },
+    {
+      "id": "imaging",
+      "title": "@tray.components.menu.imaging.title",
+      "values": [
+        "#imaging"
+      ]
+    },
+    {
+      "id": "matching",
+      "title": "@tray.components.menu.matching.title",
+      "values": [
+        "#matching"
+      ]
+    },
+    {
+      "id": "learning",
+      "title": "@tray.components.menu.learning.title",
+      "values": [
+        "#learning"
+      ]
+    },
+    {
+      "id": "generation",
+      "title": "@tray.components.menu.generation.title",
+      "values": [
+        "#generation"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "title": "@tray.components.menu.evaluation.title",
+      "values": [
+        "#evaluation"
+      ]
+    }
+  ]
+}

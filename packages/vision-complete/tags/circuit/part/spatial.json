@@ -1,0 +1,17 @@
+{
+  "title": "@tag.spatial.title",
+  "desc": "@tag.spatial.desc",
+  "values": [
+    "shift",
+    "blur3h",
+    "box3",
+    "gauss",
+    "diffx",
+    "sobelx",
+    "sobely",
+    "gradmag",
+    "kernel3",
+    "downsample",
+    "zeroUp"
+  ]
+}

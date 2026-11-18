@@ -1,0 +1,10 @@
+{
+  "title": "@tag.evaluation.title",
+  "desc": "@tag.evaluation.desc",
+  "values": [
+    "kmeansStep",
+    "iou",
+    "apMeter",
+    "occlusion"
+  ]
+}

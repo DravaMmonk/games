@@ -1,7 +1,6 @@
 {
   "title": "@level.2-16.title",
   "carry": "2-15",
-  "tray": "pipeline",
   "after": "@level.2-16.after",
   "intro": [
     {

@@ -20,7 +20,6 @@
     }
   ],
   "adds": ["dg-mu", "dg-sigma", "dg-sample"],
-  "tray": "generative",
   "unlocks": ["image/dg-reparam"],
   "tasks": [
     {

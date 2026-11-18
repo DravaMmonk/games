@@ -1,7 +1,6 @@
 {
   "opensViews": ["image/slope"],
   "title": "@level.3-9.title",
-  "tray": "pipeline",
   "after": "@level.3-9.after",
   "intro": [
     {

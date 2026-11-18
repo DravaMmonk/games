@@ -17,7 +17,6 @@
     }
   ],
   "adds": ["sqrt"],
-  "tray": "pipeline",
   "unlocks": ["image/spectrum"],
   "tasks": [
     {

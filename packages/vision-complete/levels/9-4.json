@@ -19,7 +19,6 @@
     }
   ],
   "adds": ["zeroUp"],
-  "tray": "recognition",
   "unlocks": ["image/tconv"],
   "tasks": [
     {

@@ -24,7 +24,6 @@
     }
   ],
   "adds": ["globalMax"],
-  "tray": "pipeline",
   "tasks": [
     {
       "id": "3-10",

@@ -21,7 +21,6 @@
     }
   ],
   "adds": ["exp"],
-  "tray": "pipeline",
   "unlocks": ["image/sigmoid"],
   "tasks": [
     {

@@ -1,0 +1,16 @@
+{
+  "title": "@tag.generation.title",
+  "desc": "@tag.generation.desc",
+  "values": [
+    "dg-encode",
+    "dg-decode",
+    "dg-encoder",
+    "dg-decoder",
+    "dg-mu",
+    "dg-sigma",
+    "dg-sample",
+    "dg-reparam",
+    "addNoise",
+    "restore"
+  ]
+}

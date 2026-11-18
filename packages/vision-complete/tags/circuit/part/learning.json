@@ -1,0 +1,20 @@
+{
+  "title": "@tag.learning.title",
+  "desc": "@tag.learning.desc",
+  "values": [
+    "lrnConst",
+    "lrnDense",
+    "learn3",
+    "lrnConv",
+    "lrnRgb",
+    "lrnRes",
+    "lrnSigmoid",
+    "relu",
+    "softmax",
+    "maxpool",
+    "unpool",
+    "tconv",
+    "attention",
+    "embed"
+  ]
+}

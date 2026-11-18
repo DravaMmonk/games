@@ -1,0 +1,12 @@
+{
+  "title": "@tag.frequency.title",
+  "desc": "@tag.frequency.desc",
+  "values": [
+    "cos",
+    "fqWave",
+    "fqMean",
+    "fqSpectrum",
+    "fqApply",
+    "fqLowpass"
+  ]
+}

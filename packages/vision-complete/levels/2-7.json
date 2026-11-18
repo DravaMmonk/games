@@ -20,7 +20,6 @@
     }
   ],
   "adds": ["fqApply"],
-  "tray": "pipeline",
   "unlocks": ["image/freq-filter"],
   "tasks": [
     {

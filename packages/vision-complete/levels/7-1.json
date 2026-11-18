@@ -20,7 +20,6 @@
     }
   ],
   "adds": ["argmin4"],
-  "tray": "geometry",
   "unlocks": ["image/disparity"],
   "tasks": [
     {

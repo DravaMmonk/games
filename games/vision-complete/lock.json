@@ -3,11 +3,11 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "79c7d567b082e1b954308ee2fc682686f578c18cd86a9dcd0fcd59e52cf26e82"
+      "hash": "9c2a2fb11f8a5b44c5aac7b2b8bfbdde115fb9eef7ccf8a854c858712fa6dcaf"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "3d8c6fd288699d1a4a1c01e4f902ecdf0fe0d97620f709bfdc1f4ded94f0e177"
+      "hash": "b6becbbfc5fcb4f3ce97aac9dd555a59d7f573032a2792ddbccb54d53c2ecf5c"
     },
     "encyclopedia": {
       "version": "0.0.0",
@@ -35,7 +35,7 @@
     },
     "vision-complete": {
       "version": "0.0.0",
-      "hash": "5a2d4fb4422b9d51b097cae6edeb8f0e3885025057bc7126d5f314d01286924e"
+      "hash": "e4491136742b683b7a5eb988cbf1684cbb98d3b7dd350539e23617cdbbdac8f8"
     }
   }
 }

@@ -60,12 +60,16 @@ test('JSON editing preserves existing types and rejects identity changes', () =>
   assert.throws(() => edit(['tasks', 0, 'value'], 'text'), /whole number/)
 })
 
-test('JSON editing uses catalog references and leaves locale edits on the Copy tab', () => {
+test('JSON editing preserves catalog references and passes inline copy to operations', () => {
   const vocabulary = { kinds: {}, level: S.obj({ title: S.text(), note: S.text(), amount: S.int() }) }
   const title = withTextKey({ en: 'Count', zh: '计数' }, 'level.a.title')
   const note = withTextKey({ en: 'Read', zh: '读' }, 'level.a.note')
   const value = { title, note, amount: 1 }
-  const content = { title: withTextKey({ en: 'Course' }, 'game.title'), levels: [{ id: 'a', ...value }] }
+  const content = {
+    title: withTextKey({ en: 'Course' }, 'game.title'),
+    levels: [{ id: 'a', ...value }],
+    registries: { i18n: { 'en:alt': 'New', 'zh:alt': '新' } },
+  }
   const edit = (next) => sourceOps({ level: 'a' }, value, [], next, vocabulary, content)
   const source = sourceValue(value)
   assert.deepEqual(source, { title: '@level.a.title', note: '@level.a.note', amount: 1 })
@@ -73,6 +77,12 @@ test('JSON editing uses catalog references and leaves locale edits on the Copy t
   assert.deepEqual(edit({ ...source, title: source.note, note: source.title }), [
     { op: 'level.set', level: 'a', path: ['title'], value: note },
     { op: 'level.set', level: 'a', path: ['note'], value: title },
+  ])
+  assert.deepEqual(edit({ ...source, title: { zh: '新名称', en: 'New name' } }), [
+    { op: 'level.set', level: 'a', path: ['title'], value: { zh: '新名称', en: 'New name' } },
+  ])
+  assert.deepEqual(edit({ ...source, title: '@alt' }), [
+    { op: 'level.set', level: 'a', path: ['title'], value: withTextKey({ en: 'New', zh: '新' }, 'alt') },
   ])
   assert.throws(() => edit({ ...source, title: '@game.title' }), /@game.title/)
   assert.throws(() => edit({ ...source, title: 'New prose' }), /Copy tab|文案页/)

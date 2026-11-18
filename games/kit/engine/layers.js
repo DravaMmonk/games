@@ -83,7 +83,7 @@ export function composeLayers(layers, schemas) {
     seen.add(a)
     return (dependencies.get(a) ?? []).some((dep) => dep === b || depends(dep, b, seen))
   }
-  const record = (kind, name, value, layer, override, contribution, previousValue) => {
+  const record = (kind, name, value, layer, override, contribution, previousValue, file) => {
     const key = identity(kind, name, value)
     const before = previousValue ?? registries[kind][key]
     const reader = kind === 'tag' ? readers.get(key) : undefined
@@ -99,7 +99,7 @@ export function composeLayers(layers, schemas) {
       }
       if (collaborative) contributors.add(layer.id)
       collectionContributions.set(`${kind}:${key}`, contributors)
-      history.push({ kind, name, ...(kind === 'tag' && { member: value.kind }), layer: layer.id, before: structuredClone(kind === 'i18n' ? before : sourceValue(before)), after: structuredClone(kind === 'i18n' ? value : sourceValue(value)) })
+      history.push({ kind, name, ...(kind === 'tag' && { member: value.kind }), layer: layer.id, file: structuredClone(sourceValue(file, layer.id)), before: structuredClone(kind === 'i18n' ? before : sourceValue(before)), after: structuredClone(kind === 'i18n' ? value : sourceValue(value)) })
       sources[kind][key].overrides.push(layer.id)
     } else sources[kind][key] = { ...sources[kind][key], declaration: layer.id, overrides: [] }
     const source = sources[kind][key]
@@ -120,14 +120,14 @@ export function composeLayers(layers, schemas) {
       ;(ownText.catalogs[lang] ??= {})[key] = qualified
       record('i18n', `${lang}:${fullName(layer.id, key)}`, qualified, layer, false)
     }
-    for (const { namespace, lang, entries } of layer.textOverrides ?? []) {
+    for (const { namespace, lang, entries: file } of layer.textOverrides ?? []) {
       const override = { namespace, lang, entries: {} }
       ownText.textOverrides.push(override)
-      for (const [key, text] of Object.entries(entries)) {
+      for (const [key, text] of Object.entries(file)) {
         if (key.includes('/') && !key.startsWith(`${namespace}/`)) throw new Error(`${layer.id}: ${key} is outside override namespace ${namespace}`)
         const qualified = words(text)
         override.entries[key] = qualified
-        record('i18n', `${lang}:${fullName(namespace, key)}`, qualified, layer, true)
+        record('i18n', `${lang}:${fullName(namespace, key)}`, qualified, layer, true, undefined, undefined, file)
       }
     }
   }
@@ -173,7 +173,7 @@ export function composeLayers(layers, schemas) {
       const contribution = object(kind, value, before)
       const after = applyOverride(kind, before, contribution, schemas)
       policyProblems.push(...layerProblems(layer.id, kind, id, contribution, schemaForKind(kind, schemas, { ...before, ...contribution }), schemas, true, before))
-      record(kind, id, after, layer, true, contribution, before)
+      record(kind, id, after, layer, true, contribution, before, kind === 'tag' ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'kind')) : value)
     }
   }
   return { policyProblems, registries, qualifiedLayers, sources, overrideHistory: history, layerOrder: layers.map((l) => l.id), layerUses: Object.fromEntries(layers.map((l) => [l.id, l.id.startsWith('@') ? layers.filter((p) => !p.id.startsWith('@')).map((p) => p.id) : dependencyIds(l.config)])), configurations, catalogs }

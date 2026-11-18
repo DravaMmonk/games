@@ -1,4 +1,6 @@
 {
+  "capability.operation.items.held.about": "寄存器 register 此刻存的值；还没存过时给 start",
+  "capability.operation.items.keep.about": "把输入存入指定的寄存器，从下一拍起读到。",
   "glossary.entries.tick.body.0": "世界前进的一步：每一拍，线上有一位，板上的电路算一遍。",
   "glossary.entries.tick.title": "拍",
   "glossary.groups.line.title": "线",

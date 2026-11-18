@@ -2312,8 +2312,5 @@
   "tray.proof.menu.proof-or.title": "Or ∨",
   "tray.proof.title": "Proof rules",
   "tray.resolution.desc": "Eliminate complementary literals from a pair of clauses.",
-  "tray.resolution.title": "Resolution",
-  "ui": {
-    "token": "tokens"
-  }
+  "tray.resolution.title": "Resolution"
 }

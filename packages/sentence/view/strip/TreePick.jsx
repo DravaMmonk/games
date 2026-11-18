@@ -1,7 +1,8 @@
 import { T as catalogText } from 'kernel/words'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
-import { L, tr, Popover } from 'kernel/view'
+import { L, Popover } from 'kernel/view'
+import { tr } from 'kernel/words'
 import TreeEditor from './TreeEditor.jsx'
 
 // A single value or list of values edited as trees. A language supplies the chips, serialization and display.

@@ -2,15 +2,12 @@
   "package.desc": "Provides numeric comparisons, arithmetic, and Boolean operations.",
   "package.title": "Numeric operations library",
   "ui": {
-    "a < b 时为 1，否则为 0": "1 when a < b, else 0",
     "{value} 不是数": "{value} is not a number",
     "两数之和": "the sum of two numbers",
     "两数之商；除以 0 报错": "the quotient of two numbers; dividing by 0 stops",
     "两数之差": "the difference of two numbers",
     "两数之积": "the product of two numbers",
     "按 digits 位小数四舍五入": "rounded to `digits` decimals",
-    "比较：a < b 时给 1，否则给 0": "Less: 1 when a < b, else 0",
-    "给出 a + b。": "Gives a + b.",
     "设置中的常量": "The configured constant",
     "限制在 lo 到 hi 之间": "kept between lo and hi",
     "除以 0": "divided by 0"

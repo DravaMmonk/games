@@ -305,17 +305,7 @@ export function JsonFile({ name, value, note = null }) {
   return (
     <article className="json-file">
       <header className="json-file-head"><code>{name}</code>{note && <small>{note}</small>}</header>
-      <pre>{JSON.stringify(value, null, 2)}</pre>
+      <pre>{JSON.stringify(sourceValue(value), null, 2)}</pre>
     </article>
   )
-}
-
-/** A package's package.json, as the packages list knows it. */
-export const packageJson = (info) => info && sourceValue(Object.fromEntries(['kind', 'title', 'desc', 'type', 'version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]])))
-
-/** What the games list knows of a game's game.json (its texts by their keys). */
-export const gameJson = (info) => info && {
-  kernel: info.kernel,
-  packages: info.packages,
-  ...(info.title && { title: info.title.$key ?? info.title }),
 }

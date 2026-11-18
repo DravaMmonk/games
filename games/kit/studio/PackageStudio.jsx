@@ -40,7 +40,7 @@ import Compare from './Compare.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Review from './Review.jsx'
-import { JsonFile, PackageList, PackageMeta, packageJson, surfaceLabels } from './ProjectLists.jsx'
+import { JsonFile, PackageList, PackageMeta, surfaceLabels } from './ProjectLists.jsx'
 import { PackageName } from './PackageGroups.jsx'
 import ListRow from './ListRow.jsx'
 import { copyWithoutTextKeys } from '../engine/catalogs.js'
@@ -63,6 +63,7 @@ import ObjectSummary from './ObjectSummary.jsx'
 import { icons } from 'lucide-react'
 import { freeObjectName, namespaceOf, ownNames, shownName, tagKey, tagName } from './objects-edit.js'
 import { newTag } from './tag-edit.js'
+import { sourceNamespace } from './source.js'
 import { objectFileName, objectSchema, objectValue, ownObjectData } from './object-file.js'
 import { levelTags, treeMoves } from './groups.js'
 import Inspector from './Inspector.jsx'
@@ -776,6 +777,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   const [sourceOwner, sourceSymbol] = openCapability?.name.split('/') ?? []
   const compareFile = compared && {
+    owner: sourceNamespace({ object: compared }, content),
     name: objectFileName(compared.kind, compared.full, content.registries?.tag?.[compared.full]?.kind, namespace, compared.declared),
     now: ownObjectData(namespace, objectValue(content, compared.kind, compared.full)),
     before: base && (objectValue(base, compared.kind, compared.full) ?? undefined) && ownObjectData(namespace, objectValue(base, compared.kind, compared.full)),
@@ -867,7 +869,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packageJson(packages.find((p) => p.id === pickedPackage))} note={tr("只读：没有改它的操作，手改文件")} />
+            {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packages.find((p) => p.id === pickedPackage)?.file} note={tr("只读：没有改它的操作，手改文件")} />
               : sideCtx && (objectList || heading
               ? <Inspector content={content} vocab={vocab} at={objectFile} field={objectFile.object || objectFile.capability || objectFile.override ? { path: objectPath } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickObjectField} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => {}}
                 tabs={inspectorTabs} selection={objectFile} onToggleTab={() => {}} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}

@@ -23,10 +23,10 @@ import { AddFields } from './AddFields.jsx'
 import { Picker } from './Picker.jsx'
 import { usePref } from './prefs.js'
 import SourceEditor from './SourceEditor.jsx'
-import { sourceOps } from './source.js'
+import { sourceNamespace, sourceOps } from './source.js'
 import { confirmDelete, removesContent } from './delete.js'
 import InspectorTabs, { inspectorTabKey } from './InspectorTabs.jsx'
-import { objectFileName, overrideFileName, overrideFileOf, overrideOp } from './object-file.js'
+import { objectFileName, overrideFileName, overrideOp } from './object-file.js'
 
 export default function Inspector({ content, vocab, at, field, pendingFace, ctx, places, tabs, selection,
   onEdit, onOps, onPick, onNavigate, onLevel, onRemoveLevel, onRemoveSelection, onToggleTab, onOpenTab, onCloseTab }) {
@@ -107,7 +107,7 @@ export default function Inspector({ content, vocab, at, field, pendingFace, ctx,
     </div>
   )
   if (asJson) {
-    const currentSource = sourceValue(getAt(shown?.value, path))
+    const currentSource = sourceValue(getAt(shown?.value, path), sourceNamespace(file, content))
     return (
       <div className="insp">
         {header}
@@ -215,7 +215,7 @@ function TaskTools({ content, level, tasks, k, ctx, onEdit, onOps, onPick, onLev
 function RawFile({ content, at, tabsRow, onOps }) {
   const event = at.override?.event
   const readOnly = !event || event.layer !== at.override.layer
-  const value = event ? overrideFileOf(event) : at.capability.it
+  const value = event ? event.file : sourceValue(at.capability.it, at.capability.name.split('/')[0])
   const name = event ? overrideFileName(event, content) : `${at.capability.kind} · ${at.capability.name}`
   return (
     <div className="insp">

@@ -293,7 +293,7 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
     contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, r[kind]])),
     blueprint, declarationProblems, existenceChecked: true, overridden, fromDisk: true, objectKinds: schemas.objectKinds, ...(packageId && { packageTarget: { id: packageId } }), provenance: { sources, overrideHistory, layerOrder, layerUses, capabilityDeclarations: Object.fromEntries(layers.filter(layer => Object.keys(layer.capabilityDeclarations ?? {}).length).map(layer => [layer.id, layer.capabilityDeclarations])) },
   })
-  Object.defineProperty(content, 'resolvedDependencies', { value: { layers: result.qualifiedLayers, surfaces: publicSurfaces(result.qualifiedLayers, schemas) } })
+  Object.defineProperty(content, 'resolvedDependencies', { value: { layers: result.qualifiedLayers, copy: r.i18n, surfaces: publicSurfaces(result.qualifiedLayers, schemas) } })
   return content
 }
 

@@ -525,6 +525,7 @@ packages/<包>/
 22. **JSON 声明、JS 实现，包只暴露有意设计的接口**（5.9，已实施）。收窄 `circuit`、`table`、`image`、`logic` 的公开面；结构补进声明 JSON；State Graph 的桌面机器人引擎并进 `table`，Vision Complete 的通用机制和算法进 `image` 和 lib 包；「JS 只实现声明过的名字」推广到所有能力种类。
 23. **包的显示名和短 id**（已完成）：每个包在 `package.json` 写 `title` 和 `desc`（文案键，中英文），Studio 的包列表主行显示 `title`、id 作小字；库包 id 用「缩写 + lib」（`computer-vision` → `cvlib`、`image-processing` → `imglib`、`machine-learning` → `mllib`），`encyclopedia` → `wiki`，`tick-bus` → `tick`；课程包 id 与游戏 id 相同，不改（任务 id 带包名，改了存档失效）。保留 `scalar`，因为其操作全名参与 Q.E.D. 的共享元件存档戳。三个游戏的任务存档戳逐项一致。
 24. **界面文字也做多语言**（5.10，已实施）。JSON 里的文字一律用文案键（含 `about`、包的 `title`、`desc`），代码里的文字一律走界面目录（中文原文作键、带变量用占位符）；不再中英并写；一个包一个 `i18n/`，一种语言一个文件；玩家文字缺译报错、开发者文字缺译回退中文；已有英文全部照搬；数字、符号和不表示语义的字母一律不进 i18n。
+    已补齐源 JSON 的内联文案检查、Studio 源码中的文案键显示和无引用界面文案的检查。
 25. **词条按讲的是什么归属**（5.11，已完成）。学科概念在课程包，玩法操作在玩法包，这款游戏本身（关卡地图、主线、总览）在游戏层；`entry`、`section` 可由游戏层声明，游戏层可覆盖文字和 `at`；包里的关卡和词条不引用游戏层。
 
 ## 11. 已定

@@ -124,6 +124,24 @@ test('disk reader and operations share layer composition, write ownership and in
 })
 
 
+test('inline copy in an override becomes a local key and survives later source edits', async () => {
+  const { root } = fixture()
+  const domain = { vocabulary: schemas }
+  const edit = async data => {
+    const ws = openGame('demo', root, { vocabulary: schemas, layer: 'extra' })
+    const result = await runChangeset(ws, { ops: [{ op: 'override.put', layer: 'extra', kind: 'level', name: 'base/a', data }] }, { check: false, write: true, domain })
+    assert.equal(result.ok, true, result.problems.join('\n'))
+  }
+  const title = '@override.base.levels.a.title'
+  await edit({ title: { zh: '覆写', en: 'Override' }, options: { x: 9 } })
+  const file = resolve(root, 'packages/extra/overrides/base/levels/a.json')
+  assert.deepEqual(JSON.parse(readFileSync(file)), { title, options: { x: 9 } })
+  await edit({ title, options: { x: 8 } })
+  const content = readContent('demo', root, { vocabulary: schemas })
+  assert.equal(content.levels.find(level => level.id === 'base/a').title.en, 'Override')
+  assert.deepEqual(content.overrideHistory.find(event => event.name === 'base/a').file, { title, options: { x: 8 } })
+})
+
 test('cross-package wording references retain ownership and override links resolve in the author namespace', async () => {
   const { root, put } = fixture()
   put('packages/extra/levels/b.json', { title: '@base/title', from: 'base/a' })

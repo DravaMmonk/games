@@ -2,6 +2,7 @@
 // board line by line, any other value before and after. The changeset review and the comparison of two levels both
 // show their differences this way.
 import { lineDiff } from '../engine/ops/diff.js'
+import { sourceValue } from '../engine/catalogs.js'
 import { showPath } from '../engine/ops/edit.js'
 import { isText, textEntries, textIn } from '../engine/i18n.js'
 import { tr } from '../shell/i18n.js'
@@ -38,7 +39,8 @@ function TextDiff({ before, after }) {
   )
 }
 /** A value as JSON: on one line when it is short, indented when it is a long object or list. */
-const show = (v) => {
+const show = (value) => {
+  const v = sourceValue(value)
   const line = JSON.stringify(v)
   return line.length <= 100 || v === null || typeof v !== 'object' ? line : JSON.stringify(v, null, 2)
 }

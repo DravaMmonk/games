@@ -30,7 +30,7 @@ import Review from './Review.jsx'
 import Audit, { auditSum } from './Audit.jsx'
 import Drawer, { Debug } from './Drawer.jsx'
 import Inspector from './Inspector.jsx'
-import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, gameJson, packageJson, surfaceLabels } from './ProjectLists.jsx'
+import { GameList, GameMeta, JsonFile, PackageList, PackageMeta, surfaceLabels } from './ProjectLists.jsx'
 import { PackageName } from './PackageGroups.jsx'
 import GameFrame from './GameFrame.jsx'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
@@ -238,8 +238,8 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
           <aside className="studio-side">
-            {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={gameJson(games.find((g) => g.id === pickedOpen.games))} note={tr("在编排里编辑")} />
-              : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packageJson(packages.find((p) => p.id === pickedOpen.packages))} note={tr("只读：手改文件")} />
+            {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={games.find((g) => g.id === pickedOpen.games)?.file} note={tr("在编排里编辑")} />
+              : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packages.find((p) => p.id === pickedOpen.packages)?.file} note={tr("只读：手改文件")} />
               : sideCtx && <Inspector content={content} vocab={vocab} at={sideField?.at ?? { game: true }} field={sideField ? { path: sideField.path } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}
               onPick={(path) => pick({ at: sideField.at, path })} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => setPicked(null)}
               tabs={[]} selection={sideField?.at ?? { game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}

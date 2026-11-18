@@ -12,3 +12,4 @@
 {"seq":12,"at":"2026-11-18T08:42:53.502Z","why":"Add bilingual package metadata and adopt step 23 namespace references","adopt":true,"files":[{"file":"packages/text/package.json","after":"8245ebf9f37094fb"},{"file":"packages/text/i18n/en.json","after":"7c18a7108e3c9a57"},{"file":"packages/text/i18n/zh.json","after":"28ef72bd938477cb"}]}
 {"seq":13,"at":"2026-11-18T09:10:36.456Z","why":"Move interface and declaration copy into owned language catalogs","adopt":true,"files":[{"file":"packages/text/i18n/en.json","after":"1b49bdd1caa3b90f"}]}
 {"seq":14,"at":"2026-11-18T09:16:12.642Z","why":"Finish catalog ownership and keep nonsemantic marks in source","adopt":true,"files":[]}
+{"seq":15,"at":"2026-11-18T10:11:24.998Z","why":"Classify packages by functional responsibility","adopt":true,"files":[{"file":"packages/text/package.json","after":"df7d7767f4ef9bc6"}]}

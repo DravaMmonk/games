@@ -26,7 +26,7 @@
 - [6.2 对象类型、标签与新建对象](engine-object-types.md)
 - [6.3 内核与包的边界](engine-package-boundaries.md)
 - [6.4 参数台](engine-benches.md)
-- [6.5 玩法包与共用实现](engine-play-packages.md)
+- [6.5 包的分类与职责](engine-play-packages.md)
 - [6.6 文字试玩与盲玩](engine-blind-play.md)
 - [6.7 Studio 外壳与包编辑器](engine-studio.md)
 - [6.8 元件、设置和阶段](engine-components.md)

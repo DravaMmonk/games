@@ -89,7 +89,7 @@ try {
     extends: 'task', play: 'text/answer', declares: 'package', overrides: { package: ['*'], game: ['$text'] },
     fields: { answerRule: { type: 'any' }, referenceAnswer: { type: 'str' }, wrongAnswers: { type: 'list', of: { type: 'str' } } },
   })
-  put('packages/text/package.json', { kind: 'lib', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {}, title: '@package.title', desc: '@package.desc' })
+  put('packages/text/package.json', { kind: 'feature', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {}, title: '@package.title', desc: '@package.desc' })
   put('packages/text/i18n/zh.json', { 'package.title': '文字作答', 'package.desc': '提供文字作答玩法。' })
   put('packages/text/i18n/en.json', { 'package.title': 'Text answers', 'package.desc': 'Provides a play mode for text answers.' })
   put('packages/text/levels/hello.json', { title: 'Hello', after: 'Correct.', tasks: [{ id: 'hello', play: 'text/answer', brief: 'Type hello.', answerRule: { type: 'exact', answer: 'hello' }, referenceAnswer: 'hello', wrongAnswers: ['no'] }] })

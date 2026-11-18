@@ -29,7 +29,7 @@ export function packageWordsFixture(put, id) {
 export function storyRoot() {
   const { root, put } = testProject()
   const id = 'story'
-  put('packages/story/package.json', { kind: 'play', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, id) })
+  put('packages/story/package.json', { kind: 'feature', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, id) })
   put('packages/story/capabilities/play.json', { extends: 'play', items: { answer: {} } })
   put('packages/story/core/index.js', `
     const identity = value => value

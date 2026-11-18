@@ -22,7 +22,7 @@ description: Design, extend or review the learning games in the games repository
 
 - 内核负责内容系统、操作集、检查框架、Studio 外壳，以及地图、任务、检验、通关、解锁和存档流程。
 - 包提供机制与内容，可带 `core/index.js` 和 `view/index.jsx`，两边均导出 `register(kernel)`。游戏只用数据选包、编排章、路线图、文案与允许的覆盖。
-- 新玩法放进包。只供一个包使用的实现留在该包，第二个包需要时再提到被依赖的包。
+- 独立功能放进功能包，依托已有功能的场景机制放进拓展包。只供一个包使用的实现留在该包，第二个包需要时再提到被依赖的包。
 - 核心登记 `play`、`kind`、`state`、`check`、`agent`、对象与标签读者；视图登记配对 `play`、`editor`、`display`。作品格式由核心定义。
 - 检查、基线、文字试玩只加载核心；游戏与 Studio 按 `uses` 拓扑加载两边。
 - 公开导入为 `kernel`、`kernel/view`、直接依赖的 `<包>`、`<包>/view`。核心只读本核心与无界面导出；视图可读本核心。包内部路径、传递依赖、计算导入、核心中的 JSX/CSS/界面库与 Node I/O 均由边界检查拒绝。
@@ -34,7 +34,7 @@ description: Design, extend or review the learning games in the games repository
 ## 内容与对象
 
 - `engine/resolver.js:resolveLayers` 是已安装内容的唯一加载入口。内容根、`GAMES_ROOT`、源目录、代码入口、归档位置归解析器。游戏、构建和编排只读解析后的公开数据。
-- `package.json` 声明种类 `kind`（`play`、`ext`、`course`、`lib`）、版本、`kernel` 范围和直接 `uses` 范围表。引用只授权本包与直接依赖。游戏 `game.json.packages` 选全依赖闭包，第一项是主包；加载按拓扑，游戏最后。
+- `package.json` 声明种类 `kind`（功能包 `feature`、拓展包 `ext`、课程包 `course`、库包 `lib`）、版本、`kernel` 范围和直接 `uses` 范围表。引用只授权本包与直接依赖。游戏 `game.json.packages` 选全依赖闭包，第一项是主包；加载按拓扑，游戏最后。
 - 一个对象一个文件。关卡在 `levels/`，词条在 `entries/`，关系在 `relations/`，百科分组在 `sections/`；包声明的对象目录默认取类型短名，可在声明中指定 `folder`。文件名给 id，任务、阶段和菜单保留内部 id。
 - 对象和代码登记项都用 `<包>/<名>`，每种能力单独登记。游戏层对象用 `@<游戏>/<名>`，标签引用用 `#<全名>`。本包对象短引用在组装时限定全名。
 - `kinds/<名>.json` 用数据声明对象结构、目录、关系端点、文案和 Studio 元数据。含义由代码 `kind` 登记。字段扩展使用 `extends: level|task`，任务可用 `play` 限定 schema 分支；共用字段与判别树展开后仍保持必填和防重定义约束。
@@ -57,7 +57,7 @@ description: Design, extend or review the learning games in the games repository
 ## 新建与修改
 
 - 新对象复制本包或依赖的任意对象，或从 schema 起步；最小任务内容由玩法核心提供。精选起点用普通标签组织。
-- 新包用 `npm run new -- package <id> --kind <play|ext|course|lib> --from <包>` 或 `--empty`。新游戏用 `npm run new-game -- <id> --from <游戏>` 或 `create_game`，再通过选包与章操作编排。
+- 新包用 `npm run new -- package <id> --kind <feature|ext|course|lib> --from <包>` 或 `--empty`。新游戏用 `npm run new-game -- <id> --from <游戏>` 或 `create_game`，再通过选包与章操作编排。
 - id 创建后保持不变，包含任务、阶段与章。显示名称通过文案修改；新身份通过明确新增与删除表达。移动任务保持 id。自动生成的数字后缀从 `-2` 起。
 - 可翻译字段用稳定 `@键`，本层语言表为 `i18n/<lang>.json`。用 `text.set` 与对象字段路径修改，标签键用 `@tag.<名>.title/desc`。
 - 内容修改用 CLI、MCP `modify` 或 Studio 的变更集 `{ "why": "...", "ops": [...] }`，先预览、校验再写入。批量迁移可用临时脚本，随后对每个受影响目标执行 `adopt --why`，脚本不保留。

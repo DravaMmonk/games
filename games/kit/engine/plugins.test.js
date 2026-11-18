@@ -198,7 +198,7 @@ test('a standalone package declares a new capability kind and a level references
   const { markupOf } = await import('./markup.js')
   const { root, put } = testProject('capability-kind-')
   try {
-    put('packages/sample/package.json', { kind: 'play', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+    put('packages/sample/package.json', { kind: 'feature', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {} })
     const declaration = {
       name: 'sample/prompt',
       studio: { label: { en: 'Prompts', zh: '提示' } },

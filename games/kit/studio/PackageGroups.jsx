@@ -1,13 +1,12 @@
-import { T } from '../shell/i18n.js'
 import { useState } from 'react'
 import { PACKAGE_KINDS } from '../engine/package-kinds.js'
-import { L, tr } from '../shell/i18n.js'
+import { L, tr, T } from '../shell/i18n.js'
 
 const LABELS = {
-  play: [T("玩法包")],
-  ext: [T("扩展包")],
-  course: [T("课程包")],
-  lib: [T("库包")],
+  feature: T("功能包"),
+  ext: T("拓展包"),
+  course: T("课程包"),
+  lib: T("库包"),
 }
 
 export const packageKindLabel = kind => L(LABELS[kind])
@@ -21,9 +20,9 @@ export function packageGroups(packages, filter = '') {
 }
 
 const SOURCE_LABELS = {
-  workspace: [T("工作区")],
-  archive: [T("发布归档")],
-  unknown: [T("未知来源")],
+  workspace: T("工作区"),
+  archive: T("发布归档"),
+  unknown: T("未知来源"),
 }
 
 export function packageSidebarGroups(packages, by) {

@@ -157,7 +157,7 @@ function MetaHead({ icon: Icon, id, info, children, open, disabled, onOpen, open
   )
 }
 
-/** A package kind's name (play, extension, course, library), or the kind itself when it is not one of those. */
+/** A package kind's name (feature, extension, course, library), or the kind itself when it is not one of those. */
 const kindName = (kind) => { try { return packageKindLabel(kind) } catch { return kind } }
 const short = (hash) => (hash ? String(hash).slice(0, 8) : '—')
 const none = <span className="package-meta-none">{tr("无")}</span>

@@ -337,7 +337,7 @@ test('reader registration alone creates no tag in a package or game', () => {
   const a = base()
   a.tagReaders = [{ name: 'base/reader', member: 'level', reader: 'base' }]
   a.objects.push(obj('tag', 'empty', { kind: 'level', values: [] }))
-  for (const kind of ['play', 'course', 'lib', 'ext']) {
+  for (const kind of ['feature', 'course', 'lib', 'ext']) {
     a.config.kind = kind
     const standalone = assembleLayers('base', [a], schemas, { packageId: 'base' })
     assert.equal(standalone.tags['level:base/reader'], undefined)

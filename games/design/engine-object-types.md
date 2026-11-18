@@ -18,7 +18,7 @@
 
 **新对象复制已有对象或从 schema 起步。** 来源可为本包或直接依赖，复制后分配新 id 与独立文案键。空白关卡、任务的最小玩法内容由包的核心提供。精选起点用普通标签组织。对象类型定义通过 `kind.put/set/remove` 编辑，实例通过 `object.put/set/remove` 编辑；变更类型时同时迁移受影响对象。
 
-新包用 `npm run new -- package <新包> --kind <play|ext|course|lib> --from <已有包>`，也可用 `--empty` 创建空包。终端可交互选择种类。工具 `create_package` 的 `id`、`kind`、`from` 或 `empty` 做同样的事（Studio 构建工作区的包列表用它：复制沿用原包的种类，空包先选种类）。新游戏用 `npm run new-game -- <新游戏> --from <已有游戏>`，或工具 `create_game` 的 `id`、`from`、`title`；复制选包与开局设置，从空章开始编排。需要持续共用的内容由库包提供。
+新包用 `npm run new -- package <新包> --kind <feature|ext|course|lib> --from <已有包>`，也可用 `--empty` 创建空包。终端可交互选择种类。工具 `create_package` 的 `id`、`kind`、`from` 或 `empty` 做同样的事（Studio 构建工作区的包列表用它：复制沿用原包的种类，空包先选种类）。新游戏用 `npm run new-game -- <新游戏> --from <已有游戏>`，或工具 `create_game` 的 `id`、`from`、`title`；复制选包与开局设置，从空章开始编排。需要持续共用的内容由库包提供。
 
 
 

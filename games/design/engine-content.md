@@ -31,7 +31,7 @@
 
 关系文件写 `{ kind, edges: [{ from, to, required?, game? }] }`。`requires` 的 `edges` 是 `edges<level>`，`replaces` 是 `edges<circuit/part>`。先修关系的标签端点按集合边界连接。内核统一检查集合成员引用、重复、标签嵌套环和有向环。Studio 用 `orderedMembers(content, ids, kind)` 按先修和名字排列分组成员，标签名称按全名排列。
 
-**包元数据和依赖。** `package.json` 声明种类 `kind`、`version`、`kernel` 范围和直接 `uses` 范围表。`"type": "module"` 声明包内的 JS 采用 ES 模块，新建和复制包时自动写入。种类为玩法 `play`、扩展 `ext`、课程 `course` 或基础实现库 `lib`。包 id 独立于种类，Studio 的包工作区、游戏选包、文案工作区和依赖列表按种类分组和筛选。包只可引用自身和直接依赖的对象，依赖不传递授权、不成环。游戏 `game.json` 的 `packages` 必须列全依赖闭包，至少一个包。加载按依赖拓扑排序，平局按包名，游戏最后；`packages` 的第一项是主包，选择顺序与拓扑加载顺序分别保存。
+**包元数据和依赖。** `package.json` 声明种类 `kind`、`version`、`kernel` 范围和直接 `uses` 范围表。`"type": "module"` 声明包内的 JS 采用 ES 模块，新建和复制包时自动写入。种类为功能包 `feature`、拓展包 `ext`、课程包 `course` 或库包 `lib`。功能包提供可独立使用的机制，拓展包依托已有功能提供特定场景的能力。包 id 独立于种类，Studio 的包工作区、游戏选包、文案工作区和依赖列表按种类分组和筛选。包只可引用自身和直接依赖的对象，依赖不传递授权、不成环。游戏 `game.json` 的 `packages` 必须列全依赖闭包，至少一个包。加载按依赖拓扑排序，平局按包名，游戏最后；`packages` 的第一项是主包，选择顺序与拓扑加载顺序分别保存。
 
 **包的显示名。** 每个 `package.json` 的 `title` 和 `desc` 都是文案键，例如 `@package.title` 和 `@package.desc`。包名须有完整的译文。包简介面向 Studio 作者，缺译时回退到中文。标题用人能直接叫出的名字，简介用一句话说明包提供什么。新建空包写入双语起始文案，复制包沿用来源的文案，发布 manifest 保留这两个字段。新库包 id 用「缩写 + `lib`」，例如 `cvlib`、`imglib`、`mllib`。`scalar` 的操作全名参与 Q.E.D. 的存档戳，因此继续使用原 id。
 

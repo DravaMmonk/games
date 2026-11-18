@@ -1,4 +1,4 @@
-export const PACKAGE_KINDS = ['play', 'ext', 'course', 'lib']
+export const PACKAGE_KINDS = ['feature', 'ext', 'course', 'lib']
 
 export function validatePackageKind(kind) {
   if (kind === undefined) throw new Error('package.json: missing kind')

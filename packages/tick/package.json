@@ -1,5 +1,5 @@
 {
-  "kind": "play",
+  "kind": "ext",
   "title": "@package.title",
   "desc": "@package.desc",
   "type": "module",

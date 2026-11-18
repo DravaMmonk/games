@@ -1,5 +1,5 @@
 import { imageContext } from '../core/context.js'
-import { freshBoardProgress } from 'circuit'
+import { taskScreen } from 'circuit/view'
 /** Intensity styling and range calculations for course-specific displays. */
 export { grey, rangeOf } from './ui/display.js'
 
@@ -9,13 +9,7 @@ import { displays as specialDisplays } from './ui/benches/displays.js'
 import { displays as sharedDisplays } from './bench/displays.jsx'
 const benchDisplays = { ...sharedDisplays, ...specialDisplays }
 
-function ImagePlay({ context, work, onChange, phone }) {
-  const { task, works } = imageContext(context)
-  const game = define(context.content, works, { kernel: context.kernel })
-  const Screen = game.kinds[task.kind].Screen
-  return <Screen game={game} level={{ ...task, source: task }} saved={work} save={onChange}
-    solve={() => {}} fail={() => {}} progress={context.progress ?? freshBoardProgress()} phone={phone} />
-}
+const ImagePlay = taskScreen(imageContext, define)
 export function register(kernel) {
   kernel.play('image/graph', { component: ImagePlay, preview: ImagePlay, define })
   kernel.play('image/board', { component: ImagePlay, preview: ImagePlay, define })

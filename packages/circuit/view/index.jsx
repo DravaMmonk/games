@@ -49,6 +49,7 @@ export { BoardPlay }
 export { definedGame } from './circuit-game.js'
 export { default as CircuitLevel } from './CircuitLevel.jsx'
 export { circuitScreen } from './CircuitScreen.jsx'
+export { taskScreen } from './task-screen.jsx'
 export { defineGame } from './game-definition.js'
 export { circuitSettings } from './settings.js'
 export { default as CircuitEditor } from './CircuitLevel.jsx'

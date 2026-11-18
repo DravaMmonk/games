@@ -23,7 +23,7 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "a4df9f1674a49e4cc94fea0b1b89e0d90619039663fdec991648c8885a687469"
+      "hash": "040ce39039c6a8db45a6cc827242d0dd2538cc3120bb2dfb032fdedf3c973708"
     },
     "wiki": {
       "version": "0.0.0",
@@ -31,15 +31,15 @@
     },
     "image": {
       "version": "0.0.0",
-      "hash": "a854e96618f7acfcc8e275ee70bc7b5d8d082d33d33fdd573c8653a644ec9e6a"
+      "hash": "3c9b7e872b393ca187f9c10b8b9639f384dae8804538e425d4dd19e8e991400e"
     },
     "vision-complete": {
       "version": "0.0.0",
-      "hash": "451f4f424b7ef10af984d94abd4c868e03f55875f88bda7d863524381cc6711c"
+      "hash": "45b683bd89bedc4a22d3528a26a2c42bb0a15fc23530a6e4d9e86cb815740211"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "d2002afa58bcfebe235cb77fb6be49cfbf75297b27291caee0b7109525ab73be"
+      "hash": "a052e0d922bf8207fd58e93b514d740f15d173253250fa89bf9414f303b1f09b"
     }
   }
 }

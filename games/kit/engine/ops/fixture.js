@@ -239,7 +239,7 @@ export function installCircuitFixture(root) {
   if (existsSync(join(dir, 'package.json'))) return
   mkdirSync(dir, { recursive: true })
   for (const folder of ['kinds', 'shapes', 'i18n', 'core']) cpSync(new URL(`../../../../packages/circuit/${folder}`, import.meta.url), join(dir, folder), { recursive: true })
-  writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'lib', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {} }, null, 2) + '\n')
+  writeFileSync(join(dir, 'package.json'), JSON.stringify({ kind: 'lib', type: 'module', version: '0.0.0', kernel: `^${kernelIdentity().version}`, uses: {} }, null, 2) + '\n')
 }
 
 export const circuitFixtureKinds = {

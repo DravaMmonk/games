@@ -45,7 +45,7 @@ try {
   page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`) })
   const openServer = async () => {
     server = await createServer({ root: app, mode: 'studio', configFile: resolve(app, 'vite.config.js'),
-      cacheDir: resolve(root, '.vite'), server: { host: '127.0.0.1', port: 0, open: false }, logLevel: 'error',
+      cacheDir: resolve(root, '.vite'), server: { host: '127.0.0.1', port: 0, strictPort: false, open: false }, logLevel: 'error',
     })
     await server.listen()
     return `http://127.0.0.1:${server.httpServer.address().port}`
@@ -61,7 +61,7 @@ try {
 
   // Install only the text mechanism, with one freshly authored level and no circuit provider.
   for (const side of ['core', 'view', 'kinds']) cpSync(resolve(app, '../packages/text', side), resolve(root, 'packages/text', side), { recursive: true })
-  put('packages/text/package.json', { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+  put('packages/text/package.json', { kind: 'lib', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {} })
   put('packages/text/levels/hello.json', { title: 'Hello', after: 'Correct.', tasks: [{ id: 'hello', play: 'text/answer', brief: 'Type hello.', answerRule: { type: 'exact', answer: 'hello' }, referenceAnswer: 'hello', wrongAnswers: ['no'] }] })
   await command([resolve(kit, 'engine/deps.js'), 'lock', '--package', 'text'])
   await command([resolve(kit, 'engine/check.js'), '--package', 'text'])

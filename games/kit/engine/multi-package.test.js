@@ -37,7 +37,7 @@ test('three packages compose across logic, image and rows, retain layered text a
       tests: [{ label: 'Square', in: 'image/square' }], hidden: [{ label: 'Disk', in: 'image/disk' }], solution: ['out <- in'] }],
   })
   for (const side of ['core', 'view', 'kinds']) cpSync(new URL(`../../../packages/rows/${side}`, import.meta.url), join(root, 'packages/rows', side), { recursive: true })
-  put('packages/rows/package.json', { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0' } })
+  put('packages/rows/package.json', { kind: 'lib', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0' } })
   put('packages/sums/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { 'z-pictures': '^1.0.0', rows: '^0.0.0' } })
   put('packages/sums/i18n/en.json', { title: 'A sum', brief: 'Complete the sum.' })
   put('packages/sums/overrides/z-pictures/i18n/en.json', { brief: 'Keep every pixel.' })

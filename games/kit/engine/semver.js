@@ -22,6 +22,7 @@ export function validateConfig(config, game = false) {
   if (!game) {
     validatePackageKind(config.kind)
     parseVersion(config.version)
+    if (config.type !== undefined && config.type !== 'module') throw new Error('package type must be module')
   }
   satisfies('1.0.0', config.kernel)
   const dependencies = game ? config.packages : config.uses

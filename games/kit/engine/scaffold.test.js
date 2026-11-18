@@ -19,6 +19,8 @@ test('packages start empty or copy installed objects without a template catalog'
   assert.equal(readPackage('copy', root).id, 'copy')
   assert.equal(packageConfig('sample', root).kind, 'play')
   assert.equal(packageConfig('copy', root).kind, 'course')
+  assert.equal(packageConfig('sample', root).type, 'module')
+  assert.equal(packageConfig('copy', root).type, 'module')
   assert.throws(() => newPackage({ root, id: 'missing' }), /choose --from/)
   assert.throws(() => newPackage({ root, id: 'copy', empty: true }), /there already/)
 })

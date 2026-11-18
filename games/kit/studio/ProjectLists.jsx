@@ -268,7 +268,7 @@ export function JsonFile({ name, value, note = null }) {
 }
 
 /** A package's package.json, as the packages list knows it. */
-export const packageJson = (info) => info && Object.fromEntries(['kind', 'version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]]))
+export const packageJson = (info) => info && Object.fromEntries(['kind', 'type', 'version', 'kernel', 'uses'].filter((k) => info[k] !== undefined).map((k) => [k, info[k]]))
 
 /** What the games list knows of a game's game.json (its texts by their keys). */
 export const gameJson = (info) => info && {

@@ -136,16 +136,16 @@ export function composeLayers(layers, schemas) {
       return readText(sourceValue(qualified), layer.id, schema, schemas)
     }
     if (!layer.id.startsWith('@') && !layer.missing) {
-      for (const key of Object.keys(layer.config)) if (!['uses', 'kernel', 'version', 'kind'].includes(key)) throw new Error(`${layer.id}/package.json: unknown field ${key}`)
+      for (const key of Object.keys(layer.config)) if (!['uses', 'kernel', 'version', 'kind', 'type'].includes(key)) throw new Error(`${layer.id}/package.json: unknown field ${key}`)
       validateConfig(layer.config)
     }
     const qualifiedLayer = { ...layer, config: texts(layer.config ?? {}, schemas.game, 'configuration'), objects: [], overrides: [] }
     if (layer.id.startsWith('@')) {
       policyProblems.push(...layerProblems(layer.id, 'game', `${layer.id}/config`, qualifiedLayer.config, schemas.game, schemas))
       record('game', `${layer.id}/config`, qualifiedLayer.config, layer, false)
+      configurations.push(Object.fromEntries(Object.entries(qualifiedLayer.config).filter(([key]) => !['version', 'kernel', 'uses', 'packages', 'kind'].includes(key))))
     }
     qualifiedLayers.push(qualifiedLayer)
-    configurations.push(Object.fromEntries(Object.entries(qualifiedLayer.config).filter(([key]) => !['version', 'kernel', 'uses', 'packages', 'kind'].includes(key))))
     for (const { kind, name: id, value } of layer.objects) {
       if (id.includes('/') && !id.startsWith(`${layer.id}/`)) throw new Error(`${layer.id}: declare foreign object ${id} in overrides`)
       const full = fullName(layer.id, id)

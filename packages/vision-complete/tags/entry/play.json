@@ -1,18 +1,15 @@
 {
   "title": "@tag.play.title",
   "values": [
-    "game",
-    "map",
-    "circuit",
-    "tests",
-    "details",
-    "intro",
-    "layout",
-    "wiremode",
-    "bench",
-    "unlock",
-    "score",
-    "views",
-    "training"
+    "circuit/board",
+    "image/tests",
+    "image/details",
+    "circuit/layout",
+    "circuit/wiremode",
+    "image/bench",
+    "circuit/parts",
+    "image/score",
+    "image/views",
+    "image/training"
   ]
 }

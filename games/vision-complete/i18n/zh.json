@@ -39,5 +39,21 @@
   "game.kicker": "计算机视觉",
   "game.lede": "从把图像挪一格开始。亲手接线实现模糊、寻找边缘和角点，再从两张图像估计深度。",
   "game.title": "视觉完备",
-  "game.topic": "计算机视觉"
+  "game.topic": "计算机视觉",
+  "glossary.entries.game.body.0": "在《视觉完备》中，你用元件搭出图像处理电路。每关给出输入和期望输出，通过所有测试即可过关。",
+  "glossary.entries.game.body.1": "开场时你是刚上电的探测器 V-0：传感器把世界变成一格格数字，可你还读不懂它们。你要做的，是一步步学会读懂这些数字。",
+  "glossary.entries.game.body.2": "进度存在这台设备的浏览器里：关掉页面再回来，通过的关和搭好的电路都还在。",
+  "glossary.entries.game.title": "游戏怎么玩",
+  "glossary.entries.intro.body.0": "第一次进一关时会弹出几页「引言」：这一关在讲什么、现实里哪里用得到、有什么新元件，以及动手前值得想的问题。之后随时可以点顶栏的「引言」再看。",
+  "glossary.entries.intro.body.1": "任务说明下面有「提示」按钮，卡住时再点开。提示说得比较直接，先自己试一试收获更大。",
+  "glossary.entries.intro.body.2": "过关时，通过窗口会用几句话点明刚才发生了什么。它提到的概念，大多在这本百科里有词条。",
+  "glossary.entries.intro.title": "引入与提示",
+  "glossary.entries.map.body.0": "地图按主题分章，关卡沿着电路走线排列。章节标题下方是本章要探索的问题，关卡图标区分电路和机关台。",
+  "glossary.entries.map.body.1": "一关的前置关卡都通过后，它才会打开；通过的打勾，没打开的带锁。「继续」直接带你去下一个还没通过的关卡。",
+  "glossary.entries.map.body.2": "在关卡里，顶栏的「关卡」按钮打开一份关卡列表，可以直接换关，不必回地图。",
+  "glossary.entries.map.title": "关卡地图与章节",
+  "glossary.entries.parts.body.2": "每关的元件栏只摆出这一关给的元件。地图上的「元件箱」列出游戏里所有元件，已拿到的点亮并附说明。有的关要你亲手搭出某样东西，这时现成的那个会暂时收起来。",
+  "section.play.title": "玩法",
+  "glossary.entries.board.body.2": "有的元件带设置，比如乘几、门槛多高、往哪个方向挪、九个权重。改一个设置，所有元件上的结果马上跟着变；输入没接满的元件会提示还缺输入。",
+  "glossary.entries.board.body.3": "每个元件都显示它在当前选中的那组测试上算出的结果，所以你可以沿着电路一路看图像怎样变化。"
 }

@@ -1,4 +1,4 @@
-import { BUILTIN_POLICIES } from './kind-policy.js'
+import { BUILTIN_POLICIES, declarationLayers, declaresIn } from './kind-policy.js'
 import { CHAPTER } from './course-schema.js'
 import { declarationReader } from './catalogs.js'
 // Data declarations extend an assembly, never process-wide content registries.
@@ -15,7 +15,7 @@ export const KIND_DECLARATION = S.obj({
   schema: S.opt(S.any()), extends: S.opt(S.str({ pattern: '^(?:level|task|game|[a-z][a-z0-9-]*/[a-z][a-z0-9-]*)$' })),
   caseGroups: S.opt(S.str()), fields: S.opt(S.map(S.any())), play: S.opt(S.str({ reference: 'play' })), references: S.opt(S.list(S.str())),
   relations: S.opt(S.map(S.obj({ from: S.str(), to: S.str() }))),
-  declares: S.oneOf(['package', 'game']),
+  declares: S.either(S.oneOf(['package', 'game']), S.set(S.oneOf(['package', 'game']), { min: 1 })),
   overrides: S.map(S.list(S.str()), { keys: '^(package|game)$' }),
   text: S.opt(S.list(S.str())),
   studio: S.opt(S.obj({ name: S.text(), icon: S.str(), group: S.opt(S.text()) })),
@@ -93,7 +93,7 @@ export function withKindDeclarations(vocabulary, layers, plugin = false, { check
       scoped.add(d.play)
     }
     if (d.extends ? !d.fields || d.folder || d.schema && !d.play : !d.schema || !d.folder || d.fields) throw new Error(`${name}: declare folder + schema, or extends + fields`)
-    if (!d.extends && Object.entries(definitions).some(([otherName, other]) => other.folder === d.folder && other.declares === d.declares && otherName.split('/')[0] === name.split('/')[0])) throw new Error(`${name}: duplicate object folder ${d.folder}`)
+    if (!d.extends && Object.entries(definitions).some(([otherName, other]) => other.folder === d.folder && declarationLayers(d.declares).some(scope => declaresIn(other, scope)) && otherName.split('/')[0] === name.split('/')[0])) throw new Error(`${name}: duplicate object folder ${d.folder}`)
     if (!d.extends && ['levels', 'tasks', 'tags', 'relations', 'chapters', 'kinds', 'shapes', 'capabilities', 'core', 'view', 'i18n', 'overrides'].includes(d.folder)) throw new Error(`${name}: reserved object folder ${d.folder}`)
     if (d.objectKind && (d.extends || BUILTIN_KIND_NAMES.includes(d.objectKind) || Object.hasOwn(objectKindNames(definitions), d.objectKind))) throw new Error(`${name}: duplicate or invalid object kind ${d.objectKind}`)
     const owner = schemaOwner(name)
@@ -203,7 +203,7 @@ export function schemaLayers(order, declarations, extra = {}) {
 export function objectFoldersFor(namespace, definitions, scope = namespace.startsWith('@') ? 'game' : 'package') {
   const groups = new Map()
   for (const [kind, definition] of Object.entries(definitions)) {
-    if (definition.extends || definition.declares !== scope) continue
+    if (definition.extends || !declaresIn(definition, scope)) continue
     const candidates = groups.get(definition.folder) ?? []
     candidates.push(kind)
     groups.set(definition.folder, candidates)

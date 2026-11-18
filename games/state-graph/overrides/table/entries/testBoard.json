@@ -1,0 +1,8 @@
+{
+  "at": "state-graph/copy",
+  "see": [
+    "@state-graph/robot",
+    "circuit/board",
+    "table/dial"
+  ]
+}

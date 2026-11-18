@@ -6,5 +6,8 @@
     "@glossary.entries.rolling.body.1",
     "@glossary.entries.rolling.body.2"
   ],
-  "see": ["knap01", "dirs"]
+  "see": [
+    "knap01",
+    "table/dirs"
+  ]
 }

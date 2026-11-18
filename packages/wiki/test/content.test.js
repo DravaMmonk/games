@@ -41,3 +41,31 @@ test('entry files and course ordering require the package to be selected', async
   const { validate } = await import('../../../games/kit/engine/schema.js')
   assert.match(validate(S.text(), '<wiki-ref to="topic/start"></wiki-ref>', { vocabulary: contentSchemas.get(other) })[0].says, /is no markup/)
 })
+
+test('wiki references follow the layer contributing the text and game entries keep their own namespace', async () => {
+  const { addGlossaryFixture, lockFixture, testProject } = await import('../../../games/kit/engine/test-fixture.js')
+  const { readContent, readPackage } = await import('../../../games/kit/engine/resolver.js')
+  const { root, put } = testProject()
+  put('packages/topic/package.json', { kind: 'course', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+  put('games/course/game.json', { kernel: '^0.0.0', packages: { topic: '^0.0.0' }, encyclopedia: ['play'] })
+  addGlossaryFixture(root, 'topic', 'course')
+  put('packages/topic/entries/start.json', { title: 'Start', body: ['@start.body'] })
+  put('packages/topic/i18n/en.json', { 'start.body': 'Start here.' })
+  put('games/course/entries/overview.json', { title: 'Overview', body: ['@overview.body'] })
+  put('games/course/i18n/en.json', { 'overview.body': 'Read <wiki-ref to="topic/start"></wiki-ref>.' })
+  put('games/course/sections/play.json', { title: 'Play', values: ['overview', 'topic/start'] })
+  put('games/course/overrides/topic/i18n/en.json', { 'start.body': 'See <wiki-ref to="overview"></wiki-ref>.' })
+  lockFixture(root)
+  const content = readContent('course', root)
+  assert.deepEqual(content.objectProblems, [])
+  assert.deepEqual(content.glossary.groups.map(group => [group.id, group.values]), [
+    ['@course/play', ['@course/overview', 'topic/start']],
+  ])
+  assert.match(content.registries.entry['topic/start'].body[0].en, /to="@course\/overview"/)
+
+  put('packages/topic/i18n/en.json', { 'start.body': 'See <wiki-ref to="@course/overview"></wiki-ref>.' })
+  assert.ok(readContent('course', root).objectProblems.some(problem => problem.layer === 'topic' &&
+    problem.target === '@course/overview' && problem.reason === 'undeclared dependency'))
+  assert.ok(readPackage('topic', root).objectProblems.some(problem => problem.layer === 'topic' &&
+    problem.target === '@course/overview' && problem.reason === 'missing'))
+})

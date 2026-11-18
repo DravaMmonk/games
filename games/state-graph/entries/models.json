@@ -1,0 +1,12 @@
+{
+  "title": "@glossary.entries.models.title",
+  "body": [
+    "@glossary.entries.models.body.0",
+    "@glossary.entries.models.body.1"
+  ],
+  "at": "state-graph/stairs",
+  "see": [
+    "@state-graph/robot",
+    "table/arms"
+  ]
+}

@@ -6,5 +6,9 @@
     "@glossary.entries.stateSize.body.1",
     "@glossary.entries.stateSize.body.2"
   ],
-  "see": ["layers", "memory", "speed"]
+  "see": [
+    "layers",
+    "memory",
+    "speed"
+  ]
 }

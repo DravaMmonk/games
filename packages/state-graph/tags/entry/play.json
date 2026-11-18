@@ -1,19 +1,15 @@
 {
   "title": "@tag.play.title",
   "values": [
-    "map",
-    "brief",
-    "cells",
-    "robot",
-    "board",
-    "testBoard",
-    "component",
-    "part",
-    "models",
-    "arms",
-    "dirs",
-    "sweep",
-    "dial",
+    "table/cells",
+    "circuit/board",
+    "table/testBoard",
+    "circuit/component",
+    "circuit/parts",
+    "table/arms",
+    "table/dirs",
+    "table/sweep",
+    "table/dial",
     "memory"
   ]
 }

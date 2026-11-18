@@ -1,4 +1,12 @@
 {
+  "glossary.entries.box.body.0": "假设框表达蕴含引入。在元件上选择临时假设 A，在框内推导 B 并将它接至「结论」端，框外便得到 A → B。",
+  "glossary.entries.box.body.1": "点击框内空白处，再放置的元件会进入框内；也可以拖动元件调整位置。框内可以使用外部前提和外层假设。依赖本框假设的结论须经相应规则解除该假设后才能在框外使用。左上角的箭头用于折叠框。",
+  "glossary.entries.box.body.2": "输出 A → B 时，本框的临时<b>假设</b>被<b>解除</b>：结论不再依赖它，但其他前提和外层假设仍然保留。目标不能依赖未解除的临时假设。折叠框只是改变显示，不会解除假设。",
+  "glossary.entries.box.title": "假设框",
+  "glossary.entries.circuit.body.0": "左侧每个元件代表一个基本命题：在当前行中，命题为真时输出真，否则输出假。右侧的「这句话」接收电路结果，表示复合命题在该行的真值；在中间放置逻辑门并连接它们。",
+  "glossary.entries.circuit.body.1": "点击下方真值表的一行，板上元件会显示该行的值。「一行一行算」从第一行开始逐行检查，遇到错误便停止；「单步」每次检查一行。",
+  "glossary.entries.circuit.body.2": "有些关卡隐藏目标真值列，避免直接给出答案；有些关卡要求先将自然语言陈述转换为逻辑连接词，再搭建对应电路。",
+  "glossary.entries.circuit.title": "真值电路",
   "package.desc": "提供逻辑符号、证明电路和证明判定。",
   "package.title": "逻辑与证明",
   "capability.board.items.proof.about": "带作用域假设框的推理电路",

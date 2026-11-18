@@ -105,7 +105,7 @@ export function tagValue(name, value) {
   return { ...value, kind: name.slice(0, name.lastIndexOf('/')) }
 }
 
-/** Games arrange package objects and cannot declare objects of their own. */
+/** Game layers may declare data only. */
 export function gameDeclarationProblems(gameDir) {
   return ['core', 'view'].filter(name => existsSync(resolve(gameDir, name))).map(name => ({ at: name, says: 'game layers contain data only' }))
 }
@@ -156,7 +156,7 @@ function readLayerUncached(id, dir, config, declarations) {
   const objects = levelFiles(dir).map(([name, file]) => ({ kind: 'level', name, value: json(file) }))
   for (const folder of ['tags', 'relations', 'chapters', 'shapes']) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind: kindForFolder[folder], name: folder === 'tags' ? name.split('/').at(-1) : name, value: folder === 'tags' ? tagValue(name, json(file)) : json(file) })
   for (const [name, file] of objectFiles(dir, 'kinds')) objects.push({ kind: 'kind', name, value: json(file) })
-  for (const [kind, folder] of Object.entries({ ...objectFoldersFor(id, declarations ?? {}, 'package'), ...(id.startsWith('@') && objectFoldersFor(id, declarations ?? {}, 'game')) })) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind, name, value: json(file) })
+  for (const [kind, folder] of Object.entries({ ...objectFoldersFor(id, declarations ?? {}), ...(id.startsWith('@') && objectFoldersFor(id, declarations ?? {}, 'package')) })) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind, name, value: json(file) })
   const overrides = [], textOverrides = []
   const overrideDir = resolve(dir, 'overrides')
   for (const namespace of existsSync(overrideDir) ? readdirSync(overrideDir) : []) {
@@ -277,6 +277,7 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
   const result = composeLayers(layers, schemas)
   declarationProblems = [...declarationProblems, ...result.policyProblems, ...layers.flatMap(layer => layer.dependencyProblems ?? []), ...existenceProblems(result.qualifiedLayers, schemas)]
   const { registries: r, configurations, sources, overrideHistory, layerOrder, layerUses } = result
+  const primary = packageId ?? Object.keys(layers.at(-1)?.config.packages ?? {})[0] ?? layers[0]?.id
   const game = Object.assign({}, ...configurations)
   delete game.uses
   delete game.packages
@@ -287,7 +288,7 @@ export function assembleLayers(id, layers, schemas, { blueprint, declarationProb
     const values = overridden[key] ??= {}
     values[lang] = event.before
   }
-  const content = assemble({ id, schemas, packageId: packageId ?? layers[0].id, game, qualified: true,
+  const content = assemble({ id, schemas, packageId: primary, game, qualified: true,
     levels: entries('level'), tags: entries('tag'), relations: entries('relation'),
     contentObjects: Object.fromEntries(Object.keys(kindSchemas(schemas)).map(kind => [kind, r[kind]])),
     blueprint, declarationProblems, existenceChecked: true, overridden, fromDisk: true, objectKinds: schemas.objectKinds, ...(packageId && { packageTarget: { id: packageId } }), provenance: { sources, overrideHistory, layerOrder, layerUses, capabilityDeclarations: Object.fromEntries(layers.filter(layer => Object.keys(layer.capabilityDeclarations ?? {}).length).map(layer => [layer.id, layer.capabilityDeclarations])) },

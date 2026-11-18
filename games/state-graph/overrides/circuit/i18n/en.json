@@ -1,0 +1,9 @@
+{
+  "glossary.entries.board.body.0": "A <b>circuit board</b> is the rule for one cell: you write it once, and the robot follows it on every cell. The “View” and “This cell” parts are its inputs, the red-framed “this cell” is its output, and components go in between.",
+  "glossary.entries.board.body.1": "A wire always runs from an <b>output dot</b> to an <b>input dot</b>: drag from one dot to the other, or click one dot and then the other. An input takes one wire, so a new one replaces the old; an output can feed several inputs.",
+  "glossary.entries.component.body.0": "<b>Components</b> are little machines on the circuit board: they take signals at their input dots and send a result from their output dot. On a computer, click one in the Parts window to put it on the board; on a phone, tap one in the tray or hold and drag it onto a slot, and drag it back to the tray to remove it. Click a placed component to change its settings.",
+  "glossary.entries.component.body.1": "A signal can be a number, or “—”, which means “there is no road here”, or simply nothing. An input with no wire reads “—”.",
+  "glossary.entries.parts.body.0": "After some levels, the circuit board you built becomes a <b>part</b>: a new component in the tray. Put it on the board and wire it up, and it works without being built again.",
+  "glossary.entries.parts.body.1": "The names on a part’s inputs only say how it was first used. A part cares about structure, not names: whatever you wire into it is what it works on.",
+  "glossary.entries.parts.title": "Parts and the components box"
+}

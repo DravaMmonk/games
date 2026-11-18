@@ -59,8 +59,8 @@ export function assemble({ id, packageId = id, schemas, contentObjects = {}, cou
       layers.get(namespace).objects.push({ kind, name, value })
     }
     const selected = [...layers.keys()]
-    for (const layer of layers.values()) layer.config.uses = Object.fromEntries(selected.filter(id => id !== layer.id).map(id => [id, '^1.0.0']))
-    layers.set(courseNamespace, { ...(layers.get(courseNamespace) ?? { id: courseNamespace, objects: [] }), config: { ...game, packages: Object.fromEntries(selected.map(id => [id, '^1.0.0'])) } })
+    for (const layer of layers.values()) layer.config.uses = Object.fromEntries(selected.filter(id => id !== layer.id && !id.startsWith('@')).map(id => [id, '^1.0.0']))
+    layers.set(courseNamespace, { ...(layers.get(courseNamespace) ?? { id: courseNamespace, objects: [] }), config: { ...game, packages: Object.fromEntries(selected.filter(id => !id.startsWith('@')).map(id => [id, '^1.0.0'])) } })
     // Source-free callers already carry resolved text; only source layers define catalog identities.
     const unkey = value => Array.isArray(value) ? value.map(unkey) : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== '$key').map(([key, child]) => [key, unkey(child)])) : value
     objectProblems.push(...existenceProblems([...layers.values()].map(layer => ({ ...layer, objects: layer.objects.map(object => ({ ...object, value: unkey(object.value) })), config: unkey(layer.config) })), schemas))
@@ -81,7 +81,7 @@ export function assemble({ id, packageId = id, schemas, contentObjects = {}, cou
   levels = levels.map(([name, value]) => [name, refs(value, schemas.level)])
   game = refs(game, schemas.game)
   const eras = sourceChapters && assembleChapters(sourceChapters, { expand: resolve, relations: relationEdges, ...marks, problems: objectProblems })
-  const projections = Object.assign({}, ...meaningsOf(schemas).map(meaning => meaning.assemble?.({ game, registries, relationEdges, resolve, problems: objectProblems, schemas })))
+  const projections = Object.assign({}, ...meaningsOf(schemas).map(meaning => meaning.assemble?.({ game, id, packageId, registries, relationEdges, resolve, problems: objectProblems, schemas })))
   const content = {
     id, ...game, ...provenance, ...(Object.keys(objectKinds ?? {}).length && { objectKinds }), ...(packageTarget && { packageTarget }), ...(eras && { eras, sourceChapters }), ...projections,
     levels: [...levels].sort(byId).map(([levelId, level]) => ({ id: levelId, ...level })),

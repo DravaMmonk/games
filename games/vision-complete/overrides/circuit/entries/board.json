@@ -1,0 +1,14 @@
+{
+  "see": [
+    "image/tests",
+    "image/views",
+    "circuit/parts",
+    "circuit/layout"
+  ],
+  "body": [
+    "@circuit/glossary.entries.board.body.0",
+    "@circuit/glossary.entries.board.body.1",
+    "@glossary.entries.board.body.2",
+    "@glossary.entries.board.body.3"
+  ]
+}

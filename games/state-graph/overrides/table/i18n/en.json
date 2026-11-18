@@ -1,0 +1,8 @@
+{
+  "glossary.entries.arms.body.0": "Longarm has a <b>telescopic arm</b>: how far it reaches depends on the cell’s own data, such as reaching left by as many cells as “this item’s weight”, so it can read cells outside its view.",
+  "glossary.entries.arms.body.1": "Under the view is the arm’s own row, showing the cells it can reach; click one, and the “View” part gains an output that reads it.",
+  "glossary.entries.arms.title": "Telescopic arm",
+  "glossary.entries.sweep.body.0": "Broom has a <b>sweep arm</b>: it sweeps a whole run of cells in one go and feeds every number in the run into the circuit board, however many cells the run has.",
+  "glossary.entries.sweep.body.1": "A wire carrying a whole segment is drawn thicker. Mergers, Adders and Multipliers take a whole segment directly, and every number in it takes part; gates do not take segments.",
+  "glossary.entries.sweep.title": "Sweep Arm"
+}

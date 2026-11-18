@@ -1,0 +1,7 @@
+{
+  "at": "state-graph/prefix",
+  "see": [
+    "table/arms",
+    "state-graph/manyWays"
+  ]
+}

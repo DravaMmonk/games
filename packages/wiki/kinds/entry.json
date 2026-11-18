@@ -1,13 +1,15 @@
 {
   "objectKind": "entry",
   "folder": "entries",
-  "declares": "package",
+  "declares": ["package", "game"],
   "overrides": {
     "package": [
       "*"
     ],
     "game": [
-      "$text"
+      "$text",
+      "at",
+      "see"
     ]
   },
   "schema": {

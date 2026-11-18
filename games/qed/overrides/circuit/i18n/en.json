@@ -1,0 +1,5 @@
+{
+  "glossary.entries.board.body.0": "The <b>given</b> parts on the left supply premises; the <b>goal</b> on the right is the proposition to prove. Each rule part takes the required proofs and yields a conclusion. A wire carries a proposition proved under its associated premises and assumptions.",
+  "glossary.entries.board.body.1": "A part displays its current conclusion. When an input does not match, it reports what was required and what it received. Select “Check proof” when ready.",
+  "glossary.entries.board.title": "proof board"
+}

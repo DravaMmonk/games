@@ -22,7 +22,7 @@ function blindText(game) {
 }
 
 export function register(kernel) {
-  kernel.reference(REFERENCE, { target: 'entry', label: 'encyclopedia entry' })
+  kernel.reference(REFERENCE, { target: 'entry', label: 'encyclopedia entry', scoped: true })
   kernel.kind('wiki/entries', {
     type: 'entry',
     selector: 'entry',
@@ -31,8 +31,9 @@ export function register(kernel) {
     studio: { schemas: { glossary: GLOSSARY } },
     terminology: { termRegistry, termUsage },
     blindText,
-    assemble({ game, registries, resolve }) {
-      return { glossary: encyclopedia(orderedEntries(registries), registries.section, resolve, game.encyclopedia), sections: registries.section }
+    assemble({ game, id, packageId, registries, resolve }) {
+      const local = entry => entry.startsWith(`${packageId}/`) || entry.startsWith(`@${id}/`)
+      return { glossary: encyclopedia(orderedEntries(registries), registries.section, resolve, game.encyclopedia, local), sections: registries.section }
     },
     texts({ content, spec }) {
       const entries = content.glossary.entries
@@ -70,11 +71,15 @@ export function register(kernel) {
     const inspect = (title, at, links) => {
       for (const id of new Set(links)) {
         const target = byId.get(id)
-        if (target && !opensBy(target.at, at)) out.push({ fail: true, text: `${title} links the entry ${id}, which opens later (at ${target.at})` })
+        if (!target) out.push({ fail: true, text: `${title} links the entry ${id}, which is missing from this game's encyclopedia` })
+        else if (!opensBy(target.at, at)) out.push({ fail: true, text: `${title} links the entry ${id}, which opens later (at ${target.at})` })
       }
     }
     for (const [id, links] of levelLinks(REFERENCE)) inspect(id, id, links)
-    for (const entry of entries) if (!entry.at || placed.has(entry.at)) inspect(`entry ${entry.id}`, entry.at, linked(GLOSSARY.fields.entries.of, entry, REFERENCE))
+    for (const entry of entries) {
+      if (!entry.at || placed.has(entry.at)) inspect(`entry ${entry.id}`, entry.at, linked(GLOSSARY.fields.entries.of, entry, REFERENCE))
+      for (const id of entry.see ?? []) if (!byId.has(id)) out.push({ fail: true, text: `entry ${entry.id} has related entry ${id}, which is missing from this game's encyclopedia` })
+    }
     return out
   }
   check.phase = 'references'

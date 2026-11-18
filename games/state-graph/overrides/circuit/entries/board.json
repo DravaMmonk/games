@@ -1,0 +1,14 @@
+{
+  "at": "state-graph/copy",
+  "see": [
+    "circuit/component",
+    "@state-graph/robot",
+    "circuit/parts"
+  ],
+  "body": [
+    "@circuit/glossary.entries.board.body.0",
+    "@circuit/glossary.entries.board.body.1",
+    "@glossary.entries.board.body.2",
+    "@glossary.entries.board.body.3"
+  ]
+}

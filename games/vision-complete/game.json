@@ -29,7 +29,7 @@
     "@vision-complete/11"
   ],
   "encyclopedia": [
-    "vision-complete/play",
+    "@vision-complete/play",
     "vision-complete/image",
     "vision-complete/freq",
     "vision-complete/light",

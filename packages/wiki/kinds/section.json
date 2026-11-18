@@ -1,7 +1,7 @@
 {
   "objectKind": "section",
   "folder": "sections",
-  "declares": "package",
+  "declares": ["package", "game"],
   "overrides": {
     "package": [
       "*"

@@ -1,0 +1,19 @@
+{
+  "title": "@section.play.title",
+  "values": [
+    "@state-graph/map",
+    "@state-graph/brief",
+    "table/cells",
+    "@state-graph/robot",
+    "circuit/board",
+    "table/testBoard",
+    "circuit/component",
+    "circuit/parts",
+    "@state-graph/models",
+    "table/arms",
+    "table/dirs",
+    "table/sweep",
+    "table/dial",
+    "state-graph/memory"
+  ]
+}

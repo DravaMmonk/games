@@ -1,4 +1,12 @@
 {
+  "glossary.entries.box.body.0": "An assumption box expresses implication introduction. Select a temporary assumption A, derive B inside, and connect it to “Conclusion”; the box then yields A → B.",
+  "glossary.entries.box.body.1": "Click inside the box before placing a part, or drag a part into or out of it. The inside can use external premises and outer assumptions. A conclusion depending on this box’s assumption must discharge it through the appropriate rule before use outside. The arrow folds the box.",
+  "glossary.entries.box.body.2": "When the box yields A → B, its temporary <b>assumption</b> is <b>discharged</b>. The conclusion no longer depends on it, but other premises and outer assumptions remain. The goal may not depend on undischarged temporary assumptions. Folding the box only changes its display.",
+  "glossary.entries.box.title": "Assumption box",
+  "glossary.entries.circuit.body.0": "Each part on the left represents an atomic proposition and outputs its truth value on the current row. The output “the sentence” receives the compound proposition’s value. Place and wire logic gates between them.",
+  "glossary.entries.circuit.body.1": "Select a row in the truth table to display the values of the parts on that row. “Run row by row” checks from the first row and stops at an error; “Step” checks one row at a time.",
+  "glossary.entries.circuit.body.2": "Some levels hide the target truth-value column. Others ask you to translate a natural-language statement into logical connectives and build its circuit.",
+  "glossary.entries.circuit.title": "Truth circuits",
   "package.desc": "Provides logical symbols, proof circuits, and proof checking.",
   "package.title": "Logic and proofs",
   "ui": {

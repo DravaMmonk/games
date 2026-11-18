@@ -1,0 +1,7 @@
+{
+  "at": "state-graph/frog",
+  "see": [
+    "@state-graph/models",
+    "table/sweep"
+  ]
+}

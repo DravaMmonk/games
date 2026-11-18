@@ -1,0 +1,3 @@
+{
+  "glossary.entries.box.body.2": "When the box yields A → B, its temporary <wiki-ref to=\"qed/assumption\"></wiki-ref> is <b>discharged</b>. The conclusion no longer depends on it, but other premises and outer assumptions remain. The goal may not depend on undischarged temporary assumptions. Folding the box only changes its display."
+}

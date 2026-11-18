@@ -1,0 +1,12 @@
+{
+  "at": "vision-complete/0-2",
+  "see": [
+    "circuit/board",
+    "vision-complete/padding"
+  ],
+  "body": [
+    "@circuit/glossary.entries.parts.body.0",
+    "@circuit/glossary.entries.parts.body.1",
+    "@glossary.entries.parts.body.2"
+  ]
+}

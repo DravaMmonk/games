@@ -1,0 +1,5 @@
+{
+  "glossary.entries.board.body.0": "左侧的<b>已知</b>元件提供前提，右侧的<b>目标</b>元件给出待证命题。每个规则元件接收所需的证明并输出结论；连线表示命题已在相应前提和假设下得到证明。",
+  "glossary.entries.board.body.1": "元件显示当前推导的命题。输入不匹配时，它会说明所需命题和实际输入。完成后点击「检查证明」。",
+  "glossary.entries.board.title": "证明电路板"
+}

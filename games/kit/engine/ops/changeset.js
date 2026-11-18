@@ -1,4 +1,4 @@
-import { kindPolicy } from '../kind-policy.js'
+import { declaresIn, kindPolicy } from '../kind-policy.js'
 import { meaningsOf } from '../kind-meanings.js'
 import { tagKey } from '../tag-identity.js'
 import { kindSchemas } from '../plugin-kinds.js'
@@ -67,7 +67,8 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
     // Operations resolve references against the workspace vocabulary.
     const vocabulary = meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, domain.vocabulary)
     if (args.layer && args.layer !== ws.layer) return fail([`${where}: open layer ${args.layer} to edit its objects`], k)
-    if (ws.scope && (domain.vocabulary.objectKinds?.[name.startsWith('object.') ? args.kind : name.split('.')[0]]?.declares ?? opScope({ op: name, ...args })) !== ws.scope) return fail([`${where}: this is the ${opScope({ op: name, ...args })} workspace's to change, not the ${ws.scope} workspace's`], k)
+    const policy = operationKind(name, args, domain.vocabulary) ?? { declares: opScope({ op: name, ...args }) }
+    if (ws.scope && !declaresIn(policy, ws.scope)) return fail([`${where}: this is the ${opScope({ op: name, ...args })} workspace's to change, not the ${ws.scope} workspace's`], k)
     const wrong = validate(op.params, args, { vocabulary, levels: new Set(ws.levels.keys()) })
     if (wrong.length) return fail(wrong.map((p) => `${where}: ${p.at === '(root)' ? '' : `${p.at.slice(1)}: `}${p.says}`), k)
     try {
@@ -116,20 +117,31 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
   }
 }
 
+function operationKind(operation, args, vocabulary) {
+  const kind = operation.startsWith('object.') ? args.kind
+    : operation === 'text.set' ? (args.entry !== undefined ? 'entry' : args.section !== undefined ? 'section' : args.kind)
+      : operation.split('.')[0]
+  const name = Object.keys(vocabulary.objectKinds ?? {}).find(name => name === kind || vocabulary.objectKinds[name].objectKind === kind)
+  return name && kindPolicy(name, vocabulary)
+}
+
 // Tool results carry full names. Operations edit this layer's source spelling before writing it back.
 function sourceArguments(ws, operation, supplied, vocabulary) {
   const prefix = `${ws.packageId}/`
   const layerPrefix = `${ws.layer}/`
   const local = (value) => typeof value === 'string' && value.startsWith(layerPrefix) ? value.slice(layerPrefix.length) : typeof value === 'string' && value.startsWith(prefix) ? value.slice(prefix.length) : value
-  const selectors = [...meaningsOf(vocabulary).flatMap(meaning => meaning.selectors ?? []), 'level', 'entry', 'tag', 'relation', 'section', 'chapter', 'task', 'to', 'after']
-  const selected = Object.fromEntries(Object.entries(supplied).map(([key, value]) => [key, selectors.includes(key) ? local(value) : value]))
-  const gameObject = operation.startsWith('chapter.') || operation.startsWith('object.') && kindPolicy(supplied.kind, vocabulary).declares === 'game' || supplied.chapter !== undefined
+  const policy = operationKind(operation, supplied, vocabulary)
+  const gameObject = operation.startsWith('chapter.') || supplied.chapter !== undefined || ws.scope === 'game' && policy && declaresIn(policy, 'game')
   const gameLocal = value => typeof value === 'string' && value.startsWith(layerPrefix) ? value.slice(layerPrefix.length) : value
-  const source = (value, schema) => expandNames(value, gameObject ? ws.layer : ws.packageId, { objects: Object.fromEntries(Object.entries(ws.contentObjects ?? {}).map(([kind, values]) => [kind, Object.fromEntries(values)])), schema, vocabulary, resolve: gameObject ? gameLocal : local })
+  const objectLocal = gameObject ? gameLocal : local
+  const selectors = [...meaningsOf(vocabulary).flatMap(meaning => meaning.selectors ?? []), 'level', 'entry', 'tag', 'relation', 'section', 'chapter', 'task', 'to', 'after']
+  const isOverrideTarget = key => operation === 'text.override' && ['entry', 'section'].includes(key)
+  const selected = Object.fromEntries(Object.entries(supplied).map(([key, value]) => [key, selectors.includes(key) && !isOverrideTarget(key) ? objectLocal(value) : value]))
+  const source = (value, schema) => expandNames(value, gameObject ? ws.layer : ws.packageId, { objects: Object.fromEntries(Object.entries(ws.contentObjects ?? {}).map(([kind, values]) => [kind, Object.fromEntries(values)])), schema, vocabulary, resolve: objectLocal })
   const args = source(selected, operationsFor(vocabulary)[operation].params)
   if (operation.startsWith('kind.')) args.kind = local(args.kind)
-  if (operation.startsWith('object.') || operation.startsWith('text.') && args.kind !== undefined) args.name = local(args.name)
-  if (args.entry !== undefined) args.entry = local(args.entry)
+  if (operation.startsWith('object.') || operation.startsWith('text.') && args.kind !== undefined) args.name = objectLocal(args.name)
+  if (args.entry !== undefined && !isOverrideTarget('entry')) args.entry = objectLocal(args.entry)
   if (args.tag !== undefined) args.tag = local(args.tag)
   for (const meaning of meaningsOf(vocabulary)) meaning.sourceArguments?.({ args, operation, local })
   const targets = {

@@ -6,5 +6,9 @@
     "@glossary.entries.recurrence.body.1",
     "@glossary.entries.recurrence.body.2"
   ],
-  "see": ["base", "dp", "board"]
+  "see": [
+    "base",
+    "dp",
+    "circuit/board"
+  ]
 }

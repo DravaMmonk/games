@@ -6,5 +6,10 @@
     "@glossary.entries.manyWays.body.1",
     "@glossary.entries.manyWays.body.2"
   ],
-  "see": ["sweep", "lis", "coin", "wordBreak"]
+  "see": [
+    "table/sweep",
+    "lis",
+    "coin",
+    "wordBreak"
+  ]
 }

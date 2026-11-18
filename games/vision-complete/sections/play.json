@@ -1,0 +1,18 @@
+{
+  "title": "@section.play.title",
+  "values": [
+    "@vision-complete/game",
+    "@vision-complete/map",
+    "circuit/board",
+    "image/tests",
+    "image/details",
+    "@vision-complete/intro",
+    "circuit/layout",
+    "circuit/wiremode",
+    "image/bench",
+    "circuit/parts",
+    "image/score",
+    "image/views",
+    "image/training"
+  ]
+}

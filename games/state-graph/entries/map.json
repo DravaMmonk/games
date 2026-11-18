@@ -1,0 +1,11 @@
+{
+  "title": "@glossary.entries.map.title",
+  "body": [
+    "@glossary.entries.map.body.0",
+    "@glossary.entries.map.body.1"
+  ],
+  "see": [
+    "@state-graph/brief",
+    "circuit/parts"
+  ]
+}

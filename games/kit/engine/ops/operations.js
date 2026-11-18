@@ -310,17 +310,6 @@ export const OPERATIONS = {
   },
 }
 
-/** The text at `path` of a package file, as the package writes it (the game's own texts left out). */
-function packageText(ws, args, keys, vocabulary) {
-  const { value, schema } = textTarget(ws, args, vocabulary)
-  const where = args.in
-  if (where === 'game') fail(`${showPath(keys)} is the game's own text: edit it with text.set`)
-  if (shapeAt(schema, value, keys, { vocabulary })?.type !== 'text') fail(`${showPath(keys)} is not a text`)
-  const text = getAt(value, keys)
-  if (!textKey(text)) fail(`${showPath(keys)} is a text in no language: the game has nothing to put over it`)
-  return text
-}
-
 Object.assign(OPERATIONS, {
   'text.override': {
     about: t("这款游戏在包的一处文案上写它自己的（不改包里的原文）；value 为 null 时恢复原文"),
@@ -330,13 +319,19 @@ Object.assign(OPERATIONS, {
     }),
     apply(ws, args, { vocabulary }) {
       const { path, lang, value } = args
-      const selected = textTarget(ws, args, vocabulary)
+      const selected = textTarget(ws, args, vocabulary, { overriding: true })
       if (!isLanguageCode(lang)) fail(`unknown language code ${lang}`)
       const keys = parsePath(path)
-      const key = textKey(packageText(ws, args, keys, vocabulary))
-      const target = `overrides/${ws.packageId}/i18n/${lang}.json`
-      const old = ws.overrideFiles.get(target)?.[key] ?? null
+      if (args.in === 'game') fail(`${showPath(keys)} is the game's own text: edit it with text.set`)
+      if (shapeAt(selected.schema, selected.value, keys, { vocabulary })?.type !== 'text') fail(`${showPath(keys)} is not a text`)
+      const text = textKey(getAt(selected.value, keys))
+      if (!text) fail(`${showPath(keys)} is a text in no language: the game has nothing to put over it`)
+      const namespace = text.includes('/') ? text.split('/')[0] : ws.packageId
+      if (namespace.startsWith('@')) fail(`${showPath(keys)} is the game's own text: edit it with text.set`)
+      const target = `overrides/${namespace}/i18n/${lang}.json`
       const entries = { ...ws.overrideFiles.get(target) }
+      const key = Object.hasOwn(entries, text) ? text : text.replace(`${namespace}/`, '')
+      const old = entries[key] ?? null
       if (value === null) delete entries[key]
       else entries[key] = value
       if (Object.keys(entries).length) ws.overrideFiles.set(target, entries)
@@ -478,14 +473,21 @@ for (const action of ['put', 'set', 'remove']) OPERATIONS[`object.${action}`] = 
   },
 }
 
-function textTarget(ws, args, vocabulary) {
+function textTarget(ws, args, vocabulary, { overriding = false } = {}) {
+  const declaredTarget = (kind, name) => {
+    const schema = kindSchemas(vocabulary)[kind]
+    if (!overriding || name === undefined) return mapTarget(kind, ws.contentObjects[kind], schema)
+    const id = name.includes('/') ? name : `${ws.packageId}/${name}`
+    const value = ws.content().registries[kind]?.[id] ?? fail(`no ${kind} ${id}`)
+    return [{ id, value, schema, selector: { [kind]: id } }]
+  }
   const mapTarget = (kind, values, schema, name) => args[kind] === undefined ? [] : [{ id: args[kind], value: values.get(name ?? args[kind]) ?? fail(`no ${kind} ${args[kind]}`), schema, selector: { [kind]: args[kind], ...(kind === 'tag' && { member: args.member }) }, set: value => values.set(name ?? args[kind], value) }]
   const choices = [
     ...(args.level === undefined ? [] : [{ id: args.level, value: levelOf(ws, args.level), schema: vocabulary.level, selector: { level: args.level }, operation: 'level', set: value => ws.levels.set(args.level, value) }]),
-    ...mapTarget('entry', ws.contentObjects.entry, kindSchemas(vocabulary).entry),
+    ...declaredTarget('entry', args.entry),
     ...mapTarget('chapter', ws.contentObjects.chapter, CHAPTER),
     ...mapTarget('tag', ws.tags, OBJECT_SCHEMAS.tags, tagKey(args.member, args.tag)),
-    ...mapTarget('section', ws.contentObjects.section, kindSchemas(vocabulary).section),
+    ...declaredTarget('section', args.section),
     ...(args.in !== 'game' ? [] : [{ id: 'game', value: ws.game, schema: vocabulary.game, selector: { in: 'game' }, operation: 'game', set: value => { ws.game = value } }]),
     ...(args.kind === undefined ? [] : (() => {
       const objects = ws.contentObjects[args.kind]

@@ -50,18 +50,20 @@
 
 `engine/collections.js` 统一完成字段合并。嵌套对象列表用 `id` 定位成员，边用 `from`、`to`、可选的 `game` 定位，移除边时无需重复 `required`。独立包可向同一对象提交集合字段的增量补丁，纯集合贡献按加载顺序合并。整份替换或覆盖普通字段的独立覆盖要求明确依赖。成员来源存于 `sources[kind][name].collections[fieldPath][memberKey] = [layer, …]`。标签键用 `tagKey`，边键是 `[from,to,game或null]` 的 JSON，嵌套路径例如 `menus[qed/proof-and].values`。游戏配置的来源身份为 `sources.game["@<游戏>/config"]`，其中 `collections.chapters` 和 `collections.encyclopedia` 同样记录成员贡献。原始标签引用保留自身贡献来源，展开时可沿对应标签的同一份来源表查询成员。`overrideHistory` 保留覆盖前后值。
 
-**每种对象类型显式声明层权限。** `declares` 是 `package` 或 `game`，`overrides` 按覆盖层列出字段路径。`*` 允许全部字段，`$text` 允许 schema 中的文案字段。未列出的层和字段不能覆盖。包声明示例为 `{ "declares": "package", "overrides": { "package": ["*"], "game": ["$text"] } }`。内核类型的定义在 `kind-policy.js`，包类型在 `kinds/`，`layerProblems` 按同样的两个属性报告 `rule: "layer"`。
+**每种对象类型显式声明层权限。** `declares` 可以写 `"package"`、`"game"` 或 `["package", "game"]`，`overrides` 按覆盖层列出字段路径。`*` 允许全部字段，`$text` 允许 schema 中的文案字段和文案列表。未列出的层和字段不能覆盖。包声明示例为 `{ "declares": "package", "overrides": { "package": ["*"], "game": ["$text"] } }`。内核类型的定义在 `kind-policy.js`，包类型在 `kinds/`，`layerProblems` 按同样的两个属性报告 `rule: "layer"`。
 
 | 内核类型 | 谁能声明 | 包层覆盖 | 游戏层覆盖 |
 |---|---|---|---|
-| level、task、tag、entry、section、kind | package | 全部字段 | 文案 |
+| level、task、tag、kind | package | 全部字段 | 文案 |
+| entry（百科包） | package、game | 全部字段 | 文案、开放位置 `at`、相关词条 `see` |
+| section（百科包） | package、game | 全部字段 | 文案 |
 | relation | package | 全部字段 | 文案，requires 另允许 edges |
 | chapter、game | game | 无 | 全部字段 |
 | i18n | 各自语言表 | 文案键 | 文案键 |
 
 **检查命令**（`site/`）：`npm run check -- <游戏>` 查课程和选入的关；`npm run check -- --package <包>` 不生成课程，先查对象、引用、依赖和覆盖，再查元件的类型与设置，最后逐关检查参考解通过、naive 解失败。课程解锁、托盘引入来源、章和进度只在游戏上查。不写目标时查全部游戏，再查没有游戏玩的包；同名时用 `--game`、`--package` 区分。
 
-包和游戏各有 `i18n/<lang>.json`、`changes.jsonl`。游戏另有 `game.json`、`chapters/`，可有作者侧 `blueprint.json`、`pipeline.json`。`resolver.js` 读盘，`content.js` 组装；页面加载构建出的 `content.json` 和语言文件，`publish:content` 检查后只发布内容。文件按职责放，开发按对象做：Studio 聚合对象的定义、文案、标签、关系和覆盖，不要求作者来回找文件。
+包和游戏各有 `i18n/<lang>.json`、`changes.jsonl`。游戏另有 `game.json`、`chapters/`，安装百科时也可有 `entries/` 和 `sections/`，可有作者侧 `blueprint.json`、`pipeline.json`。`resolver.js` 读盘，`content.js` 组装；页面加载构建出的 `content.json` 和语言文件，`publish:content` 检查后只发布内容。文件按职责放，开发按对象做：Studio 聚合对象的定义、文案、标签、关系和覆盖，不要求作者来回找文件。
 
 ### 6.1.1 版本、锁定、发布与解析器
 

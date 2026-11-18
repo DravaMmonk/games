@@ -6,5 +6,9 @@
     "@glossary.entries.spectrum.body.1",
     "@glossary.entries.spectrum.body.2"
   ],
-  "see": ["fourier", "lowpass", "views"]
+  "see": [
+    "fourier",
+    "lowpass",
+    "image/views"
+  ]
 }

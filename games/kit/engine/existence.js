@@ -1,6 +1,14 @@
 import { dependencyIds } from './semver.js'
 // One existence check over public identities, independent of source files or future manifests.
-import { textKey } from './i18n.js'
+import { textEntries, textKey } from './i18n.js'
+import { REF } from './text.js'
+
+function collectTextReferences(text, schemas, emit, at) {
+  for (const [, kind, target] of text.matchAll(REF)) {
+    const reference = schemas.references?.[kind]
+    if (reference?.scoped) emit(reference.target, target, at)
+  }
+}
 import { shapeAt } from './schema.js'
 import { meaningsOf, kindMatches } from './kind-meanings.js'
 import { tagKey, tagName, kernelTags } from './tag-identity.js'
@@ -78,6 +86,7 @@ export function collectReferences(value, schema, schemas, emit, at) {
   if (schema.type === 'text') {
     const key = textKey(value) ?? (typeof value === 'string' && value.startsWith('@') ? value.slice(1) : null)
     if (key) emit('i18n', key, at)
+    else for (const [lang, text] of typeof value === 'string' ? [['', value]] : textEntries(value)) collectTextReferences(text, schemas, emit, lang ? fieldAt(at, lang) : at)
     return
   }
   if (Array.isArray(value)) value.forEach((child, index) => collectReferences(child, itemSchema, schemas, emit, `${at}[${index}]`))
@@ -92,6 +101,7 @@ export function collectReferences(value, schema, schemas, emit, at) {
 
 export function existenceProblems(layers, schemas, surfaces = publicSurfaces(layers, schemas)) {
   const targets = []
+  const catalogTexts = []
   const kindNames = objectKindNames(schemas.objectKinds)
   for (const layer of layers) {
     const emitter = (object, base) => (kind, target, path, member) => {
@@ -132,11 +142,20 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
         for (const [key, field] of Object.entries(value.fields ?? {})) schemaReferences(field, emit, fieldAt('fields', key))
       }
     }
-    for (const { namespace, lang, entries } of layer.textOverrides ?? []) for (const key of Object.keys(entries)) {
+    for (const [lang, entries] of Object.entries(layer.catalogs ?? {})) for (const [key, text] of Object.entries(entries)) {
+      if (typeof text !== 'string') continue
+      const name = key.includes('/') ? key : `${layer.id}/${key}`
+      catalogTexts.push({ name, text, emit: emitter({ kind: 'i18n', name }, `${layer.id}/i18n/${lang}.json`), path: key })
+    }
+    for (const { namespace, lang, entries } of layer.textOverrides ?? []) for (const [key, text] of Object.entries(entries)) {
       const name = key.includes('/') ? key : `${namespace}/${key}`
-      emitter({ kind: 'i18n', name, override: true }, `${layer.id}/overrides/${namespace}/i18n/${lang}.json.${key}`)('i18n', name, '')
+      const emit = emitter({ kind: 'i18n', name, override: true }, `${layer.id}/overrides/${namespace}/i18n/${lang}.json.${key}`)
+      emit('i18n', name, '')
+      catalogTexts.push({ name, text, emit, path: '' })
     }
   }
+  const usedKeys = new Set(targets.filter(ref => ref.kind === 'i18n' && ref.object.kind !== 'i18n').map(ref => ref.target))
+  for (const { name, text, emit, path } of catalogTexts) if (usedKeys.has(name)) collectTextReferences(text, schemas, emit, path)
   const entries = [...new Map([...surfaces.values()].flatMap(surface => [...surface.values()]).map(entry => [identity(entry.kind, entry.name, entry.member), entry])).values()]
   const byName = new Map()
   for (const entry of entries) {
@@ -154,7 +173,7 @@ export function existenceProblems(layers, schemas, surfaces = publicSurfaces(lay
     const owner = ownerOf(target)
     const author = layers.find(item => item.id === layer)
     const foreign = target.includes('/') || kind === 'package' || layers.some(item => item.id === owner)
-    const allowed = owner === layer || owner === 'kernel' || layer.startsWith('@') && dependencyIds(author.config).includes(owner) || dependencyIds(author.config).includes(owner)
+    const allowed = owner === layer || owner === 'kernel' || !owner.startsWith('@') && dependencyIds(author.config).includes(owner)
     const reason = !matches.length ? 'missing' : matches.length > 1 ? 'ambiguous' : foreign && !allowed ? 'undeclared dependency' : null
     if (reason) problems.push({ at, object, path, says: `${reason} target ${kind} ${target}${member ? ` (member ${member})` : ''}`, rule: 'exists', layer, kind, target, ...(member && { member }), reason })
   }

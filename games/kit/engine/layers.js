@@ -107,18 +107,27 @@ export function composeLayers(layers, schemas) {
     registries[kind][key] = kind === 'i18n' ? value : applyOverride(kind, before, override ? contribution : value, schemas, source.collections, layer.id)
   }
   // Text is composed first, then references resolve against the catalog visible to the whole assembly.
+  const authoredText = new Map()
   for (const layer of layers) {
     const { qualify } = contextFor(layer, layers, schemas)
     const words = (text) => qualify({ en: text }, { type: 'text' }).en
+    const ownText = { catalogs: {}, textOverrides: [] }
+    authoredText.set(layer.id, ownText)
     for (const [lang, entries] of Object.entries(layer.catalogs ?? {})) for (const [key, text] of Object.entries(entries)) {
       if (key === 'ui') continue
       if (key.includes('/') && !key.startsWith(`${layer.id}/`)) throw new Error(`${layer.id}: declare foreign wording ${key} in overrides`)
-      record('i18n', `${lang}:${fullName(layer.id, key)}`, words(text), layer, false)
+      const qualified = words(text)
+      ;(ownText.catalogs[lang] ??= {})[key] = qualified
+      record('i18n', `${lang}:${fullName(layer.id, key)}`, qualified, layer, false)
     }
     for (const { namespace, lang, entries } of layer.textOverrides ?? []) {
+      const override = { namespace, lang, entries: {} }
+      ownText.textOverrides.push(override)
       for (const [key, text] of Object.entries(entries)) {
         if (key.includes('/') && !key.startsWith(`${namespace}/`)) throw new Error(`${layer.id}: ${key} is outside override namespace ${namespace}`)
-        record('i18n', `${lang}:${fullName(namespace, key)}`, words(text), layer, true)
+        const qualified = words(text)
+        override.entries[key] = qualified
+        record('i18n', `${lang}:${fullName(namespace, key)}`, qualified, layer, true)
       }
     }
   }
@@ -139,7 +148,7 @@ export function composeLayers(layers, schemas) {
       for (const key of Object.keys(layer.config)) if (!['uses', 'kernel', 'version', 'kind', 'type', 'title', 'desc'].includes(key)) throw new Error(`${layer.id}/package.json: unknown field ${key}`)
       validateConfig(layer.config)
     }
-    const qualifiedLayer = { ...layer, config: layer.id.startsWith('@') ? texts(layer.config ?? {}, schemas.game, 'configuration') : layer.config, objects: [], overrides: [] }
+    const qualifiedLayer = { ...layer, ...authoredText.get(layer.id), config: layer.id.startsWith('@') ? texts(layer.config ?? {}, schemas.game, 'configuration') : layer.config, objects: [], overrides: [] }
     if (layer.id.startsWith('@')) {
       policyProblems.push(...layerProblems(layer.id, 'game', `${layer.id}/config`, qualifiedLayer.config, schemas.game, schemas))
       record('game', `${layer.id}/config`, qualifiedLayer.config, layer, false)

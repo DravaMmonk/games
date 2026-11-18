@@ -1,0 +1,7 @@
+{
+  "at": "qed/assume",
+  "see": [
+    "qed/assumption",
+    "qed/deduction"
+  ]
+}

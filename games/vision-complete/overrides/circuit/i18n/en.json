@@ -1,0 +1,12 @@
+{
+  "glossary.entries.layout.body.0": "On a desktop the screen is a workbench: the task, hint and parts list on the left, the board in the middle and the test panel on the right. Click a part in the list to drop it in a free spot on the board; drag a wire from the dot on the right of a part to another part; select a part or wire and press Delete to remove it.",
+  "glossary.entries.layout.body.1": "Drag an empty part of the board to pan, hold ⌘/Ctrl and scroll (or pinch) to zoom, and the corner buttons fit the whole circuit into view.",
+  "glossary.entries.layout.body.2": "On a phone it is a tall circuit board: the inputs at the top, the outputs at the bottom and two columns of slots in between. Tap a part in the tray at the bottom to drop it into a free slot, tap two dots to wire them, and tap a wired input to unplug it; hold a block to move it to another slot, or drag it back onto the tray to remove it. Tap a block to open its panel, with its description and settings.",
+  "glossary.entries.layout.body.3": "The phone’s bottom bar has “Undo”, the test details, “Clear” (tap twice) and “Run tests”. Both layouts edit the same circuit.",
+  "glossary.entries.parts.body.0": "Passing a level often unlocks a new part, listed in the passed window. A black box you have figured out becomes your <part-ref to=\"image/shift\"></part-ref>, and what you build by hand often becomes a ready-made part too, used directly from then on without your having to think about what is inside.",
+  "glossary.entries.parts.body.1": "An unlock can also be a new option in a setting.",
+  "glossary.entries.parts.title": "The components box and unlocking",
+  "glossary.entries.board.body.0": "Most levels ask you to build a circuit. The “Input” part holds the data the level gives you and the “Output” part is the result you hand in; each part also says whether it carries an image, a waveform or a number. In between you place parts and wire them together.",
+  "glossary.entries.board.body.1": "Every part has one or more input ports (such as a and b, or left and right) and a single output dot. A wire runs from one block’s output dot to another block’s input port: an output can feed many places, but each input port reads from one wire. Wires cannot form a loop, since a block cannot wait for itself to finish.",
+  "glossary.entries.board.title": "Building a circuit"
+}

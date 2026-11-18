@@ -79,7 +79,8 @@ test('the operation registry exposes no identity-changing operations', () => {
 })
 
 test('field edits, patches and replacements reject id changes before mutation', () => {
-  const { ws } = toy()
+  const { root } = toy()
+  const ws = openGame('toy', root)
   const base = level(ws, 'a1')
   const changed = { ...base, tasks: [{ id: 'new' }] }
   const before = ws.snapshot()
@@ -252,18 +253,19 @@ test('a game puts its own wording over a package text, which the package keeps; 
 })
 
 test('text.set edits one language at a field path and round trips', () => {
-  const { ws } = toy()
+  const { root, ws } = toy()
+  const pkg = openGame('toy', root)
   const before = level(ws, 'b1').brief
   const gameTitle = ws.game.title
-  const entryTitle = ws.contentObjects.entry.get('e').title
+  const entryTitle = pkg.contentObjects.entry.get('e').title
   roundTrip(ws, 'text.set', { level: 'b1', path: 'brief', lang: 'en', value: 'then' })
   assert.deepEqual(level(ws, 'b1').brief, { ...before, en: 'then' })
   roundTrip(ws, 'text.set', { level: 'b1', path: 'brief', lang: 'fr', value: 'ensuite' })
   assert.deepEqual(level(ws, 'b1').brief, { ...before, en: 'then', fr: 'ensuite' })
   roundTrip(ws, 'text.set', { in: 'game', path: 'title', lang: 'zh', value: '玩具' })
   assert.deepEqual(ws.game.title, { ...gameTitle, zh: '玩具' })
-  roundTrip(ws, 'text.set', { entry: 'e', path: 'title', lang: 'ja', value: '項目' })
-  assert.deepEqual(ws.contentObjects.entry.get('e').title, { ...entryTitle, ja: '項目' })
+  roundTrip(pkg, 'text.set', { entry: 'e', path: 'title', lang: 'ja', value: '項目' })
+  assert.deepEqual(pkg.contentObjects.entry.get('e').title, { ...entryTitle, ja: '項目' })
   assert.throws(() => run(ws, 'text.set', { level: 'b1', path: 'from', lang: 'en', value: 'x' }), /not a text/)
 })
 
@@ -302,7 +304,8 @@ test('preview, apply and undo a locale edit across a workspace reopen', async ()
 })
 
 test('entry.put, entry.patch and entry.remove edit the encyclopedia', () => {
-  const { ws } = toy()
+  const { root } = toy()
+  const ws = openGame('toy', root)
   roundTrip(ws, 'entry.put', { entry: 'f', data: { title: 'F', body: [] } })
   assert.deepEqual([...ws.contentObjects.entry.keys()], ['e', 'f'])
   roundTrip(ws, 'entry.patch', { entry: 'e', fields: { title: 'E2', at: null } })

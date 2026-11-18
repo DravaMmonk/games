@@ -1,0 +1,7 @@
+{
+  "at": "vision-complete/0-2",
+  "see": [
+    "@vision-complete/game",
+    "@vision-complete/intro"
+  ]
+}

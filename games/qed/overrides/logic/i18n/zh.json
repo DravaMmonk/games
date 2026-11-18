@@ -1,0 +1,3 @@
+{
+  "glossary.entries.box.body.2": "输出 A → B 时，本框的临时<wiki-ref to=\"qed/assumption\"></wiki-ref>被<b>解除</b>：结论不再依赖它，但其他前提和外层假设仍然保留。目标不能依赖未解除的临时假设。折叠框只是改变显示，不会解除假设。"
+}

@@ -1,0 +1,9 @@
+{
+  "title": "@section.play.title",
+  "values": [
+    "@qed/map",
+    "logic/circuit",
+    "circuit/board",
+    "logic/box"
+  ]
+}

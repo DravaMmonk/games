@@ -1,0 +1,13 @@
+{
+  "glossary.entries.bench.body.0": "Not every level is a circuit. A <b>bench</b> is a figure you can work with your hands: drag things, turn knobs, push sliders, and the figure changes at once, showing live whether the goals are met.",
+  "glossary.entries.bench.body.1": "One kind of bench holds just a black box: pick test pictures to feed in, compare what goes in with what comes out, then say what it did. Experimenting before concluding is the most reliable way to get to know an unfamiliar tool.",
+  "glossary.entries.bench.title": "Benches",
+  "glossary.entries.score.body.0": "Circuit levels are scored on two things: <b>parts</b> is how many parts you placed, and <b>cost</b> is how many arithmetic operations it takes to compute one output pixel. Lower cost is better; at equal cost, fewer parts wins.",
+  "glossary.entries.score.body.1": "Your best score for each level is kept and shown on the map beside the passed level. The score does not usually affect passing, so you can come back later and improve it.",
+  "glossary.entries.score.body.2": "A few levels set a limit, such as a maximum cost or a maximum number of parts. The limit is shown under the score, and until it is met, passing every test does not complete the level.",
+  "glossary.entries.score.title": "Score and limits",
+  "glossary.entries.views.body.0": "Everything in a circuit is a grid of numbers, but you can draw it in different ways. A single number is drawn as a reading and a single row as a waveform; a 2-D image starts out drawn as pixels, and later levels bring in four more ways: profile, terrain, spectrum and slope.",
+  "glossary.entries.views.body.1": "“Pixels” draws brightness as grey; an image with negative values puts 0 at mid-grey. “Terrain” treats brightness as height: blurring rounds off the hills and edges are cliffs. “Slope” draws contour lines and arrows pointing where the image brightens fastest. “Profile” draws the brightness along one row as a curve; drag on the picture to change row. <part-ref to=\"image/spectrum\"></part-ref> shows how strong the wave at each frequency is, with frequency (0, 0) at the centre.",
+  "glossary.entries.views.body.2": "Each part can switch its own view; on a desktop, “Draw all as” at the bottom left of the board switches every image part at once, and the button beside it restores the level’s default views. Changing the view does not change the circuit and needs no new test run.",
+  "glossary.entries.views.title": "Ways of drawing"
+}

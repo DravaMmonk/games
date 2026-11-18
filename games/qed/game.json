@@ -29,7 +29,7 @@
     "@qed/inductive"
   ],
   "encyclopedia": [
-    "qed/play",
+    "@qed/play",
     "qed/prop",
     "qed/entries-proof",
     "qed/fol",

@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import { reordered, shifted } from './list-order.js'
 import { listPatch, objectOverride, setPatch } from './collection-edit.js'
 import { groupTree, treeMoves } from './groups.js'
+import { groupHierarchy, groupsOf, ungrouped } from './list-groups.js'
 
 test('moving in a list, by a drop or a key', () => {
   assert.deepEqual(reordered(['a', 'b', 'c', 'd'], ['d'], { before: 'b' }), ['a', 'd', 'b', 'c'])
@@ -48,4 +49,21 @@ test('a level dropped into another group changes the tags’ members, never an o
     { op: 'tag.set', tag: 'two', member: 'level', path: 'values', value: ['c', 'a'] },
   ])
   assert.deepEqual(treeMoves(['demo/c'], { group: 'level:base/far', at: 0 }, content, 'demo'), [{ op: 'tag.set', tag: 'two', member: 'level', path: 'values', value: [] }])
+})
+
+test('nested part groups keep children and their members out of the parent rows', () => {
+  const kind = 'circuit/part'
+  const key = name => `${kind}:demo/${name}`
+  const tag = values => ({ kind, values })
+  const partIds = ['demo/a', 'demo/b', 'demo/loose']
+  const content = { registries: {
+    [kind]: Object.fromEntries(partIds.map(id => [id, {}])),
+    tag: { [key('parent')]: tag(['#demo/child', 'demo/a']), [key('child')]: tag(['demo/b']) },
+  } }
+  const flat = groupsOf(content, kind, 'tag', { nestedTags: true })
+  const [parent] = groupHierarchy(flat)
+  assert.equal(parent.full, key('parent'))
+  assert.deepEqual(parent.members, ['demo/a'])
+  assert.deepEqual(parent.children.map(child => [child.full, child.members]), [[key('child'), ['demo/b']]])
+  assert.deepEqual(ungrouped(partIds, flat), ['demo/loose'])
 })

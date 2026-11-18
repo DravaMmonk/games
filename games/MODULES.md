@@ -274,7 +274,7 @@ packages/<包>/
 
 | 种类 | 是什么 | 包 |
 |---|---|---|
-| `play` | 玩法：对象类型、玩法、显示、编辑器等机制，带代码 | `circuit`、`logic`、`image`、`table`、`text`、`rows`、`tick` |
+| `play` | 玩法：对象类型、玩法、显示、编辑器等机制，带代码 | `circuit`、`logic`、`image`、`table`、`text`、`tick` |
 | `ext` | 可选的功能层，挂在内核或某种玩法上 | `progress`、`wiki`（第 15 步） |
 | `course` | 一款游戏自己的内容 | `qed`、`vision-complete`、`state-graph` |
 | `lib` | 可复用的数据结构、算法和底层能力 | `scalar`、`imglib`、`cvlib`、`mllib` |
@@ -333,7 +333,7 @@ packages/<包>/
 - **引用种类由它登记**：将第 19 步已通过登记接口安装的 `wiki` 交给百科包（内核只自带 `level`）；`<wiki-ref to="…">` 的写法不变，改由百科包认、检查目标存在、点开跳到词条。
 - **界面由它提供**：百科页（`Encyclopedia.jsx`）、未读标记、地图上的「百科」按钮、关卡里打开百科的入口、通关窗口里「解锁了哪些词条」（`openedEntries`），都由百科包的视图登记。列表加文章页的通用界面 `Library.jsx` 留在内核（元件册、工坊也用它）。
 - **游戏配置**：`game.json` 的 `encyclopedia`（分组顺序）成为百科包登记的游戏字段；没装百科包的游戏写了它，检查报错。
-- **谁依赖它**：有词条的包（`qed`、`vision-complete`、`state-graph`，以及带一两个词条的 `rows`、`tick`）在 `uses` 里加 `wiki`；三款主力游戏在 `packages` 里加它；`comp90086` 不加。
+- **谁依赖它**：有词条的包（`qed`、`vision-complete`、`state-graph`，以及带一两个词条的 `tick`）在 `uses` 里加 `wiki`；三款主力游戏在 `packages` 里加它；`comp90086` 不加。
 - **验收**：三款游戏的百科、未读点、通关解锁的词条、`<wiki-ref>` 跳转都不变；COMP90086 没有百科入口；存档戳不变；全部检查、零内容验收通过。
 
 **顺序。** 依赖第 19 步（引用种类和能力由包登记），所以排在第 19 步之后。百科拆完，再按同样的办法看关卡地图、通关窗口、存档能不能也做成可选的，最后接上 `plugin-game.jsx` 现有的展示路径，让展示页只装 `circuit` 就能跑。

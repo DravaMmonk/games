@@ -2,7 +2,7 @@
 import { after, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { dirname, join } from 'node:path'
-import { cpSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { proofsRoot, installImageFixture } from './fixture.js'
 import { openGame } from '../../../games/kit/engine/ops/workspace.js'
 import { runChangeset } from '../../../games/kit/engine/ops/changeset.js'
@@ -20,7 +20,7 @@ import { fresh } from '../../../games/kit/shell/progress.js'
 const roots = []
 after(async () => { await closeGames(); roots.forEach(root => rmSync(root, { recursive: true, force: true })) })
 
-test('three packages compose across logic, image and rows, retain layered text and play each standalone level', async () => {
+test('logic and image compose in one game and retain layered text in standalone play', async () => {
   const { root, id } = proofsRoot()
   roots.push(root)
   installImageFixture(root)
@@ -36,17 +36,13 @@ test('three packages compose across logic, image and rows, retain layered text a
     tasks: [{ id: 'same', play: 'image/graph', brief: '@brief', scene: 'image/filter', setup: { target: 'image/same' },
       tests: [{ label: 'Square', in: 'image/square' }], hidden: [{ label: 'Disk', in: 'image/disk' }], solution: ['out <- in'] }],
   })
-  for (const side of ['core', 'view', 'kinds']) cpSync(new URL(`../../rows/${side}`, import.meta.url), join(root, 'packages/rows', side), { recursive: true })
-  put('packages/rows/package.json', { kind: 'lib', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0' } })
-  put('packages/sums/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { 'z-pictures': '^1.0.0', rows: '^0.0.0' } })
-  put('packages/sums/i18n/en.json', { title: 'A sum', brief: 'Complete the sum.' })
-  put('packages/sums/overrides/z-pictures/i18n/en.json', { brief: 'Keep every pixel.' })
-  put('packages/sums/levels/add.json', { title: '@title', tasks: [{ id: 'add', play: 'rows/equation', brief: '@brief', rows: [{ total: 5, chips: [0, 2, 3], reference: '2 + 3', naive: '0 + 3' }] }] })
+  put('packages/z-copy/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { 'z-pictures': '^1.0.0' } })
+  put('packages/z-copy/overrides/z-pictures/i18n/en.json', { brief: 'Keep every pixel.' })
   // Select packages through the public operation boundary; no image-only game fields are needed.
   const selected = await runChangeset(openGame(id, root), { ops: [
     ...['imglib', 'cvlib', 'mllib'].map(id => ({ op: 'game.package.add', package: id, range: '^0.0.0' })),
-    { op: 'game.package.add', package: 'image', range: '^0.0.0' }, { op: 'game.package.add', package: 'rows', range: '^0.0.0' }, { op: 'game.package.add', package: 'z-pictures', range: '^1.0.0' }, { op: 'game.package.add', package: 'sums', range: '^1.0.0' },
-    { op: 'chapter.set', chapter: 'ground', path: 'levels', value: [`${id}/given`, `${id}/apply`, `${id}/suppose`, 'z-pictures/same', 'sums/add'] },
+    { op: 'game.package.add', package: 'image', range: '^0.0.0' }, { op: 'game.package.add', package: 'z-pictures', range: '^1.0.0' }, { op: 'game.package.add', package: 'z-copy', range: '^1.0.0' },
+    { op: 'chapter.set', chapter: 'ground', path: 'levels', value: [`${id}/given`, `${id}/apply`, `${id}/suppose`, 'z-pictures/same'] },
   ] }, { write: true })
   assert.equal(selected.ok, true, selected.problems.join('\n'))
   const content = readContent(id, root)
@@ -60,19 +56,16 @@ test('three packages compose across logic, image and rows, retain layered text a
   const spec = runtime.spec(content)
   assert.deepEqual(spec.levels.map(level => level.id), content.sourceChapters[0].levels)
   assert.deepEqual((await checkGame(content, { domain: runtime, root })).filter(line => line.fail), [])
-  // The same package closure opens each task without a chapter or unlock state.
-  const support = readPackage('sums', root)
-  for (const [level, text] of [['z-pictures/same', 'out <- in'], ['sums/add', '2 + 3']]) {
-    const shell = packageLevel(support, level)
-    const { shell: game, hook, course } = await loadPlay(shell)
-    const play = createPlay({ game, hook, course, record: newSession({ game: shell.id, session: 'mixed', progress: fresh() }) })
-    assert.equal(play.attempt(text).pass, true, level)
-  }
+  // The overlay package can open the image task without a chapter or unlock state.
+  const support = readPackage('z-copy', root)
+  const shell = packageLevel(support, 'z-pictures/same')
+  const standalone = await loadPlay(shell)
+  const solo = createPlay({ game: standalone.shell, hook: standalone.hook, course: standalone.course, record: newSession({ game: shell.id, session: 'mixed', progress: fresh() }) })
+  assert.equal(solo.attempt('out <- in').pass, true)
   const { shell: game, hook, course } = await loadPlay(content)
   const play = createPlay({ game, hook, course, record: newSession({ game: id, session: 'mixed-game', progress: fresh() }) })
   assert.equal(play.attempt('goal <- p').pass, true)
   play.giveUp()
   play.giveUp()
   assert.equal(play.attempt('out <- in').pass, true)
-  assert.equal(play.attempt('2 + 3').pass, true)
 })

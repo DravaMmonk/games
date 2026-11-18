@@ -2,7 +2,6 @@ import { EyeOff } from 'lucide-react'
 import { useLayoutEffect, useRef } from 'react'
 import { L, tr } from './i18n.js'
 
-import { useEmbed } from './embed.js'
 
 import { usePointerSession } from '../views/usePointerSession.js'
 
@@ -20,17 +19,13 @@ import { usePointerSession } from '../views/usePointerSession.js'
  * `results` left out: the level has no results pane (the run bar alone, at the right); null: the pane is there, empty
  * until there is something to show. The line along the strip's top drags it taller or shorter, and the height is
  * remembered for every game.
- *
- * Embedded in a note (embed.js), the level is a block in the page's flow: the task on top, the stage under it (a board
- * at a set height), then the strip as tall as what it holds.
  */
 export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, dock }) {
   const own = useRef(null)
   const rootRef = given ?? own
-  const embed = useEmbed()
   const pane = results !== undefined
   return (
-    <div ref={rootRef} className={`level ${embed ? 'is-embed' : ''} ${className}`}>
+    <div ref={rootRef} className={`level ${className}`}>
       <aside className="brief">{taskNav}{brief}</aside>
       <div className={`stage-pane ${scroll ? 'is-scroll' : 'is-board'}`}>
         {tools && <div className="wb-toolbar" aria-label={tr('工具', 'Tools')}>{tools}</div>}
@@ -38,7 +33,7 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
       </div>
       {(pane || dock || tests || status) && (
         <section className="wb-strip">
-          {pane && !embed && <WorldHandle rootRef={rootRef} />}
+          {pane && <WorldHandle rootRef={rootRef} />}
           {(tests || status) && (
             <header className="wb-strip-head">
               <div className="wb-tests">{tests}</div>

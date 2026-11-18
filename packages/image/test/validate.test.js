@@ -19,7 +19,7 @@ test('the image author check accepts a naive board caught only by a hidden case'
     })
     return reportRuns(runs, { score: { nodes: 1, cost: 1 } })
   }
-  const lines = validate({ levels: [{ id: task.id, tasks: [task] }], intros: {}, kit: { runLevel }, course: { notes: true }, publishedBy: () => [] })
+  const lines = validate({ levels: [{ id: task.id, tasks: [task] }], intros: {}, kit: { runLevel }, packageTarget: { id: "sample" }, publishedBy: () => [] })
   assert.equal(lines.some((line) => line.fail), false)
   assert.match(lines.at(-1).text, /naive fails \(hidden test\)/)
   assert.deepEqual(inspected, [
@@ -30,7 +30,7 @@ test('the image author check accepts a naive board caught only by a hidden case'
 
 test('package previews allow omitted introductions but still check authored pages and tasks', () => {
   const task = { id: 'sample', kind: 'board', title: 'Sample', board: 'sample', verify: () => '' }
-  const spec = { levels: [{ id: task.id, tasks: [task] }], intros: {}, kit: {}, course: {}, publishedBy: () => [] }
+  const spec = { levels: [{ id: task.id, tasks: [task] }], intros: {}, kit: {}, publishedBy: () => [] }
   assert.ok(validate(spec).some((line) => line.fail && line.text.includes('没有引言')))
   const preview = { ...spec, packageTarget: { id: 'sample' } }
   assert.ok(validate(preview).every((line) => !line.fail))

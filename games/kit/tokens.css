@@ -1,9 +1,4 @@
-/* Shared tokens for everything in the study notes: the notes site, Fieldnotes, the games hub and the games (状态之图,
-   Vision Complete). Components built on them live beside this file: ui.css (top bar, buttons, page hero, cards) and
-   prose.css (note typography). A theme is only a
-   token set (paper, night, blueprint), chosen by data-theme on <html>; kit/theme.js keeps the choice. The last
-   block holds what the games share beyond the page palette: failure and selection colors, card shadows, the
-   hues that tell wires and tiles apart, and the robot's colors. */
+/* Shared game and Studio typography, spacing, and color tokens. The HTML data-theme attribute selects the palette. */
 :root {
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
   --serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Noto Serif SC', 'Songti SC', 'Noto Serif CJK SC', 'Source Han Serif SC', 'SimSun', serif;
@@ -43,7 +38,7 @@
   --gap-group: var(--sp-5);
   --gap-section: var(--sp-7);
 
-  /* Corners by role: marks in text and the notes' engraved blocks, small parts, controls and part cards, panels and
+  /* Corners by role: marks in text, small parts, controls and part cards, panels and
      sheets, dots and pills. A nested corner is its container's less the space between them. */
   --r-xs: 2px;
   --r-sm: 6px;

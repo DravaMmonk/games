@@ -11,16 +11,16 @@ import { introProblems } from './intros.js'
 
 const FIGURES = ['conv-press', 'ransac-pegboard', 'surface-bump']
 
-/** spec: { levels, intros, kit, course, packageTarget?, publishedBy } (kit: the course's, engine/kit.js; publishedBy(key) the built
+/** spec: { levels, intros, kit, packageTarget?, publishedBy } (kit: the course's, engine/kit.js; publishedBy(key) the built
  *  parts a task runs inside). Returns [{ text, fail?, level? }]: a line
- *  about one level names it. Notes editions and independent package levels may omit introductions. */
-export function validate({ levels, intros, kit, course, publishedBy, packageTarget = false, figures = FIGURES, memo = (_id, _name, f) => f() }) {
+ *  about one level names it. Independent package levels may omit introductions. */
+export function validate({ levels, intros, kit, publishedBy, packageTarget = false, figures = FIGURES, memo = (_id, _name, f) => f() }) {
   const { runLevel } = kit
   const out = []
   const failAt = (text, level) => out.push({ text, fail: true, ...(level ? { level } : {}) })
 
   for (const level of levels) {
-    if ((course.notes || packageTarget) && !intros[level.id]?.length) continue
+    if (packageTarget && !intros[level.id]?.length) continue
     for (const problem of introProblems(intros[level.id], level, figures, kit.types)) failAt(`${level.id}: 引言：${problem}`, level.id)
   }
 

@@ -6,7 +6,6 @@ import { RunResults } from './RunDock.jsx'
 import { useEdit, useMark } from './edit.js'
 import { AddMark } from './EditMarks.jsx'
 import { default as Workbench } from './Workbench.jsx'
-import { useEmbed } from './embed.js'
 import { TASK_BOARD_SECTIONS } from '../engine/plays.js'
 
 // The level screen's frame on a phone (PhonePage; on a desktop, Workbench.jsx), and what goes in it in every game:
@@ -29,20 +28,16 @@ export function Level({ phone, stage, ...props }) {
  * scrolls: task navigation, the foldable 任务 card, the play area, and what a run or check gives (`results`); at the
  * bottom the tools and the run bar, pinned. A run, a step or a check brings the results into view
  * (RunDock). `results` null or left out: nothing below the play area; `brief` null: no task card.
- *
- * Embedded in a note (embed.js), the page is a block in the note's flow: nothing pinned and nothing scrolling of its
- * own, the task open above the play area, the tools and the run bar under the results.
  */
 export function PhonePage({ rootRef, scrollRef, onScroll, className = '', brief, taskNav, tests, children, tools, results, dock }) {
   const box = useRef(null)
-  const embed = useEmbed()
   const shown = useMemo(() => ({ show: () => requestAnimationFrame(() => box.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' })) }), [])
   return (
-    <div ref={rootRef} className={`level-phone ${embed ? 'is-embed' : ''} ${className}`}>
+    <div ref={rootRef} className={`level-phone ${className}`}>
       {tests}
       <div ref={scrollRef} className="pl-scroll" onScroll={onScroll}>
         {taskNav}
-        {brief && (embed ? <div className="task-body">{brief}</div> : <TaskCard>{brief}</TaskCard>)}
+        {brief && <TaskCard>{brief}</TaskCard>}
         {children}
         {results && <section ref={box} className="pl-results" aria-label={tr('结果', 'Results')}>{results}</section>}
       </div>
@@ -68,11 +63,10 @@ export function TaskCard({ children }) {
 
 /**
  * The play selects the task board's content. Task switching and skipping remain available regardless of its content.
- * Hints open one at a time. On phones and in notes, the surrounding page supplies the level title.
+ * Hints open one at a time. On phones, the surrounding page supplies the level title.
  */
 export function Brief({ game, level, sections = TASK_BOARD_SECTIONS, text, tip, hint, statement, readouts, children }) {
   const [shown, setShown] = useState(0) // how many hints are open
-  const embed = useEmbed()
   const edit = useEdit()
   const mark = useMark()
   const body = text ?? level.brief
@@ -85,7 +79,7 @@ export function Brief({ game, level, sections = TASK_BOARD_SECTIONS, text, tip, 
   const more = shown < hints.length
   return (
     <>
-      {sections.includes('title') && !embed && (
+      {sections.includes('title') && (
         <header className="brief-head">
           <span className="brief-id">{game.levelLabel(level)}</span>
           <h1 {...mark('title', 'level')}>{L(level.title)}</h1>

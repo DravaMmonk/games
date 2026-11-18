@@ -1,6 +1,6 @@
 ---
 name: turing-complete-games
-description: Design, extend or review the learning games in study-notes (games/ and packages/, built on games/kit) — curricula, chapters, levels, parts, stages, and component-wiring interaction.
+description: Design, extend or review the learning games in the games repository (games/ and packages/, built on games/kit) — curricula, chapters, levels, parts, stages, and component-wiring interaction.
 ---
 
 # 类图灵完备学习游戏

@@ -11,7 +11,7 @@
 | `logic` | 公式、证明核、合一、证明机、规则板、符号与编辑器 |
 | `text` | 文字作答、匹配规则、答案判定和输入视图 |
 
-`vision-complete` 持有专用实验台、场景和显示；与 `comp90086` 共用的 filter 场景、obscura/wave 模型及暗箱显示由 `image` 提供。两个内容包分别声明自己的 power、box 对象类型。`state-graph` 持有具体世界、机器人、手动玩法、课程判定和插画，任务使用 `state-graph/*`，示范面板用 `panel`。`qed` 持有 `qed/wordset`、词典投影和地图插画。
+`vision-complete` 持有专用实验台、场景和显示，并声明自己的 power、box 对象类型。filter 场景、obscura/wave 模型及暗箱显示由 `image` 提供。`state-graph` 持有具体世界、机器人、手动玩法、课程判定和插画，任务使用 `state-graph/*`，示范面板用 `panel`。`qed` 持有 `qed/wordset`、词典投影和地图插画。
 
 按专题需要选择已有包；新的机制放进包的核心与视图。依赖只声明实际使用的提供者。值类型、运算、读写与判定由相应包维护，共用界面组件通过公开导出复用。
 

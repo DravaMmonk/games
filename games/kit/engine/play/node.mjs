@@ -25,7 +25,7 @@ let loadedLang = null
 export async function loadPlay(game, lang = 'en') {
   if (loadedLang && loadedLang !== lang) throw new Error(`this process plays in ${loadedLang}, not ${lang}`)
   if (!loadedLang) {
-    globalThis.localStorage.setItem('fieldnotes.lang', lang)
+    globalThis.localStorage.setItem('games.lang', lang)
     loadedLang = lang
   }
   const content = typeof game === 'string' ? readContent(game) : game

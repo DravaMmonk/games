@@ -73,7 +73,7 @@ function playable({ intro: _, play, ...source }, kit, keep, items) {
  * content: { eras (games/design/README.md 2: each with its chapter { title, label, question }), levels (in any order: the
  * eras give the order), levels with opensViews (pixels is there from the start), trays: { tray: { name, desc, items } } (../../course.js trays),
  * replaces: { part: [part] } the parts a part supersedes
- * once met }, mode: 'notes' for a notes edition (every level open, no audit).
+ * once met }.
  * A level is a list of tasks (../../engine/tasks.js), each read as the level with the task's fields over it. A level
  * names only the parts it brings in (`adds`) and the tray it plays with (`tray`): every part met or built before it
  * carries into it, as far as its tray lists it; see ../../course.js reach and offer. What a task unlocks, the tasks after it hold at once (`opens`); a

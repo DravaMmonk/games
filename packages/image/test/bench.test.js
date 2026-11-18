@@ -101,8 +101,8 @@ test('numbers and thresholds as a goal row writes them', () => {
 })
 
 test('a bench is checked as data: knobs, goal, layout blocks and display items with their parameters', () => {
-  const content = readPackage('comp90086')
-  const level = content.levels.find(level => level.id === 'comp90086/projection')
+  const content = readPackage('vision-complete')
+  const level = content.levels.find(level => level.id === 'vision-complete/0-8')
   const bench = level.tasks[0].bench
   const vocabulary = contentSchemas.get(content)
   const schema = shapeAt(vocabulary.level, level, ['tasks', 0, 'bench'], { vocabulary })

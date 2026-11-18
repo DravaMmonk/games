@@ -296,7 +296,7 @@ export default function GameShell({ game, store, author = null }) {
   return (
     <SettingsContext.Provider value={game}><SheetHost.Provider value={level || area ? viewportRoot : null}>
       <div ref={setViewportRoot} className={`game ${level || area ? 'is-playing' : 'is-mapping'}`} data-game={game.id}>
-        {/* The kit's top bar (games/kit/ui.css), the same on every page of the notes and games. */}
+        {/* The kit's top bar (games/kit/ui.css), shared with the games hub. */}
         <TopBar className="game-bar" game={game} theme={theme} onTheme={setTheme}>
           {level ? (
             <>
@@ -320,7 +320,7 @@ export default function GameShell({ game, store, author = null }) {
           {intro && <button className="kit-btn is-label bar-button intro-button" onClick={() => setIntroFor(introKey)} aria-label={tr('引言')}><BookOpen size={16} /><span>{tr('引言')}</span></button>}
           {edit && !intro && <button className="kit-btn is-label bar-button intro-button" onClick={() => edit.add({ at: 'intro', scope: taskAt === 0 ? 'level' : 'task' })}><BookOpen size={16} /><span>{tr('+ 引言')}</span></button>}
           {level && game.glossary && (
-            <button className="kit-btn is-label bar-button notes-button wiki-button" onClick={() => setSheet('wiki')} aria-label={tr(`百科${wiki.unread.length ? `（${wiki.unread.length} 条未读）` : ''}`, `Encyclopedia${wiki.unread.length ? ` (${wiki.unread.length} unread)` : ''}`)}>
+            <button className="kit-btn is-label bar-button wiki-button" onClick={() => setSheet('wiki')} aria-label={tr(`百科${wiki.unread.length ? `（${wiki.unread.length} 条未读）` : ''}`, `Encyclopedia${wiki.unread.length ? ` (${wiki.unread.length} unread)` : ''}`)}>
               <BookMarked size={16} /><span>{tr('百科')}</span>{wiki.unread.length > 0 && <i className="wiki-dot" />}
             </button>
           )}

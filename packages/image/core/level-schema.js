@@ -113,8 +113,8 @@ export const levelSchema = {
                     "type": "str",
                     "pattern": "^[a-z0-9-]+$",
                     "about": {
-                      "zh": "笔记插图的名字（site/src/figures 登记的 id，检查时核对）",
-                      "en": "the id of one of the notes’ figures (as site/src/figures registers it, checked)"
+                      "zh": "交互图示的名字（site/src/figures 登记的 id，检查时核对）",
+                      "en": "the id of an interactive game figure (as site/src/figures registers it, checked)"
                     }
                   },
                   "caption": {

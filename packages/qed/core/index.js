@@ -1,6 +1,6 @@
 import { S } from 'kernel'
 
-const vocabularyProjection = Symbol.for('study-notes.qed-vocabulary')
+const vocabularyProjection = Symbol.for('games.qed-vocabulary')
 
 /** QED selects named reading dictionaries; logic also accepts inline dictionaries. */
 export function register(kernel) {

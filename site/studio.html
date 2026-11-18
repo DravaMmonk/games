@@ -12,13 +12,13 @@
     <title>Studio</title>
     <script>
       try {
-        const saved = localStorage.getItem('fieldnotes.theme')
+        const saved = localStorage.getItem('games.theme')
         document.documentElement.dataset.theme = ['paper', 'night', 'blueprint'].includes(saved) ? saved : matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'paper'
       } catch {
         document.documentElement.dataset.theme = 'paper'
       }
       try {
-        const saved = localStorage.getItem('fieldnotes.lang')
+        const saved = localStorage.getItem('games.lang')
         document.documentElement.lang = saved === 'en' ? 'en' : 'zh-CN'
       } catch {
         document.documentElement.lang = 'zh-CN'

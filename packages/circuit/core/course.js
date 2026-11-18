@@ -2,13 +2,13 @@ import { layout } from 'kernel'
 import { partDefinition } from './part-definition.js'
 import { trayMembers } from './trays.js'
 
-export function defineCourse({ levels, eras = null, plan: suppliedPlan = null, complete = true, trays = {}, tray: trayOf = () => null, primitives = [], adds = () => [], needs = () => null, builds = () => [], opens = () => [], gives = () => [], withholds = () => [], machine = () => null, uses = () => [], can = () => null, replaces = () => [], local = () => false, needed = () => null, featured = () => [], boards = () => [], carries = () => [], references = null, notes = false, available = null, availableItems = null, parts = {}, awards = () => [] }) {
+export function defineCourse({ levels, eras = null, plan: suppliedPlan = null, complete = true, trays = {}, tray: trayOf = () => null, primitives = [], adds = () => [], needs = () => null, builds = () => [], opens = () => [], gives = () => [], withholds = () => [], machine = () => null, uses = () => [], can = () => null, replaces = () => [], local = () => false, needed = () => null, featured = () => [], boards = () => [], carries = () => [], references = null, available = null, availableItems = null, parts = {}, awards = () => [] }) {
   const index = new Map(levels.map((l, i) => [l.id, i]))
   const setBy = new Map()
   for (const l of levels) for (const f of l.unlocks ?? []) if (!setBy.has(f)) setBy.set(f, l.id)
   /** The level that builds a part: the first to set the flag it needs. */
   const builder = (part) => (needs(part) ? setBy.get(needs(part)) ?? null : null)
-  const plan = suppliedPlan ?? (eras ? layout(eras, { notes }) : null)
+  const plan = suppliedPlan ?? (eras ? layout(eras) : null)
   // Everything solved before a level can open: with eras, what it requires, all the way back; without, every level
   // before it in play order.
   const ancestors = new Map()
@@ -30,7 +30,7 @@ export function defineCourse({ levels, eras = null, plan: suppliedPlan = null, c
   const stages = new Map(Object.entries(parts).map(([part, definition]) => [part, { part, id: part, index: 0, definition }]))
   const course = { stages, partOf: id => id, startStages: primitives, awards, levels, eras, plan, complete, trays, tray,
     available, availableItems, primitives: new Set(primitives), adds, needs, builds, opens, gives, withholds, machine, uses, can,
-    replaces, local, needed, featured, boards, carries, references, notes, index, builder, before: (a, b) => up(b).has(a),
+    replaces, local, needed, featured, boards, carries, references, index, builder, before: (a, b) => up(b).has(a),
     registerParts(definitions) {
       for (const [part, definition] of Object.entries(definitions)) if (!parts[part]) {
         parts[part] = definition

@@ -56,6 +56,7 @@ export default defineConfig(({ mode }) => ({
   resolve: { dedupe: ['react', 'react-dom', 'lucide-react', 'katex'] },
   plugins: [react(), localPaths(mode === 'studio'), gameApp(), studioApp()],
   server: {
+    ...(mode === 'studio' && { host: '127.0.0.1', port: 5274, strictPort: true }),
     fs: {
       allow: ['..', contentRoot()],
     },

@@ -17,7 +17,7 @@
     <title>%GAME_TITLE% — %GAME_EN%</title>
     <script>
       try {
-        const saved = localStorage.getItem('fieldnotes.theme')
+        const saved = localStorage.getItem('games.theme')
         document.documentElement.dataset.theme = ['paper', 'night', 'blueprint'].includes(saved) ? saved : matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'paper'
       } catch {
         document.documentElement.dataset.theme = 'paper'
@@ -26,7 +26,7 @@
       {
         let lang = 'zh'
         try {
-          const saved = localStorage.getItem('fieldnotes.lang')
+          const saved = localStorage.getItem('games.lang')
           lang = saved === 'zh' || saved === 'en' ? saved : /^zh\b/i.test(navigator.language || '') ? 'zh' : 'en'
         } catch {
           lang = /^zh\b/i.test(navigator.language || '') ? 'zh' : 'en'

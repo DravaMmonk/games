@@ -5,7 +5,7 @@ import { logicReports } from './baseline.js'
 export const registry = createCapabilityRegistry()
 module.register(registry)
 
-const vocabularyProjection = Symbol.for('study-notes.logic-vocabulary')
+const vocabularyProjection = Symbol.for('games.logic-vocabulary')
 
 export const meaning = {
   type: 'level', read: value => value, baselineReports: logicReports,

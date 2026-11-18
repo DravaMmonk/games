@@ -11,7 +11,7 @@ import { GLOSSARY } from './vocabulary.js'
 import { createRegistries, expandNames, fullName, registryOf } from './names.js'
 import { referenceResolver, readTag, expandReferences, expandRelations, assembleChapters } from './objects.js'
 
-const schemaKey = Symbol.for('study-notes.content-schema')
+const schemaKey = Symbol.for('games.content-schema')
 export const contentSchemas = {
   set(content, schemas) { Object.defineProperty(content, schemaKey, { value: schemas, enumerable: true, configurable: true }); return this },
   get: content => content?.[schemaKey],

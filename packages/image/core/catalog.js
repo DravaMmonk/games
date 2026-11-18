@@ -38,7 +38,7 @@ export const meaning = {
     }
     const level = base.level ? S.obj({ ...fields, tasks: S.list(S.either(base.level.fields.tasks.of, levelSchema.fields.tasks.of), { min: 1 }) }) : levelSchema
     const gameFields = { ...base.game.fields }
-    const ownGame = { box: S.opt(S.name('image/box')), power: S.opt(S.name('image/power')), mode: S.opt(S.oneOf(['notes'])) }
+    const ownGame = { box: S.opt(S.name('image/box')), power: S.opt(S.name('image/power')) }
     for (const [key, schema] of Object.entries(ownGame)) gameFields[key] = gameFields[key] ? S.opt(S.either(gameFields[key], schema)) : schema
     return { ...projected, level, game: S.obj(gameFields) }
   },

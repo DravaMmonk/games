@@ -1,9 +1,7 @@
-// Circuit kit: the reading language, shared by every game in games/, by Fieldnotes and by the notes site (same
-// storage key, so a choice made in one carries to the others). Without a stored choice the browser's language
-// decides: any Chinese locale reads Chinese, everything else English.
+// The games and Studio share a language preference. The browser language supplies the default.
 
 export const LANGS = [['zh', '中文'], ['en', 'English']];
-const KEY = 'fieldnotes.lang';
+const KEY = 'games.lang';
 
 export function currentLang() {
   try {

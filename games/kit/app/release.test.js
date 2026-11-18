@@ -29,10 +29,6 @@ test('refresh returns to the map and keeps other URL parameters', () => {
   assert.equal(cleanRefreshURL(url), 'https://example.test/games/vision/index.html?lang=zh#x')
 })
 
-test('an embedded level refreshes onto the same level', () => {
-  assert.equal(refreshURL('https://example.test/games/notes/index.html?embed=&level=separable&lang=zh', 42), 'https://example.test/games/notes/index.html?embed=&level=separable&lang=zh&_refresh=42')
-})
-
 test('startup recovery preserves the link, retries a newer build once, and ignores unrelated failures', async () => {
   const link = `${base}&lang=zh#x`
   const retry = 'https://example.test/games/vision/index.html?level=3-6&lang=zh&_refresh=42#x'

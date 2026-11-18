@@ -50,7 +50,7 @@ export function contentCourse(content, {
     boards, needed: (at) => { const observed = needed?.(at); if (observed !== undefined) return observed; const works = boards(at); return works.length ? works.flatMap((work) => work.nodes.map((node) => node.type)) : null },
     machine, uses, can,
     carries: (at) => carries?.(at) ?? (level(at).carry ? [level(at).carry] : []),
-    references, notes: content.mode === 'notes',
+    references,
   })
   if (!progress) course.adds = (at) => course.tray(at) ? course.availableParts(at) : []
   if (content.standalone) course.availableParts = (at) => standaloneParts(content, at)

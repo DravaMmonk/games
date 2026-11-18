@@ -1,9 +1,9 @@
-/* Shared interface parts for every page of the study notes, on the tokens in tokens.css.
+/* Shared interface parts for the games and Studio, on the tokens in tokens.css.
 
    Top bar (one per page, the same everywhere):
      <header class="kit-bar">
        <a class="kit-brand" href="…/"><i class="kit-chip"></i><span>学习笔记</span></a>
-       <span class="kit-crumbs">COMP90086<i>/</i>滤波</span>
+       <span class="kit-crumbs">Vision Complete<i>/</i>滤波</span>
        <div class="kit-actions"></div>   (menu.js mountBarMenus fills it with the language and theme menus)
      </header>
    Page head: .kit-hero > .kit-kicker + h1.kit-title + .kit-lede.  Cards: .kit-cards > a.kit-card > .kit-card-body. */

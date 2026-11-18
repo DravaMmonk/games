@@ -50,7 +50,6 @@ export function circuitGame(content, circuit, { kind, screen, cards, Hero, Intro
     glossary: content.glossary,
     course,
     Hero,
-    notes: course.notes,
     chapters: CHAPTERS,
     core: (level) => isCore(course, level),
     levelLabel: (level) => labels.get(level.id) ?? level.id,

@@ -186,13 +186,12 @@ All measured requests return HTTP 200. Times are wall-clock seconds and stay out
 | vision-complete vocabulary | 0.703 | 0.489 |
 | vision-complete preview, check false | 5.061 | 4.852 |
 
-After extraction, comp90086 vocabulary/quick preview take 0.096/2.926 seconds,
-qed 0.325/4.136 seconds, and state-graph 0.206/3.465 seconds.
+After extraction, vocabulary/quick preview take 0.325/4.136 seconds for qed and 0.206/3.465 seconds for state-graph.
 Shared discriminator fields reduce source declaration duplication. Name-indexed existence checks,
 resolved-layer reuse, parsed-import reuse and unchanged-JSON/diff reuse retain validation results.
 
 Browser acceptance still reaches the 20-second deadline with the main loading indicator visible
-for vision-complete, comp90086, qed and state-graph. Initial navigation issues repeated packages,
+for vision-complete, qed and state-graph. Initial navigation issues repeated packages,
 games and preview requests. Studio's loading orchestration requires its owner's follow-up.
 The untouched Studio starter-control test fails at studio.test.js:352 with `some field is chips`.
 Its traversal covers the remaining native starters. Package-provided controls require the Studio
@@ -215,16 +214,14 @@ when a consumer does not install the course-specific vocabulary. The step-9 pale
 
 Studio HTTP timings (sequential requests, seconds, HTTP 200): packages 0.909 -> 1.010;
 games 1.048 -> 1.110; state-graph vocabulary 0.196 -> 0.239 and quick preview (`check:false`)
-3.681 -> 4.209. After extraction, vision-complete vocabulary/quick preview are 0.482/4.809,
-comp90086 0.082/3.005, and qed 0.332/5.352. The measured state-graph requests remain below twice
+3.681 -> 4.209. After extraction, vision-complete vocabulary/quick preview are 0.482/4.809 and qed 0.332/5.352. The measured state-graph requests remain below twice
 their pre-extraction durations. Browser acceptance and Studio-owned failures are reported separately.
 
 
 Browser package navigation on the same Studio server reaches the level list in 9.096 s (state-graph),
-13.530 s (vision-complete), 9.428 s (comp90086) and 10.746 s (qed), all within 20 seconds.
-An earlier run under simultaneous verification reached the deadline for comp90086/qed; both passed
-on repeat. Browser requests include bridge queue time: comp90086 packages/games/quick preview/
-vocabulary took 2.005/1.111/3.230/6.784 s; qed 1.958/1.089/4.536/4.880 s. These queued browser times
+13.530 s (vision-complete) and 10.746 s (qed), all within 20 seconds.
+An earlier run under simultaneous verification reached the deadline for qed, which passed on repeat.
+The qed packages/games/quick preview/vocabulary browser requests took 1.958/1.089/4.536/4.880 s, including bridge queue time. These queued browser times
 are distinct from the sequential HTTP service measurements above. No Studio implementation was edited.
 The remaining Studio-owned failure is studio/studio.test.js:353, `some field is choice`: its native
 starter traversal no longer includes the extracted table controls.
@@ -263,7 +260,6 @@ Sequential local HTTP measurements (seconds, all HTTP 200):
 | qed vocabulary | 0.414 | 0.463 |
 | qed preview, check false | 5.027 | 6.249 |
 | vision-complete vocabulary / quick preview | — | 0.634 / 7.318 |
-| comp90086 vocabulary / quick preview | — | 0.159 / 6.150 |
 | state-graph vocabulary / quick preview | — | 0.302 / 4.905 |
 
 An earlier concurrent verification run measured QED vocabulary/preview at 3.194/42.373 seconds;

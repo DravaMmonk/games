@@ -25,7 +25,7 @@ function ancestors(id, edges) {
 export function courseDependencies(content) {
   const { eras = [], levels = [] } = content
   const links = eras.flatMap((era) => (era.links ?? []).map((link) => ({ ...link, source: 'course', detail: String(era.id) })))
-  if (content.mode === 'notes' || content.packageTarget) return { links, problems: [] }
+  if (content.packageTarget) return { links, problems: [] }
   const placed = new Set(eras.flatMap(eraLevels))
   const problems = []
   const bindings = new Map()
@@ -50,25 +50,22 @@ export function courseLayout(content) {
   if (content.coursePlan) return content.coursePlan
   if (content.standalone) return standalonePlan(content)
   const { links, problems } = courseDependencies(content)
-  const notes = content.mode === 'notes'
-  const plan = layout(content.eras ?? [], { notes, links })
+  const plan = layout(content.eras ?? [], { links })
   const external = new Map()
   const bind = (to, game, level) => {
     const gates = external.get(to) ?? []
     if (!gates.some((gate) => gate.game === game && gate.level === level)) external.set(to, [...gates, { game, level }])
   }
-  if (!notes) {
-    const bypass = new Map()
-    for (const { fromGame, from, to, required } of links) {
-      if (fromGame) bind(to, fromGame, from)
-      else if (!required && plan.place.get(from)?.skippable && !plan.required.get(to)?.includes(from)) {
-        if (!bypass.has(to)) bypass.set(to, new Set())
-        bypass.get(to).add(from)
-      }
+  const bypass = new Map()
+  for (const { fromGame, from, to, required } of links) {
+    if (fromGame) bind(to, fromGame, from)
+    else if (!required && plan.place.get(from)?.skippable && !plan.required.get(to)?.includes(from)) {
+      if (!bypass.has(to)) bypass.set(to, new Set())
+      bypass.get(to).add(from)
     }
-    for (const id of plan.order) for (const skipped of bypass.get(id) ?? []) {
-      for (const { game, level } of external.get(skipped) ?? []) bind(id, game, level)
-    }
+  }
+  for (const id of plan.order) for (const skipped of bypass.get(id) ?? []) {
+    for (const { game, level } of external.get(skipped) ?? []) bind(id, game, level)
   }
   const planExtensions = Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.plan?.({ content, plan, external, ancestors })))
   return { ...plan, dependencyLinks: links, problems, external, ...planExtensions }

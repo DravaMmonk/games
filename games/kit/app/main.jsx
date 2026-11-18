@@ -1,8 +1,7 @@
 // Every game's page: the shared kit's styles and shell, around the game the page is for. The page is its domain's
 // code (virtual:game, from ./vite.js); the content it plays is read when the page opens (content.json beside it) and
 // checked against the domain's vocabulary first: content that does not fit is shown as what is wrong with it, never
-// handed to the domain. A domain never writes into its content: on the dev server the page reads it frozen. With
-// `?embed` the page is one level embedded in a note (../shell/EmbedShell.jsx).
+// handed to the domain. A domain never writes into its content: on the dev server the page reads it frozen.
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '../tokens.css'
@@ -10,7 +9,6 @@ import '../ui.css'
 import '../shell/shell.css'
 import '../views/views.css'
 import { GameShell } from '../shell/index.js'
-import EmbedShell from '../shell/EmbedShell.jsx'
 import { createProgress } from '../shell/progress.js'
 import { taskStamps } from '../engine/stamp.js'
 import { checkContent } from '../engine/vocabulary.js'
@@ -33,16 +31,6 @@ async function open() {
   const game = define(content)
   const options = { content, tasks: taskStamps(vocabulary, content) }
   const store = game.openProgress?.(options) ?? createProgress({ id: content.id, tasks: options.tasks })
-  // A level embedded in a note (`?embed&level=…&lang=…`, games/design/README.md 12.1): the note sets its language.
-  const asked = new URL(window.location.href).searchParams
-  if (asked.has('embed')) {
-    const lang = asked.get('lang')
-    if (lang === 'zh' || lang === 'en') {
-      document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN'
-      window.dispatchEvent(new CustomEvent('langchange', { detail: lang }))
-    }
-    return { page: <EmbedShell game={game} store={store} levelId={asked.get('level')} />, content: contentText }
-  }
   return { page: <GameShell game={game} store={store} />, content: contentText }
 }
 

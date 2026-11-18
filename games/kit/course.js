@@ -79,7 +79,7 @@ export function mapRows(ids, requires, selectedLayout = null) {
 }
 
 /** Direct author prerequisites, effective unlock gates, and chapter information. */
-export function layout(eras, { notes = false, links = eras.flatMap((era) => era.links ?? []) } = {}) {
+export function layout(eras, { links = eras.flatMap((era) => era.links ?? []) } = {}) {
   const place = new Map(), requires = new Map(), tracks = new Map(), rows = new Map()
   const incoming = new Map()
   for (const era of eras) {
@@ -90,7 +90,7 @@ export function layout(eras, { notes = false, links = eras.flatMap((era) => era.
     tracks.set(era.id, eraLevels(era))
     rows.set(era.id, era.rows ?? [])
   }
-  if (!notes) for (const link of links) if (!link.fromGame) incoming.get(link.to)?.push(link)
+  for (const link of links) if (!link.fromGame) incoming.get(link.to)?.push(link)
   for (const [id, links] of incoming) requires.set(id, [...new Set(links.map(({ from }) => from))])
 
   const order = [...place.keys()]

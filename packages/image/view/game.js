@@ -53,7 +53,6 @@ export default function imageGame(content, image = imageWorks(content), { kernel
   const game = defineGame({
     id: content.id,
     course,
-    notes: course.notes,
     glossary: content.glossary,
     title: content.title,
     kicker: content.kicker,

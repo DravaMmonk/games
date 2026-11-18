@@ -1,10 +1,14 @@
-// The studio bridge's second lane (studio.js): the same tools (../engine/ops/tools.js) in a worker thread, for the
-// slow reads — a whole check, a run of a level's tests — so the dev server answers quick previews meanwhile.
-//   message in:  { id, name, args }      message out: { id, result } | { id, error }
+// Each Studio lane has its own package module cache. Closing through the message port lets ESM initialization finish.
 import { parentPort } from 'node:worker_threads'
+import { closeGames } from '../engine/games.mjs'
 
 const { TOOLS } = await import('../engine/ops/tools.js')
-parentPort.on('message', async ({ id, name, args }) => {
+parentPort.on('message', async ({ id, name, args, close }) => {
+  if (close) {
+    await closeGames()
+    parentPort.close()
+    return
+  }
   try {
     // Match the HTTP bridge's JSON boundary before crossing the worker's structured-clone boundary.
     const result = JSON.stringify(await TOOLS[name].run(args))

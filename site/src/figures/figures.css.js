@@ -1,6 +1,6 @@
 import { ISO_CSS } from './kit/iso-kit.js'
 
-// Fieldnotes tokens for the anatomy kit: warm paper, night ink and blueprint. Every fill and stroke
+// Game theme tokens for the anatomy kit: warm paper, night ink and blueprint. Every fill and stroke
 // in a figure reads one of these, so a theme is only a token set.
 const THEMES = `
 .iso[data-theme="light"]{

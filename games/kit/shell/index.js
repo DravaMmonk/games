@@ -1,5 +1,5 @@
 import { passedLevelIn } from './progress.js'
-// The game shell shared by every game in the study notes (React). A game is content on top of it: see defineGame.
+// The game shell shared by all games (React). A game is content on top of it: see defineGame.
 
 export { default as GameShell } from './GameShell.jsx'
 export { Brief, Level, PhonePage, PinnedPlay, TaskCard, Text } from './Layout.jsx'

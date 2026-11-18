@@ -17,11 +17,9 @@ The reference implementation is commit `1d1299eb0`. It was extracted to an indep
 | package / qed | 4763 | 4401 | 2130 | 481 | 568 |
 | package / vision-complete | 5094 | 4739 | 2291 | 615 | 806 |
 | package / state-graph | 3871 | 3611 | 1879 | 353 | 438 |
-| package / comp90086 | 3202 | 3034 | 1567 | 175 | 177 |
 | game / qed | 4405 | 4101 | 1838 | 455 | 575 |
 | game / vision-complete | 4537 | 4170 | 1991 | 589 | 792 |
 | game / state-graph | 4178 | 3897 | 1706 | 338 | 413 |
-| game / comp90086 | 3939 | 3737 | 1508 | 152 | 177 |
 
 The initial CPU profile covered three calls per target in one process. Inclusive sample totals overlap: cross-game dependency checking accounted for about 58% (71.5/123.1 seconds), layer composition 35%, manifests 14%, file hashing 11%, and circuit name-reader initialization 12%. Garbage collection accounted for about 13% of self samples. Repeated sibling reads and reassembly dominated; collection merging was not a leading sampled cost.
 
@@ -38,11 +36,11 @@ Validation:
 - `npm test`: 781 passed.
 - `npm run lint:kit`: passed.
 - `npm run words -- --check`: passed, 1711 words.
-- `GAMES_BASELINE_ROOT=/Users/drava/Local/GitHub/study-notes/output/modules-baseline npm run baseline -- compare`: zero differences for all available snapshots (four games and five packages). The existing baseline tool skips circuit, image, rows, text and tick-bus because they have no locked snapshots; their package contract tests passed. Snapshots were read only; generated differences were written locally. `save` was never used.
+- `npm run baseline -- compare with the original snapshots`: zero differences for all available snapshots (four games and five packages). The existing baseline tool skips circuit, image, rows, text and tick-bus because they have no locked snapshots; their package contract tests passed. Snapshots were read only; generated differences were written locally. `save` was never used.
 
 `GAMES_BASELINE_ROOT` selects the input snapshot directory only. Comparison reports continue to be written under the current worktree's `output/modules-baseline/`.
 
-Raw final samples: [reference](preview-before.jsonl), [optimized](preview-after.jsonl), [pending edits](preview-edits.jsonl). All before/after preview digests match. Earlier independent runs overlapped other sessions' tests and produced large outliers; the table uses the final paired runs after this worktree's checks finished. No competing Node test runner was detected at any final sample start.
+Raw final samples for the retained targets: [reference](preview-before.jsonl), [optimized](preview-after.jsonl), [pending edits](preview-edits.jsonl). All before/after preview digests match. Earlier independent runs overlapped other sessions' tests and produced large outliers; the table uses the final paired runs after this worktree's checks finished. No competing Node test runner was detected at any final sample start.
 
 Additional read-tool samples for package `qed` (three fresh processes): vocabulary 260 / 123 ms, names 331 / 186 ms, first / second calls. The cache also wraps games and packages. Full tool-output comparison is recorded below.
 
@@ -53,11 +51,9 @@ Initial required shared-process pass, before optimization (three calls, millisec
 | package / qed | 4513, 4422, 4440 | 4440 |
 | package / vision-complete | 4996, 4764, 4784 | 4784 |
 | package / state-graph | 3725, 3714, 3780 | 3725 |
-| package / comp90086 | 3122, 3113, 3049 | 3113 |
 | game / qed | 4222, 4175, 4132 | 4175 |
 | game / vision-complete | 4230, 4185, 4214 | 4214 |
 | game / state-graph | 3951, 3989, 3941 | 3951 |
-| game / comp90086 | 3956, 3926, 3951 | 3951 |
 
 Strict output comparison: 42 tool results (empty previews, pending package edits, rejected game-scope level edits, unknown operations, vocabulary, names, games and packages) serialize identically to the reference, including manifest hashes. The two approximately 70 MiB JSON files share SHA-256 `b0f9f3a627ed97b23da277d966b61462d23220e6b73253db2782830bdd9c3be9`.
 

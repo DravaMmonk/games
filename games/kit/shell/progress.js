@@ -90,7 +90,7 @@ export function createProgress({ id, tasks = {}, initial = () => ({}), restore =
     load,
     blank: () => ({ ...empty(), seenPower: true }),
     update(change) {
-      // A tab or another notes embed may have written since this screen rendered.
+      // Another tab may have written since this screen rendered.
       const before = load()
       const after = change(before)
       if (after !== before) save(after)

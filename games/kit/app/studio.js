@@ -63,7 +63,10 @@ export function worker() {
     waiting.clear()
   }
   thread.on('error', failAll)
-  thread.on('exit', code => failAll(failure ?? new Error(`Studio worker exited (${code}).`)))
+  const closed = new Promise(resolve => thread.once('exit', code => {
+    failAll(failure ?? new Error(`Studio worker exited (${code}).`))
+    resolve()
+  }))
   return {
     run: (name, args) => new Promise((done, fail) => {
       if (failure) return fail(failure)
@@ -71,7 +74,10 @@ export function worker() {
       waiting.set(next, { resolve: done, reject: fail })
       thread.postMessage({ id: next, name, args })
     }),
-    close: () => thread.terminate(),
+    close: () => {
+      if (!failure) thread.postMessage({ close: true })
+      return closed
+    },
   }
 }
 
@@ -138,13 +144,12 @@ export const defineContent = content => loadGame(content, PACKAGES)`
     },
     async configureServer(server) {
       const { TOOLS, lacking } = await import('../engine/ops/tools.js')
-      let fast = worker()
-      let lane = worker()
-      const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, { ...tool, run: args => fast.run(name, args) }]))
+      let fast
+      let lane
+      const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, { ...tool, run: args => (fast ??= worker()).run(name, args) }]))
       const refreshCode = async () => {
-        const old = [fast, lane]
-        fast = worker()
-        lane = worker()
+        const old = [fast, lane].filter(Boolean)
+        fast = lane = undefined
         for (const id of [MODULE, 'virtual:package-displays']) {
           const module = server.moduleGraph.getModuleById(`\0${id}`)
           if (module) server.moduleGraph.invalidateModule(module)
@@ -153,10 +158,10 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       }
       const host = server.config.server.host
       const source = !host || ['localhost', '127.0.0.1', '::1'].includes(host) ? sourceTools(root, refreshCode) : {}
-      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking, { run: (name, args) => lane.run(name, args) }))
+      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking, { run: (name, args) => (lane ??= worker()).run(name, args) }))
       server.httpServer?.on('close', () => {
-        fast.close()
-        lane.close()
+        fast?.close()
+        lane?.close()
       })
     },
   }

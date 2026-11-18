@@ -36,10 +36,12 @@ try {
   const { createServer } = await import('vite')
   browser = await chromium.launch()
   const errors = []
+  const expectedRecoveryError = 'Studio source recovery test'
+  const recordError = message => { if (message !== expectedRecoveryError) errors.push(message) }
   const page = await browser.newPage()
-  await page.addInitScript(() => { if (location.protocol === 'http:') localStorage.setItem('fieldnotes.lang', 'en') })
-  page.on('pageerror', error => errors.push(error.message))
-  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
+  await page.addInitScript(() => { if (location.protocol === 'http:') localStorage.setItem('games.lang', 'en') })
+  page.on('pageerror', error => recordError(error.message))
+  page.on('console', message => { if (message.type() === 'error') recordError(message.text()) })
   page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`) })
   const openServer = async () => {
     server = await createServer({ root: app, mode: 'studio', configFile: resolve(app, 'vite.config.js'),
@@ -91,11 +93,11 @@ try {
   await editor.waitFor()
   const original = await editor.inputValue()
   assert.match(original, /kernel.play\('text\/answer'/)
-  await editor.fill(original + "\nthrow new Error('Studio source recovery test')\n")
+  await editor.fill(original + `\nthrow new Error(${JSON.stringify(expectedRecoveryError)})\n`)
   await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
   await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
   await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
-  await page.getByRole('alert').filter({ hasText: 'Studio source recovery test' }).waitFor()
+  await page.getByRole('alert').filter({ hasText: expectedRecoveryError }).waitFor()
   await page.getByRole('link', { name: /^(打开包源码|Open package source)$/ }).click()
   await editor.waitFor()
   await editor.fill(original)

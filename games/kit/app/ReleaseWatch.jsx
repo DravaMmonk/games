@@ -39,12 +39,8 @@ export function ReleaseWatch({ page, content, loadedAssets }) {
     }
   }, [content, loadedAssets])
   if (!updated) return page
-  // An embedded level (`?embed`) reopens on itself, with no map to return to.
-  const embedded = new URL(window.location.href).searchParams.has('embed')
-  const lines = embedded
-    ? [tr('请刷新以使用最新版本。更新可能会重置这一关的进度。')]
-    : [tr('请刷新以使用最新版本，刷新后将返回关卡导航页。更新可能会重置游戏进度。')]
-  const label = embedded ? tr('刷新') : tr('刷新并返回导航')
+  const lines = [tr('请刷新以使用最新版本，刷新后将返回关卡导航页。更新可能会重置游戏进度。')]
+  const label = tr('刷新并返回导航')
   return <>{page}<Dialog top title={tr('游戏已更新')} lines={lines} actions={[[label, () => window.location.replace(refreshURL(window.location.href))]]} /></>
 }
 

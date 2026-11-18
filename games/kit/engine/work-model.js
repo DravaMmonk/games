@@ -21,7 +21,7 @@ export function readWorkSet(content, readers) {
     }
     return visit(second)
   }
-  const course = { plan, levels: pending.flatMap(({ facts }) => facts.levels), before, notes: content.mode === 'notes' }
+  const course = { plan, levels: pending.flatMap(({ facts }) => facts.levels), before }
   return pending.map(({ iterator }) => {
     const last = iterator.next(course)
     if (!last.done) throw new Error('a work reader must complete after receiving its course')

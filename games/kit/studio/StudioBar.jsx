@@ -22,7 +22,7 @@ export const SPACES = [['build', '构建', 'Build'], ['arrange', '编排', 'Arra
 export default function StudioBar({ space, ops, busy, fresh, onPalette, onUndo = null, onRedo = null, panels = null, children }) {
   const actions = useRef(null)
   useEffect(() => {
-    const menus = mountBarMenus(actions.current, {})
+    const menus = mountBarMenus(actions.current)
     return () => menus.destroy()
   }, [])
   useWorkspaceKeys((event) => {

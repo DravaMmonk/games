@@ -10,13 +10,11 @@
 ```bash
 cd site && npm ci
 npm run dev        # http://localhost:5173/ → the games
-npm run studio     # the editor
+npm run studio     # http://127.0.0.1:5274/studio.html → the editor
 npm test
 ```
 
 Pushing to `main` builds the site and publishes it to this repository's `gh-pages` branch.
-
-The source was split out of the study-notes repository, history included.
 
 ## License
 

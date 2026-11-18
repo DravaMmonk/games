@@ -150,7 +150,7 @@ packages/<包>/
 
 - 只有元件真的需要发放。联结词没有阶段、不升级，所有托盘里都是全部 8 个，只靠 8 处 `adds` 决定从哪关起能用；为了经 `circuit` 发放，符号的阶段借元件的 `partStages` 算（`packages/logic/core/grants.js`），通关窗口把解锁的符号当成元件显示。
 - 任务只能写一个托盘，证明任务既要元件又要符号，只好用合并托盘（`proof-formula` = `proof` 的元件和菜单 + `formula` 的符号，`machine-formula`、`gates-formula`、`resolution-formula`、`certificate-formula` 同理）：菜单整份重复；合并托盘混着符号，只能标 `workshop: false`；`qed/proof`、`qed/machine`、`qed/gates` 不再有任务用，工坊找不到可进工坊的电路任务，证明完毕的「元件工坊」入口就没了。
-- 有的游戏只要电路玩法、不要进度：《COMP90086》只有 3 关、没有托盘，整个游戏只用了一处 `adds`（`separable` 带来 `line3`、`add`）。电路玩法不应该非得带着发放、阶段、工坊才能用。
+- 电路玩法可以独立运行。发放、阶段和工坊由进度包提供。
 
 **目标：分三处。**
 
@@ -176,7 +176,7 @@ packages/<包>/
 
 1. 新建进度包 `packages/progress/`，把阶段、发放字段、派生状态、发放相关检查、工坊、阶段链从 `circuit` 搬过去；`circuit` 留托盘、元件、板子，加上「手里有什么元件」的接口。删 `grants.register` 和 `packages/logic/core/grants.js`；`logic` 不再从 `circuit` 取 `grants`、`partStages`。
 2. 符号：8 处 `adds` 里的符号改成符号自己的 `at`；所有托盘去掉符号。合并托盘的任务换回对应的元件托盘（`proof-formula` → `proof`，其余同理；换之前核对合并托盘的元件和菜单与元件托盘一致），只用 `formula` 托盘的任务去掉 `tray`；删掉 `formula` 和 5 个合并托盘。
-3. 游戏：`qed`、`vision-complete`、`state-graph` 等用到发放字段、阶段或工坊的游戏在 `packages` 里加 `progress`；`comp90086` 不加，`separable` 的 `adds` 改成不靠进度也能让这关的板子给出 `line3`、`add`。
+3. 游戏：`qed`、`vision-complete`、`state-graph` 等用到发放字段、阶段或工坊的游戏在 `packages` 里加 `progress`。
 4. 检查：托盘成员都是元件；没启用进度包的游戏不得用发放字段、`stages`、`workshop`；符号的 `at` 指向存在的关卡；参考解只用能用的元件和符号。
 5. 验收：基线对比（第 12 节）除下面两处外没有差异——托盘栏、拼句子的可选符号和顺序、解锁内容、参考解都不变。两处：证明完毕的关卡地图重新出现「元件工坊」；通关窗口把符号按符号显示。全部测试、零内容检查通过。
 6. `qed/design/README.md` 里关于合并托盘、公式连接词登记为件的说法改为：符号是 `logic/symbol`，用 `at` 决定从哪关起能用；`design/README.md` 里讲托盘和发放的地方照本节改。
@@ -276,7 +276,7 @@ packages/<包>/
 |---|---|---|
 | `play` | 玩法：对象类型、玩法、显示、编辑器等机制，带代码 | `circuit`、`logic`、`image`、`table`、`text`、`rows`、`tick-bus` |
 | `ext` | 挂在某种玩法上的可选层 | `progress` |
-| `course` | 一款游戏自己的内容 | `qed`、`vision-complete`、`state-graph`、`comp90086` |
+| `course` | 一款游戏自己的内容 | `qed`、`vision-complete`、`state-graph` |
 | `lib` | 给多款游戏共用的内容 | `arithmetic` |
 
 - **Studio 按种类分类**：列出包的地方（包工作室的包列表、游戏选包、依赖显示）按 `kind` 分组，可以按种类筛选；`npm run new`（scaffold）新建包时要选种类。
@@ -297,7 +297,7 @@ packages/<包>/
 
 - **`:` 并进 `/`**：玩法、对象类型、显示、检查、编辑器扩展、游戏钩子等代码登记的名字，从 `<包>:<名>` 改成 `<包>/<名>`（`"play": "logic/proof"`）。名字只需在同种里唯一（4.1），注册表按种类分开，不会和对象全名混。
 - **种类不再拼进名字**：内核现在把代码登记的能力拼成 `<种类>-<名>`（`image:picture-glyph`、`image:display-step`、`image:benchModel-obscura`），`-` 被当成分隔符用。改为各种能力各一张注册表、名字里不带种类：字段知道自己要的是哪种（`"in": "image/glyph"`）。一个字段接受几种能力时，同名由检查报歧义。
-- **对象目录不再拼包名**：对象类型的 `folder` 默认就是类型的短名，`comp90086-box/`、`vision-complete-power/` 这类改成 `box/`、`power/`（包自己的目录已经说明是谁的）。
+- **对象目录不再拼包名**：对象类型的 `folder` 默认就是类型的短名，`vision-complete-power/` 这类改成 `box/`、`power/`（包自己的目录已经说明是谁的）。
 - **自动生成的 id 用 `-2`**，不用 `_2`（`task.add` 等）；现有的 `sp-laws_2` 之类一并改名。
 - **全名一层一个符号**：`qed/level.always.title` 是 `/` 分开归属、`.` 走进对象内部。
 - **不在本次范围**：名字的大小写（`formulaAnd`、`benchModel` 这样的驼峰写法）照旧。
@@ -340,7 +340,7 @@ packages/<包>/
 | **内核** | `engine/` 里的内容系统、操作集、检查框架、通用进度；`shell/` 里的地图、关卡页框架、检验和结果、百科页、对话框、布局；`studio/` 的外壳；`app/`；`views/` 里与玩法无关的部分 |
 | **`circuit`**（元件接线玩法） | `engine/circuit.js`、`boards.js`、`board-works.js`、`board-view.js`、`board-cards.js`、`parts/`、`pieces.js`、`piece-stages.js`、`trays.js`、工坊；课程模型里元件、托盘、阶段、`local`、`replaces`、`gives` 等；`circuit/` 整个目录（蓝图文本、画板编辑器）；`shell/` 的电路屏、工作台、元件册、读数、训练控件；`modules/circuit`；Studio 的元件、托盘、阶段编辑器 |
 | **`rows`**、**`tick-bus`** | `modules/rows`、`modules/tick-bus`，依赖 `circuit`（如果用到它的元件） |
-| **图像**（建议 `image`） | `modules/image` 整块，依赖 `circuit`；只为 vision-complete 或 comp90086 写的实验台、场景，进各自的包 |
+| **图像**（建议 `image`） | `modules/image` 整块，依赖 `circuit`；专用实验台和场景放进使用它们的内容包 |
 | **逻辑**（建议 `logic`） | `modules/logic` 整块（公式、证明核、合一、证明机、规则书……），依赖 `circuit`；qed 专用的东西进 `qed` |
 | **表格**（建议 `table`） | `modules/table` 整块，依赖 `circuit`；只为 state-graph 写的世界、机器人进 `state-graph` |
 | **起步内容** | `kit/templates/` 拆掉：整包起步用 `new-package --from <包>` 复制一个起步包，新对象从任何已有对象复制（5.5） |
@@ -405,14 +405,14 @@ packages/<包>/
 5. **`circuit` 出内核。** 电路求值、元件、托盘、阶段、工坊、蓝图文本、画板编辑器、电路屏，连同课程模型里对应的部分，搬进 `packages/circuit`；内核的进度只剩任务和关卡的解锁。元件的对象类型 `part` 变成 `circuit/part`，发放机制按「可发放」登记工作（5.1）。（`piece` 改名 `part`、覆盖路径统一、公式连接词拆成 `logic/symbol`，在第 1 步之后已单独做完。）验收：四款游戏不变。
 6. **集合字段取代 `order` 关系**（5.3.1）。内核实现 `set`、`list`、`edges` 三种字段类型（合并、覆盖补丁、存在性、成环、来源审计）；标签、托盘、百科分组、`requires`、`replaces` 改用它们；删掉全部 `order` 关系，顺序并进托盘、百科分组自己的 `list` 字段；章改成内核自带的 `chapter` 对象类型（5.3.1）；所有对象类型写明谁能声明、谁能覆盖，越层检查改成对照它（5.3）。Studio 同步：去掉拖动写 `order` 关系的做法，托盘、百科分组、章用同一套 `list` 编辑，标签用 `set` 勾选，先修和取代用关系板编辑 `edges`。放在后面几个模块搬出内核之前，搬出去的玩法直接用新字段。
 7. **`rows`、`tick-bus` 出内核。**
-8. **`image` 出内核**，专用实验台、场景进 vision-complete / comp90086。
+8. **`image` 出内核**，专用实验台、场景进 vision-complete。
 9. **`table` 出内核**，专用世界、机器人进 state-graph。
 10. **`logic` 出内核**，专用部分进 qed。
 11. **Studio 的编辑器改成由包提供**；内核的 Studio 只剩外壳。
 12. **零内容验收和写回手册**：清空内容后平台能跑；改写 `design/README.md`。
 13. **平台独立成仓库**（8.4）：平台仓库发布第一个版本，内容仓库按 `kernel` 范围装它；删掉这份文档。
-14. **进度层出 `circuit`**（5.1.2，已完成）。阶段、发放字段、工坊进可选的进度包（`progress`，依赖 `circuit`）；托盘留在 `circuit`、只放元件；符号用自己的 `at`，删掉通用发放登记、`formula` 托盘和合并托盘；解锁窗口收集各包报的解锁；不用进度包的游戏（`comp90086`）只装 `circuit`。
-15. **内核功能按需启用**（待定）。只放一两个展示关卡的页面（比如嵌在笔记里的电路题）用不上关卡地图、百科、通关窗口、存档：内核只负责跑关卡，这些功能由游戏声明才打开。从 `plugin-game.jsx` 现有的展示路径起步。
+14. **进度层出 `circuit`**（5.1.2，已完成）。阶段、发放字段、工坊进可选的进度包（`progress`，依赖 `circuit`）；托盘留在 `circuit`、只放元件；符号用自己的 `at`，删掉通用发放登记、`formula` 托盘和合并托盘；解锁窗口收集各包报的解锁。
+15. **内核功能按需启用**（待定）。只放一两个展示关卡的页面用不上关卡地图、百科、通关窗口、存档：内核只负责跑关卡，这些功能由游戏声明才打开。从 `plugin-game.jsx` 现有的展示路径起步。
 16. **包的种类和名字里的符号**（5.6，已完成）。`package.json` 写 `kind`（`play`、`ext`、`course`、`lib`），包 id 不变，Studio 按种类分组和筛选；全名一律 `<命名空间>/<名>`，代码登记的名字去掉 `:` 和拼进去的种类；对象目录不再拼包名；生成的 id 用 `-2`。四款游戏存档清零一次。
 
 17. **游戏配置整理**：game.json 一个文件；首页读 game.json；box、power 由 image 声明；borrow 只在 state-graph。

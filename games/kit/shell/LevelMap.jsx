@@ -77,24 +77,6 @@ function stack({ at, edges, box, below, x, w, join }) {
   return { top, turn, height }
 }
 
-/**
- * A chapter's levels, on the map and in the level drawer: a button for each level (byId: the chapter's levels), joined
- * by wires into its tree; a notes edition (game.notes, games/design/README.md 12.1) opens every level and lists them in
- * order, with no tree. current: the level being played (marked); next: the one to play next (its pad pulses).
- */
-export function LevelTree(props) {
-  return props.game.notes ? <LevelList {...props} /> : <Tree {...props} />
-}
-
-function LevelList({ game, track, byId, solved, all, best = () => null, current, next, compact, onOpen }) {
-  const { w, h } = compact ? SIZE.compact : SIZE.full
-  return (
-    <div className={`map-list ${compact ? 'is-compact' : ''}`} style={{ '--node-w': `${w}px` }}>
-      {track.map((id) => byId.get(id) && <LevelButton key={id} game={game} level={byId.get(id)} style={{ height: h }} solved={solved} all={all} best={best} current={current} next={next} compact={compact} onOpen={onOpen} />)}
-    </div>
-  )
-}
-
 /** A level's button on the map: its number, title and kind (or best score), how it stands, and opening it. */
 function LevelButton({ game, level, style, solved, all, best, current, next, needed = null, compact, onOpen }) {
   const open = game.isOpen(level, solved, all)
@@ -119,7 +101,7 @@ function LevelButton({ game, level, style, solved, all, best, current, next, nee
   )
 }
 
-function Tree({ game, track, rows, byId, solved, all, best = () => null, current, next, compact, onOpen, needed = null }) {
+export function LevelTree({ game, track, rows, byId, solved, all, best = () => null, current, next, compact, onOpen, needed = null }) {
   const { w, h, col, gap, plain, minor } = compact ? SIZE.compact : SIZE.full
   const { at, edges } = useMemo(() => plot(track, byId, rows), [track, byId, rows])
   const scroll = useRef(null)

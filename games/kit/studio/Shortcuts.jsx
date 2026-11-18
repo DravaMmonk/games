@@ -8,7 +8,7 @@ export const KEYS = [
   [`${MOD}+Shift+F`, '在整款游戏里搜索、替换', 'Search and replace across the game'],
   [`${MOD}+Z`, '撤销上一个待定操作（不在文字框里时；顶栏也有按钮）', 'Undo the last pending operation (outside a field; also in the top bar)'],
   [`${MOD}+Shift+Z · Ctrl+Y`, '重做撤销的操作', 'Redo an undone operation'],
-  [`${MOD}+Enter`, '载入参考解，从这一关试玩', 'Play this level with its reference loaded'],
+  [`${MOD}+Enter`, '试玩：构建里载入参考解从这一关玩，编排里从选中的关（或地图）玩', 'Play: in Build this level with its reference loaded, in Arrange from the level picked (or the map)'],
   ['F8 / Shift+F8', '下一处 / 上一处检查结果，在侧栏打开它说的字段', 'Next / previous finding, its field opened in the side panel'],
   [`${MOD}+L · [[`, '在文字里插入链接（选中的字拿去搜，换成链接）', 'Insert a link in a text (a selection is searched for and replaced)'],
   ['Alt+1…6', '「字段」里跳到这一关的第几段', 'Jump to a section of the level’s fields'],

@@ -8,7 +8,7 @@
 // changeset, shown before the preview comes back (pending-view.js), beside the chapter as the player's map draws it
 // (MapPreview.jsx).
 import { useMemo, useState } from 'react'
-import { GripVertical, RotateCcw, X } from 'lucide-react'
+import { GripVertical, Play, RotateCcw, X } from 'lucide-react'
 import { eraLevels, mapRows } from '../course.js'
 import { L, tr } from '../shell/i18n.js'
 import { Picker } from './Picker.jsx'
@@ -31,7 +31,7 @@ const MODES = [['order', '顺序', 'Order'], ['links', '依赖', 'Links'], ['map
  * `course`: the authored chapters; `content`: as it plays. `ops`:
  * the pending changeset; `previewOps`: the operations the content was previewed with; `applying`: being written.
  */
-export default function ChapterBoard({ content, course, e, at, pending, ops = [], previewOps = [], applying = false, vocabulary = null, names = null, places = [], onSelect, onEdit, onOps }) {
+export default function ChapterBoard({ content, course, e, at, pending, ops = [], previewOps = [], applying = false, vocabulary = null, names = null, places = [], onSelect, onEdit, onOps, onPlay = null }) {
   const [mode, setMode] = usePref('chapter-mode', 'links')
   const chapter = course.chapters[e]
   const played = content.eras?.[e]
@@ -94,6 +94,8 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
               <b className="member-no">{k + 1}</b>
               <span>{titleOf(id) || id}</span>
               <code>{id}</code>
+              {onPlay && !id.startsWith('#') && <button type="button" className="kit-btn editor-tool" title={tr('从这一关试玩', 'Play from this level')} aria-label={tr('从这一关试玩', 'Play from this level')}
+                onClick={() => onPlay(id)}><Play size={12} aria-hidden="true" /></button>}
               <button type="button" className="kit-btn editor-tool" disabled={applying} title={tr('移出这一章', 'Take out of the chapter')}
                 onClick={() => setMembers(members.filter((m) => m !== id))}><X size={12} /></button>
             </li>

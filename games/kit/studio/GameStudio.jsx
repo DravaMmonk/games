@@ -10,7 +10,7 @@ import { typeName } from './LeftTypes.jsx'
 // middle. Only
 // the game's side of the operation set runs here (useChangeset.js): the course, the game's texts and its overrides.
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ArrowDown, ArrowUp, BookMarked, Gamepad2, Hammer, Layers, ListTree, Minus, Package, Plus, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, BookMarked, Gamepad2, Hammer, Layers, ListTree, Map as MapIcon, Minus, Package, Play, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { L, T, getLang, tr } from '../shell/i18n.js'
 import { contentVocabulary } from './editors.js'
 import { parsePath } from '../engine/ops/edit.js'
@@ -37,6 +37,9 @@ import { GameList, GameMeta, JsonFile, gameJson } from './ProjectLists.jsx'
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarGrouping from './SidebarGrouping.jsx'
 import ListRow from './ListRow.jsx'
+import GameFrame from './GameFrame.jsx'
+import { useWorkspaceKeys } from '../shell/useOverlay.js'
+import { MOD } from './Shortcuts.jsx'
 
 const QUERY = new URLSearchParams(window.location.search)
 const SCOPE = 'game'
@@ -82,6 +85,17 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const [chapterQuery, setChapterQuery] = useState('')
   const chapterMatches = (chapter) => { const q = chapterQuery.trim().toLowerCase(); return !q || `${chapter.id} ${L(chapter.title ?? chapter.chapter?.title) ?? ''}`.toLowerCase().includes(q) }
   const gamesShown = side === 'games'
+  // The game played in the middle, as a player meets it (GameFrame.jsx, play mode only): `playing` shows it instead of
+  // the chapter board; `playAt` is where it opened ({ level }, or the map); the frame, once opened, stays loaded while
+  // hidden, so going back to it finds the game as it was left.
+  const [playing, setPlaying] = useState(false)
+  const [playAt, setPlayAt] = useState(null)
+  const [playOpened, setPlayOpened] = useState(false)
+  const playGame = (level = null) => {
+    setPlayAt(level ? { level } : { map: Date.now() })
+    setPlaying(true)
+    setPlayOpened(true)
+  }
   const [layout, setLayout] = usePref('game-layout', { tree: 220, audit: 200, side: 360, treeOpen: true, auditOpen: true, sideOpen: true })
   const [resize, setResize] = useState(null)
   useEffect(() => {
@@ -185,11 +199,21 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
   const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
   const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
+  // ⌘/Ctrl+Enter plays the level picked (else the game, from its map), as the build workspace plays a level.
+  useWorkspaceKeys((event) => {
+    if (!(event.metaKey || event.ctrlKey) || event.key !== 'Enter' || !content) return
+    event.preventDefault()
+    playGame(at?.level ?? null)
+  })
   const ready = content && vocab
   const busyEditing = saving || shown?.ops !== ops
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+        <button type="button" className={`studio-open-name studio-play-toggle ${playing ? 'is-on' : ''}`} aria-pressed={playing}
+          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame())} title={`${playing ? tr('回到编排', 'Back to arranging') : tr('试玩这款游戏', 'Play the game')} (${MOD}+Enter)`}>
+          <Play size={13} aria-hidden="true" /><span>{tr('试玩', 'Play')}</span>
+        </button>
         <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => setSide('games')} title={tr('在左栏选游戏', 'Pick a game in the left column')}>
           <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
         </button>
@@ -227,7 +251,14 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
           <main className="studio-main">
-            <div className="studio-scroll">
+            {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
+              onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
+              tools={<>
+                <button type="button" className="kit-btn is-label" onClick={() => setPlayAt({ map: Date.now() })} title={tr('回到这款游戏的地图', 'Back to the game’s map')}><MapIcon size={14} aria-hidden="true" />{tr('地图', 'Map')}</button>
+                {at?.level && <button type="button" className="kit-btn is-label" onClick={() => playGame(at.level)} title={tr('从编排里选中的这一关开始', 'Start at the level picked in arranging')}><RotateCcw size={14} aria-hidden="true" />{at.level}</button>}
+                <button type="button" className="kit-btn is-label" onClick={() => setPlaying(false)}><ListTree size={14} aria-hidden="true" />{tr('回到编排', 'Back to arranging')}</button>
+              </>} />}
+            <div className="studio-scroll" hidden={playing}>
               {packagesShown && <PackageCard key={packageShown} id={packageShown} packages={packages} used={used} content={content} pending={busyEditing} onBuild={onBuild} onOps={tryOps} />}
               {overridesShown && <OverrideDetail event={openEvent} layer={layer} pending={busyEditing} onOps={addOps} onOpen={() => setSide('chapters')} />}
               {gamesShown && <GameMeta games={games} id={pickedGame} open={game} disabled={saving} onOpen={openGame} />}
@@ -237,7 +268,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                   <header className="editor-head chapter-head" onClick={() => pickField([])}>
                     <code className="editor-id is-static">{chapterName(eras[e].id)}</code><h1>{L(eras[e].title ?? eras[e].chapter?.title) ?? ''}</h1>
                   </header>
-                  <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} />
+                  <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} onPlay={playGame} />
                 </>)}
             </div>
           </main>

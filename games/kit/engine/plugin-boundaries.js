@@ -45,42 +45,58 @@ export function importProblem(specifier, file, root, uses) {
 const walkFiles = dir => !existsSync(dir) ? [] : readdirSync(dir, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? walkFiles(resolve(dir, entry.name)) : [resolve(dir, entry.name)])
 const parsedImports = new Map()
 
+function parseCode(source, jsx) {
+  const require = createRequire(resolve(KIT, '../../site/package.json'))
+  const { parse } = require('espree')
+  const sources = []
+  try {
+    const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx } })
+    const visit = node => {
+      if (!node || typeof node !== 'object') return
+      let source
+      if (['ImportDeclaration', 'ExportNamedDeclaration', 'ExportAllDeclaration'].includes(node.type) && node.source) source = node.source
+      if (node.type === 'ImportExpression') source = node.source
+      if (node.type === 'CallExpression' && node.callee?.name === 'require') source = node.arguments[0] ?? {}
+      if (source) sources.push(source.type === 'Literal' ? source.value : null)
+      for (const value of Object.values(node)) if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') visit(value)
+    }
+    visit(ast)
+  } catch (error) {
+    return { error: `${error.lineNumber}:${error.column} ${error.message}` }
+  }
+  return { sources }
+}
+
+function fileProblems(file, root, uses, side, parsed) {
+  if (side === 'core' && extname(file) === '.jsx') return ['core contains JSX']
+  if (parsed.error) return [parsed.error]
+  if (side === 'test') return []
+  // Recheck dependency authority and export availability even when the source is unchanged.
+  return parsed.sources.map(source => importProblem(source, file, root, uses)).filter(Boolean)
+}
+
+/** Check an edited file's syntax and import boundaries before writing it. */
+export function packageSourceProblems(id, root, path, source) {
+  const side = path.split('/')[0]
+  const file = resolve(packageDirectory(id, root), path)
+  const uses = dependencyIds(packageConfig(id, root))
+  return fileProblems(file, root, uses, side, parseCode(source, side !== 'core'))
+}
+
 export function packageCodeProblems(id, root) {
   const dir = location(id, root)
   const uses = dependencyIds(packageConfig(id, root))
-  const require = createRequire(resolve(KIT, '../../site/package.json'))
-  const { parse } = require('espree')
   const problems = []
   for (const side of ['core', 'view']) for (const file of walkFiles(resolve(dir, side))) {
     if (!/\.(js|jsx|mjs)$/.test(file)) { if (side === 'core' && /\.(css|tsx)$/.test(file)) problems.push({ at: file, says: 'core contains view code' }); continue }
-    const add = says => problems.push({ at: relative(root, file), says })
-    if (side === 'core' && extname(file) === '.jsx') add('core contains JSX')
     const stat = statSync(file)
     const stamp = `${stat.mtimeMs}:${stat.ctimeMs}:${stat.size}`
-    let parsed = parsedImports.get(file)
-    if (parsed?.stamp !== stamp) {
-      parsed = { stamp, sources: [] }
-      try {
-        const ast = parse(readFileSync(file, 'utf8'), { ecmaVersion: 'latest', sourceType: 'module', ecmaFeatures: { jsx: side === 'view' } })
-        const visit = node => {
-          if (!node || typeof node !== 'object') return
-          let source
-          if (['ImportDeclaration', 'ExportNamedDeclaration', 'ExportAllDeclaration'].includes(node.type) && node.source) source = node.source
-          if (node.type === 'ImportExpression') source = node.source
-          if (node.type === 'CallExpression' && node.callee?.name === 'require') source = node.arguments[0] ?? {}
-          if (source) parsed.sources.push(source.type === 'Literal' ? source.value : null)
-          for (const value of Object.values(node)) if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') visit(value)
-        }
-        visit(ast)
-      } catch (error) { parsed.error = error.message }
-      parsedImports.set(file, parsed)
+    let entry = parsedImports.get(file)
+    if (entry?.stamp !== stamp) {
+      entry = { stamp, parsed: parseCode(readFileSync(file, 'utf8'), side === 'view') }
+      parsedImports.set(file, entry)
     }
-    if (parsed.error) { add(parsed.error); continue }
-    // Recheck dependency authority and export availability on every call, even when the source is unchanged.
-    for (const source of parsed.sources) {
-      const issue = importProblem(source, file, root, uses)
-      if (issue) add(issue)
-    }
+    for (const says of fileProblems(file, root, uses, side, entry.parsed)) problems.push({ at: relative(root, file), says })
   }
   return problems
 }

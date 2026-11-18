@@ -1,7 +1,7 @@
 // Exercise the installed platform against an isolated content workspace.
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
@@ -67,6 +67,56 @@ try {
   await page.goto(`${base}/studio.html?package=text`)
   await page.locator('.studio-loading').waitFor({ state: 'detached' })
   await page.getByText('Hello', { exact: true }).first().waitFor()
+  await page.getByRole('button', { name: /^(源码|Source)$/ }).click()
+  const editor = page.getByRole('textbox', { name: /^(JavaScript 源码|JavaScript source)$/ })
+  await editor.waitFor()
+  assert.match(await editor.inputValue(), /export function register/)
+  await page.getByRole('button', { name: /^(新建|New)$/ }).click()
+  await page.getByRole('textbox', { name: /^(新文件路径|New file path)$/ }).fill('test/studio-source.test.js')
+  await page.getByRole('button', { name: /^(创建草稿|Create draft)$/ }).click()
+  const source = "import { test } from 'node:test'\ntest('saved by Studio', () => {})\n"
+  await editor.fill(source)
+  await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
+  await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
+  assert.equal(readFileSync(resolve(root, 'packages/text/test/studio-source.test.js'), 'utf8'), source)
+  await page.getByRole('button', { name: /^(检查包|Check package)$/ }).click()
+  await page.getByRole('heading', { name: /^(包检查通过|Package checks passed)$/ }).waitFor().catch(async error => {
+    console.error(await page.locator('body').innerText())
+    throw error
+  })
+  await page.locator('.package-source-report').filter({ hasText: 'saved by Studio' }).waitFor()
+
+  await page.goto(`${base}/studio.html?package=text&capability=play%2Ftext%2Fanswer`)
+  await page.getByRole('button', { name: /^(在源码中查找|Find in source)$/ }).click()
+  await editor.waitFor()
+  const original = await editor.inputValue()
+  assert.match(original, /kernel.play\('text\/answer'/)
+  await editor.fill(original + "\nthrow new Error('Studio source recovery test')\n")
+  await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
+  await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
+  await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
+  await page.getByRole('alert').filter({ hasText: 'Studio source recovery test' }).waitFor()
+  await page.getByRole('link', { name: /^(打开包源码|Open package source)$/ }).click()
+  await editor.waitFor()
+  await editor.fill(original)
+  await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
+  await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
+  await page.getByRole('tab', { name: /^(关卡|Levels)$/ }).click().catch(async error => {
+    console.error(await page.locator('body').innerText(), errors)
+    throw error
+  })
+  await page.getByText('Hello', { exact: true }).first().waitFor()
+  await page.goto(`${base}/studio.html?package=text&source=test%2Fstudio-source.test.js`)
+  await editor.waitFor()
+  assert.equal(await editor.inputValue(), source)
+  await editor.fill(source + '// Edited on the phone.\n')
+  await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
+  await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
+  assert.match(readFileSync(resolve(root, 'packages/text/test/studio-source.test.js'), 'utf8'), /Edited on the phone/)
+  console.log('Studio created, edited, checked and reloaded package source on desktop and phone')
   assert.deepEqual(errors, [])
   await page.goto('about:blank')
   await server.close()

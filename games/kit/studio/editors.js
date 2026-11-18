@@ -8,6 +8,10 @@ export function registeredMeanings(order) {
   const entries = [...(plugins?.tables.kind ?? [])]
   return order ? order.flatMap(id => entries.filter(([name]) => name.startsWith(`${id}/`)).map(([, meaning]) => meaning)) : entries.map(([, meaning]) => meaning)
 }
+export const registeredPlayCapabilities = (order) => Object.fromEntries(
+  [...(plugins?.tables.play ?? [])].filter(([name]) => order.includes(name.split('/')[0]))
+    .map(([name, play]) => [name, play.about ? { about: play.about } : {}]),
+)
 export const fieldEditor = kind => [...(plugins?.tables.editor.values() ?? [])].map(editor => editor.fields?.[kind]).find(Boolean)
 export const editorRules = () => Object.assign({}, ...registeredMeanings().map(meaning => meaning.studio?.rules))
 export const fileSchema = (vocabulary, field) => (vocabulary?.meanings ?? registeredMeanings()).map(meaning => meaning.studio?.schemas?.[field]).map(schema => typeof schema === 'function' ? schema(vocabulary) : schema).find(Boolean)

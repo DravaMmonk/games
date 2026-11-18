@@ -1,10 +1,11 @@
 import { packageEntries } from '../engine/plugin-node.js'
 import { packageApp } from './package-vite.js'
+import { localSourceRequest, sourceTools } from './studio-source.js'
 import { packageIds } from '../engine/resolver.js'
 // The studio's server side (games/design/README.md 6.7), a Vite plugin for the dev server (npm run studio): the tools the
 // MCP server offers (../engine/ops/tools.js) as HTTP endpoints, and the module that gives the studio's page every
-// domain's game.js. Like the MCP server it has no logic of its own: every change is a changeset run by the operation
-// set, every check npm run check's.
+// package's plugin entries. Content writes use the same operation set as MCP. Local source editing has its own
+// file tools, with the package import policy and the same package checks.
 //
 //   GET  /studio/api/              the tools: { name: { about, params } }
 //   POST /studio/api/packages       {} → installed packages
@@ -15,7 +16,7 @@ import { packageIds } from '../engine/resolver.js'
 //
 // Calls are answered one at a time, in order, as the MCP server answers them: a changeset sees the files the one
 // before it wrote. The slow ones — a whole check (preview with check, which runs every reference of a big game for
-// seconds), a run of a level's tests — go to a second lane, a worker thread with its own copy of the tools, so a quick
+// seconds), a run of a level's tests — go to a second worker lane with its own copy of the tools, so a quick
 // preview never waits behind them; a call that writes waits for both lanes. GAMES_ROOT points the tools at a copy of
 // the games folder.
 import { resolve } from 'node:path'
@@ -41,13 +42,14 @@ const courseCatalog = {
 
 /** Whether a call is a slow read (it goes to the second lane), and whether it writes (it waits for both). */
 export const slow = (name, args) => (name === 'preview' && args.check !== false) || name === 'run_tests'
-const writes = (name, args) => (['modify', 'undo', 'adopt'].includes(name) && !args.dryRun) || ['create_game', 'create_package'].includes(name) || (name === 'blueprint' && args.text !== undefined && !args.dryRun)
+const writes = (name, args) => (['modify', 'undo', 'adopt'].includes(name) && !args.dryRun) || ['create_game', 'create_package', 'source_save'].includes(name) || (name === 'blueprint' && args.text !== undefined && !args.dryRun)
 
-/** The second lane: the tools in a worker thread. run(name, args) → the result, or throws the tool's error. */
+/** The tools in a worker thread, with a fresh module cache when the lane is replaced. run(name, args) → the result, or throws the tool's error. */
 export function worker() {
   const thread = new Worker(new URL('./studio-worker.js', import.meta.url))
   const waiting = new Map()
   let next = 0
+  let failure
   thread.on('message', ({ id, result, error }) => {
     const call = waiting.get(id)
     waiting.delete(id)
@@ -55,12 +57,16 @@ export function worker() {
     else call.resolve(result)
   })
   // A thread that dies fails what it was asked; the next call meets the error too, never a hang.
-  thread.on('error', (error) => {
+  const failAll = error => {
+    failure = error
     for (const call of waiting.values()) call.reject(error)
     waiting.clear()
-  })
+  }
+  thread.on('error', failAll)
+  thread.on('exit', code => failAll(failure ?? new Error(`Studio worker exited (${code}).`)))
   return {
     run: (name, args) => new Promise((done, fail) => {
+      if (failure) return fail(failure)
       next += 1
       waiting.set(next, { resolve: done, reject: fail })
       thread.postMessage({ id: next, name, args })
@@ -86,6 +92,7 @@ export function bridge(tools, lacking, aside = null) {
     const tool = tools[name]
     if (!tool) return reply(404, { error: `no tool ${name}; the tools are ${Object.keys(tools).join(', ')}` })
     if (req.method !== 'POST') return reply(405, { error: `POST ${name}’s arguments as JSON` })
+    if (name.startsWith('source_') && !localSourceRequest(req)) return reply(403, { error: 'Package source tools require same-origin JSON on the local Studio.' })
     let body = ''
     req.setEncoding('utf8')
     req.on('data', (chunk) => { body += chunk })
@@ -131,12 +138,25 @@ export const defineContent = content => loadGame(content, PACKAGES)`
     },
     async configureServer(server) {
       const { TOOLS, lacking } = await import('../engine/ops/tools.js')
-      const { closeGames } = await import('../engine/games.mjs')
-      const lane = worker()
-      server.middlewares.use(bridge({ ...TOOLS, course_catalog: courseCatalog }, lacking, lane))
+      let fast = worker()
+      let lane = worker()
+      const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, { ...tool, run: args => fast.run(name, args) }]))
+      const refreshCode = async () => {
+        const old = [fast, lane]
+        fast = worker()
+        lane = worker()
+        for (const id of [MODULE, 'virtual:package-displays']) {
+          const module = server.moduleGraph.getModuleById(`\0${id}`)
+          if (module) server.moduleGraph.invalidateModule(module)
+        }
+        await Promise.all(old.map(worker => worker.close()))
+      }
+      const host = server.config.server.host
+      const source = !host || ['localhost', '127.0.0.1', '::1'].includes(host) ? sourceTools(root, refreshCode) : {}
+      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking, { run: (name, args) => lane.run(name, args) }))
       server.httpServer?.on('close', () => {
+        fast.close()
         lane.close()
-        closeGames()
       })
     },
   }

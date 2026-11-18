@@ -7,8 +7,8 @@ const { TOOLS } = await import('../engine/ops/tools.js')
 parentPort.on('message', async ({ id, name, args }) => {
   try {
     // Match the HTTP bridge's JSON boundary before crossing the worker's structured-clone boundary.
-    const result = JSON.parse(JSON.stringify(await TOOLS[name].run(args)))
-    parentPort.postMessage({ id, result })
+    const result = JSON.stringify(await TOOLS[name].run(args))
+    parentPort.postMessage({ id, result: result === undefined ? undefined : JSON.parse(result) })
   } catch (error) {
     parentPort.postMessage({ id, error: error.message })
   }

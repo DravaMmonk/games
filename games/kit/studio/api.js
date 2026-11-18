@@ -7,7 +7,7 @@ import { schemaLayers, withKindDeclarations } from '../engine/plugin-kinds.js'
 
 // Tools that only read. The same read asked again while the first is on its way (a view opened twice, an effect run
 // twice in development) waits for the first instead of queueing behind it on the bridge.
-const READS = new Set(['games', 'packages', 'vocabulary', 'preview', 'names', 'objects', 'overrides', 'deps', 'flow', 'history', 'log', 'search', 'audit', 'package_compatibility'])
+const READS = new Set(['games', 'packages', 'vocabulary', 'preview', 'names', 'objects', 'overrides', 'deps', 'flow', 'history', 'log', 'search', 'audit', 'package_compatibility', 'source_packages', 'source_list', 'source_read'])
 const inFlight = new Map()
 
 export function call(tool, args) {

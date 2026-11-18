@@ -965,3 +965,18 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .package-dependencies dl { margin: 4px 0 0; }
 .package-dependencies dl > div { display: flex; flex-wrap: wrap; gap: 0 8px; margin-bottom: 4px; }
 .package-dependencies code { overflow-wrap: anywhere; }
+
+.package-source-picker, .package-source-actions { display: flex; align-items: center; gap: var(--sp-4); min-width: 0; }
+.package-source-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); min-height: 0; flex: 1; }
+.package-source-files { min-width: 0; overflow: auto; padding: var(--sp-4); }
+.package-source-files ul { list-style: none; padding: 0; margin: 0; }
+.package-source-files input, .package-source-editor input { min-width: 0; flex: 1; }
+.package-source-hint { margin: var(--sp-4) 0; }
+.package-source-editor { display: flex; flex-direction: column; min-width: 0; overflow: auto; gap: var(--sp-4); padding: var(--sp-5); }
+.package-source-actions { flex-wrap: wrap; }
+.package-source-actions code { overflow-wrap: anywhere; margin-inline-end: auto; }
+.package-source-editor textarea { flex: 1; min-height: 18rem; resize: vertical; }
+.package-source-report { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+@media (max-width: 640px) {
+  .package-source-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 10rem) minmax(0, 1fr); }
+}

@@ -15,7 +15,7 @@
 // prefs.js); the command palette (Ctrl/⌘+K) reaches every place and action, ? lists the keys.
 import './studio.css'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { BookOpen, Cpu, FileBox, Flag, Layers, ListTree, Package, Search as SearchIcon } from 'lucide-react'
+import { BookOpen, Cpu, FileBox, FileCode2, Flag, Layers, ListTree, Package, Search as SearchIcon } from 'lucide-react'
 import { L, T, getLang, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { find, shapeAt } from '../engine/schema.js'
@@ -25,7 +25,7 @@ import { blank, copyLevelData, creationChoices, placesOf, referenceFor } from '.
 import { findTask, tasksSchema } from '../engine/tasks.js'
 import { addFor, markOf, markPath } from './marks.js'
 import { contentVocabulary } from './editors.js'
-import { editorForType, editorRoute, registeredEditors } from './editors.js'
+import { editorForType, editorRoute, registeredEditors, registeredPlayCapabilities } from './editors.js'
 import { freeName } from './names.js'
 import { itemOf, problemPlace } from './worklist.js'
 import { paletteIndex } from './palette.js'
@@ -251,7 +251,10 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }, [content, rawNames, playOrder])
 
   // The object open in the object list shown (the first when none is named): the middle shows it, the right its file.
-  const capabilities = vocab?.vocabulary?.capabilities
+  const capabilities = useMemo(() => {
+    const declared = vocab?.vocabulary?.capabilities
+    return declared && { ...declared, play: { ...registeredPlayCapabilities(vocab.layerOrder ?? []), ...declared.play } }
+  }, [vocab])
   const events = useMemo(() => visibleOverrides(content, namespace), [content, namespace])
   const openCapability = side === 'kernel' ? currentCapability(capabilities, opened.capability) : null
   const openEvent = side === 'overrides' ? events.find((event) => overrideKey(event) === opened.override) ?? events[0] ?? null : null
@@ -763,6 +766,13 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     : openCapability ? { capability: openCapability } : openEvent ? { override: { event: openEvent, layer: namespace } } : { game: true }
   // The file the fold bar's compare shows: the object open in the middle (as its layer writes it), else a level.
   const compared = objectFile.object
+  const openSource = (id, symbol) => {
+    if (saving) return
+    if (ops.length && !window.confirm(tr('打开源码会放弃待定操作，确定吗？', 'Opening source discards pending operations. Continue?'))) return
+    const params = new URLSearchParams({ space: 'build', package: id, source: '', ...(symbol && { symbol }) })
+    window.location.assign(`?${params}`)
+  }
+  const [sourceOwner, sourceSymbol] = openCapability?.name.split('/') ?? []
   const compareFile = compared && {
     name: objectFileName(compared.kind, compared.full, content.registries?.tag?.[compared.full]?.kind, namespace, compared.declared),
     now: ownObjectData(namespace, objectValue(content, compared.kind, compared.full)),
@@ -774,6 +784,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }} onPalette={() => openOverlay('palette')}>
         <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => showList('packages')} title={tr('在左栏选包', 'Pick a package in the left column')}>
           <Package size={13} aria-hidden="true" /><span>{pkg}</span>
+        </button>
+        <button type="button" className="kit-btn is-label" disabled={saving} onClick={() => openSource(pkg)}>
+          <FileCode2 size={14} aria-hidden="true" />{tr('源码', 'Source')}
         </button>
       </StudioBar>
       {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
@@ -817,7 +830,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
           <main className="studio-main">
             {objectList && (
               <div className="studio-scroll">
-                {side === 'kernel' && <CapabilityView current={openCapability} />}
+                {side === 'kernel' && <CapabilityView current={openCapability} onSource={packages.some(({ id }) => id === sourceOwner) ? () => openSource(sourceOwner, sourceSymbol) : null} />}
                 {side === 'overrides' && <OverrideDetail event={openEvent} layer={namespace} pending={objectPending} onOps={addOps}
                   onOpen={(event) => {
                     if (HEADING_KINDS.includes(event.kind)) openNamed(event.kind, event.name)

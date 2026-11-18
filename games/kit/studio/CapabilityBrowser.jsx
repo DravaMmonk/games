@@ -69,16 +69,17 @@ export function CapabilityList({ capabilities, current, onOpen }) {
 }
 
 /** The capability picked, in the middle: what it says, what it takes and gives. */
-export function CapabilityView({ current }) {
-  return <article className="arrange">{current && <CapabilityDetail name={current.name} it={current.it} />}</article>
+export function CapabilityView({ current, onSource }) {
+  return <article className="arrange">{current && <CapabilityDetail name={current.name} it={current.it} onSource={onSource} />}</article>
 }
 
-function CapabilityDetail({ name, it }) {
+function CapabilityDetail({ name, it, onSource }) {
   const ports = (list) => list.map((p) => <li key={p.name}><code>{p.name}</code><span className="capability-type">{p.type}</span>{p.optional && <small>{tr('可不接', 'Optional')}</small>}</li>)
   return (
     <section className="capability-detail" aria-label={name}>
       <h2><code>{name}</code></h2>
       {it.about && <p>{L(it.about)}</p>}
+      {onSource && <button className="kit-btn is-label" type="button" onClick={onSource}>{tr('在源码中查找', 'Find in source')}</button>}
       {it.args && <><h3>{tr('输入', 'Inputs')}</h3><ul className="capability-ports">{ports(it.args)}</ul></>}
       {it.inputs && <><h3>{tr('输入口', 'Inputs')}</h3><ul className="capability-ports">{ports(it.inputs)}</ul></>}
       {(it.returns || it.outputType) && <><h3>{tr('输出', 'Output')}</h3><p className="capability-type">{it.returns ?? it.outputType}</p></>}

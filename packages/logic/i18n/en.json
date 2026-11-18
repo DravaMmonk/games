@@ -438,7 +438,9 @@
     "{left}或者{right}": "{left} or {right}",
     "{left}等价于{right}": "{left} is equivalent to {right}",
     "矛盾 ⟦notation⟧": "contradiction",
-    "并非{formula}": "not {formula}"
+    "并非{formula}": "not {formula}",
+    "拼一句": "Build a sentence",
+    "证明项须为 {term}。": "Its proof term must be {term}."
   },
   "capability.board.items.proof.about": "An inference circuit with scoped assumption frames",
   "capability.board.items.machine.about": "A circuit over proof assistant values",

@@ -238,7 +238,7 @@ function proofBrief(schema, level, notation) {
   const goalZh = bot ? `矛盾${notation.symbols.includes('⊥') ? ' ⊥' : ''}` : zhQuote(write(schema.goal, 'zh'))
   const goalEn = bot ? `a contradiction${notation.symbols.includes('⊥') ? ' ⊥' : ''}` : enQuote(write(schema.goal, 'en'))
   const enList = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0])
-  const note = level.briefNote ?? (schema.term ? { zh: `证明项须为 ${schema.term}。`, en: `Its proof term must be ${schema.term}.` } : level.script ? catalogText("按照下方脚本连接证明。") : { zh: '', en: '' })
+  const note = level.briefNote ?? (schema.term ? catalogText("证明项须为 {term}。", { term: schema.term }) : level.script ? catalogText("按照下方脚本连接证明。") : { zh: '', en: '' })
   return {
     zh: `${premises.length ? `已知${given('zh', zhQuote).join('')}，证明出${goalZh}` : `不需要任何已知，证明出${goalZh}`}。${note.zh}`,
     en: `${premises.length ? `Given ${enList(given('en', enQuote))}, prove ${goalEn}` : `Prove ${goalEn} from nothing`}.${note.en ? ` ${note.en}` : ''}`,

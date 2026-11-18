@@ -1,4 +1,20 @@
 {
   "package.desc": "Provides a play area and an editor for assembling sentences with typed slots. Consumer packages supply the grammar and judge.",
-  "package.title": "Sentence Building"
+  "package.title": "Sentence Building",
+  "ui": {
+    "句子 ⟦strip⟧": "Sentence",
+    "{value}：点击移除": "{value}: tap to remove",
+    "{name}：空位，点击选中": "{name}: empty; tap to select",
+    "清空整句？": "Clear the whole sentence?",
+    "已填入的内容将全部移除，清空后仍可撤销。": "Everything filled in will be removed. You can undo this.",
+    "撤销": "Undo",
+    "撤销（⌘/Ctrl+Z）": "Undo (⌘/Ctrl+Z)",
+    "重做": "Redo",
+    "重做（⇧⌘/Ctrl+Z）": "Redo (⇧⌘/Ctrl+Z)",
+    "点击文字可以删除。": "Tap words to delete them.",
+    "清空": "Clear",
+    "未写完": "Unfinished",
+    "这一格是这一关给定的。": "This one is given by the level.",
+    "没有空位能放它。先点一个位置，或拿掉占着的那一块。": "No empty place takes it. Tap a place first, or take out the one in the way."
+  }
 }

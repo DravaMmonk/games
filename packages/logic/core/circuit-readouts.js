@@ -84,7 +84,7 @@ function wantOf(task, test) {
   return L(WANT[test.want ?? task.want])
 }
 
-/** What the results show of a test: the types and definitions it reads, its inputs, what it wants, the result. */
+/** What the results show of a test: the types and definitions it reads, its inputs, and at the output what it wants (the result once run). */
 const machineEntries = ({ task, test, run }) => {
   if (!test) return []
   const term = machineTermOf(task)
@@ -92,8 +92,7 @@ const machineEntries = ({ task, test, run }) => {
   return [
     ...(task.datatypes ? [{ of: 'types', label: T('类型'), shape: 'scalar', given: Object.entries(task.datatypes).map(([type, d]) => typeText(type, d, term)).join(punctuation("；")) }] : []),
     ...Object.entries(inputsOf(test, task)).map(([name, v]) => ({ of: name, label: labels.get(name) ?? T("输入"), shape: 'scalar', given: v })),
-    { of: 'want', label: T("要"), shape: 'scalar', given: wantOf(task, test) },
-    { of: 'out', label: T("结果"), shape: 'scalar', got: run?.outputs?.out },
+    { of: 'out', label: T("预期"), shape: 'scalar', want: wantOf(task, test), got: run?.outputs?.out },
   ]
 }
 

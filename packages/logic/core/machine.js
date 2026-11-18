@@ -486,12 +486,12 @@ const clauseSetOf = (texts) => [...new Map(texts.map((c) => parseClause(c, parse
 /** The names and labels of a level's inputs. */
 export const inputsOfLevel = (level) => level.inputs ?? [{ name: 'in', label: catalogText("输入") }]
 
-/** A machine board: an `in` card for each of a level's inputs on the left, the result `out` on the right. */
+/** A machine board: an `in` card for each of a level's inputs on the left, `out` on the right (it shows what is wanted). */
 export const MACHINE_BOARD = circuitBoard({
   text: FORMULA_TEXT,
   cards: [
     { type: 'in', side: 'left', of: (task) => inputsOfLevel(task) },
-    { type: 'out', side: 'right', of: () => [{ name: 'out', label: T("结果") }] },
+    { type: 'out', side: 'right', of: () => [{ name: 'out', label: T("预期") }] },
   ],
   right: 900,
   gap: 130,

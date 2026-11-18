@@ -39,7 +39,8 @@
         "results": {
           "type": "oneOf",
           "values": [
-            "hidden"
+            "hidden",
+            "report"
           ],
           "optional": true
         },
@@ -112,7 +113,8 @@
         "results": {
           "type": "oneOf",
           "values": [
-            "hidden"
+            "hidden",
+            "report"
           ],
           "optional": true
         },
@@ -185,7 +187,8 @@
         "results": {
           "type": "oneOf",
           "values": [
-            "hidden"
+            "hidden",
+            "report"
           ],
           "optional": true
         },
@@ -258,7 +261,8 @@
         "results": {
           "type": "oneOf",
           "values": [
-            "hidden"
+            "hidden",
+            "report"
           ],
           "optional": true
         },
@@ -338,7 +342,8 @@
         "results": {
           "type": "oneOf",
           "values": [
-            "hidden"
+            "hidden",
+            "report"
           ],
           "optional": true
         },

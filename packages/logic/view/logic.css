@@ -89,3 +89,6 @@
 .ck-scenario button[aria-pressed='true'] { color: var(--paper); background: var(--accent); box-shadow: none; }
 .ck-grid { border-collapse: separate; border-spacing: 4px; }
 .ck-grid td { padding: 0; }
+
+/* The machine board: sentences, rules and goals on cards, notes and the step log in a smaller, compact face. */
+.lg-machine-level .vw-value { font: 500 12px/1.35 var(--sans); letter-spacing: 0; }

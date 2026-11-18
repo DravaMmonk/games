@@ -35,7 +35,10 @@
         "editor": "circuit",
         "judge": "steps",
         "resources": "machine",
+        "results": "report",
+        "output": "target",
         "tileSettings": "hidden",
+        "layout": "lg-machine-level",
         "taskBoard": [
           "title",
           "brief",

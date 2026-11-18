@@ -19,13 +19,12 @@ import { keyOf } from 'kernel'
 import { readWorks } from 'circuit'
 import { parse, replaceAtoms, show } from './formula.js'
 import { claimSentences, vocabulary } from './fol.js'
-import { parseEquation, parseS } from './schematic.js'
 import { MACHINE_BOARD, RULE_DEFINITION, axiomPartsOf, builtMachine, inputsOfLevel, rulePartsOf, ruleParts, startMachine } from './machine.js'
 import { operationsOf } from 'circuit'
 import { compileParts } from 'circuit'
 import { presetCardIds, presetOf, withPreset } from 'circuit'
 import { T } from 'kernel/words'
-import { render, say, sayTerm } from './notation.js'
+import { render, say } from './notation.js'
 import { typeOf } from './iso.js'
 import { equations } from './define.js'
 import { lemmaReference, PROOF_BOARD } from './proof.js'
@@ -208,18 +207,8 @@ function vocabOf(level) {
   return { preds: v.preds, consts: v.consts, names: [...new Set([...names, ...v.consts])] }
 }
 
-// A machine test's tab: its input in words; a clause set by how many clauses it has.
-function machineLabel(test, notation) {
-  if (test.eqs) {
-    const sides = test.eqs.map(parseEquation).map((e) => [e.s, e.t].map((x) => ('t' in x ? sayTerm(x, notation) : say(x, notation))))
-    return { zh: sides.map(([a, b]) => `${a.zh} ≐ ${b.zh}`).join('；'), en: sides.map(([a, b]) => `${a.en} ≐ ${b.en}`).join('; ') }
-  }
-  // A declaration (the generator's test) goes by its sentence.
-  if (test.ways) return say(parseS(test.it), notation)
-  // A goal of ⊥ (the hypotheses to search) goes by its first hypothesis.
-  if (test.goal) return say(parseS(test.goal === '⊥' && test.hyps?.length ? test.hyps[0] : test.goal), notation)
-  return { zh: `${test.clauses.length} 条子句`, en: `${test.clauses.length} clauses` }
-}
+// A machine test's tab: 案例 1, 2, 3 (its input is on the board).
+const machineLabel = (k) => catalogText("案例 {k}", { k: k + 1 })
 
 /**
  * A proof level's task, written from its schema in letters (the test cases name the letters' everyday sentences):
@@ -463,7 +452,7 @@ export function* prepareLogicWorks(content) {
     Object.assign(one, answers({
       ...one, ...declarations(one, one.id), ...(!one.brief && expanded.schema ? { brief: expanded.tests.at(-1).caseBrief } : {}),
       ...(WORLD_KINDS.includes(one.kind) ? { vocab: vocabOf(one) } : {}), ...expanded, ...views,
-      ...(one.kind === 'logic/machine' ? { tests: one.tests.map((t) => ({ label: machineLabel(t, notation), ...t })) } : {}),
+      ...(one.kind === 'logic/machine' ? { tests: one.tests.map((t, k) => ({ label: machineLabel(k), ...t })) } : {}),
       lemmas, proofs: lemmaParts, facts, gates: boardGates, partDefs: defs, notation,
     }))
   }

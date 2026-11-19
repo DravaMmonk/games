@@ -13,7 +13,7 @@ import { pendingValue, writtenBy } from './pending-view.js'
 import { addEdgeOps, removeEdgeOps, tagOverrideOps } from './override-edit.js'
 import { usePref } from './prefs.js'
 import { objectsOf, tagByRef, tagKey, tagMembers, tagName } from './objects-edit.js'
-import { chapterName, chapterOrderRefusal, chapterSet, chapterUnset, importLevels } from './course-edit.js'
+import { chapterName, chapterSet, chapterUnset, courseOrderRefusal, earlierPrerequisites, importLevels } from './course-edit.js'
 import { reordered } from './list-order.js'
 import { useDragOrder } from './useDragOrder.js'
 import { wiringLayoutRefusal } from './layout-edit.js'
@@ -54,16 +54,18 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
     note([op], next, members)
     onOps([op])
   }
-  // The chapter's levels are its play order: a move that puts a level before its prerequisite is refused.
-  const reorder = (id, to) => {
-    const next = reordered(members, [id], to)
-    const refused = chapterOrderRefusal(content, next)
+  // The chapter's levels are its play order, after the chapters before it: a change that puts a level before its
+  // prerequisite, here or in a later chapter, is refused (one already so is no refusal).
+  const courseWith = (levels) => (content.eras ?? []).map((era, k) => (k === e ? { id: era.id, levels } : era))
+  const changeMembers = (next) => {
+    const refused = courseOrderRefusal(content, courseWith(next), courseWith(members))
     if (refused) setRefusal(refused)
     else setMembers(next)
   }
+  const reorder = (id, to) => changeMembers(reordered(members, [id], to))
   const { item } = useDragOrder({ ids: members, disabled: applying, onMove: reorder })
   const importing = (value) => {
-    try { setMembers(importLevels(content, members, value, placedIds)) } catch (error) { setRefusal(error.message) }
+    try { changeMembers(importLevels(content, members, value, placedIds)) } catch (error) { setRefusal(error.message) }
   }
   const map = writtenBy(`${content.id}|${chapter.id}`, mapWrites)
   const savedRows = Array.isArray(chapter.rows) ? chapter.rows : null
@@ -116,7 +118,7 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
         </div>}
         {played && mode === 'map' && <ChapterMap key={chapter.id} content={content} chapter={chapter} played={played} e={e} at={at}
           rows={rows} pending={pending} applying={applying} titleOf={titleOf} onSelect={onSelect} onWrite={writeRows}
-          onOps={onOps} levelMarks={vocabulary?.levelMarks} />}
+          onOps={onOps} onRefuse={setRefusal} levelMarks={vocabulary?.levelMarks} />}
         {played && <MapPreview content={content} stamp={stamp} chapter={e} rows={rows} />}
       </div>
     </article>
@@ -135,7 +137,7 @@ const refusal = (reason) => ({
 const mapWrites = new WeakMap()
 const orderWrites = new WeakMap()
 
-function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, titleOf, onSelect, onWrite, onOps, levelMarks = {} }) {
+function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, titleOf, onSelect, onWrite, onOps, onRefuse, levelMarks = {} }) {
   const ids = useMemo(() => eraLevels(played), [played])
   const links = useMemo(() => projectWires((played.links ?? []).map((link) => ({ ...link, source: link.fromGame ? 'external' : 'course' }))), [played])
   const local = useMemo(() => new Map(ids.map((id) => [id, links.filter(({ to, from }) => to === id && ids.includes(from)).map(({ from }) => from)])), [ids, links])
@@ -176,6 +178,12 @@ function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, 
     return null
   }
   const selected = played.levels.find(({ id }) => id === at?.level)
+  // A prerequisite from another chapter is picked from the chapters before this one; it then shows at the map's top.
+  const earlier = useMemo(() => !selected ? [] : earlierPrerequisites(content, e, selected.id).map(({ id, chapter: k }) => ({
+    value: id, label: id, title: content.registries?.level?.[id]?.title,
+    group: `${k + 1} · ${L(content.eras[k].title ?? content.eras[k].chapter?.title) ?? chapterName(content.eras[k].id)}`,
+  })), [content, e, selected])
+  const addEarlier = (from) => onRefuse(refuse(from, selected.id) ?? connect(from, selected.id))
   const mark = (name, on) => {
     const key = tagKey('level', name)
     const now = tagMembers(content, key)
@@ -190,6 +198,8 @@ function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, 
           <RotateCcw size={13} aria-hidden="true" />{tr("按规则排")}
         </button>}
         {selected && <>
+          <Picker options={earlier} disabled={pending || !earlier.length} add label={tr("加前面章节的前置")}
+            placeholder={earlier.length ? tr("加前面章节的前置") : tr("前面的章没有可加的前置")} onPick={(value) => !pending && addEarlier(value)} />
           {levelMarks.optional && <label><input type="checkbox" checked={Boolean(selected.optional)} disabled={pending} onChange={(event) => mark(levelMarks.optional, event.target.checked)} />{tr("可选", {}, "chapter-board")}</label>}
           {levelMarks.skippable && <label><input type="checkbox" checked={Boolean(selected.skippable)} disabled={pending} onChange={(event) => mark(levelMarks.skippable, event.target.checked)} />{tr("可跳过")}</label>}
         </>}

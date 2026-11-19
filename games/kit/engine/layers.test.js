@@ -116,6 +116,10 @@ test('disk reader and operations share layer composition, write ownership and in
   result = await runChangeset(ws, { ops: [{ op: 'override.put', layer: '@demo', kind: 'i18n', name: 'base/en', data: { title: 'Game' } }] }, { check: false, write: true, domain })
   assert.equal(result.ok, true, result.problems.join('\n'))
   assert.equal(readContent('demo', root, { vocabulary: schemas }).levels.find((l) => l.id === 'base/a').title.en, 'Game')
+  // The game's own texts are the game workspace's, whatever kinds the packages declare.
+  const declared = { ...schemas, objectKinds: { 'base/thing': { declares: 'package', overrides: { package: ['*'] }, schema: S.obj({}) } } }
+  result = await runChangeset(openGame('demo', root, { vocabulary: declared, layer: '@demo' }), { ops: [{ op: 'text.set', in: 'game', path: ['title'], value: 'Demo!' }] }, { check: false, domain: { vocabulary: declared } })
+  assert.equal(result.ok, true, result.problems.join('\n'))
   result = await runChangeset(ws, { ops: [{ op: 'override.put', layer: '@demo', kind: 'level', name: 'base/a' }] }, { check: false, domain })
   assert.equal(result.ok, false)
   assert.match(result.problems.join('\n'), /game cannot override/)

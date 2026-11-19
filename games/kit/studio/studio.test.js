@@ -15,7 +15,7 @@ import {
   referenceFor, revertOf, sectionsOf, shapeName, shapeOf, summaryOf, tableOf, tableValue, textsOf, taskOptionsOf, tickValue, tickValues, toggled,
 } from './form.js'
 import { groupOf, groupTree, stays } from './groups.js'
-import { blankChapter, chapterOrderRefusal, importLevels, moveChapter } from './course-edit.js'
+import { blankChapter, chapterRetitle, courseOrderRefusal, earlierPrerequisites, importLevels, moveChapter } from './course-edit.js'
 import { fieldDiff } from './diff.js'
 import { taskIdsOf } from '../engine/tasks.js'
 
@@ -137,6 +137,14 @@ test('chapter metadata edits preserve level references and detach a copied layou
   const chapters = [{ id: 1, levels: ['#pkg/a'] }, { id: 2, levels: ['pkg/b'] }]
   assert.deepEqual(moveChapter(chapters, 0, 1).map(({ id }) => id), [2, 1])
   assert.deepEqual(blankChapter(chapters, { ...chapters[1], rows: [['pkg/a']], title: 'T' }, (v) => v), { id: 3, title: 'T', levels: [] })
+  // A chapter renamed where its title is kept, in one language: the others and the message key stay; a plain title stays plain.
+  const named = { registries: { chapter: {
+    '@g/one': { id: '@g/one', chapter: { title: { en: 'One', zh: '一', $key: '@g/course.one.title' } }, levels: [] },
+    '@g/two': { id: '@g/two', title: 'Two', levels: [] },
+  } } }
+  assert.deepEqual(chapterRetitle(named, '@g', '@g/one', '第一', 'zh'),
+    { op: 'chapter.set', chapter: 'one', path: ['chapter', 'title'], value: { en: 'One', zh: '第一', $key: 'course.one.title' } })
+  assert.deepEqual(chapterRetitle(named, '@g', '@g/two', 'Second', 'zh'), { op: 'chapter.set', chapter: 'two', path: ['title'], value: 'Second' })
   // A level or a level tag imported with the prerequisites no chapter places yet, those first.
   const pkg = {
     registries: {
@@ -147,9 +155,18 @@ test('chapter metadata edits preserve level references and detach a copied layou
   }
   assert.deepEqual(importLevels(pkg, ['p/x'], 'p/c'), ['p/x', 'p/a', 'p/b', 'p/c'])
   assert.deepEqual(importLevels(pkg, [], '#p/t', new Set(['p/a'])), ['p/b', 'p/c', 'p/d'])
-  // A chapter order that puts a level before its prerequisite is refused as the check says it.
-  assert.equal(chapterOrderRefusal(pkg, ['p/a', 'p/b', 'p/c']), null)
-  assert.equal(chapterOrderRefusal(pkg, ['p/b', 'p/a']), 'p/a must precede p/b in chapter order')
+  // A course order that puts a level before its prerequisite, in its chapter or a later one, is refused as the check
+  // says it; one the order replaced already broke is no refusal.
+  assert.equal(courseOrderRefusal(pkg, [{ id: 'one', levels: ['p/a', 'p/b', 'p/c'] }]), null)
+  assert.equal(courseOrderRefusal(pkg, [{ id: 'one', levels: ['p/b', 'p/a'] }]), 'p/a must precede p/b in chapter order')
+  const split = [{ id: 'one', levels: ['p/a'] }, { id: 'two', levels: [{ id: 'p/b' }, { id: 'p/c' }] }]
+  assert.equal(courseOrderRefusal(pkg, split), null)
+  assert.equal(courseOrderRefusal(pkg, moveChapter(split, 0, 1)), 'p/a must precede p/b: it is in the later chapter one')
+  assert.equal(courseOrderRefusal(pkg, [{ id: 'one', levels: ['p/c', 'p/b'] }], moveChapter(split, 0, 1)), 'p/b must precede p/c in chapter order')
+  // The prerequisites a level could take from the chapters before its own: not those it already has.
+  const played = { ...pkg, eras: [{ id: 'one', levels: [{ id: 'p/a' }, { id: 'p/d' }] }, { id: 'two', levels: [{ id: 'p/b' }] }] }
+  assert.deepEqual(earlierPrerequisites(played, 1, 'p/b'), [{ id: 'p/d', chapter: 0 }])
+  assert.deepEqual(earlierPrerequisites(played, 0, 'p/a'), [])
 })
 
 test('a changed file reads field by field: texts and boards whole, objects and lists looked into', () => {

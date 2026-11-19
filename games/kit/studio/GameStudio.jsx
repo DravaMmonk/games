@@ -15,11 +15,11 @@ import { contentVocabulary } from './editors.js'
 import { parsePath } from '../engine/ops/edit.js'
 import { isText, textEntries } from '../engine/i18n.js'
 import { call } from './api.js'
-import { placesOf } from './form.js'
+import { opFor, placesOf } from './form.js'
 import { itemOf } from './worklist.js'
 import { usePref } from './prefs.js'
 import { confirmDelete } from './delete.js'
-import { blankChapter, chapterName, chaptersOrder, moveChapter, newChapterName } from './course-edit.js'
+import { blankChapter, chapterName, chapterRetitle, chaptersOrder, courseOrderRefusal, moveChapter, newChapterName } from './course-edit.js'
 import { missingDependencies, packageAddOps, packageRemoveOps } from './game-packages.js'
 import { useChangeset } from './useChangeset.js'
 import StudioBar from './StudioBar.jsx'
@@ -35,6 +35,7 @@ import { GameList, GameMeta, JsonFile, PackageUsers, surfaceCounts, surfaceLabel
 import SidebarListTools from './SidebarListTools.jsx'
 import SidebarGrouping from './SidebarGrouping.jsx'
 import ListRow from './ListRow.jsx'
+import TitleEdit from './TitleEdit.jsx'
 import GameFrame from './GameFrame.jsx'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { MOD } from './Shortcuts.jsx'
@@ -161,7 +162,17 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     addOps([chaptersOrder(eras.filter((_, i) => i !== k)), { op: 'chapter.remove', chapter: chapterName(eras[k].id) }])
     select({ era: Math.max(0, k - 1) })
   }
+  // A chapter's title is edited where it is shown (the list, double-clicked; the board's head), in the studio's language.
+  const [renaming, setRenaming] = useState(null)
+  const chapterTitle = (chapter) => L(chapter.title ?? chapter.chapter?.title) ?? ''
+  const retitle = (k, text) => {
+    const op = chapterRetitle(content, layer, eras[k].id, text, getLang())
+    if (op) edit(op)
+  }
+  // A chapter moved past a chapter it takes prerequisites from (or gives them to) is refused, as the check says it.
+  const shiftRefusal = (k, by) => courseOrderRefusal(content, moveChapter(eras, k, by), eras)
   const shift = (k, by) => {
+    if (shiftRefusal(k, by)) return
     edit(chaptersOrder(moveChapter(eras, k, by)))
     select({ era: k + by })
   }
@@ -231,10 +242,16 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 query={chapterQuery} onQuery={setChapterQuery} />
               {eras.map((chapter, k) => !chapterMatches(chapter) ? null : (
                 <div key={k} className={`chapter-item ${e === k && !at?.game ? 'is-on' : ''}`}>
-                  <ListRow icon={BookMarked} on={e === k && !at?.game} onClick={() => select({ era: k })} title={L(chapter.title ?? chapter.chapter?.title)} id={chapterName(chapter.id)} />
+                  {renaming === k
+                    ? <TitleEdit className="chapter-rename" value={chapterTitle(chapter)} label={tr("章名")} autoFocus disabled={busyEditing} onSet={(text) => retitle(k, text)} onDone={() => setRenaming(null)} />
+                    : <ListRow icon={BookMarked} on={e === k && !at?.game} onClick={() => select({ era: k })} onDoubleClick={() => !busyEditing && setRenaming(k)}
+                      title={chapterTitle(chapter)} id={chapterName(chapter.id)} tooltip={`${chapterTitle(chapter)} · ${chapterName(chapter.id)} · ${tr("双击改章名")}`} />}
                   <span className="chapter-tools">
-                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === 0} onClick={() => shift(k, -1)} title={tr("上移")}><ArrowUp size={12} /></button>
-                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || k === eras.length - 1} onClick={() => shift(k, 1)} title={tr("下移")}><ArrowDown size={12} /></button>
+                    {[[-1, ArrowUp, tr("上移"), k === 0], [1, ArrowDown, tr("下移"), k === eras.length - 1]].map(([by, Icon, label, edge]) => {
+                      const refused = !edge && shiftRefusal(k, by)
+                      return <button key={by} type="button" className="kit-btn editor-tool" disabled={busyEditing || edge || Boolean(refused)} onClick={() => shift(k, by)}
+                        title={refused ? `${label} · ${refused}` : label} aria-label={label}><Icon size={12} /></button>
+                    })}
                     <button type="button" className="kit-btn editor-tool" disabled={busyEditing || chapter.levels.length > 0 || eras.length === 1} onClick={() => removeChapter(k)} title={tr("删掉这一章（章里没有关卡时）")}><Trash2 size={12} /></button>
                   </span>
                 </div>
@@ -255,10 +272,12 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
               {overridesShown && <OverrideDetail event={openEvent} layer={layer} pending={busyEditing} onOps={addOps} onOpen={() => setSide('chapters')} />}
               {gamesShown && <GameMeta games={games} packages={packages} id={pickedGame} open={game} disabled={saving} onOpen={openGame} />}
               {!gamesShown && !overridesShown && !packagesShown && (at?.game || e === null
-                ? <article className="editor"><header className="editor-head"><h1>{L(content.title)}</h1></header></article>
+                ? <article className="editor"><header className="editor-head"><h1><TitleEdit value={L(content.title) ?? ''} label={tr("游戏名")} disabled={busyEditing}
+                  onSet={(text) => edit(opFor({ game: true }, ['title'], { set: text, ...(typeof content.title !== 'string' && { lang: getLang() }) }, 'text'))} /></h1></header></article>
                 : <>
                   <header className="editor-head chapter-head" onClick={() => pickField([])}>
-                    <code className="editor-id is-static">{chapterName(eras[e].id)}</code><h1>{L(eras[e].title ?? eras[e].chapter?.title) ?? ''}</h1>
+                    <code className="editor-id is-static">{chapterName(eras[e].id)}</code>
+                    <h1><TitleEdit value={chapterTitle(eras[e])} label={tr("章名")} disabled={busyEditing} onSet={(text) => retitle(e, text)} /></h1>
                   </header>
                   <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} onPlay={playGame} />
                 </>)}

@@ -1,11 +1,14 @@
-// A text as an author writes it, growing with what it holds. A link
+// A text as an author writes it, growing with what it holds, edited where it is shown: the field reads as the text
+// until it is pointed at or focused; Enter or leaving the field writes it (one operation for the whole edit, empty
+// included: in the copy table an empty cell goes back to the package's text), Shift+Enter breaks the line, Escape puts
+// back the text shown. A link
 // (<level-ref>, <part-ref>, <wiki-ref>, ../shell/refs.js) shows as a chip with the name it will show in the game, and
 // is put in from a picker that searches the game's levels, parts and entries, never typed as a tag: opened by 🔗, by
 // Ctrl/⌘+L (a selection becomes the search and is replaced by the link) or by typing [[ (【【 from a Chinese keyboard);
 // the links the other language has and this one lacks come first. Link targets are checked
 // as the text is edited (../engine/text.js).
 //
-//   <TextField value onSet names compact? />   onSet(text): the text typed into the selected language; compact: the findings
+//   <TextField value onSet names compact? />   onSet(text): the text written in the selected language; compact: the findings
 //                                                    a count on the text, listed while it is being edited
 //   names: the reference catalog assembled from the registered groups.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
@@ -108,7 +111,7 @@ const select = (range) => {
  * One side: editable text with chips. `api` gets insert(kind, id), to put a link over the selection it last had, and
  * focus(), to go back to it; onLink(query) asks for the link picker.
  */
-function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, onLink }) {
+function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, onLink, onCommit, onCancel }) {
   const el = useRef(null)
   const composing = useRef(false)
   const drawn = useRef(null)
@@ -178,9 +181,15 @@ function Side({ value, onChange, names, lang, label, placeholder, api, onFocus, 
         document.execCommand('insertText', false, e.clipboardData.getData('text/plain'))
       }}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+        if (composing.current || e.nativeEvent.isComposing) return
+        if (e.key === 'Enter' && e.shiftKey) {
           e.preventDefault()
           document.execCommand('insertLineBreak')
+        } else if (e.key === 'Enter' || e.key === 'Escape') {
+          e.preventDefault()
+          e.stopPropagation()
+          ;(e.key === 'Enter' ? onCommit : onCancel)()
+          el.current.blur()
         } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
           e.preventDefault()
           keep()
@@ -203,10 +212,14 @@ export function textFindings(pair, names) {
 
 export function TextField({ value, onSet, label, names, findings = [], compact = false, lang = getLang(), placeholder, onFocus, onBlur }) {
   const text = textIn(value, lang)
-  // Typed text kept here while the operation it makes is on its way back.
+  // The text being typed, kept here until it is written and while the operation it makes is on its way back; a text
+  // that changes elsewhere (an undo) shows unless it is being edited.
   const [draft, setDraft] = useState(text)
   const pending = useRef(null)
+  const editing = useRef(false)
+  const done = useRef(false) // written or put back by a key: leaving the field then writes nothing more
   useEffect(() => {
+    if (editing.current) return
     if (pending.current === null || pending.current === text) {
       pending.current = null
       setDraft(text)
@@ -215,11 +228,24 @@ export function TextField({ value, onSet, label, names, findings = [], compact =
   const box = useRef(null)
   const tools = useRef(null)
   const [linking, setLinking] = useState(null) // the picker's first search while it is open
-  const set = useCallback((text) => {
-    pending.current = text
-    setDraft(text)
-    onSet(text)
-  }, [onSet])
+  const latest = useRef(draft)
+  latest.current = draft
+  const commit = useCallback(() => {
+    const next = latest.current
+    if (next === text) return
+    pending.current = next
+    onSet(next)
+  }, [onSet, text])
+  // A field taken away while it is being edited (another object picked by a key) writes what it holds.
+  const unmounting = useRef(commit)
+  unmounting.current = () => { if (editing.current && !done.current) commit() }
+  useEffect(() => () => unmounting.current(), [])
+  const keyed = (write) => () => {
+    done.current = true
+    editing.current = false
+    if (write) commit()
+    else setDraft(text)
+  }
   const pickerOpen = linking !== null
   const options = useMemo(() => pickerOpen
     ? (names?.options ?? []).map(option => ({ ...option, group: L(option.group) }))
@@ -227,11 +253,18 @@ export function TextField({ value, onSet, label, names, findings = [], compact =
   const close = () => { setLinking(null); box.current?.focus() }
   const all = [...new Set([...textFindings({ [lang]: draft }, names), ...findings])]
   return (
-    <div onFocus={onFocus} onBlur={(event) => {
-      if (!event.currentTarget.contains(event.relatedTarget)) pending.current = null
+    <div onFocus={(event) => { editing.current = true; done.current = false; onFocus?.(event) }} onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        if (!done.current) commit()
+        pending.current = null
+        editing.current = false
+        done.current = false
+        setLinking(null)
+      }
       onBlur?.(event)
     }} className={`field-text ${all.length ? 'has-findings' : ''} ${compact ? 'is-compact' : ''}`}>
-      <Side value={draft} onChange={set} names={names} lang={lang} label={label} placeholder={placeholder} api={box} onLink={setLinking} />
+      <Side value={draft} onChange={setDraft} names={names} lang={lang} label={label} placeholder={placeholder} api={box} onLink={setLinking}
+        onCommit={keyed(true)} onCancel={keyed(false)} />
       {names && (
         <div className="text-tools" ref={tools}>
           <button type="button" className="text-link" onPointerDown={(e) => e.preventDefault()} onClick={() => setLinking(linking === null ? '' : null)} aria-label={tr('插入链接')} title={tr("插入链接（{MOD}+L 或 [[）", {MOD})}><Link2 size={13} aria-hidden="true" /></button>

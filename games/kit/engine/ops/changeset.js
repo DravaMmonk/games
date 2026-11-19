@@ -119,6 +119,8 @@ function operationKind(operation, args, vocabulary) {
   const kind = operation.startsWith('object.') ? args.kind
     : operation === 'text.set' ? (args.entry !== undefined ? 'entry' : args.section !== undefined ? 'section' : args.kind)
       : operation.split('.')[0]
+  // A text.set naming no kind (the game's texts, a level's) has no declared kind's policy: its scope is opScope's.
+  if (kind === undefined) return null
   const name = Object.keys(vocabulary.objectKinds ?? {}).find(name => name === kind || vocabulary.objectKinds[name].objectKind === kind)
   return name && kindPolicy(name, vocabulary)
 }

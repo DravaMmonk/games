@@ -202,7 +202,7 @@ export function orderedTags(content, kind) {
 /** The runtime route consumed by courseLayout, maps and domains; chapter rows belong to the game. */
 export function assembleChapters(chapters, { expand, relations, optional = new Set(), skippable = new Set(), problems = [] }) {
   const seen = new Set()
-  return chapters.map((chapter) => {
+  const eras = chapters.map((chapter) => {
     const ids = (chapter.levels ?? []).filter((id) => {
       if (typeof id !== 'string' || id.startsWith('#') || !id.includes('/')) {
         problems.push({ at: `chapters/${chapter.id}.levels`, says: 'chapter levels must be an ordered list of level full names, without tags' })
@@ -218,6 +218,12 @@ export function assembleChapters(chapters, { expand, relations, optional = new S
     }
     return { ...chapter, levels: ids.map((id) => ({ id, ...(optional.has(id) && { optional: true }), ...(skippable.has(id) && { skippable: true }) })), links: relations.requires.filter((e) => ids.includes(e.to)).map(({ game, ...e }) => ({ ...e, ...(game && { fromGame: game }) })) }
   })
+  // A prerequisite in another chapter is in an earlier one: the course's chapter order is its play order too.
+  const chapterOf = new Map(eras.flatMap((era, k) => era.levels.map(({ id }) => [id, k])))
+  for (const edge of relations.requires) if (!edge.game && chapterOf.get(edge.from) > chapterOf.get(edge.to)) {
+    problems.push({ at: `chapters/${eras[chapterOf.get(edge.to)].id}.levels`, says: `${edge.from} must precede ${edge.to}: it is in the later chapter ${eras[chapterOf.get(edge.from)].id}` })
+  }
+  return eras
 }
 
 /** Read one registered object by full name. */

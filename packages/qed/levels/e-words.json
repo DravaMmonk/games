@@ -12,6 +12,17 @@
   ],
   "tasks": [
     {
+      "id": "e-words-warmup",
+      "kind": "logic/translate",
+      "target": "Rain ∧ Wet",
+      "step": "@level.e-words.tasks.e-words-warmup.step",
+      "brief": "@level.e-words.tasks.e-words-warmup.brief",
+      "say": "@level.e-words.tasks.e-words-warmup.say",
+      "hint": [
+        "@level.e-words.tasks.e-words-warmup.hint.0"
+      ]
+    },
+    {
       "id": "e-words-translate",
       "kind": "logic/translate",
       "target": "(Rain → Wet) ∧ (Rain ∧ ¬Wet)",

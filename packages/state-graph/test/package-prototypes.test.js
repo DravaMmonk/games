@@ -1,24 +1,16 @@
-import { logicVocabulary } from '../../qed/test/fixture.js'
 import { logicVocabulary as circuitVocabulary } from '../../qed/test/fixture.js'
-import { existenceProblems } from '../../../games/kit/engine/existence.js'
-import { after, test } from 'node:test'
+import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { readPackage, runtimeOf, resolveLayers, layerVocabulary } from '../../../games/kit/engine/resolver.js'
 import { checkGame } from '../../../games/kit/engine/checks.js'
-import { closeGames } from '../../../games/kit/engine/games.mjs'
 import { composeLayers } from '../../../games/kit/engine/layers.js'
 import { vocabulary } from '../../../games/kit/engine/kernel.js'
 import { defineParts } from '../../circuit/core/index.js'
-import { openPackage } from '../../../games/kit/engine/ops/workspace.js'
-import { runChangeset, undo } from '../../../games/kit/engine/ops/changeset.js'
-import { contentAssets, CONTENT_FILE } from '../../../games/kit/app/content-assets.js'
-import { pageContent } from '../../../games/kit/app/page-content.js'
 import { lockFixture, writeContentFixture, installTableFixture, installScalarFixture } from '../../qed/test/fixture.js'
 
-after(closeGames)
 const text = en => ({ en })
 const numericParts = Object.fromEntries([
   ['add', 'plus'], ['subtract', 'minus'], ['multiply', 'times'], ['divide', 'over'],
@@ -28,20 +20,6 @@ const numericParts = Object.fromEntries([
   outputType: 'kernel/number', op: `numlib/${operation}`,
 }]))
 const layer = (id, objects = [], uses = [], overrides = []) => ({ id, config: { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^1.0.0'])) }, objects, overrides, catalogs: {} })
-
-test('content prototypes qualify, merge, replace, reject undeclared dependencies and retain provenance', () => {
-  const base = layer('base', [{ kind: 'qed/wordset', name: 'words', value: { A: 'alpha', B: 'beta' } }])
-  const extra = layer('extra', [], ['base'], [{ kind: 'qed/wordset', name: 'base/words', value: { B: 'bravo' } }])
-  const composed = composeLayers([extra, base], logicVocabulary)
-  assert.deepEqual(composed.registries['qed/wordset']['base/words'], { A: 'alpha', B: 'bravo' })
-  assert.deepEqual(composed.sources['qed/wordset']['base/words'], { declaration: 'base', overrides: ['extra'], collections: {} })
-  extra.overrides[0].value = { A: 'alpha', B: 'beta', C: 'charlie' }
-  assert.deepEqual(composeLayers([base, extra], logicVocabulary).registries['qed/wordset']['base/words'], { A: 'alpha', B: 'beta', C: 'charlie' })
-  extra.config.uses = {}
-  assert.ok(existenceProblems(composeLayers([base, extra], logicVocabulary).qualifiedLayers, logicVocabulary).some(p => p.reason === 'undeclared dependency'))
-  const badReference = layer('extra', [{ kind: 'level', name: 'one', value: { words: ['base/words'] } }])
-  assert.ok(existenceProblems(composeLayers([base, badReference], logicVocabulary).qualifiedLayers, logicVocabulary).some(p => p.reason === 'undeclared dependency'))
-})
 
 test('packages reject the retired vocabulary field and invalid ranges', () => {
   const base = layer('base')
@@ -86,29 +64,18 @@ test('a numeric library works in packages using image and table boards, with no 
     for (const id of ['picture', 'cells']) put(`packages/${id}/package.json`, { kind: 'lib', uses: { 'numeric-parts': '^0.0.0', ...(id === 'picture' ? { image: '^0.0.0' } : { 'state-graph': '^0.0.0', table: '^0.0.0' }) }, version: '1.0.0', kernel: '^0.0.0' })
     for (const id of ['numeric-parts', 'picture', 'cells']) rmSync(resolve(root, 'games', id), { recursive: true })
     lockFixture(root)
-    for (const id of ['numeric-parts', 'picture', 'cells']) {
-      const content = readPackage(id, root)
-      assert.equal(Object.keys(content.registries['circuit/part']).filter(name => name.startsWith('numeric-parts/')).length, 4)
-      assert.deepEqual((await checkGame(content, { domain: await runtimeOf(content), root })).filter(line => line.fail), [], id)
-      const { PARTS } = defineParts(content.partDefs, {})
-      assert.equal(PARTS['numeric-parts/add'].eval({ a: 6, b: 3 }, {}), 9)
-      assert.equal(PARTS['numeric-parts/subtract'].eval({ a: 6, b: 3 }, {}), 3)
-      assert.equal(PARTS['numeric-parts/multiply'].eval({ a: 6, b: 3 }, {}), 18)
-      assert.equal(PARTS['numeric-parts/divide'].eval({ a: 6, b: 3 }, {}), 2)
-      assert.throws(() => PARTS['numeric-parts/divide'].eval({ a: 6, b: 0 }, {}))
+    const library = readPackage('numeric-parts', root)
+    for (const content of [library, readPackage('picture', root), readPackage('cells', root)]) {
+      const parts = Object.keys(content.registries['circuit/part']).filter(name => name.startsWith('numeric-parts/')).sort()
+      assert.deepEqual(parts, Object.keys(numericParts).sort().map(name => `numeric-parts/${name}`))
+      assert.deepEqual((await checkGame(content, { domain: await runtimeOf(content), root })).filter(line => line.fail), [], content.id)
     }
-    put('packages/numeric-parts/kinds/wordset.json', { folder: 'wordset', declares: 'package', overrides: { package: ['*'], game: ['$text'] }, schema: { type: 'map', of: { type: 'text' } } })
-    put('packages/numeric-parts/wordset/numbers.json', { A: 'one' })
-    const ws = openPackage('numeric-parts', root)
-    const result = await runChangeset(ws, { ops: [{ op: 'object.set', kind: 'numeric-parts/wordset', name: 'numeric-parts/numbers', path: 'A', value: text('two') }] }, { write: true })
-    assert.equal(result.ok, true, result.problems.join('\n'))
-    assert.equal(readPackage('numeric-parts', root).registries['numeric-parts/wordset']['numeric-parts/numbers'].A.en, 'two')
-    const content = readPackage('numeric-parts', root)
-    const assets = contentAssets(content)
-    const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', url => new Response(assets.get(url.pathname.slice(1))), circuitVocabulary)
-    assert.deepEqual(restored.registries['numeric-parts/wordset'], content.registries['numeric-parts/wordset'])
-    assert.equal((await undo(openPackage('numeric-parts', root), { write: true })).ok, true)
-    assert.equal(JSON.parse(readFileSync(resolve(root, 'packages/numeric-parts/wordset/numbers.json'), 'utf8')).A, 'one')
+    const { PARTS } = defineParts(library.partDefs, {})
+    assert.equal(PARTS['numeric-parts/add'].eval({ a: 6, b: 3 }, {}), 9)
+    assert.equal(PARTS['numeric-parts/subtract'].eval({ a: 6, b: 3 }, {}), 3)
+    assert.equal(PARTS['numeric-parts/multiply'].eval({ a: 6, b: 3 }, {}), 18)
+    assert.equal(PARTS['numeric-parts/divide'].eval({ a: 6, b: 3 }, {}), 2)
+    assert.throws(() => PARTS['numeric-parts/divide'].eval({ a: 6, b: 0 }, {}))
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

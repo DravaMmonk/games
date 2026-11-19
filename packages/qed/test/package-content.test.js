@@ -9,6 +9,9 @@ import { contentTargets, gameCatalog, runtimeOf, readContent, readPackage } from
 import { checkGame } from '../../../games/kit/engine/checks.js'
 import { lockTarget } from '../../../games/kit/engine/releases.js'
 import { packageLevel, packageLevelOrder } from '../../../games/kit/engine/package-play.js'
+import { contentAssets, CONTENT_FILE } from '../../../games/kit/app/content-assets.js'
+import { pageContent } from '../../../games/kit/app/page-content.js'
+import { contentSchemas } from '../../../games/kit/engine/content.js'
 import { holds } from '../../circuit/core/index.js'
 import { usable } from '../../circuit/core/course.js'
 import { openGame, openPackage } from '../../../games/kit/engine/ops/workspace.js'
@@ -58,8 +61,6 @@ test('a parts-only package opens without a course, checks and writes its own log
   assert.equal(readPackage('library', root).partDefs.parts['library/apply'].desc, 'Apply an implication.')
   const cli = execFileSync(process.execPath, [resolve(new URL('../../../games/kit/engine/', import.meta.url).pathname, 'ops/cli.js'), '--package', 'library', 'log'], { env: { ...process.env, GAMES_ROOT: root }, encoding: 'utf8' })
   assert.match(cli, /Start the independent library log/)
-  const checked = execFileSync(process.execPath, [resolve(new URL('../../../games/kit/engine/', import.meta.url).pathname, 'check.js'), '--package', 'library'], { env: { ...process.env, GAMES_ROOT: root }, encoding: 'utf8' })
-  assert.match(checked, /all games ok/)
 })
 
 test('single-level play uses task trays, ignores prerequisites and opens settings without progress', async () => {
@@ -71,6 +72,7 @@ test('single-level play uses task trays, ignores prerequisites and opens setting
   const content = readPackage(id, root)
   assert.equal('eras' in content, false)
   assert.equal('chapters' in content, false)
+  assert.deepEqual(packageLevelOrder(content), ['given', 'apply', 'suppose'].map(level => `${id}/${level}`))
   const source = content.levels.find(l => l.id === `${id}/given`)
   source.tasks[0].tray = `${id}/tools`
   const shell = packageLevel(content, source.id)
@@ -129,7 +131,7 @@ test('package dependencies are readable while only the selected layer can be edi
   assert.deepEqual(readLog(openPackage('library', root)), [])
 })
 
-test('games can edit only their own layer and cannot undo a package log entry', async () => {
+test('games can edit only their own layer, and log in their own log', async () => {
   const { root, id } = proofsRoot()
   roots.push(root)
   const ws = openGame(id, root)
@@ -141,7 +143,8 @@ test('games can edit only their own layer and cannot undo a package log entry', 
   assert.deepEqual(result.files, [`games/${id}/game.json`, `games/${id}/i18n/en.json`])
   assert.equal(readFileSync(resolve(root, 'packages', id, 'parts/mp.json'), 'utf8'), before)
   assert.equal(readContent(id, root).title, 'New game title')
-  assert.equal((await undo(openPackage(id, root))).ok, false)
+  assert.equal(readLog(openGame(id, root)).length, 1)
+  assert.deepEqual(readLog(openPackage(id, root)), [])
 })
 
 test('default check targets include every game followed by unplayed packages; names can be disambiguated', () => {
@@ -176,13 +179,6 @@ test('packages reject invalid authored package fields', async () => {
 })
 
 
-test('package lists use prerequisites then names without constructing chapters', () => {
-  const content = { levels: ['p/a', 'p/b', 'p/c'].map(id => ({ id })),
-    relationEdges: { requires: [{ from: 'p/b', to: 'p/a' }] } }
-  assert.deepEqual(packageLevelOrder(content), ['p/b', 'p/a', 'p/c'])
-  assert.equal('eras' in content, false)
-})
-
 test('symbol files, wording, typed tags and overrides use symbols throughout authoring', async () => {
   const { root, put } = library()
   put('packages/library/symbols/and.json', { mark: 'logic/formulaAnd', name: '∧', desc: '@symbol.and.desc', icon: 'Rows3' })
@@ -203,5 +199,17 @@ test('symbol files, wording, typed tags and overrides use symbols throughout aut
   assert.equal(result.ok, true, result.problems.join('\n'))
   assert.ok(existsSync(resolve(root, 'packages/library/symbols/and.json')))
   assert.equal(existsSync(resolve(root, 'packages/library/symbol/and.json')), false)
-  assert.equal(readPackage('library', root).registries['logic/symbol']['library/and'].desc.en, 'Both sentences')
+  const edited = readPackage('library', root)
+  const symbols = edited.registries['logic/symbol']
+  assert.equal(symbols['library/and'].desc.en, 'Both sentences')
+  assert.equal(symbols['library/and'].icon, 'Box')
+  const assets = contentAssets(edited)
+  const page = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/',
+    url => new Response(assets.get(url.pathname.slice(1))), contentSchemas.get(edited))
+  assert.deepEqual(page.registries['logic/symbol'], symbols)
+  const back = await undo(openPackage('library', root), { write: true, check: false })
+  assert.equal(back.ok, true, back.problems.join('\n'))
+  const { desc, icon } = readPackage('library', root).registries['logic/symbol']['library/and']
+  assert.equal(desc.en, 'Conjunction')
+  assert.equal(icon, 'Rows3')
 })

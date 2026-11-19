@@ -1,5 +1,5 @@
 // Explicit lock updates and checked, automatically versioned package publication.
-import { existsSync, mkdirSync, readdirSync, writeFileSync, readFileSync, mkdtempSync, cpSync, rmSync, symlinkSync, renameSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync, readFileSync, mkdtempSync, cpSync, rmSync, symlinkSync, renameSync } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { spawnSync, execFileSync } from 'node:child_process'
@@ -11,6 +11,7 @@ import { exportedNames } from './manifests.js'
 import { vocabulary } from './kernel.js'
 import { OBJECT_SCHEMAS } from './objects.js'
 import { OPERATIONS } from './ops/operations.js'
+import { testArgs, testEnv, testFiles } from './test-files.js'
 
 const write = (file, value) => writeFileSync(file, JSON.stringify(value, null, 2) + '\n')
 export function lockTarget(target, root = contentRoot(), { pins } = {}) {
@@ -114,10 +115,13 @@ export function publishPackage(id, root = contentRoot(), { launch = false } = {}
     symlinkSync(packageDirectory('', root), resolve(validation, 'packages'), 'dir')
     if (existsSync(releaseDirectory(root))) symlinkSync(releaseDirectory(root), resolve(validation, 'releases'), 'dir')
     checkTarget(target, validation)
-    const tests = resolve(dir, 'test')
-    contracts = existsSync(tests) ? readdirSync(tests).filter(name => name.endsWith('.test.js')).map(name => resolve(tests, name)) : []
+    contracts = testFiles(resolve(dir, 'test'))
     if (existsSync(resolve(dir, 'core/index.js')) && !contracts.length) throw new Error(`${id}: code packages require contract tests`)
-    if (contracts.length) execFileSync(process.execPath, ['--test', ...contracts], { cwd: resolve(kitDirectory, '../../site'), env: { ...process.env, GAMES_ROOT: validation, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` }, stdio: 'pipe' })
+    if (contracts.length) execFileSync(process.execPath, testArgs(contracts), {
+      cwd: resolve(kitDirectory, '../../site'),
+      env: testEnv({ GAMES_ROOT: validation, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` }),
+      stdio: 'pipe',
+    })
   } finally { rmSync(validation, { recursive: true, force: true }) }
   const targets = affectedTargets(id, root)
   const result = resolveLayers({ package: id, closure: true, root })

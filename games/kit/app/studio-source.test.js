@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import { localSourceRequest, sourceTools } from './studio-source.js'
-import { packageWordsFixture } from '../engine/test-fixture.js'
+import { lockFixture, packageWordsFixture, testProject } from '../engine/test-fixture.js'
 
 test('Studio edits only workspace source and rejects stale or invalid writes', async () => {
   const root = mkdtempSync(join(tmpdir(), 'studio-source-'))
@@ -55,4 +55,22 @@ test('Studio source tools accept loopback same-origin JSON requests only', () =>
     assert.ok(!localSourceRequest({ ...allowed, headers: { ...allowed.headers, ...headers } }))
   }
   assert.ok(!localSourceRequest({ ...allowed, socket: { remoteAddress: '192.0.2.1' } }))
+})
+
+test('Studio source checks surface failures from nested package tests', async () => {
+  const { root, put } = testProject('studio-source-check-')
+  try {
+    put('packages/sample/package.json', { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, 'sample') })
+    put('packages/sample/test/contracts/verify.test.mjs', `
+      import test from 'node:test'
+      test('nested Studio contract', () => { throw new Error('contract failed') })
+    `)
+    lockFixture(root)
+    const result = await sourceTools(root).source_check.run({ package: 'sample' })
+    assert.equal(result.ok, false)
+    assert.match(result.output, /not ok \d+ - nested Studio contract/)
+    assert.match(result.output, /contract failed/)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })

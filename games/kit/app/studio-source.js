@@ -7,6 +7,7 @@ import { promisify } from 'node:util'
 import { packageDirectory, readCatalogs } from '../engine/resolver.js'
 import { packageWords } from '../engine/manifests.js'
 import { packageSourceProblems } from '../engine/plugin-boundaries.js'
+import { testArgs, testEnv, testFiles } from '../engine/test-files.js'
 
 const sourcePath = /^(?:core|view|test)(?:\/[\w-][\w.-]*)*\/[\w-][\w.-]*\.(?:js|jsx|mjs)$/
 const sides = ['core', 'view', 'test']
@@ -120,14 +121,14 @@ export function sourceTools(root, onSave = () => {}) {
       params: { package: 'string' },
       async run({ package: id }) {
         const dir = packageSourceDirectory(root, id)
-        const options = { cwd: root, env: { ...process.env, GAMES_ROOT: root }, maxBuffer: 8 * 1024 * 1024 }
+        const options = { cwd: root, env: testEnv({ GAMES_ROOT: root }), maxBuffer: 8 * 1024 * 1024 }
         const output = []
         try {
           const check = await run(process.execPath, [resolve(import.meta.dirname, '../engine/check.js'), '--package', id, '--fresh'], options)
           output.push(check.stdout, check.stderr)
-          const tests = sourceFiles(dir, 'test').filter(path => /\.test\.(js|mjs)$/.test(path)).map(path => resolve(dir, path))
+          const tests = testFiles(resolve(dir, 'test'))
           if (tests.length) {
-            const result = await run(process.execPath, ['--import', resolve(import.meta.dirname, '../engine/package-imports.mjs'), '--test', ...tests], options)
+            const result = await run(process.execPath, testArgs(tests), options)
             output.push(result.stdout, result.stderr)
           }
           return { ok: true, output: output.join('').trim() }

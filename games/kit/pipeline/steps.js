@@ -12,7 +12,7 @@ import { runtimeIds } from '../engine/runtime.js'
 //   review     reviewer              reads it all, reports findings   gate: no finding to fix left open
 //   queue      —                     the review queue entry           gate: every gate above still clean
 import { execFileSync } from 'node:child_process'
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { checkGame } from '../engine/checks.js'
 import { runtimeOf, readContent, packageDirectory } from '../engine/resolver.js'
@@ -24,8 +24,8 @@ import { searchable } from '../engine/ops/search.js'
 import { checkContent } from '../engine/vocabulary.js'
 import { meaningsOf } from '../engine/kind-meanings.js'
 import { isLanguageCode } from '../engine/i18n.js'
+import { testArgs, testEnv, testFiles } from '../engine/test-files.js'
 
-const KIT_DIR = resolve(import.meta.dirname, '..')
 const finding = (rule, at, says) => ({ rule, at, says })
 
 /** Reuse authoring checks within one gate invocation, including all steps of a queue run. */
@@ -89,13 +89,10 @@ export const STEPS = [
         .map((problem) => finding('contract', owners.join(', '), problem))
       const tests = []
       for (const owner of owners) {
-        const directory = resolve(packageDirectory(owner), 'test')
-        if (!existsSync(directory)) continue
-        const files = readdirSync(directory, { recursive: true }).filter(file => file.endsWith('.test.js'))
+        const files = testFiles(resolve(packageDirectory(owner), 'test'))
         if (!files.length) continue
         try {
-          const { NODE_TEST_CONTEXT: _, ...env } = process.env
-          execFileSync(process.execPath, ['--import', resolve(KIT_DIR, 'engine/package-imports.mjs'), '--test', ...files.map(file => resolve(directory, file))], { stdio: 'pipe', env })
+          execFileSync(process.execPath, testArgs(files), { stdio: 'pipe', env: testEnv() })
         } catch (error) {
           const failures = String(error.stdout ?? error.message).split('\n').filter(line => line.startsWith('not ok'))
           tests.push(finding('package-test', owner, failures.join('\n') || 'its unit tests fail'))

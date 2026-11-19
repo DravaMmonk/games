@@ -1,6 +1,4 @@
-# The kit's unit tests, when kit code changes. They read no real game (games/design/README.md), so content changes never
-# run them, and they never hold up a deploy. No workflow replays a game: checking kit code against every game's
-# content (the compatibility corpus, games/DIRECTION.md decision 17) is the platform's to run.
+# Run unit and contract tests when kit or package code changes. Game content uses the platform compatibility checks.
 name: Test kit
 
 on:
@@ -8,6 +6,10 @@ on:
     branches: [main]
     paths:
       - 'games/kit/**'
+      - 'packages/*/core/**'
+      - 'packages/*/view/**'
+      - 'packages/*/test/**'
+      - 'packages/*/package.json'
       - 'site/**'
       - '.github/workflows/test-kit.yml'
   workflow_dispatch:

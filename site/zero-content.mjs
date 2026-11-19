@@ -1,16 +1,17 @@
 // Exercise the installed platform against an isolated content workspace.
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
 import { chromium } from 'playwright'
+import { testArgs, testEnv, testFiles } from '../games/kit/engine/test-files.js'
 
 const app = import.meta.dirname
 const kit = resolve(app, '../games/kit')
 const root = mkdtempSync(resolve(tmpdir(), 'kit-zero-'))
-const env = { ...process.env, GAMES_ROOT: root }
+const env = testEnv({ GAMES_ROOT: root })
 const run = promisify(execFile)
 const command = async args => {
   const { stdout, stderr } = await run(process.execPath, args, { cwd: app, env, maxBuffer: 32 << 20 })
@@ -27,8 +28,8 @@ let browser
 try {
   mkdirSync(resolve(root, 'packages'))
   mkdirSync(resolve(root, 'games'))
-  const tests = readdirSync(kit, { recursive: true }).filter(file => file.endsWith('.test.js')).map(file => resolve(kit, file))
-  await command(['--import', resolve(kit, 'engine/package-imports.mjs'), '--test', '--test-reporter=dot', ...tests])
+  const tests = testFiles(kit)
+  await command(testArgs(tests, ['--test-reporter=dot']))
   console.log(`Empty workspace: ${tests.length} kernel test files passed`)
   await command([resolve(kit, 'engine/check.js')])
 

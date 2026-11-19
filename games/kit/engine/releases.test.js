@@ -90,11 +90,23 @@ test('checked archives and workspace sources use the same reader, manifests and 
     put(root, 'packages/library/package.json', namedConfig(root, 'library'))
     put(root, 'packages/library/core/index.js', "export const answerValue = 42; export function register(kernel) { kernel.tag('library/read', 'library/topic') }")
     put(root, 'packages/library/view/index.jsx', "export function Widget() { return <span /> } export function register(kernel) { kernel.display('library/widget', Widget) }")
-    put(root, 'packages/library/test/contract.test.js', "import test from 'node:test'; import assert from 'node:assert/strict'; import { answerValue } from '../core/index.js'; test('public value', () => assert.equal(answerValue, 42))")
+    const contract = 'test/public/contract.test.mjs'
+    const sourceTest = value => `
+      import test from 'node:test'
+      import assert from 'node:assert/strict'
+      import { firstText } from 'kernel'
+      import { answerValue } from '../../core/index.js'
+      test('public value', () => assert.equal(firstText({ en: String(answerValue) }), '${value}'))
+    `
+    put(root, `packages/library/${contract}`, sourceTest(41))
     put(root, 'packages/library/kinds/topic.json', topic)
     put(root, 'packages/library/topic/one.json', { title: 'One', body: ['An explanatory test entry.'] })
     const target = { id: 'library', kind: 'package' }
     lockTarget(target, root)
+    assert.throws(() => publishPackage('library', root, { launch: true }),
+      error => /not ok \d+ - public value/.test(String(error.stdout)))
+    assert.equal(releaseIndex(root).packages.library, undefined)
+    put(root, `packages/library/${contract}`, sourceTest(42))
     const first = publishPackage('library', root, { launch: true })
     assert.equal(first.version, '1.0.0')
     const source = resolveLayers({ package: 'library', closure: true, root }).layers[0]
@@ -108,6 +120,8 @@ test('checked archives and workspace sources use the same reader, manifests and 
     const archive = resolveLayers({ package: 'library', closure: true, root }).layers[0]
     for (const field of ['config', 'objects', 'overrides', 'catalogs', 'manifest']) assert.deepEqual(archive[field], source[field], field)
     assert.equal(archive.source, 'archive')
+    const published = releaseSource('library', { ...releaseIndex(root).packages.library[first.version], version: first.version }, root)
+    assert.deepEqual(JSON.parse(readFileSync(resolve(published, 'manifest.json'), 'utf8')).checks.contracts, [contract])
     put(root, 'games/demo/game.json', { kernel: '^0.0.0', packages: { library: '^1.0.0' } })
     lockTarget({ id: 'demo', kind: 'game' }, root)
     const workspace = openGame('demo', root)

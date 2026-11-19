@@ -52,36 +52,36 @@ test('bulk edits are one operation a level, and the levels an edit does not fit 
     ops: [{ op: 'level.adds', level: 'a', add: ['sub'], remove: ['add'] }, { op: 'level.adds', level: 'b', add: ['sub'] }],
     skipped: [{ level: 'c', why: 'brings in no parts' }],
   })
-  // Put together into a group: the first to the place, each next right after the one before; or out of every group.
 })
 
-// Every domain's starter game, as content.js assembles it; and one opened for operations in a temp games folder.
+// The circuit and logic starter games, read for indexing and opened separately for operation previews.
 const DOMAINS = resolve(import.meta.dirname, '../..')
 const STARTERS = ['circuit', 'logic']
 const starterDir = domain => resolve(DOMAINS, domain, 'test')
-const starter = domain => readStarter(starterDir(domain))
+const starterContent = new Map()
+const starter = domain => {
+  if (!starterContent.has(domain)) starterContent.set(domain, readStarter(starterDir(domain)))
+  return starterContent.get(domain)
+}
 const openStarter = domain => openPackage('starter', starterRoot(starterDir(domain)))
 
-test('on every starter: a bulk edit of its package levels runs as a changeset, and they go into a group in order', async () => {
+test('a bulk preview edits and tags the levels of the circuit and logic starter packages', async () => {
   for (const d of STARTERS) {
     const ws = openStarter(d)
     const content = ws.content()
     const { vocabulary } = await runtimeOf(content)
     const ids = content.levels.map(l => l.id)
-    const levels = ids.map((id) => content.levels.find((l) => l.id === id))
-    // A text every level of the era holds: the title, which every vocabulary gives a level.
-    const { ops, skipped } = bulkSet(vocabulary, levels, ['title'], { en: '同一个标题' })
+    const { ops, skipped } = bulkSet(vocabulary, content.levels, ['title'], { en: '同一个标题' })
     assert.deepEqual([ops.length, skipped], [ids.length, []], d)
-    // The era's levels backwards, into a new group: they end up together there, in that order.
     const grouped = [{ op: 'tag.put', tag: 'first', member: 'level', data: { title: { en: 'First' }, values: ids } }]
     const r = await runChangeset(ws, { ops: [...ops, ...grouped] }, { write: false, check: false })
     assert.equal(r.failed, null, `${d}: ${r.problems.join('\n')}`)
     assert.deepEqual(r.content.tags[`level:${ws.id}/first`].values, ids, d)
-    assert.ok(ids.every((id) => r.content.levels.find((l) => l.id === id).title.en === '同一个标题'), d)
+    assert.deepEqual(r.content.levels.map(({ id, title }) => [id, title.en]), ids.map(id => [id, '同一个标题']), d)
   }
 })
 
-test('a dry run without texts leaves the content as it is and gives no file texts', async () => {
+test('a dry run can omit file texts while preserving the simulated edit', async () => {
   const d = STARTERS[0]
   const ws = openStarter(d)
   const id = ws.content().levels[0].id
@@ -92,6 +92,7 @@ test('a dry run without texts leaves the content as it is and gives no file text
   assert.ok(full.changes.length > 0)
   assert.deepEqual([slim.changes, slim.diff, slim.files], [[], '', []])
   assert.deepEqual(slim.content, full.content)
+  assert.equal(slim.content.levels.find(level => level.id === id).title.en, '另一个标题')
 })
 
 const CONTENT = {
@@ -120,13 +121,13 @@ test('the palette indexes levels, eras, fields, entries, findings, recent fields
 
 
 
-test('on every starter: the palette indexes every level and entry', () => {
-  assert.ok(STARTERS.length > 0)
+test('the palette indexes the levels and entries of both starter games', () => {
   for (const game of STARTERS) {
     const content = starter(game)
     const items = paletteIndex({ content, projections: navigableProjections(contentSchemas.get(content)) })
-    assert.equal(items.filter((it) => it.kind === 'level').length, content.levels.length, game)
-    assert.equal(items.filter((it) => it.kind === 'projected' && it.file === 'glossary').length, content.glossary.entries.length, game)
+    assert.deepEqual(items.filter(item => item.kind === 'level').map(item => item.level).sort(), content.levels.map(level => level.id).sort(), game)
+    assert.deepEqual(items.filter(item => item.kind === 'projected' && item.file === 'glossary').map(item => item.path).sort(),
+      content.glossary.entries.map((_, index) => ['entries', index]).sort(), game)
   }
 })
 

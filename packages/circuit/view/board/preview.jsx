@@ -9,9 +9,11 @@ import PartFace, { blocksOf } from "../parts/PartFace.jsx"
 import { nextParams } from "../parts/faces.jsx"
 import { withPartLabels } from "./board-parts.js"
 import PartSheet, { Implementations, Ports, Settings, marker } from "../parts/PartSheet.jsx"
+import { cardPorts, namesPorts } from "../../core/board/card-ports.js"
+import Glyph from "./Glyph.jsx"
 
 // The circuit editor's parts drawn (games/design/README.md 6.7, 6.8). A primitive's scenes are its three faces — the desktop
-// card and phone tile in a fixed single-part layout, and the detail both share — drawn from the game's definitions
+// card as the canvas draws it (CanvasCard), the phone tile on a fixed slot board, and the detail both share — drawn from the game's definitions
 // (game.defined), so its icons, colours and controls are the player's; its settings move as a player would move them
 // (rules followed, readouts and actions live) and the three scenes share them (`state`); nothing is wired to it, so
 // its value shows as a placeholder. The parts box and Studio previews take the same example circuits, simulations
@@ -44,6 +46,57 @@ function Code({ path, label, text, picked, ok = null }) {
 /** A part's settings as the scenes share them: its defaults until one is moved. */
 const paramsOf = (type, defined, [params]) => params ?? defined.defaults(type)
 
+// One unwired card as the desktop canvas draws it (CanvasEditor's card): its head, the port rails flanking its body, and
+// a frame's regions under it, each with the dots its region opens and closes. Nothing sits inside a region, so its
+// field is a short empty strip rather than the canvas's room to drop cards.
+function CanvasCard({ node, parts, body }) {
+  const { inputs, outputs, regions } = cardPorts(parts, node)
+  const named = namesPorts(parts, node, (label) => String(L(label)))
+  const plain = outputs.length === 1 && outputs[0].key === null && !named
+  const icon = parts.icon?.(node)
+  const dot = (side, extra = '') => <i className={`port port-${side} ${extra}`}><i /></i>
+  return (
+    <div data-family={parts.family(node)} className={`node is-${parts.role(node)} ${parts.packed?.(node) ? 'is-packed' : ''} ${regions.length ? 'is-frame' : ''}`} style={parts.cardStyle?.(node)}>
+      {regions.length > 0 && <div className="frame-back" />}
+      <div className="node-head">
+        <div className="node-heading">
+          {icon && <i className="family-chip"><Glyph icon={icon} size={12} /></i>}
+          <span className="node-title">{L(parts.label(node))}</span>
+        </div>
+      </div>
+      <div className="node-ports">
+        <div className="node-inputs">
+          {inputs.map((port) => <span key={port} className="node-port-label">{dot('in', parts.portClass?.(node, port) ?? '')}{L(parts.portLabel?.(node, port)) ?? ''}</span>)}
+        </div>
+        <div className="node-body">{body()}</div>
+        <div className="node-outputs">
+          {!plain && outputs.map((o) => (
+            <span key={o.key} className="node-port-out">
+              {o.glyph ? <span className="node-out-name is-glyph" title={L(o.label)} dangerouslySetInnerHTML={{ __html: o.glyph }} /> : <span className="node-out-name" title={L(o.label)}>{L(o.short ?? o.label)}</span>}
+              {dot('out', parts.portClass?.(node, null, o.key) ?? '')}
+            </span>
+          ))}
+        </div>
+        {plain && dot('out', parts.portClass?.(node, null) ?? '')}
+      </div>
+      {regions.length > 0 && (
+        <div className="frame-regions">
+          {regions.map((r) => (
+            <section key={r.name} className="frame-region">
+              <header className="frame-region-head">
+                {r.opens && dot('out', 'frame-open')}
+                <span className="frame-region-name">{L(r.label)}</span>
+                <span className="frame-region-result">{L(parts.portLabel?.(node, r.name)) ?? ''}{dot('in', 'frame-close')}</span>
+              </header>
+              <div className="frame-field" />
+            </section>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Face({ part, game, scene, edit, state }) {
   const { type } = part
   const defined = game.defined
@@ -62,15 +115,14 @@ function Face({ part, game, scene, edit, state }) {
   const shown = { ...defined, value }
   const { mark } = marker(edit)
   const face = (name, extra = {}) => <PartFace def={def} face={name} node={node} ctx={ctx} set={set} defined={shown} mark={mark} {...extra} />
-  if (scene === 'card' || scene === 'tile') {
-    const desktop = scene === 'card'
-    const tile = desktop ? [] : blocksOf(def, 'tile')
-    const body = desktop ? () => face('card') : () => face('tile', { blocks: tile.filter(([block]) => block.show !== 'value') })
+  if (scene === 'card') return <div className="pp-card"><CanvasCard node={node} parts={parts} body={() => face('card')} /></div>
+  if (scene === 'tile') {
+    const tile = blocksOf(def, 'tile')
     return (
       <div className="pp-slots">
         <SlotBoard fixed graph={graph} parts={parts} nameOf={() => L(def.name)}
-          thumb={desktop ? undefined : () => face('tile', { blocks: tile.filter(([block]) => block.show === 'value') })}
-          tileExtra={body} frameBody={desktop ? body : undefined} onPort={ignore} onNode={ignore} />
+          thumb={() => face('tile', { blocks: tile.filter(([block]) => block.show === 'value') })}
+          tileExtra={() => face('tile', { blocks: tile.filter(([block]) => block.show !== 'value') })} onPort={ignore} onNode={ignore} />
       </div>
     )
   }

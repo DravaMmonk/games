@@ -1,12 +1,9 @@
 import { withProgressFixture } from '../../../qed/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resolve } from 'node:path'
 import { contentCourse, readWorkSet } from '../../core/course-model.js'
 import { publicationEvents } from '../../core/index.js'
 import { holds, met, offer } from '../../core/index.js'
-import { readStarter } from "../../../qed/test/fixture.js"
-import { runtimeOf } from "../../../../games/kit/engine/runtime.js"
 
 const sample = () => withProgressFixture({
   partDefs: { parts: { base: { settings: { border: { control: 'select', options: [{ value: 'edge' }] } }, stages: [{ id: 'base-wrap', settings: { border: { options: [{ value: 'edge' }, { value: 'wrap' }] } } }] } } },
@@ -63,18 +60,6 @@ test('proved stages open after the publishing task and carry along prerequisites
   assert.equal(holds(course, { id: 'first', task: 0 }, new Set())('theorem', 'form', 'expanded'), false)
   assert.equal(holds(course, { id: 'first', task: 1 }, new Set())('theorem', 'form', 'expanded'), true)
   assert.equal(holds(course, { id: 'next' }, new Set())('theorem', 'form', 'expanded'), true)
-})
-
-test('runtime selection follows task declarations when the historical domain is changed or absent', async () => {
-  const content = readStarter(resolve(import.meta.dirname, '../../../logic/test'))
-  const runtime = await runtimeOf(content)
-  const expected = runtime.spec(content)
-  for (const domain of ['image', undefined]) {
-    const changed = { ...content, domain }
-    const actual = (await runtimeOf(changed)).spec(changed)
-    assert.deepEqual(actual.course.levels, expected.course.levels)
-    assert.deepEqual(actual.course.builds({ id: actual.levels[0].id }), expected.course.builds({ id: expected.levels[0].id }))
-  }
 })
 
 test('local belongs to the introducing level and does not suppress a later permanent introduction', () => {

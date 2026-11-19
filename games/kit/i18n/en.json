@@ -650,7 +650,7 @@
     "输出口": "Outputs",
     "达到此尝试次数时会话放弃该关。": "attempts a level gets before the session gives it up",
     "运行": "Run",
-    "运行 npm run check 的内容、课程、文案和玩法检查。mutants 可请求已支持的玩法报告参考解变异覆盖。": "Check a game as npm run check does: content against its vocabulary, the course audit, copy, and its domain’s checks (reference answers pass, naive ones fail). mutants: ask supported checks to report reference-work mutation coverage.",
+    "检查内容、课程、文案和玩法示例。mutants 可请求已支持的玩法报告参考解变异覆盖。": "Check content against its vocabulary, course rules, copy, and gameplay examples. mutants: ask supported checks to report reference-work mutation coverage.",
     "运行器有完整会话时附上。": "the whole session, when the runner knows it",
     "运行步骤": "Steps of the run",
     "返回修改": "Revise",

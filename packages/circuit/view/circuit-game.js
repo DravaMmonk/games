@@ -19,7 +19,8 @@ import { circuitScreen } from './CircuitScreen.jsx'
 //     them, on its screens (CircuitScreen `defined`) and as the circuit editor previews them (../circuit/preview.jsx)
 import { CircuitBoard } from 'lucide-react'
 import { levelLabels } from 'kernel/view'
-import { fresh, introductions, isCore } from '../core/course.js'
+import { fresh, isCore } from '../core/course.js'
+import { circuitPartCatalog } from '../core/part-catalog.js'
 import { definePlays } from 'kernel/view'
 
 import { playKinds } from 'kernel/view'
@@ -35,12 +36,8 @@ export function circuitGame(content, circuit, { kind, screen, cards, Hero, Intro
   const plays = definePlays({ [kind.id]: { editor: 'circuit', judge: 'steps', resources: kind.id } }, circuitPlaySchema)
   const resources = { [kind.id]: { ...screen, cards, course: (game) => game.circuit } }
   const { LEVELS, CHAPTERS, course } = circuit
-  const primitives = [...introductions(course)].map(([type, at]) => {
-    const { name, desc, icon } = cards[type]
-    return { key: `part:${type}`, part: type, name, desc, icon, at, atTasks: at.flatMap((id) => circuit.introductions(type, id)) }
-  })
-  // The built parts, in the order the course builds them.
-  const built = [...new Set(LEVELS.flatMap((L) => L.unlocks))].map((type) => ({ key: type, part: type, name: circuit.parts[type].name, desc: circuit.parts[type].desc, icon: CircuitBoard }))
+  const { primitives, built: published } = circuitPartCatalog(circuit, cards)
+  const built = published.map(part => ({ ...part, icon: CircuitBoard }))
   const labels = levelLabels(content.eras)
   const game = defineGame({
     id: content.id,
@@ -81,7 +78,9 @@ export function circuitGame(content, circuit, { kind, screen, cards, Hero, Intro
     IntroFigure,
     kinds: playKinds(plays, resources, { [kind.id]: kind }, { circuit: circuitScreen }),
     parts: {
-      all: [...primitives, ...built],
+      all: [...primitives.map(part => ({
+        ...part, icon: cards[part.part].icon, atTasks: part.at.flatMap(id => circuit.introductions(part.part, id)),
+      })), ...built],
       // A built part shows the board it runs: the one the player passed its task with, else the reference.
       preview: (part, { progress }) => {
         if (!circuit.BUILT[part.part]) return null

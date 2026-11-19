@@ -30,7 +30,8 @@ export function pluginRuntime(id, kernel, vocabulary) {
 export function evaluatePlay(kernel, task, work, context = {}) {
   const play = kernel.tables.play.get(task.play)
   if (!play) throw new Error(`unknown play ${task.play}`)
-  const ctx = { ...context, kernel, task, state: kernel.state(context) }
+  const input = { ...context, kernel, task, state: kernel.state(context) }
+  const ctx = play.prepareContext?.(input) ?? input
   const normalized = play.normalize(play.read(work, ctx), ctx)
   const report = play.run(normalized, ctx)
   return { work: play.write(normalized, ctx), report, verdict: play.judge(report, ctx) }

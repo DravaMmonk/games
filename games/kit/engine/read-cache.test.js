@@ -1,15 +1,17 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync, renameSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, renameSync, rmSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { withReadCache, memoResolution } from './read-cache.js'
 
-test('read requests reuse resolutions, isolate returned data and invalidate changed inputs', async () => {
+test('read requests keep caller data isolated and invalidate changes under a linked package root', async () => {
   const root = mkdtempSync(resolve(tmpdir(), 'author-cache-'))
   try {
-    mkdirSync(resolve(root, 'packages'))
-    const file = resolve(root, 'packages/input.json')
+    const source = resolve(root, 'workspace-packages')
+    mkdirSync(source)
+    symlinkSync(source, resolve(root, 'packages'), 'dir')
+    const file = resolve(source, 'input.json')
     writeFileSync(file, 'a')
     let runs = 0
     const fn = () => true
@@ -41,20 +43,18 @@ test('cached resolution preserves assembly and observes edits, additions and del
   const file = resolve(folder, 'topic/one.json')
   const put = title => writeFileSync(file, JSON.stringify({ title: { en: title }, body: [] }))
   const cached = () => withReadCache(root, () => readPackage('library', root))
+  const entry = content => content.registries['library/topic']['library/one']
   try {
     put('First')
-    assert.deepEqual(cached(), readPackage('library', root))
     const first = cached()
-    first.registries['library/topic']['library/one'].body.push('caller edit')
-    assert.deepEqual(cached(), readPackage('library', root))
+    assert.deepEqual(first, readPackage('library', root))
+    entry(first).body.push('caller edit')
+    assert.deepEqual(entry(cached()).body, [])
     put('Other')
-    assert.deepEqual(cached(), readPackage('library', root))
-    assert.equal(cached().registries['library/topic']['library/one'].title.en, 'Other')
+    assert.equal(entry(cached()).title.en, 'Other')
     rmSync(file)
-    assert.deepEqual(cached(), readPackage('library', root))
-    assert.equal(cached().registries['library/topic']['library/one'], undefined)
+    assert.equal(entry(cached()), undefined)
     put('Again')
-    assert.deepEqual(cached(), readPackage('library', root))
-    assert.equal(cached().registries['library/topic']['library/one'].title.en, 'Again')
+    assert.equal(entry(cached()).title.en, 'Again')
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

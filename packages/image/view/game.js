@@ -10,7 +10,7 @@ import { displays as ui } from './ui/displays.js'
 import { FlaskConical, Workflow } from 'lucide-react'
 import { defineGame } from 'circuit/view'
 import { levelLabels } from 'kernel/view'
-import { introductions, isCore } from 'circuit'
+import { isCore } from 'circuit'
 import { imageWorks } from '../core/work.js'
 import { playKinds } from 'kernel/view'
 import { plays } from '../core/plays.js'
@@ -18,13 +18,9 @@ import { partsFor } from 'circuit/view'
 import { imageBoards } from '../core/engine/board-view.js'
 import { imagePreview } from './engine/preview.js'
 import { descriptionOf } from '../core/words.js'
+import { imagePartCatalog, shownUnlocks } from '../core/part-catalog.js'
 
 const { familyOf, iconOf } = ui['image/catalog']
-// Unlock flags → the part (or option) they give in a course's part table, for the passed dialog and the parts box.
-const partOfFlag = (types) => {
-  const map = Object.fromEntries(Object.entries(types).filter(([, spec]) => spec.unlock).map(([type, spec]) => [spec.unlock, type]))
-  return map
-}
 /**
  * content (../../engine/content.js): { id, title, kicker, lede, power, eras, concept, replaces,
  * levels, glossary }.
@@ -33,18 +29,8 @@ export default function imageGame(content, image = imageWorks(content), { kernel
   const parameters = ({ bench, model }) => ({ bench, model, displays: Promise.resolve(Object.fromEntries([...(kernel?.tables.display ?? [])].map(([name, value]) => [name, value.component ?? value]))) })
   const { CHAPTERS, LEVELS, course, kit } = image
   const { types } = kit
-  const PART_OF_FLAG = partOfFlag(types)
-  const unlockOf = (flag) => {
-    const type = PART_OF_FLAG[flag]
-    if (type && types[type]) return { key: flag, part: type, label: types[type].label, name: types[type].label, desc: descriptionOf(types, type), family: familyOf(type, types), icon: iconOf(type, types) }
-    return { key: flag, label: flag, name: flag }
-  }
-  // A level of several tasks shows what it unlocks as one: a flag an earlier task opens on the way (the Shift part's
-  // replicate edge, before the filters') is part of what the level unlocks, not an item of its own.
-  const shownUnlocks = (level) => level.unlocks.filter((flag) => !level.tasks.slice(0, -1).some((task) => task.opens.includes(flag)))
-  const allFlags = [...new Set(LEVELS.flatMap(shownUnlocks))]
-  // The primitives, each from the levels that bring it in.
-  const primitives = [...introductions(course)].filter(([type]) => types[type]).map(([type, at]) => ({ key: `part:${type}`, type, part: type, label: types[type].label, name: types[type].label, desc: descriptionOf(types, type), family: familyOf(type, types), icon: iconOf(type, types), at }))
+  const catalog = imagePartCatalog(image)
+  const decorate = part => part.part ? { ...part, family: familyOf(part.part, types), icon: iconOf(part.part, types) } : part
   const boards = imageBoards(image)
   const cards = Object.fromEntries(Object.keys(types).map((type) => [type, {
     name: types[type].label, desc: descriptionOf(types, type), family: familyOf(type, types), icon: iconOf(type, types),
@@ -69,14 +55,14 @@ export default function imageGame(content, image = imageWorks(content), { kernel
       'image/board': { icon: FlaskConical, label: catalogText("机关台") },
       'image/probe': { icon: FlaskConical, label: catalogText("机关台") },
     }, { circuit: circuitScreen, workshop: (play, prepare) => function Exercise(screen) { const resource = useMemo(() => prepare(screen.level.source, screen), [screen.level.source]); return createElement(WorkshopPlay, { screen, resource, play }) } }),
-    unlocked: (level) => [...shownUnlocks(level).map(unlockOf), ...course.awards({ id: level.id }).map(id => {
+    unlocked: (level) => [...shownUnlocks(level).map(flag => decorate(catalog.unlockOf(flag))), ...course.awards({ id: level.id }).map(id => {
       const stage = course.stages.get(id)
       return { part: stage.part, label: stage.definition.name, icon: iconOf(stage.part, types) }
     })],
     core: (level) => isCore(course, level),
     levelLabel: (level) => labels.get(level.id) ?? level.id,
     parts: {
-      all: [...primitives, ...allFlags.map(unlockOf)],
+      all: catalog.parts.map(decorate),
       settings: (part, progress) => {
         const staged = game.textFor(part, progress)
         const stage = course.stages.get(staged.stage ?? part.part)

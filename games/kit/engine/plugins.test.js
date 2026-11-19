@@ -104,7 +104,8 @@ test('Node core imports and paired Vite entries compose two dependent plugins in
     `)
     put('packages/beta/core/index.js', `
       import { answer } from 'alpha'
-      export function register(k) { k.play('beta/answer', answer); k.agent('beta/answer', { observe: () => ({ brief: 'Answer' }), act: (_, x) => answer.judge(x) }) }
+      const second = { ...answer, judge: x => answer.judge(x === 'finish' ? 'ok' : '') }
+      export function register(k) { k.play('beta/answer', second); k.agent('beta/answer', { observe: () => ({ brief: 'Answer' }), act: (_, x) => second.judge(x) }) }
     `)
     put('packages/alpha/view/index.jsx', `export function Component() { return <p>Answer</p> }\nexport function register(k) { k.play('alpha/answer', { component: Component, preview: Component }) }`)
     put('packages/beta/view/index.jsx', `import { Component } from 'alpha/view'\nexport function register(k) { k.play('beta/answer', { component: Component, preview: Component }) }`)
@@ -113,25 +114,27 @@ test('Node core imports and paired Vite entries compose two dependent plugins in
     ] })
     put('packages/beta/i18n/en.json', { title: 'Mixed', brief: 'Answer' })
     put('packages/beta/i18n/zh.json', { title: '组合', brief: '作答' })
+    put('games/hub-order.json', ['workspace'])
+    put('games/workspace/game.json', { kernel: '^0.0.0', packages: { beta: '^1.0.0' }, title: 'Workspace hub', chapters: [] })
     const content = readPackage('beta', root)
     assert.deepEqual(content.layerOrder, ['alpha', 'beta'])
     put('packages/gamma/package.json', { kind: 'lib', uses: { 'beta': '^1.0.0' }, version: '1.0.0', kernel: '^0.0.0' })
     put('packages/gamma/levels/private.json', { title: 'Private', tasks: [{ id: 'private', play: 'alpha/answer', brief: 'Answer' }] })
     assert.ok(readPackage('gamma', root).objectProblems.some(problem => problem.reason === 'undeclared dependency' && problem.kind === 'play'))
 
-    const { runtimeOf } = await import('./runtime.js')
+    const { runtimeIds, runtimeOf } = await import('./runtime.js')
     const runtime = await runtimeOf(content)
     const { packageLevel } = await import('./package-play.js')
     const scope = packageLevel(content, 'beta/mixed')
+    assert.deepEqual(runtimeIds({ ...scope, domain: 'unrelated' }), ['alpha', 'beta'])
     const spec = runtime.spec(scope)
     assert.deepEqual(spec.levels[0].tasks.map(task => task.kind), ['alpha/answer', 'beta/answer'])
-    assert.equal(runtime.play.attempt({ level: { source: content.levels[0].tasks[1] } }, 'ok').pass, true)
-    const { gameOf, closeGames } = await import('./games.mjs')
+    assert.equal(runtime.play.attempt({ level: { source: content.levels[0].tasks[1] } }, 'finish').pass, true)
+    const { gameOf, loadModule, closeGames } = await import('./games.mjs')
     try {
-      // Preserve the workspace location when constructing an ephemeral single-level shell.
-      const { contentRoots } = await import('./content.js')
-      contentRoots.set(scope, root)
       const game = await gameOf(scope, { view: true })
+      const { GAMES } = await loadModule('virtual:game-catalog', root)
+      assert.deepEqual(GAMES.map(({ id, title }) => [id, title]), [['workspace', 'Workspace hub']])
       assert.deepEqual(game.levels[0].tasks.map(task => task.kind), ['alpha/answer', 'beta/answer'])
       const require = createRequire(new URL('../../../site/package.json', import.meta.url))
       const { createElement } = require('react')
@@ -139,6 +142,20 @@ test('Node core imports and paired Vite entries compose two dependent plugins in
       const { preview } = game.pluginKernel.tables.playView.get('beta/answer')
       assert.equal(renderToString(createElement(preview)), '<p>Answer</p>')
 
+      const { loadPlay } = await import('./play/node.mjs')
+      const { createPlay } = await import('./play/play.js')
+      const { checkPlaytest, newSession } = await import('./play/session.js')
+      const { fresh } = await import('../shell/progress.js')
+      const { shell, hook } = await loadPlay(scope)
+      const record = newSession({ game: scope.id, session: 'mixed', progress: fresh() })
+      const session = createPlay({ game: shell, hook, record })
+      assert.equal(session.view().level, 'beta/mixed')
+      assert.equal(session.attempt('wrong').pass, false)
+      assert.equal(session.attempt('ok').pass, true)
+      assert.equal(session.view().task, 1)
+      assert.equal(session.attempt('finish').pass, true)
+      assert.equal(session.view().level, null)
+      assert.deepEqual(checkPlaytest(record), [])
     } finally { await closeGames() }
   } finally { rmSync(root, { recursive: true, force: true }) }
 })

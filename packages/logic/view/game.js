@@ -8,7 +8,8 @@ import { displays as ui } from './ui/displays.js'
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
 import { CircuitBoard, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
 import { defineGame } from 'circuit/view'
-import { fresh, introductions, isCore } from 'circuit'
+import { fresh, isCore } from 'circuit'
+import { logicPartCatalog } from '../core/part-catalog.js'
 import { tr } from 'kernel/words'
 import { worldCheck } from '../core/worldValues.js'
 import { query, translation } from '../core/formulaWork.js'
@@ -69,17 +70,17 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     const boards = logic.circuitFor(task)
     return boards ? { ...boards, BUILT: { [type]: { opens: () => ({ circuit: task.solution, level: task }) } } } : null
   }
-  // A part that stays where it is brought (`local`) is in no components box and unlocks nothing to show.
-  const kept = ([type]) => !logic.course.local(type)
   // The parts box lists circuit parts, each from the levels that bring it in.
   // The rules a proof-board part gives as a rule part on the machine board (the kernel's rules it is), and those a
   // lemma gives, one for each of its shapes: a shape after the first only once the player has earned it (`form`).
   const kernelRules = (type) => KERNEL_RULES.filter((r) => `logic/${r.part}` === logic.partResources[type]).map((r) => ({ text: ruleText(r) }))
   const lemmaRows = (type) => lemmaRules(type, lemmas[type]).map((r, k) => ({ text: ruleText(r), ...(k ? { form: r.key.split('.')[1] } : {}) }))
-  const primitives = [...introductions(logic.course)].map(([type, at]) => {
+  const catalog = logicPartCatalog(logic)
+  const primitives = catalog.primitives.map(part => {
+    const type = part.part
     const text = logic.defs[type] ?? parts[type]
     const rules = kernelRules(type)
-    return { key: `part:${type}`, part: type, name: text?.name ?? type, desc: text?.desc, icon: cards[type]?.icon ?? partIcon(text?.icon) ?? Cpu, at, ...(rules.length ? { rules } : {}) }
+    return { ...part, icon: cards[type]?.icon ?? partIcon(text?.icon) ?? Cpu, ...(rules.length ? { rules } : {}) }
   })
   // A part is new in the level that first brings its idea in (`adds`); everything else carries (../../course.js reach).
   const levels = LEVELS.map((L, index) => ({
@@ -142,9 +143,9 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     parts: {
       all: [
         ...primitives,
-        ...Object.entries(gates).filter(kept).map(([type, g]) => ({ key: `lemma:${type}`, part: type, name: g.name, desc: g.desc, icon: CircuitBoard })),
-        ...Object.entries(lemmas).filter(kept).map(([type, l]) => ({ key: `lemma:${type}`, part: type, name: l.name, desc: l.desc, icon: cards[type].icon, rules: lemmaRows(type) })),
-        ...Object.entries(machines).filter(kept).map(([type, m]) => ({ key: `lemma:${type}`, part: type, name: m.name, desc: m.desc, icon: CircuitBoard })),
+        ...catalog.gates.map(part => ({ ...part, icon: CircuitBoard })),
+        ...catalog.lemmas.map(part => ({ ...part, icon: cards[part.part].icon, rules: lemmaRows(part.part) })),
+        ...catalog.machines.map(part => ({ ...part, icon: CircuitBoard })),
       ],
       // A built part shows the board it runs: the one the player passed its task with, else the reference.
       preview: (part, { progress }) => {

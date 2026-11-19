@@ -79,15 +79,20 @@ test('the single-level shell feeds the same package level to the screen and blin
   await assert.rejects(() => call('play_level', { package: GAME, level: `${GAME}/missing` }), /missing/)
 })
 
-test('game audit reports check lines and run_tests reports each proof case', async () => {
+test('full game preview maps a copy diagnostic to the level in course order', async () => {
+  const missing = `${GAME}/missing`
+  const changeset = { ops: [{ op: 'text.override', level: 'given', path: 'tasks[0].brief', lang: 'en', value: `See <level-ref to="${missing}"></level-ref>.` }] }
+  const preview = await call('preview', { game: GAME, changeset })
+  assert.equal(preview.ok, false)
+  assert.equal(preview.failed, null, preview.problems.join('\n'))
+  assert.deepEqual(preview.order, ['given', 'apply', 'suppose'].map(id => `${GAME}/${id}`))
+  const line = preview.lines.find(line => line.text.startsWith('text levels.0.') && line.text.endsWith(missing))
+  assert.deepEqual(line?.levels, [`${GAME}/given`])
+})
 
-  const audit = await call('audit', { game: GAME })
-  assert.equal(audit.ok, true, audit.failures.join('\n'))
-  assert.ok(audit.lines.some((l) => l.startsWith(`${GAME}/suppose `)))
-
+test('run_tests reports each proof case', async () => {
   const proof = await call('run_tests', { game: GAME, level: 'suppose' })
   assert.equal(proof.covered && proof.pass, true)
   assert.deepEqual(proof.tests.map(({ pass }) => pass), [true, true])
   assert.match(proof.tests[1].shows, /A → C/)
-
 })

@@ -11,13 +11,25 @@ export async function runtimeOf(content, root) {
   const { contentRoot } = await import('./resolver.js')
   root ??= contentRoots.get(content) ?? contentRoot()
   const plugins = await loadPlugins(content, root)
+  return runtimeFromPlugins(content, plugins)
+}
+
+/** Use the game projection's kernel when its prepared tasks will enter the runtime. */
+export function runtimeFromPlugins(content, plugins, excludedChecks) {
   const pluginIds = new Set([...plugins.tables.play.keys()].map(name => name.split('/')[0]))
   const vocabulary = contentSchemas.get(content) ?? vocabularyFor()
   const runtimes = runtimeIds(content).filter(id => pluginIds.has(id)).map(id => ({ id, runtime: pluginRuntime(id, plugins, vocabulary) }))
   const provided = id => [...plugins.tables.play].find(([name, play]) => name.startsWith(`${id}/`) && play.runtime)?.[1].runtime
   for (const entry of runtimes) if (provided(entry.id)) entry.runtime = provided(entry.id)
   if (!runtimes.length) runtimes.push({ id: 'kernel', runtime: pluginRuntime('kernel', plugins, vocabulary) })
-  const complete = runtime => ({ ...runtime, checkPhase: context => plugins.checks(context), validate: async spec => [...await runtime.validate(spec), ...await plugins.checks({ content, levels: spec.levels, excludePackages: runtimes.map(({ id }) => id) })] })
+  // A standalone level skips readers for other plays in its package. Those plays also keep their check ownership.
+  const excludePackages = excludedChecks ?? runtimes.map(({ id }) => id)
+  const complete = runtime => ({
+    ...runtime,
+    forContent: source => runtimeFromPlugins(source, plugins, excludePackages),
+    checkPhase: context => plugins.checks(context),
+    validate: async spec => [...await runtime.validate(spec), ...await plugins.checks({ content, levels: spec.levels, excludePackages })],
+  })
   if (runtimes.length === 1) return complete({ ...runtimes[0].runtime, vocabulary })
   const byId = new Map(runtimes.map(({ id, runtime }) => [id, runtime]))
   const choose = (ctx) => byId.get(taskModule(ctx.level.source ?? ctx.level))
@@ -35,7 +47,7 @@ export async function runtimeOf(content, root) {
     spec: (source) => runtimeSpec(source, runtimes),
     validate: async (spec) => (await Promise.all(runtimes.map(({ runtime }, index) => runtime.validate({ ...spec.specs[index], memo: spec.memo })))).flat(),
     play: {
-      open: (ctx) => choose(ctx).play.open(context(ctx)),
+      open: (ctx, options) => choose(ctx).play.open(context(ctx), options),
       attempt: (ctx, text) => choose(ctx).play.attempt(context(ctx), text),
     },
   })

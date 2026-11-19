@@ -17,7 +17,7 @@ import { kindSchemas } from './plugin-kinds.js'
 // })
 //
 import { validate } from './schema.js'
-import { dependencyCycle, eraLevels, layout } from '../course.js'
+import { dependencyCycle, eraLevels, prerequisiteGraph } from '../course.js'
 import { courseDependencies } from './course-dependencies.js'
 import { BLUEPRINT } from '../pipeline/blueprint.js'
 import { taskIdProblems } from './tasks.js'
@@ -87,10 +87,12 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
   }
   if (!packageTarget) add(validate(vocabulary.game, resolvedGame, { vocabulary, levels: ids, languages, names }), 'game.json')
   if (eras) {
-    out.push(...courseProblems(eras))
+    const route = eras.flatMap(eraLevels)
+    const authored = eras.flatMap(era => era.links ?? []).filter(link => !link.fromGame)
+    out.push(...courseProblems(eras, prerequisiteGraph(authored, route)))
     const dependencies = courseDependencies(content)
     out.push(...dependencies.problems)
-    const cycle = dependencyCycle(layout(eras, { links: dependencies.links }).requires)
+    const cycle = dependencyCycle(prerequisiteGraph(dependencies.links.filter(link => !link.fromGame), route))
     if (cycle) out.push({ at: 'game.json.eras', says: `circular prerequisites: ${cycle.join(' → ')}` })
   }
   if (open !== undefined) add(validate(OPEN, open, { vocabulary }), 'game.json.open')
@@ -104,9 +106,8 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
 /**
  * Validate selected sections after projecting them onto their chapters.
  */
-function courseProblems(played) {
+function courseProblems(played, requires) {
   const out = []
-  const plan = layout(played)
   for (const [e, era] of played.entries()) {
     const own = new Set(eraLevels(era)), drawn = new Map()
     for (const [r, row] of (Array.isArray(era.rows) ? era.rows : []).entries()) {
@@ -119,7 +120,7 @@ function courseProblems(played) {
         else drawn.set(id, r)
       }
     }
-    for (const [id, r] of drawn) for (const from of plan.requires.get(id) ?? []) {
+    for (const [id, r] of drawn) for (const from of requires.get(id) ?? []) {
       if (drawn.has(from) && drawn.get(from) >= r) out.push({ at: `game.json.eras[${e}].rows[${r}]`, says: `${id} is drawn on a row no lower than its prerequisite ${from}` })
     }
   }

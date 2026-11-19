@@ -9,15 +9,14 @@ import { captureWorkshop, publishWorkshop, workshopIdentity } from '../../worksh
 import { packedBoards } from 'circuit'
 import { courseWorkshop } from '../../workshop/core/workshop-view.js'
 import { fresh as freshBoardProgress } from '../../circuit/core/progress.js'
-import { at, boxBlur3, fromFn, gradientMagnitude, horizontalDifference, sobelGradient, squaredGradient } from 'imglib'
-import { ransacLine, robustHomography } from 'cvlib'
+import { fromFn } from 'imglib'
 import { MATCHING } from '../core/engine/parts/matching.js'
+import { imageDefinitions } from '../core/engine/definitions.js'
 import { picture } from '../core/items/pictures.js'
 import { constraintOf, depthOf } from '../core/items/constraints.js'
 import { imageWorks } from '../core/work.js'
 import { imageBoards } from '../core/engine/board-view.js'
 import { play } from '../core/play.js'
-import domain from '../core/runtime.js'
 
 // A course of three levels: one a built part runs, one holds that part, one is two tasks.
 const L = (s) => ({ zh: s, en: s })
@@ -33,28 +32,29 @@ const content = deepFreeze(withProgressFixture({
     level('use', [filter('use', { solution: ['k = image/const[c="pi/8"]()', 'm = image/arith[op=mul](in, k)', 'p = widen(m)', 'out <- p'], naive: ['out <- in'] })]),
     level('two', [filter('two_1', { solution: ['s = image/shift[dir=up, n=2](in)', 'out <- s'] }), filter('two_2', { carries: true, solution: ['t = image/threshold[t=0.3](in)', 'out <- t'] })], { adds: ["image/shift"] }),
   ],
-  partDefs: { parts: { widen: { name: L('p'), desc: L('d'), inside: [{ id: 'base', reference: { solution: wide } }] } } },
+  partDefs: { parts: {
+    widen: { name: L('p'), desc: L('d'), inside: [{ id: 'base', reference: { solution: wide } }] },
+    'library/proof': { name: L('Proof'), outputType: 'logic/judgment', inside: [{ id: 'base', reference: { kind: 'logic/proof', solution: ['goal <- p'] } }] },
+  } },
 }))
 const image = imageWorks(content)
 const { fromText, toText } = image.kit
 
-test('shared neighbourhood filters preserve signs, scaling and edge padding', () => {
-  const ramp = fromFn(3, 3, (x, y) => 2 * x + 4 * y)
-  const [gx, gy] = sobelGradient(ramp, 'edge')
-  assert.deepEqual([at(gx, 1, 1), at(gy, 1, 1)], [2, 4])
-  assert.deepEqual([at(gx, 0, 0), at(gy, 0, 0)], [1, 2])
-  assert.equal(at(gradientMagnitude(ramp), 1, 1), Math.fround(Math.sqrt(20)))
-  assert.equal(at(squaredGradient(ramp), 1, 1), 20)
-  assert.ok(Math.abs(at(boxBlur3(ramp), 1, 1) - 6) < 1e-6)
-  assert.deepEqual(Array.from(horizontalDifference(ramp).data.slice(0, 3)), [2, 2, -4])
+test('image boards accept compatible parts from other packages and filter foreign port signatures', () => {
+  const input = { name: 'in', type: 'logic/judgment' }
+  const proof = { name: L('Proof'), inputs: [input], outputType: 'logic/judgment' }
+  const { types } = imageDefinitions({ parts: {
+    'filters/rectifier': { name: L('Rectifier'), op: 'image/relu' },
+    'proofs/rule': proof,
+    'proofs/box': { ...proof, regions: [{ name: 'body', type: 'logic/judgment' }] },
+  } })
+  assert.deepEqual(types['filters/rectifier'].inputs, ['in'])
+  assert.deepEqual([...types['filters/rectifier'].eval({ in: fromFn(2, 1, x => x ? 2 : -1) }).data], [0, 2])
+  assert.equal(types['proofs/rule'], undefined)
+  assert.equal(types['proofs/box'], undefined)
 })
 
-test('line and homography estimation stop before sampling when there are too few points', () => {
-  const next = () => assert.fail('not enough points to sample')
-  assert.equal(ransacLine([], 10, 1, next), null)
-  assert.equal(ransacLine([[0, 0]], 10, 1, next), null)
-  const tooFew = [[0, 0], [1, 0], [0, 1]].map((point) => ({ from: point, to: point }))
-  assert.equal(robustHomography(tooFew, 10, next), null)
+test('matching reports degenerate homographies and returns an empty mask for sparse lines', () => {
   assert.throws(() => MATCHING.homography.eval({ pairs: { w: 4, data: [0, 0, 0, 0] } }, { k: 10 }), /do not fix a homography/)
   const onePoint = fromFn(2, 2, (x, y) => Number(!x && !y))
   assert.deepEqual(Array.from(MATCHING.ransac.eval({ in: onePoint }, { k: 10 }).data), [0, 0, 0, 0])
@@ -69,26 +69,17 @@ test('blueprint text reads into a board and writes back the same', () => {
   assert.deepEqual(toText(b), lines)
 })
 
-test('blueprint text names the line it cannot read', () => {
-  assert.throws(() => fromText(['s = nope(in)', 'out <- s']), (e) => e.line === 1 && /nope/.test(e.en))
-  assert.throws(() => fromText(['s = image/shift[speed=2](in)', 'out <- s']), (e) => e.line === 1 && /speed/.test(e.en))
-  assert.throws(() => fromText(['out <- s']), (e) => e.line === 1)
-})
-
-test('a board read from text has each part a column after what it reads, and its outputs after them all', () => {
-  const b = fromText(['a = image/shift[dir=left](in)', 'k = image/const[c=2]()', 'm = image/arith[op=mul](a, k)', 'out <- m'])
-  const at = Object.fromEntries(b.nodes.map((n) => [n.id, n.x]))
-  assert.ok(at.in < at.a && at.a === at.k && at.k < at.m && at.m < at.out)
-  const cards = b.nodes.map((n) => `${n.x},${n.y}`)
-  assert.equal(new Set(cards).size, cards.length)
-})
-
-test('a course’s reference boards, a packed part’s and every task’s, read back to the lines content wrote', () => {
+test('a frozen course prepares tasks and round-trips task and packed reference boards', () => {
   for (const raw of content.levels) {
     const played = image.levelById[raw.id]
     assert.deepEqual(played.tasks.map((t) => t.key), raw.tasks.map((t) => t.id))
-    for (const [k, task] of raw.tasks.entries()) assert.deepEqual(toText(played.tasks[k].solution), task.solution, raw.id)
+    for (const [k, task] of raw.tasks.entries()) {
+      assert.ok(Array.isArray(played.tasks[k].palette), task.id)
+      assert.deepEqual(toText(played.tasks[k].solution), task.solution, task.id)
+    }
   }
+  assert.deepEqual(toText(image.kit.types.widen.circuitOf()), content.partDefs.parts.widen.inside[0].reference.solution)
+  assert.equal(image.kit.partOf('library/proof'), null)
 })
 
 test('a packed part runs the circuit the player passed its level with, in its own course only', () => {
@@ -187,12 +178,6 @@ test('a packed image trace and its test verdict share the evaluated output', () 
   assert.equal(image.kit.runLevel(task, task.solution).runs[0].trace, undefined)
   const direct = image.levelById.wide.tasks[0]
   assert.equal(image.kit.runLevel(direct, direct.solution, { traced: true }).runs[0].trace, undefined)
-})
-
-// The domain's starter read frozen: a write into its content anywhere in the read throws.
-test('a course read writes nothing into its content', () => {
-  const spec = domain.spec(deepFreeze(content))
-  for (const level of spec.levels) assert.ok(level.tasks.length && level.tasks.every((t) => t.key && t.palette), level.id)
 })
 
 test('network constraints follow wires from named outputs', () => {

@@ -23,6 +23,16 @@ const base = () => layer('base', [], [obj('level', 'a', { title: 'A', options: {
 const problems = layers => existenceProblems(composeLayers(layers, schemas).qualifiedLayers, schemas).map(problem => problem.says).join('\n')
 const game = (overrides = []) => ({ id: '@demo', config: { chapters: ['@demo/one'] }, objects: [obj('chapter', 'one', { levels: ['base/a', 'base/b'] })], catalogs: {}, overrides })
 
+test('layer assembly rejects invalid package configuration', () => {
+  const { kind: _, ...withoutKind } = layer('base').config
+  for (const [config, issue] of [
+    [withoutKind, /missing kind/],
+    [{ ...withoutKind, kind: 'unknown' }, /unknown kind/],
+    [{ ...withoutKind, kind: 'lib', vocabulary: 1 }, /unknown field vocabulary/],
+    [{ ...withoutKind, kind: 'lib', kernel: 'latest' }, /invalid range/],
+  ]) assert.throws(() => composeLayers([{ ...layer('base'), config }], schemas), issue)
+})
+
 test('dependencies are complete, direct, acyclic and deterministically ordered', () => {
   const a = base(), b = layer('b', ['base']), c = layer('c', ['b'])
   assert.deepEqual(orderPackages([c, b, a, layer('aa')]).map((p) => p.id), ['aa', 'base', 'b', 'c'])

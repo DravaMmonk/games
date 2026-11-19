@@ -59,16 +59,20 @@ test('the reference check reports each unavailable part once per level across ta
 })
 
 test('part links accept the earliest unlock or declared placement', () => {
-  const game = {
-    levels: [{ id: 'intro' }, { id: 'first', unlocks: ['by-unlock'] }, { id: 'later', unlocks: ['by-placement'] }],
-    parts: { all: [{ key: 'by-placement', at: ['later', 'first'] }, { key: 'by-unlock', at: ['later'] }] },
+  const levels = [{ id: 'intro' }, { id: 'first', unlocks: ['by-unlock'] }, { id: 'later', unlocks: ['by-placement'] }]
+  const spec = {
+    levels,
+    specs: [
+      { levels: [], partCatalog: () => [{ key: 'unplaced', at: ['later'] }] },
+      { levels, partCatalog: () => [{ key: 'by-placement', at: ['later', 'first'] }, { key: 'by-unlock', at: ['later'] }] },
+    ],
   }
   const links = ['by-placement', 'by-unlock']
   const order = ['intro', 'first', 'later']
   const lines = referenceChecks({
-    game, content: { registries: partPolicy(['references']) },
+    spec, content: { registries: partPolicy(['references']) },
     opensBy: (earned, at) => order.indexOf(earned) <= order.indexOf(at),
-    levelLinks: () => order.map(id => [id, links]),
+    levelLinks: () => order.map(id => [id, [...links, 'unplaced']]),
   })
   assert.deepEqual(lines, links.map(key => ({ fail: true, text: `intro links the part ${key}, earned later (at first)` })))
 })

@@ -6,7 +6,8 @@ import assert from 'node:assert/strict'
 import { registeredOperations } from "../../../../games/kit/engine/capabilities.js"
 import { S } from "../../../../games/kit/engine/schema.js"
 import { progressMeaning as genericProgress } from 'progress'
-import { partStages, requiredStage, progressMeaning } from '../../core/progression/index.js'
+import { partStages, progressMeaning } from '../../core/progression/index.js'
+import { stageForSettings } from '../../core/progression/part-stages.js'
 import { partDefinition, holds } from '../../core/index.js'
 import { defineParts, partProblems } from '../../core/index.js'
 import { audit, defineCourse } from '../../core/progression/index.js'
@@ -54,8 +55,10 @@ test('part and stage identities share a namespace and reject collisions', () => 
 
 test('reference cards select the earliest stage that admits their explicit settings', () => {
   const definitions = { scale: { settings: { mode: { control: 'select', options: [{ value: 'up' }] } }, stages: [{ id: 'division', settings: { mode: { options: [{ value: 'up' }, { value: 'down' }] } } }] } }
-  assert.equal(requiredStage(definitions, 'scale', { mode: 'up' }), 'scale')
-  assert.equal(requiredStage(definitions, 'scale', { mode: 'down' }), 'division')
+  const stage = stageForSettings(partStages(definitions))
+  assert.equal(stage('scale', { mode: 'down' }), 'division')
+  assert.equal(stage('scale', { mode: 'up' }), 'scale')
+  assert.equal(stage('scale', { mode: 'down' }), 'division')
 })
 
 test('the normal circuit view evaluates stage defaults under the stable part id', (context) => {

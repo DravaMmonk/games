@@ -8,6 +8,7 @@ import { validate } from './validate.js'
 import { play } from './play.js'
 import { parse } from './formula.js'
 import { parseS, parseSide } from './schematic.js'
+import { logicPartCatalog } from './part-catalog.js'
 
 // The readers of the vocabulary's languages: why a text cannot be read, or null.
 const reads = (parser) => (text) => {
@@ -31,6 +32,7 @@ function spec(content, works = logicWorks(content)) {
     title: content.title,
     course: logic.course,
     levels: logic.LEVELS,
+    partCatalog: () => Object.values(logicPartCatalog(logic)).flat(),
     logic,
     blueprints: logic.blueprints,
     texts: { chapters: logic.CHAPTERS, ...logic.texts },

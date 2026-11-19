@@ -1,5 +1,18 @@
 import { evaluatePlay, describeTask } from 'kernel'
 
+function ruleProblem(rule) {
+  if (!rule) return 'an answer rule is required'
+  if (rule.type === 'number' && (!Number.isFinite(rule.tolerance) || rule.tolerance < 0)) return 'tolerance must be nonnegative'
+  if (rule.type === 'regex') {
+    try {
+      RegExp(rule.pattern, rule.flags)
+    } catch (error) {
+      return error.message
+    }
+  }
+  return null
+}
+
 export const answerPlay = {
   initial: () => '',
   read: value => typeof value === 'string' ? value : '',
@@ -26,9 +39,16 @@ export const answerPlay = {
 
 export function register(kernel) {
   kernel.play('text/answer', answerPlay)
+  const checkRules = ({ content }) => content.levels.flatMap(level => level.tasks.flatMap(task => {
+    if (task.play !== 'text/answer') return []
+    const problem = ruleProblem(task.answerRule)
+    return problem ? [{ level: level.id, fail: true, text: `${task.id}: ${problem}` }] : []
+  }))
+  kernel.check('text/answer-rules', Object.assign(checkRules, { phase: 'runtime' }))
   kernel.check('text/answers', ({ levels }) => levels.flatMap(level => level.tasks.filter(task => task.source.play === 'text/answer').map(({ source: task }) => {
     try {
-      if (task.answerRule.type === 'number' && (!Number.isFinite(task.answerRule.tolerance) || task.answerRule.tolerance < 0)) throw new Error('tolerance must be nonnegative')
+      const problem = ruleProblem(task.answerRule)
+      if (problem) return { level: level.id, fail: true, text: `${task.taskId}: ${problem}` }
       if (task.answerRule.type === 'regex' && /[gy]/.test(task.answerRule.flags ?? '')) throw new Error('stateful regex flags are not allowed')
       const judge = work => answerPlay.judge(answerPlay.run(work, { task })).pass
       const pass = typeof task.referenceAnswer === 'string' && judge(task.referenceAnswer) && Array.isArray(task.wrongAnswers) && task.wrongAnswers.length > 0 && task.wrongAnswers.every(work => !judge(work))

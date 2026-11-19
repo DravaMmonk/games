@@ -9,7 +9,7 @@ import { KIND_DECLARATION, kindSchemas, objectKindNames } from '../plugin-kinds.
 //
 // An operation is { about, params (schema.js: its arguments as data), apply(ws, args, ctx) }. apply edits the
 // workspace (workspace.js) and returns { says, inverse }: what it did, in words, and the operations that undo it.
-// ctx: { vocabulary, domain }. A level's tasks (../tasks.js) are added, removed, moved (in a level or to another: two
+// ctx: { vocabulary }. A level's tasks (../tasks.js) are added, removed, moved (in a level or to another: two
 // levels made one, or one split) by stable id. No operation looks after players' saves: while the games are in
 // development a save made on other puzzles is not read (../stamp.js).
 import { S, shapeAt } from '../schema.js'

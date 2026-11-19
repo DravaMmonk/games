@@ -7,7 +7,7 @@ import { boardShape } from 'circuit'
 import { eraLevels } from 'kernel'
 import { fresh, holds, offer, reach } from 'circuit'
 import { courseLayout } from 'kernel'
-import { taskLevels } from 'kernel'
+import { taskLevels, taskModule } from 'kernel'
 
 import { keptBoards } from 'circuit'
 import { fitsCircuit } from 'circuit'
@@ -110,9 +110,16 @@ export function* prepareImageWorks(config) {
     }
   }
   const kit = { ...imageKit(types, partsFor), ...definitions }
-  const parts = builtParts(partDefs)
+  const artifacts = builtParts(partDefs)
+  const implementations = publications(levels, artifacts).filter(({ type, task, reference }) => {
+    const owner = taskModule(reference)
+    const output = artifacts[type].outputType
+    const supported = owner ? owner === 'image' : !output || output === 'image/image'
+    if (!supported && task) throw new Error(`image task ${task} cannot publish ${type} with a non-image reference`)
+    return supported
+  })
+  const parts = Object.fromEntries(implementations.map(({ type }) => [type, artifacts[type]]))
   const published = new Map()
-  const implementations = publications(levels, parts)
   for (const { task, type } of implementations) if (task) published.set(task, [...(published.get(task) ?? []), type])
   const publishingTasks = new Map()
   const own = keptBoards((key, board) => {
@@ -183,7 +190,11 @@ export function* prepareImageWorks(config) {
   // A circuit level's palette is everything it can hold (../../course.js reach), in its tray's order; a board or probe
   // level has only what it brings in. Its tasks hold the same.
   const LEVELS = placed.map((level) => {
-    const tray = { fresh: level.adds.length ? level.adds : [...fresh(course, level)], palette: level.kind === 'image/graph' ? reach(course, level) : level.adds }
+    const supported = type => Object.hasOwn(types, type)
+    const tray = {
+      fresh: (level.adds.length ? level.adds : [...fresh(course, level)]).filter(supported),
+      palette: (level.kind === 'image/graph' ? reach(course, level) : level.adds).filter(supported),
+    }
     return { ...level, ...viewsAt(level.id), ...tray, tasks: level.tasks.map((task) => ({ ...task, ...viewsAt(level.id), ...tray })) }
   })
   const levelById = Object.fromEntries(LEVELS.map((level) => [level.id, level]))

@@ -2,18 +2,22 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { contentAssets, CONTENT_FILE } from './content-assets.js'
 import { S } from '../engine/schema.js'
-import { COURSE_FIELDS } from '../engine/course-schema.js'
+import { CHAPTERS } from '../engine/course-schema.js'
 import { assemble } from '../engine/content.js'
 import { pageContent } from './page-content.js'
 
 test('the page loads independent course and package catalogs, and a translation changes the manifest', async () => {
-  const vocabulary = { kinds: {}, game: S.obj({ title: S.text(), chapters: S.list(S.obj({ id: S.str(), title: S.text(), ...COURSE_FIELDS })) }), level: S.obj({ title: S.text() }) }
-  const content = {
+  const vocabulary = { kinds: {}, game: S.obj({ title: S.text(), chapters: CHAPTERS }), level: S.obj({ title: S.text() }) }
+  const courseTitle = { en: 'Course', zh: '课程', $key: '@toy/heading' }
+  const chapterTitle = { en: 'Opening', zh: '开场', $key: '@toy/chapter' }
+  const levelTitle = { en: 'Level', zh: '关卡', $key: 'toy/heading' }
+  const content = assemble({
     id: 'toy',
-    title: { en: 'Course', zh: '课程', $key: '@toy/heading' },
-    chapters: [{ id: 'main', title: { en: 'Opening', zh: '开场', $key: '@toy/chapter' }, levels: ['toy/first'] }],
-    levels: [{ id: 'toy/first', title: { en: 'Level', zh: '关卡', $key: 'toy/heading' } }],
-  }
+    schemas: vocabulary,
+    game: { title: courseTitle, chapters: ['@toy/main'] },
+    contentObjects: { chapter: { '@toy/main': { title: chapterTitle, levels: ['toy/first'] } } },
+    levels: [['toy/first', { title: levelTitle }]],
+  })
   const assets = contentAssets(content)
   const manifest = JSON.parse(assets.get(CONTENT_FILE))
   assert.equal(manifest.game.title, '@@toy/heading')
@@ -22,7 +26,10 @@ test('the page loads independent course and package catalogs, and a translation 
   assert.deepEqual(JSON.parse(assets.get(manifest.locales.course.zh)), { '@toy/chapter': '开场', '@toy/heading': '课程' })
 
   const restored = await pageContent(manifest, 'https://example.test/toy/', (url) => new Response(assets.get(url.pathname.slice('/toy/'.length))), vocabulary)
-  assert.deepEqual(restored, assemble({ id: content.id, schemas: vocabulary, game: { title: content.title, chapters: content.chapters }, levels: content.levels.map(({ id, ...level }) => [id, level]), glossary: content.glossary }))
+  assert.deepEqual(restored.objectProblems, [])
+  assert.deepEqual(restored.title, courseTitle)
+  assert.deepEqual(restored.sourceChapters, [{ id: '@toy/main', title: chapterTitle, levels: ['toy/first'] }])
+  assert.deepEqual(restored.levels, [{ id: 'toy/first', title: levelTitle }])
 
   const revised = contentAssets({ ...content, title: { ...content.title, en: 'Course title' } })
   const next = JSON.parse(revised.get(CONTENT_FILE))

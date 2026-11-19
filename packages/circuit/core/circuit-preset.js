@@ -35,15 +35,16 @@ import { checkWorks, scoreWorks } from 'kernel'
 
 
 import { cases } from 'kernel'
+import { circuitPartCatalog } from './part-catalog.js'
 
 
 
 /** A domain module on the preset: the kernel's spec and checks over the domain's course and runs. */
-export function circuitRuntime({ vocabulary, course, run, entries, failure, summarize, more, kinds, ...extensions }) {
+export function circuitRuntime({ vocabulary, course, run, entries, failure, summarize, more, kinds, fixedCards, ...extensions }) {
   return {
     vocabulary,
     names: circuitNames,
-    spec: circuitSpec(course),
+    spec: circuitSpec(course, fixedCards),
     validate: ({ circuit, memo, mutants }) => checkCircuitTasks({ ...circuit, ...(mutants && { mutants }) }, { run, entries, failure, summarize, more, kinds, memo }),
     ...extensions,
   }
@@ -52,13 +53,17 @@ export function circuitRuntime({ vocabulary, course, run, entries, failure, summ
 /** A circuit game's part names (runtime.js names): its built parts. */
 export const circuitNames = (content) => partNames(Object.keys(builtParts(content.partDefs)))
 
-export const circuitSpec = (courseOf) => (content, circuit = courseOf(content)) => {
+export const circuitSpec = (courseOf, fixedCards) => (content, circuit = courseOf(content)) => {
   return {
     id: content.id,
     title: content.title,
     course: circuit.course,
     levels: circuit.LEVELS,
     circuit,
+    partCatalog: () => {
+      const { primitives, built } = circuitPartCatalog(circuit, fixedCards)
+      return [...primitives, ...built]
+    },
     blueprints: circuit.blueprints,
     texts: { chapters: circuit.CHAPTERS },
   }
@@ -108,7 +113,8 @@ export function checkCircuitTasks(circuit, { run, entries, failure = () => '', s
           if (value !== undefined && !has(n.type, key, String(value))) problems.push(`${what} sets ${n.type}’s ${key} to ${value}, which the level does not hold`)
         }
       })
-      const inspect = (work) => run(all, work, partOf)
+      // Checks need outputs and verdicts. Interactive and baseline runs collect replay traces separately.
+      const inspect = (work, level = all) => run(level, work, partOf, { traced: false })
       const opening = board.startBoard(task)
       // The parts this task publishes, each placed alone and wired to its cards.
       const publishes = level.builds.filter((b) => b.at === k)
@@ -122,17 +128,22 @@ export function checkCircuitTasks(circuit, { run, entries, failure = () => '', s
       strays(task.solution, 'the answer')
       if (task.starter) strays(task.starter, 'the starter')
       ref.runs.forEach((r, j) => {
-        if (r.error || r.fail) problems.push(`the answer fails ${where(j)}${failure(r) ? ` ${failure(r)}` : ''}`)
+        if (r.error || r.fail) {
+          const reason = failure(r)
+          problems.push(`the answer fails ${where(j)}${reason ? ` ${reason}` : ''}`)
+        }
       })
-      problems.push(...viewsProblems(task.views), ...rowProblems(task.results, entries({ task, test: all.tests[0], run: ref.runs[0], sample: null }), task.views))
+      problems.push(...viewsProblems(task.views))
+      if (task.results?.length) problems.push(...rowProblems(task.results, entries({ task, test: all.tests[0], run: ref.runs[0], sample: null }), task.views))
       if (checked.starter?.ok === false) problems.push('the board it opens on passes')
       if (checked.empty?.ok === false) problems.push('the empty board passes')
       if (task.carry && !checkWorks(inspect, { starter: circuit.opening(task) }).starter.ok) problems.push(`the board it carries on from (${task.carry}) passes as it is`)
       if (task.carries && tasks[k - 1]?.solution && !checkWorks(inspect, { starter: board.carriedOnto(task, tasks[k - 1].solution, board.wiring(task, here)) }).starter.ok) problems.push('the task before’s board passes as it is')
       if (task.solution.nodes.some((n) => !board.isFixed(n.type))) {
+        const nodes = board.fixedOf(task)
         for (const name of board.portsIn(task).map((i) => i.name)) {
           const from = board.sourceFor(task, name)
-          if (inspect({ nodes: board.fixedOf(task), wires: outs.map((to) => ({ from, to, port: 'in' })) }).pass) problems.push(`the board that only wires ${name} straight through passes`)
+          if (inspect({ nodes, wires: outs.map((to) => ({ from, to, port: 'in' })) }).pass) problems.push(`the board that only wires ${name} straight through passes`)
         }
       }
       problems.push(...more(task, k, tasks, held))
@@ -151,7 +162,7 @@ export function checkCircuitTasks(circuit, { run, entries, failure = () => '', s
       let mutated = ''
       if (circuit.mutants && !problems.length) {
         // One test at a time, stopping at the first a mutant fails: most die on the first.
-        const judge = cases(all.tests, (work, test) => run({ ...all, tests: [test] }, work, partOf).fail)
+        const judge = cases(all.tests, (work, test) => inspect(work, { ...all, tests: [test] }).fail)
         const score = scoreWorks(judge, task.solution, (reference, passes) => mutationScore(reference, passes, { partOf, isFixed: board.isFixed, held: [...held] }))
         if (score.undeclared.length) problems.push(`inputs declared symmetric are not (${score.undeclared.join('; ')})`)
         if (score.made) mutated = `, mutants ${score.killed}/${score.made}${score.survivors.length ? ` (alive: ${score.survivors.join('; ')})` : ''}`

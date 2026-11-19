@@ -8,11 +8,11 @@ import { Cable, Grid3x3 } from 'lucide-react'
 import { defineGame } from 'circuit/view'
 import { taskOpen } from 'kernel/view'
 import { eraLevels } from 'kernel'
-import { introductions, isCore } from 'circuit'
+import { isCore } from 'circuit'
 import { playsFor } from '../core/plays.js'
 import { playKinds } from 'kernel/view'
 import { robotCircuits } from './ui/circuitCourse.js'
-import { modelsOf } from '../core/model/parts.js'
+import { tablePartCatalog } from '../core/part-catalog.js'
 import { robotOf } from '../core/model/robots.js'
 import { T } from '../core/lang.js'
 import { tableWorks } from '../core/work.js'
@@ -54,17 +54,7 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
     tasks: played.get(L.id).map((s) => ({ key: s.taskId, kind: s.play, ...(s.done ? { after: doneText(s.done) } : {}), ...(s.carries ? { carries: true } : {}), source: s })),
   }))
 
-  // The primitives in the components box, one card each (a merger's models are one card), from the level that brings
-  // the card in. A card named like another says which one it is.
-  const cardOf = (k) => modelsOf(k)?.[0] ?? k
-  const cards = [...introductions(course, cardOf)]
-  const nameOf = (k) => {
-    const c = table.model.def(k)
-    const twin = !modelsOf(k) && cards.some(([o]) => o !== k && String(table.model.def(o).name) === String(c.name))
-    return twin ? T("{zh} · {zh2}", {zh: { zh: String(c.name.zh), en: String(c.name.en) }, zh2: { zh: String(c.tag.zh), en: String(c.tag.en) }}) : c.name
-  }
-  const descOf = (k) => (modelsOf(k) ? T("用所选模式把几个输入合并成一个值。") : table.model.def(k).desc)
-  const primitives = cards.map(([k, at]) => ({ key: `part:${k}`, part: k, name: nameOf(k), desc: descOf(k), icon: lookIcon(k), at }))
+  const { primitives, built } = tablePartCatalog(table)
 
   // The components box by robot: a robot can use every part earned in its era and the eras before it (parts carry over,
   // games/design/README.md 2.1). It joins the box once the first level of its era is passed.
@@ -98,7 +88,7 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
     core: (level) => isCore(course, level),
     parts: {
       // The primitives, and the parts a level that is played unlocks (a retired level's card would never be earned).
-      all: [...primitives, ...Object.entries(PARTS).filter(([key]) => LEVELS.some((L) => L.unlock === key)).map(([key, part]) => ({ key, part: key, name: part.name, desc: part.desc, icon: lookIcon(key) }))],
+      all: [...primitives, ...built].map(part => ({ ...part, icon: lookIcon(part.part) })),
       // The part on a bench: its level's board (a primitive's, the level that brings it in), with inputs, constants and
       // models to change and a Run button. A built part runs, and opens to show, the board the player passed its level with.
       preview: (part, { progress }) => {

@@ -5,7 +5,7 @@ import { partStages } from './part-stages.js'
 import { progressCourse, RULE_TEXT } from './course.js'
 import { referenceDependencies, externalSupplies } from './course-links.js'
 
-export { partStages, stagePatch, requiredStage } from './part-stages.js'
+export { partStages, stagePatch } from './part-stages.js'
 export { defineCourse, reach, met, audit, againstOpen, RULE_TEXT } from './course.js'
 
 const stagesOf = registries => partStages(registries['circuit/part'])

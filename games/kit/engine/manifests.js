@@ -5,7 +5,6 @@ import { catalogReader, referenceKey, sourceValue } from './catalogs.js'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
-import { publicSurfaces } from './existence.js'
 import { fileHashes, contentHash, hash, stableJSON, kitDirectory } from './release-data.js'
 
 const require = createRequire(resolve(kitDirectory, '../../site/package.json'))
@@ -74,9 +73,7 @@ export function viewRegistrations(file) {
   visit(ast)
   return registrations
 }
-export function layerManifest(layer, layers, schemas, dir) {
-  const bare = layers.map(item => ({ ...item, manifest: undefined }))
-  const entries = publicSurfaces(bare, schemas).get(layer.id) ?? new Map()
+export function layerManifest(layer, entries, schemas, dir) {
   const values = new Map([...layer.objects, ...(layer.codeObjects ?? [])].map(object => [`${object.kind}:${object.kind === 'tag' ? `${object.value.kind}:` : ''}${object.name}`, object.value]))
   for (const object of layer.objects) {
     for (const task of object.kind === 'level' ? object.value.tasks ?? [] : []) values.set(`task:${task.id}`, task)
@@ -87,7 +84,7 @@ export function layerManifest(layer, layers, schemas, dir) {
     const key = `i18n:${name.includes('/') ? name : `${layer.id}/${name}`}`
     values.set(key, { ...values.get(key), [lang]: value })
   }
-  const surface = Object.fromEntries([...entries].map(([key, entry]) => {
+  const surface = Object.fromEntries([...(entries ?? [])].map(([key, entry]) => {
     const declaration = values.get(key) ?? {}
     const value = sourceValue(entry.kind === 'shape' ? schemas.shapes[entry.name]
       : entry.kind === 'kind' ? schemas.objectKinds[entry.name] ?? declaration : declaration)

@@ -22,7 +22,11 @@ export function register(kernel) {
   kernel.check('circuit/boards', boardChecks)
   kernel.agent('circuit/board', {
     observe: ({ task }) => ({ brief: task.brief, inputs: task.inputs, outputs: task.outputs }),
-    act: (context, work) => { const graph = boardPlay.read(work, context); const report = boardPlay.run(graph, context); return { work: graph, verdict: boardPlay.judge(report) } },
+    act: (context, work) => {
+      const prepared = boardPlay.prepareContext(context)
+      const graph = boardPlay.read(work, prepared)
+      return { work: graph, verdict: boardPlay.judge(boardPlay.run(graph, prepared)) }
+    },
   })
 }
 

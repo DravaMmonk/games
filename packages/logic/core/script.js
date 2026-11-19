@@ -14,7 +14,6 @@
 import { asImp, fn, parse, same, show, subst } from './formula.js'
 import { KERNEL, assumption, depthFirst, rule } from './tactics.js'
 import { ruleBookOf, runTactic } from './machine.js'
-import { cases } from 'kernel'
 import { T } from 'kernel/words'
 
 
@@ -207,9 +206,11 @@ export function scriptLines(rows, text) {
   return out
 }
 
-export const scriptJudge = (level) => cases([level], (rows, task) => {
-  const result = checkScript(task, rows)
-  if (result.pass) return null
-  const row = result.rows.findIndex(Boolean)
-  return { ...(row < 0 ? {} : { at: { row } }), why: result.reason }
-})
+export function inspectScript(level, rows) {
+  const run = checkScript(level, rows)
+  if (run.pass) return { fail: null, run }
+  const row = run.rows.findIndex(Boolean)
+  return { fail: { ...(row < 0 ? {} : { at: { row } }), why: run.reason, check: 0 }, run }
+}
+
+export const scriptJudge = level => Object.assign(rows => inspectScript(level, rows).fail, { checks: [level] })

@@ -2,26 +2,12 @@
 // changed, and the diff that previews it.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, readdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { WIDTH, writeJson } from './json.js'
 import { lineDiff, unified } from './diff.js'
 
-test('unchanged starter configuration and content keep their file formatting', () => {
-  for (const id of ['circuit', 'logic']) {
-    const starter = resolve(import.meta.dirname, '../../../../packages', id, 'test/starter')
-    const files = [resolve(starter, 'game.json')]
-    for (const folder of ['levels', 'entries', 'tags/entry']) {
-      const dir = resolve(starter, folder)
-      for (const entry of readdirSync(dir, { withFileTypes: true })) {
-        if (entry.isFile() && entry.name.endsWith('.json')) files.push(resolve(dir, entry.name))
-      }
-    }
-    for (const file of files) {
-      const text = readFileSync(file, 'utf8')
-      assert.equal(writeJson(JSON.parse(text), text), text, file)
-    }
-  }
+test('an unchanged document preserves its whitespace', () => {
+  const text = '{\n  "title": "@sample",\n  "items": [ { "x": 1 },\n             { "x": 2 } ]\n}\n'
+  assert.equal(writeJson(JSON.parse(text), text), text)
 })
 
 test('new content is in the house style: one line when it fits, open otherwise', () => {

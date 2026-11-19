@@ -1,5 +1,5 @@
 // Small self-contained workspaces for platform tests.
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { constants, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { lockTarget } from './releases.js'
@@ -18,6 +18,18 @@ export function testProject(prefix = 'games-test-') {
     writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value, null, 2) + '\n')
   }
   return { root, put }
+}
+
+/** Copy a fixture so each test can edit the workspace independently. */
+export function copyTestProject(seed, prefix) {
+  const project = testProject(prefix)
+  try {
+    cpSync(seed, project.root, { recursive: true, mode: constants.COPYFILE_FICLONE })
+    return project
+  } catch (error) {
+    rmSync(project.root, { recursive: true, force: true })
+    throw error
+  }
 }
 
 export function packageWordsFixture(put, id) {

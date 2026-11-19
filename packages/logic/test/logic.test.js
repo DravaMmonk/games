@@ -1,4 +1,4 @@
-import { starterParts } from '../../qed/test/fixture.js'
+import { logicParts } from './part-fixture.js'
 // node --test packages/logic/test — formulas, rules as parts, boxes, and countermodels. Boards are written short,
 // by the helpers below.
 import { test } from 'node:test'
@@ -20,13 +20,12 @@ import { partsOf } from '../core/ops.js'
 import { printTerm } from '../core/pterm.js'
 import { validate } from '../core/validate.js'
 
-// A proof runs on the parts the starter defines (its parts.json) and the level's lemmas.
-const STARTER = starterParts(new URL('../../logic/test/', import.meta.url).pathname)
-const proofParts = (lemmas) => ({ ...PROOF_BOARD.FIXED_PARTS, ...partsOf(STARTER, lemmas).PARTS })
+// Proofs use the operation fixtures together with their local lemmas.
+const proofParts = (lemmas) => ({ ...PROOF_BOARD.FIXED_PARTS, ...partsOf(logicParts, lemmas).PARTS })
 const run = (level, circuit) => runProof({ parts: proofParts(level.lemmas), ...level }, circuit)
-// A machine runs on the starter's machine parts, and a rule part for every rule part type.
-const STARTER_DEFINED = partsOf(STARTER)
-const MACHINE_ONLY = Object.fromEntries(Object.entries(STARTER_DEFINED.PARTS).filter(([type]) => ['logic/tactic', 'logic/loop'].includes(STARTER_DEFINED.defs[type].family)))
+// A machine runs on the tactic and loop fixtures and supplies its rule parts separately.
+const defined = partsOf(logicParts)
+const MACHINE_ONLY = Object.fromEntries(Object.entries(defined.PARTS).filter(([type]) => ['logic/tactic', 'logic/loop'].includes(defined.defs[type].family)))
 const RULE_ENGINE = compileParts({ rules: RULE_DEFINITION }, OPS).PARTS.rules
 const machineParts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? MACHINE_ONLY[type] ?? RULE_ENGINE
 const onMachine = (level) => ({ parts: machineParts, ...level })
@@ -220,14 +219,45 @@ test('countermodels: Peirce has none classically, (A → B) → A has one, the q
   const swap = countermodelSearch([parse('∀x. ∃y. R(y, x)')], parse('∃y. ∀x. R(y, x)'))
   assert.equal(swap.size, 2)
   assert.ok(holds(parse('∀x. ∃y. R(y, x)'), swap.model))
+  assert.ok(!holds(parse('∃y. ∀x. R(y, x)'), swap.model))
+})
+
+test('mixed countermodel search keeps the first witness and skips domains over its limit', () => {
+  const options = { consts: ['a'] }
+  const premises = ['P(a)', 'f(a) = a'].map(text => parse(text, options))
+  const goal = parse('∀x. f(x) = a', options)
+  assert.deepEqual(countermodelSearch(premises, goal, { limit: 31 }), { model: null, searched: [1] })
+  assert.deepEqual(countermodelSearch(premises, goal, { limit: 32 }), {
+    model: { domain: [0, 1], preds: { P: new Set(['0']) }, fns: { a: new Map([['', 0]]), f: new Map([['0', 0], ['1', 1]]) } },
+    size: 2,
+    searched: [1],
+  })
 })
 
 test('the domain check runs reference and naive proofs', () => {
   const s = proof({ m: ['mp'] }, ['p>m.imp', 'q>m.a', 'm>goal'], { premises: ['p', 'q'] })
   const level = { id: 'mp', kind: 'logic/proof', title: 'mp', tests: [{ premises: { p: 'A → B', q: 'A' }, goal: 'B' }], solution: s, parts: proofParts() }
   const lines = (naive) => validate({ levels: [{ id: 'mp', tasks: [{ ...level, task: 0, naive }] }], logic: { wrong: [] } })
-  assert.deepEqual(lines(proof({}, ['q>goal'], { premises: ['p', 'q'] })).filter((l) => l.fail), [])
-  assert.equal(lines(s).filter((l) => l.fail).length, 1)
+  const reference = { level: 'mp', fail: false, text: 'mp mp: solution PASS [1 steps]' }
+  assert.deepEqual(lines(proof({}, ['q>goal'], { premises: ['p', 'q'] })), [
+    reference, { level: 'mp', fail: false, text: '  naive fails' },
+  ])
+  assert.deepEqual(lines(s), [reference, { level: 'mp', fail: true, text: '  naive PASSES (bad)' }])
+})
+
+test('one-step lemma checks require every case and respect a requested proof term', () => {
+  const solution = proof({ m: ['mp'] }, ['p>m.imp', 'q>m.a', 'm>goal'], { premises: ['p', 'q'] })
+  const lemmas = { applyB: { statement: 'B', premises: ['A → B', 'A'] } }
+  const course = { availableParts: () => ['mp', 'applyB'], builder: () => null }
+  const first = { premises: { p: 'A → B', q: 'A' }, goal: 'B' }
+  const second = { premises: { p: 'A → C', q: 'A' }, goal: 'C' }
+  const lines = tests => validate({
+    levels: [{ id: 'mp', tasks: [{ id: 'mp', kind: 'logic/proof', title: 'mp', task: 0, tests, solution, lemmas, parts: proofParts() }] }],
+    course, logic: { wrong: [] },
+  }).filter(line => line.fail)
+  assert.deepEqual(lines([first]), [{ level: 'mp', fail: true, text: 'mp: the lemma applyB it carries proves it in one step' }])
+  assert.deepEqual(lines([first, second]), [])
+  assert.deepEqual(lines([first, { ...first, term: 'p q' }]), [])
 })
 
 test('a lemma gives a goal in one step only when the givens fit its premises', () => {
@@ -556,7 +586,7 @@ test('rewriting the hypotheses, under a binder without catching what is put in',
 })
 
 test('a script: each row by a rule or a block, checked row by row', async () => {
-  const { checkScript } = await import('../core/script.js')
+  const { checkScript, inspectScript } = await import('../core/script.js')
   const level = { premises: { p: 'Rain → Wet', q: 'Wet → Slip' }, goal: 'Rain → Slip' }
   const rows = (by) => [
     { k: 'show', stmt: 'Rain → Slip', by: 'proof' },
@@ -565,9 +595,10 @@ test('a script: each row by a rule or a block, checked row by row', async () => 
     { k: 'show', stmt: 'Slip', using: ['q', 'h1'], by: 'rule:mp' },
   ]
   assert.equal(checkScript(level, rows('rule:mp')).pass, true)
-  const wrong = checkScript(level, rows('rule:conjI'))
-  assert.equal(wrong.pass, false)
-  assert.ok(wrong.rows[2] && !wrong.rows[3])
+  const { fail, run } = inspectScript(level, rows('rule:conjI'))
+  assert.equal(run.pass, false)
+  assert.ok(run.rows[2] && !run.rows[3])
+  assert.deepEqual(fail, { at: { row: 2 }, why: run.reason, check: 0 })
   assert.equal(checkScript(level, rows('rule:mp').slice(0, 3)).pass, false)
 })
 

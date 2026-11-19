@@ -6,6 +6,7 @@ import { tableWorks, prepareTableWorks } from './work.js';
 import { validate } from './validate.js';
 import { play } from './play.js';
 import { builtParts } from 'circuit'
+import { tablePartCatalog } from './part-catalog.js'
 
 /** A table game's spec, as the checks read one (../../engine/checks.js). */
 // What a tray may list (capabilities.json): the parts and ideas parts.json names.
@@ -17,7 +18,11 @@ function spec(content, works = tableWorks(content)) {
     id: content.id,
     title: content.title,
     course: table.course,
-    levels: table.LEVELS,
+    levels: table.LEVELS.map(level => ({ ...level, unlocks: level.unlock ? [level.unlock] : [] })),
+    partCatalog: () => {
+      const { primitives, built } = tablePartCatalog(table);
+      return [...primitives, ...built];
+    },
     table,
     blueprints: table.blueprints,
     texts: { chapters: table.CHAPTERS, parts: table.PARTS },

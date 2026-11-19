@@ -66,7 +66,7 @@ const show = ({ failures, reports = [] }, clean = 'gate clean') => {
 // The commands an agent's directory offers, each a script that runs one tool on this game and logs its exit.
 const COMMANDS = {
   op: { run: () => `if [ "$1" = list ]; then node ../games/kit/engine/ops/cli.js list; else node ../games/kit/engine/ops/cli.js ${game} "$@"; fi`, about: './op --file <changeset.json> [--dry-run]   run a changeset through the operation set (./op list: the operations; ./op log: the change log)' },
-  check: { run: () => `node ../games/kit/engine/check.js ${game}`, about: './check   npm run check for this game: vocabulary, course audit, link targets, every reference / naive answer' },
+  check: { run: () => `node ../games/kit/engine/check.js --authoring ${game}`, about: './check   validate the course, its links and its authored examples' },
   gate: { run: (step) => `node ../games/kit/pipeline/pipeline.mjs ${game} gate ${step} "$@"`, about: './gate [--scope <scope>]   this step\'s gate: every failure names a rule' },
   deps: { run: () => `node ../games/kit/engine/deps.js ${game} --levels`, about: './deps   the part dependency graph (Mermaid), levels included' },
   eras: { run: () => `node ../games/kit/pipeline/pipeline.mjs ${game} eras`, about: './eras   the course\'s eras as the blueprint lays them out' },

@@ -73,21 +73,23 @@ export function worldCheck(level) {
     ? null
     : { want: !row.value, got: row.value, why: reason(row) })(world)
   const judge = inOrder(worldShape, (world) => judgeClaims(world, claimIn(level, world)))
+  const report = (world) => {
+    const malformed = worldShape(world)
+    if (malformed) return { fail: malformed, run: { steps: [{ failed: malformed.why }], lines: [] } }
+    const found = claimIn(level, world)
+    const fail = judgeClaims(world, found)
+    const steps = found.rows.slice(0, fail ? fail.check + 1 : undefined).map((_, k) => k === fail?.check ? { failed: fail.why } : {})
+    const lines = found.rows.map((row, k) => ({ strip: strip(row.f, `s${k}`), text: truth(row.value), right: row.right, step: k }))
+    if (level.meant) lines.unshift({ strip: strip(level.meant, 'meant'), text: truth(found.meant), right: true, step: 0 })
+    else lines[lines.length - 1].separator = true
+    return { fail, run: { steps, lines } }
+  }
   return {
     judge,
     initial: { size: Math.min(2, MAX_WORLD), preds: {}, consts: {} },
     prompt: level.say,
-    run: (world) => {
-      const malformed = worldShape(world)
-      if (malformed) return { steps: [{ failed: malformed.why }], lines: [] }
-      const found = claimIn(level, world)
-      const fail = judgeClaims(world, found)
-      const steps = found.rows.slice(0, fail ? fail.check + 1 : undefined).map((_, k) => k === fail?.check ? { failed: fail.why } : {})
-      const lines = found.rows.map((row, k) => ({ strip: strip(row.f, `s${k}`), text: truth(row.value), right: row.right, step: k }))
-      if (level.meant) lines.unshift({ strip: strip(level.meant, 'meant'), text: truth(found.meant), right: true, step: 0 })
-      else lines[lines.length - 1].separator = true
-      return { steps, lines }
-    },
+    report,
+    run: world => report(world).run,
     fields: (world, change) => {
       const valid = !worldShape(world)
       const sizes = {

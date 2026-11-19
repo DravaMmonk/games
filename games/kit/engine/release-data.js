@@ -12,8 +12,8 @@ export const stableJSON = value => JSON.stringify(value, (_, v) => v && !Array.i
 export const hash = value => createHash('sha256').update(value).digest('hex')
 // Mutable author logs and generated metadata are outside a package's content identity.
 const excluded = new Set(['.DS_Store', 'node_modules', '.git', 'changes.lock', 'manifest.json'])
-export function fileHashes(dir, prefix = '') {
-  return memoResolution(`hashes:${JSON.stringify([dir, prefix])}`, () => fileHashesUncached(dir, prefix))
+export function fileHashes(dir) {
+  return memoResolution(`hashes:${dir}`, () => fileHashesUncached(dir, ''))
 }
 
 function fileHashesUncached(dir, prefix) {
@@ -22,11 +22,14 @@ function fileHashesUncached(dir, prefix) {
     if (excluded.has(entry.name)) return []
     if (entry.isSymbolicLink()) throw new Error(`release cannot contain symlinks: ${prefix}${entry.name}`)
     const path = resolve(dir, entry.name), name = `${prefix}${entry.name}`
-    return entry.isDirectory() ? Object.entries(fileHashes(path, `${name}/`)) : [[name, hash(readFileSync(path))]]
+    return entry.isDirectory() ? Object.entries(fileHashesUncached(path, `${name}/`)) : [[name, hash(readFileSync(path))]]
   }))
 }
 export const contentHash = files => hash(stableJSON(Object.fromEntries(Object.entries(files).filter(([name]) => name !== 'changes.jsonl'))))
-export const kernelIdentity = () => ({ version: readJSON(resolve(kitDirectory, 'platform.json')).version, hash: contentHash(fileHashes(kitDirectory)) })
+export const kernelIdentity = () => memoResolution('kernel-identity', () => ({
+  version: readJSON(resolve(kitDirectory, 'platform.json')).version,
+  hash: contentHash(fileHashes(kitDirectory)),
+}))
 
 export function structureProblems(before, after, at = 'surface') {
   if (Array.isArray(before)) {

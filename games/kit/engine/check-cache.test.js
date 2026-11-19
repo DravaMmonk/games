@@ -1,7 +1,10 @@
 // node --test (npm test) — which levels' kept checks a change reaches (check-cache.js), on a small course written here.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { levelKeys } from './check-cache.js'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { checkCache, levelKeys } from './check-cache.js'
 
 const level = (id, answer, title = id) => ({ id, title: { zh: title }, answer, tasks: [{ id: `${id}t`, answer }] })
 const content = (levels) => ({ id: 'toy', domain: 'toy', levels })
@@ -28,6 +31,35 @@ test('the game around its levels changes every key', () => {
   assert.deepEqual(changed(keys(base), other), ['a', 'b', 'c', 'd'])
 })
 
-test('a task is kept under its level', () => {
-  assert.equal(levelKeys(content(base), course).home.get('bt'), 'b')
+test('a saved task check is reused across reads and invalidated by its prerequisites', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'games-check-cache-'))
+  t.after(() => rmSync(directory, { recursive: true, force: true }))
+  const open = options => checkCache('toy', { directory, ...options })
+  const original = open()
+  const memo = original.memo(content(base), { course })
+  const lines = [{ level: 'b', text: 'checked task' }]
+  assert.deepEqual(memo('bt', 'proof', () => lines), lines)
+  assert.deepEqual(memo('bt', 'proof', () => assert.fail('rechecked in the same run')), lines)
+  original.save()
+
+  const next = open()
+  const read = levels => next.memo(content(levels), { course })
+  const renamed = [level('a', 1, 'renamed'), ...base.slice(1)]
+  assert.deepEqual(read(renamed)('bt', 'proof', () => assert.fail('rechecked after a wording edit')), lines)
+  assert.deepEqual(read(base)('bt', 'schema', () => [{ text: 'different check' }]), [{ text: 'different check' }])
+  const revised = [level('a', 9), ...base.slice(1)]
+  assert.deepEqual(read(revised)('bt', 'proof', () => [{ text: 'ran again' }]), [{ text: 'ran again' }])
+  const fresh = open({ fresh: true }).memo(content(base), { course })
+  assert.deepEqual(fresh('bt', 'proof', () => []), [])
+})
+
+test('a cache with an invalid disk payload reruns the check', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'games-check-cache-'))
+  t.after(() => rmSync(directory, { recursive: true, force: true }))
+  for (const payload of ['{', 'null', '42', '[]']) {
+    writeFileSync(join(directory, 'toy.json'), payload)
+    const cache = checkCache('toy', { directory })
+    const lines = [{ text: 'recomputed' }]
+    assert.deepEqual(cache.memo(content(base), { course })('bt', 'proof', () => lines), lines, payload)
+  }
 })

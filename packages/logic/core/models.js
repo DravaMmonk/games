@@ -33,7 +33,8 @@ export function holds(f, m, env = {}) {
 }
 
 
-// Every structure on `domain` for the signature, lazily; stops after `limit`.
+// Enumerate a domain only when its entire signature fits within the search limit.
+// The search reads the current structure before continuing and stops as soon as it finds a witness.
 function* structures(domain, { preds, fns }, limit) {
   const slots = []
   for (const [p, n] of preds) slots.push({ kind: 'pred', name: p, keys: tuples(domain, n).map((t) => t.join(',')), choices: 2 })
@@ -41,21 +42,24 @@ function* structures(domain, { preds, fns }, limit) {
   const sizes = slots.map((s) => (s.kind === 'pred' ? 2 ** s.keys.length : s.choices))
   const total = sizes.reduce((a, b) => a * b, 1)
   if (total > limit) return
+  const m = { domain, preds: {}, fns: {} }
+  const picks = sizes.map(() => 0)
+  const write = (slot, pick) => {
+    if (slot.kind === 'pred') {
+      m.preds[slot.name] = slot.keys[0] === '' ? Boolean(pick) : new Set(slot.keys.filter((_, i) => (pick >> i) & 1))
+    } else {
+      m.fns[slot.name] ??= new Map()
+      m.fns[slot.name].set(slot.keys[0], domain[pick])
+    }
+  }
+  slots.forEach((slot) => write(slot, 0))
   for (let n = 0; n < total; n++) {
-    let rest = n
-    const m = { domain, preds: {}, fns: {} }
-    slots.forEach((s, k) => {
-      const pick = rest % sizes[k]
-      rest = Math.floor(rest / sizes[k])
-      if (s.kind === 'pred') {
-        if (!s.keys[0] && s.keys.length === 1) m.preds[s.name] = Boolean(pick)
-        else m.preds[s.name] = new Set(s.keys.filter((_, i) => (pick >> i) & 1))
-      } else {
-        m.fns[s.name] ??= new Map()
-        m.fns[s.name].set(s.keys[0], domain[pick])
-      }
-    })
     yield m
+    for (let k = 0; k < slots.length; k++) {
+      picks[k] = (picks[k] + 1) % sizes[k]
+      write(slots[k], picks[k])
+      if (picks[k] !== 0) break
+    }
   }
 }
 

@@ -124,7 +124,7 @@ export function sourceTools(root, onSave = () => {}) {
         const options = { cwd: root, env: testEnv({ GAMES_ROOT: root }), maxBuffer: 8 * 1024 * 1024 }
         const output = []
         try {
-          const check = await run(process.execPath, [resolve(import.meta.dirname, '../engine/check.js'), '--package', id, '--fresh'], options)
+          const check = await run(process.execPath, [resolve(import.meta.dirname, '../engine/check.js'), '--package', id], options)
           output.push(check.stdout, check.stderr)
           const tests = testFiles(resolve(dir, 'test'))
           if (tests.length) {

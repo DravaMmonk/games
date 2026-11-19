@@ -16,7 +16,7 @@
 
 - 步内硬切换，不留旧路径、兼容层或死代码。只修改本次任务授权的工作树和文件；提交与集成服从当前任务要求。
 - 内容只经操作集修改：`npm run op -- <游戏> --file <变更集.json>`；独立包用 `npm run op -- --package <包> --file <变更集.json>`。批量迁移可用一次性脚本，迁移后逐层 `adopt --why "…"`，脚本不留仓库。
-- 内核改动运行 `npm test`、`npm run lint:kit`、`npm run words -- --check`；单元测试只用现写的小内容或 `kit/templates/<模板>/starter/`，不读真实游戏。内容检查用 `npm run check -- <游戏>`、`npm run check -- --package <包>`。上述命令在 `site/` 执行。
+- 内核改动运行 `npm test`、`npm run lint:kit`、`npm run words -- --check`。平台测试使用小型合成夹具。运行检查使用 `npm run check -- <游戏>` 或 `npm run check -- --package <包>`。如需审阅课程示例，显式加 `--authoring`。上述命令在 `site/` 执行。
 - 行为重构先保存受影响游戏的检查输出，之后逐项对比；差异要事先说明。Public-surface changes use semantic platform/package versions, explicit dependency locks and `npm run publish`; see design/README.md 6.1.1.
 - 新包用 `npm run new-package -- <包> --template <模板>`；同时建游戏用 `npm run new-game -- <游戏> --template <模板>`；复用已有游戏的包与开局设置用 `create_game` 工具（`id`、`from`、`title`），再用选包操作调整。
 - 界面改动在真实浏览器核对桌面和手机的通过与失败流程，使用 `GAMES_ROOT` 内容副本试写。开发阶段不要求存档兼容。

@@ -54,7 +54,7 @@ export function register(kernel) {
       const placed = new Set(spec.levels.map(level => level.id))
       return { glossary: entries.map(entry => !entry.at || placed.has(entry.at) ? entry : {}) }
     },
-    contentChecks: ({ content }) => termRegistry(content.glossary).failures.map(finding => ({
+    authoringChecks: ({ content }) => termRegistry(content.glossary).failures.map(finding => ({
       fail: true, text: `terminology ${finding.rule} ${finding.at}: ${finding.says}`,
     })),
     operations: {

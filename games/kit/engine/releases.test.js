@@ -1,12 +1,12 @@
 import { openGame, openPackage } from './ops/workspace.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, renameSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, renameSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve, dirname } from 'node:path'
 import { satisfies, parseVersion, compatibility, nextVersion, hash } from './release-data.js'
 import { resolveLayers, readPackage } from './resolver.js'
-import { lockTarget, publishPackage, checkTarget, upgradeTarget, platformManifest } from './releases.js'
+import { lockTarget, publishPackage, checkTarget, upgradeTarget, platformManifest, packageCompatibility } from './releases.js'
 import { releaseIndex, releaseSource } from './release-store.js'
 import { S } from './schema.js'
 import { packageWordsFixture } from './test-fixture.js'
@@ -84,6 +84,20 @@ test('locks report missing pins, range drift, extra dependencies and content has
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 
+test('publication requires a contract for packages with a core or view entry', t => {
+  const root = project()
+  t.after(() => rmSync(root, { recursive: true, force: true }))
+  for (const [id, entry] of [['engine', 'core/index.js'], ['screen', 'view/index.jsx']]) {
+    const manifest = { ...namedConfig(root, id), version: '0.0.0' }
+    put(root, `packages/${id}/package.json`, manifest)
+    put(root, `packages/${id}/${entry}`, 'export function register() {}')
+    lockTarget({ id, kind: 'package' }, root)
+    assert.throws(() => publishPackage(id, root, { launch: true }), new RegExp(`${id}: code packages require contract tests`))
+    assert.deepEqual(JSON.parse(readFileSync(resolve(root, `packages/${id}/package.json`), 'utf8')), manifest)
+  }
+  assert.equal(existsSync(resolve(root, 'releases')), false)
+})
+
 test('checked archives and workspace sources use the same reader, manifests and public layers', () => {
   const root = project()
   try {
@@ -104,8 +118,9 @@ test('checked archives and workspace sources use the same reader, manifests and 
     const target = { id: 'library', kind: 'package' }
     lockTarget(target, root)
     assert.throws(() => publishPackage('library', root, { launch: true }),
-      error => /not ok \d+ - public value/.test(String(error.stdout)))
+      /library: contract tests failed[\s\S]*not ok \d+ - public value/)
     assert.equal(releaseIndex(root).packages.library, undefined)
+    assert.equal(existsSync(resolve(root, 'releases')), false)
     put(root, `packages/library/${contract}`, sourceTest(42))
     const first = publishPackage('library', root, { launch: true })
     assert.equal(first.version, '1.0.0')
@@ -135,7 +150,10 @@ test('checked archives and workspace sources use the same reader, manifests and 
     renameSync(resolve(root, 'held'), resolve(root, 'packages/library'))
     put(root, 'packages/library/topic/two.json', { title: 'Two', body: ['An explanatory test entry.'] })
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.1.0')
-    assert.equal(publishPackage('library', root, { launch: true }).version, '1.1.1')
+    const unchanged = packageCompatibility('library', root)
+    assert.equal(unchanged.previous, '1.1.0')
+    assert.equal(unchanged.type, 'unchanged')
+    assert.equal(unchanged.proposed, '1.1.1')
     rmSync(resolve(root, 'packages/library/topic/one.json'))
     assert.equal(publishPackage('library', root, { launch: true }).version, '2.0.0')
     renameSync(resolve(root, 'packages/library'), resolve(root, 'held-again'))
@@ -146,18 +164,20 @@ test('checked archives and workspace sources use the same reader, manifests and 
     assert.equal(locked.dependencies.library.version, '1.0.0')
     assert.equal(upgradeTarget({ id: 'course', kind: 'package' }, 'library', root).dependencies.library.version, '1.0.0')
     put(root, 'packages/other/README.md', 'A changed retained source dependency.')
-    assert.equal(upgradeTarget({ id: 'course', kind: 'package' }, 'library', root).dependencies.other.version, '1.0.0')
+    const refreshed = upgradeTarget({ id: 'course', kind: 'package' }, 'library', root)
+    assert.deepEqual(refreshed.dependencies.library, locked.dependencies.library)
+    assert.equal(refreshed.dependencies.other.version, '1.0.0')
+    assert.notEqual(refreshed.dependencies.other.hash, locked.dependencies.other.hash)
     const index = releaseIndex(root).packages.library
-    assert.deepEqual(Object.keys(index), ['1.0.0', '1.1.0', '1.1.1', '2.0.0'])
+    assert.deepEqual(Object.keys(index), ['1.0.0', '1.1.0', '2.0.0'])
     const release = { ...index['1.0.0'], version: '1.0.0' }
-    assert.ok(releaseSource('library', release, root))
     const file = resolve(root, 'releases', release.file)
     writeFileSync(file, Buffer.concat([readFileSync(file), Buffer.from('tampered')]))
     assert.throws(() => releaseSource('library', release, root), /archive hash mismatch/)
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 
-test('publication compares real dependent checks and reports a major behavioral change', () => {
+test('publication compares dependent runtime checks and reports a major behavioral change', () => {
   const root = project()
   try {
     put(root, 'packages/library/package.json', namedConfig(root, 'library'))
@@ -167,11 +187,21 @@ test('publication compares real dependent checks and reports a major behavioral 
     lockTarget({ id: 'library', kind: 'package' }, root)
     assert.equal(publishPackage('library', root, { launch: true }).version, '1.0.0')
     put(root, 'packages/course/package.json', namedConfig(root, 'course', { library: '^1.0.0' }))
-    put(root, 'packages/course/core/index.js', "import { answerValue } from 'library'; export function register(kernel) { kernel.play('course/probe', { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: () => ({ pass: true }), judge: report => report }); kernel.check('course/probe', () => [{ text: `probe ${answerValue}` }]) }")
+    put(root, 'packages/course/core/index.js', `
+      import { answerValue } from 'library'
+      export function register(kernel) {
+        kernel.play('course/probe', { initial: () => '', read: x => x, write: x => x, normalize: x => x, run: () => ({ pass: true }), judge: report => report })
+        kernel.check('course/probe', Object.assign(() => [{ text: 'probe ' + answerValue }], { phase: 'runtime' }))
+        kernel.check('course/examples', () => [{ fail: true, text: 'Authoring example is incomplete' }])
+      }
+    `)
+    put(root, 'packages/course/view/index.jsx', `
+      function Probe() { return null }
+      export function register(kernel) { kernel.play('course/probe', { component: Probe, preview: Probe }) }
+    `)
     put(root, 'packages/course/capabilities/play.json', { extends: 'play', items: { probe: {} } })
     put(root, 'packages/course/levels/sum.json', { title: 'Probe', tasks: [{ id: 'probe', play: 'course/probe', brief: 'Observe the public value.' }] })
     lockTarget({ id: 'course', kind: 'package' }, root)
-    checkTarget({ id: 'course', kind: 'package' }, root)
     put(root, 'packages/library/core/index.js', code(43))
     const release = publishPackage('library', root, { launch: true })
     assert.equal(release.version, '2.0.0')
@@ -179,6 +209,8 @@ test('publication compares real dependent checks and reports a major behavioral 
     assert.deepEqual(release.affected, [{ id: 'course', kind: 'package' }])
     assert.match(release.compatibility.behavior[0].before.stdout, /probe 42/)
     assert.match(release.compatibility.behavior[0].after.stdout, /probe 43/)
+    assert.equal(release.compatibility.behavior[0].before.status, 0)
+    assert.equal(release.compatibility.behavior[0].after.status, 0)
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 

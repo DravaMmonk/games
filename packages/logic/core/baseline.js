@@ -9,30 +9,41 @@ import { checkIso, sentenceOf } from './iso.js'
 import { runAudit } from './audit-cases.js'
 import { translation, query } from './formulaWork.js'
 import { worldCheck } from './worldValues.js'
-import { scriptJudge, checkScript } from './script.js'
+import { inspectScript } from './script.js'
 import { parse } from './formula.js'
 import { say } from './notation.js'
 
-const judged = (judge, work) => { const fail = judge(work); return { pass: !fail, fail, steps: [{ pass: !fail, fail }] } }
+const judged = fail => ({ pass: !fail, fail, steps: [{ pass: !fail, fail }] })
+const observed = ({ fail, run }) => ({ ...judged(fail), run })
 const examples = (task, run, reference = task.solution ?? task.answer, naive = task.naive) => exampleReports(reference, naive, run)
 
 function logicReport(task) {
   const words = sentence => say(sentenceOf(task, sentence), task.notation)
   switch (task.kind) {
-    case 'logic/proof': return examples(task, work => runProof(withHidden(task), work, { traced: true }))
-    case 'logic/machine': return examples(task, work => runMachine(withHidden(task), work, { traced: true }))
-    case 'logic/gates': return examples(task, work => runGates({ ...task, tests: gateTests(task) }, work, null, { traced: true }))
-    case 'logic/define': return examples(task, work => judged(checkDefine(task), work))
-    case 'logic/script': return examples(task, work => ({ ...judged(scriptJudge(task), work), run: checkScript(task, work) }), task.answer)
-    case 'logic/model': return examples(task, work => ({ ...judged(worldCheck(task).judge, work), run: worldCheck(task).run(work) }), task.answer)
+    case 'logic/proof': case 'logic/machine': {
+      const all = withHidden(task)
+      const run = task.kind === 'logic/proof' ? runProof : runMachine
+      return examples(task, work => run(all, work, { traced: true }))
+    }
+    case 'logic/gates': {
+      const all = { ...task, tests: gateTests(task) }
+      return examples(task, work => runGates(all, work, null, { traced: true }))
+    }
+    case 'logic/define': return examples(task, work => judged(checkDefine(task)(work)))
+    case 'logic/script': return examples(task, work => observed(inspectScript(task, work)), task.answer)
+    case 'logic/model': {
+      const { report } = worldCheck(task)
+      return examples(task, work => observed(report(work)), task.answer)
+    }
     case 'logic/translate': case 'logic/query': {
       const judge = (task.kind === 'logic/query' ? query : translation)(task).judge
-      return examples(task, work => judged(judge, typeof work === 'string' ? parse(work, { consts: task.vocab.names }) : work), task.target)
+      return examples(task, work => judged(judge(typeof work === 'string' ? parse(work, { consts: task.vocab.names }) : work)), task.target)
     }
     case 'logic/iso': {
       const audit = task.play === 'logic/audit'
       const naiveRules = !audit && task.naive?.every(rule => rule.needs) ? task.naive : null
-      const declaration = examples(task, work => judged(audit ? checkIso(task, words) : rules => checkDeclaration(task)(readRuleRows(task, rules)), work), task.solution, naiveRules)
+      const judge = audit ? checkIso(task, words) : rules => checkDeclaration(task)(readRuleRows(task, rules))
+      const declaration = examples(task, work => judged(judge(work)), task.solution, naiveRules)
       return task.play === 'logic/audit' ? { declaration, cases: examples(task, work => runAudit(task, work, words), task.answer) } : declaration
     }
     case 'logic/truth': {

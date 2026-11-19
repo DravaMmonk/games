@@ -11,7 +11,7 @@ import { exportedNames } from './manifests.js'
 import { vocabulary } from './kernel.js'
 import { OBJECT_SCHEMAS } from './objects.js'
 import { OPERATIONS } from './ops/operations.js'
-import { testArgs, testEnv, testFiles } from './test-files.js'
+import { packageTestFailure, testFiles } from './test-files.js'
 
 const write = (file, value) => writeFileSync(file, JSON.stringify(value, null, 2) + '\n')
 export function lockTarget(target, root = contentRoot(), { pins } = {}) {
@@ -38,7 +38,7 @@ export function upgradeTarget(target, dependency, root = contentRoot()) {
   return lock
 }
 function checkObservation(target, root, probe = false) {
-  const result = spawnSync(process.execPath, [resolve(kitDirectory, 'engine/check.js'), `--${target.kind}`, target.id, '--fresh'], { cwd: resolve(kitDirectory, '../../site'), env: { ...process.env, GAMES_ROOT: root, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings`, GAMES_DEPENDENCY_PROBE: probe ? '1' : '0' }, encoding: 'utf8', maxBuffer: 64 << 20 })
+  const result = spawnSync(process.execPath, [resolve(kitDirectory, 'engine/check.js'), `--${target.kind}`, target.id], { cwd: resolve(kitDirectory, '../../site'), env: { ...process.env, GAMES_ROOT: root, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings`, GAMES_DEPENDENCY_PROBE: probe ? '1' : '0' }, encoding: 'utf8', maxBuffer: 64 << 20 })
   if (result.error || result.signal || result.status === null) throw result.error ?? new Error('check interrupted')
   return { status: result.status, stdout: result.stdout.replaceAll(root, '<project>'), stderr: result.stderr.replaceAll(root, '<project>') }
 }
@@ -109,19 +109,22 @@ export function publishPackage(id, root = contentRoot(), { launch = false } = {}
   const previousDir = last ? releaseSource(id, { ...versions[last], version: last }, root) : null
   const before = previousDir ? readJSON(resolve(previousDir, 'manifest.json')) : null
   const target = { kind: 'package', id }
+  const contracts = testFiles(resolve(dir, 'test'))
+  if (!contracts.length && ['core/index.js', 'view/index.jsx'].some(entry => existsSync(resolve(dir, entry)))) {
+    throw new Error(`${id}: code packages require contract tests`)
+  }
   const validation = mkdtempSync(join(tmpdir(), 'package-contract-'))
-  let contracts
   try {
     symlinkSync(packageDirectory('', root), resolve(validation, 'packages'), 'dir')
     if (existsSync(releaseDirectory(root))) symlinkSync(releaseDirectory(root), resolve(validation, 'releases'), 'dir')
     checkTarget(target, validation)
-    contracts = testFiles(resolve(dir, 'test'))
-    if (existsSync(resolve(dir, 'core/index.js')) && !contracts.length) throw new Error(`${id}: code packages require contract tests`)
-    if (contracts.length) execFileSync(process.execPath, testArgs(contracts), {
-      cwd: resolve(kitDirectory, '../../site'),
-      env: testEnv({ GAMES_ROOT: validation, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` }),
-      stdio: 'pipe',
-    })
+    if (contracts.length) {
+      const failure = packageTestFailure(contracts, {
+        cwd: resolve(kitDirectory, '../../site'),
+        env: { GAMES_ROOT: validation, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` },
+      })
+      if (failure) throw new Error(`${id}: ${failure}`)
+    }
   } finally { rmSync(validation, { recursive: true, force: true }) }
   const targets = affectedTargets(id, root)
   const result = resolveLayers({ package: id, closure: true, root })

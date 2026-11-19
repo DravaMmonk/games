@@ -36,6 +36,7 @@ test('text play follows the circuit target policy in the table and on failure', 
     const source = { kind: 'logic/gates', target: '¬A', gates, ...fields }
     const ctx = { game, level: { kind: 'logic/gates', source }, progress: { built: {} } }
     const opened = play.open(ctx)
+    assert.deepEqual(play.open({ ...ctx, game: null }, { testsOnly: true }), { tests: opened.tests })
     assert.deepEqual(opened.palette.map(({ type }) => type), ['gNot'])
     assert.equal(opened.given.en.includes('the sentence'), showSentence)
     assert.deepEqual(opened.tests.map(({ text }) => text.en), showTarget

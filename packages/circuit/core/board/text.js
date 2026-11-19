@@ -129,6 +129,7 @@ export function print(graph, parts, head = {}) {
 // ---- reading ----
 
 const say = (line, zh, en) => ({ line, zh: line ? `第 ${line} 行：${zh}` : zh, en: line ? `Line ${line}: ${en}` : en })
+const byLine = (a, b) => (a.line ?? Number.MAX_SAFE_INTEGER) - (b.line ?? Number.MAX_SAFE_INTEGER)
 
 function tokens(text) {
   const out = []
@@ -433,7 +434,7 @@ export function read(text, graph, parts, types) {
   const invalid = regionProblems(out, parts)
   if (invalid.length) {
     const lines = new Map(parsed.statements.map(({ id, line }) => [id, line]))
-    return { errors: [...errors, ...invalid.map(({ id, zh, en }) => say(lines.get(id), zh, en))] }
+    return { errors: [...errors, ...invalid.map(({ id, zh, en }) => say(lines.get(id), zh, en))].sort(byLine) }
   }
   for (const node of out.nodes) {
     // A new card in a frame's region takes the next free cell of it; one on the board itself is placed once the
@@ -484,7 +485,7 @@ export function read(text, graph, parts, types) {
     const line = parsed.statements.find((st) => st.id === srcNode(wire.from) || st.id === wire.to)?.line
     errors.push(say(line, PRESET_PORT_REFUSAL.zh, PRESET_PORT_REFUSAL.en))
   }
-  if (errors.length) return { errors }
+  if (errors.length) return { errors: errors.sort(byLine) }
   flowSpots(out, fresh, parts.role)
   return { graph: { ...graph, nodes: out.nodes, wires: out.wires } }
 }

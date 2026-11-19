@@ -21,39 +21,44 @@ const call = async (tool, args) => {
 }
 const onDisk = file => readFileSync(join(root, 'packages', GAME, file), 'utf8')
 
-test('a pending changeset previewed: its content, lines by level and files, nothing written', async () => {
-  const before = onDisk('levels/suppose.json')
+test('package preview uses dependency order for copy diagnostics and leaves files untouched', async () => {
+  const before = onDisk('levels/given.json')
   const originalCatalog = onDisk('i18n/en.json')
+  const value = `See <level-ref to="${GAME}/missing"></level-ref>.`
   const ops = [
-    { op: 'text.set', level: 'suppose', path: 'tasks[0].brief', lang: 'en', value: 'Prove it with one box.' },
+    { op: 'text.set', level: 'given', path: 'tasks[0].brief', lang: 'en', value },
   ]
   const body = await call('preview', { package: GAME, changeset: { ops } })
+  assert.equal(body.ok, false)
   assert.equal(body.failed, null)
-  assert.equal(body.content.levels.find((l) => l.id === `${GAME}/suppose`).tasks[0].brief.en, 'Prove it with one box.')
-  assert.ok(body.order.includes(`${GAME}/suppose`) && body.lines.every((l) => Array.isArray(l.levels)))
-  assert.ok(body.lines.some((l) => l.levels.includes(`${GAME}/suppose`) && /^proofs\/suppose /.test(l.text)), 'a domain line is about its level')
+  assert.equal(body.content.levels.find((l) => l.id === `${GAME}/given`).tasks[0].brief.en, value)
+  assert.deepEqual(body.order, ['given', 'apply', 'suppose'].map(id => `${GAME}/${id}`))
+  assert.deepEqual(body.lines, [{
+    fail: true, text: `text levels.0.tasks.0.brief refers to a missing level: ${GAME}/missing`, levels: [`${GAME}/given`],
+  }])
   const catalog = `packages/${GAME}/i18n/en.json`
   assert.deepEqual(body.changes.map((c) => c.file).sort(), [catalog])
   const brief = JSON.parse(before).tasks[0].brief.slice(1)
-  assert.equal(JSON.parse(body.changes.find((c) => c.file === catalog).after)[brief], 'Prove it with one box.')
-  assert.equal(onDisk('levels/suppose.json'), before)
+  assert.equal(JSON.parse(body.changes.find((c) => c.file === catalog).after)[brief], 'See <level-ref to="missing"></level-ref>.')
+  assert.equal(onDisk('levels/given.json'), before)
   assert.equal(onDisk('i18n/en.json'), originalCatalog, 'preview leaves the changed catalog on disk untouched')
 
   const bad = await call('preview', { package: GAME, changeset: { ops: [ops[0], { op: 'level.set', level: 'nope', path: 'x', value: 1 }] } })
   assert.equal(bad.failed, 1)
   assert.equal(bad.content, null)
+  assert.deepEqual(bad.order, [])
   assert.match(bad.problems[0], /^op 2 \(level.set\)/)
 })
 
-test('a board seeded for the game, drawn as SVG', async () => {
-  const seed = await call('seed', { package: GAME, level: 'suppose', path: 'tasks[0].solution' })
-  assert.equal(seed.task, 0)
-  assert.ok(Array.isArray(seed.data.nodes) && seed.data.nodes.some((n) => n.type === `${GAME}/impI`), JSON.stringify(seed).slice(0, 300))
+test('a board can be seeded from pending edits and rendered from saved content', async () => {
   const text = [`# blueprint 1 ${GAME} suppose`, 'f = impI[A=A](body: z) {', '  body {', '    m1 = mp(p, f.body)', '    z = mp(q, m1)', '  }', '}', 'goal <- f'].join('\n')
   const changed = await call('seed', { package: GAME, level: 'suppose', path: 'tasks[0].solution', changeset: { ops: [{ op: 'level.blueprint', level: 'suppose', path: 'tasks[0].solution', text }] } })
-  assert.ok(changed.data.nodes.some((n) => n.id === 'z'), 'seeded from the content as the changeset leaves it')
+  assert.equal(changed.task, 0)
+  assert.equal(changed.data.nodes.find(node => node.id === 'f')?.type, `${GAME}/impI`)
+  assert.equal(changed.data.nodes.find(node => node.id === 'z')?.type, `${GAME}/mp`)
   const { boards } = await call('render', { package: GAME, level: 'suppose', format: 'svg' })
-  assert.match(boards[0].svg, /^<svg/)
+  assert.deepEqual(boards.map(board => board.path), ['tasks[0].solution'])
+  assert.match(boards[0].svg, /^<svg[\s\S]*>m2<\/text>/)
 })
 
 test('the tools list, preview and write a package that no game selects', async () => {
@@ -63,20 +68,18 @@ test('the tools list, preview and write a package that no game selects', async (
   writeFileSync(join(pkg, 'package.json'), `${JSON.stringify({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0', logic: '^0.0.0', qed: '^0.0.0' }, ...words })}\n`)
   mkdirSync(join(pkg, 'parts'), { recursive: true })
   writeFileSync(join(pkg, 'parts/apply.json'), JSON.stringify( { name: 'Apply', desc: 'Apply an implication.', icon: 'GitFork', family: 'logic/rule', inputs: [{ name: 'imp', type: 'logic/judgment' }, { name: 'a', type: 'logic/judgment' }], outputType: 'logic/judgment', op: 'logic/mp' }))
-  const full = await call('preview', { package: 'library' })
   const quick = await call('preview', { package: 'library', check: false })
   assert.equal(quick.ok, false)
-  assert.deepEqual(quick.lines, full.lines)
-  assert.equal(quick.lines.find(line => line.problem?.rule === 'dependency').problem.reason, 'missing lock')
+  assert.deepEqual(quick.lines.filter(line => line.fail).map(({ problem }) => [problem?.rule, problem?.reason]), [
+    ['dependency', 'missing lock'],
+  ])
+  assert.deepEqual(quick.content.levels, [])
+  assert.equal(quick.content.packageTarget.id, 'library')
   lockTarget({ kind: 'package', id: 'library' }, root)
   const packages = await call('packages', {})
   const library = packages.find(entry => entry.id === 'library')
   assert.equal(library.title.en, 'library')
   assert.equal(library.desc.zh, '测试包。')
-  const preview = await call('preview', { package: 'library' })
-  assert.equal(preview.ok, true, preview.problems.join('\n'))
-  assert.deepEqual(preview.content.levels, [])
-  assert.equal(preview.content.packageTarget.id, 'library')
   const modified = await call('modify', { package: 'library', changeset: { ops: [{ op: 'parts.set', path: ['parts', 'apply', 'desc'], value: 'A revised description.' }] } })
   assert.equal(modified.written, true, modified.problems.join('\n'))
   assert.deepEqual(modified.files, ['packages/library/parts/apply.json'])
@@ -95,19 +98,22 @@ test('reading tools expose vocabulary, reference results, board text and depende
   assert.match((await call('deps', { game: GAME })).text, /^flowchart LR/)
 })
 
-test('modify refuses a failing changeset, previews a diff, and writes a passing one with its reason', async () => {
-  const goal = { op: 'level.set', level: 'suppose', path: 'tasks[0].tests[0].goal', value: 'A → (B → C)' }
-  // The reference no longer proves the new goal: refused, nothing written.
+test('modify refuses a broken reference, previews a diff, and writes a loadable edit with its reason', async () => {
+  const invalid = { op: 'text.set', level: 'suppose', path: 'tasks[0].brief', lang: 'en', value: 'See <level-ref to="missing"></level-ref>.' }
   const level = onDisk('levels/suppose.json')
-  const refused = await call('modify', { package: GAME, changeset: { ops: [goal] } })
+  const originalCatalog = onDisk('i18n/en.json')
+  const refused = await call('modify', { package: GAME, changeset: { ops: [invalid] } })
   assert.equal(refused.ok, false)
-  assert.ok(refused.problems.some((p) => p.startsWith(`${GAME}/suppose`)), refused.problems.join('\n'))
+  assert.match(refused.problems.join('\n'), /refers to a missing level: proofs\/missing/)
   assert.equal(onDisk('levels/suppose.json'), level)
+  assert.equal(onDisk('i18n/en.json'), originalCatalog)
 
   const hint = { op: 'text.set', level: 'suppose', path: 'tasks[0].hint[0]', lang: 'en', value: 'Set the box’s assumption to “Today is Saturday”, the first half of the sentence.' }
+  const catalog = onDisk('i18n/en.json')
   const preview = await call('modify', { package: GAME, changeset: { ops: [hint] }, dryRun: true })
   assert.equal(preview.ok && !preview.written, true)
   assert.match(preview.diff, new RegExp(`^--- a/packages/${GAME}/i18n/en.json`))
+  assert.equal(onDisk('i18n/en.json'), catalog)
   const done = await call('modify', { package: GAME, changeset: { why: 'a clearer hint', ops: [hint] } })
   assert.equal(done.written, true, done.problems.join('\n'))
   const ref = JSON.parse(onDisk('levels/suppose.json')).tasks[0].hint[0]

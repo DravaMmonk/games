@@ -9,7 +9,7 @@ import { boardSvg } from './board/svg.js'
 import { specProblems, validateProblems } from './contracts.js'
 import { circuitOperations } from './author-operations.js'
 import { S, parsePath } from 'kernel'
-import { firstText, isLanguageNeutral } from 'kernel'
+import { isLanguageNeutral } from 'kernel'
 import { readWorkSet } from './course-model.js'
 import { implementationProblems } from './parts/dependencies.js'
 import { taskIdsOf } from 'kernel'
@@ -20,6 +20,7 @@ import { progressFieldsProblems } from './progress-fields.js'
 import { primitiveParts } from './primitive-parts.js'
 import { partFileSchema } from './parts/schema.js'
 import { partProjection } from './studio.js'
+import { referencePartCatalog } from './part-catalog.js'
 
 // Presentation-only part fields are validated as objects and do not affect board checks or saved work.
 function puzzleParts(parts, vocabulary) {
@@ -113,14 +114,12 @@ export const partMeaning = {
       set: value => { ws.contentObjects['circuit/part'] = new Map(Object.entries(value.parts)) },
     })
   },
-  textNames({ content, game, vocabulary }) {
-    if (game) return { part: new Map((game.parts?.all ?? []).map(part => [part.key, String(firstText(part.name))])) }
-    const names = new Map(Object.entries(content.registries['circuit/part'] ?? {}).map(([id, object]) => [id, String(firstText(object.name ?? id))]))
-    for (const id of Object.keys(content.registries['circuit/part'] ?? {})) { names.set(`part:${id}`, ''); names.set(`lemma:${id}`, '') }
-    for (const id of Object.keys(vocabulary.kinds.unlock ?? {})) names.set(id, '')
-    return { part: names }
+  textNames({ content, spec, vocabulary }) {
+    if (spec) return { part: new Set(referencePartCatalog(spec).map(part => part.key)) }
+    const names = Object.keys(content.registries['circuit/part'] ?? {})
+    return { part: new Set([...names.flatMap(id => [id, `part:${id}`, `lemma:${id}`]), ...Object.keys(vocabulary.kinds.unlock ?? {})]) }
   },
-  texts: ({ content, game }) => ({ parts: game ? (game.parts?.all ?? []).map(part => ({ key: part.key, name: part.name, desc: part.desc })) : content.partDefs?.parts }),
+  texts: ({ content, spec }) => ({ parts: spec ? referencePartCatalog(spec).map(({ key, name, desc }) => ({ key, name, desc })) : content.partDefs?.parts }),
   readWorks: ({ content, readers }) => readWorkSet(content, readers),
   taskModule: () => 'circuit',
   runtimeIds({ content, tasks, taskModule }) {

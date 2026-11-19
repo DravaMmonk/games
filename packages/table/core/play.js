@@ -21,10 +21,10 @@ import { playOf } from './plays.js'
 const str = (v) => (v === null || v === undefined ? '' : String(v))
 
 export const play = {
-  open(ctx) {
+  open(ctx, options) {
     const s = ctx.level.source
     if (playOf(s).editor !== 'circuit') return { covered: false, why: catalogText("手动玩法（在表上点格子），harness 只支持电路关") }
-    return circuit.open(ctx)
+    return circuit.open(ctx, options)
   },
   attempt: (ctx, text) => circuit.attempt(ctx, text),
 }

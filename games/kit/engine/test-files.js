@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { lstatSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -19,4 +20,14 @@ export const testArgs = (files, options = []) => [
 export function testEnv(overrides = {}) {
   const { NODE_TEST_CONTEXT: _, ...env } = process.env
   return { ...env, ...overrides }
+}
+
+/** Keep the child process diagnostics when a package's test gate fails. */
+export function packageTestFailure(files, { cwd, env, options } = {}) {
+  const run = spawnSync(process.execPath, testArgs(files, options), {
+    cwd, env: testEnv(env), encoding: 'utf8', maxBuffer: 64 << 20,
+  })
+  if (run.status === 0) return null
+  const reason = run.error?.message ?? `contract tests failed (${run.signal ?? run.status})`
+  return [reason, run.stdout?.trim(), run.stderr?.trim()].filter(Boolean).join('\n')
 }

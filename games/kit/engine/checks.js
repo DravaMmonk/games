@@ -2,9 +2,7 @@ import { meaningsOf } from './kind-meanings.js'
 import { contentSchemas } from './content.js'
 // The rules every game follows, over one game's content (content.js): its content against its domain's vocabulary
 // (./vocabulary.js), the course audit (../course.js), unique level ids
-// that require only real levels, its links, and then its domain's own
-// checks (reference answers pass, naive ones fail, …). npm run check (check.js) and every changeset (ops/changeset.js)
-// run it.
+// that require only real levels, and its links. Authoring checks also run curriculum rules and example verdicts.
 //
 // A game is checked through its spec, which its domain makes under node (the package core runtime: { vocabulary,
 // spec(content), validate(spec) }): { id, domain, title, course, levels, texts?, audit?() → [{ rule, level,
@@ -12,21 +10,19 @@ import { contentSchemas } from './content.js'
 // `audit` adds the game's own course problems to the shared audit's. game.json may leave findings open (`open`, the
 // work list in its design doc): they are listed, not failed, and one met since fails until it is dropped.
 import { REF, refProblems } from './text.js'
-import { gameOf } from './games.mjs'
 import { checkContent } from './vocabulary.js'
-import { firstText, textEntries } from './i18n.js'
+import { textEntries } from './i18n.js'
 import { find } from './schema.js'
 import { noMemo } from './check-cache.js'
 import { dependencyProblemsInProject } from './project-dependencies.js'
-import { packageLevel } from './package-play.js'
+import { packageLevel, packageLevelOrder } from './package-play.js'
 
 const registeredReferenceNames = (content, selections = {}) => Object.fromEntries(Object.entries(contentSchemas.get(content)?.references ?? {}).flatMap(([kind, { target }]) => {
   if (!target) return []
-  const objects = selections[target] ?? Object.entries(content.registries[target] ?? {}).map(([id, value]) => ({ ...value, id }))
-  return [[kind, new Map(objects.map(({ id, title, name }) => [id, String(firstText(title ?? name))]))]]
+  return [[kind, new Set(selections[target]?.map(({ id }) => id) ?? Object.keys(content.registries[target] ?? {}))]]
 }))
 
-export function checkContentLines(content, { domain, root }) {
+function checkContentLines(content, { domain, root }) {
   const problems = checkContent(domain, content)
   if (!problems.length) problems.push(...dependencyProblemsInProject(content, root))
   return problems.map(problem => ({
@@ -36,19 +32,31 @@ export function checkContentLines(content, { domain, root }) {
   }))
 }
 
+const authoredOrder = content => content.packageTarget ? packageLevelOrder(content) : content.levels.map(level => level.id)
+
+/** Check content without constructing a course. */
+export function checkContentOnly(content, options) {
+  return { lines: checkContentLines(content, options), order: authoredOrder(content) }
+}
+
 /** Check each package level independently of any learning route. */
-async function checkPackageLevels(content, domain, mutants) {
+async function checkPackageLevels(content, domain, { authoring, mutants }, order) {
   const lines = []
   const names = { ...registeredReferenceNames(content), ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, vocabulary: domain.vocabulary }))) }
-  for (const [name, value] of Object.entries({ levels: content.levels, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
+  const byId = new Map(content.levels.map(level => [level.id, level]))
+  const levels = order.map(id => byId.get(id))
+  for (const [name, value] of Object.entries({ levels, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
     for (const problem of refProblems(value, name, names)) lines.push({ fail: true, text: `text ${problem}` })
   }
   for (const level of content.levels) {
     try {
       const shell = packageLevel(content, level.id)
-      const spec = domain.spec(shell)
-      lines.push(...await domain.checkPhase?.({ phase: 'course', spec, content: shell }) ?? [])
-      lines.push(...await domain.validate({ ...spec, memo: noMemo, mutants }))
+      const checker = domain.forContent?.(shell) ?? domain
+      const spec = checker.spec(shell)
+      const phase = authoring ? 'course' : 'runtime'
+      const findings = [...await checker.checkPhase?.({ phase, spec, content: shell }) ?? [],
+        ...(authoring ? await checker.validate({ ...spec, memo: noMemo, mutants }) : [])]
+      lines.push(...findings.map(line => ({ level: level.id, ...line })))
     } catch (error) {
       lines.push({ fail: true, level: level.id, text: `${level.id}: ${error.message}` })
     }
@@ -57,22 +65,31 @@ async function checkPackageLevels(content, domain, mutants) {
 }
 
 /**
- * Everything checked on game `content`, as lines [{ text, fail? }].
+ * Everything checked on `content`, with diagnostic lines and the level order their paths use.
  * `domain`: its domain module (resolver.js runtimeOf). Content that does not fit the vocabulary is not built into a course: what
- * is wrong with it is all there is to say. `mutants`: also mutation reports for supported tasks. `cache`: the game's
+ * is wrong with it is all there is to say. `authoring`: also review course rules and example verdicts.
+ * `mutants`: mutation reports for supported tasks in an authoring review. `cache`: the game's
  * kept checks (check-cache.js), which the domain's checks of an unchanged level are read from; never with `mutants`.
  */
-export async function checkGame(content, { domain, mutants = false, cache = null, root }) {
+export async function checkGame(content, { domain, authoring = false, mutants = false, cache = null, root }) {
   const invalid = checkContentLines(content, { domain, root })
-  if (invalid.length) return invalid
+  if (invalid.length) return { lines: invalid, order: authoredOrder(content) }
   const meanings = meaningsOf(contentSchemas.get(content))
-  const lines = meanings.flatMap(meaning => meaning.contentChecks?.({ content }) ?? [])
-  if (content.packageTarget) return [...lines, ...await checkPackageLevels(content, domain, mutants)]
+  const lines = meanings.flatMap(meaning => [
+    ...meaning.contentChecks?.({ content }) ?? [],
+    ...(authoring ? meaning.authoringChecks?.({ content }) ?? [] : []),
+  ])
+  if (content.packageTarget) {
+    const order = packageLevelOrder(content)
+    return { lines: [...lines, ...await checkPackageLevels(content, domain, { authoring, mutants }, order)], order }
+  }
   const fail = text => lines.push({ fail: true, text })
   const spec = domain.spec(content)
-  lines.push(...await domain.checkPhase?.({ phase: 'course', spec, content }) ?? [])
+  const phase = authoring ? 'course' : 'runtime'
+  lines.push(...await domain.checkPhase?.({ phase, spec, content }) ?? [])
 
-  const placed = new Set(spec.levels.map(level => level.id))
+  const order = spec.levels.map(level => level.id)
+  const placed = new Set(order)
   const seen = new Set()
   for (const level of spec.levels) {
     if (seen.has(level.id)) fail(`${level.id}: duplicate id`)
@@ -80,14 +97,15 @@ export async function checkGame(content, { domain, mutants = false, cache = null
     for (const r of level.requires ?? []) if (!placed.has(r)) fail(`${level.id}: requires missing level ${r}`)
   }
 
-  // References to levels, parts and entries: the names come from the game as the shell gets it.
-  const game = await gameOf(content)
+  const context = { content, spec }
   const names = {
-    ...registeredReferenceNames(content, { level: game.levels }),
-    ...Object.assign({}, ...meanings.map(meaning => meaning.textNames?.({ content, game, vocabulary: domain.vocabulary }))),
+    ...registeredReferenceNames(content, { level: spec.levels }),
+    ...Object.assign({}, ...meanings.map(meaning => meaning.textNames?.({ ...context, vocabulary: domain.vocabulary }))),
   }
-  const extraTexts = Object.assign({}, ...meanings.map(meaning => meaning.texts?.({ content, game, spec })))
+  const extraTexts = Object.assign({}, ...meanings.map(meaning => meaning.texts?.(context)))
   for (const [name, value] of Object.entries({ levels: spec.levels, ...spec.texts, ...extraTexts })) for (const problem of refProblems(value, name, names)) fail(`text ${problem}`)
+
+  if (!authoring) return { lines, order }
 
   // An entry is linked only where it is open already: in a level it opens at or after, in an entry opening no earlier.
   // The links are read off every text of the content, by its schema, whatever its fields are called.
@@ -109,12 +127,12 @@ export async function checkGame(content, { domain, mutants = false, cache = null
     })
     return linksByLevel.map(([id, byKind]) => [id, [...byKind.get(kind) ?? []]])
   }
-  lines.push(...await domain.checkPhase?.({ phase: 'references', spec, content, game, levelLinks, opensBy, linked, placed }) ?? [])
+  lines.push(...await domain.checkPhase?.({ phase: 'references', ...context, levelLinks, opensBy, linked, placed }) ?? [])
 
   // Mutation reports are requested explicitly because providers may perform expensive checks.
   // A domain's check of one level goes through `memo` (check-cache.js), which runs it or hands back what it said last.
   const memo = cache && !mutants ? cache.memo(content, spec) : noMemo
   lines.push(...(await domain.validate({ ...spec, memo, mutants })))
   if (cache && !mutants) cache.save()
-  return lines
+  return { lines, order }
 }

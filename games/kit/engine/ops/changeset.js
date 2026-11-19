@@ -11,12 +11,9 @@ import { kindSchemas } from '../plugin-kinds.js'
 //
 // A workspace opened for one side (workspace.js `scope`: the package, or the game) runs only that side's operations
 // (operations.js opScope). Each operation's arguments are checked against its schema, then it runs on the workspace (workspace.js) in order;
-// one that fails stops the changeset with nothing written. Then the game is checked as a whole: its content against
-// its vocabulary, the course audit, the copy checks and its domain's checks (reference answers run, naive ones fail) —
-// npm run check's rules (../checks.js). Only a changeset with no failure is written, with an entry in the game's change
-// log (<game>/changes.jsonl, append only): what ran, the files and the changeset that undoes it. One that is refused,
-// or only previewed, leaves the workspace as it found it. `cache`: the game's kept checks (../check-cache.js), so only the
-// levels the changeset touches, and the levels after them its puzzles and answers reach, are checked again.
+// one that fails stops the changeset with nothing written. The resulting content must load through the platform.
+// A successful write records the operations, changed files and inverse in the append-only log. A refused change
+// or a preview restores the original workspace.
 import { expandNames } from '../names.js'
 import { parsePath } from './edit.js'
 import { assertStableIds } from './identity.js'
@@ -24,7 +21,7 @@ import { shapeAt, validate } from '../schema.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tasksSchema } from '../tasks.js'
 
-import { checkContentLines, checkGame } from '../checks.js'
+import { checkContentOnly, checkGame } from '../checks.js'
 import { runtimeOf } from '../resolver.js'
 import { operationsFor, opScope } from './operations.js'
 import { adoptionFiles, append, hashOf, headOf, readLog, withLock } from './log.js'
@@ -33,50 +30,44 @@ export { LOG, readLog } from './log.js'
 
 /**
  * Apply `changeset` to the open game `ws`. write: put it on disk when it passes (otherwise it is a dry run);
- * check: run the whole game's checks (off: only its content against the vocabulary, for a quick preview); domain: the
+ * check: run platform checks (off: only validate the content schema and dependencies); domain: the
  * game's domain module (its own by default). Returns { ok, says, problems, failed (the index of the operation that
- * failed, or null), lines (every line of the check), diff, files, changes ([{ file, before, after }] texts), content
+ * failed, or null), lines (every line of the check), order, diff, files, changes ([{ file, before, after }] texts), content
  * (the game as the changeset leaves it, null when an operation failed), inverse (the changeset undoing it) }.
  * texts false: a dry run that leaves out the files' texts (changes, diff, files empty), for a caller that shows none.
  */
-export async function runChangeset(ws, changeset, { write = false, check = true, undoes = null, base = null, domain: given = null, cache = null, texts = true } = {}) {
-  const initialContent = given ? null : ws.content()
-  let domain = given ? { ...given, vocabulary: ws.schemas } : (await runtimeOf(initialContent, ws.root))
-  ws.schemas = domain.vocabulary
+export async function runChangeset(ws, changeset, { write = false, check = true, undoes = null, base = null, domain: given = null, texts = true } = {}) {
   const start = ws.snapshot()
   const says = []
   const inverse = []
   const fail = (problems, op = null) => {
     ws.restore(start)
-    return { ok: false, says, problems, failed: op, lines: [], diff: '', files: [], changes: [], content: null, inverse: null }
+    return { ok: false, says, problems, failed: op, lines: [], order: [], diff: '', files: [], changes: [], content: null, inverse: null }
   }
   for (const [k, { op: name, ...supplied }] of (changeset.ops ?? []).entries()) {
-    const operations = operationsFor(domain.vocabulary)
+    const baseVocabulary = ws.schemas
+    const operations = operationsFor(baseVocabulary)
     const op = operations[name]
     const where = `op ${k + 1} (${name})`
     if (ws.copyOnly && name !== 'ui.set') return fail([`${where}: only interface copy is editable here`], k)
     if (!op) return fail([`${where}: no such operation; the operations are ${Object.keys(operations).join(', ')}`], k)
     let args
     try {
-      args = sourceArguments(ws, name, supplied, domain.vocabulary)
+      args = sourceArguments(ws, name, op.params, supplied, baseVocabulary)
     } catch (error) {
       return fail([`${where}: ${error.en ?? error.message}`], k)
     }
     // Operations resolve references against the workspace vocabulary.
-    const vocabulary = meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, domain.vocabulary)
+    const vocabulary = validationVocabulary(ws)
     if (args.layer && args.layer !== ws.layer) return fail([`${where}: open layer ${args.layer} to edit its objects`], k)
-    const policy = operationKind(name, args, domain.vocabulary) ?? { declares: opScope({ op: name, ...args }) }
+    const policy = operationKind(name, args, baseVocabulary) ?? { declares: opScope({ op: name, ...args }) }
     if (ws.scope && !declaresIn(policy, ws.scope)) return fail([`${where}: this is the ${opScope({ op: name, ...args })} workspace's to change, not the ${ws.scope} workspace's`], k)
     const wrong = validate(op.params, args, { vocabulary, levels: new Set(ws.levels.keys()) })
     if (wrong.length) return fail(wrong.map((p) => `${where}: ${p.at === '(root)' ? '' : `${p.at.slice(1)}: `}${p.says}`), k)
     try {
       const previous = ws.snapshot()
-      const done = op.apply(ws, args, { vocabulary, domain })
-      if (ws.packageLayers !== previous.packageLayers && !given) {
-        domain = await runtimeOf(ws.content(), ws.root)
-        ws.schemas = domain.vocabulary
-      }
-      ws.normalize(meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, domain.vocabulary), previous)
+      const done = op.apply(ws, args, { vocabulary })
+      ws.normalize(validationVocabulary(ws), previous)
       if (name.startsWith('kind.') || name.startsWith('capability.') || name.startsWith('object.') && args.kind === 'shape') {
         const declarations = ['kind', 'shape']
         const layers = ws.packageLayers.map(layer => layer.id !== ws.packageId ? layer : { ...layer, capabilityDeclarations: Object.fromEntries(ws.capabilities), objects: [
@@ -86,7 +77,6 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
         // Rebuild from the unextended layer vocabulary, so replacing a declaration is a hard switch.
         const { layerVocabulary } = await import('../resolver.js')
         ws.schemas = layerVocabulary(layers)
-        domain = { ...domain, vocabulary: ws.schemas }
         for (const kind of Object.keys(ws.contentObjects)) if (!kindSchemas(ws.schemas)[kind]) {
           if (ws.contentObjects[kind].size) throw new Error(`cannot remove nonempty kind ${kind}`)
           delete ws.contentObjects[kind]; delete ws.kindFolders[kind]
@@ -104,16 +94,18 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
     }
   }
 
-  // Whatever throws from here on (a domain's spec, its checks, the whole game's check) refuses the changeset and
-  // leaves the workspace as it was found: fail restores it.
+  // Load the runtime for the final package selection. A failed check restores the original workspace.
   try {
-    const content = given || changeset.ops?.length ? ws.content() : initialContent
-    if (!given && content !== initialContent) domain = await runtimeOf(content, ws.root)
-    return await settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache, texts: texts || write })
+    const content = ws.content()
+    const domain = given ? { ...given, vocabulary: ws.schemas } : await runtimeOf(content, ws.root)
+    return await settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, texts: texts || write })
   } catch (error) {
     return fail([`the changeset could not be settled: ${error.message}`])
   }
 }
+
+const validationVocabulary = ws => meaningsOf(ws.schemas).reduce((vocabulary, meaning) =>
+  meaning.validationVocabulary?.({ vocabulary, workspace: ws }) ?? vocabulary, ws.schemas)
 
 function operationKind(operation, args, vocabulary) {
   const kind = operation.startsWith('object.') ? args.kind
@@ -126,7 +118,7 @@ function operationKind(operation, args, vocabulary) {
 }
 
 // Tool results carry full names. Operations edit this layer's source spelling before writing it back.
-function sourceArguments(ws, operation, supplied, vocabulary) {
+function sourceArguments(ws, operation, params, supplied, vocabulary) {
   const prefix = `${ws.packageId}/`
   const layerPrefix = `${ws.layer}/`
   const local = (value) => typeof value === 'string' && value.startsWith(layerPrefix) ? value.slice(layerPrefix.length) : typeof value === 'string' && value.startsWith(prefix) ? value.slice(prefix.length) : value
@@ -138,7 +130,7 @@ function sourceArguments(ws, operation, supplied, vocabulary) {
   const isOverrideTarget = key => operation === 'text.override' && ['entry', 'section'].includes(key)
   const selected = Object.fromEntries(Object.entries(supplied).map(([key, value]) => [key, selectors.includes(key) && !isOverrideTarget(key) ? objectLocal(value) : value]))
   const source = (value, schema) => expandNames(value, gameObject ? ws.layer : ws.packageId, { objects: Object.fromEntries(Object.entries(ws.contentObjects ?? {}).map(([kind, values]) => [kind, Object.fromEntries(values)])), schema, vocabulary, resolve: objectLocal })
-  const args = source(selected, operationsFor(vocabulary)[operation].params)
+  const args = source(selected, params)
   if (operation.startsWith('kind.')) args.kind = local(args.kind)
   if (operation.startsWith('object.') || operation.startsWith('text.') && args.kind !== undefined) args.name = objectLocal(args.name)
   if (args.entry !== undefined && !isOverrideTarget('entry')) args.entry = objectLocal(args.entry)
@@ -173,10 +165,10 @@ function sourceArguments(ws, operation, supplied, vocabulary) {
 }
 
 // The whole game's check, and the write or the restore, after every operation of a changeset has run.
-async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache, texts }) {
+async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, texts }) {
   // The hub's count goes with the change (workspace.js), so it is checked against the levels there are now.
-  const options = { domain, cache, root: ws.root }
-  const lines = check ? await checkGame(content, options) : checkContentLines(content, options)
+  const options = { domain, root: ws.root }
+  const { lines, order } = check ? await checkGame(content, options) : checkContentOnly(content, options)
   const problems = lines.filter((l) => l.fail).map((l) => l.text)
   const changes = texts ? ws.changes() : []
   const diff = texts ? ws.diff(changes) : ''
@@ -198,8 +190,8 @@ async function settle({ ws, content, changeset, domain, start, says, inverse, wr
     })
   }
   if (!ok || !write || refused) ws.restore(start)
-  if (refused) return { ok: false, says, problems: [refused], failed: null, lines, diff, files, changes, content, inverse: null }
-  return { ok, says, problems, failed: null, lines, diff, files, changes, content, inverse: { why: `undo: ${changeset.why ?? says.join('; ')}`, ops: inverse } }
+  if (refused) return { ok: false, says, problems: [refused], failed: null, lines, order, diff, files, changes, content, inverse: null }
+  return { ok, says, problems, failed: null, lines, order, diff, files, changes, content, inverse: { why: `undo: ${changeset.why ?? says.join('; ')}`, ops: inverse } }
 }
 
 /** The last change of the log not undone yet (an undo is never itself undone this way: apply the change again). */
@@ -215,7 +207,7 @@ export function lastUndoable(ws) {
  */
 export async function undo(ws, { seq = null, ...options } = {}) {
   const entry = lastUndoable(ws)
-  const refused = (problem) => ({ ok: false, says: [], problems: [problem], failed: null, lines: [], diff: '', files: [], changes: [], content: null, inverse: null })
+  const refused = (problem) => ({ ok: false, says: [], problems: [problem], failed: null, lines: [], order: [], diff: '', files: [], changes: [], content: null, inverse: null })
   if (!entry) return refused('nothing to undo')
   if (seq !== null && seq !== entry.seq) return refused(`#${seq} is not the change undo would undo now (#${entry.seq} is): the log has changed since`)
   if (entry.layer && entry.layer !== ws.layer) return refused(`open layer ${entry.layer} to undo its change`)

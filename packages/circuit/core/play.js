@@ -88,10 +88,11 @@ function playBoard({ game, level: { source: task }, progress, saved, flags }) {
   return { start: openCircuit(view, task, progress, saved), parts: view.board.wiring(task, view), types }
 }
 
-/** A play hook for a circuit domain (see the top of this file). */
+/** A play hook for a circuit domain. A tests-only observation skips the board and palette. */
 export function circuitPlay(hook) {
   return {
-    open(ctx) {
+    open(ctx, { testsOnly = false } = {}) {
+      if (testsOnly) return { tests: hook.tests(ctx) }
       const board = playBoard(ctx)
       const start = print(board.start, board.parts).split('\n').slice(1).join('\n')
       return {

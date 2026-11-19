@@ -54,12 +54,19 @@ const settingOf = (setting, old = {}) => {
 
 export function imageDefinitions(file) {
   const defined = defineParts(file, IMAGE_OPS)
-  const resources = new Map(Object.entries(defined.defs).map(([type, def]) => {
+  // Image boards carry images through fixed ports. Other domains can share the same package catalog.
+  const defs = Object.fromEntries(Object.entries(defined.defs).filter(([type]) => {
+    const { inputs, inputTypes, outputType, outputTypes } = defined.PARTS[type]
+    const outputs = Object.values(outputTypes)
+    return Array.isArray(inputs) && Object.values(inputTypes).every(type => type === 'image/image' || type === 'kernel/any')
+      && (outputs.length ? outputs.every(type => type === 'image/image') : outputType === 'image/image')
+  }))
+  const resources = new Map(Object.entries(defs).map(([type, def]) => {
     return [type, operationsOf(def)]
   }))
   const authoredTypes = new Set([...resources.values()].flat().map((resource) => nativeForResource.get(resource)?.type))
   const types = Object.fromEntries(Object.entries(NODE_TYPES).filter(([type, spec]) => spec.fixed || !authoredTypes.has(type)))
-  for (const [type, def] of Object.entries(defined.defs)) {
+  for (const [type, def] of Object.entries(defs)) {
     if (types[type]?.fixed) continue
     const nativeSpec = nativeForResource.get(resources.get(type)[0])
     const nativeType = nativeSpec?.type
@@ -92,8 +99,8 @@ export function imageDefinitions(file) {
     }
   }
   return {
-    types, defs: defined.defs, ops: IMAGE_OPS,
-    shows: (type, key, params) => !defined.defs[type]?.setting[key] || shows(defined.defs[type].setting[key], defined.defs[type], params, IMAGE_OPS),
-    applyRules: (type, params, changed) => defined.defs[type] ? applyRules(defined.defs[type], params, changed, IMAGE_OPS) : params,
+    types, defs, ops: IMAGE_OPS,
+    shows: (type, key, params) => !defs[type]?.setting[key] || shows(defs[type].setting[key], defs[type], params, IMAGE_OPS),
+    applyRules: (type, params, changed) => defs[type] ? applyRules(defs[type], params, changed, IMAGE_OPS) : params,
   }
 }

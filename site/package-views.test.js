@@ -1,20 +1,52 @@
 // View contracts over the public entries share one Vite server and circuit's transformed modules.
 import test, { after } from 'node:test'
 import assert from 'node:assert/strict'
+import { rmSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
-import { createPluginKernel } from '../games/kit/engine/plugins.js'
-import { loadModule, gameOf, closeGames } from '../games/kit/engine/games.mjs'
-import { readPackage } from '../games/kit/engine/resolver.js'
-import { packageLevel } from '../games/kit/engine/package-play.js'
+import { createPluginKernel, registerPlugins } from '../games/kit/engine/plugins.js'
+import { evaluatePlay } from '../games/kit/engine/plugin-runtime.js'
+import { loadModule as loadWorkspaceModule, closeGames } from '../games/kit/engine/games.mjs'
+import { testProject } from '../games/kit/engine/test-fixture.js'
 import { register as registerTable } from '../packages/table/core/index.js'
+import { register as registerText } from '../packages/text/core/index.js'
 import { content, task } from '../packages/tick/test/contract-fixture.js'
 
-after(closeGames)
+const { root } = testProject('platform-views-')
+const loadModule = file => loadWorkspaceModule(file, root)
+after(async () => {
+  try {
+    await closeGames()
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+async function registeredBoardPreview(packages, level, data = {}) {
+  const [task] = level.tasks
+  const entries = await Promise.all(packages.map(async id => ({
+    id,
+    core: await loadModule(new URL(`../packages/${id}/core/index.js`, import.meta.url).pathname),
+    view: await loadModule(new URL(`../packages/${id}/view/index.jsx`, import.meta.url).pathname),
+  })))
+  const kernel = await registerPlugins(entries, { tasks: [task], view: true })
+  const content = {
+    id: 'sample', title: 'Sample', standalone: { level: level.id }, eras: [], trays: {},
+    partDefs: { parts: {} }, glossary: { groups: [], entries: [] },
+    levels: [{ title: 'Sample board', intro: [], ...level }], ...data,
+  }
+  const context = { content, task, kernel }
+  const { preview } = kernel.tables.playView.get(task.play)
+  const work = kernel.tables.play.get(task.play).initial(context)
+  return { html: renderToString(createElement(preview, { context, work, onChange() {} })), context, kernel }
+}
 
 test('the circuit view registers the stage editor and renders the selected stage', async () => {
+  const entry = new URL('../packages/circuit/view/index.jsx', import.meta.url).pathname
+  const views = await Promise.all(Array.from({ length: 4 }, () => loadModule(entry)))
+  const [view] = views
+  for (const loaded of views.slice(1)) assert.equal(loaded.register, view.register)
   const core = await loadModule(new URL('../packages/circuit/core/index.js', import.meta.url).pathname)
-  const view = await loadModule(new URL('../packages/circuit/view/index.jsx', import.meta.url).pathname)
   const kernel = createPluginKernel()
   core.register(kernel.forPackage('circuit', 'core'))
   view.register(kernel.forPackage('circuit', 'view'))
@@ -56,6 +88,41 @@ test('tick core and view compose with circuit through public entries', async () 
   assert.deepEqual(game.levels.map(level => level.id), [content.levels[0].id])
 })
 
+test('a registered image graph renders through the shared circuit view', async () => {
+  const imageTask = {
+    id: 'sample/copy', play: 'image/graph', brief: 'Connect the image.', scene: 'image/filter', setup: { target: 'image/same' },
+    tests: [{ label: 'Square', in: 'image/square' }], solution: ['out <- in'],
+  }
+  const image = await registeredBoardPreview(['circuit', 'image'], { id: imageTask.id, tasks: [imageTask] }, { registries: { 'image/power': {} } })
+  assert.match(image.html, /class="cl-board"/)
+})
+
+test('a registered proof board renders and evaluates prepared work', async () => {
+  const proofTask = {
+    id: 'sample/proof', play: 'logic/proof', kind: 'logic/proof', brief: 'Use the premise.', tests: [{ premises: { p: 'P' }, goal: 'P' }],
+    solution: ['goal <- p'],
+  }
+  const proof = await registeredBoardPreview(['circuit', 'logic'], { id: proofTask.id, tasks: [proofTask] })
+  assert.match(proof.html, /class="cl-board"/)
+  assert.equal(evaluatePlay(proof.kernel, proofTask, proofTask.solution, proof.context).verdict.pass, true)
+})
+
+test('a robot board renders and checks work against the same prepared world', async () => {
+  const { WORLDS } = await loadModule(new URL('../packages/state-graph/core/model/worlds.js', import.meta.url).pathname)
+  const task = {
+    id: 'sample/robot', play: 'state-graph/circuit', world: 'state-graph/grid',
+    tests: [{ R: 1, C: 2, given: { '0,0': 7 } }], expected: [7], solution: ['cell <- view.left'],
+  }
+  const level = {
+    id: task.id, robot: 'state-graph/scout', mission: { goal: 'Copy the previous cell.', how: 'Connect the sensor.' },
+    debrief: { title: 'Done', body: [] }, tasks: [task],
+  }
+  const { html, context, kernel } = await registeredBoardPreview(['circuit', 'table', 'state-graph'], level, { tableWorlds: WORLDS })
+  assert.match(html, /class="cl-board"/)
+  assert.equal(evaluatePlay(kernel, task, task.solution, context).verdict.pass, true)
+  assert.equal(evaluatePlay(kernel, task, ['cell <- view.up'], context).verdict.pass, false)
+})
+
 test('table view registers and renders escaped scenes independently of any robot catalog', async () => {
   const core = createPluginKernel()
   registerTable(core.forPackage('table', 'core'))
@@ -67,12 +134,43 @@ test('table view registers and renders escaped scenes independently of any robot
   assert.doesNotMatch(svg, /<unsafe>/)
 })
 
+test('the robot window shows intrinsic sweep values and recorded table values', async () => {
+  const { robotWindow } = await loadModule(new URL('../packages/table/view/ui/robotDrawing.js', import.meta.url).pathname)
+  const { robotOf } = await loadModule(new URL('../packages/table/core/model/robots.js', import.meta.url).pathname)
+  const { WORLDS } = await loadModule(new URL('../packages/state-graph/core/model/worlds.js', import.meta.url).pathname)
+  const picture = robotWindow({
+    world: WORLDS['state-graph/parts'], test: { s: 'cats', dict: { cats: 0, ats: 2 } }, robot: robotOf('state-graph/broom'),
+    task: { facts: [], given: { offers: { view: ['seg', 'cost'], facts: [] } } },
+    cell: { i: 4, id: '4' }, shown: new Map([['0', 5], ['1', null]]), reads: new Set(['0', '2']),
+    empty: new Set(['2']), lit: ['cost'],
+  })
+  const [prior, cost] = picture.win.arm.sweeps
+  assert.deepEqual(cost.cells.map(({ value }) => value), ['0', '2', '—', '—'])
+  assert.deepEqual(prior.cells.map(({ value, state }) => [value, state]), [['5', 'read'], ['—', ''], ['', 'empty'], ['', '']])
+})
+
+test('a registered channel display and decision control render synthetic bench state', async () => {
+  const kernel = createPluginKernel()
+  const view = await loadModule(new URL('../packages/vision-complete/view/index.jsx', import.meta.url).pathname)
+  view.register(kernel.forPackage('vision-complete', 'view'))
+  const channels = kernel.tables.display.get('vision-complete/appleChannels')
+  const decision = kernel.tables.display.get('vision-complete/appleDecision')
+  const display = renderToString(createElement(channels, { ctx: { view: { channels: [[0, 0.5, 1]] } } }))
+  assert.deepEqual([...display.matchAll(/aria-label="([^"]+)"/g)].map(([, label]) => label), ['A R 0.00', 'A G 0.50', 'A B 1.00'])
+  const disabled = renderToString(createElement(decision, { ctx: { values: { pick: null } } }))
+  const enabled = renderToString(createElement(decision, { ctx: { values: { pick: 'a' } } }))
+  assert.match(disabled, /<button[^>]*disabled/)
+  assert.doesNotMatch(enabled, /<button[^>]*disabled/)
+})
+
 test('text answers pair with the shell and render the registered preview', async () => {
-  const text = packageLevel(readPackage('text'), 'text/exact')
-  const game = await gameOf(text, { view: true })
-  assert.deepEqual(game.levels.map(({ id }) => id), ['text/exact'])
-  const { preview } = game.pluginKernel.tables.playView.get('text/answer')
-  const task = text.levels[0].tasks[0]
+  const kernel = createPluginKernel()
+  registerText(kernel.forPackage('text', 'core'))
+  const view = await loadModule(new URL('../packages/text/view/index.jsx', import.meta.url).pathname)
+  view.register(kernel.forPackage('text', 'view'))
+  const task = { play: 'text/answer' }
+  kernel.pair([task], true)
+  const { preview } = kernel.tables.playView.get(task.play)
   const input = renderToString(createElement(preview, { task, work: 'sample answer' }))
   assert.match(input, /<input[^>]*value="sample answer"/)
   const choices = renderToString(createElement(preview, { task: { ...task, choices: ['First', 'Second'] }, work: 'Second' }))

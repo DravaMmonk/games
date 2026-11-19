@@ -102,13 +102,14 @@ test('chapter object identities preserve explicitly authored numeric level label
   assert.deepEqual([...levelLabels([{ id: '@demo/1', number: 1, levels: [{ id: 'p/a' }] }])], [['p/a', '1-1']])
 })
 
-test('game-layer declared objects persist through public authoring operations and source paths', async () => {
+test('a changeset can select a package and immediately author its game-layer objects', async t => {
   const { storyRoot, lockFixture } = await import('./test-fixture.js')
-  const { mkdirSync, writeFileSync, readFileSync } = await import('node:fs')
+  const { mkdirSync, writeFileSync, readFileSync, rmSync } = await import('node:fs')
   const { join } = await import('node:path')
   const { openGame } = await import('./ops/workspace.js')
   const { runChangeset } = await import('./ops/changeset.js')
   const { root, id } = storyRoot()
+  t.after(() => rmSync(root, { recursive: true, force: true }))
   mkdirSync(join(root, 'packages/provider/kinds'), { recursive: true })
   writeFileSync(join(root, 'packages/provider/package.json'), JSON.stringify({ kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} }))
   writeFileSync(join(root, 'packages/provider/kinds/settings.json'), JSON.stringify({ folder: 'settings', declares: 'game', overrides: { game: ['*'] }, schema: S.obj({ title: S.text() }) }))
@@ -124,7 +125,9 @@ test('game-layer declared objects persist through public authoring operations an
   assert.deepEqual(result.content.sources.game[`@${id}/config`].collections.chapters[`@${id}/ground`], [`@${id}`])
   assert.ok(result.files.includes(`games/${id}/settings/main.json`))
   assert.ok(result.files.includes(`games/${id}/chapters/ground.json`))
-  assert.equal(openGame(id, root).content().registries['provider/settings'][`@${id}/main`].title.en, 'Settings')
+  const saved = openGame(id, root).content()
+  assert.equal(saved.registries['provider/settings'][`@${id}/main`].title.en, 'Settings')
+  assert.equal(saved.registries.chapter[`@${id}/ground`].chapter.title.en, 'Foundation')
   assert.deepEqual(JSON.parse(readFileSync(join(root, `games/${id}/chapters/ground.json`))).levels, [])
 })
 

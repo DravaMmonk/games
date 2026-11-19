@@ -101,10 +101,13 @@ test('numbers and thresholds as a goal row writes them', () => {
 })
 
 test('a bench is checked as data: knobs, goal, layout blocks and display items with their parameters', () => {
-  const content = readPackage('vision-complete')
-  const level = content.levels.find(level => level.id === 'vision-complete/0-8')
-  const bench = level.tasks[0].bench
-  const vocabulary = contentSchemas.get(content)
+  const vocabulary = contentSchemas.get(readPackage('image'))
+  const bench = {
+    model: 'image/wave', setup: { N: 8 },
+    knobs: { a: { min: 0, max: 1, step: 0.25 } },
+    goal: [{ of: 'sum', atLeast: 1 }], layout: { main: ['image/knobs'] },
+  }
+  const level = { tasks: [{ play: 'image/board', bench }] }
   const schema = shapeAt(vocabulary.level, level, ['tasks', 0, 'bench'], { vocabulary })
   assert.deepEqual(validate(schema, bench, { vocabulary }), [])
   const wrong = { ...bench, knobs: { a: { min: 0, max: 1 } }, layout: { main: [{ 'image/plot': { huge: true } }, 'nothing'] } }

@@ -104,6 +104,20 @@ export function layout(eras, { links = eras.flatMap((era) => era.links ?? []) } 
   return { order, place, requires, required, tracks, rows }
 }
 
+/** Index local prerequisites in declaration order. A supplied route limits the destinations. */
+export function prerequisiteGraph(edges, route) {
+  const graph = new Map()
+  if (route) for (const id of route) graph.set(id, new Set())
+  for (const { from, to } of edges) {
+    if (!route) {
+      if (!graph.has(from)) graph.set(from, new Set())
+      if (!graph.has(to)) graph.set(to, new Set())
+    }
+    graph.get(to)?.add(from)
+  }
+  return graph
+}
+
 /** The first loop in the prerequisite graph, with its starting level repeated at the end. */
 export function dependencyCycle(requires) {
   const done = new Set()

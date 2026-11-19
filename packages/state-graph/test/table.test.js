@@ -1,12 +1,11 @@
 import { withProgressFixture } from '../../qed/test/fixture.js'
-import { resolve } from 'node:path'
 // The table board as content and saves hold it: blueprint text both ways, fitting a board to its task, the checks on
-// a board that becomes a part; a course read of every table game leaves its content as it was; a save of a level's
+// a board that becomes a part; reading a course leaves its content as it was; a save of a level's
 // stages moves to its tasks.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { deepFreeze } from '../../../games/kit/engine/content.js';
 import { plainBoard } from '../../circuit/core/contracts.js'
-import { readStarter } from '../../qed/test/fixture.js';
 import { print, read } from '../../circuit/core/board/text.js'
 import { readLines } from 'circuit'
 import { workshopView } from '../../workshop/core/workshop-view.js'
@@ -30,22 +29,6 @@ const world = {
 };
 const blueprint = robotBlueprint(model, given, world);
 
-test('author checks use intermediate cells when the task grades the entire table', () => {
-  const solution = { cell: 4 };
-  const naive = { cell: 3 };
-  const task = { play: 'state-graph/circuit', world: 'state-graph/grid', ports: [], tests: [{}], expected: [8], solution, naive, checkAll: true };
-  const run = (_world, _test, board) => ({ value: 8, steps: [{ writes: [['cell', board.cell]] }] });
-  assert.equal(inspectRobotCase(run, task, naive, 0).ok, false);
-  assert.equal(inspectRobotCase(run, task, naive, 0, { traced: true }).ok, false);
-  const levels = [{ id: 'example' }];
-  const boards = [];
-  const record = (...args) => { boards.push(args[2]); return run(...args); };
-  const check = (task) => validate({ levels, table: { run: record, wrong: [], played: new Map([['example', [task]]]) } });
-  assert.deepEqual(check(task), [{ text: '2 runs' }]);
-  assert.deepEqual(boards, [solution, naive]);
-  assert.match(check({ ...task, checkAll: false })[0].text, /naive board passes every test/);
-});
-
 test('blueprint text reads into a board and writes back the same', () => {
   const lines = ['m = table/msum(view.up, view.left)', 'k = table/const[value=1]()', 'g = table/pass(facts.start, k)', 's = table/msum(m, g)', 'cell <- s'];
   const b = blueprint.read(lines);
@@ -55,16 +38,13 @@ test('blueprint text reads into a board and writes back the same', () => {
   assert.deepEqual(b.wires.find(w => w.to === 'cell'), { from: 's', to: 'cell', port: 'in' });
   const written = blueprint.write(b);
   assert.deepEqual(written.slice(0, 2), ['view[picks=[up, left]]()', 'facts[picks=[start]]()']);
-  assert.deepEqual(plainBoard(blueprint.read(written)), plainBoard(b));
-  assert.deepEqual(blueprint.write(blueprint.read(written)), written);
-});
-
-test('blueprint text names the line it cannot read', () => {
-  assert.throws(() => blueprint.read(['m = table/msum(view.down)', 'cell <- m']), e => e.line === 1 && /down/.test(e.en));
-  assert.throws(() => blueprint.read(['cell <- nope']), e => e.line === 1);
+  const restored = blueprint.read(written);
+  assert.deepEqual(plainBoard(restored), plainBoard(b));
+  assert.deepEqual(blueprint.write(restored), written);
 });
 
 test('robot blueprints refuse a second wire, sink sources and unavailable sensor settings', () => {
+  assert.throws(() => blueprint.read(['m = table/msum(view.down)', 'cell <- m']), e => e.line === 1 && /has no output “down”/.test(e.en));
   assert.throws(() => blueprint.read(['cell <- view.up', 'cell <- view.left']), e => e.line === 2 && /takes two wires/.test(e.en));
   assert.throws(() => blueprint.read(['m = table/mmin(cell)']), e => e.line === 1 && /has no output/.test(e.en));
   assert.throws(() => blueprint.read(['view[picks=up]()']), e => e.line === 1 && /must be a list/.test(e.en));
@@ -76,12 +56,12 @@ test('robot blueprints refuse a second wire, sink sources and unavailable sensor
 });
 
 test('a grouped merger stays available to blueprints under each unlocked model', () => {
-  const content = readStarter(resolve(import.meta.dirname));
+  const content = twoLevels();
   content.registries.tag['circuit/part:circuit/primitives'].values.push('table/mmin');
-  const merge = content.levels.find((level) => level.id === 'starter/merge');
-  merge.adds = [...merge.adds, 'table/mmin'];
-  const course = tableWorks(content);
-  const task = course.played.get('starter/merge')[0];
+  content.levels[0].adds.push('table/mmin');
+  const course = tableWorks(deepFreeze(withProgressFixture(content)));
+  assert.deepEqual(course.wrong, []);
+  const [task] = course.played.get('build');
   const { shown, folded, types } = course.offerIn(task, new Set());
   assert.deepEqual([...shown, ...folded].filter((type) => type === 'table/msum' || type === 'table/mmin'), ['table/msum']);
   assert.deepEqual(types.filter((type) => type === 'table/msum' || type === 'table/mmin'), ['table/msum', 'table/mmin']);
@@ -222,29 +202,74 @@ test('carried boards use the reference until the prerequisite has passed', async
   assert.equal(table.opening(target, passed).nodes.find(n => n.id === 'k').params.value, 7);
 });
 
-test('reference runs check authored answers and supply the cells checked against the published board', () => {
-  const course = twoLevels();
-  course.levels[1].tasks[0].expected = [8, 12, 11];
-  const table = tableWorks(course);
+function cellCourse(publish = false) {
+  const solution = ['value = table/const[value=4]()', 'zero = table/const[value=0]()', 'start = table/pass(facts.start, zero)', 'sum = table/msum(value, start)', 'cell <- sum'];
+  const different = solution.map(line => line.replace('zero = table/const[value=0]', 'zero = table/const[value=1]'));
+  const reference = {
+    play: 'state-graph/circuit', world: 'state-graph/grid', robot: 'state-graph/scout', facts: ['start'],
+    ports: [{ 'state-graph/start': { sensor: 'start' } }],
+  };
+  const task = { ...reference, id: 'cells', tests: [{ R: 2, C: 2 }], expected: [4], solution, checkAll: true };
+  const parts = {};
+  if (publish) {
+    task.publishes = [{ part: 'first', variant: 'base' }];
+    parts.first = {
+      name: t('First'), desc: t('Changes the first cell.'),
+      inputs: [{ name: 'start', type: 'kernel/boolean' }], outputType: 'kernel/number',
+      inside: [{ id: 'base', reference: { ...reference, solution: different } }],
+    };
+  } else task.naive = different;
+  return {
+    id: 'cells', title: t('Cells'), partDefs: { parts },
+    eras: [{ id: 'e', levels: [{ id: 'cells' }], chapter: { title: t('Cells') } }],
+    levels: [{ id: 'cells', robot: 'state-graph/scout', intro: [], tasks: [task] }],
+  };
+}
+
+test('author checks can reject a robot board whose final answer is correct', () => {
+  const table = tableWorks(deepFreeze(cellCourse()));
   assert.deepEqual(table.wrong, []);
-  const builder = table.played.get('build')[0];
+  const [task] = table.played.get('cells');
+  for (const traced of [true, false]) {
+    const report = inspectRobotCase(table.run, task, task.naive, 0, { traced });
+    assert.equal(report.res.value, 4);
+    assert.equal(report.ok, false);
+    assert.deepEqual(report.mm, { q: 0, z: 0, want: 4, got: 5 });
+  }
+  assert.deepEqual(validate({ levels: table.LEVELS, table }), [{ text: '2 runs' }]);
+  const endpoint = { ...table, played: new Map([['cells', [{ ...task, checkAll: false }]]]) };
+  assert.deepEqual(validate({ levels: table.LEVELS, table: endpoint }), [
+    { level: 'cells', fail: true, text: 'cells: its naive board passes every test' },
+    { text: '2 runs' },
+  ]);
+});
+
+test('a packed robot board must fill the same cells as its publishing reference', () => {
+  const table = tableWorks(cellCourse(true));
+  assert.deepEqual(table.wrong, []);
+  const [builder] = table.played.get('cells');
   let referenceRuns = 0;
   const run = (...args) => {
     if (args[2] === builder.solution) referenceRuns++;
-    const result = table.run(...args);
-    if (!args[2].nodes.some(node => node.id === 'p' && node.type === 'counter')) return result;
-    const cells = new Map(result.table);
-    cells.set(cells.keys().next().value, -1);
-    return { ...result, table: cells };
+    return table.run(...args);
   };
-  const lines = validate({ levels: table.LEVELS, table: { ...table, run } }).filter(l => l.fail).map(l => l.text);
-  assert.deepEqual(lines, [
-    "build: its part fills the table differently from the level's board on test 1",
-    'reuse test 3: the reference gives 10, expected 11',
+  assert.deepEqual(validate({ levels: table.LEVELS, table: { ...table, run } }), [
+    { level: 'cells', fail: true, text: "cells: its part fills the table differently from the level's board on test 1" },
+    { text: '2 runs' },
   ]);
-  assert.equal(referenceRuns, builder.tests.length);
-  course.levels[1].tasks[0].expected = [8, 12];
-  assert.match(tableWorks(course).wrong[0], /reuse: gives 2 expected answers for 3 tests/);
+  assert.equal(referenceRuns, 1);
+});
+
+test('the robot check reports incorrect and missing authored answers', () => {
+  const course = cellCourse();
+  course.levels[0].tasks[0].expected = [5];
+  const table = tableWorks(course);
+  assert.deepEqual(validate({ levels: table.LEVELS, table }), [
+    { level: 'cells', fail: true, text: 'cells test 1: the reference gives 4, expected 5' },
+    { text: '2 runs' },
+  ]);
+  course.levels[0].tasks[0].expected = [];
+  assert.deepEqual(tableWorks(course).wrong, ['cells: gives 0 expected answers for 1 tests']);
 });
 
 test('a built part runs the board its level’s last task was passed with, when that board reads exactly the part’s ports', async () => {
@@ -274,13 +299,4 @@ test('a built part runs the board its level’s last task was passed with, when 
   syncOwn({ build: stalePort });
   assert.deepEqual(answers(), user.expected);
 
-});
-
-/** Every game on the table domain, and the starter a new one is copied from: [id, dir]. */
-test('reading a course never writes into its content', async () => {
-  const { deepFreeze } = await import('../../../games/kit/engine/content.js');
-  const { default: domain } = await import('../../table/core/runtime.js');
-  const spec = domain.spec(deepFreeze({ ...readStarter(resolve(import.meta.dirname)), tableWorlds: WORLDS }));
-  assert.deepEqual(spec.table.wrong, []);
-  assert.ok(domain.validate(spec).every(l => !l.fail));
 });

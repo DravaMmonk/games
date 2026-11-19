@@ -1,6 +1,6 @@
 import { shapeAt } from './schema.js'
 // Collection composition is driven exclusively by field schemas.
-import { dependencyCycle } from '../course.js'
+import { dependencyCycle, prerequisiteGraph } from '../course.js'
 
 export const collectionKey = value => {
   if (typeof value === 'string') return value
@@ -91,8 +91,7 @@ export function collectionProblems(value, schema, expand, at = '') {
       if (new Set(keys).size !== keys.length) problems.push({ at: path, says: 'duplicate collection member' })
       if (schema.type === 'edges') {
         const edges = value.flatMap(edge => edge.game ? [] : expand(edge.from, referenceType(schema.of.fields.from), path).flatMap(from => expand(edge.to, referenceType(schema.of.fields.to), path).map(to => ({ from, to }))))
-        const nodes = [...new Set(edges.flatMap(edge => [edge.from, edge.to]))]
-        const cycle = dependencyCycle(new Map(nodes.map(id => [id, edges.filter(edge => edge.to === id).map(edge => edge.from)])))
+        const cycle = dependencyCycle(prerequisiteGraph(edges))
         if (cycle) problems.push({ at: path, says: `circular edges: ${cycle.join(' → ')}` })
       }
     }

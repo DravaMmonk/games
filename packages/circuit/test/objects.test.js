@@ -51,13 +51,19 @@ test('the generic resolver expands every typed list, checks kind and cycles, and
   assert.ok(problems.every(p => !/unknown|missing target/.test(p.says)))
 })
 
-test('checks reject separate relation cycles, duplicate chapter membership, invalid layout rows and inverted prerequisites', () => {
+test('chapter checks locate duplicate membership and invalid authored rows', () => {
   const wrong = source()
-  wrong.relations.push(['loop', { kind: 'requires', edges: [{ from: 'b', to: 'a' }] }])
-  wrong.game.chapters.push({ id: 'two', levels: ['toy/a'] })
-  wrong.game.chapters[0].rows = [['toy/b', 'toy/a', 'toy/c', null]]
-  const problems = checkContent({ vocabulary }, assemble(wrong)).map((p) => p.says)
-  for (const pattern of [/circular requires/, /placed twice/, /no lower/, /at most|max|more than/]) assert.ok(problems.some((s) => pattern.test(s)), String(pattern) + problems.join('\n'))
+  wrong.levels.push(['other', { title: 'Other' }])
+  wrong.game.chapters.push({ id: 'two', levels: ['toy/a', 'toy/other'] })
+  wrong.game.chapters[0].rows = [['toy/b', 'toy/a', 'toy/c', null], ['toy/b'], ['toy/other']]
+  const problems = checkContent({ vocabulary }, assemble(wrong))
+  assert.deepEqual(problems.filter(({ at }) => at === 'chapters' || at.startsWith('game.json.eras')), [
+    { at: 'chapters', says: 'toy/a is placed twice' },
+    { at: 'game.json.eras[0].rows[0]', says: 'a row of the map has at most three places, not 4' },
+    { at: 'game.json.eras[0].rows[1]', says: 'toy/b is on the map twice' },
+    { at: 'game.json.eras[0].rows[2]', says: 'toy/other is not in this chapter' },
+    { at: 'game.json.eras[0].rows[0]', says: 'toy/b is drawn on a row no lower than its prerequisite toy/a' },
+  ])
 })
 
 test('partial courses restrict both ends of loaded level relations', () => {
@@ -102,9 +108,13 @@ test('schema-aware catalogs resolve text while preserving package object referen
 
 test('cycles between tag endpoints cannot vanish during boundary expansion', () => {
   const input = source()
-  input.tags.push(['left', { kind: 'level', values: ['a'] }], ['right', { kind: 'level', values: ['b'] }])
-  input.relations = [['loop', { kind: 'requires', edges: [{ from: '#left', to: '#right' }, { from: '#right', to: '#left' }] }]]
-  assert.ok(assemble(input).objectProblems.some((p) => /circular requires/.test(p.says)))
+  input.tags.push(['pair', { kind: 'level', values: ['a', 'b'] }])
+  input.relations = [['loop', { kind: 'requires', edges: [{ from: '#pair', to: 'b' }, { from: 'b', to: '#pair' }] }]]
+  const content = assemble(input)
+  assert.deepEqual(content.relationEdges.requires, [])
+  assert.deepEqual(content.objectProblems.filter(({ says }) => says.startsWith('circular requires')), [
+    { at: 'relations/toy/loop', says: 'circular requires: toy/a → toy/b → toy/a' },
+  ])
 })
 
 test('game namespaces cannot declare tags, relations or sections', () => {

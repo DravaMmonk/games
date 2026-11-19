@@ -1,7 +1,7 @@
 // node --test games/kit/studio — a task list edited as a whole becomes task operations, each task known by its id.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { copyLevelData, creationChoices, gameFields, taskListOps, pushOp } from './form.js'
+import { boardPaths, copyLevelData, creationChoices, fieldAt, formOf, gameFields, tableOf, tableValue, taskListOps, pushOp } from './form.js'
 import { sourceOps } from './source.js'
 import { removesContent } from './delete.js'
 import { sourceValue } from '../engine/catalogs.js'
@@ -12,6 +12,29 @@ import { taskLevel } from '../engine/tasks.js'
 
 const levels = [{ id: 'l', tasks: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }, { id: 'l-2' }]
 const before = levels[0].tasks.map((x) => ({ ...x, n: 1 }))
+
+test('a declared task projects copy, work and editable value tables', () => {
+  const schema = taskLevel({ title: S.text() }, {
+    brief: S.text(),
+    solution: S.board(),
+    tests: S.list(S.obj({ inputs: S.map(S.num()), expect: S.map(S.num()) })),
+    publishes: S.list(S.obj({ part: S.str(), variant: S.str() })),
+  })
+  const task = { id: 'sample', brief: 'Connect the input.', solution: ['out <- in'],
+    tests: [{ inputs: { in: 2 }, expect: { out: 2 } }], publishes: [{ part: 'sample/identity', variant: 'base' }] }
+  const level = { title: 'Sample', tasks: [task] }
+  const vocabulary = { kinds: {}, level: schema }
+  const form = formOf(schema, level, { vocabulary })
+  const path = (...keys) => fieldAt(form, ['tasks', 0, ...keys])?.field
+  assert.equal(path('brief')?.kind, 'text')
+  assert.equal(path('solution')?.kind, 'board')
+  assert.deepEqual(boardPaths(vocabulary, level), [['tasks', 0, 'solution']])
+  for (const [field, expected] of [[path('tests', 0, 'inputs'), { in: 2 }], [path('tests', 0, 'expect'), { out: 2 }], [path('publishes'), task.publishes]]) {
+    assert.equal(field?.kind, 'table')
+    const table = tableOf(field)
+    assert.deepEqual(tableValue(field, table, table.rows), expected)
+  }
+})
 
 test('a reordered list moves tasks; nothing else changes', () => {
   assert.deepEqual(taskListOps('l', before, [before[2], before[0], before[1]], levels), [{ op: 'task.move', task: 'c', to: { level: 'l', first: true } }])
@@ -113,7 +136,7 @@ test('assembled registries stay outside the editable course fields', () => {
 test('encyclopedia form and copy edits target entry and tag objects', async () => {
   const { fileForm, opFor } = await import('./form.js')
   const { copyRows, copyEdit, allCopyRows, copyScopes } = await import('./copy.js')
-  const glossary = { groups: [{ id: 'toy/terms', title: { en: 'Terms' }, values: ['toy/term'] }], entries: [{ id: 'toy/term', group: 'toy/terms', title: { en: 'Term' }, body: [] }] }
+  const glossary = { groups: [{ id: 'toy/terms', title: { en: 'Terms' }, values: ['toy/term'] }], entries: [{ id: 'toy/term', group: 'toy/terms', title: { en: 'Term' }, body: ['Definition.'] }] }
   const { glossarySchemas } = await import('../../../packages/wiki/test/fixture.js')
   const vocabulary = glossarySchemas({ game: { type: 'obj', fields: {} }, level: { type: 'obj', fields: {} } })
   const { file } = fileForm({ glossary }, vocabulary, { glossary: true }, [])
@@ -122,13 +145,18 @@ test('encyclopedia form and copy edits target entry and tag objects', async () =
   assert.equal(file.projection.sourceFile(file.value, ['entries', 0, 'body']), 'entries/term.json')
   assert.equal(file.projection.sourceFile(file.value, ['groups', 0, 'title']), 'tags/entry/terms.json')
   const rows = copyRows({ glossary }, vocabulary, 'glossary', [])
+  const body = rows.find(row => row.path.at(-2) === 'body')
+  assert.deepEqual(body?.path, ['entries', 0, 'body', 0])
+  assert.equal(body.file.projected, 'glossary')
+  assert.equal(body.file.source, 'entries/term.json')
+  assert.equal(body.value, 'Definition.')
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/term'), 'en', 'New'), { op: 'text.set', entry: 'toy/term', path: ['title'], lang: 'en', value: 'New' })
   assert.deepEqual(copyEdit(rows.find((r) => r.name === 'toy/terms'), 'en', 'New', 'game'), { op: 'text.override', tag: 'toy/terms', member: 'entry', path: ['title'], lang: 'en', value: 'New' })
   const entryType = Object.entries(vocabulary.objectKinds).find(([, kind]) => kind.objectKind === 'entry')?.[0]
   assert.ok(entryType)
   const content = { levels: [], glossary, objectKinds: vocabulary.objectKinds, registries: { entry: { 'toy/term': glossary.entries[0] } } }
   assert.equal(copyScopes(content, vocabulary).some(([name]) => name === 'glossary'), true)
-  assert.equal(allCopyRows(content, vocabulary, []).filter(row => row.name === 'toy/term').length, 1)
+  assert.deepEqual(allCopyRows(content, vocabulary, []).filter(row => row.name === 'toy/term'), rows.filter(row => row.name === 'toy/term'))
   assert.deepEqual(file.projection.fieldPath(glossary, ['entries', 'toy/term', 'title']), ['entries', 0, 'title'])
   assert.deepEqual(file.projection.pagePath(glossary, ['entries', 0, 'title']), ['entries', 'toy/term', 'title'])
 })

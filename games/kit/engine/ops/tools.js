@@ -3,7 +3,7 @@ import { withReadCache } from '../read-cache.js'
 import { BUILTIN_POLICIES } from '../kind-policy.js'
 import { tagName } from '../tag-identity.js'
 import { packageLevel, packageLevelOrder } from '../package-play.js'
-import { runtimeIds } from '../runtime.js'
+import { runtimeFromPlugins, runtimeIds } from '../runtime.js'
 // What an agent can do to a game, as functions of plain data: the tools the MCP server (mcp.js) offers, each a thin
 // layer over the kernel (the checks, the operation set, the dependency graph, the vocabulary). None has logic of its
 // own: a change is always a changeset (changeset.js). params: each argument's JSON type, '?' when it may be left out.
@@ -188,11 +188,11 @@ const tools = {
     },
   },
   audit: {
-    about: catalogText("运行 npm run check 的内容、课程、文案和玩法检查。mutants 可请求已支持的玩法报告参考解变异覆盖。"),
+    about: catalogText("检查内容、课程、文案和玩法示例。mutants 可请求已支持的玩法报告参考解变异覆盖。"),
     params: { game: 'string', mutants: 'boolean?' },
     async run({ game, mutants = false }) {
       const content = readTarget(game)
-      const lines = await checkGame(content, { domain: await runtimeOf(content), mutants, cache: kept(game), root: ROOT })
+      const { lines } = await checkGame(content, { domain: await runtimeOf(content), authoring: true, mutants, cache: kept(game), root: ROOT })
       return { ok: !lines.some((l) => l.fail), failures: lines.filter((l) => l.fail).map((l) => l.text), lines: lines.map((l) => `${l.fail ? 'FAIL ' : ''}${l.text}`) }
     },
   },
@@ -200,7 +200,7 @@ const tools = {
     about: catalogText("逐项执行变更集并检查整个目标。全部通过才写入，dryRun 只预览。base 是调用者看到的最后日志序号，过期时拒绝。by 会写进日志，操作和参数见 vocabulary。"),
     params: { game: 'string', changeset: 'object', dryRun: 'boolean?', base: 'number?', scope: 'string?', layer: 'string?' },
     async run({ game, changeset, dryRun = false, base = null, scope, layer }) {
-      const r = await runChangeset(open(game, scope, layer), changeset, { write: !dryRun, base, cache: kept(game) })
+      const r = await runChangeset(open(game, scope, layer), changeset, { write: !dryRun, base })
       return { ok: r.ok, written: r.ok && !dryRun, says: r.says, problems: r.problems, files: r.files, diff: r.diff, undo: r.inverse }
     },
   },
@@ -286,18 +286,15 @@ const tools = {
     params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?' },
     async run({ game, changeset = { ops: [] }, check = true, scope, layer, omit = [] }) {
       const ws = open(game, scope, layer)
-      const r = await runChangeset(ws, changeset, { write: false, check, cache: kept(game), texts: !omit.includes('changes') })
-      const { content } = r
-      // Copy problems count levels in play order, which only a content that fits its vocabulary has (and only the whole
-      // check reports them: a quick preview does without the order).
-      const ids = !content ? [] : content.packageTarget ? packageLevelOrder(content) : !check || r.lines.some((l) => l.text.startsWith('content: ')) ? content.levels.map((l) => l.id) : (await runtimeOf(content)).spec(content).levels.map((l) => l.id)
+      const r = await runChangeset(ws, changeset, { write: false, check, texts: !omit.includes('changes') })
+      const { content, order } = r
       // JSON editing can select catalog entries that no field currently uses.
       const copy = !omit.includes('content') && content?.resolvedDependencies?.copy
       const answer = {
         ok: r.ok, says: r.says, problems: r.problems, failed: r.failed,
         content: copy ? { ...content, registries: { ...content.registries, i18n: copy } } : content,
-        order: ids,
-        lines: r.lines.map((l) => ({ ...l, levels: levelsOfLine(l, ids) })),
+        order,
+        lines: r.lines.map((l) => ({ ...l, levels: levelsOfLine(l, order) })),
         changes: r.changes, ...logOf(game, scope, layer, ws, omit),
       }
       // A caller that has no use for some of the answer (the studio's quick preview: the file texts and the log) leaves it out.
@@ -328,21 +325,21 @@ const tools = {
     async run({ game, level, path = 'tasks[0].solution', changeset = null, scope }) {
       const source = await contentAfter(game, changeset, scope)
       const content = source.packageTarget ? packageLevel(source, level) : source
-      const domain = await runtimeOf(content)
-      if (!domain.play) return { covered: false, why: 'the selected runtime gives no play hook' }
-      const board = boardAt(content, level, path, domain.vocabulary)
+      const board = boardAt(content, level, path, contentSchemas.get(content))
       if (!board) return { covered: false, why: `${level} has no board at ${path}` }
       const { lines, task } = board
       const shown = await gameOf(content)
+      const domain = runtimeFromPlugins(content, shown.pluginKernel)
+      if (!domain.play) return { covered: false, why: 'the selected runtime gives no play hook' }
       const at = shown.byId[level]
       // The Studio preview opens all progression gates.
       const progress = { ...fresh(), all: true }
       const ctx = taskContext(shown, progress, at, task)
-      // A hook that cannot open the level without the boards a played session would have built says so.
+      // The preview needs the visible cases. Attempting the board still opens and checks it with the normal rules.
       let opened
       let r
       try {
-        opened = domain.play.open(ctx)
+        opened = domain.play.open(ctx, { testsOnly: true })
         if (opened.covered === false) return { covered: false, why: opened.why }
         r = domain.play.attempt(ctx, lines.join('\n'))
       } catch (error) {

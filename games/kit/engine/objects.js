@@ -4,7 +4,7 @@ export const registryVocabularies = new WeakMap()
 // Typed collections, presentation objects and directed relations share one reference resolver.
 import { S, shapeAt } from './schema.js'
 import { fullName } from './names.js'
-import { dependencyCycle } from '../course.js'
+import { dependencyCycle, prerequisiteGraph } from '../course.js'
 
 export const OBJECT_NAME = '^(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$'
 export const REFERENCE = S.str({ pattern: '^#?(?:@?[a-z][a-z0-9-]*/)?[A-Za-z0-9][A-Za-z0-9-]*$' })
@@ -138,9 +138,7 @@ export function expandRelations(relations, expand, scheduled, problems = [], opt
     const candidates = raw.map((edge) => ({ edge, from: ends(edge.from, Boolean(edge.game)), to: ends(edge.to, false, 'to') }))
     const direct = candidates.flatMap(({ edge, from, to }) => from.flatMap((f) => to.map((t) => ({ ...edge, from: f, to: t }))))
     if (relation.kind === 'requires') {
-      const ids = [...new Set(direct.filter((edge) => !edge.game).flatMap((edge) => [edge.from, edge.to]))]
-      const graph = new Map(ids.map((id) => [id, direct.filter((edge) => !edge.game && edge.to === id).map((edge) => edge.from)]))
-      const cycle = dependencyCycle(graph)
+      const cycle = dependencyCycle(prerequisiteGraph(direct.filter(edge => !edge.game)))
       if (cycle) problems.push({ at: `relations/${name}`, says: `circular ${relation.kind}: ${cycle.join(' → ')}` })
     }
     const boundary = (id, ids, side) => {
@@ -153,8 +151,7 @@ export function expandRelations(relations, expand, scheduled, problems = [], opt
   }
   for (const kind of Object.keys(result)) {
     const edges = result[kind].filter(edge => !edge.game)
-    const graph = new Map([...new Set(edges.flatMap(edge => [edge.from, edge.to]))].map(id => [id, edges.filter(edge => edge.to === id).map(edge => edge.from)]))
-    const cycle = dependencyCycle(graph)
+    const cycle = dependencyCycle(prerequisiteGraph(edges))
     if (cycle) problems.push({ at: 'relations', says: `circular ${kind}: ${cycle.join(' → ')}` })
   }
   for (const kind of Object.keys(result)) result[kind] = [...new Map(result[kind].map((e) => [JSON.stringify(e), e])).values()]

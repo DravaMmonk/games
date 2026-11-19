@@ -2,7 +2,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { framePart } from '../../core/board/frames.js'
-import { headOf, print, read } from '../../core/board/text.js'
+import { headOf, print, read, readLines } from '../../core/board/text.js'
 import { textParse as parse } from '../../core/index.js'
 import { boardSvg } from '../../core/board/svg.js'
 import { withPreset } from '../../core/index.js'
@@ -62,11 +62,13 @@ test('a board prints as ASCII and reads back to itself', () => {
   assert.deepEqual(graph.nodes.find((n) => n.id === 'a'), { ...board.nodes.find((n) => n.id === 'a') })
 })
 
-test('a text read onto a fresh board lays new cards out', () => {
-  const fresh = { nodes: given, wires: [] }
-  const { graph } = read(print(board, parts), fresh, parts, TYPES)
-  assert.deepEqual(shape(graph), shape(board))
-  assert.ok(graph.nodes.every((n) => Number.isFinite(n.x) && Number.isFinite(n.y)))
+test('a fresh import places a constant beside its input and moves the sink after them', () => {
+  const fresh = { nodes: given.map(node => ({ ...node, ...(node.id === 'out' && { x: 350 }) })), wires: [] }
+  const { graph } = read('n = not(Wind)\nk = const[value=10]()\na = and(n, k)\nout <- a', fresh, parts, TYPES)
+  const { Wind, n, k, a, out } = Object.fromEntries(graph.nodes.map(node => [node.id, node]))
+  assert.ok(Wind.x < n.x && n.x === k.x && k.x < a.x && a.x < out.x)
+  assert.ok(Number.isFinite(n.y) && Number.isFinite(k.y) && n.y !== k.y)
+  assert.equal(fresh.nodes.find(node => node.id === 'out').x, 350)
 })
 
 test('reading and drawing a blueprint reject a frame redeclared inside itself', () => {
@@ -98,6 +100,23 @@ test('what reading refuses, by line', () => {
   assert.deepEqual(errs('n = not(Rain'), [[1, 'Line 1: It ends too soon; “)” is missing.']])
   // A value made in a box is seen only inside it.
   assert.equal(errs('f = box(body: m) {\n  body {\n    m = and(f.body, Rain)\n  }\n}\nout <- m')[0][0], 6)
+})
+
+test('editor and content imports put earlier wire errors before later card errors', () => {
+  const fresh = { nodes: given, wires: [] }
+  const lines = ['out <- missing', 'bad = nand(Rain)']
+  const expected = [
+    [1, 'Line 1: There is no node called “missing”.'],
+    [2, 'Line 2: “nand” is not available on this level.'],
+  ]
+  const { errors } = read(lines.join('\n'), fresh, parts, TYPES)
+  assert.deepEqual(errors.map(({ line, en }) => [line, en]), expected)
+  assert.throws(() => readLines(lines, fresh, parts, TYPES), error => {
+    assert.equal(error.line, 1)
+    assert.equal(error.en, expected[0][1])
+    assert.deepEqual(error.errors, errors)
+    return true
+  })
 })
 
 test('a blueprint cannot declare an extra fixed input or output even if it is in the type list', () => {

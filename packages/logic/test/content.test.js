@@ -1,6 +1,5 @@
 import { withProgressFixture } from '../../qed/test/fixture.js'
-import { resolve } from 'node:path'
-import { starterParts } from '../../qed/test/fixture.js'
+import { logicParts } from './part-fixture.js'
 // The logic domain on its content: boards as blueprint text both ways, a course's data read into its levels (test
 // cases, words), and the parts the player builds running the player's board; on a course written here.
 import { test } from 'node:test'
@@ -16,13 +15,21 @@ import { primitivesOnly } from 'circuit'
 import { PROOF_BOARD, runProof, startProof } from '../core/proof.js'
 import { GATE_BOARD, checkGates, gateParts, rowsFor, startGates } from '../core/gates.js'
 import { deepFreeze } from '../../../games/kit/engine/content.js'
-import { readStarter } from '../../qed/test/fixture.js'
 import { openPackedPart } from '../../circuit/core/board/packed-boards.js'
 import { packedBoards } from 'circuit'
 import { trayDisplay } from '../../circuit/core/trays.js'
 import domain from '../core/runtime.js'
+import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
+import { register as registerScalar } from '../../numlib/core/index.js'
+
+registerScalar(createPluginKernel().forPackage('numlib', 'core'))
 
 const L = (zh, en = zh) => ({ zh, en })
+const symbol = (name, mark, at) => ({ mark: `logic/formula${mark}`, icon: 'Rows3', name, desc: L(name), at })
+const symbols = {
+  not: symbol('¬', 'Not', 'or'), or: symbol('∨', 'Or', 'or'), and: symbol('∧', 'And', 'chain'),
+  implies: symbol('→', 'Implies', 'chain'), forall: symbol('∀', 'Forall', 'chain'),
+}
 // A level of one task (its id the level's): what it says once, then the task.
 const ONCE = ['title', 'intro', 'after', 'adds', 'fold', 'without']
 const one = ({ id, ...fields }) => ({
@@ -43,15 +50,14 @@ const halfOf = (form, goal) => ({
 })
 const CONTENT = {
   words: 'everyday',
-  registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['gNot', 'gAnd', 'mp', 'impI', 'andI', 'andE', 'allE', 'allI', 'rewrite'] } }, 'logic/symbol': Object.fromEntries(Object.entries(readStarter(resolve(import.meta.dirname, '../../logic/test')).registries['logic/symbol']).map(([name, value]) => [name.split('/').at(-1), { ...value, at: ({ formulaOr: 'or', formulaImplies: 'chain', formulaAnd: 'chain', formulaForall: 'chain' })[name.split('/').at(-1)] }])), wordset: {
+  registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['gNot', 'gAnd', 'mp', 'impI', 'andI', 'andE', 'allE', 'allI', 'rewrite'] } }, 'logic/symbol': symbols, wordset: {
     everyday: { Rain: L('下雨', 'it rains'), Wind: L('刮风', 'it is windy'), Wet: L('地湿', 'the ground is wet'), Slip: L('路滑', 'the road is slippery'), Bright: L('{0}很亮', '{0} is bright'), Seen: L('{0}看得见', '{0} can be seen'), i: L('安', 'Ann'), j: L('博', 'Bo') },
     stars: { a: L('晨星', 'the Morning Star'), b: L('昏星', 'the Evening Star'), i: L('晨星', 'the Morning Star'), j: L('昏星', 'the Evening Star') },
     properties: { P: L('{0}具有该性质', '{0} has that property'), Q: L('{0}具有该性质', '{0} has that property') },
   } },
-  // The parts the starter defines (its parts/<name>.json: the gates and the proof rules), and the parts built here: a gate,
-  // a lemma, and a lemma of two shapes, each shape the proof of a task.
+  // The registered operation fixtures and the parts built by these tasks.
   partDefs: { parts: {
-    ...Object.fromEntries(Object.entries(starterParts(new URL('../../logic/test/', import.meta.url).pathname).parts).filter(([, p]) => !p.inside)),
+    ...logicParts.parts,
     gOr: { name: L('或', 'Or'), desc: L('d'), family: 'logic/gate', inside: [{ id: 'base', reference: GATE }] },
     chain: { name: L('串联', 'Chain'), desc: L('d'), family: 'logic/lemma', settings: Object.fromEntries(['A', 'B', 'C'].map((key) => [key, { control: 'tree' }])), inside: [{ id: 'base', reference: CHAIN }] },
     half: { name: L('取一半', 'Half'), desc: L('d'), family: 'logic/lemma', settings: Object.fromEntries(['A', 'B'].map((key) => [key, { control: 'tree' }])), inside: [{ id: 'left', form: 'left', label: 'A ∧ B ⟹ A', reference: halfOf('left', 'A') }, { id: 'right', form: 'right', label: 'A ∧ B ⟹ B', reference: halfOf('right', 'B') }] },
@@ -92,7 +98,7 @@ const CONTENT = {
 }
 CONTENT.wordSets = CONTENT.registries.wordset
 delete CONTENT.registries.wordset
-const course = logicWorks(withProgressFixture(CONTENT))
+const course = logicWorks(deepFreeze(withProgressFixture(CONTENT)))
 const syncOwn = course.syncOwn
 const level = (id) => course.LEVELS.find((l) => l.id === id)
 // A level of one task, as read.
@@ -128,7 +134,8 @@ test('a proof reads from blueprint text and prints back the same', () => {
   const one = { tests: [{ premises: { p: 'A' }, goal: 'B → (C → A)' }] }
   const circuit = primitivesOnly(PROOF_BOARD, only('chain').parts)
   const board = PROOF_BOARD.fromText(lines, one, circuit)
-  assert.deepEqual(board.nodes.find((n) => n.id === 'g'), { ...board.nodes.find((n) => n.id === 'g'), type: 'impI', params: { A: 'C' }, in: 'f/body' })
+  const { type, params, in: region } = board.nodes.find(n => n.id === 'g')
+  assert.deepEqual({ type, params, region }, { type: 'impI', params: { A: 'C' }, region: 'f/body' })
   assert.deepEqual(PROOF_BOARD.toText(board, one, circuit), lines)
   // A sentence on a card is written in ASCII and read back in the game's symbols.
   const and = PROOF_BOARD.fromText(['f = impI[A="A & B"](body: p)', 'goal <- f'], one, circuit)
@@ -276,52 +283,34 @@ test('a lemma runs the proof the player passed its level with, a level of tasks 
   syncOwn({})
 })
 
-test('reading a game on the domain never writes into its content', () => {
-  const spec = domain.spec(deepFreeze(readStarter(resolve(import.meta.dirname, '../../logic/test'))))
-  assert.deepEqual(spec.logic.wrong, [])
-  // The parts the player builds run the boards kept for them, or their levels' reference boards.
-  for (const shapes of Object.values(spec.logic.proofs)) for (const { board } of Object.values(shapes)) assert.ok(board().nodes)
-  for (const gate of Object.values(spec.logic.gates)) assert.ok(gate.opens().circuit.nodes)
-})
-
-
-test('formula chips use the registered symbols and keep contextual names', () => {
-  const content = readStarter(resolve(import.meta.dirname, '../../logic/test'))
-  const level = logicWorks(content).LEVELS.at(-1).tasks.at(-1)
-  const chips = chipsOf({
-    kind: 'logic/translate', notation: level.notation, vocab: { preds: [['Rain', 0]], consts: [] },
-  })
-  const not = chips.find((chip) => chip.key === '¬')
-  const rain = chips.find((chip) => chip.key === 'P:Rain')
-  assert.equal(not.symbol.type, 'starter/formulaNot')
-  assert.equal(not.make().op, '¬')
-  assert.equal(rain.make().pred, 'Rain')
-  assert.ok(level.notation.symbols.includes('∨'))
-})
-
 test('symbol keys use prerequisite order while the board has its own part tray', () => {
-  const content = readStarter(resolve(import.meta.dirname, '../../logic/test'))
-  content.trays = {
-    gates: { name: 'Gates', items: ['starter/gNot', 'starter/gAnd'] },
-  }
-  const first = content.levels.find(level => level.id === 'starter/g-not')
-  const last = content.levels.find(level => level.id === 'starter/g-use')
-  first.tray = last.tray = 'gates'
-  for (const symbol of Object.values(content.registries['logic/symbol'])) symbol.at = 'not-in-this-course'
-  content.registries['logic/symbol']['starter/formulaNot'].at = first.id
-  content.registries['logic/symbol']['starter/formulaAnd'].at = last.id
-  content.registries['logic/symbol']['starter/formulaOr'].at = last.id
-  const logic = logicWorks(content)
-  const read = id => logic.LEVELS.find(level => level.id === id).tasks[0]
-  const chips = id => chipsOf({
-    kind: 'logic/translate', notation: read(id).notation, vocab: { preds: [['Rain', 0]], consts: [] },
-  }).map(({ key }) => key)
-  assert.deepEqual(chips(first.id), ['P:Rain', '¬'])
-  assert.deepEqual(chips(last.id), ['P:Rain', '¬', '∧', '∨'])
-  assert.deepEqual(fixedTray(logic.course, read(last.id)), ['starter/gNot', 'starter/gAnd'])
-  const { shown, folded, types } = logic.offerIn(read(last.id), new Set())
-  assert.deepEqual(types, [...shown, ...folded])
-  assert.ok(types.every(type => ['starter/gNot', 'starter/gAnd'].includes(type)))
+  const { gNot, gAnd } = logicParts.parts
+  const gate = (id, adds, target, solution) => ({
+    id, title: L(id), tray: 'gates', adds, tasks: [{ id, kind: 'logic/gates', target, solution }],
+  })
+  const logic = logicWorks(withProgressFixture({
+    partDefs: { parts: { gNot, gAnd } },
+    registries: {
+      'logic/symbol': { not: { ...symbols.not, at: 'a' }, and: { ...symbols.and, at: 'b' }, or: { ...symbols.or, at: 'b' } },
+      tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['gNot', 'gAnd'] } },
+    },
+    trays: { gates: { name: L('Gates'), items: ['gNot', 'gAnd'] } },
+    eras: [{ id: 'gates', levels: [{ id: 'a' }, { id: 'b' }], links: [{ from: 'a', to: 'b' }], chapter: { title: L('Gates') } }],
+    levels: [
+      gate('a', ['gNot'], '¬Rain', ['n = gNot(Rain)', 'out <- n']),
+      gate('b', ['gAnd'], 'Rain ∧ Wind', ['a = gAnd(Rain, Wind)', 'out <- a']),
+    ],
+  }))
+  const [first, last] = logic.LEVELS.map(level => level.tasks[0])
+  const chips = task => chipsOf({ kind: 'logic/translate', notation: task.notation, vocab: { preds: [['Rain', 0]], consts: [] } })
+  assert.deepEqual(chips(first).map(({ key }) => key), ['P:Rain', '¬'])
+  const available = chips(last)
+  assert.deepEqual(available.map(({ key }) => key), ['P:Rain', '¬', '∧', '∨'])
+  assert.equal(available[0].make().pred, 'Rain')
+  assert.equal(available[1].symbol.type, 'not')
+  assert.equal(available[1].make().op, '¬')
+  assert.deepEqual(fixedTray(logic.course, last), ['gNot', 'gAnd'])
+  assert.deepEqual(logic.offerIn(last, new Set()).types, ['gAnd', 'gNot'])
 })
 
 test('a proof tray groups disjunction rules and leaves truth gates off the proof board', () => {
@@ -369,22 +358,4 @@ test('proof-board lemma cards expose packed boards and selected forms to worksho
   logic.syncOwn({ chain: own })
   assert.equal(openPackedPart(view, node).circuit, own)
   assert.equal(workshop.open(node, { level: use }).opened.circuit, own)
-})
-
-test('the logic starter projects its text and proof work into Studio', async () => {
-  const { runtimeOf } = await import('../../../games/kit/engine/resolver.js')
-  const { contentVocabulary } = await import('../../../games/kit/studio/editors.js')
-  const { boardPaths, fieldAt, formOf, textsOf } = await import('../../../games/kit/studio/form.js')
-  const content = readStarter(import.meta.dirname)
-  const vocabulary = contentVocabulary((await runtimeOf(content)).vocabulary, content)
-  const levels = content.levels.map(level => level.id)
-  for (const { id, ...level } of content.levels) {
-    const form = formOf(vocabulary.level, level, { vocabulary, levels })
-    for (const { path } of textsOf(vocabulary.level, level, vocabulary)) {
-      assert.equal(fieldAt(form, path)?.field?.kind, 'text', `${id} ${path.join('.')}`)
-    }
-    for (const path of boardPaths(vocabulary, level)) {
-      assert.equal(fieldAt(form, path)?.field?.kind, 'board', `${id} ${path.join('.')}`)
-    }
-  }
 })

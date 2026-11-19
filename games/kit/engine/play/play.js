@@ -20,19 +20,18 @@ import { plain, side } from './words.js'
 
 
 /**
- * game: defineGame's result; course: the course the audit checks (its plan says which levels are required); hook: the
- * domain's play hook; record: the session (./session.js), changed in place as the player plays.
+ * game: defineGame's result, including each level's route flags; hook: the domain's play hook; record: the session
+ * (./session.js), changed in place as the player plays.
  */
 /** What a pass asks of the player: what they worked out, in the field's words (the pipeline compares it with the
  *  knowledge the level brings, games/design/README.md 7.2). */
 const EXPLAIN = catalogText("用本领域的术语写一两句：这一关你弄明白了什么？（./play --explain \"…\"）")
 
-export function createPlay({ game, course, hook, record, now = () => new Date() }) {
+export function createPlay({ game, hook, record, now = () => new Date() }) {
   record.progress = game.progress?.normalize?.(record.progress) ?? record.progress
   const lang = record.lang
   const textProviders = meaningsOf(game.contentVocabulary).map(meaning => meaning.blindText?.(game)).filter(Boolean)
   const solved = () => new Set(record.progress.solved)
-  const required = (id) => !course.plan?.place.get(id)?.optional
   const names = (kind, id) => {
     if (kind === 'level') return game.byId[id] ? `${game.levelLabel(game.byId[id])} ${side(game.byId[id].title, lang)}` : null
     return game.referenceName?.(kind, id, lang) || textProviders.map(provider => provider.name?.(kind, id, lang)).find(Boolean) || null
@@ -72,7 +71,7 @@ export function createPlay({ game, course, hook, record, now = () => new Date() 
       if (!at) return { at: null, skipped }
       const ctx = ctxOf(at)
       const opened = hook.open(ctx)
-      const entry = outcomeOf(record, at.level.id, at.task, required(at.level.id), now())
+      const entry = outcomeOf(record, at.level.id, at.task, !at.level.optional, now())
       if (opened.covered !== false) return { at, ctx, opened, entry, skipped }
       close(entry, 'skipped', now(), { why: side(opened.why, 'en') })
       skipped.push(`${names('level', at.level.id)}${at.level.tasks.length > 1 ? ` (${at.task + 1}/${at.level.tasks.length})` : ''}: ${say(opened.why)}`)

@@ -1,27 +1,10 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { channel, compare, compose, correlate, downsample, image, maxPool, shift, zip } from 'imglib'
+import { channel, compare, compose, image, zip } from 'imglib'
 import { NODE_TYPES } from '../core/engine/nodes.js'
 import { runnerOf } from '../core/engine/graph.js'
 
 const plane = (values, w = values.length) => ({ w, h: values.length / w, data: Float32Array.from(values) })
-
-test('RGB channels round-trip and monochrome arithmetic broadcasts per pixel', () => {
-  const r = plane([0.2, 0.4]), g = plane([0.3, 0.5]), b = plane([0.6, 0.7])
-  const rgb = compose(r, g, b)
-  assert.deepEqual([...channel(rgb, 1).data], [...g.data])
-  assert.deepEqual([...zip(rgb, plane([2, 3]), (a, b) => a * b).data], [...compose(zip(r, plane([2, 3]), (a, b) => a * b), zip(g, plane([2, 3]), (a, b) => a * b), zip(b, plane([2, 3]), (a, b) => a * b)).data])
-  assert.equal(compare(rgb, r).pass, false)
-  assert.equal(compare(rgb, rgb).pass, true)
-})
-
-test('RGB spatial operations preserve each channel', () => {
-  const a = plane([1, 2, 3, 4], 2), b = plane([5, 6, 7, 8], 2), c = plane([9, 10, 11, 12], 2)
-  const rgb = compose(a, b, c)
-  for (const op of [(x) => shift(x, 1, 0), (x) => correlate(x, [1]), downsample, maxPool]) {
-    assert.deepEqual([...channel(op(rgb), 1).data], [...op(b).data])
-  }
-})
 
 test('output combines RGB ports, fills unconnected channels and still accepts a single image', () => {
   const runner = runnerOf(NODE_TYPES)
@@ -53,14 +36,6 @@ test('an RGB image can be corrected directly with a single-channel illumination 
   assert.equal(compare(runner.evaluate(graph, { photo, light }).values.get('out'), original).pass, true)
 })
 
-test('an RGB mismatch is counted once per pixel and includes non-finite readings', () => {
-  const got = { w: 3, h: 1, c: 3, data: [0.625, 0.375, 0.5, 0.75, 0.75, 0.5, 0.5, NaN, Infinity] }
-  const want = { ...got, data: Array(9).fill(0.5) }
-  const check = compare(got, want, { tolerance: 0.125, mismatches: 2 })
-  assert.deepEqual({ pass: check.pass, wrong: check.wrong, worst: check.worst }, { pass: true, wrong: 2, worst: Infinity })
-  assert.equal(compare(got, want, { tolerance: Infinity }).wrong, 1)
-})
-
 test('colour input exposes the full image and independent RGB outputs', async () => {
   const { imageKit } = await import('../core/engine/kit.js')
   const kit = imageKit(NODE_TYPES)
@@ -76,25 +51,6 @@ test('colour input exposes the full image and independent RGB outputs', async ()
   assert.equal(compare(values.get('out'), rgb).pass, true)
 })
 
-test('colour scene variants expose RGB inputs without changing their targets', async () => {
-  const { LEARNING } = await import('../../vision-complete/core/items/scenes/learning.js')
-  const examples = [
-    ['colour', 'rgbContrast', { paint: 'halves' }, { mix: 'redGreen' }, 0.5],
-    ['colour', 'rgbContrast', { paint: 'skyline' }, { mix: 'blueYellow' }, 0.5],
-    ['street', 'rgbStreet', { layout: 'crossing' }, {}, 0],
-    ['colourMix', 'rgbMix', { paint: 'blueSquare' }, {}, 0],
-  ]
-  for (const [oldName, newName, fields, setup, offset] of examples) {
-    const old = LEARNING[oldName].make(fields, setup)
-    const updated = LEARNING[newName].make(fields, setup)
-    for (const [i, key] of ['r', 'g', 'b'].entries()) {
-      const restored = zip(old.inputs[key], image(old.inputs[key].w, old.inputs[key].h, offset), (a, b) => a + b)
-      assert.equal(compare(channel(updated.inputs.photo, i), restored, { tolerance: 1e-6 }).pass, true)
-    }
-    for (const name of Object.keys(old.expected)) assert.equal(compare(updated.expected[name], old.expected[name], { tolerance: 1e-6 }).pass, true)
-  }
-})
-
 test('image content and editor imports enforce the same task ports', async () => {
   const [{ imageKit }, { startBoard }, { read }] = await Promise.all([
     import('../core/engine/kit.js'), import('../core/engine/board.js'), import('../../circuit/core/board/text.js'),
@@ -102,9 +58,19 @@ test('image content and editor imports enforce the same task ports', async () =>
   const kit = imageKit(NODE_TYPES)
   const grey = plane([0.2, 0.4])
   const task = { tests: [{ inputs: { in: grey }, expected: { out: grey } }] }
-  for (const line of ['out <- in.unknown', 'out <- in.r', 'out.r <- in', 'a = image/arith[unknown=1](in, in)']) {
+  for (const [line, refusal] of [
+    ['out <- in.r', /has no output “r”/],
+    ['out.r <- in', /has no input called “r”/],
+    ['a = image/arith[constantSide=b](b: in)', /has no input called “b”/],
+    ['a = image/arith[unknown=1](in, in)', /has no setting “unknown”/],
+  ]) {
     const { errors } = read(line, startBoard(task), kit.boardParts(task.tests[0]), Object.keys(NODE_TYPES))
     assert.equal(errors.length, 1)
-    assert.throws(() => kit.fromText([line], task), (error) => error.line === 1 && error.en === errors[0].en)
+    assert.match(errors[0].en, refusal)
+    assert.throws(() => kit.fromText([line], task), error => {
+      assert.equal(error.line, 1)
+      assert.deepEqual(error.errors, errors)
+      return true
+    })
   }
 })

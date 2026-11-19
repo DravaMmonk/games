@@ -9,29 +9,29 @@ import { register as registerQED } from '../core/index.js'
 import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { projectVocabulary } from '../../../games/kit/engine/kind-meanings.js'
 import { withKindDeclarations, kindSchemas } from '../../../games/kit/engine/plugin-kinds.js'
-import { objectFiles, packageIds, contentTargets, resolveLayers, readContent } from '../../../games/kit/engine/resolver.js'
+import { objectFiles, packageIds, contentTargets, resolveLayers } from '../../../games/kit/engine/resolver.js'
 // Each end-to-end test gets a fresh games folder with a small logic game and three proof levels.
 //
 //   proofsRoot() → { root, id }   the games folder (in the system's temp folder) and the game's id
 //
 // The game: `given` (the given is the goal), `apply` (two Applies in a row), `suppose` (an assumption box around them);
 // every brief and hint in everyday words, the English side naming “Saturday” and “Assume” for search and replace.
-import { constants, mkdirSync, mkdtempSync, readFileSync, writeFileSync, cpSync, existsSync, readdirSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, cpSync, existsSync, readdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { catalogsOf, normalizeText } from '../../../games/kit/engine/content-text.js'
-import { catalogReader, sourceValue } from '../../../games/kit/engine/catalogs.js'
+import { sourceValue } from '../../../games/kit/engine/catalogs.js'
 import { assemble as assembleContent, contentSchemas } from '../../../games/kit/engine/content.js'
 import { GLOSSARY as GLOSSARY_SCHEMA } from '../../wiki/core/schema.js'
 import { glossarySchemas } from '../../wiki/test/fixture.js'
-import { installGlossaryFixture, packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
+import { copyTestProject, installGlossaryFixture, packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
 import { OBJECT_SCHEMAS } from '../../../games/kit/engine/objects.js'
 import { PARTS_FILE } from '../../circuit/core/parts/schema.js'
 import { partMeaning, trayMeaning } from '../../circuit/core/content-meaning.js'
 const contentMeanings = [partMeaning, trayMeaning]
 import { withParts } from '../../circuit/core/parts/define.js'
 import { expandNames } from '../../../games/kit/engine/names.js'
-import { readCatalogs, contentVocabulary } from '../../../games/kit/engine/resolver.js'
+import { contentVocabulary } from '../../../games/kit/engine/resolver.js'
 
 const kernelRange = `^${JSON.parse(readFileSync(new URL('../../../games/kit/platform.json', import.meta.url))).version}`
 const T = (en) => ({ en })
@@ -205,20 +205,7 @@ export function proofsRoot() {
 
 /** Copy a locked proof workspace before changing its files. */
 export function copyProofsRoot({ root: seed, id }) {
-  const root = mkdtempSync(join(tmpdir(), 'games-'))
-  try {
-    cpSync(seed, root, { recursive: true, mode: constants.COPYFILE_FICLONE })
-    return { root, id }
-  } catch (error) {
-    rmSync(root, { recursive: true, force: true })
-    throw error
-  }
-}
-
-/** Source definitions for unit tests that compose their own small content over the starter's resources. */
-export function starterParts(domainDir) {
-  const dir = join(domainDir, 'starter')
-  return { parts: Object.fromEntries(objectFiles(dir, 'parts').map(([name, file]) => [name, catalogReader(readCatalogs(join(dir, 'i18n/package')))(JSON.parse(readFileSync(file, 'utf8')))])) }
+  return { root: copyTestProject(seed, 'games-').root, id }
 }
 
 /** Seal the dependencies of a completed synthetic project before invoking production readers. */
@@ -342,39 +329,6 @@ export function installLogicFixture(root) {
     cpSync(new URL(`../../${id}/package.json`, import.meta.url), join(dir, 'package.json'))
   }
 }
-
-const starterFixtures = new Map()
-process.once('exit', () => { for (const root of starterFixtures.values()) rmSync(root, { recursive: true, force: true }) })
-/** Install package-owned test data once for readers and dry-run workspaces. */
-export function starterRoot(fixtureDir) {
-  if (starterFixtures.has(fixtureDir)) return starterFixtures.get(fixtureDir)
-  const source = join(fixtureDir, 'starter')
-  const root = mkdtempSync(join(tmpdir(), 'package-example-'))
-  starterFixtures.set(fixtureDir, root)
-  const { uses } = JSON.parse(readFileSync(join(source, 'package.json')))
-  if (uses.logic) installLogicFixture(root)
-  else if (uses['state-graph']) installTableFixture(root)
-  else {
-    installCircuitFixture(root)
-    installScalarFixture(root)
-    installGlossaryFixture(root)
-  }
-  const pkg = join(root, 'packages/starter')
-  const game = join(root, 'games/starter')
-  mkdirSync(game, { recursive: true })
-  const gameFiles = ['game.json', 'chapters', 'overrides']
-  cpSync(source, pkg, { recursive: true, filter: file => ![...gameFiles, 'i18n'].some(name => file === join(source, name)) })
-  for (const name of gameFiles) cpSync(join(source, name), join(game, name), { recursive: true })
-  cpSync(join(source, 'i18n/course'), join(game, 'i18n'), { recursive: true })
-  cpSync(join(source, 'i18n/package'), join(pkg, 'i18n'), { recursive: true })
-  const config = JSON.parse(readFileSync(join(game, 'game.json')))
-  config.packages = Object.fromEntries(['starter', ...packageIds(root).filter(id => id !== 'starter')].map(id => [id, '^0.0.0']))
-  writeFileSync(join(game, 'game.json'), JSON.stringify(config))
-  lockFixture(root, [{ kind: 'package', id: 'starter' }, { kind: 'game', id: 'starter' }])
-  return root
-}
-
-export const readStarter = fixtureDir => readContent('starter', starterRoot(fixtureDir))
 
 const partPolicy = { kind: 'circuit/part', stages: true, grants: true, unlocks: true, checks: ['stages', 'availability', 'course', 'references'] }
 const usesGrants = object => ['adds', 'gives', 'withholds', 'opens', 'awards', 'local'].some(field => Object.hasOwn(object, field))

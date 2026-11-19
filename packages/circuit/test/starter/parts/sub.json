@@ -1,7 +1,0 @@
-{
-  "name": "@part.sub.name",
-  "desc": "@part.sub.desc",
-  "icon": "Minus",
-  "family": "circuit/value",
-  "op": "numlib/sub"
-}

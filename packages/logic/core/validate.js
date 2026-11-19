@@ -227,12 +227,19 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     out.push(...memo(level.id, `proof ${level.task ?? 0}`, () => {
       const out = []
       const consts = level.consts ?? []
+      const sequents = new Map()
+      const sequentOf = test => {
+        if (!sequents.has(test)) {
+          const premises = Object.values(test.premises ?? {}).map(text => parse(text, { consts }))
+          sequents.set(test, [premises, parse(test.goal, { consts })])
+        }
+        return sequents.get(test)
+      }
       // Induction is no first-order consequence (worlds with numbers past every S…S 0 satisfy the definitions and not
       // the conclusion), so a proof that uses it is not held to the countermodel search.
       const induction = (level.solution?.nodes ?? []).some((n) => (level.partResources?.[n.type] ?? n.type) === 'logic/natInd')
       for (const test of induction ? [] : level.tests) {
-        const premises = Object.values(test.premises ?? {}).map((t) => parse(t, { consts }))
-        const m = countermodel(premises, parse(test.goal, { consts }))
+        const m = countermodel(...sequentOf(test))
         if (m) out.push({ level: level.id, fail: true, text: `${level.id}: ${test.goal} has a countermodel, so no proof can exist` })
       }
       // What the task holds of each lemma's shapes (../../course.js holds).
@@ -245,7 +252,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
           if (!lemma || course.builder(part) === level.id || level.without?.includes(part)) continue
           // A test that asks for a term asks for one proof in particular, not just any.
           const forms = lemma.forms ? lemma.forms.map(form => form.key).filter(key => has(part, 'form', key)) : null
-          const gives = test => !test.term && lemmaGives(lemma, Object.values(test.premises ?? {}).map(text => parse(text, { consts })), parse(test.goal, { consts }), forms)
+          const gives = test => !test.term && lemmaGives(lemma, ...sequentOf(test), forms)
           if (level.tests.every(gives)) out.push({ level: level.id, fail: true, text: `${level.id}: the lemma ${part} it carries proves it in one step` })
         }
         // A later task of a level may use what the level builds.

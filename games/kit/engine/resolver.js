@@ -130,12 +130,20 @@ export function readPlaytests(id, dir = gameDirectory()) {
   return existsSync(folder) ? readdirSync(folder).filter((f) => f.endsWith('.json')).sort().map((f) => json(resolve(folder, f))) : []
 }
 
-/** Read a layer in file shape; workspaces can replace this layer before assembling. */
-function readLayer(id, dir, config = json(resolve(dir, 'package.json')), declarations = null) {
-  return memoResolution(`layer:${JSON.stringify([id, dir, config, declarations])}`, () => readLayerUncached(id, dir, config, declarations))
+const overrideNamespaces = dir => existsSync(dir) ? readdirSync(dir) : []
+const builtinOverrideFolders = { ...Object.fromEntries(Object.entries(folders).filter(([kind]) => kind !== 'shape')), kind: 'kinds' }
+const readOverrides = (dir, namespace, folders) => Object.entries(folders).flatMap(([kind, folder]) =>
+  objectFiles(resolve(dir, namespace), folder).map(([name, file]) => ({
+    kind, name: `${namespace}/${kind === 'tag' ? name.split('/').at(-1) : name}`, value: kind === 'tag' ? tagValue(name, json(file)) : json(file),
+  })),
+)
+
+/** Read the declarations and built-in objects before resolving package-defined folders. */
+function readLayer(id, dir, config) {
+  return memoResolution(`layer:${JSON.stringify([id, dir, config])}`, () => readLayerUncached(id, dir, config))
 }
 
-function readLayerUncached(id, dir, config, declarations) {
+function readLayerUncached(id, dir, config) {
   if (id === 'kernel') throw new Error('kernel is a reserved namespace')
   const tagReaders = []
   const kernel = createPluginKernel()
@@ -156,14 +164,26 @@ function readLayerUncached(id, dir, config, declarations) {
   const objects = levelFiles(dir).map(([name, file]) => ({ kind: 'level', name, value: json(file) }))
   for (const folder of ['tags', 'relations', 'chapters', 'shapes']) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind: kindForFolder[folder], name: folder === 'tags' ? name.split('/').at(-1) : name, value: folder === 'tags' ? tagValue(name, json(file)) : json(file) })
   for (const [name, file] of objectFiles(dir, 'kinds')) objects.push({ kind: 'kind', name, value: json(file) })
-  for (const [kind, folder] of Object.entries({ ...objectFoldersFor(id, declarations ?? {}), ...(id.startsWith('@') && objectFoldersFor(id, declarations ?? {}, 'package')) })) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind, name, value: json(file) })
   const overrides = [], textOverrides = []
   const overrideDir = resolve(dir, 'overrides')
-  for (const namespace of existsSync(overrideDir) ? readdirSync(overrideDir) : []) {
-    for (const [kind, folder] of Object.entries({ ...Object.fromEntries(Object.entries(folders).filter(([kind]) => kind !== 'shape')), kind: 'kinds', ...objectFoldersFor(namespace, declarations ?? {}) })) for (const [name, file] of objectFiles(resolve(overrideDir, namespace), folder)) overrides.push({ kind, name: `${namespace}/${kind === 'tag' ? name.split('/').at(-1) : name}`, value: kind === 'tag' ? tagValue(name, json(file)) : json(file) })
+  for (const namespace of overrideNamespaces(overrideDir)) {
+    overrides.push(...readOverrides(overrideDir, namespace, builtinOverrideFolders))
     for (const [lang, entries] of Object.entries(readCatalogs(resolve(overrideDir, namespace, 'i18n')))) textOverrides.push({ namespace, lang, entries })
   }
   return { id, config, capabilityDeclarations, capabilityImplementations: Object.fromEntries([...kernel.capabilityImplementations].map(([kind, items]) => [kind, Object.fromEntries(items)])), entryPaths: Object.fromEntries([['core', 'core/index.js'], ['view', 'view/index.jsx']].filter(([, path]) => existsSync(resolve(dir, path))).map(([side, path]) => [side, resolve(dir, path)])), tagReaders, meanings: pluginMeanings(kernel), codeObjects: [...viewRegistrations(existsSync(resolve(dir, 'view/index.jsx')) ? resolve(dir, 'view/index.jsx') : null), ...pluginObjects(kernel)], objects, overrides, textOverrides, hasCore: existsSync(resolve(dir, 'core/index.js')), hasView: existsSync(resolve(dir, 'view/index.jsx')), catalogs }
+}
+
+function readDeclaredObjects(layer, dir, definitions) {
+  const { id } = layer
+  const declared = { ...objectFoldersFor(id, definitions), ...(id.startsWith('@') && objectFoldersFor(id, definitions, 'package')) }
+  const objects = [...layer.objects]
+  for (const [kind, folder] of Object.entries(declared)) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind, name, value: json(file) })
+  const builtins = Map.groupBy(layer.overrides, override => override.name.split('/')[0])
+  const overrideDir = resolve(dir, 'overrides')
+  const overrides = overrideNamespaces(overrideDir).flatMap(namespace => [
+    ...(builtins.get(namespace) ?? []), ...readOverrides(overrideDir, namespace, objectFoldersFor(namespace, definitions)),
+  ])
+  return { ...layer, objects, overrides }
 }
 
 /** Resolve locked dependencies into a single layer representation for every consumer. */
@@ -223,7 +243,8 @@ function resolveLayersUncached({ game, package: packageId, packages, closure = f
   }
   if (!game && packageId && !lock && found.get(packageId)?.source === 'archive') lock = readJSON(resolve(locations.get(packageId), 'lock.json'))
   const initial = orderPackages([...found.values()])
-  const definitions = layerVocabulary(initial).objectKinds
+  const schemas = layerVocabulary(initial)
+  const definitions = schemas.objectKinds
   let available
   const installedKinds = () => available ??= packageIds(root).flatMap(owner =>
     objectFiles(packageDirectory(owner, root), 'kinds').map(([name, file]) => ({ owner, name, definition: json(file) })))
@@ -242,10 +263,17 @@ function resolveLayersUncached({ game, package: packageId, packages, closure = f
     const declaration = installedKinds().find(({ definition }) => definition.extends === 'game' && Object.hasOwn(definition.fields, field))
     if (declaration) throw new Error(`@${game}/game.json.${field}: requires package ${declaration.owner} in packages`)
   }
-  const layers = initial.map(layer => layer.missing ? layer : { ...readLayer(layer.id, locations.get(layer.id), layer.config, definitions), source: layer.source })
-  const schemas = layerVocabulary(layers)
+  const layers = initial.map(layer => layer.missing ? layer : readDeclaredObjects(layer, locations.get(layer.id), definitions))
   const qualified = composeLayers(layers, schemas).qualifiedLayers
-  for (const layer of layers) if (!layer.missing) layer.manifest = memoResolution(`manifest:${JSON.stringify([locations.get(layer.id), [...locations]])}`, () => layerManifest(qualified.find(item => item.id === layer.id), qualified, schemas, locations.get(layer.id)))
+  let surfaces
+  for (const [index, layer] of layers.entries()) {
+    if (layer.missing) continue
+    const dir = locations.get(layer.id)
+    layer.manifest = memoResolution(`manifest:${JSON.stringify([dir, [...locations]])}`, () => {
+      surfaces ??= publicSurfaces(qualified, schemas)
+      return layerManifest(qualified[index], surfaces.get(layer.id), schemas, dir)
+    })
+  }
   const platform = kernelIdentity()
   const config = game ? { ...selected.game, packages: selected.packageRanges } : found.get(packageId)?.config
   for (const layer of layers) if (!layer.missing) requireRange('kernel', layer.config.kernel, layer.id)
@@ -265,7 +293,10 @@ function resolveLayersUncached({ game, package: packageId, packages, closure = f
       }
     }
   }
-  if (game) layers.push(readLayer(`@${game}`, gameDirectory(game, root), config, definitions))
+  if (game) {
+    const dir = gameDirectory(game, root)
+    layers.push(readDeclaredObjects(readLayer(`@${game}`, dir, config), dir, definitions))
+  }
   if (owner && problems.length && layers.length) layers.at(-1).dependencyProblems = problems
   return { layers, lock, lockStatus: { valid: !problems.length, problems }, identities, ...(selected ?? {}) }
 }

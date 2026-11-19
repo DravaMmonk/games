@@ -73,14 +73,14 @@ try {
     for (const [kind, registry] of Object.entries(content.registries)) if (!['kind', 'chapter', 'game'].includes(kind)) for (const name of Object.keys(registry)) names.add(name)
     for (const registry of Object.values(runtime.vocabulary.kinds)) for (const name of Object.keys(registry)) names.add(name)
     for (const level of content.levels) for (const task of level.tasks) names.add(task.id)
-    const checked = spawnSync(process.execPath, [fileURLToPath(new URL('./check.js', import.meta.url)), ...(packaged ? ['--package'] : ['--game']), id, '--fresh'], {
+    const checked = spawnSync(process.execPath, [fileURLToPath(new URL('./check.js', import.meta.url)), ...(packaged ? ['--package'] : ['--game']), id, '--authoring', '--fresh'], {
       cwd: resolve(import.meta.dirname, '../../../site'), env: { ...process.env, GAMES_ROOT: root, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ''} --no-warnings` }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
     })
     if (checked.error || checked.signal || checked.status === null) throw checked.error ?? new Error(`check interrupted: ${id}`)
     const records = []
     const scopes = packaged ? content.levels.map(level => packageLevel(content, level.id)) : [content]
     for (const scope of scopes) {
-      const spec = runtime.spec(scope)
+      const spec = (packaged ? runtime.forContent(scope) : runtime).spec(scope)
       for (const fragment of spec.specs ?? [spec]) {
         records.push({ course: { levels: fragment.course.levels, plan: fragment.course.plan, ...Object.assign({}, ...meanings.map(meaning => meaning.baselineCourse?.({ fragment }))) } })
         const reports = await taskReports(fragment, meanings)

@@ -1,6 +1,7 @@
 import { holds } from '../course.js'
 import { policyFor } from 'progress'
 import { RULE_TEXT, againstOpen, audit } from './course.js'
+import { referencePartCatalog } from '../part-catalog.js'
 
 function unavailableParts(course, works, at, flags, checks) {
   const holding = holds(course, at, flags)
@@ -53,17 +54,17 @@ export function courseChecks({ spec, content }) {
   return lines
 }
 
-export function referenceChecks({ game, content, levelLinks, opensBy }) {
+export function referenceChecks({ spec, content, levelLinks, opensBy }) {
   if (!policyFor(content, 'circuit/part').checks.has('references')) return []
   const lines = []
   const fail = text => lines.push({ fail: true, text })
   // A part likewise: linked in the level that earns it or one after (that level's own intro may name what it builds).
-  const partsByKey = new Map((game.parts?.all ?? []).map((p) => [p.key, p]))
+  const partsByKey = new Map(referencePartCatalog(spec).map((p) => [p.key, p]))
   const earnedAt = new Map()
   for (const [id, links] of levelLinks('part')) for (const key of links) {
     const part = partsByKey.get(key)
     if (!part || !policyFor(content, 'circuit/part', part.part ?? key).checks.has('references')) continue
-    if (!earnedAt.has(key)) earnedAt.set(key, game.levels.find(level => level.unlocks?.includes(key) || part.at?.includes(level.id))?.id)
+    if (!earnedAt.has(key)) earnedAt.set(key, spec.levels.find(level => level.unlocks?.includes(key) || part.at?.includes(level.id))?.id)
     const earned = earnedAt.get(key)
     if (!opensBy(earned, id)) fail(`${id} links the part ${key}, earned later (at ${earned})`)
   }

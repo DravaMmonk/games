@@ -2,10 +2,9 @@
 // inputs and outputs are the base's own cards, its parts a game's parts.json). A description says only what a card does
 // (games/design/README.md 4).
 import { Activity, Megaphone } from 'lucide-react'
-import { T } from 'kernel/words'
-import { LINE } from '../core/line.js'
+import { fixedCards } from '../core/cards.js'
 
 export const CARDS = {
-  line: { name: LINE, icon: Activity, family: 'given', desc: T('这一拍线上的位。') },
-  say: { name: T('说'), icon: Megaphone, family: 'end', desc: T('接到这里的位，这一拍说到线上。') },
+  line: { ...fixedCards.line, icon: Activity },
+  say: { ...fixedCards.say, icon: Megaphone },
 }

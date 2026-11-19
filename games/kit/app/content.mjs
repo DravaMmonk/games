@@ -21,7 +21,8 @@ for (const id of knownGames(asked.length ? asked : ALL_GAMES, 'npm run publish:c
     continue
   }
   const content = readContent(id)
-  const failed = (await checkGame(content, { domain: await runtimeOf(content) })).filter((l) => l.fail)
+  const { lines } = await checkGame(content, { domain: await runtimeOf(content) })
+  const failed = lines.filter((l) => l.fail)
   if (failed.length) {
     console.log(`${id}: not published, ${failed.length} problem(s) (npm run check -- ${id})`)
     refused += 1

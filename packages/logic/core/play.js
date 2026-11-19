@@ -104,6 +104,6 @@ const notCovered = (kind) => ({
 })
 
 export const play = {
-  open: (ctx) => circuits[ctx.level.kind]?.open(ctx) ?? notCovered(ctx.level.kind),
+  open: (ctx, options) => circuits[ctx.level.kind]?.open(ctx, options) ?? notCovered(ctx.level.kind),
   attempt: (ctx, text) => circuits[ctx.level.kind]?.attempt(ctx, text) ?? notCovered(ctx.level.kind),
 }

@@ -27,7 +27,9 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   const kernel = createPluginKernel()
   register(kernel.forPackage('circuit', 'core'))
   registerScalar(kernel.forPackage('numlib', 'core'))
-  assert.deepEqual((await kernel.checks({ content })).filter(line => line.fail), [])
+  assert.deepEqual(await kernel.checks({ content }), [{
+    plugin: 'circuit/boards', level: 'sample/sum', fail: false, text: 'sample/task: circuit reference and naive PASS',
+  }])
   const task = content.levels[0].tasks[0]
   const context = { content, task }
   const start = boardPlay.initial(context)
@@ -40,7 +42,17 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   assert.equal(naive.report.fail.check, 1)
   assert.equal(naive.verdict.pass, false)
   const agent = kernel.tables.agent.get('circuit/board')
-  assert.equal(agent.observe(context).solution, undefined)
-  assert.equal(agent.act(context, task.solution).verdict.pass, true)
-  assert.equal(agent.act(context, task.solution).report, undefined)
+  const { brief, inputs, outputs } = task
+  assert.deepEqual(agent.observe(context), { brief, inputs, outputs })
+  const attempt = agent.act(context, task.solution)
+  assert.deepEqual(attempt, { work: graph, verdict: { pass: true, score: 1 } })
+
+  // Reusing an authored object must pick up an edited hidden case on the next evaluation.
+  task.hidden[0].expect.out = 4
+  const changed = evaluatePlay(kernel, task, task.solution, context)
+  assert.equal(changed.verdict.pass, false)
+  assert.equal(changed.report.fail.check, 1)
+  assert.deepEqual(await kernel.checks({ content }), [{
+    plugin: 'circuit/boards', level: 'sample/sum', fail: true, text: 'sample/task: circuit reference and naive FAIL',
+  }])
 })

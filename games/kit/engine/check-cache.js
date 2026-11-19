@@ -1,7 +1,7 @@
 // The author checks of a game kept between runs, level by level (games/PLAN.md B.2): what a domain's checks said of a
 // level is said again without running them while nothing they read has changed. Kept on this machine only, never in
-// the repository: site/node_modules/.cache/games-check/<game>.json. npm run check and the operation set read it
-// (`--fresh` does not); npm test never does.
+// the repository: site/node_modules/.cache/games-check/<game>.json. Authoring reviews read it unless they run
+// with `--fresh`.
 //
 //   checkCache(game, { fresh })  → { memo(content, spec), save() }
 //     memo(content, spec)        → memo(id, name, run): run()'s lines, or what it said last time. id names a level or
@@ -61,12 +61,13 @@ export function levelKeys(content, course) {
 }
 
 /** A game's kept checks: memo hands a run's lines back when the level they are about has not changed. */
-export function checkCache(game, { fresh = false } = {}) {
-  const file = resolve(FOLDER, `${game}.json`)
+export function checkCache(game, { fresh = false, directory = FOLDER } = {}) {
+  const file = resolve(directory, `${game}.json`)
   let kept = {}
   if (!fresh && existsSync(file)) {
     try {
-      kept = JSON.parse(readFileSync(file, 'utf8'))
+      const saved = JSON.parse(readFileSync(file, 'utf8'))
+      if (saved && typeof saved === 'object' && !Array.isArray(saved)) kept = saved
     } catch {
       kept = {}
     }
@@ -85,7 +86,7 @@ export function checkCache(game, { fresh = false } = {}) {
       }
     },
     save() {
-      mkdirSync(FOLDER, { recursive: true })
+      mkdirSync(directory, { recursive: true })
       writeFileSync(file, JSON.stringify(used))
     },
   }

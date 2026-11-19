@@ -12,8 +12,6 @@ import { onceRun } from '../../core/circuit-run.js'
 const text = (zh) => ({ zh })
 const OPS = {
   calc: { args: [{ name: 'a' }, { name: 'b' }], params: S.obj({ how: S.oneOf(['plus', 'minus'], { default: 'plus' }) }), run: ([a, b], { how }) => how === 'minus' ? a - b : a + b },
-  add: { about: text('a + b'), args: [{ name: 'a' }, { name: 'b' }], run: ([a, b]) => a + b },
-  sub: { about: text('a − b'), args: [{ name: 'a' }, { name: 'b' }], run: ([a, b]) => a - b },
 }
 // One part of two ways: `how` picks adding or subtracting.
 const partDefs = { parts: { calc: {
@@ -34,10 +32,9 @@ const course = (levels, definitions = partDefs) => definedWorks(withProgressFixt
   glossary: { groups: [], entries: [] },
   partDefs: definitions,
 }), { board: flowBoard(), ops: OPS })
-const failures = (read) => {
-  const { runLevel, entries } = onceRun({})
-  return checkCircuitTasks(read, { run: runLevel, entries }).filter((l) => l.fail).map((l) => l.text)
-}
+const { runLevel, entries } = onceRun({})
+const reports = (read) => checkCircuitTasks(read, { run: runLevel, entries })
+const failures = (read) => reports(read).filter((line) => line.fail).map((line) => line.text)
 
 test('a value a task opens is held from there on, and not before; a value nothing opens is held from the start', () => {
   const read = course([
@@ -48,7 +45,11 @@ test('a value a task opens is held from there on, and not before; a value nothin
   assert.deepEqual(read.wrong, [])
   const has = (id, k) => read.holdsIn(read.played.get(id)[k], [])
   assert.deepEqual([has('one', 0), has('two', 0), has('two', 1), has('three', 0)].map((h) => [h('calc'), h('calc', 'how', 'plus'), h('calc', 'how', 'minus')]), [[true, true, false], [true, true, false], [true, true, true], [true, true, true]])
-  assert.deepEqual(failures(read), [])
+  assert.deepEqual(reports(read), [
+    { level: 'one', fail: false, text: 'one one: answer PASS (2 tests)' },
+    { level: 'two', fail: false, text: 'two two: task two-a: answer PASS (2 tests) · task two-b: answer PASS (2 tests)' },
+    { level: 'three', fail: false, text: 'three three: answer PASS (2 tests)' },
+  ])
 })
 
 test('a task gives and withholds a value for itself alone, and its answer keeps to what it holds', () => {
@@ -77,9 +78,37 @@ test('a task gives and withholds a value for itself alone, and its answer keeps 
 test('a packaged circuit runs even when no task publishes it', () => {
   const reference = { ...ports, solution: ['c = calc[how=plus](a, b)', 'out <- c'] }
   const read = course([
-    level('one', [task('one', sums, 'plus', { solution: ['w = wrapped(a, b)', 'out <- w'] })], { adds: ['calc', 'wrapped'] }),
+    level('one', [task('one', sums, 'plus', { solution: ['w = wrapped(a, b)', 'out <- w'], results: [{ of: 'out' }] })], { adds: ['calc', 'wrapped'] }),
   ], { ...partDefs, parts: { ...partDefs.parts, wrapped: { name: text('wrapped'), desc: text('wrapper'), inside: [{ id: 'base', reference }] } } })
   assert.deepEqual(read.wrong, [])
-  assert.deepEqual(failures(read), [])
+  const outputs = []
+  const lines = checkCircuitTasks(read, { run: runLevel, entries: sample => {
+    outputs.push(sample.run.outputs.out)
+    return entries(sample)
+  } })
+  assert.deepEqual(lines, [{ level: 'one', fail: false, text: 'one one: answer PASS (2 tests)' }])
+  assert.deepEqual(outputs, [8])
   assert.equal(read.builtBy('wrapped'), null)
+})
+
+test('passing starters and hidden publication failures are reported without replay traces', () => {
+  const reference = { ...ports, solution: ['out <- a'] }
+  const read = course([
+    level('one', [task('one', [{ inputs: { a: 2, b: 0 }, expect: { out: 2 } }], 'plus', {
+      hidden: [sums[0]], publishes: [{ part: 'wrapped', variant: 'base' }],
+      starter: ['c = calc[how=plus](a, b)', 'out <- c'],
+    })], { adds: ['calc'] }),
+  ], { ...partDefs, parts: { ...partDefs.parts, wrapped: { name: text('wrapped'), inside: [{ id: 'base', reference }] } } })
+  const lines = checkCircuitTasks(read, {
+    run: (...args) => {
+      const result = runLevel(...args)
+      assert.ok(result.runs.length)
+      assert.ok(result.runs.every(run => !Object.hasOwn(run, 'trace')))
+      return result
+    },
+    entries: () => assert.fail('no explicit result rows need validation'),
+  })
+  assert.deepEqual(lines, [{
+    level: 'one', fail: true, text: 'one one: the board it opens on passes; its part wrapped alone fails hidden test 1',
+  }])
 })

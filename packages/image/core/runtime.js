@@ -7,6 +7,7 @@ import { validate } from './validate.js'
 import { play } from './play.js'
 import { partNames } from 'circuit'
 import { builtParts } from 'circuit'
+import { imagePartCatalog } from './part-catalog.js'
 
 /** An image game's part names, for its trays: its built parts. */
 const names = (content) => partNames(Object.keys(builtParts(content.partDefs)))
@@ -20,6 +21,7 @@ function spec(content, works = imageWorks(content)) {
     title: content.title,
     course: image.course,
     levels: image.LEVELS,
+    partCatalog: () => imagePartCatalog(image).parts,
     intros: image.intros,
     blueprints: image.blueprints,
     kit: image.kit,

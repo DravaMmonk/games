@@ -52,24 +52,23 @@ test('workshop compatibility follows resolved settings and executable checks acr
     checks: [{ holds: 'positive($factor)', say: { en: 'Use a positive factor.' } }],
   }
   const setting = { control: 'number', default: 2, min: 1, max: 8 }
-  const catalog = (id, definition, part = declaration) => ({
-
-    parts: { multiply: { ...part, settings: { 'factor': definition } } },
+  const catalog = (definition, part = declaration) => ({
+    parts: { multiply: { ...part, settings: { factor: definition } } },
   })
   const identityFor = (file) => (type) => workshopIdentity(file, type)
-  const original = identityFor(catalog('original', setting))
+  const original = identityFor(catalog(setting))
   const part = take(base(), { identity: original })
   const accepts = (file) => workshopAvailable(part, {
     identity: identityFor(file), types: new Set(['multiply']), has: () => true, allows: () => true, resolve,
   })
-  assert.ok(accepts(catalog('renamed', { ...setting, label: 'Gain', stepper: true }, {
+  assert.ok(accepts(catalog({ ...setting, label: 'Gain', stepper: true }, {
     ...declaration, inputs: [{ name: 'in', label: 'Signal' }],
     checks: [{ holds: declaration.checks[0].holds, say: { en: 'Gain must be positive.' } }],
   })))
-  assert.ok(!accepts(catalog('original', { control: 'toggle', default: true })))
-  assert.ok(!accepts(catalog('original', { ...setting, default: 3 })))
-  assert.ok(!accepts(catalog('original', { ...setting, max: 6 })))
-  assert.ok(!accepts(catalog('original', setting, { ...declaration, checks: [] })))
+  assert.ok(!accepts(catalog({ control: 'toggle', default: true })))
+  assert.ok(!accepts(catalog({ ...setting, default: 3 })))
+  assert.ok(!accepts(catalog({ ...setting, max: 6 })))
+  assert.ok(!accepts(catalog(setting, { ...declaration, checks: [] })))
 })
 
 test('publishing an upgrade hides the earlier automatic version and leaves saved instances runnable', () => {
@@ -107,7 +106,7 @@ test('deleting a manual part removes its tray pins and preserves saved boards an
   assert.equal(removeWorkshopPart(reward, part.id), reward)
 })
 
-test('an already packed course part is captured as a snapshot with its primitive dependencies', () => {
+test('a packed course part captures and runs its primitives without exposing them on the outer board', () => {
   const nested = base()
   const coursePart = packed({ circuit: nested, inputs: ['in'], outputs: ['out'] })
   const graph = from('coursePart')
@@ -117,12 +116,6 @@ test('an already packed course part is captured as a snapshot with its primitive
     open: () => ({ circuit: nested, parts: drawing }),
   })
   assert.deepEqual(part.requirements.map(({ type }) => type), ['multiply'])
-  const library = publishWorkshop(empty(), part, { id: part.id })
-  assert.equal(runBoard(from(part.id), { parts: workshopParts(library, resolve), bind: { in: 4 } }).outputs.out, 8)
-})
-
-test('a packed snapshot reads its captured primitives even when the outer board does not offer them', () => {
-  const part = take(base())
   const library = publishWorkshop(empty(), part, { id: part.id })
   const captured = workshopParts(library, resolve)
   const parts = { in: types.in, out: types.out, [part.id]: captured(part.id) }
@@ -164,8 +157,9 @@ test('draft terminals can be added, given ports, labelled, and removed along wit
     text: 'External source', ports: terminalPorts(drawing, draft.nodes[0]).slice(0, 1),
   })
   assert.deepEqual(shrunk.wires, [wire(input.id, output.id)])
-  assert.deepEqual(editWorkshopTerminal(shrunk, drawing, output.id, null).wires, [])
-  assert.equal(editWorkshopTerminal(shrunk, drawing, output.id, null).nodes.length, 1)
+  const removed = editWorkshopTerminal(shrunk, drawing, output.id, null)
+  assert.deepEqual(removed.wires, [])
+  assert.deepEqual(removed.nodes.map(({ id }) => id), [input.id])
 })
 
 test('a multiport draft packages each wired input and every output as an independent port', () => {
@@ -239,19 +233,23 @@ test('a board that cannot be kept says why', () => {
 test('a lemma whose board names its inputs differently from its ports is kept, its inputs paired in order', () => {
   // The lemma's ports are p0 and p1; the proof inside it names its premises p and q, in that order.
   const lemmaBoard = {
-    nodes: [inNode('p'), inNode('q'), { id: 'mul', type: 'multiply', params: { factor: 1 } }, outNode('goal')],
-    wires: [wire('p', 'mul'), wire('mul', 'goal')],
+    nodes: [inNode('p'), inNode('q'), { id: 'sub', type: 'subtract' }, outNode('goal')],
+    wires: [wire('p', 'sub', 'left'), wire('q', 'sub', 'right'), wire('sub', 'goal')],
   }
-  const parts = { ...drawing, inputs: (node) => (node.type === 'lemma' ? ['p0', 'p1'] : ['in']) }
+  const subtract = { inputs: ['left', 'right'], eval: ({ left, right }) => left - right }
+  const lookup = type => type === 'subtract' ? subtract : resolve(type)
+  const ports = { lemma: ['p0', 'p1'], subtract: subtract.inputs }
+  const parts = { ...drawing, inputs: ({ type }) => ports[type] ?? ['in'] }
   const board = {
     nodes: [inNode('a'), inNode('b'), { id: 'l', type: 'lemma' }, outNode('out')],
     wires: [wire('a', 'l', 'p0'), wire('b', 'l', 'p1'), wire('l', 'out')],
   }
   const kept = take(board, {
-    parts, needsSnapshot: (type) => type === 'lemma',
-    open: () => ({ circuit: { ...lemmaBoard, wires: [...lemmaBoard.wires, wire('q', 'mul', 'in2')] }, parts, level: {} }),
+    parts, resolve: lookup, needsSnapshot: (type) => type === 'lemma',
+    open: () => ({ circuit: lemmaBoard, parts, level: {} }),
   })
   assert.ok(kept)
-  assert.deepEqual(Object.values(kept.children).map(({ inputs }) => inputs), [['p0', 'p1']])
-  assert.deepEqual(Object.values(kept.children)[0].graph.nodes.filter(({ id }) => id.startsWith('pin_')).map(({ params }) => params.name), ['p0', 'p1'])
+  const library = publishWorkshop(empty(), kept, { id: kept.id })
+  const engine = workshopParts(library, lookup)
+  assert.deepEqual(runBoard(kept.graph, { parts: engine, bind: { a: 9, b: 4 } }).outputs, { out: 5 })
 })

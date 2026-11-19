@@ -11,7 +11,6 @@ import { runtimeIds } from '../engine/runtime.js'
 //                                                                            + the pedagogy lint
 //   review     reviewer              reads it all, reports findings   gate: no finding to fix left open
 //   queue      —                     the review queue entry           gate: every gate above still clean
-import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { checkGame } from '../engine/checks.js'
@@ -24,7 +23,7 @@ import { searchable } from '../engine/ops/search.js'
 import { checkContent } from '../engine/vocabulary.js'
 import { meaningsOf } from '../engine/kind-meanings.js'
 import { isLanguageCode } from '../engine/i18n.js'
-import { testArgs, testEnv, testFiles } from '../engine/test-files.js'
+import { packageTestFailure, testFiles } from '../engine/test-files.js'
 
 const finding = (rule, at, says) => ({ rule, at, says })
 
@@ -36,13 +35,22 @@ function inspectionOf(id) {
     if (!results.has(name)) results.set(name, run())
     return results.get(name)
   }
-  const domain = () => once('runtime', () => runtimeOf(content))
-  const spec = () => once('spec', async () => (await domain()).spec(content))
+  const domain = () => once('runtime', async () => {
+    const runtime = await runtimeOf(content)
+    return {
+      ...runtime,
+      spec(source, ...args) {
+        if (source === content && !args.length) return once('spec', () => runtime.spec(source))
+        return runtime.spec(source, ...args)
+      },
+    }
+  })
+  const spec = async () => (await domain()).spec(content)
   const noBlueprint = () => finding('bp-missing', id, 'the game has no blueprint.json')
   return {
     id, content, domain, spec, noBlueprint,
     checks: () => once('check', async () => {
-      const lines = await checkGame(content, { domain: await domain() })
+      const { lines } = await checkGame(content, { domain: await domain(), authoring: true })
       return lines.filter(line => line.fail).map(line => finding('check', line.level ?? id, line.text))
     }),
     conformance: () => once('conformance', async () => content.blueprint
@@ -91,12 +99,8 @@ export const STEPS = [
       for (const owner of owners) {
         const files = testFiles(resolve(packageDirectory(owner), 'test'))
         if (!files.length) continue
-        try {
-          execFileSync(process.execPath, testArgs(files), { stdio: 'pipe', env: testEnv() })
-        } catch (error) {
-          const failures = String(error.stdout ?? error.message).split('\n').filter(line => line.startsWith('not ok'))
-          tests.push(finding('package-test', owner, failures.join('\n') || 'its unit tests fail'))
-        }
+        const failure = packageTestFailure(files, { options: ['--test-reporter=dot'] })
+        if (failure) tests.push(finding('package-test', owner, failure))
       }
       return { failures: [...open, ...contract, ...tests, ...await inspection.checks()], reports: [] }
     },

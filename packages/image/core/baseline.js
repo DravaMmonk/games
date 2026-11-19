@@ -22,15 +22,20 @@ function benchReport(task, value) {
   }
 }
 
+function graphReport(task, kit) {
+  const all = withHidden(task)
+  const run = work => kit.runLevel(all, work, { traced: true })
+  return {
+    ...exampleReports(task.solution, task.naive, run),
+    alsoFails: (task.alsoFails ?? []).map(run),
+  }
+}
 
 export function imageReports({ spec, value }) {
   if (!spec.kit) return null
   return spec.levels.flatMap(level => level.tasks.map(task => {
     const kind = task.kind
-    const report = kind === 'image/graph' ? {
-      ...exampleReports(task.solution, task.naive, work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
-      alsoFails: (task.alsoFails ?? []).map(work => spec.kit.runLevel(withHidden(task), work, { traced: true })),
-    } : kind === 'image/board' ? benchReport(task, value) : {
+    const report = kind === 'image/graph' ? graphReport(task, spec.kit) : kind === 'image/board' ? benchReport(task, value) : {
       verify: task.verify(), examples: task.probe.examples.map(example => ({ ...example, output: task.probe.run(example.input) })),
       choices: task.probe.answers.map(choice => ({ choice, pass: task.probe.judge(choice) })),
     }

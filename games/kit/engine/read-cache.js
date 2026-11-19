@@ -1,15 +1,15 @@
 // Read-only author requests share resolution work until any input's metadata changes.
 import { AsyncLocalStorage } from 'node:async_hooks'
-import { existsSync, readdirSync, lstatSync } from 'node:fs'
+import { readdirSync, lstatSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { releaseDirectory } from './release-store.js'
 
 const requests = new AsyncLocalStorage()
 const generations = new Map()
 const excluded = new Set(['node_modules', '.git', '.DS_Store', 'changes.lock'])
-const stamp = path => {
-  if (!existsSync(path)) return [path, null]
-  const stat = lstatSync(path, { bigint: true })
+const stamp = (path, read = lstatSync) => {
+  const stat = read(path, { bigint: true, throwIfNoEntry: false })
+  if (!stat) return [path, null]
   if (stat.isDirectory()) return [path, readdirSync(path).sort().filter(name => !excluded.has(name)).map(name => stamp(resolve(path, name)))]
   return [path, String(stat.mtimeNs), String(stat.ctimeNs), String(stat.size), String(stat.ino)]
 }
@@ -22,7 +22,9 @@ const copy = value => {
 
 export function withReadCache(root, run) {
   const inputs = [...new Set([resolve(root, 'packages'), resolve(root, 'games'), resolve(import.meta.dirname, '..'), releaseDirectory(root)])]
-  const signature = JSON.stringify([process.env.GAMES_DEPENDENCY_PROBE, ...inputs.filter(path => !inputs.some(other => other !== path && path.startsWith(`${other}/`))).map(stamp)])
+  const roots = inputs.filter(path => !inputs.some(other => other !== path && path.startsWith(`${other}/`)))
+  // Publication and other callers can mount a whole input directory through a symlink.
+  const signature = JSON.stringify([process.env.GAMES_DEPENDENCY_PROBE, ...roots.map(path => stamp(path, statSync))])
   let generation = generations.get(root)
   if (generation?.signature !== signature) {
     generation = { signature, values: new Map() }

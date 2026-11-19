@@ -24,18 +24,18 @@ const stubs = {
 for (const [k, v] of Object.entries(stubs)) if (!(k in globalThis)) globalThis[k] = v
 
 const from = createRequire(resolve(ROOT, 'package.json'))
-let server = null
+const servers = new Map()
 
-/** A module through the same server, so it shares the game's module instances (a domain's play hook, say). */
-export async function loadModule(file) {
-  await serve()
+/** Load from the workspace's server so the module shares its game and plugin instances. */
+export async function loadModule(file, root = contentRoot()) {
+  const server = await serve(root)
   return server.ssrLoadModule(file)
 }
 
 /** The game made from `content` as the shell gets it (its domain's game.js over it). */
 export async function gameOf(content, { view = false } = {}) {
-  await serve()
   const root = contentRoots.get(content) ?? contentRoot()
+  const server = await serve(root)
   const plugins = (await import('./plugin-node.js')).loadPlugins
   const kernel = await plugins(content, root, file => server.ssrLoadModule(file), true)
   const { pluginGame } = await server.ssrLoadModule(resolve(KIT_DIR, 'app/plugin-game.jsx'))
@@ -46,20 +46,29 @@ export async function gameOf(content, { view = false } = {}) {
   return configureGame(game, content, kernel)
 }
 
-async function serve() {
-  if (!server) {
-    const { createServer } = await import(pathToFileURL(from.resolve('vite')).href)
-    const react = (await import(pathToFileURL(from.resolve('@vitejs/plugin-react')).href)).default
-    server = await createServer({
-      root: ROOT, configFile: false, plugins: [react(), packageApp(contentRoot())], appType: 'custom', logLevel: 'error',
-      server: { middlewareMode: true, hmr: false, ws: false, fs: { allow: ['..'] } },
-      resolve: { dedupe: ['react', 'react-dom', 'lucide-react', 'katex'] }, ssr: { noExternal: ['lucide-react', 'katex'] }, optimizeDeps: { noDiscovery: true, include: [] },
+function serve(root) {
+  if (!servers.has(root)) {
+    const opening = createGameServer(root).catch(error => {
+      if (servers.get(root) === opening) servers.delete(root)
+      throw error
     })
+    servers.set(root, opening)
   }
+  return servers.get(root)
+}
+
+async function createGameServer(root) {
+  const { createServer } = await import(pathToFileURL(from.resolve('vite')).href)
+  const react = (await import(pathToFileURL(from.resolve('@vitejs/plugin-react')).href)).default
+  return createServer({
+    root: ROOT, configFile: false, plugins: [react(), packageApp(root)], appType: 'custom', logLevel: 'error',
+    server: { middlewareMode: true, hmr: false, ws: false, fs: { allow: ['..'] } },
+    resolve: { dedupe: ['react', 'react-dom', 'lucide-react', 'katex'] }, ssr: { noExternal: ['katex'] }, optimizeDeps: { noDiscovery: true, include: [] },
+  })
 }
 
 export async function closeGames() {
-  const open = server
-  server = null
-  await open?.close()
+  const open = [...servers.values()]
+  servers.clear()
+  await Promise.all(open.map(async pending => (await pending.catch(() => null))?.close()))
 }

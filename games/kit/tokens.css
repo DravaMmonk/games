@@ -52,7 +52,8 @@
   --settings-width: 360px;
   --port-radius: 6px;
   --port-dot-inset: 2px;
-  --phone-compact-port-dot-size: 10px;
+  --compact-port-dot-inset: 1px;
+  --phone-compact-port-dot-size: 12px;
   --circuit-wire-width: 2.6px;
   --circuit-wire-preview: 1.6px;
   --circuit-wire-casing: 7px;

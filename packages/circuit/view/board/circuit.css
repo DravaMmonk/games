@@ -299,7 +299,7 @@
 .port-in > i { inset: 3px; }
 .pb-dot.is-in i { position: relative; }
 .pb-dot.is-in i::after { inset: var(--sp-2); }
-.port[data-port-shape='compact'] { --port-outline: inset 0 0 0; }
+.port[data-port-shape='compact'] { --port-dot-inset: var(--compact-port-dot-inset); --port-outline: inset 0 0 0; }
 .pb-dot[data-port-shape='compact'] i { width: var(--phone-compact-port-dot-size); height: var(--phone-compact-port-dot-size); }
 /* A part's sheet ends with this: take the block off the board. */
 .sheet-actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sp-4); }

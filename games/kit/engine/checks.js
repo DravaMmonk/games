@@ -26,13 +26,19 @@ const registeredReferenceNames = (content, selections = {}) => Object.fromEntrie
   return [[kind, new Map(objects.map(({ id, title, name }) => [id, String(firstText(title ?? name))]))]]
 }))
 
-/** Packages check objects and implementations once, then each level independently of any learning route. */
-export async function checkPackage(content, { domain, root, mutants = false }) {
-  const wrong = checkContent(domain, content)
-  if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, root))
-  const lines = wrong.map(problem => ({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(['exists', 'dependency'].includes(problem.rule) && { problem }) }))
-  if (wrong.length) return lines
-  lines.push(...meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? []))
+export function checkContentLines(content, { domain, root }) {
+  const problems = checkContent(domain, content)
+  if (!problems.length) problems.push(...dependencyProblemsInProject(content, root))
+  return problems.map(problem => ({
+    fail: true,
+    text: `content: ${problem.at}: ${problem.says}`,
+    ...(['exists', 'dependency'].includes(problem.rule) && { problem }),
+  }))
+}
+
+/** Check each package level independently of any learning route. */
+async function checkPackageLevels(content, domain, mutants) {
+  const lines = []
   const names = { ...registeredReferenceNames(content), ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, vocabulary: domain.vocabulary }))) }
   for (const [name, value] of Object.entries({ levels: content.levels, ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content }))) })) {
     for (const problem of refProblems(value, name, names)) lines.push({ fail: true, text: `text ${problem}` })
@@ -57,17 +63,13 @@ export async function checkPackage(content, { domain, root, mutants = false }) {
  * kept checks (check-cache.js), which the domain's checks of an unchanged level are read from; never with `mutants`.
  */
 export async function checkGame(content, { domain, mutants = false, cache = null, root }) {
-  if (content.packageTarget) return checkPackage(content, { domain, root, mutants })
-  const lines = []
-  const fail = (text) => lines.push({ fail: true, text })
-  const wrong = checkContent(domain, content)
-  if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, root))
-  for (const problem of wrong) lines.push({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(['exists', 'dependency'].includes(problem.rule) && { problem }) })
-  if (wrong.length) return lines
-  lines.push(...meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? []))
+  const invalid = checkContentLines(content, { domain, root })
+  if (invalid.length) return invalid
+  const lines = meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? [])
+  if (content.packageTarget) return [...lines, ...await checkPackageLevels(content, domain, mutants)]
+  const fail = text => lines.push({ fail: true, text })
   const spec = domain.spec(content)
   lines.push(...await domain.checkPhase?.({ phase: 'course', spec, content }) ?? [])
-
 
   const seen = new Set()
   for (const level of spec.levels) {

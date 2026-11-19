@@ -15,7 +15,7 @@
 
 **存在性检查只有一份。** `engine/existence.js` 按 schema 收集字段引用、覆盖目标、集合补丁的成员与边、标签、进度字段的元件引用及依赖选择，对照 manifest 的公开身份与代码登记表检查。目标须由所属命名空间声明或由代码登记。加载和引用展开只处理结构、集合与成环，存在性问题统一汇总。
 
-问题保留 `rule`、`layer`、`kind`、`target`、`member?`、`reason`、`at`、`says`，另有 `object: { kind, name, member?, override? }` 与 `path`。存在性问题的 `rule` 为 `exists`，`reason` 为 `missing`、`ambiguous` 或 `undeclared dependency`。`name` 是对象全名，标签带成员类型；覆盖位置设 `override: true`，覆盖目标本身的 `path` 为空串。字段路径如 `tasks[0].solution`；配置位置如 `{ kind: "package", name: "example" }` 与 `uses[0]`。同一原始字段只报告一次，不同对象、成员类型和字段分别报告。Studio 直接使用结构化位置。
+问题保留 `rule`、`layer`、`kind`、`target`、`member?`、`reason`、`at`、`says`，另有 `object: { kind, name, member?, override? }` 与 `path`。存在性问题的 `rule` 为 `exists`，`reason` 为 `missing`、`ambiguous` 或 `undeclared dependency`。`name` 是对象全名，标签带成员类型；覆盖位置设 `override: true`，覆盖目标本身的 `path` 为空串。字段路径如 `tasks[0].solution`；配置位置如 `{ kind: "package", name: "example" }` 与 `uses[0]`。同一原始字段只报告一次，不同对象、成员类型和字段分别报告。Studio 直接使用结构化位置。完整检查和快速预览共用内容与依赖的诊断，包括缺锁和引用错误的位置。
 
 在 `site/` 运行 `npm run check -- <游戏>` 或 `npm run check -- --package <包>`。包逐关独立检查，游戏另查编排和进度。省略目标时查全部游戏及未被游戏选用的包。空内容工作区也能执行。技术问题由检查报告，教学建议由评审处理。
 

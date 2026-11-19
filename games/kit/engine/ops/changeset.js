@@ -24,10 +24,8 @@ import { shapeAt, validate } from '../schema.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tasksSchema } from '../tasks.js'
 
-import { checkContent } from '../vocabulary.js'
-import { checkGame } from '../checks.js'
+import { checkContentLines, checkGame } from '../checks.js'
 import { runtimeOf } from '../resolver.js'
-import { dependencyProblemsInProject } from '../project-dependencies.js'
 import { operationsFor, opScope } from './operations.js'
 import { adoptionFiles, append, hashOf, headOf, readLog, withLock } from './log.js'
 
@@ -175,13 +173,8 @@ function sourceArguments(ws, operation, supplied, vocabulary) {
 // The whole game's check, and the write or the restore, after every operation of a changeset has run.
 async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, cache, texts }) {
   // The hub's count goes with the change (workspace.js), so it is checked against the levels there are now.
-  let lines
-  if (check) lines = await checkGame(content, { domain, cache, root: ws.root })
-  else {
-    const wrong = checkContent(domain, content)
-    if (!wrong.length) wrong.push(...dependencyProblemsInProject(content, ws.root))
-    lines = wrong.map(problem => ({ fail: true, text: `content: ${problem.at}: ${problem.says}`, ...(problem.rule === 'exists' && { problem }) }))
-  }
+  const options = { domain, cache, root: ws.root }
+  const lines = check ? await checkGame(content, options) : checkContentLines(content, options)
   const problems = lines.filter((l) => l.fail).map((l) => l.text)
   const changes = texts ? ws.changes() : []
   const diff = texts ? ws.diff(changes) : ''

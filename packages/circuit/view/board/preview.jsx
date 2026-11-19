@@ -1,18 +1,17 @@
 import { Fragment, useMemo } from 'react'
-import { EditableCanvas } from "./CanvasEditor.jsx"
 import SlotBoard from "./SlotBoard.jsx"
 import { L } from "kernel/view"
 import { tr } from 'kernel/words'
 
 import { circuitBoard, primitivesOnly } from "../../core/board-cards.js"
 import { definitionPorts, evalSettings } from "../../core/parts/define.js"
-import PartFace from "../parts/PartFace.jsx"
+import PartFace, { blocksOf } from "../parts/PartFace.jsx"
 import { nextParams } from "../parts/faces.jsx"
 import { withPartLabels } from "./board-parts.js"
 import PartSheet, { Implementations, Ports, Settings, marker } from "../parts/PartSheet.jsx"
 
 // The circuit editor's parts drawn (games/design/README.md 6.7, 6.8). A primitive's scenes are its three faces — the desktop
-// card on the game's own canvas, the phone tile on its slot board, the detail both share — drawn by the game's page
+// card and phone tile in a fixed single-part layout, and the detail both share — drawn from the game's definitions
 // (game.defined), so its icons, colours and controls are the player's; its settings move as a player would move them
 // (rules followed, readouts and actions live) and the three scenes share them (`state`); nothing is wired to it, so
 // its value shows as a placeholder. The parts box and Studio previews take the same example circuits, simulations
@@ -30,6 +29,7 @@ import BuiltBoard from './BuiltBoard.jsx'
 const NONE = { values: new Map(), errors: new Map() }
 const at = (path) => JSON.stringify(path)
 const previewBoard = circuitBoard({ cards: [] })
+const ignore = () => {}
 
 function Code({ path, label, text, picked, ok = null }) {
   return (
@@ -54,7 +54,7 @@ function Face({ part, game, scene, edit, state }) {
     const circuit = primitivesOnly(previewBoard, { [type]: definitionPorts(def, defined.ops) })
     return withPartLabels(previewBoard.wiring(null, circuit), defined.of)
   }, [type, def, defined])
-  const node = { id: 'p', type, params, x: 40, y: 30 }
+  const node = { id: 'p', type, params }
   const graph = { nodes: [node], wires: [] }
   const set = (patch, changed) => setParams((p) => nextParams(def, { params: p ?? defined.defaults(type) }, patch, changed, defined.ops))
   const ctx = { view: NONE, board: { circuit: graph, parts }, path: [], readOnly: false }
@@ -62,18 +62,15 @@ function Face({ part, game, scene, edit, state }) {
   const shown = { ...defined, value }
   const { mark } = marker(edit)
   const face = (name, extra = {}) => <PartFace def={def} face={name} node={node} ctx={ctx} set={set} defined={shown} mark={mark} {...extra} />
-  const tile = (pick) => (d) => (d.views?.tile ? d.views.tile.map((b, k) => [b, ['views', 'tile', k]]) : [[{ show: 'value' }, null], [{ show: 'summary' }, null]]).filter(([b]) => pick(b.show === 'value'))
-  if (scene === 'card') {
-    return (
-      <div className="pp-canvas">
-        <EditableCanvas graph={graph} parts={parts} height={260} onChange={(g) => { const n = g.nodes.find((x) => x.id === 'p'); if (n) setParams(n.params ?? {}) }} body={() => face('card')} />
-      </div>
-    )
-  }
-  if (scene === 'tile') {
+  if (scene === 'card' || scene === 'tile') {
+    const desktop = scene === 'card'
+    const tile = desktop ? [] : blocksOf(def, 'tile')
+    const body = desktop ? () => face('card') : () => face('tile', { blocks: tile.filter(([block]) => block.show !== 'value') })
     return (
       <div className="pp-slots">
-        <SlotBoard fixed graph={graph} parts={parts} nameOf={() => L(def.name)} thumb={() => face('tile', { blocks: tile((v) => v)(def) })} tileExtra={() => face('tile', { blocks: tile((v) => !v)(def) })} onPort={() => {}} onSlot={() => {}} onNode={() => {}} />
+        <SlotBoard fixed graph={graph} parts={parts} nameOf={() => L(def.name)}
+          thumb={desktop ? undefined : () => face('tile', { blocks: tile.filter(([block]) => block.show === 'value') })}
+          tileExtra={body} frameBody={desktop ? body : undefined} onPort={ignore} onNode={ignore} />
       </div>
     )
   }

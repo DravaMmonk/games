@@ -60,9 +60,11 @@
 .pp-pane > header { display: flex; align-items: center; gap: var(--sp-3); height: 24px; padding: 0 var(--sp-4); color: var(--faint); }
 .pp-add { margin-left: auto; width: 20px; height: 20px; display: grid; place-items: center; padding: 0; border: 0; border-radius: var(--r-sm); color: var(--muted); background: none; cursor: pointer; }
 .pp-add:hover { color: var(--ink); background: var(--canvas); }
-.pp-canvas { height: 260px; }
-.pp-slots { width: min(100%, 360px); margin: 0 auto; padding: 0 var(--sp-4) var(--sp-4); }
-.pp-slots .pb-tools { display: none; }
+.pp-slots { width: min(100%, 360px); margin: 0 auto; padding: var(--sp-5) var(--sp-4); }
+.pp-slots :is(.pb-tools, .pb-terms:empty) { display: none; }
+.pp-slots .pb-grid.is-blocks:not(:has(> .is-frame)) { display: flex; justify-content: center; }
+.pp-slots .pb-grid.is-blocks > .pb-cell:not(.is-frame) { width: min(100%, 260px); }
+.pp-slots .pb-grid.is-blocks > .pb-cell:has(> .pb-cell.is-blank) { display: none; }
 .pp-detail { padding: var(--sp-2) var(--sp-5) var(--sp-5); display: grid; gap: var(--sp-4); }
 .pp-detail h3, .pp-sheet-head h3 { margin: 0; font-size: 15px; }
 .pp-value { display: inline-block; padding: 1px var(--sp-4); border-radius: var(--r-sm); color: var(--faint); box-shadow: inset 0 0 0 1px var(--line); font: 11px var(--mono); }

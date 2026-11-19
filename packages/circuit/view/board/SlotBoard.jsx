@@ -126,6 +126,7 @@ const readMode = () => {
  * @param nameOf(node)                     a block's name (with its number, for parts)
  * @param thumb(node, size)                what a block shows; sinkBody(node) what a sink shows; tileExtra(node) a line
  *                                         under a part's name (a setting); sinkClass(node) a sink's state
+ * @param frameBody(node)                  content under a frame's name
  * @param picking, moving, canLand(p), onPort(p), onNode(id), onSlot(at)    from useSlotEditing
  * @param fixed                            a circuit that is only looked at and tried (a bench in the parts box): just its
  *                                         own blocks, no empty slots to fill
@@ -154,7 +155,7 @@ const readMode = () => {
 /** The most outputs a source holds before it takes a row of its own (two rows of four dots, on a phone's half row). */
 const WIDE = 8
 
-export default function SlotBoard({ blocks = null, onPartitionHint, canMove = () => true, graph, parts: givenParts, boardRef, nameOf, thumb, tileExtra, sinkBody, sinkClass, picking, moving, canLand, onPort, onNode, onSlot, fixed = false, nodeClass, outNote, history, onClear, onChange, types, regionNote, resultNote, regionLabel, needsSetting }) {
+export default function SlotBoard({ blocks = null, onPartitionHint, canMove = () => true, graph, parts: givenParts, boardRef, nameOf, thumb, tileExtra, frameBody, sinkBody, sinkClass, picking, moving, canLand, onPort, onNode, onSlot, fixed = false, nodeClass, outNote, history, onClear, onChange, types, regionNote, resultNote, regionLabel, needsSetting }) {
   const portMask = useId()
   const ownRef = useRef(null)
   const board = boardRef ?? ownRef
@@ -396,6 +397,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
     const title = (
       <div className="pb-frame-head">
         <span className="pb-name">{icon(node)}{nameOf(node)}</span>
+        {!isFolded && frameBody?.(node)}
       </div>
     )
     let row = 1

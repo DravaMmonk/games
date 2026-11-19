@@ -1,6 +1,4 @@
-import { L } from '../shell/i18n.js'
-import { T } from '../shell/i18n.js'
-// The route map's preview (games/design/README.md 2.6, 6.7): one chapter of the game's map as the player sees it, drawn by
+// The chapter editor's preview (games/design/README.md 2.6, 6.7): one chapter of the game's map, drawn by
 // the shell itself (../shell/LevelMap.jsx MapChapter) in the play page (studio.html?play, play.jsx) with every level
 // open. It is handed the content as the preview has it and, apart, the chapter's rows as the map editor leaves them,
 // its own pending moves in too. Making a game of the content takes the page (and the studio, on the same thread)
@@ -10,7 +8,7 @@ import { T } from '../shell/i18n.js'
 // phone's (the author's choice, kept).
 import { useEffect, useRef, useState } from 'react'
 import { Monitor, Smartphone } from 'lucide-react'
-import { getLang, tr } from '../shell/i18n.js'
+import { getLang, L, T, tr } from '../shell/i18n.js'
 import { usePref } from './prefs.js'
 
 /**
@@ -48,9 +46,9 @@ export default function MapPreview({ content, stamp, chapter, rows }) {
     if (ready) send({ type: 'look', theme, lang })
   }, [ready, theme, lang]) // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <section className={`map-preview is-${device}`} aria-label={tr("玩家看到的路线图")}>
-      <div className="map-preview-head">
-        <h3>{tr("玩家看到的样子")}</h3>
+    <section className={`effect-preview map-preview is-${device}`} aria-label={tr("路线图预览")}>
+      <div className="effect-preview-head">
+        <h3>{tr("效果")}</h3>
         <span className="seg" role="radiogroup" aria-label={tr("设备")}>
           {[['desktop', Monitor, T("桌面")], ['phone', Smartphone, T("手机")]].map(([id, Icon, label]) => (
             <button key={id} type="button" role="radio" aria-checked={device === id} className={device === id ? 'is-on' : ''} onClick={() => setDevice(id)} title={L(label)} aria-label={L(label)}>

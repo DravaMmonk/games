@@ -62,9 +62,9 @@ export const addRow = (rows, at = rows.length) => [...rows.slice(0, at), [null],
 export const removeRow = (rows, row) => rows.filter((_, k) => k !== row)
 
 /** Every level that `id` needs, all the way back along `edges` ({ from, to }: from is a prerequisite of to). */
-function prerequisitesOf(id, edges) {
+function prerequisitesOf(id, incoming) {
   const seen = new Set()
-  const walk = (to) => { for (const e of edges) if (e.to === to && !seen.has(e.from)) { seen.add(e.from); walk(e.from) } }
+  const walk = (to) => { for (const from of incoming.get(to) ?? []) if (!seen.has(from)) { seen.add(from); walk(from) } }
   walk(id)
   return seen
 }
@@ -72,8 +72,10 @@ function prerequisitesOf(id, edges) {
 /** Every pair { from, to } of placed levels where `from` is a prerequisite of `to` and not in a row above it. */
 export function rowConflicts(rows, edges) {
   const row = new Map(rows.flatMap((r, k) => r.filter((x) => x !== null).map((x) => [x, k])))
+  const incoming = new Map()
+  for (const { from, to } of edges) incoming.set(to, [...(incoming.get(to) ?? []), from])
   const out = []
-  for (const [to, at] of row) for (const from of prerequisitesOf(to, edges)) if (row.has(from) && row.get(from) >= at) out.push({ from, to })
+  for (const [to, at] of row) for (const from of prerequisitesOf(to, incoming)) if (row.has(from) && row.get(from) >= at) out.push({ from, to })
   return out
 }
 
@@ -81,4 +83,10 @@ export function rowConflicts(rows, edges) {
 export function layoutRefusal(before, after, edges) {
   const had = new Set(rowConflicts(before, edges).map(({ from, to }) => `${from} ${to}`))
   return rowConflicts(after, edges).find(({ from, to }) => !had.has(`${from} ${to}`)) ?? null
+}
+
+/** The first new row conflict introduced by a prerequisite, including indirect prerequisites. */
+export function wiringLayoutRefusal(rows, edges, edge) {
+  const had = new Set(rowConflicts(rows, edges).map(({ from, to }) => `${from} ${to}`))
+  return rowConflicts(rows, [...edges, edge]).find(({ from, to }) => !had.has(`${from} ${to}`)) ?? null
 }

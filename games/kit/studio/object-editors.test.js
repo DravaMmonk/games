@@ -4,7 +4,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { memberKnown, memberTitle, newTag, ownTagData, tagCycle, tagValuesOp, textWith, withMember, withoutMember, writtenName } from './tag-edit.js'
-import { addPlace, addRow, clearLevel, layoutRefusal, placeLevel, placeOf, removePlace, removeRow, rowConflicts, unplacedOf } from './layout-edit.js'
+import { addPlace, addRow, clearLevel, layoutRefusal, placeLevel, placeOf, removePlace, removeRow, rowConflicts, unplacedOf, wiringLayoutRefusal } from './layout-edit.js'
 
 const CONTENT = {
   registries: {
@@ -109,3 +109,12 @@ test('a move that puts a prerequisite in a row not above its level is refused, a
   assert.equal(layoutRefusal(wrong, placeLevel(wrong, 'p/c', { row: 2, new: true }), edges), null)
 })
 
+
+test('wiring refuses new indirect row conflicts and allows existing ones', () => {
+  const edges = [{ from: 'p/b', to: 'p/c' }]
+  const rows = [['p/b'], ['p/a', 'p/c'], ['p/d']]
+  assert.deepEqual(wiringLayoutRefusal(rows, edges, { from: 'p/a', to: 'p/b' }), { from: 'p/a', to: 'p/b' })
+  const indirect = [['p/a', 'p/c'], ['p/d']]
+  assert.deepEqual(wiringLayoutRefusal(indirect, edges, { from: 'p/a', to: 'p/b' }), { from: 'p/a', to: 'p/c' })
+  assert.equal(wiringLayoutRefusal([['p/c'], ['p/b'], ['p/d']], edges, { from: 'p/b', to: 'p/d' }), null)
+})

@@ -6,8 +6,9 @@
 // board shows it before the preview comes back (pending-view.js), so wiring never waits.
 // The list of relations is the left column's (ObjectLists.jsx); its file the right's.
 import { useMemo, useState } from 'react'
-import { Plus, Trash2 } from 'lucide-react'
+import { ArrowRight, Plus, Trash2 } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
+import { expandRelations, readTag, referenceResolver } from '../engine/objects.js'
 import { Picker } from './Picker.jsx'
 import ArrangementBoard from './ArrangementBoard.jsx'
 import { linkKey, wiringBoard, wiringRefusal } from './arrangement.js'
@@ -16,6 +17,7 @@ import { localName, namespaceOf, shownName, tagByRef, tagCandidates } from './ob
 import SourceMark from './SourceMark.jsx'
 import { overridesIt, relationOverrideOps } from './override-edit.js'
 import { pendingValue, writtenBy } from './pending-view.js'
+import { registeredMeanings } from './editors.js'
 import { declaredEdges, endpointKind, endpointsOf, withEdge, withRequired, withoutEdge, withoutEndpoint, writeEdges } from './relation-edit.js'
 
 const refusal = (reason) => ({
@@ -34,14 +36,14 @@ const placedOn = new Map()
  * `ops`: the pending changeset; `previewOps`: the operations the content shown was previewed with; `applying`: the
  * changeset is being written.
  */
-export default function RelationBoard({ content, namespace, full, ops = [], previewOps = [], applying = false, pending, onSelect, onEdit, onOps, onPick }) {
+export default function RelationBoard({ content, namespace, full, vocabulary, ops = [], previewOps = [], applying = false, pending, onSelect, onEdit, onOps, onPick }) {
   const relation = content?.registries?.relation?.[full]
   if (!relation) return <article className="arrange" />
-  return <OneRelation key={full} full={full} name={localName(namespace, full)} relation={relation} own={namespaceOf(full) === namespace} content={content} namespace={namespace}
+  return <OneRelation key={full} full={full} name={localName(namespace, full)} relation={relation} own={namespaceOf(full) === namespace} content={content} namespace={namespace} vocabulary={vocabulary}
     ops={ops} previewOps={previewOps} applying={applying} pending={pending} onSelect={onSelect} onEdit={onEdit} onOps={onOps} onPick={onPick} />
 }
 
-function OneRelation({ full, name, relation, own, content, namespace, ops, previewOps, applying, pending, onSelect, onEdit, onOps, onPick }) {
+function OneRelation({ full, name, relation, own, content, namespace, vocabulary, ops, previewOps, applying, pending, onSelect, onEdit, onOps, onPick }) {
   const kind = endpointKind(relation)
   const boardKey = `${namespace}|${full}`
   const saved = useMemo(() => declaredEdges(relation), [relation])
@@ -119,25 +121,53 @@ function OneRelation({ full, name, relation, own, content, namespace, ops, previ
           onPick={(id) => setPlaced([...placed, id])} />}
         {own && <button type="button" className="kit-btn editor-tool" disabled={pending} onClick={remove} title={tr("删掉这份关系")}><Trash2 size={14} /></button>}
       </div>
-      {/* What is picked, in a row of a fixed height; taking it off is the board's (its × buttons, Delete). */}
-      <div className="arrange-actions">
-        {wire ? <>
-          <strong title={`${describe(wire.from)} → ${describe(wire.to)}`}><code>{shownName(namespace, wire.from)}</code> → <code>{shownName(namespace, wire.to)}</code></strong>
-          {relation.kind === 'requires' && <label title={tr("须通过这个前置")}>
-            <input type="checkbox" checked={wire.required ?? false} disabled={locked} onChange={(e) => write(withRequired(edges, highlight, e.target.checked))} />
-            {tr("须通过")}
-          </label>}
-        </> : active ? <strong title={describe(active)}>{describe(active)}</strong> : null}
+      <div className="effect-layout">
+        <div className="arrange-links">
+          {/* What is picked, in a row of a fixed height; taking it off is the board's (its × buttons, Delete). */}
+          <div className="arrange-actions">
+            {wire ? <>
+              <strong title={`${describe(wire.from)} → ${describe(wire.to)}`}><code>{shownName(namespace, wire.from)}</code> → <code>{shownName(namespace, wire.to)}</code></strong>
+              {relation.kind === 'requires' && <label title={tr("须通过这个前置")}>
+                <input type="checkbox" checked={wire.required ?? false} disabled={locked} onChange={(e) => write(withRequired(edges, highlight, e.target.checked))} />
+                {tr("须通过")}
+              </label>}
+            </> : active ? <strong title={describe(active)}>{describe(active)}</strong> : null}
+          </div>
+          <ArrangementBoard board={board} idOf={(id) => shownName(namespace, id)} titleOf={titleOf} describe={describe} active={active} wire={highlight} pending={locked} isExternal={() => false} refuse={refuse}
+            onLevel={(id) => { reset(); setActive(active === id ? null : id) }} onWire={(edge) => {
+              setActive(null)
+              setHighlight(linkKey(edge))
+              const k = (relation.edges ?? []).findIndex((e) => linkKey(e) === linkKey(edge))
+              onPick?.(k < 0 ? ['sequence'] : ['edges', k])
+            }}
+            onConnect={connect} onDelete={removeWire} onRemoveCard={editable ? removeEnd : null}
+            removeCardLabel={tr("从板上拿掉")} onCancel={() => { reset(); setActive(null) }} />
+        </div>
+        <RelationPreview content={content} full={full} relation={relation} edges={edges} vocabulary={vocabulary} describe={describe} />
       </div>
-      <ArrangementBoard board={board} idOf={(id) => shownName(namespace, id)} titleOf={titleOf} describe={describe} active={active} wire={highlight} pending={locked} isExternal={() => false} refuse={refuse}
-        onLevel={(id) => { reset(); setActive(active === id ? null : id) }} onWire={(edge) => {
-          setActive(null)
-          setHighlight(linkKey(edge))
-          const k = (relation.edges ?? []).findIndex((e) => linkKey(e) === linkKey(edge))
-          onPick?.(k < 0 ? ['sequence'] : ['edges', k])
-        }}
-        onConnect={connect} onDelete={removeWire} onRemoveCard={editable ? removeEnd : null}
-        removeCardLabel={tr("从板上拿掉")} onCancel={() => { reset(); setActive(null) }} />
     </article>
+  )
+}
+
+function RelationPreview({ content, full, relation, edges, vocabulary, describe }) {
+  const resolved = useMemo(() => {
+    const { registries, objectKinds } = content
+    const expand = referenceResolver(registries, [], { ...vocabulary, meanings: registeredMeanings() })
+    const scheduled = new Set(Object.keys(registries.level ?? {}))
+    const optional = new Set(readTag(registries, 'level', vocabulary?.levelMarks?.optional))
+    const definitions = Object.assign({}, ...Object.values(objectKinds ?? {}).map((kind) => kind.relations))
+    return expandRelations({ [full]: { ...relation, edges } }, expand, scheduled, [], optional, definitions)[relation.kind]
+  }, [content, full, relation, edges, vocabulary])
+  return (
+    <section className="effect-preview" aria-label={tr("关系效果")}>
+      <div className="effect-preview-head"><h3>{tr("效果")}</h3></div>
+      {resolved.length > 0 ? <ul className="relation-effect">
+        {resolved.map((edge) => <li key={JSON.stringify(edge)}>
+          <span>{edge.game ? `${edge.game} · ${edge.from}` : describe(edge.from)}</span>
+          <ArrowRight size={13} aria-hidden="true" />
+          <span>{describe(edge.to)}{edge.required && <small>{tr("须通过")}</small>}</span>
+        </li>)}
+      </ul> : <p className="arrange-note">{tr("没有生效的连线。")}</p>}
+    </section>
   )
 }

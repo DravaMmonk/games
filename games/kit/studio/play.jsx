@@ -90,21 +90,24 @@ export default function Play() {
   useEffect(() => {
     let no = 0
     let stamp = 0
+    let mapView = null
     const onMessage = async (event) => {
       if (event.source !== window.parent) return
       const m = event.data
       if (m?.type === 'edit') return setEdit({ on: m.on, picked: m.picked ?? null })
       if (m?.type === 'go') return setGo((g) => ({ task: m.task, n: (g?.n ?? 0) + 1 }))
       if (m?.type === 'look') return look(m)
-      if (m?.type === 'map') {
+      if (m?.type === 'map' || m?.type === 'map-rows') {
+        const view = { chapter: m.chapter, rows: m.rows ?? null, compact: Boolean(m.compact) }
+        mapView = view
+        if (m.type === 'map-rows') return setMap((now) => now?.game.stamp === stamp ? { ...now, ...view } : now)
         look(m)
         // The latest edit wins: a game made of an older content that comes late is not shown.
         const mine = ++stamp
         const game = await gameOf(m.content, mine)
-        if (mine === stamp) setMap({ game, chapter: m.chapter, rows: m.rows ?? null, compact: Boolean(m.compact) })
+        if (mine === stamp) setMap({ game, ...mapView })
         return undefined
       }
-      if (m?.type === 'map-rows') return setMap((now) => now && { ...now, chapter: m.chapter, rows: m.rows ?? null, compact: Boolean(m.compact) })
       if (m?.type === 'content') {
         const game = await gameOf(m.content, ++stamp)
         setPart((p) => (p ? { ...p, game } : p))

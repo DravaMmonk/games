@@ -5,7 +5,7 @@ import { stageChain } from './stages.js'
 const keyOf = (kind, id) => JSON.stringify([kind, id])
 
 /** Read stage and grant state from the existing level and task save. */
-export function objectProgress(content, isOpen = (id, solved) => solved.has(id)) {
+export function objectProgress(content) {
   const scope = grantScope(Object.entries(content.registries?.['progress/policy'] ?? {}))
   const possibleGrants = new Map()
   const grant = (items, ids, source) => {
@@ -39,30 +39,32 @@ export function objectProgress(content, isOpen = (id, solved) => solved.has(id))
       grant(offered, ids, level)
       grant(awards, ids, level)
     }
-    const introduce = (ids, local, active, level) => {
+    const introduce = (ids, local, active, cleared, level) => {
       const visible = ids?.filter(id => !local.has(id))
       grant(offered, active ? ids : visible, level)
-      grant(introduced, visible, level)
+      if (cleared) grant(introduced, visible, level)
     }
     const completed = (level, task) => completedTask(progress, level.id, task.id, task.optional)
     for (const level of content.levels) {
-      if (solved.has(level.id)) award(level.awards, level.id)
+      const cleared = solved.has(level.id)
+      if (cleared) award(level.awards, level.id)
       const local = new Set(level.local ?? [])
-      const reachable = at?.level === level.id || isOpen(level.id, solved)
-      if (reachable) for (const field of ['adds', 'opens']) introduce(level[field], local, at?.level === level.id, level.id)
-      if (at?.level === level.id) {
+      const active = at?.level === level.id
+      if (cleared || active) for (const field of ['adds', 'opens']) introduce(level[field], local, active, cleared, level.id)
+      if (active) {
         grant(offered, level.gives, level.id)
         grant(withheld, level.withholds, level.id)
       }
-      let next = reachable
+      let next = cleared || active
       for (const task of level.tasks ?? []) {
         const passed = completed(level, task)
         if (passed) award(task.awards, level.id)
-        if (next || passed || at?.task === task.id) {
+        const current = at?.task === task.id
+        if (next || ((cleared || active) && passed) || current) {
           const taskLocal = new Set([...local, ...(task.local ?? [])])
-          for (const field of ['adds', 'opens']) introduce(task[field], taskLocal, at?.task === task.id, level.id)
+          for (const field of ['adds', 'opens']) introduce(task[field], taskLocal, current, cleared, level.id)
         }
-        if (at?.task === task.id) {
+        if (current) {
           grant(offered, task.gives, level.id)
           grant(withheld, task.withholds, level.id)
         }

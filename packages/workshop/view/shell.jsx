@@ -21,7 +21,7 @@ export function useWorkshopShell({ game, progress, level, author, solved, phone,
   const sources = useMemo(() => {
     if (level || author || !game.workshop) return []
     return game.levels.slice().reverse().flatMap(candidate => {
-      if (!game.isOpen(candidate, solved, progress.all)) return []
+      if (!progress.all && !solved.has(candidate.id)) return []
       return candidate.tasks.map((task, at) => ({ candidate, at, task, kind: game.kinds[playId(task)] }))
         .reverse().filter(({ at, kind }) => kind?.editor === 'circuit' && taskOpen(game, progress, candidate.id, at))
     })

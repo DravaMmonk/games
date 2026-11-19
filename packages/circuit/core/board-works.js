@@ -5,7 +5,7 @@ import { boardShape } from './board-shape.js'
 // game.json's `replaces` says which built parts supersede which. A domain says how its own fields and tests read:
 //
 //   circuitWorks(content, { board, parts, read?, test?, kinds?, unwanted? }) → { LEVELS, played, builtBy,
-//     CHAPTERS, course, partOf, BUILT, parts, types, blueprints, wrong, offerIn, introductions, carried, opening,
+//     CHAPTERS, course, partOf, BUILT, parts, types, blueprints, wrong, offerIn, carried, opening,
 //     syncOwn }
 //       board  its circuitBoard (./board-cards.js)
 //       parts  { type: part } the game's primitives; read(task, say) → the task's own fields read (what it wants…),
@@ -279,8 +279,6 @@ export function* prepareCircuitWorks(content, { board, parts, read: readOwn = (t
     offerIn: (task, flags) => offer(course, { id: task.id, task: task.task }, new Set(flags)),
     // Whether a task holds an item, of any grain (../course.js holds): has(part), has(part, key), has(part, key, value).
     holdsIn: (task, flags) => holding(course, { id: task.id, task: task.task }, new Set(flags)),
-    // The tasks of level `id` that bring in part `type`.
-    introductions: (type, id) => (played.get(id) ?? []).filter((T) => T.fresh.includes(type)).map((T) => T.taskId),
     // The levels a task carries on from: passing them keeps the board (progress.built).
     carried: new Set(LEVELS.flatMap((L) => played.get(L.id).map((T) => T.carry)).filter(Boolean)),
     // The board a task opens on: the board of the level it carries on from (the player's, else its last task's

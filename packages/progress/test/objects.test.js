@@ -35,6 +35,7 @@ test('a text course configures inline stages and grants by object type without c
   const file = join(root, 'packages/story/levels/given.json')
   const level = JSON.parse(readFileSync(file))
   level.stages = [{ id: 'introduced' }]
+  level.adds = ['given']
   level.tasks[0].awards = ['bonus']
   writeFileSync(file, JSON.stringify(level))
   write('levels/review.json', { title: 'Review', requiresObjects: ['bonus', 'practised'],
@@ -48,6 +49,9 @@ test('a text course configures inline stages and grants by object type without c
   assert.deepEqual(content.objectProblems, [])
   const progress = objectProgress(content)
   assert.equal(progress({ passed: [], solved: [] }).stage('entry', 'story/given'), null)
+  const inLevel = progress({ passed: [], solved: [] }, { level: 'story/given', task: 'story/given' })
+  assert.equal(inLevel.stage('entry', 'story/given').id, 'story/given')
+  assert.deepEqual(inLevel.grants('entry').introduced, [])
   assert.equal(progress({ passed: ['story/given'], solved: [] }).stage('entry', 'story/given').id, 'story/learned')
   assert.equal(progress({ passed: [], solved: ['story/given'] }).stage('entry', 'story/given').id, 'story/practised')
   assert.equal(progress({ passed: [], solved: [] }).stage('level', 'story/given').id, 'story/introduced')
@@ -55,7 +59,7 @@ test('a text course configures inline stages and grants by object type without c
   assert.equal(progress({ passed: ['story/given'], solved: [] }).stage('entry', 'story/given').definition.title, 'Clue unlocked')
   assert.equal(progress({ passed: [], solved: [] }).stage('entry', 'story/bonus'), null)
   assert.equal(progress({ passed: ['story/given'], solved: [] }).stage('entry', 'story/bonus').id, 'story/bonus')
-  assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('entry'), { awards: ['story/bonus'], introduced: [] })
+  assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('entry'), { awards: ['story/bonus'], introduced: ['story/given'] })
   assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('level').awards, [])
   assert.deepEqual(progressMeaning.contentChecks({ content }), [])
   assert.ok(courseLayout(content).dependencyLinks.some(link => link.from === 'story/given' && link.to === 'story/review' && link.source === 'reference'))

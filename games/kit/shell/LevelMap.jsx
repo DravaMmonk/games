@@ -192,7 +192,7 @@ function UnlockChip({ items, style }) {
   const [first] = items
   const fresh = items.filter((item) => item.fresh && item.open).map((item) => L(item.label))
   const built = items.filter((item) => !item.fresh && item.open).map((item) => L(item.label))
-  const title = [fresh.length && tr("这一关新带来：{value}", {value: { zh: String(fresh.join('、')), en: String(fresh.join(', ')) }}), built.length && tr("已解锁：{value}", {value: { zh: String(built.join('、')), en: String(built.join(', ')) }}), items.some((item) => !item.open) && tr('进入或通过这一关后可见')].filter(Boolean).join('\n')
+  const title = [fresh.length && tr("这一关新带来：{value}", {value: { zh: String(fresh.join('、')), en: String(fresh.join(', ')) }}), built.length && tr("已解锁：{value}", {value: { zh: String(built.join('、')), en: String(built.join(', ')) }}), items.some((item) => !item.open) && tr('通关后解锁')].filter(Boolean).join('\n')
   return (
     <span className={`map-unlock ${first.open ? 'is-open' : 'is-locked'} ${first.fresh ? 'is-fresh' : ''}`} style={style} title={title}>
       {first.open ? <Package size={11} /> : <Lock size={10} />}

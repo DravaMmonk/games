@@ -1,7 +1,7 @@
 import { describeObservation } from '../core/observation.js'
 import { circuitSettings } from './settings.js'
 import { composeCircuitModules } from './compose.js'
-import { defineGame as defineShellGame, taskOpen } from 'kernel/view'
+import { defineGame as defineShellGame } from 'kernel/view'
 import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress.js'
 /**
  * Describe a game for GameShell. Required: id, title, kicker, lede ({ zh, en } pairs), chapters
@@ -18,7 +18,7 @@ import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress
  *                 theme }), the kit a value it shows (show: ../engine/views.js SHOW); a level's afterShow is the value
  *                 its pass text shows
  *   parts         the components box (元件箱) { all: [{ key, name, desc?, icon?, family?, at? }] (a built part's key is
- *                 the flag earning it; a primitive has `at`, the levels that bring it in, and is earned once one is open),
+ *                 the flag earning it; a primitive has `at`, the levels that bring it in, and is earned after passing one),
  *                 preview?(part, { progress }) → { sample?, experiment?, inside? } for the editor (../circuit/preview.jsx),
  *                 filters?(progress) → [{ key, name, icon?, lock?, keys }] to narrow the box, such as by robot }
  *   unlocked(level)  what passing a level awards [{ part?, label, icon?, family? }]
@@ -34,24 +34,18 @@ import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress
  */
 export function defineGame(def) {
   const game = defineShellGame(def)
-  const { byId, isOpen } = game
+  const { byId } = game
   game.flagsOf = progress => [...new Set([...(progress.flags ?? []),
     ...progress.solved.flatMap(id => byId[id] ? earnedUnlocks(byId[id], progress) : [])])]
   // The primitives a level brings in, for the map.
   game.introduced = (level) => (def.parts?.all ?? []).filter((part) => part.at?.includes(level.id))
   game.isCircuitPart = (type) => Boolean(type && (game.course?.stages.has(type) || game.partDefs?.parts?.[type]))
-  // A built part is earned by solving its level; a primitive when its introducing task becomes available.
+  // A primitive goes into the parts box after its introducing level is passed.
   // With every level unlocked, the components box is full too (the encyclopedia opens every entry the same way).
   const earned = (progress, parts) => {
     if (progress.all) return parts.map((part) => part.key)
     const solved = new Set(progress.solved)
-    const introduced = (part, id) => {
-      const level = byId[id]
-      if (!level || !isOpen(level, solved)) return false
-      if (!part.atTasks) return true
-      return level.tasks?.some((task, k) => part.atTasks.includes(task.key) && taskOpen(game, progress, id, k))
-    }
-    return [...game.flagsOf(progress), ...parts.filter((part) => part.at?.some((id) => introduced(part, id))).map((part) => part.key)]
+    return [...game.flagsOf(progress), ...parts.filter((part) => part.at?.some(id => solved.has(id))).map((part) => part.key)]
   }
   const parts = [...(def.parts?.all ?? []), ...(def.extraParts ?? [])].filter(({ part }) => part)
   game.earnedParts = (progress) => {
@@ -77,7 +71,8 @@ export function defineGame(def) {
   game.mapBadges = (level, { solved, all }) => {
     const first = { ...level, unlocks: (level.unlocks ?? []).filter(flag => !game.unlocksBefore(level).includes(flag)) }
     const accepts = ({ part }) => game.isCircuitPart(part)
-    return [...game.introduced(level).filter(accepts).map(part => ({ label: part.name, fresh: true, open: all || game.isOpen(level, solved) })), ...game.unlocked(first).filter(accepts).map(part => ({ label: part.label, open: all || solved.has(level.id) }))]
+    const open = all || solved.has(level.id)
+    return [...game.introduced(level).filter(accepts).map(part => ({ label: part.name, fresh: true, open })), ...game.unlocked(first).filter(accepts).map(part => ({ label: part.label, open }))]
   }
   game.composeModules = composeCircuitModules
   return game

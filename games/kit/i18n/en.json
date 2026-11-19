@@ -695,7 +695,7 @@
     "这款游戏的内容读不进来": "This game’s content cannot be read",
     "这段配置较长，打开可能需要一些时间。是否继续？": "This configuration is large and may take a while to open. Continue?",
     "这类关卡尚在制作中。": "This kind of level is still being made.",
-    "进入或通过这一关后可见": "Visible once this level is opened or passed",
+    "通关后解锁": "Unlocks after passing this level",
     "进度": "Progress",
     "进行到 {value}「{value2}」时解锁。": "Unlocks at {value} “{value2}”.",
     "进行到第 {lock} 关时解锁": "Unlocks at level {lock}",

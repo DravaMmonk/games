@@ -78,9 +78,7 @@ export function circuitGame(content, circuit, { kind, screen, cards, Hero, Intro
     IntroFigure,
     kinds: playKinds(plays, resources, { [kind.id]: kind }, { circuit: circuitScreen }),
     parts: {
-      all: [...primitives.map(part => ({
-        ...part, icon: cards[part.part].icon, atTasks: part.at.flatMap(id => circuit.introductions(part.part, id)),
-      })), ...built],
+      all: [...primitives.map(part => ({ ...part, icon: cards[part.part].icon })), ...built],
       // A built part shows the board it runs: the one the player passed its task with, else the reference.
       preview: (part, { progress }) => {
         if (!circuit.BUILT[part.part]) return null

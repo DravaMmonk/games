@@ -159,11 +159,9 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     bestLabel: (best) => (best.unit === 'cases' ? tr("{steps} 条", {steps: best.steps}) : tr("{steps} 步", {steps: best.steps})),
   })
   game.symbolUnlocks = (level, before, after) => {
-    const open = (symbol, progress) => game.byId[symbol.at] && game.isOpen(game.byId[symbol.at], new Set(progress.solved))
-    const items = Object.values(logic.symbols).filter(symbol =>
-      symbol.at && open(symbol, after) && !open(symbol, before))
+    if (before.solved.includes(level.id) || !after.solved.includes(level.id)) return []
+    return Object.values(logic.symbols).filter(symbol => symbol.at === level.id)
       .map(symbol => ({ key: symbol.type, kind: 'symbol', label: symbol.name, chip: symbolFor[symbol.mark], caption: catalogText("符号") }))
-    return items
   }
   game.logic = logic
   game.circuit = { forTask: (task) => logic.circuitFor(task)?.forTask(task) }

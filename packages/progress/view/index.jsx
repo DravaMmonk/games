@@ -3,7 +3,7 @@ import { objectProgress, policyFor } from '../core/index.js'
 
 export function register(kernel) {
   kernel.game('progress/objects', (game, content) => {
-    const read = objectProgress(content, (id, solved) => game.byId[id] && game.isOpen(game.byId[id], solved))
+    const read = objectProgress(content)
     const snapshots = new WeakMap()
     game.objectProgress = (progress, at) => {
       if (at) return read(progress, at)

@@ -39,6 +39,19 @@ test('Studio restores the course progression policy after transferring content',
   const apply = game.parts.all.find(({ part }) => part === `${GAME}/mp`)
   const badges = game.mapBadges(level, { solved: new Set(), all: true })
   assert.deepEqual(badges.map(({ label, fresh }) => ({ label, fresh })), [{ label: apply.name, fresh: true }])
+  const initial = { solved: [], passed: [] }
+  const open = { ...initial, solved: level.requires }
+  const won = { ...open, solved: [...open.solved, level.id] }
+  const rewards = (completed, before, after) => [...game.pluginKernel.tables.unlocks.values()]
+    .flatMap(read => read(game, completed, before, after)).map(item => item.part)
+  const prerequisite = game.byId[level.requires.at(-1)]
+  assert.ok(game.isOpen(level, new Set(open.solved)))
+  assert.equal(game.mapBadges(level, { solved: new Set(open.solved) })[0].open, false)
+  assert.ok(!game.parts.earned(open).includes(apply.key))
+  assert.ok(!rewards(prerequisite, initial, open).includes(apply.part))
+  assert.equal(game.mapBadges(level, { solved: new Set(won.solved) })[0].open, true)
+  assert.ok(game.parts.earned(won).includes(apply.key))
+  assert.ok(rewards(level, open, won).includes(apply.part))
 })
 
 test('blueprint preview, seed, and tests use the requested task', async () => {

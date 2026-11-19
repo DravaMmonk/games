@@ -144,4 +144,7 @@ test('an edit stands for the last only when both edit the same object: two new o
   assert.deepEqual(pushOp([a], b), [a, b])
   const e1 = { op: 'entry.put', entry: 'x', data: {} }, e2 = { op: 'entry.put', entry: 'y', data: {} }
   assert.deepEqual(pushOp([e1], e2), [e1, e2])
+  const add = { op: 'task.add', level: 'p', data: {} }
+  const move = { op: 'task.move', task: 'a', to: { level: 'p', first: true } }
+  for (const taskOp of [add, move]) assert.deepEqual(pushOp([taskOp], taskOp), [taskOp, taskOp])
 })

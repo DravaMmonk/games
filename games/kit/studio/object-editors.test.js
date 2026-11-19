@@ -3,7 +3,7 @@
 // with their keys, levels placed, swapped and taken off a map, and moves refused that put a prerequisite below.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { memberKnown, memberTitle, newTag, ownTagData, tagCycle, tagValuesOp, textWith, withMember, withoutMember, writtenName } from './tag-edit.js'
+import { memberKnown, memberTitle, newTag, ownTagData, tagCycle, tagValuesOp, textWith, withMember, withoutMember } from './tag-edit.js'
 import { addPlace, addRow, clearLevel, layoutRefusal, placeLevel, placeOf, removePlace, removeRow, rowConflicts, unplacedOf, wiringLayoutRefusal } from './layout-edit.js'
 
 const CONTENT = {
@@ -23,11 +23,9 @@ const CONTENT = {
 }
 
 test('a member is written short for the layer’s own, full for another namespace', () => {
-  assert.equal(writtenName('p', 'p/a'), 'a')
-  assert.equal(writtenName('p', '#p/first'), '#first')
-  assert.equal(writtenName('p', '#o/more'), '#o/more')
-  assert.equal(writtenName('p', 'not'), 'not')
-  assert.deepEqual(tagValuesOp('p', 'level:p/first', ['p/a', 'o/d', '#p/third']), { op: 'tag.set', tag: 'first', member: 'level', path: 'values', value: ['a', 'o/d', '#third'] })
+  assert.deepEqual(tagValuesOp('p', 'level:p/first', ['p/a', 'o/d', '#p/third', '#o/more', 'not']), {
+    op: 'tag.set', tag: 'first', member: 'level', path: 'values', value: ['a', 'o/d', '#third', '#o/more', 'not'],
+  })
 })
 
 test('members show their object’s title, a part its name', () => {

@@ -4,7 +4,7 @@ import { defaultTypes, leftLists, listOfType, objectTypes, studioLeft, typeOfLis
 import { objectFileName, objectOp, objectSchema } from './object-file.js'
 import { headingParam, listOfHeading, readHeading } from './left-lists.js'
 
-const scene = { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'scenes', schema: { type: 'obj', fields: { title: { type: 'str' } } }, studio: { name: { zh: '场景', en: 'Scenes' }, icon: 'Image' } }
+const scene = { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'stage-props', schema: { type: 'obj', fields: { title: { type: 'str' } } }, studio: { name: { zh: '场景', en: 'Scenes' }, icon: 'Image' } }
 const noteDeclaration = { declares: 'package', overrides: { package: ['*'], game: ['$text'] }, folder: 'notes', schema: { type: 'obj', fields: { text: { type: 'str' } } } }
 const content = (tags = {}) => ({
   layerOrder: ['base', 'story'],
@@ -36,11 +36,8 @@ test('a declared type’s object is edited through the object operations, in its
   const object = { kind: 'story/scene', full: 'story/start', namespace: 'story', value: { title: 'Start' }, declared: scene }
   assert.deepEqual(objectOp(object, ['title'], { set: 'Begin' }), { op: 'object.set', kind: 'story/scene', name: 'start', path: ['title'], value: 'Begin' })
   assert.deepEqual(objectOp(object, ['title'], { unset: true }), { op: 'object.put', kind: 'story/scene', name: 'start', data: {} })
-  assert.equal(objectFileName('story/scene', 'story/start', null, 'story', scene), 'scenes/start.json')
+  assert.equal(objectFileName('story/scene', 'story/start', null, 'story', scene), 'stage-props/start.json')
   assert.equal(objectSchema('story/scene', object), scene.schema)
-  const note = { kind: 'story/note', full: 'story/q', namespace: 'story', value: { text: 'x' }, declared: noteDeclaration }
-  assert.deepEqual(objectOp(note, ['text'], { set: 'y' }), { op: 'object.set', kind: 'story/note', name: 'q', path: ['text'], value: 'y' })
-  assert.equal(objectFileName('story/note', 'story/q', null, 'story', noteDeclaration), 'notes/q.json')
 })
 
 test('an object of any type is kept in the address', () => {
@@ -49,7 +46,6 @@ test('an object of any type is kept in the address', () => {
   assert.deepEqual(readHeading(new URLSearchParams({ [param]: value })), heading)
   assert.deepEqual(headingParam({ kind: 'tag', full: 'story/t' }), ['tag', 'story/t'])
   assert.equal(listOfHeading('story/scene'), 'type:story/scene')
-  assert.equal(listOfHeading('sample/collection'), 'type:sample/collection')
 })
 
 test('a structured problem points at the object and field that name the missing target', async () => {

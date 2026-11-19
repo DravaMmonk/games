@@ -48,7 +48,7 @@ export default function MapPreview({ content, stamp, chapter, rows }) {
   return (
     <section className={`effect-preview map-preview is-${device}`} aria-label={tr("路线图预览")}>
       <div className="effect-preview-head">
-        <h3>{tr("效果")}</h3>
+        <h3>{tr("路线图预览")}</h3>
         <span className="seg" role="radiogroup" aria-label={tr("设备")}>
           {[['desktop', Monitor, T("桌面")], ['phone', Smartphone, T("手机")]].map(([id, Icon, label]) => (
             <button key={id} type="button" role="radio" aria-checked={device === id} className={device === id ? 'is-on' : ''} onClick={() => setDevice(id)} title={L(label)} aria-label={L(label)}>

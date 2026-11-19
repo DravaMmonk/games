@@ -17,7 +17,7 @@ const SHOWN = 400 // rows drawn at most; the rest summed up
 export function auditSum(items, last) {
   const fails = items.filter((it) => it.severity === 'fail').length
   const failedOp = last && last.failed !== null && last.failed !== undefined
-  return { fail: Boolean(fails || failedOp), label: failedOp ? tr('操作失败') : fails ? tr("{fails} 处不过", {fails}) : tr("全部通过") }
+  return { fail: Boolean(fails || failedOp), label: failedOp ? tr('操作失败') : fails ? tr("发现 {fails} 处问题", {fails}) : tr("检查通过") }
 }
 
 /** `open`: the fold bar is open on the audit; `onOpen()` opens it there (F8 steps into a folded one). */

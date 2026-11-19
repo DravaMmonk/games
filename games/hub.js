@@ -20,7 +20,7 @@ let unmount = [];
 function render() {
   const en = currentLang() === 'en', pick = x => (typeof x === 'string' ? x : en ? x.en : x.zh);
   document.querySelector('#games').innerHTML = GAMES.filter(g => !g.hidden).map(g => {
-    const done = Math.min(solvedCount(g.id), g.levels), started = done > 0;
+    const done = Math.min(solvedCount(g.id), g.levels);
     return `<article class="game">
       <div class="game-art"${g.art ? ` data-art="${g.art}"` : ''}></div>
       <a class="game-body" href="${g.id}/index.html" aria-labelledby="game-title-${g.id}">
@@ -29,8 +29,8 @@ function render() {
         <p class="game-desc">${pick(g.lede)}</p>
         <div class="game-foot">
           <span class="meter" aria-hidden="true"><i style="width:${(done / g.levels) * 100}%"></i></span>
-          <span class="game-count">${tr("{done} / {levels} 关", {done, levels: g.levels})}</span>
-          <b class="game-go">${started ? tr("继续") : tr("开始")}<span aria-hidden="true">→</span></b>
+          <span class="game-count">${tr("已通过 {done} / {length} 关", {done, length: g.levels})}</span>
+          <b class="game-go">${tr("查看关卡")}<span aria-hidden="true">→</span></b>
         </div>
       </a></article>`;
   }).join('');

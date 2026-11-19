@@ -162,7 +162,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
       <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
         <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => setList(opened.game ? 'games' : 'packages')}
-          title={opened.game ? tr("在左栏选游戏") : L(pkg.desc)}>
+          title={opened.game ? tr("选择游戏") : L(pkg.desc)}>
           {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
           {opened.game ? <span>{L(games.find((g) => g.id === opened.game)?.title) ?? opened.game}</span> : <PackageName info={pkg} />}
         </button>

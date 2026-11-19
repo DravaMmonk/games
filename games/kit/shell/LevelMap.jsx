@@ -277,9 +277,9 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
           <h1 {...fileMark(edit, 'game', ['title'])}>{L(game.title)}</h1>
           {game.author && <p className="map-author" {...fileMark(edit, 'game', ['author'])}>{tr("作者")} <span>{game.author}</span></p>}
           <Text className="map-lede" text={game.lede} mark={fileMark(edit, 'game', ['lede'])} />
-          <div className="map-progress" aria-label={tr("已通过 {done} / {length} 关", {done, length: levels.length})}>
-            <span className="map-progress-bar"><i style={{ width: `${(done / levels.length) * 100}%` }} /></span>
-            <span>{tr("{done} / {length} 关", {done, length: levels.length})}</span>
+          <div className="map-progress">
+            <span className="map-progress-bar" aria-hidden="true"><i style={{ width: `${(done / levels.length) * 100}%` }} /></span>
+            <span>{tr("已通过 {done} / {length} 关", {done, length: levels.length})}</span>
           </div>
           {next && (
             <button className="map-continue" onClick={() => onOpen(next.id)}>
@@ -327,7 +327,7 @@ function ProgressDialog({ progressText, progress, onAll, onReset, onClose }) {
             : progressText?.open ?? tr("开放所有关卡和任务。")}</small>
         </div>
         <div className="progress-clear">
-          <p>{progressText?.clear ?? tr("清空后，这台设备上的作品和进度将全部删除，无法恢复。")}</p>
+          <p>{progressText?.clear ?? tr("清空会删除这台设备上的全部进度和作品，无法恢复。")}</p>
           <button
             type="button"
             className={`progress-clear-btn ${armed ? 'is-armed' : ''}`}
@@ -341,11 +341,11 @@ function ProgressDialog({ progressText, progress, onAll, onReset, onClose }) {
               onClose()
             }}
           >
-            <RotateCcw size={14} />{armed ? tr('再次点击即清空全部进度') : tr('清空全部进度')}
+            <RotateCcw size={14} />{armed ? tr('确认清空全部进度') : tr('清空全部进度')}
           </button>
         </div>
         <div className="dialog-actions">
-          <button className="is-primary" onClick={onClose} autoFocus>{tr('完成')}</button>
+          <button className="is-primary" onClick={onClose} autoFocus>{tr('关闭')}</button>
         </div>
       </div>
     </div>

@@ -88,7 +88,7 @@ export default function ValueTables({ screen, resource, play }) {
       {checked.pass ? L(resource.accepted) : mode === 'try' ? L(resource.retry) : <>
         {checked.unanswered.size > 0 && tr('还有 {count} 项未作答。', { count: checked.unanswered.size })}
         {checked.unanswered.size > 0 && checked.wrong.size > 0 && ' '}
-        {checked.wrong.size > 0 && tr('有 {count} 项答错。', { count: checked.wrong.size })}
+        {checked.wrong.size > 0 && tr('有 {count} 项答错，请修改标出的答案。', { count: checked.wrong.size })}
       </>}
     </Verdict>
   )

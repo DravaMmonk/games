@@ -233,7 +233,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           <Play size={13} aria-hidden="true" /><span>{tr("试玩")}</span>
         </button>
       </StudioBar>
-      {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
+      {!ready ? <div className="studio-loading">{tr('正在加载课程……')}</div> : (
         <div className={`studio-body is-${overridesShown || packagesShown ? 'objects' : 'arrange'} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style} data-mobile-panel={mobilePanel}>
           <nav className="arrange-panels" aria-label={tr('编排面板')}>
             {PANELS.map(([id, label]) => (

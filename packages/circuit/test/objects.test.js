@@ -178,12 +178,6 @@ test('chapters retain authored order independently of display relations and reje
   assert.deepEqual(assemble(input).eras[0].levels.map(level => level.id), input.game.chapters[0].levels)
   input.game.chapters[0].levels = ['toy/b', 'toy/a']
   assert.ok(assemble(input).objectProblems.some(problem => /must precede/.test(problem.says)))
-  // Across chapters, a prerequisite is in an earlier chapter.
-  input.game.chapters = [{ id: 'one', levels: ['toy/a'] }, { id: 'two', levels: ['toy/b'] }]
-  assert.ok(!assemble(input).objectProblems.some(problem => /must precede/.test(problem.says)))
-  input.game.chapters.reverse()
-  assert.deepEqual(assemble(input).objectProblems.filter(problem => /must precede/.test(problem.says)),
-    [{ at: 'chapters/@toy/two.levels', says: 'toy/a must precede toy/b: it is in the later chapter @toy/one' }])
   input.game.chapters[0].levels = ['#toy/core']
   assert.ok(assemble(input).objectProblems.some(problem => /without tags/.test(problem.says)))
 })

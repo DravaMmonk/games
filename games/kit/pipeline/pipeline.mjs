@@ -30,7 +30,7 @@ import { describe } from '../engine/vocabulary.js'
 import { operationsFor } from '../engine/ops/operations.js'
 import { knownGames } from '../engine/cli-args.js'
 import { erasOf } from './blueprint.js'
-import { STEPS, briefOf, pedagogyOf, stepOf, terminologyOf } from './steps.js'
+import { STEPS, briefOf, gateOf, pedagogyOf, stepOf, terminologyOf } from './steps.js'
 
 const USAGE = 'npm run pipeline -- <game> (status | brief <step> | run <step> [--from <step>] [--scope <scope>] | gate <step> [--scope <scope>] | eras | pedagogy | terminology [--json] | vocab | resolve <k> --why … | queue | comment <at> --owner <step> --why …)'
 const argv = process.argv.slice(2)
@@ -50,7 +50,7 @@ const stepNamed = (name) => stepOf(name) ?? (console.error(`no step ${name}; the
 
 /** Run a step's gate and record it. */
 async function gate(step, state) {
-  const { failures, reports } = await step.gate(game, state, option('--scope'))
+  const { failures, reports } = await gateOf(step, game, state, option('--scope'))
   const at = state.steps[step.id] ?? (state.steps[step.id] = { runs: [], gates: [] })
   at.gates.push({ at: now(), ok: failures.length === 0, failures, reports })
   writeState(state)

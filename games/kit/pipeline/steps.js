@@ -28,42 +28,39 @@ import { isLanguageCode } from '../engine/i18n.js'
 const KIT_DIR = resolve(import.meta.dirname, '..')
 const finding = (rule, at, says) => ({ rule, at, says })
 
-/** npm run check's lines for a game, as findings (rule: check). */
-async function checks(id) {
+/** Reuse authoring checks within one gate invocation, including all steps of a queue run. */
+function inspectionOf(id) {
   const content = readContent(id)
-  const lines = await checkGame(content, { domain: await runtimeOf(content) })
-  return lines.filter((l) => l.fail).map((l) => finding('check', l.level ?? id, l.text))
+  const results = new Map()
+  const once = (name, run) => {
+    if (!results.has(name)) results.set(name, run())
+    return results.get(name)
+  }
+  const domain = () => once('runtime', () => runtimeOf(content))
+  const spec = () => once('spec', async () => (await domain()).spec(content))
+  const noBlueprint = () => finding('bp-missing', id, 'the game has no blueprint.json')
+  return {
+    id, content, domain, spec, noBlueprint,
+    checks: () => once('check', async () => {
+      const lines = await checkGame(content, { domain: await domain() })
+      return lines.filter(line => line.fail).map(line => finding('check', line.level ?? id, line.text))
+    }),
+    conformance: () => once('conformance', async () => content.blueprint
+      ? conformance(content.blueprint, content, await spec())
+      : [noBlueprint()]),
+    pedagogy: () => once('pedagogy', async () => splitFindings(lintPedagogy(content, await spec()))),
+    terminology: () => once('terminology', async () => reviewTerminology(content, await spec(), (await domain()).vocabulary)),
+  }
 }
 
-/** The blueprint audit's findings split into failures and reports. */
-function blueprintGate(id) {
-  const { blueprint } = readContent(id)
-  if (!blueprint) return { failures: [finding('bp-missing', id, 'the game has no blueprint.json')], reports: [] }
-  const all = auditBlueprint(blueprint)
-  return { failures: all.filter((f) => !f.report), reports: all.filter((f) => f.report) }
-}
+const splitFindings = findings => ({
+  failures: findings.filter(item => !item.report),
+  reports: findings.filter(item => item.report),
+})
 
-async function conformanceOf(id) {
-  const content = readContent(id)
-  if (!content.blueprint) return [finding('bp-missing', id, 'the game has no blueprint.json')]
-  const domain = await runtimeOf(content)
-  return conformance(content.blueprint, content, domain.spec(content))
-}
-
-/** The pedagogy lint's findings split into failures and reports. */
-export async function pedagogyOf(id) {
-  const content = readContent(id)
-  const domain = await runtimeOf(content)
-  const all = lintPedagogy(content, domain.spec(content))
-  return { failures: all.filter((f) => !f.report), reports: all.filter((f) => f.report) }
-}
-
-/** The per-game term dictionary and its usage; this reads no saved review status and writes no content. */
-export async function terminologyOf(id) {
-  const content = readContent(id)
-  const domain = await runtimeOf(content)
-  return reviewTerminology(content, domain.spec(content), domain.vocabulary)
-}
+export const pedagogyOf = id => inspectionOf(id).pedagogy()
+export const terminologyOf = id => inspectionOf(id).terminology()
+export const gateOf = (step, id, state, scope) => step.gate(inspectionOf(id), state, scope)
 
 /** The last run of a step recorded in the game's pipeline state. */
 const lastRun = (state, step) => state.steps?.[step]?.runs?.at(-1) ?? null
@@ -74,17 +71,19 @@ export const STEPS = [
     who: 'agent',
     role: 'curriculum designer',
     commands: ['op', 'check', 'gate'],
-    gate: async (id) => blueprintGate(id),
+    gate: async ({ content, noBlueprint }) => content.blueprint
+      ? splitFindings(auditBlueprint(content.blueprint))
+      : { failures: [noBlueprint()], reports: [] },
   },
   {
     id: 'domain',
     who: 'engineer',
     role: 'engineer',
-    gate: async (id) => {
-      const content = readContent(id)
+    gate: async (inspection) => {
+      const { content } = inspection
       const open = (content.blueprint?.requests ?? []).filter((r) => r.status === 'open').map((r) => finding('request-open', r.id, r.about.en ?? r.about))
-      const domain = await runtimeOf(content)
-      const spec = domain.spec(content)
+      const domain = await inspection.domain()
+      const spec = await inspection.spec()
       const owners = runtimeIds(content)
       const contract = [...specProblems(domain, content, spec), ...await validateProblems(domain, content, spec)]
         .map((problem) => finding('contract', owners.join(', '), problem))
@@ -102,7 +101,7 @@ export const STEPS = [
           tests.push(finding('package-test', owner, failures.join('\n') || 'its unit tests fail'))
         }
       }
-      return { failures: [...open, ...contract, ...tests, ...(await checks(id))], reports: [] }
+      return { failures: [...open, ...contract, ...tests, ...await inspection.checks()], reports: [] }
     },
   },
   {
@@ -110,9 +109,9 @@ export const STEPS = [
     who: 'agent',
     role: 'level designer',
     commands: ['op', 'check', 'gate', 'deps', 'eras', 'pedagogy'],
-    gate: async (id) => {
-      const pedagogy = await pedagogyOf(id)
-      return { failures: [...(await checks(id)), ...(await conformanceOf(id)).filter((f) => f.rule !== 'bp-entry'), ...pedagogy.failures], reports: pedagogy.reports }
+    gate: async (inspection) => {
+      const pedagogy = await inspection.pedagogy()
+      return { failures: [...await inspection.checks(), ...(await inspection.conformance()).filter((f) => f.rule !== 'bp-entry'), ...pedagogy.failures], reports: pedagogy.reports }
     },
   },
   {
@@ -120,10 +119,10 @@ export const STEPS = [
     who: 'agent',
     role: 'copy writer',
     commands: ['op', 'check', 'gate', 'pedagogy', 'terminology'],
-    gate: async (id) => {
-      const pedagogy = await pedagogyOf(id)
-      const terms = await terminologyOf(id)
-      return { failures: [...(await checks(id)), ...(await conformanceOf(id)), ...pedagogy.failures, ...terms.failures], reports: pedagogy.reports }
+    gate: async (inspection) => {
+      const pedagogy = await inspection.pedagogy()
+      const terms = await inspection.terminology()
+      return { failures: [...await inspection.checks(), ...(await inspection.conformance()), ...pedagogy.failures, ...terms.failures], reports: pedagogy.reports }
     },
   },
   {
@@ -131,8 +130,9 @@ export const STEPS = [
     who: 'agent',
     role: 'reviewer',
     commands: ['check', 'deps', 'pedagogy', 'terminology'],
-    gate: async (id, state) => {
-      const terms = await terminologyOf(id)
+    gate: async (inspection, state) => {
+      const { id } = inspection
+      const terms = await inspection.terminology()
       const run = lastRun(state, 'review')
       if (!run?.findings) return { failures: [...terms.failures, finding('review-missing', id, 'no review has run')], reports: [] }
       const open = run.findings.filter((f) => f.fix && !f.resolved)
@@ -147,9 +147,9 @@ export const STEPS = [
     role: 'translator',
     aside: true,
     commands: ['op', 'check', 'gate'],
-    gate: async (id, _state, scope) => {
-      const content = readContent(id)
-      const domain = await runtimeOf(content)
+    gate: async (inspection, _state, scope) => {
+      const { content } = inspection
+      const domain = await inspection.domain()
       const vocabulary = meaningsOf(domain.vocabulary).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, content }) ?? vocabulary, domain.vocabulary)
       const places = searchable(content, vocabulary, ['text']).filter((p) => p.side)
       const field = (place) => JSON.stringify([place.file, place.path])
@@ -171,11 +171,17 @@ export const STEPS = [
     id: 'queue',
     who: 'pipeline',
     role: 'pipeline',
-    gate: async (id, state) => {
+    gate: async (inspection, state) => {
       const failures = []
-      for (const step of STEPS.filter((s) => s.id !== 'queue' && !s.aside)) {
-        const { failures: f } = await step.gate(id, state)
-        failures.push(...f.map((x) => ({ ...x, rule: `${step.id}:${x.rule}` })))
+      const seen = new Set()
+      for (const step of STEPS.filter(step => step.id !== 'queue' && !step.aside)) {
+        const result = await step.gate(inspection, state)
+        for (const issue of result.failures) {
+          const key = JSON.stringify([issue.rule, issue.at, issue.says])
+          if (seen.has(key)) continue
+          seen.add(key)
+          failures.push({ ...issue, rule: `${step.id}:${issue.rule}` })
+        }
       }
       return { failures, reports: [] }
     },

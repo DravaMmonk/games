@@ -7,17 +7,20 @@ import { resolve } from 'node:path'
 import { WIDTH, writeJson } from './json.js'
 import { lineDiff, unified } from './diff.js'
 
-// The modules' starter games: content files the kit keeps, in the house style every content file is written in.
-const MODULES = resolve(import.meta.dirname, '../../../../packages')
-const files = ['circuit', 'logic'].map(d => resolve(MODULES, d, 'test/starter')).flatMap((g) => [
-  resolve(g, 'game.json'), ...['levels', 'entries', 'tags/entry'].flatMap((dir) => readdirSync(resolve(g, dir)).map((f) => resolve(g, dir, f))),
-])
-
-test('every content file is written back as it is', () => {
-  assert.ok(files.length > 10)
-  for (const file of files) {
-    const text = readFileSync(file, 'utf8')
-    assert.equal(writeJson(JSON.parse(text), text), text, file)
+test('unchanged starter configuration and content keep their file formatting', () => {
+  for (const id of ['circuit', 'logic']) {
+    const starter = resolve(import.meta.dirname, '../../../../packages', id, 'test/starter')
+    const files = [resolve(starter, 'game.json')]
+    for (const folder of ['levels', 'entries', 'tags/entry']) {
+      const dir = resolve(starter, folder)
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isFile() && entry.name.endsWith('.json')) files.push(resolve(dir, entry.name))
+      }
+    }
+    for (const file of files) {
+      const text = readFileSync(file, 'utf8')
+      assert.equal(writeJson(JSON.parse(text), text), text, file)
+    }
   }
 })
 

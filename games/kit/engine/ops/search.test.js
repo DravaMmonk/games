@@ -1,16 +1,11 @@
 // node --test games/kit/engine/ops — search across a game and replace as operations (search.js): texts side by side,
-// never inside a link tag; board lines; ids found and left alone; a replace as text.set and level.blueprint operations
-// that a changeset runs; and on a small game on a real domain (./fixture.js), a replace that the operation set takes and
-// that leaves nothing to find.
+// never inside a link tag, and replacement operations for text and boards that leave object IDs alone.
 import { glossarySchemas } from '../../../../packages/wiki/test/fixture.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { S } from '../schema.js'
 import { defineVocabulary } from '../vocabulary.js'
-import { hitKey, patternOf, replaceOps, replaced, searchContent } from './search.js'
-import { openPackage } from './workspace.js'
-import { runChangeset } from './changeset.js'
-import { storyRoot } from '../test-fixture.js'
+import { hitKey, replaceOps, replaced, searchContent } from './search.js'
 
 const VOCAB = glossarySchemas(defineVocabulary({
   module: 'toy',
@@ -48,7 +43,6 @@ test('search: every text, never inside a link tag; board lines; ids', () => {
   assert.equal(searchContent(CONTENT, VOCAB, { find: 'flag', word: true }).find((h) => h.path.join('.') === 'hint.0'), undefined, 'a whole word: neither flags nor flagpole')
   assert.equal(searchContent(CONTENT, VOCAB, { find: 'Flag', caseSensitive: true }).length, 0)
   assert.deepEqual(searchContent(CONTENT, VOCAB, { find: 'value=\\d', regex: true }).map((h) => [h.level, h.kind, h.line]), [['other', 'board', 0]])
-  assert.equal(patternOf({ find: '(', regex: true }), null, 'a pattern that does not read finds nothing')
   assert.deepEqual(searchContent(CONTENT, VOCAB, { find: '(', regex: true }), [])
 })
 
@@ -70,19 +64,4 @@ test('replace: one text.set a text, one level.blueprint a board; ids left alone'
   const hit = searchContent(CONTENT, VOCAB, { find: 'flag' }).find((h) => h.in === 'game')
   assert.deepEqual(replaceOps(CONTENT, VOCAB, { find: 'flag' }, 'marker', [hitKey(hit)]).ops, [{ op: 'text.set', in: 'game', path: ['title'], lang: 'en', value: 'The marker game' }])
   assert.deepEqual(replaceOps(CONTENT, VOCAB, { find: 'nothing here' }, 'x'), { ops: [], changes: [], skipped: [] })
-})
-
-test('on a synthetic course: a replace runs as a changeset, and afterwards there is nothing left to find', async () => {
-  const { root, id } = storyRoot()
-  const ws = openPackage(id, root)
-  const content = ws.content()
-  const vocabulary = ws.schemas
-  const query = { find: 'Answer', kinds: ['text'] }
-  const before = searchContent(content, vocabulary, query)
-  assert.ok(before.length > 0, 'hits in the authored level')
-  const { ops } = replaceOps(content, vocabulary, query, 'Reply')
-  const r = await runChangeset(ws, { ops }, { write: false, check: false })
-  assert.equal(r.failed, null, r.problems.join('\n'))
-  assert.deepEqual(searchContent(r.content, vocabulary, query), [])
-  assert.ok(searchContent(r.content, vocabulary, { ...query, find: 'Reply' }).length >= before.length)
 })

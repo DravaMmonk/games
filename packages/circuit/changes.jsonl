@@ -38,3 +38,4 @@
 {"seq":38,"at":"2026-11-18T23:46:54.395Z","why":"Repeat frame is a step only where it decides (继续/跳出); a refused step reads ✗ and gives its state back; import dialog shows its errors.","adopt":true,"files":[]}
 {"seq":39,"at":"2026-11-18T23:49:19.712Z","why":"Import dialog shows its errors.","adopt":true,"files":[]}
 {"seq":40,"at":"2026-11-19T00:26:32.578Z","why":"Cards show only propositions; report steps get an ⓘ explanation and baseline-aligned marks; desktop cards numbered like the phone.","adopt":true,"files":[]}
+{"seq":41,"at":"2026-11-19T04:33:34.250Z","why":"Drop the loading text: play screens are imported directly","adopt":true,"files":[{"file":"packages/circuit/i18n/en.json","after":"a007073960193be8"}]}

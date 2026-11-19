@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { EditableCanvas } from "./CanvasEditor.jsx"
 import SlotBoard from "./SlotBoard.jsx"
 import { L } from "kernel/view"
@@ -23,9 +23,9 @@ import PartSheet, { Implementations, Ports, Settings, marker } from "../parts/Pa
 //   preview(part, { game, scene, edit?, state?, entry?, phone?, progress? })   part: parts.json's entry with its `type`;
 //     state [params, set] the settings the scenes share; entry the parts box's entry it is shown in
 
-const SampleCircuit = lazy(() => import('./SampleCircuit.jsx'))
-const PartExperiment = lazy(() => import('./PartExperiment.jsx'))
-const BuiltBoard = lazy(() => import('./BuiltBoard.jsx'))
+import SampleCircuit from './SampleCircuit.jsx'
+import PartExperiment from './PartExperiment.jsx'
+import BuiltBoard from './BuiltBoard.jsx'
 
 const NONE = { values: new Map(), errors: new Map() }
 const at = (path) => JSON.stringify(path)
@@ -96,11 +96,11 @@ export function preview(part, { game, scene, edit = null, state = [undefined, ()
   if (scene !== 'detail' || (!entry && !part.inside)) return null
   const shown = entry ?? game.parts?.all.find((p) => p.part === part.type) ?? { key: part.type, part: part.type }
   const { sample, experiment, inside } = game.parts?.preview?.(shown, { progress }) ?? {}
-  if (sample || experiment || inside) return <Suspense key={shown.key} fallback={<div className="board-loading">{tr('载入中…')}</div>}>
+  if (sample || experiment || inside) return <Fragment key={shown.key}>
     {sample && <SampleCircuit example={sample} defined={game.defined} phone={phone} />}
     {experiment && <PartExperiment spec={experiment} phone={phone} />}
     {inside && <BuiltBoard type={shown.part} defined={game.defined} {...inside} />}
-  </Suspense>
+  </Fragment>
   return faced(part, game) ? <Face part={part} game={game} scene={scene} edit={edit} state={state} /> : null
 }
 

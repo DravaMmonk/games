@@ -3,7 +3,7 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "a9c0682c34b8c2723307de8eee5ff85a628092d99b4dec4047578ff9db517b18"
+      "hash": "b4018af375ec04862ff89939bc935b23c7f1fa9dbc7e7af8975e11102abd05dc"
     },
     "progress": {
       "version": "0.0.0",

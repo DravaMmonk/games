@@ -184,7 +184,8 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const [w, h] = sizeOf(byId.get(id))
     return { w, h }
   }
-  const gapOf = (name) => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0
+  // Read while rendering; outside a browser (server rendering) there are no CSS variables, so 0 as when one is unset.
+  const gapOf = (name) => typeof getComputedStyle !== 'function' ? 0 : Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0
   const gaps = { gapX: gapOf('--board-gap-x'), gapY: gapOf('--board-gap-y') }
   const spacing = { pad: gapOf('--block-pad'), head: gapOf('--block-head-height') }
   const arrange = () => pipelineLayout(graph, groups, {

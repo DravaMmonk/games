@@ -1,9 +1,8 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { useMemo } from 'react'
 import { defineGame } from '../index.js'
-import { tr } from '../i18n.js'
 
-const FieldRows = lazy(() => import('./FieldRows.jsx'))
-const ValueTables = lazy(() => import('./ValueTables.jsx'))
+import FieldRows from './FieldRows.jsx'
+import ValueTables from './ValueTables.jsx'
 
 const bind = {
   values: (play, prepare) => resourceScreen(ValueTables, play, prepare),
@@ -23,12 +22,7 @@ export function playKinds(plays, resources, presentation = {}, bindings = {}) {
   return Object.fromEntries(Object.entries(plays).map(([name, play]) => {
     if (!Object.hasOwn(resources, play.resources)) throw new Error(`play ${name}: missing resource ${play.resources}`)
     const Bound = (bindings[play.editor] ?? bind[play.editor])(play, resources[play.resources])
-    const Screen = (screen) => (
-      <Suspense fallback={<div className="board-loading">{tr('载入中…')}</div>}>
-        <Bound {...screen} />
-      </Suspense>
-    )
-    return [name, { label: play.label, ...presentation[name], Screen, editor: play.editor }]
+    return [name, { label: play.label, ...presentation[name], Screen: Bound, editor: play.editor }]
   }))
 }
 

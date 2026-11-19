@@ -1,4 +1,4 @@
-import { createElement, lazy } from 'react'
+import { createElement } from 'react'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
 // A table game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
@@ -17,7 +17,7 @@ import { robotOf } from '../core/model/robots.js'
 import { T } from '../core/lang.js'
 import { tableWorks } from '../core/work.js'
 
-const ManualBoardPlay = lazy(() => import('./ManualBoardPlay.jsx'))
+import ManualBoardPlay from './ManualBoardPlay.jsx'
 const manualBoardScreen = (play, resource) => (screen) => createElement(ManualBoardPlay, { screen, play, resource })
 
 const { partDemo, lookIcon } = ui['catalog']

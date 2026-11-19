@@ -1,6 +1,5 @@
 import { T as catalogText } from 'kernel/words'
 import { sentenceScreen } from 'sentence/view'
-import { lazy } from 'react'
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
@@ -25,9 +24,9 @@ import { declaration, definition } from '../core/rowValues.js'
 import { audit } from '../core/auditWork.js'
 import { truth } from '../core/truthValues.js'
 
-const Rows = lazy(() => import('./plays/Rows.jsx'))
-const BoardChecks = lazy(() => import('./plays/BoardChecks.jsx'))
-const ScenarioCheck = lazy(() => import('./plays/ScenarioCheck.jsx'))
+import Rows from './plays/Rows.jsx'
+import BoardChecks from './plays/BoardChecks.jsx'
+import ScenarioCheck from './plays/ScenarioCheck.jsx'
 
 const bindings = {
   circuit: circuitScreen,

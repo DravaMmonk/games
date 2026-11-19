@@ -1,9 +1,10 @@
-import { lazy } from 'react'
+import Bench from './bench/Bench.jsx'
+import GridProbe from './GridProbe.jsx'
 import { Brief, Level, PinnedPlay, TaskNavigation } from 'kernel/view'
 
 const exercises = {
-  parameters: lazy(() => import('./bench/Bench.jsx')),
-  gridProbe: lazy(() => import('./GridProbe.jsx')),
+  parameters: Bench,
+  gridProbe: GridProbe,
 }
 
 /** A focused exercise with a shared layout and one completion event. */

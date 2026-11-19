@@ -86,7 +86,7 @@ export const STEPS = [
       const domain = await runtimeOf(content)
       const spec = domain.spec(content)
       const owners = runtimeIds(content)
-      const contract = [...specProblems(domain, content, spec), ...(await validateProblems(domain, content, spec)).problems]
+      const contract = [...specProblems(domain, content, spec), ...await validateProblems(domain, content, spec)]
         .map((problem) => finding('contract', owners.join(', '), problem))
       const tests = []
       for (const owner of owners) {

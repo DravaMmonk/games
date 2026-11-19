@@ -1,34 +1,22 @@
 import { meaningsOf } from './kind-meanings.js'
 import { contentSchemas } from './content.js'
 import { sameJson } from './json-value.js'
-import { playId } from './plays.js'
-// The module runtime contract: what a module gives the kernel, checked mechanically. A module that
-// passes it is one `npm run check`, the shell, and every tool built on them (the operation set, the MCP, the blind-play
-// harness, the studio) can take without knowing anything about it. contract.test.js runs it over every registered module
-// and its starter content.
-//
-//   runtimeProblems(name, runtime)           runtime.js: { vocabulary, prepare, spec, validate, play }
-//   vocabularyProblems(name, vocabulary)    the vocabulary describes itself as data: kinds, items, schemas
-//   specProblems(domain, content, spec)     spec(content): its course, levels, texts; the course hooks' shapes; the
-//                                           boards round-trip through blueprint text
-//   validateProblems(domain, content, spec) delegates semantic conformance checks to installed meanings
-//   gameProblems(content, spec, game)       game.js's game (the shell's description) plays the same levels
-//
-// Each returns what is wrong as [string], empty when the contract holds (validateProblems: { problems, … }).
+// Unit tests check runtime and capability declarations. The domain gate checks the installed
+// meanings' derived models and semantic behavior. Each check returns its diagnostics.
 import { HINTS, S, validate as fits, validAbout } from './schema.js'
 import { describe } from './vocabulary.js'
 import { taskShapes, tasksSchema } from './tasks.js'
 
 
 /** Required runtime entries and optional tool extensions. */
-export const ENTRIES = ['vocabulary', 'prepare', 'spec', 'validate', 'play']
+const ENTRIES = ['vocabulary', 'prepare', 'spec', 'validate', 'play']
 const isFn = (f) => typeof f === 'function'
 // Each extension point and the shape it must have. A tool that needs more of every domain adds its hook here.
 //   play                { open(ctx), attempt(ctx, text) }: the blind-play harness's hook (games/design/README.md 6.6)
 //   names               names(content) → { kind: Set }: what the content defines that its schema names (S.name)
 //   languages           { lang: (text) → why it cannot be read, or null }: the readers of the vocabulary's languages
 //                       (schema.js syntax), one for each it names
-export const EXTENSIONS = {
+const EXTENSIONS = {
   names: isFn,
   languages: (l) => Boolean(l) && typeof l === 'object' && Object.values(l).every(isFn),
   play: (p) => Boolean(p) && isFn(p.open) && isFn(p.attempt),
@@ -36,7 +24,7 @@ export const EXTENSIONS = {
 
 const isText = (v) => typeof v === 'string' || (v && (typeof v.en === 'string' || typeof v.zh === 'string'))
 
-export function runtimeProblems(name, runtime) {
+function runtimeProblems(name, runtime) {
   const out = []
   if (!runtime || typeof runtime !== 'object') return [`${name}: runtime.js has no default export`]
   for (const key of ENTRIES) if (!runtime[key]) out.push(`${name}: runtime.js gives no ${key}`)
@@ -66,7 +54,7 @@ function* schemasIn(s, at) {
 // The schema types are what schema.js makes (opt is a flag on another type, not a type of its own).
 const TYPES = Object.keys(S).filter((k) => k !== 'opt')
 
-export function vocabularyProblems(name, v) {
+function vocabularyProblems(name, v) {
   const out = []
   const say = (text) => out.push(`${name}: vocabulary: ${text}`)
   if (v.module !== name) say(`it is ${v.module}'s, in the folder ${name}`)
@@ -122,27 +110,7 @@ export function specProblems(domain, content, spec) {
 }
 export async function validateProblems(domain, content, spec) {
   const results = await Promise.all(meaningsOf(contentSchemas.get(content)).map(meaning => meaning.contract?.validate(domain, content, spec)).filter(Boolean))
-  return { problems: results.flatMap(result => result.problems), builders: results.flatMap(result => result.builders), runsOwn: results.flatMap(result => result.runsOwn) }
-}
-
-/** The game game.js makes of a content (the shell's description, ../shell/index.js defineGame) against the spec. */
-export function gameProblems(content, spec, game) {
-  const out = []
-  const say = (text) => out.push(`game.js: ${text}`)
-  if (game.id !== content.id) say(`id ${game.id}, the content's is ${content.id}`)
-  for (const key of ['title', 'kicker', 'lede']) if (!isText(game[key])) say(`no ${key}`)
-  if (!Array.isArray(game.chapters) || !Array.isArray(game.levels)) return [...out, 'game.js: no chapters or no levels']
-  if (!sameJson(game.levels.map((l) => l.id), spec.levels.map((l) => l.id))) say('its levels are not the spec’s, in play order')
-  const chapters = new Set(game.chapters.map((c) => c.id))
-  for (const l of game.levels) {
-    if (!game.kinds?.[l.kind] || !isFn(game.kinds[l.kind].Screen)) say(`${l.id}: the kind ${l.kind} has no Screen`)
-    for (const task of l.tasks ?? []) {
-      const chosen = playId({ ...l, ...task })
-      if (!isFn(game.kinds?.[chosen]?.Screen)) say(`${l.id}/${task.key}: the play ${chosen} has no Screen`)
-    }
-    if (!chapters.has(l.chapter)) say(`${l.id}: in no chapter`)
-  }
-  return out
+  return results.flat()
 }
 
 /** A module's registered capabilities are qualified, printable and type-complete. */

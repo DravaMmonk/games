@@ -98,7 +98,7 @@ export function specProblems(domain, content, spec) {
  * A course whose levels hold boards (course.boards) lists them; every one reads back as itself: written (the domain's
  * `write`) and read again on its level (`read`), it computes the same, and writing it again gives the same text.
  */
-export function blueprintProblems(spec) {
+function blueprintProblems(spec) {
   const out = []
   if (!spec.course.levels.some((l) => spec.course.boards(l).length)) return out
   if (!Array.isArray(spec.blueprints) || !spec.blueprints.length) return ['spec: levels hold boards, but the spec lists no blueprints']
@@ -146,8 +146,7 @@ const named = (lines) => [...new Set(lines.map((l) => l.level))]
  * validate(spec) against the contract, on changed content: every level's naive answer in its reference's place (each
  * such level fails, and no other level but one after it), then every builder level's part running its board unplugged:
  * each such level fails, but one whose every part the spec lists as builtIn (a built-in implementation, not the
- * player's board), which must pass, so the list only shrinks. Returns { problems, builders, runsOwn }: the levels that
- * build parts, and those whose part runs the board syncOwn hands it.
+ * player's board), which must pass.
  */
 export async function validateProblems(domain, content, spec) {
   const out = []
@@ -160,7 +159,7 @@ export async function validateProblems(domain, content, spec) {
     try {
       lines = await domain.validate(domain.spec(naive))
     } catch (e) {
-      return { problems: [`validate: throws on a naive answer in a reference's place: ${e.message}`], runsOwn: [], builders }
+      return [`validate: throws on a naive answer in a reference's place: ${e.message}`]
     }
     const fails = failing(lines)
     for (const id of changed) if (!fails.some((l) => l.level === id)) out.push(`validate: ${id} passes with its naive answer as its reference`)
@@ -188,6 +187,6 @@ export async function validateProblems(domain, content, spec) {
     if (own && !runsOwn.includes(id)) out.push(`syncOwn: ${id} passes with its board unplugged: its part does not run the board syncOwn hands it (a built-in implementation goes in spec.builtIn)`)
     if (!own && runsOwn.includes(id)) out.push(`syncOwn: ${id} builds only parts the spec lists as builtIn, but its part runs the board syncOwn hands it: drop them from builtIn`)
   }
-  return { problems: out, runsOwn, builders }
+  return out
 }
 

@@ -41,19 +41,19 @@
 .node-body:empty { min-width: 0; }
 .node-body > :is(.cs-card, .pf-face.is-card) { padding: 0; }
 .node-port-label { position: relative; height: 20px; display: flex; align-items: center; color: var(--muted); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
-.port { position: absolute; width: 12px; height: 12px; border-radius: var(--r-full); transition: transform 160ms ease; }
-.port::before { content: ''; position: absolute; inset: var(--port-dot-inset); border-radius: inherit; background: var(--paper); box-shadow: 0 0 0 1.5px var(--fam, var(--ink)); transition: background 160ms ease; }
+.port { --port-outline: 0 0 0; position: absolute; width: 12px; height: 12px; border-radius: var(--r-full); transition: transform 160ms ease; }
+.port::before { content: ''; position: absolute; inset: var(--port-dot-inset); border-radius: inherit; background: var(--paper); box-shadow: var(--port-outline) 1.5px var(--fam, var(--ink)); transition: background 160ms ease; }
 .port.is-wired::before { background: var(--fam, var(--ink)); }
 .port-in { left: -18px; top: 4px; }
 .port-out { right: -6px; top: 4px; cursor: crosshair; }
 .port-in { cursor: pointer; }
 /* Click to wire: the dot picked, and the dots its wire may go to. */
 .port.is-picked { transform: scale(1.35); }
-.port.is-picked::before { background: var(--accent); box-shadow: 0 0 0 1.5px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
+.port.is-picked::before { background: var(--accent); box-shadow: var(--port-outline) 1.5px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
 .port.is-target { transform: scale(1.2); }
-.port.is-target::before { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 28%, transparent); animation: port-pulse 1.2s ease-in-out infinite; }
+.port.is-target::before { box-shadow: var(--port-outline) 2px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 28%, transparent); animation: port-pulse 1.2s ease-in-out infinite; }
 .kit-board.is-picking .node { cursor: pointer; }
-@keyframes port-pulse { 50% { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 9px color-mix(in srgb, var(--accent) 12%, transparent); } }
+@keyframes port-pulse { 50% { box-shadow: var(--port-outline) 2px var(--accent-ink), 0 0 0 9px color-mix(in srgb, var(--accent) 12%, transparent); } }
 /* One of a card's several outputs: its name (and what it carries) at the right edge, the dot past it. */
 .node-port-out { position: relative; z-index: 1; height: 20px; max-width: 100%; display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-3); font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
 .node-outputs .port-out { right: -18px; }
@@ -292,18 +292,15 @@
 .pb-dot.over i { transform: scale(1.5); background: var(--accent); }
 @keyframes pb-pulse { 50% { box-shadow: inset 0 0 0 2.5px var(--accent-ink), 0 0 0 9px color-mix(in srgb, var(--accent) 12%, transparent); } }
 
-/* Ports: every dot is round. An input that still waits for its wire carries a small ring inside (the desktop dot's
-   inner <i>, the phone dot's ::after), gone once it is wired, so an input tells apart from an output at a glance.
-   Its colour is --port-mark, set per theme in tokens.css; a dot of another shape sets --port-mark-radius so the ring
-   takes its shape (a diamond gets a small diamond). */
+/* Ordinary inputs show an inner ring until wired. Secondary ports use a single, smaller ring. */
 .port > i { display: none; }
-.port-in:not(.is-wired) > i, .pb-dot.is-in:not(.is-wired) i::after { content: ''; display: block; position: absolute; border-radius: var(--port-mark-radius, var(--r-full)); box-shadow: inset 0 0 0 1.5px var(--port-mark); pointer-events: none; }
-.port-in:not(.is-wired) > i { inset: 3px; }
+.port-in:not(.is-wired, [data-wire-pattern='dashed'], [data-wire-pattern='double']) > i,
+.pb-dot.is-in:not(.is-wired, [data-wire-pattern='dashed'], [data-wire-pattern='double']) i::after { content: ''; display: block; position: absolute; border-radius: var(--port-mark-radius, var(--r-full)); box-shadow: inset 0 0 0 1.5px var(--port-mark); pointer-events: none; }
+.port-in > i { inset: 3px; }
 .pb-dot.is-in i { position: relative; }
-.pb-dot.is-in:not(.is-wired) i::after { inset: var(--sp-2); }
-/* Secondary wire patterns have a smaller visible dot while keeping the same anchor and hit area. */
-.port[data-wire-pattern]:not([data-wire-pattern='solid'])::before { inset: var(--port-alt-dot-inset); }
-.pb-dot[data-wire-pattern]:not([data-wire-pattern='solid']) i { width: calc(var(--pb-dot) - 2 * var(--port-alt-dot-inset)); height: calc(var(--pb-dot) - 2 * var(--port-alt-dot-inset)); }
+.pb-dot.is-in i::after { inset: var(--sp-2); }
+.port:is([data-wire-pattern='dashed'], [data-wire-pattern='double']) { --port-outline: inset 0 0 0; }
+.pb-dot:is([data-wire-pattern='dashed'], [data-wire-pattern='double']) i { width: var(--phone-alt-port-dot-size); height: var(--phone-alt-port-dot-size); }
 /* A part's sheet ends with this: take the block off the board. */
 .sheet-actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sp-4); }
 .sheet-actions > button { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: inherit; }
@@ -611,7 +608,7 @@
 .circuit-block .block-stubs { top: 0; bottom: 0; flex-direction: column; justify-content: space-evenly; }
 .circuit-block .block-stubs.is-input { left: calc(-1 * var(--port-radius)); }
 .circuit-block .block-stubs.is-output { right: calc(-1 * var(--port-radius)); }
-.block-stubs .port { position: relative; inset: auto; padding: 0; border: 0; flex: none; }
+.block-stubs .port { --port-outline: 0 0 0; position: relative; inset: auto; padding: 0; border: 0; flex: none; }
 .block-selection, .pb-cell.is-block-selected { outline: var(--block-rule-width) solid var(--accent); background: var(--selection); }
 .block-selection { position: absolute; z-index: 5; pointer-events: none; }
 .board-zoom button[aria-pressed='true'], .pb-partition[aria-pressed='true'] { color: var(--accent); background: var(--hover); }

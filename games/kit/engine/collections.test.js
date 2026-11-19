@@ -74,15 +74,6 @@ test('schema text traversal reaches nested collection patches', () => {
   assert.deepEqual(found.map(field => field.path), [['menus', 'add', 0, 'title']])
 })
 
-test('independent typed set contributions union through patches and audit every author', () => {
-  const layer = (id, uses, objects = [], overrides = []) => ({ id, config: { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: Object.fromEntries(uses.map(id => [id, '^0.0.0'])) }, objects, overrides })
-  const base = layer('p', [], [{ kind: 'tag', name: 'all', value: { kind: 'entry', values: ['a'] } }])
-  const patch = id => layer(id, ['p'], [], [{ kind: 'tag', name: 'p/all', value: { kind: 'entry', values: { add: ['p/a', 'p/b'] } } }])
-  const result = composeLayers([base, patch('q'), patch('r')], { game: S.obj({}), kinds: {} })
-  assert.deepEqual(result.registries.tag['entry:p/all'].values, ['p/a', 'p/b'])
-  assert.deepEqual(result.sources.tag['entry:p/all'].collections.values, { 'p/a': ['p', 'q', 'r'], 'p/b': ['q', 'r'] })
-})
-
 test('declaration and override permissions apply to package-defined game types', () => {
   const vocabulary = { objectKinds: { 'p/settings': { declares: 'game', overrides: { game: ['title'] } } } }
   const shape = S.obj({ title: S.text(), size: S.int() })

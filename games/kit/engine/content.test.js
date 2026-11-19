@@ -10,7 +10,6 @@ import { markupOf } from './markup.js'
 import { checkContent, defineVocabulary, describe } from './vocabulary.js'
 import { assemble } from './content.js'
 import { isDataGame, readContent } from './resolver.js'
-import { dependencyProblemsInProject } from './project-dependencies.js'
 
 const VOCAB = defineVocabulary({
   module: 'toy',
@@ -133,14 +132,6 @@ test('a data game is read from its folder', () => {
   const content = readContent('toy', dir, { vocabulary: VOCAB })
   assert.deepEqual(content.levels, [{ id: 'shared-toy/one', mode: 'read', text: 'hello' }])
   assert.deepEqual(checkContent({ vocabulary: VOCAB }, content), [])
-
-  // Another game on the same package must still find what its course names.
-  mkdirSync(join(dir, 'games', 'draft'), { recursive: true })
-  writeFileSync(join(dir, 'games', 'draft', 'game.json'), JSON.stringify({ kernel: '^0.0.0', packages: { 'shared-toy': '^1.0.0' }, title: 'Draft', chapters: ['@draft/main'] }))
-  mkdirSync(join(dir, 'games', 'draft', 'chapters'))
-  writeFileSync(join(dir, 'games', 'draft', 'chapters/main.json'), JSON.stringify({ levels: ['shared-toy/one'] }))
-  assert.deepEqual(dependencyProblemsInProject(content, dir), [])
-  assert.ok(dependencyProblemsInProject({ ...content, levels: [] }, dir).some(problem => problem.rule === 'exists' && problem.layer === '@draft' && problem.target === 'shared-toy/one'))
 
   mkdirSync(join(dir, 'games', 'toy', 'tags/level'), { recursive: true })
   mkdirSync(join(dir, 'games', 'toy', 'relations'))

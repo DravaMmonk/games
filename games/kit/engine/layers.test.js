@@ -169,19 +169,6 @@ test('multi-package sibling courses validate shared levels without rejecting the
   assert.ok(problems.some(problem => problem.rule === 'exists' && problem.layer === '@peer' && problem.target === 'base/a'))
 })
 
-test('the published frontend restores composed multi-package registries', async () => {
-  const a = base(); a.catalogs = { en: { title: 'Original' } }; a.objects[0].value.title = '@title'
-  const b = layer('extra', ['base'], [obj('level', 'c', { from: 'base/a' })], [obj('level', 'base/a', { options: { x: 9 } })])
-  const content = assembleLayers('demo', [a, b, game()], schemas)
-  const assets = contentAssets(content)
-  const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', (url) => new Response(assets.get(url.pathname.slice(1))), schemas)
-  assert.deepEqual(restored.levels, content.levels)
-  assert.deepEqual(restored.tags, content.tags)
-  assert.deepEqual(restored.relations, content.relations)
-  assert.deepEqual(restored.sections, content.sections)
-})
-
-
 test('author writes refuse changed dependency files while holding every selected layer lock', async () => {
   for (const file of ['packages/base/levels/a.json', 'packages/base/levels/new.json']) {
     const { root, put } = fixture()
@@ -207,6 +194,8 @@ test('entry files, typed tag paths, ordering and overrides round trip through au
   put('packages/base/i18n/en.json', { title: 'Original', 'entry-z': 'Z', 'entry-group': 'First' })
   put('packages/extra/overrides/base/tags/entry/first.json', { values: { add: ['base/c'] } })
   put('packages/extra/overrides/base/entries/z.json', { body: ['Changed'] })
+  put('packages/extra/overrides/base/levels/a.json', { options: { x: 9 } })
+  put('packages/extra/relations/route.json', { kind: 'requires', edges: [{ from: 'base/a', to: 'b' }] })
   const content = readContent('demo', root, { vocabulary: schemas })
   assert.deepEqual(content.glossary.groups.map((g) => g.id), ['base/first', 'base/second'])
   assert.deepEqual(content.glossary.entries.map((e) => e.id), ['base/a', 'base/c', 'base/z'])
@@ -215,9 +204,13 @@ test('entry files, typed tag paths, ordering and overrides round trip through au
   assert.equal(content.registries.entry['base/z'].group, undefined)
   assert.deepEqual(content.sources.entry['base/z'], { declaration: 'base', overrides: ['extra'], collections: { see: { 'base/a': ['base'] } } })
   lockFixture(root)
-  const assets = contentAssets(readContent('demo', root, { vocabulary: schemas }))
+  // The published frontend restores the composed multi-package content.
+  const published = readContent('demo', root, { vocabulary: schemas })
+  const assets = contentAssets(published)
   const restored = await pageContent(JSON.parse(assets.get(CONTENT_FILE)), 'https://example.test/', async (url) => ({ ok: true, json: async () => JSON.parse(assets.get(url.pathname.slice(1))) }), contentSchemas.get(content))
-  assert.deepEqual(restored.glossary, content.glossary)
+  for (const field of ['glossary', 'levels', 'tags', 'relations', 'sections']) assert.deepEqual(restored[field], published[field], field)
+  assert.equal(restored.levels.find(level => level.id === 'base/a').options.x, 9)
+  assert.deepEqual(restored.relations['extra/route'].edges, [{ from: 'base/a', to: 'extra/b' }])
   const domain = { vocabulary: schemas }
   const ws = openGame('demo', root, { vocabulary: schemas, layer: 'extra' })
   const result = await runChangeset(ws, { ops: [{ op: 'override.put', layer: 'extra', kind: 'tag', member: 'entry', name: 'base/second', data: { values: ['base/a'] } }] }, { check: false, write: true, domain })

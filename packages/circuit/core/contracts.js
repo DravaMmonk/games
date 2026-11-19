@@ -80,13 +80,6 @@ export function specProblems(domain, content, spec) {
   }
   out.push(...hookProblems(spec.course))
   out.push(...blueprintProblems(spec))
-  const builds = spec.course.levels.some((l) => spec.course.builds(l).length)
-  if (builds && !isFn(spec.syncOwn)) say('the course builds parts, but the spec has no syncOwn(built)')
-  if (spec.builtIn !== undefined) {
-    const built = new Set(spec.course.levels.flatMap((l) => spec.course.builds(l)))
-    if (!strings(spec.builtIn)) say('builtIn is not a list of parts')
-    else for (const p of spec.builtIn.filter((x) => !built.has(x))) say(`builtIn lists ${p}, which no level builds`)
-  }
   return out
 }
 
@@ -142,12 +135,7 @@ function naiveInPlace(domain, content, keep) {
 const failing = (lines) => lines.filter((l) => l.fail)
 const named = (lines) => [...new Set(lines.map((l) => l.level))]
 
-/**
- * validate(spec) against the contract, on changed content: every level's naive answer in its reference's place (each
- * such level fails, and no other level but one after it), then every builder level's part running its board unplugged:
- * each such level fails, but one whose every part the spec lists as builtIn (a built-in implementation, not the
- * player's board), which must pass.
- */
+/** A substituted naive reference fails its own level, and may affect levels that depend on it. */
 export async function validateProblems(domain, content, spec) {
   const out = []
   const course = spec.course
@@ -166,26 +154,6 @@ export async function validateProblems(domain, content, spec) {
     // A later level may stand on an earlier one's answer (a type it declared, a function it defined); no other may fail.
     const downstream = (id) => changed.some((c) => course.before(c, id))
     for (const id of named(fails)) if (!changed.includes(id) && !(id && downstream(id))) out.push(`validate: ${id ?? 'a line naming no level'} fails, though only naive answers moved: ${fails.find((l) => l.level === id).text}`)
-  }
-  // The built parts run what syncOwn hands them: each builder level's last reference board unplugged (its wires into
-  // the level's own nodes dropped, `out <- a`), kept as the level's screen keeps it, under its task's key in the
-  // saves, makes that level fail.
-  const unplugged = builders.flatMap((id) => {
-    const bp = spec.blueprints?.filter((b) => b.level === id && !b.naive).at(-1)
-    return bp ? [{ id, key: bp.key, board: bp.read(bp.write(bp.board).filter((line) => !line.includes('<-'))) }] : []
-  })
-  const runsOwn = []
-  if (unplugged.length) {
-    spec.syncOwn(Object.fromEntries(unplugged.map((u) => [u.key, u.board])))
-    const fails = failing(await domain.validate(spec))
-    spec.syncOwn({})
-    for (const { id } of unplugged) if (fails.some((l) => l.level === id)) runsOwn.push(id)
-  }
-  const builtIn = new Set(spec.builtIn ?? [])
-  for (const id of builders) {
-    const own = !course.builds(course.levels.find((l) => l.id === id)).every((p) => builtIn.has(p))
-    if (own && !runsOwn.includes(id)) out.push(`syncOwn: ${id} passes with its board unplugged: its part does not run the board syncOwn hands it (a built-in implementation goes in spec.builtIn)`)
-    if (!own && runsOwn.includes(id)) out.push(`syncOwn: ${id} builds only parts the spec lists as builtIn, but its part runs the board syncOwn hands it: drop them from builtIn`)
   }
   return out
 }

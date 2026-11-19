@@ -26,9 +26,6 @@ function spec(content, works = imageWorks(content)) {
     publishedBy: image.publishedBy,
     // The board each built part runs, by its task's key: the screens keep it as that task's passed board.
     syncOwn: image.syncOwn,
-    // The built parts that run no circuit (games/DIRECTION.md §2, 4): a part a level unlocks is the engine's own
-    // implementation; only a built part of parts.json (inside) runs the player's board.
-    builtIn: [...new Set(image.course.levels.flatMap((l) => image.course.builds(l)))].filter((p) => !image.kit.types[p]?.kit),
     texts: { chapters: image.CHAPTERS, intros: image.intros },
   }
 }

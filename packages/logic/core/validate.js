@@ -16,7 +16,7 @@ import { lemmaGives, runProof, startProof } from './proof.js'
 import { paramsOf } from 'circuit'
 import { scriptJudge, methodsOf, sentencesOf } from './script.js'
 import { lettersOf, tautology } from './truth.js'
-import { MACHINE_PARTS, inputsOfLevel, rulePartsOf, runMachine } from './machine.js'
+import { inputsOfLevel, rulePartsOf, runMachine } from './machine.js'
 import { SETTING_KINDS, choiceKey, choicesOf } from './choices.js'
 import { chipsFrom, chipsOf, missingChips } from './formulaTree.js'
 import { checkGates, rowsFor, startGates } from './gates.js'
@@ -175,15 +175,22 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       return out
     }))
   }
-  for (const level of levels.filter((l) => l.builds && MACHINE_PARTS[l.builds] && l.kind === 'logic/machine')) {
-    out.push(...memo(level.id, `built ${level.task ?? 0}`, () => {
-      const out = []
-      const names = inputsOfLevel(level).map((i) => i.name)
-      const alone = { nodes: [...names.map((name) => ({ id: name, type: 'in', params: { name } })), { id: 'x', type: level.builds, params: {} }, { id: 'out', type: 'out', params: { name: 'out' } }], wires: [...names.map((name) => ({ from: name, to: 'x', port: name })), { from: 'x', to: 'out', port: 'in' }] }
-      const { built: run } = checkWorks((work) => runMachine(withHidden(level), work), { built: alone })
-      if (!run.ok) out.push({ level: level.id, fail: true, text: `${level.id}: the part ${level.builds}, alone, does not pass the level that builds it` })
-      return out
-    }))
+  // Run each published machine variant on the cases of the task that publishes it.
+  for (const level of levels.filter(level => level.kind === 'logic/machine')) {
+    for (const { part, variant } of level.publishes ?? []) {
+      if (logic.parts[part]?.family !== 'logic/built') continue
+      out.push(...memo(level.taskId, `published ${part}.${variant}`, () => {
+        const fail = text => [{ level: level.id, fail: true, text: `${level.id}: ${text}` }]
+        if (level.built?.[part]?.opens().level.taskId !== level.taskId) return fail(`the part ${part}.${variant} does not resolve to its publishing task`)
+        const names = inputsOfLevel(level).map(input => input.name)
+        const alone = {
+          nodes: [...names.map(name => ({ id: name, type: 'in', params: { name } })), { id: 'x', type: part, params: {} }, { id: 'out', type: 'out', params: { name: 'out' } }],
+          wires: [...names.map(name => ({ from: name, to: 'x', port: name })), { from: 'x', to: 'out', port: 'in' }],
+        }
+        const run = runMachine(withHidden({ ...level, budget: undefined }), alone)
+        return run.pass ? [] : fail(`the part ${part}.${variant}, alone, does not pass its publishing task`)
+      }))
+    }
   }
   // A lemma runs the proof of each of its shapes (course.js lemmaProofs): its card alone, in that shape, fed the
   // premises of the task that proves it in order and set to the task's own letters, gives the statement on every test.

@@ -1,7 +1,7 @@
 // The board of a circuit task (games/design/README.md 6.3): the cards the task gives it, where they stand, how a saved board
 // still fits the task, and the board as blueprint text. A domain says which cards its tasks give:
 //
-//   circuitBoard({ cards, breaksCycle, pack = packed, right, gap, text }) → { FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf,
+//   circuitBoard({ cards, breaksCycle, portPattern, pack = packed, right, gap, text }) → { FIXED, FIXED_PARTS, isFixed, portsIn, portsOut, labelOf,
 //     sourceFor, fixedOf, startBoard, fits, carriedOnto, wiring, fromText, toText, pack }
 //       cards  [{ type, side: 'left' | 'right', of(task) → [{ name, label }], params?(port), part?, group?(task) }]
 //              in board order: the cards a level gives (its inputs, outputs, wires…), each a source on the left or a sink
@@ -9,6 +9,7 @@
 //              members: [port name] }] ports of a left card that stand on one card together, one output a member (a
 //              board reads it as `group.member`), while the task's ports, and a part its board becomes, stay one each
 //       breaksCycle(node, part)  whether the part can break an immediate dependency cycle
+//       portPattern(node, input, output, task)  optional wire pattern for a port
 //       pack   how to make a reusable part from a board; defaults to the circuit packer
 //       text   how a card's settings read from and spell as blueprint text ({ read(node, key, v), value(node, key, v) }:
 //              ../circuit/text.js); by default a setting is kept as the words it is written in
@@ -36,7 +37,7 @@ export function fixedCardsFit(board, given, isFixed) {
   return signature(board.nodes) === signature(given)
 }
 
-export function circuitBoard({ cards, breaksCycle, pack = packed, right = 980, gap = 140, text = WORDS }) {
+export function circuitBoard({ cards, breaksCycle, portPattern, pack = packed, right = 980, gap = 140, text = WORDS }) {
   const FIXED = cards.map((c) => c.type)
   // A left card that groups ports gives each member as an output of its own.
   const grouping = source({ outputs: (node) => node.params?.members?.split(',') ?? null, eval: (_, node, ctx, key) => ctx.bind?.[node.params.members ? key : node.params.name] })
@@ -88,6 +89,7 @@ export function circuitBoard({ cards, breaksCycle, pack = packed, right = 980, g
   /** How the editor and the blueprint reader wire a task's cards (../circuit/model.js parts): `circuit` is the course read. */
   const wiring = (task, circuit) => ({
     ...(breaksCycle && { breaksCycle: node => breaksCycle(node, circuit.partOf(node.type)) }),
+    ...(portPattern && { portPattern: (node, input, output) => portPattern(node, input, output, task) }),
     text,
     frames: partRegions(circuit.partOf),
     inputs: (n) => {

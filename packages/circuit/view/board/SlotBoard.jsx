@@ -29,6 +29,7 @@ import Glyph from "./Glyph.jsx"
 import { feeding, inPort, layout, outPort, parsePort, placement } from "../../core/board/model.js"
 import { regionAddress } from "../../core/board/regions.js"
 import { cardAt } from '../drag.js'
+import { patternAt, wireMarkup, wirePattern } from './wire-appearance.js'
 
 
 // The phone circuit board, the same in every game: the sources on top, parts in a grid of slots that
@@ -73,11 +74,8 @@ export function drawWires(el, graph, parts, live) {
     }
     return `M${f(ax)},${f(ay)} C${f(ax)},${f(ay + drop)} ${f(bx)},${f(by - drop)} ${f(bx)},${f(by)}`
   }
-  const family = (id) => parts.family(graph.nodes.find((n) => n.id === id) ?? {})
-  // A game may colour a wire itself (by its source, say) instead of by family.
-  const style = (w) => Object.entries(parts.wireStyle?.(w, graph) ?? {}).map(([k, v]) => `${k}:${v}`).join(';')
-  // A game whose wires carry different kinds of thing (data, handles, order) names each wire's kind.
-  const kind = (w) => (parts.wireKind ? ` kind-${parts.wireKind(w, graph)}` : '')
+  const nodes = new Map(graph.nodes.map((n) => [n.id, n]))
+  const find = (id) => nodes.get(id)
   let markup = ''
   const mask = svg.dataset.portMask
   for (const w of graph.wires) {
@@ -86,13 +84,14 @@ export function drawWires(el, graph, parts, live) {
     const b = at(inPort(w.to, w.port))
     if (!a || !b) continue
     const d = curve(a, b)
-    markup += `<path class="pb-casing" d="${d}"/><path class="pb-wire${kind(w)}" data-family="${family(srcNode(w.from))}" style="${style(w)}" d="${d}"/>`
+    markup += wireMarkup(d, wirePattern(parts, find, w), { family: parts.family(find(srcNode(w.from)) ?? {}), style: parts.wireStyle?.(w, graph) })
   }
   if (live) {
     const a = at(live.from)
     if (a) {
       const b = [live.x - origin.left, live.y - origin.top]
-      markup += `<path class="pb-wire is-live" d="${live.from.startsWith('o|') ? curve(a, b) : curve(b, a)}"/>`
+      const d = live.from.startsWith('o|') ? curve(a, b) : curve(b, a)
+      markup += wireMarkup(d, patternAt(parts, find, live.from) ?? 'solid', { draft: true, casing: false })
     }
   }
   // Translated parts and the SVG itself must not permanently enlarge the board's scroll extent.
@@ -279,6 +278,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
       type="button"
       className={`pb-dot ${dotClass(p, extra)}`}
       data-p={p}
+      data-wire-pattern={patternAt(parts, (id) => graph.nodes.find((node) => node.id === id), p)}
       onClick={(event) => {
         event.stopPropagation()
         onPort(p)

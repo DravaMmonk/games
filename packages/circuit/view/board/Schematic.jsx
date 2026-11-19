@@ -7,6 +7,7 @@ import { cardPorts } from "../../core/board/card-ports.js"
 import { schematic } from "../../core/board/schematic.js"
 import { inPort, outPort } from "../../core/board/model.js"
 import { regionAddress } from "../../core/board/regions.js"
+import { wireMarkup, wirePattern } from './wire-appearance.js'
 
 // A board to read, the same on a desktop and a phone: small chips in rows from top to bottom (schematic.js), each a
 // part's name over what it holds, thin wires between their edges. Nothing on it is edited: no ports to press, no
@@ -37,7 +38,7 @@ const climb = ([ax, ay], [bx, by]) => {
 function draw(root, graph, parts, paths) {
   const svg = root.querySelector(':scope > .sk-wires')
   const find = (attr, value) => root.querySelector(`[${attr}="${CSS.escape(value)}"]`)
-  const family = (id) => parts.family(graph.nodes.find((n) => n.id === id) ?? {})
+  const nodeOf = (id) => graph.nodes.find((n) => n.id === id)
   let markup = ''
   for (const { wire, vias, back } of paths) {
     const [from, to] = [find('data-p', outPort(wire.from)), find('data-p', inPort(wire.to, wire.port))]
@@ -53,9 +54,7 @@ function draw(root, graph, parts, paths) {
       last = [v.x + v.w / 2, v.y + v.h]
     }
     d += (back ? climb : fall)(last, [b.x, b.y])
-    const style = Object.entries(parts.wireStyle?.(wire, graph) ?? {}).map(([k, v]) => `${k}:${v}`).join(';')
-    const kind = parts.wireKind ? ` kind-${parts.wireKind(wire, graph)}` : ''
-    markup += `<path class="pb-wire${kind}" data-family="${family(srcNode(wire.from))}" style="${style}" d="${d}"/>`
+    markup += wireMarkup(d, wirePattern(parts, nodeOf, wire), { family: parts.family(nodeOf(srcNode(wire.from)) ?? {}), style: parts.wireStyle?.(wire, graph), casing: false })
   }
   svg.setAttribute('width', root.offsetWidth)
   svg.setAttribute('height', root.offsetHeight)

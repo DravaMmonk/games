@@ -51,6 +51,14 @@
   --gutter: max(var(--sp-6), env(safe-area-inset-left));
   --settings-width: 360px;
   --port-radius: 6px;
+  --port-dot-inset: 1px;
+  --port-alt-dot-inset: 2px;
+  --circuit-wire-width: 2.6px;
+  --circuit-wire-preview: 1.6px;
+  --circuit-wire-casing: 7px;
+  --circuit-wire-dashes: 5 5;
+  --circuit-wire-double: 5px;
+  --circuit-wire-gap: 2px;
 
   --ink: #282824;
   --heading: #272723;

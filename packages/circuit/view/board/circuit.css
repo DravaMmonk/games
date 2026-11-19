@@ -15,8 +15,6 @@
 .board-layer .node { pointer-events: auto; }
 .board-wires { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
 .board-empty { position: absolute; z-index: 1; top: 50%; left: 50%; width: min(320px, 80%); margin: 0; padding: var(--sp-6) var(--sp-6); color: var(--muted); border-radius: var(--r-lg); background: color-mix(in srgb, var(--paper) 80%, transparent); box-shadow: 0 0 0 1px var(--hairline); font-size: 13px; line-height: 1.6; text-align: center; transform: translate(-50%, 40px); pointer-events: none; }
-.kw { --kw: color-mix(in srgb, var(--fam, var(--muted)) 55%, var(--rule)); --kw-halo: var(--canvas); }
-.kw.is-live { --kw: color-mix(in srgb, var(--fam, var(--muted)) 75%, var(--ink) 10%); }
 .node { position: absolute; min-width: min-content; padding-bottom: var(--sp-4); border-radius: var(--r-md); background: var(--paper); box-shadow: var(--card); cursor: default; animation: card-in 240ms cubic-bezier(.2, .8, .2, 1); transition: box-shadow 180ms ease; }
 .node::before { content: ''; position: absolute; top: 0; left: 12px; right: 12px; height: 2px; border-radius: 0 0 var(--r-full) var(--r-full); background: var(--fam, var(--muted)); opacity: .85; }
 .node.is-selected { box-shadow: var(--card-lift); }
@@ -43,14 +41,17 @@
 .node-body:empty { min-width: 0; }
 .node-body > :is(.cs-card, .pf-face.is-card) { padding: 0; }
 .node-port-label { position: relative; height: 20px; display: flex; align-items: center; color: var(--muted); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
-.port { position: absolute; width: 12px; height: 12px; border-radius: var(--r-full); background: var(--paper); box-shadow: 0 0 0 1.5px var(--fam, var(--ink)); transition: background 160ms ease, transform 160ms ease; }
-.port.is-wired { background: var(--fam, var(--ink)); }
+.port { position: absolute; width: 12px; height: 12px; border-radius: var(--r-full); transition: transform 160ms ease; }
+.port::before { content: ''; position: absolute; inset: var(--port-dot-inset); border-radius: inherit; background: var(--paper); box-shadow: 0 0 0 1.5px var(--fam, var(--ink)); transition: background 160ms ease; }
+.port.is-wired::before { background: var(--fam, var(--ink)); }
 .port-in { left: -18px; top: 4px; }
 .port-out { right: -6px; top: 4px; cursor: crosshair; }
 .port-in { cursor: pointer; }
 /* Click to wire: the dot picked, and the dots its wire may go to. */
-.port.is-picked { transform: scale(1.35); background: var(--accent); box-shadow: 0 0 0 1.5px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
-.port.is-target { transform: scale(1.2); box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 28%, transparent); animation: port-pulse 1.2s ease-in-out infinite; }
+.port.is-picked { transform: scale(1.35); }
+.port.is-picked::before { background: var(--accent); box-shadow: 0 0 0 1.5px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
+.port.is-target { transform: scale(1.2); }
+.port.is-target::before { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 28%, transparent); animation: port-pulse 1.2s ease-in-out infinite; }
 .kit-board.is-picking .node { cursor: pointer; }
 @keyframes port-pulse { 50% { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 9px color-mix(in srgb, var(--accent) 12%, transparent); } }
 /* One of a card's several outputs: its name (and what it carries) at the right edge, the dot past it. */
@@ -61,7 +62,8 @@
 .node-out-name.is-glyph, .pb-o em.is-glyph { display: inline-flex; line-height: 0; }
 .node-out-name.is-glyph svg { width: 24px; height: 16px; }
 .pb-o em.is-glyph svg { width: 27px; height: 18px; }
-.port:hover { transform: scale(1.25); background: var(--accent); }
+.port:hover { transform: scale(1.25); }
+.port:hover::before { background: var(--accent); }
 .param { margin: var(--sp-2) var(--sp-4) 0; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); color: var(--muted); font-size: 11px; }
 .param select, .param input { width: 76px; min-width: 0; height: 24px; padding: 0 var(--sp-3); border: 0; border-radius: var(--r-sm); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font-family: var(--mono); font-size: 11px; }
 /* A card's setting chosen with buttons (Choice.jsx): its name above them. */
@@ -181,9 +183,6 @@
 .pb-board { --pb-row-gap: calc(var(--pb-dot) + var(--pb-port-label)); --pb-io-overhang: 9px; position: relative; min-width: 0; max-width: 100%; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--pb-row-gap); padding: var(--sp-2) 0; }
 /* Wires run over the blocks, lifted off the board by a soft shadow; the dots and their tags sit on top of them. */
 .pb-wires { position: absolute; z-index: 3; top: 0; left: 0; overflow: visible; pointer-events: none; filter: drop-shadow(0 3px 2.5px rgba(0, 0, 0, .22)) drop-shadow(0 1px .5px rgba(0, 0, 0, .14)); }
-.pb-casing { fill: none; stroke: var(--paper); stroke-width: 6; stroke-linecap: round; opacity: .85; }
-.pb-wire { fill: none; stroke: color-mix(in srgb, var(--fam, var(--ink)) 75%, var(--rule)); stroke-width: 2.6; stroke-linecap: round; }
-.pb-wire.is-live { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 6 5; }
 /* Terminals wrap within the board. Sinks use balanced columns (SlotBoard sets --cols); sources fit their content. */
 .pb-terms { position: relative; min-width: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-7) var(--sp-4); }
 .pb-terms > .pb-term { flex: 0 0 calc((100% - (var(--cols, 1) - 1) * 8px) / var(--cols, 1)); max-width: 160px; }
@@ -283,7 +282,7 @@
 .pb-term.is-named .pb-o, .pb-term.is-named .pb-in { flex: none; min-width: var(--pb-target); }
 .pb-term.is-named .pb-o > em, .pb-term.is-named .pb-in > em { position: static; max-width: 10ch; overflow: hidden; color: var(--ink); font: var(--fs-label)/var(--pb-port-label) var(--mono); text-overflow: ellipsis; }
 .pb-dot { position: relative; z-index: 4; width: var(--pb-target); height: var(--pb-target); display: grid; place-items: center; padding: 0; border: 0; background: transparent; touch-action: none; cursor: pointer; }
-.pb-dot i { width: var(--pb-dot); height: var(--pb-dot); border-radius: var(--r-full); background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); transition: transform 140ms ease, box-shadow 140ms ease; }
+.pb-dot i { width: calc(var(--pb-dot) - 2 * var(--port-dot-inset)); height: calc(var(--pb-dot) - 2 * var(--port-dot-inset)); border-radius: var(--r-full); background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); transition: transform 140ms ease, box-shadow 140ms ease; }
 /* A dot is hollow until a wire is on it, then solid; an input still waiting for one is ringed in red. */
 .pb-dot.is-open i { box-shadow: inset 0 0 0 2px var(--fail); }
 .pb-dot.is-wired i { background: var(--ink); }
@@ -301,7 +300,10 @@
 .port-in:not(.is-wired) > i, .pb-dot.is-in:not(.is-wired) i::after { content: ''; display: block; position: absolute; border-radius: var(--port-mark-radius, var(--r-full)); box-shadow: inset 0 0 0 1.5px var(--port-mark); pointer-events: none; }
 .port-in:not(.is-wired) > i { inset: 3px; }
 .pb-dot.is-in i { position: relative; }
-.pb-dot.is-in:not(.is-wired) i::after { inset: 4px; }
+.pb-dot.is-in:not(.is-wired) i::after { inset: var(--sp-2); }
+/* Secondary wire patterns have a smaller visible dot while keeping the same anchor and hit area. */
+.port[data-wire-pattern]:not([data-wire-pattern='solid'])::before { inset: var(--port-alt-dot-inset); }
+.pb-dot[data-wire-pattern]:not([data-wire-pattern='solid']) i { width: calc(var(--pb-dot) - 2 * var(--port-alt-dot-inset)); height: calc(var(--pb-dot) - 2 * var(--port-alt-dot-inset)); }
 /* A part's sheet ends with this: take the block off the board. */
 .sheet-actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sp-4); }
 .sheet-actions > button { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: inherit; }
@@ -540,7 +542,6 @@
 .cl-readonly :is(select, input) { pointer-events: none; }
 .sk-board { position: relative; box-sizing: border-box; width: max-content; min-width: 100%; padding: var(--sp-5); }
 .sk-wires { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
-.sk-wires .pb-wire { stroke-width: 1.6; }
 .sk-rows { display: grid; gap: var(--sp-7); }
 .sk-row { display: flex; align-items: center; justify-content: center; gap: var(--sp-5); }
 .sk-via { align-self: stretch; width: var(--sp-3); }

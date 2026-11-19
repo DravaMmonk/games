@@ -44,6 +44,7 @@ import { useCircuitEdits } from "./useCircuitEdits.js"
 import { historyKey } from 'kernel/view'
 
 import { usePickedPort } from "./usePickedPort.js"
+import { patternAt, wirePattern } from './wire-appearance.js'
 import { alignTerminals, spaceNodes } from "../../core/board/spacing.js"
 
 // The desktop circuit board, the same in every game: parts are cards, wires run from a card's output (a dot on its
@@ -166,6 +167,8 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const layer = useRef(null)
   const pointers = useRef(new Map())
   const byId = new Map(graph.nodes.map((n) => [n.id, n]))
+  const findNode = (id) => byId.get(id)
+  const pattern = (port) => patternAt(parts, findNode, port)
   // A part is numbered as the phone board numbers it (① ②…, its reading order there), so a run's report and a phone
   // name the same card the same way.
   const order = useMemo(() => cardOrder(phoneBlockBoard(withNewSlots(graph, parts), parts), parts), [graph, parts])
@@ -627,10 +630,10 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const plainOutput = outputs.length === 1 && outputs[0].key === null && !named
     const icon = parts.icon?.(node)
     const wired = (src) => graph.wires.some((w) => w.from === src)
-    const outDot = (src, extra = '') => <i className={`port port-out ${wired(src) ? 'is-wired' : ''} ${portClass(outPort(src))} ${extra}`} data-p={outPort(src)} title={tr('点击后再点击另一个元件的输入口，也可以直接拖动连接')} onClick={() => clickPort(outPort(src))}><i /></i>
+    const outDot = (src, extra = '') => <i className={`port port-out ${wired(src) ? 'is-wired' : ''} ${portClass(outPort(src))} ${extra}`} data-p={outPort(src)} data-wire-pattern={pattern(outPort(src))} title={tr('点击后再点击另一个元件的输入口，也可以直接拖动连接')} onClick={() => clickPort(outPort(src))}><i /></i>
     const inDot = (port, extra = '') => {
       const wired = graph.wires.some((w) => w.to === node.id && w.port === port)
-      return <i className={`port port-in ${wired ? 'is-wired' : ''} ${portClass(inPort(node.id, port))} ${extra}`} data-p={inPort(node.id, port)} title={wired && !picking ? tr('点击取下这根连线，再点击其他输入口重新连接') : undefined} onClick={() => clickPort(inPort(node.id, port))}><i /></i>
+      return <i className={`port port-in ${wired ? 'is-wired' : ''} ${portClass(inPort(node.id, port))} ${extra}`} data-p={inPort(node.id, port)} data-wire-pattern={pattern(inPort(node.id, port))} title={wired && !picking ? tr('点击取下这根连线，再点击其他输入口重新连接') : undefined} onClick={() => clickPort(inPort(node.id, port))}><i /></i>
     }
     return (
       <div
@@ -735,7 +738,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const reveal=(id)=>{blocks.open(block.id);setFocus(id);choose(byId.get(id))}
     return <section key={block.id} data-block={block.id} data-node={hidden ? `hidden:${block.id}` : undefined} className={`circuit-block ${hidden?'is-hidden':''} ${dropBlock===block.id?'is-drop':''}`} style={{ left: x, top: y, width: w, ...(hidden ? { minHeight: h } : { height: h }) }}>
       <BlockHeader block={block} editable={!readOnly} onEdit={(patch)=>blocks.edit(block.id,patch)} onDragStart={readOnly?undefined:e=>dragBlock(e,block)} />
-      {hidden&&<><span className="block-stubs is-input" onPointerDown={e=>e.stopPropagation()}>{block.ins.map(w=><button type="button" key={`${w.to}.${w.port}`} className="port port-in is-wired" data-p={inPort(w.to,w.port)} title={L(parts.label(byId.get(w.to)))} aria-label={L(parts.label(byId.get(w.to)))} onClick={()=>reveal(w.to)}><i /></button>)}</span><span className="block-stubs is-output" onPointerDown={e=>e.stopPropagation()}>{[...new Set(block.outs.map(w=>w.from))].map(src=><button type="button" key={src} className="port port-out is-wired" data-p={outPort(src)} title={L(parts.label(byId.get(srcNode(src))))} aria-label={L(parts.label(byId.get(srcNode(src))))} onClick={()=>reveal(srcNode(src))}><i /></button>)}</span></>}
+      {hidden&&<><span className="block-stubs is-input" onPointerDown={e=>e.stopPropagation()}>{block.ins.map(w=><button type="button" key={`${w.to}.${w.port}`} className="port port-in is-wired" data-p={inPort(w.to,w.port)} data-wire-pattern={pattern(inPort(w.to, w.port))} title={L(parts.label(byId.get(w.to)))} aria-label={L(parts.label(byId.get(w.to)))} onClick={()=>reveal(w.to)}><i /></button>)}</span><span className="block-stubs is-output" onPointerDown={e=>e.stopPropagation()}>{[...new Set(block.outs.map(w=>w.from))].map(src=><button type="button" key={src} className="port port-out is-wired" data-p={outPort(src)} data-wire-pattern={pattern(outPort(src))} title={L(parts.label(byId.get(srcNode(src))))} aria-label={L(parts.label(byId.get(srcNode(src))))} onClick={()=>reveal(srcNode(src))}><i /></button>)}</span></>}
     </section>
   }
 
@@ -774,6 +777,14 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const selectedNode = selected?.node ? byId.get(selected.node) : null
   const canDelete = !selectionRefusal && (Boolean(selectedWire) || removable(selectedNode))
 
+  const draft = (port, d) => {
+    const appearance = pattern(port)
+    return <g className="kw is-draft" data-wire-pattern={appearance}>
+      <path className="kw-line" d={d} />
+      {appearance === 'double' && <path className="kw-gap" d={d} />}
+    </g>
+  }
+
   return (
     <div className={`board kit-board ${picking ? 'is-picking' : ''} ${readOnly ? 'is-readonly' : ''}`} ref={surface} onPointerDownCapture={partitioning ? beginPartition : undefined}
       onPointerDown={beginPan} onPointerMove={movePointer} onPointerUp={endPan} onPointerCancel={endPan} onLostPointerCapture={endPan}>
@@ -790,10 +801,12 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
             const d = curve(a, b)
             const active = selected?.wire?.to === wire.to && selected?.wire?.port === wire.port
             const state = wireState?.(wire)
+            const appearance = wirePattern(parts, findNode, wire)
             return (
               <g
                 key={`${wire.to}.${wire.port}`}
-                className={`kw ${active ? 'is-selected' : ''} ${state === 'live' ? 'is-live' : state === 'dead' ? 'is-dead' : ''} ${parts.wireClass?.(wire) ?? ''} ${parts.wireKind ? `kind-${parts.wireKind(wire, graph)}` : ''}`}
+                className={`kw ${active ? 'is-selected' : ''} ${state === 'live' ? 'is-live' : ''}`}
+                data-wire-pattern={appearance}
                 data-family={parts.family(from)}
                 style={parts.wireStyle?.(wire, graph)}
                 onPointerDown={(e) => {
@@ -803,13 +816,13 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
               >
                 <path className="kw-halo" d={d} />
                 <path className="kw-line" d={d} />
-                {state === 'live' && <path className="kw-flow" d={d} />}
+                {appearance === 'double' && <path className="kw-gap" d={d} />}
                 <path className="kw-hit" d={d} />
               </g>
             )
           })}
-          {drag && at(outPort(drag.from)) && <path className="kw-draft" d={curve(at(outPort(drag.from)), [drag.x, drag.y])} />}
-          {picking && pointer && at(picking) && <path className="kw-draft" d={parsePort(picking).side === 'out' ? curve(at(picking), pointer) : curve(pointer, at(picking))} />}
+          {drag && at(outPort(drag.from)) && draft(outPort(drag.from), curve(at(outPort(drag.from)), [drag.x, drag.y]))}
+          {picking && pointer && at(picking) && draft(picking, parsePort(picking).side === 'out' ? curve(at(picking), pointer) : curve(pointer, at(picking)))}
         </svg>
         {visible.map(card)}
         {selectionRect&&<div className="block-selection" style={{left:Math.min(selectionRect[0][0],selectionRect[1][0]),top:Math.min(selectionRect[0][1],selectionRect[1][1]),width:Math.abs(selectionRect[1][0]-selectionRect[0][0]),height:Math.abs(selectionRect[1][1]-selectionRect[0][1])}} />}

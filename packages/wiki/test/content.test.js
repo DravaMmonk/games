@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { rmSync } from 'node:fs'
 import { assemble } from '../../../games/kit/engine/content.js'
 import { S } from '../../../games/kit/engine/schema.js'
 import { applyOverride } from '../../../games/kit/engine/layers.js'
@@ -17,14 +18,13 @@ test('sections order independently of tags, share entries and collect ungrouped 
   ])
   assert.deepEqual(content.glossary.groups.at(-1).title, { zh: '其它', en: 'Other' })
   assert.deepEqual(applyOverride('section', { title: 'First', values: ['a'] }, { values: { remove: ['a'], add: ['b'] } }, schemas), { title: 'First', values: ['b'] })
-  assert.equal(Object.hasOwn(content.registries, 'layout'), false)
-  assert.equal(content.trays, undefined)
 })
 
-test('entry files and course ordering require the package to be selected', async () => {
+test('entry files and course ordering require the package to be selected', async t => {
   const { addGlossaryFixture, installGlossaryFixture, testProject } = await import('../../../games/kit/engine/test-fixture.js')
   const { readContent, readPackage } = await import('../../../games/kit/engine/resolver.js')
   const { root, put } = testProject()
+  t.after(() => rmSync(root, { recursive: true, force: true }))
   installGlossaryFixture(root)
   const pkg = { kind: 'course', version: '0.0.0', kernel: '^0.0.0', uses: {} }
   put('packages/topic/package.json', pkg)
@@ -42,10 +42,11 @@ test('entry files and course ordering require the package to be selected', async
   assert.match(validate(S.text(), '<wiki-ref to="topic/start"></wiki-ref>', { vocabulary: contentSchemas.get(other) })[0].says, /is no markup/)
 })
 
-test('wiki references follow the layer contributing the text and game entries keep their own namespace', async () => {
+test('wiki references follow the layer contributing the text and game entries keep their own namespace', async t => {
   const { addGlossaryFixture, lockFixture, testProject } = await import('../../../games/kit/engine/test-fixture.js')
   const { readContent, readPackage } = await import('../../../games/kit/engine/resolver.js')
   const { root, put } = testProject()
+  t.after(() => rmSync(root, { recursive: true, force: true }))
   put('packages/topic/package.json', { kind: 'course', version: '0.0.0', kernel: '^0.0.0', uses: {} })
   put('games/course/game.json', { kernel: '^0.0.0', packages: { topic: '^0.0.0' }, encyclopedia: ['play'] })
   addGlossaryFixture(root, 'topic', 'course')

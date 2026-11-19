@@ -51,9 +51,9 @@
   --gutter: max(var(--sp-6), env(safe-area-inset-left));
   --settings-width: 360px;
   --port-radius: 6px;
-  --port-dot-inset: 2px;
-  --compact-port-dot-inset: 1px;
-  --phone-compact-port-dot-size: 12px;
+  --desktop-port-outline-width: 1.5px;
+  --phone-port-dot-inset: 2px;
+  --compact-port-scale: .75;
   --circuit-wire-width: 2.6px;
   --circuit-wire-preview: 1.6px;
   --circuit-wire-casing: 7px;

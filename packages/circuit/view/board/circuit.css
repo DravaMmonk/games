@@ -41,15 +41,15 @@
 .node-body:empty { min-width: 0; }
 .node-body > :is(.cs-card, .pf-face.is-card) { padding: 0; }
 .node-port-label { position: relative; height: 20px; display: flex; align-items: center; color: var(--muted); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
-.port { --port-outline: 0 0 0; position: absolute; width: 12px; height: 12px; border-radius: var(--r-full); transition: transform 160ms ease; }
-.port::before { content: ''; position: absolute; inset: var(--port-dot-inset); border-radius: inherit; background: var(--paper); box-shadow: var(--port-outline) 1.5px var(--fam, var(--ink)); transition: background 160ms ease; }
+.port { --port-outline: 0 0 0; --port-dot-inset: 0px; position: absolute; width: calc(2 * var(--port-radius)); height: calc(2 * var(--port-radius)); border-radius: var(--r-full); transition: transform 160ms ease; }
+.port::before { content: ''; position: absolute; inset: var(--port-dot-inset); border-radius: inherit; background: var(--paper); box-shadow: var(--port-outline) var(--desktop-port-outline-width) var(--fam, var(--ink)); transition: background 160ms ease; }
 .port.is-wired::before { background: var(--fam, var(--ink)); }
 .port-in { left: -18px; top: 4px; }
 .port-out { right: -6px; top: 4px; cursor: crosshair; }
 .port-in { cursor: pointer; }
 /* Click to wire: the dot picked, and the dots its wire may go to. */
 .port.is-picked { transform: scale(1.35); }
-.port.is-picked::before { background: var(--accent); box-shadow: var(--port-outline) 1.5px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
+.port.is-picked::before { background: var(--accent); box-shadow: var(--port-outline) var(--desktop-port-outline-width) var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent); }
 .port.is-target { transform: scale(1.2); }
 .port.is-target::before { box-shadow: var(--port-outline) 2px var(--accent-ink), 0 0 0 5px color-mix(in srgb, var(--accent) 28%, transparent); animation: port-pulse 1.2s ease-in-out infinite; }
 .kit-board.is-picking .node { cursor: pointer; }
@@ -282,8 +282,8 @@
 .pb-term.is-named .pb-ins { margin-top: calc(-1 * (var(--sp-6) + var(--pb-target) / 2)); }
 .pb-term.is-named .pb-o, .pb-term.is-named .pb-in { flex: none; min-width: var(--pb-target); }
 .pb-term.is-named .pb-o > em, .pb-term.is-named .pb-in > em { position: static; max-width: 10ch; overflow: hidden; color: var(--ink); font: var(--fs-label)/var(--pb-port-label) var(--mono); text-overflow: ellipsis; }
-.pb-dot { position: relative; z-index: 4; width: var(--pb-target); height: var(--pb-target); display: grid; place-items: center; padding: 0; border: 0; background: transparent; touch-action: none; cursor: pointer; }
-.pb-dot i { width: calc(var(--pb-dot) - 2 * var(--port-dot-inset)); height: calc(var(--pb-dot) - 2 * var(--port-dot-inset)); border-radius: var(--r-full); background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); transition: transform 140ms ease, box-shadow 140ms ease; }
+.pb-dot { --port-dot-scale: 1; --port-dot-size: calc((var(--pb-dot) - 2 * var(--phone-port-dot-inset)) * var(--port-dot-scale)); position: relative; z-index: 4; width: var(--pb-target); height: var(--pb-target); display: grid; place-items: center; padding: 0; border: 0; background: transparent; touch-action: none; cursor: pointer; }
+.pb-dot i { width: var(--port-dot-size); height: var(--port-dot-size); border-radius: var(--r-full); background: var(--paper); box-shadow: inset 0 0 0 2px var(--ink); transition: transform 140ms ease, box-shadow 140ms ease; }
 /* A dot is hollow until a wire is on it, then solid; an input still waiting for one is ringed in red. */
 .pb-dot.is-open i { box-shadow: inset 0 0 0 2px var(--fail); }
 .pb-dot.is-wired i { background: var(--ink); }
@@ -300,8 +300,9 @@
 .port-in > i { inset: 3px; }
 .pb-dot.is-in i { position: relative; }
 .pb-dot.is-in i::after { inset: var(--sp-2); }
-.port[data-port-shape='compact'] { --port-dot-inset: var(--compact-port-dot-inset); --port-outline: inset 0 0 0; }
-.pb-dot[data-port-shape='compact'] i { width: var(--phone-compact-port-dot-size); height: var(--phone-compact-port-dot-size); }
+/* The desktop standard ring extends outside the dot. The compact ring is inset in its scaled diameter. */
+.port[data-port-shape='compact'] { --port-dot-inset: calc(var(--port-radius) - (var(--port-radius) + var(--desktop-port-outline-width)) * var(--compact-port-scale)); --port-outline: inset 0 0 0; }
+.pb-dot[data-port-shape='compact'] { --port-dot-scale: var(--compact-port-scale); }
 /* A part's sheet ends with this: take the block off the board. */
 .sheet-actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sp-4); }
 .sheet-actions > button { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: inherit; }
@@ -609,7 +610,7 @@
 .circuit-block .block-stubs { top: 0; bottom: 0; flex-direction: column; justify-content: space-evenly; }
 .circuit-block .block-stubs.is-input { left: calc(-1 * var(--port-radius)); }
 .circuit-block .block-stubs.is-output { right: calc(-1 * var(--port-radius)); }
-.block-stubs .port { --port-outline: 0 0 0; position: relative; inset: auto; padding: 0; border: 0; flex: none; }
+.block-stubs .port { position: relative; inset: auto; padding: 0; border: 0; flex: none; }
 .block-selection, .pb-cell.is-block-selected { outline: var(--block-rule-width) solid var(--accent); background: var(--selection); }
 .block-selection { position: absolute; z-index: 5; pointer-events: none; }
 .board-zoom button[aria-pressed='true'], .pb-partition[aria-pressed='true'] { color: var(--accent); background: var(--hover); }

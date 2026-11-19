@@ -269,13 +269,14 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
       </span>
     )
   }
+  const shapeOf = (p) => appearanceAt(parts, (id) => graph.nodes.find((node) => node.id === id), p).shape
   const dot = (p, label, extra = '') => (
     <button
       key={p}
       type="button"
       className={`pb-dot ${dotClass(p, extra)}`}
       data-p={p}
-      data-port-shape={appearanceAt(parts, (id) => graph.nodes.find((node) => node.id === id), p).shape}
+      data-port-shape={shapeOf(p)}
       onClick={(event) => {
         event.stopPropagation()
         onPort(p)
@@ -352,7 +353,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
       const first=headTrack.get(block.id),last=rowTrack.get(block.end-1)??first
       out.push(<div key={`head-${block.id}`} data-block={block.id} data-pick-row={block.start} className={`pb-block-head is-rule ${block.view==='hidden'?'is-hidden':''}`} style={{gridRow:first,gridColumn:`1 / span ${cols}`}}>
         <BlockHeader block={block} editable={!fixed} onEdit={(patch)=>blocks.edit(block.id,patch)} />
-        {block.view==='hidden'&&<><span className="block-stubs is-input">{block.ins.map(w=><button key={`${w.to}.${w.port}`} className="pb-dot is-in is-wired" data-p={inPort(w.to,w.port)} aria-label={nameOf(graph.nodes.find(n=>n.id===w.to))} onClick={()=>reveal(block,w.to)}><i /></button>)}</span><span className="block-stubs is-output">{[...new Set(block.outs.map(w=>w.from))].map(src=><button key={src} className="pb-dot is-out is-wired" data-p={outPort(src)} aria-label={nameOf(graph.nodes.find(n=>n.id===srcNode(src)))} onClick={()=>reveal(block,srcNode(src))}><i /></button>)}</span>{tags(new Set(block.nodes))}</>}
+        {block.view==='hidden'&&<><span className="block-stubs is-input">{block.ins.map(w=><button key={`${w.to}.${w.port}`} className="pb-dot is-in is-wired" data-p={inPort(w.to,w.port)} data-port-shape={shapeOf(inPort(w.to,w.port))} aria-label={nameOf(graph.nodes.find(n=>n.id===w.to))} onClick={()=>reveal(block,w.to)}><i /></button>)}</span><span className="block-stubs is-output">{[...new Set(block.outs.map(w=>w.from))].map(src=><button key={src} className="pb-dot is-out is-wired" data-p={outPort(src)} data-port-shape={shapeOf(outPort(src))} aria-label={nameOf(graph.nodes.find(n=>n.id===srcNode(src)))} onClick={()=>reveal(block,srcNode(src))}><i /></button>)}</span>{tags(new Set(block.nodes))}</>}
       </div>)
       if(block.view!=='hidden')out.push(<div key={`end-${block.id}`} className="pb-block-end" aria-hidden="true" style={{gridRow:last,gridColumn:`1 / span ${cols}`}} />)
     }

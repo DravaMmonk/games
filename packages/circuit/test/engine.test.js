@@ -76,20 +76,14 @@ test('an output that reads only some ports can feed the node it comes from', () 
   assert.equal(runBoard(c, { parts: PARTS, bind: { in: 3 } }).outputs.out, -29)
 })
 
-test('a packed circuit is a part', () => {
+test('packed parts compose and trace each instance by its path', () => {
   const inner = io([{ id: 'a', type: 'add' }], w('in>a.a in>a.b a>out'))
   const parts = { ...PARTS, dbl: packed({ circuit: inner, inputs: ['in'], outputs: ['out'] }) }
   const c = io([{ id: 'd', type: 'dbl' }, { id: 'e', type: 'dbl' }], w('in>d d>e e>out'))
-  assert.equal(runBoard(c, { parts, bind: { in: 5 } }).outputs.out, 20)
-})
-
-test('a packed part traces each card inside with its path', () => {
-  const inner = io([{ id: 'a', type: 'add' }], w('in>a.a in>a.b a>out'))
-  const parts = { ...PARTS, dbl: packed({ circuit: inner, inputs: ['in'], outputs: ['out'] }) }
-  const c = io([{ id: 'd', type: 'dbl' }], w('in>d d>out'))
   const trace = []
-  runBoard(c, { parts, bind: { in: 2 }, ctx: { trace } })
+  assert.equal(runBoard(c, { parts, bind: { in: 2 }, ctx: { trace } }).outputs.out, 8)
   assert.ok(trace.some((s) => s.id === 'a' && s.path?.[0] === 'd' && s.value === 4))
+  assert.ok(trace.some((s) => s.id === 'a' && s.path?.[0] === 'e' && s.value === 8))
   assert.ok(trace.some((s) => s.id === 'd' && !s.path && s.value === 4))
 })
 

@@ -113,12 +113,12 @@ test('game namespaces cannot declare tags, relations or sections', () => {
   assert.ok(checkContent({ vocabulary }, assemble(input)).some((p) => /may only be declared by package/.test(p.says)))
 })
 
-test('explicit trays produce ordered menus, expand task items and apply replacements on load', () => {
+test('explicit trays keep authored menu order, expand task items and apply replacements on load', () => {
   const input = source()
   input.schemas = { ...vocabulary, level: S.obj({ title: S.text(), tray: S.name('circuit/tray'), adds: S.list(S.ref('primitive', { reference: 'circuit/part' })), tasks: S.list(S.obj({ gives: S.list(S.str({ reference: 'circuit/part' })) })) }) }
   input.partDefs = { parts: { one: {}, two: {}, three: {} } }
   input.tags.push(['menu', { kind: 'circuit/part', title: 'Menu', values: ['one', 'two'] }], ['tray', { kind: 'circuit/part', title: 'Tray', values: ['three', '#menu'] }])
-  input.trays = [['tray', { title: 'Tray', values: ['three'], menus: [{ id: 'menu', title: 'Menu', values: ['two', 'one'] }] }]]
+  input.trays = [['tray', { title: 'Tray', values: ['three'], menus: [{ id: 'menu', title: 'Menu', values: ['two', 'one'] }, { id: 'a-menu', title: 'Second', values: ['two'] }] }]]
   input.relations.push( ['upgrade', { kind: 'replaces', edges: [{ from: 'three', to: 'one' }] }])
   input.levels[0][1] = { title: 'Start', tray: 'tray', adds: ['#menu'], tasks: [{ gives: ['#tray'] }] }
   const content = assemble(input)
@@ -126,7 +126,8 @@ test('explicit trays produce ordered menus, expand task items and apply replacem
   assert.equal(start.tray, 'toy/tray')
   assert.deepEqual(start.adds, ['toy/one', 'toy/two'])
   assert.deepEqual(start.tasks[0].gives, ['toy/one', 'toy/three', 'toy/two'])
-  assert.deepEqual(content.trays['toy/tray'].items, [{ id: 'toy/menu', title: 'Menu', items: ['toy/two', 'toy/one'] }, 'toy/three'])
+  // Menus keep their authored order, ahead of the tray's own parts.
+  assert.deepEqual(content.trays['toy/tray'].items, [{ id: 'toy/menu', title: 'Menu', items: ['toy/two', 'toy/one'] }, { id: 'toy/a-menu', title: 'Second', items: ['toy/two'] }, 'toy/three'])
   assert.deepEqual(content.replaces, { 'toy/three': ['toy/one'] })
 })
 
@@ -177,6 +178,12 @@ test('chapters retain authored order independently of display relations and reje
   assert.deepEqual(assemble(input).eras[0].levels.map(level => level.id), input.game.chapters[0].levels)
   input.game.chapters[0].levels = ['toy/b', 'toy/a']
   assert.ok(assemble(input).objectProblems.some(problem => /must precede/.test(problem.says)))
+  // Across chapters, a prerequisite is in an earlier chapter.
+  input.game.chapters = [{ id: 'one', levels: ['toy/a'] }, { id: 'two', levels: ['toy/b'] }]
+  assert.ok(!assemble(input).objectProblems.some(problem => /must precede/.test(problem.says)))
+  input.game.chapters.reverse()
+  assert.deepEqual(assemble(input).objectProblems.filter(problem => /must precede/.test(problem.says)),
+    [{ at: 'chapters/@toy/two.levels', says: 'toy/a must precede toy/b: it is in the later chapter @toy/one' }])
   input.game.chapters[0].levels = ['#toy/core']
   assert.ok(assemble(input).objectProblems.some(problem => /without tags/.test(problem.says)))
 })

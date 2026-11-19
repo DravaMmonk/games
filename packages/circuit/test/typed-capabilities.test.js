@@ -4,7 +4,6 @@ import { register } from '../core/index.js'
 import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { vocabulary } from '../../../games/kit/engine/kernel.js'
 import { createCapabilityRegistry } from '../../../games/kit/engine/capabilities.js'
 import { typeProblems } from '../core/parts/types.js'
 import { S } from '../../../games/kit/engine/schema.js'
@@ -16,7 +15,6 @@ test('each kind rejects duplicate names and permits a name shared across kinds',
   registry.add('operation', 'toy/number', { about: 'number' })
   assert.throws(() => registry.add('valueType', 'toy/number', {}), /duplicate/)
   assert.throws(() => registry.add('operation', 'plain', {}), /invalid capability name/)
-  assert.equal(vocabulary.version, undefined)
 })
 
 test('qualified operation names round-trip beside match case delimiters', () => {

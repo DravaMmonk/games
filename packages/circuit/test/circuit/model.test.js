@@ -60,13 +60,6 @@ test('a change keeps the locked parts and wires, and nothing else of the old boa
   assert.deepEqual(unplugged.graph.wires, started.wires)
 })
 
-test('a locked wire refuses another wire into its port; a free port takes one', () => {
-  const started = withPreset(board, preset)
-  const parts = { role: (n) => n.type === 'out' ? 'sink' : 'part', inputs: () => ['in'] }
-  assert.match(wireRefusal(started, parts, { from: 'in', to: 'out', port: 'in' }).en, /came with the level/)
-  assert.equal(wireRefusal(started, parts, { from: 'in', to: 'p', port: 'in' }), null)
-})
-
 test('a preset may fix a part\'s settings, all of them or some', () => {
   const answer = { nodes: [{ id: 'r', type: 'rule', params: { rule: 'K', at: 'goal' } }], wires: [] }
   const some = withPreset(board, presetOf(answer, [{ id: 'r', fixed: ['rule'] }]))

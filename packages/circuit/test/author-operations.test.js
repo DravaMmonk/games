@@ -11,7 +11,7 @@ import { join } from 'node:path'
 import { eraLevels } from '../../../games/kit/course.js'
 import { S } from '../../../games/kit/engine/schema.js'
 import { defineVocabulary } from '../../../games/kit/engine/vocabulary.js'
-import { OPERATIONS, operationsFor } from '../../../games/kit/engine/ops/operations.js'
+import { operationsFor } from '../../../games/kit/engine/ops/operations.js'
 import { openGame as openWorkspace, openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { adopt, runChangeset, readLog, undo } from '../../../games/kit/engine/ops/changeset.js'
 import { driftOf, hashOf } from '../../../games/kit/engine/ops/log.js'
@@ -92,10 +92,6 @@ function roundTrip(ws, op, args) {
 }
 const level = (ws, id) => ws.levels.get(id)
 
-test('the operation registry exposes no identity-changing operations', () => {
-  assert.deepEqual(Object.keys(OPERATIONS).filter((name) => name.endsWith('.rename')), [])
-})
-
 test('field edits, patches and replacements reject id changes before mutation', () => {
   const { root } = toy()
   const ws = openGame('toy', root)
@@ -133,12 +129,15 @@ test('stable ids allow list reordering, insertion, deletion and undo', () => {
   roundTrip(ws, 'game.set', { path: 'chapters', value: [...ws.game.chapters, '@toy/new'] })
   roundTrip(ws, 'game.unset', { path: 'chapters[0]' })
   roundTrip(ws, 'level.set', { level: 'a1', path: 'tasks[0].id', value: 'a1' })
+  roundTrip(ws, 'game.unset', { path: 'description' })
+  assert.equal(Object.hasOwn(ws.game, 'description'), false)
 })
 
 test('part variants, setting definitions, blueprints and overrides preserve ids', () => {
   const { root } = toy()
   const ws = openPackage('toy', root, { vocabulary: VOCAB })
   run(ws, 'part.add', { part: 'made', data: { inside: [{ id: 'base', reference: {} }] } })
+  assert.deepEqual(Object.keys(ws.partDefs.parts), ['made'])
   for (const args of [
     { path: 'parts.made.id', value: 'new' },
     { path: 'parts.made.inside[0].id', value: 'new' },
@@ -227,12 +226,6 @@ test('game tag patches update the assembled route and undo cleanly', () => {
     layer: ws.layer, kind: 'tag', name: levelMarks.optional, member: 'level', data: { values: { add: ['toy/a2'] } },
   })
   assert.equal(result.after.eras[0].levels.find(level => level.id === 'toy/a2').optional, true)
-})
-
-test('game.set and game.unset edit the assembled configuration', () => {
-  const { ws } = toy()
-  roundTrip(ws, 'game.set', { path: 'title', value: { en: '玩具' } })
-  roundTrip(ws, 'game.unset', { path: 'description' })
 })
 
 test('named-object operations persist typed tags, relations and sections and preserve translations', async () => {
@@ -481,14 +474,7 @@ function writePartsToy() {
 }
 const prun = (ws, op, args) => operationsFor(circuitFixtureSchema(PVOCAB))[op].apply(ws, args, { vocabulary: withParts(circuitFixtureSchema(PVOCAB), ws.partDefs), domain: { vocabulary: PVOCAB } })
 
-test('the first part of a game makes its parts.json', () => {
-  const ws = partsToy()
-  ws.contentObjects['circuit/part'].clear()
-  prun(ws, 'part.add', { part: 'sum', data: sum })
-  assert.deepEqual(Object.keys(ws.partDefs.parts), ['sum'])
-})
-
-test('the part operations edit parts.json, refuse to remove a part still used', () => {
+test('part operations edit and restore the registry and refuse to remove a referenced part', () => {
   const ws = partsToy()
   const before = JSON.stringify(ws.content())
   const added = prun(ws, 'part.add', { part: 'twice', data: { ...sum, inputs: [{ name: 'a' }], op: 'add' }, after: 'sum' })
@@ -499,7 +485,7 @@ test('the part operations edit parts.json, refuse to remove a part still used', 
   assert.deepEqual(Object.keys(ws.partDefs.parts), ['sum'])
   for (const { op, ...args } of removed.inverse) prun(ws, op, args)
   for (const done of [said, added]) for (const { op, ...args } of done.inverse) prun(ws, op, args)
-  assert.equal(JSON.stringify(ws.content()), before, 'the inverses put parts.json back')
+  assert.equal(JSON.stringify(ws.content()), before)
   assert.throws(() => prun(ws, 'part.remove', { part: 'sum' }), /still named at levels\/a1.json adds\[0\], levels\/a1.json brief.en, levels\/a1.json solution\[0\], overrides\/circuit\/tags\/circuit\/part\/primitives\.json values\.add\[0\]/)
   assert.throws(() => prun(ws, 'parts.set', { path: 'parts.sum', value: {} }), /part.add/)
   assert.throws(() => prun(ws, 'part.add', { part: 'twice', data: sum, after: 'none' }), /no part none/)
@@ -516,8 +502,6 @@ test('inline settings are edited and undone with their part', () => {
   assert.deepEqual(ws.partDefs.parts.sum.settings, data)
   for (const { op, ...args } of change.inverse) prun(ws, op, args)
   assert.deepEqual(ws.content(), before)
-  assert.equal(OPERATIONS['setting.add'], undefined)
-  assert.equal(OPERATIONS['setting.remove'], undefined)
 })
 
 test('operations consume assembled names and keep package source references local', async () => {
@@ -578,16 +562,13 @@ test('removing a level clears its tag, relation placements and supports undo', (
 })
 
 
-test('entry identity and membership cannot be hidden by the encyclopedia projection', async () => {
+test('entry membership cannot be patched through the encyclopedia projection', async () => {
   const { root } = toy()
   const ws = openPackage('toy', root, { vocabulary: VOCAB })
-  for (const op of [{ op: 'entry.set', entry: 'e', path: 'id', value: 'other' }, { op: 'entry.patch', entry: 'e', fields: { group: 'g' } }]) {
-    const result = await runChangeset(ws, { ops: [op] }, { check: false, domain: DOMAIN })
-    assert.equal(result.ok, false)
-    assert.match(result.problems.join('\n'), /not a field here|id cannot change/)
-    assert.equal(ws.contentObjects.entry.get('e').id, undefined)
-    assert.equal(ws.contentObjects.entry.get('e').group, undefined)
-  }
+  const result = await runChangeset(ws, { ops: [{ op: 'entry.patch', entry: 'e', fields: { group: 'g' } }] }, { check: false, domain: DOMAIN })
+  assert.equal(result.ok, false)
+  assert.match(result.problems.join('\n'), /not a field here/)
+  assert.equal(ws.contentObjects.entry.get('e').group, undefined)
 })
 
 

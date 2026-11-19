@@ -70,19 +70,3 @@ test('tray overrides use generic collection patches and nested identified lists'
   assert.deepEqual(apply(next, { menus: { remove: ['group'] } }).menus.map(menu => menu.id), ['other'])
   assert.deepEqual(apply(source, { values: ['z'], menus: [] }), { title: 'Tools', values: ['z'], menus: [] })
 })
-
-test('tray lists retain menu and grant order', async () => {
-  const { assembleCircuitFixture: assemble } = await import('../../../qed/test/fixture.js')
-  const { S } = await import('../../../../games/kit/engine/schema.js')
-  const content = assemble({ id: 'sample', schemas: circuitFixtureSchema({ game: S.obj({}), level: S.obj({}), kinds: {} }), game: {}, levels: [],
-    partDefs: { parts: { one: {}, two: {}, last: {} } },
-    trays: [['tools', { title: 'Tools', values: ['last'], menus: [
-      { id: 'z-menu', title: 'First', values: ['two', 'one'] },
-      { id: 'a-menu', title: 'Second', values: ['two'] },
-    ] }]],
-  })
-  assert.deepEqual(content.objectProblems, [])
-  assert.deepEqual(content.trays['sample/tools'].items.map(item => typeof item === 'string' ? item : item.id), ['sample/z-menu', 'sample/a-menu', 'sample/last'])
-  assert.deepEqual(content.trays['sample/tools'].items[0].items, ['sample/two', 'sample/one'])
-})
-const assemble = options => assembleContent({ ...options, schemas: circuitFixtureSchema(options.schemas) })

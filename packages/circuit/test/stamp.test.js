@@ -2,8 +2,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { partMeaning, trayMeaning } from '../core/content-meaning.js'
-const contentMeanings = [partMeaning, trayMeaning]
 import { solutionStamp as boardStamp } from '../core/stamp.js'
+const contentMeanings = [partMeaning, trayMeaning]
 import { S } from '../../../games/kit/engine/schema.js'
 import { solutionStamp, taskStamps } from '../../../games/kit/engine/stamp.js'
 
@@ -62,8 +62,9 @@ test('a solution stamp includes the selected works throughout a shared reference
   assert.notEqual(before.stamp, replay({ ...leaf, puzzle: 'new puzzle' }).stamp)
 })
 
-test('presentation changes leave a board solution stamp alone', () => {
-  const root = { key: 'root', work: { nodes: [{ id: 'x', type: 'sum', x: 20 }], wires: [], blocks: [] } }
-  const moved = { ...root, work: { ...root.work, nodes: [{ ...root.work.nodes[0], x: 120 }] } }
-  assert.equal(boardStamp(root, () => []).stamp, boardStamp(moved, () => []).stamp)
+test('moving a part preserves the board stamp while editing its settings invalidates it', () => {
+  const stamp = (node) => boardStamp({ key: 'root', work: { nodes: [node], wires: [] } }, () => []).stamp
+  const node = { id: 'x', type: 'sum', x: 20, params: { n: 1 } }
+  assert.equal(stamp(node), stamp({ ...node, x: 120 }))
+  assert.notEqual(stamp(node), stamp({ ...node, params: { n: 2 } }))
 })

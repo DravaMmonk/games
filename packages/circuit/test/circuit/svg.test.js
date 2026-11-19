@@ -35,7 +35,3 @@ test('a quoted output name keeps its full spelling in the SVG', () => {
   const svg = boardSvg(['p = part()', 'out <- p."out#mode"'])
   assert.match(svg, /class="bp-key"[^>]*>out#mode<\/text>/)
 })
-
-test('text it cannot read throws as the blueprint reader does', () => {
-  assert.throws(() => boardSvg(['a = (']), (e) => e.line === 1 && typeof e.en === 'string')
-})

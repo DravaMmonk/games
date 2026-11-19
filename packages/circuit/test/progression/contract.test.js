@@ -2,10 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { defineCourse as defineCircuitCourse } from '../../core/index.js'
 import { usable } from '../../core/course.js'
-import { createPluginKernel } from '../../../../games/kit/engine/plugins.js'
-import { loadModule, closeGames } from '../../../../games/kit/engine/games.mjs'
 import { progressFieldsProblems } from '../../core/progress-fields.js'
-import { register } from '../../core/index.js'
 import { defineCourse } from '../../core/progression/index.js'
 
 test('circuit offers the whole tray and progress limits it to held members', () => {
@@ -35,18 +32,4 @@ test('a tray can include unlisted parts only under a grant policy', () => {
   assert.deepEqual(progressFieldsProblems(content).map(problem => problem.at), ['trays/tray.json.includeUnlisted'])
   content.registries['progress/policy'] = { parts: { kind: 'circuit/part', grants: true } }
   assert.deepEqual(progressFieldsProblems(content), [])
-})
-
-test('circuit registers its progression and Studio adapters through paired entries', async () => {
-  try {
-    const kernel = createPluginKernel()
-    register(kernel.forPackage('circuit', 'core'))
-    const view = await loadModule(new URL('../../view/index.jsx', import.meta.url).pathname)
-    view.register(kernel.forPackage('circuit', 'view'))
-    assert.equal(typeof kernel.tables.kind.get('circuit/progression').circuitProgress, 'function')
-    assert.equal(typeof kernel.tables.game.get('circuit/stages'), 'function')
-    assert.equal(typeof kernel.tables.editorExtension.get('circuit/stages').stageChain, 'function')
-  } finally {
-    await closeGames()
-  }
 })

@@ -1,5 +1,6 @@
 {
   "title": "@level.g-or.title",
+  "after": "@level.g-or.after",
   "tray": "gates",
   "intro": [
     {
@@ -9,16 +10,16 @@
   "tasks": [
     {
       "id": "g-or",
+      "step": "@level.g-or.tasks.g-or.step",
       "kind": "logic/gates",
-      "target": "Rain ∨ Wind",
+      "target": "Rain ∨ Wet",
       "brief": "@level.g-or.tasks.g-or.brief",
       "hint": [
-        "@level.g-or.tasks.g-or.hint.0",
-        "@level.g-or.tasks.g-or.hint.1"
+        "@level.g-or.tasks.g-or.hint.0"
       ],
       "solution": [
         "n1 = gNot(Rain)",
-        "n2 = gNot(Wind)",
+        "n2 = gNot(Wet)",
         "a = gAnd(n1, n2)",
         "n3 = gNot(a)",
         "out <- n3"
@@ -29,6 +30,15 @@
           "variant": "base"
         }
       ]
+    },
+    {
+      "id": "g-or-2",
+      "kind": "logic/gates",
+      "step": "@level.g-or.tasks.g-or-2.step",
+      "target": "Rain ∨ Wind",
+      "budget": 1,
+      "brief": "@level.g-or.tasks.g-or-2.brief",
+      "solution": ["o = gOr(Rain, Wind)", "out <- o"]
     }
   ]
 }

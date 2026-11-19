@@ -1,5 +1,6 @@
 {
   "title": "@level.e-words.title",
+  "after": "@level.e-words.after",
   "tray": "gates",
   "intro": [
     {
@@ -13,33 +14,29 @@
     {
       "id": "e-words-translate",
       "kind": "logic/translate",
+      "target": "(Rain → Wet) ∧ (Rain ∧ ¬Wet)",
       "step": "@level.e-words.tasks.e-words-translate.step",
       "brief": "@level.e-words.tasks.e-words-translate.brief",
       "say": "@level.e-words.tasks.e-words-translate.say",
-      "target": "¬(KA ∧ KB)",
       "hint": [
         "@level.e-words.tasks.e-words-translate.hint.0",
         "@level.e-words.tasks.e-words-translate.hint.1"
       ]
     },
     {
-      "id": "e-words",
-      "step": "@level.e-words.tasks.e-words.step",
+      "id": "g-always-2",
       "kind": "logic/gates",
-      "target": "¬(KA ∧ KB)",
+      "step": "@level.e-words.tasks.g-always-2.step",
+      "target": "(Rain → Wet) ∧ (Rain ∧ ¬Wet)",
+      "brief": "@level.e-words.tasks.g-always-2.brief",
+      "hint": ["@level.e-words.tasks.g-always-2.hint.0"],
       "blind": true,
-      "brief": "@level.e-words.tasks.e-words.brief",
-      "hint": ["@level.e-words.tasks.e-words.hint.0"],
       "solution": [
-        "a = gAnd(KA, KB)",
-        "n = gNot(a)",
-        "out <- n"
-      ],
-      "naive": [
-        "na = gNot(KA)",
-        "nb = gNot(KB)",
-        "a = gAnd(na, nb)",
-        "out <- a"
+        "i = gImp(Rain, Wet)",
+        "n = gNot(Wet)",
+        "a1 = gAnd(Rain, n)",
+        "a2 = gAnd(i, a1)",
+        "out <- a2"
       ]
     }
   ]

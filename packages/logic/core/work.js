@@ -236,14 +236,15 @@ const wordsOf = (list = [], sets = {}) => Object.assign({}, ...list.map((w) => (
 
 /**
  * A level's tasks as the course reads each (../../engine/tasks.js taskLevels): the level under the task, but for its
- * introduction and pass text, which are the level's own; what the level builds or proves comes of its last task. Each
+ * introduction and pass text, which are the level's own. The task publishing a part is its builder. Each task
  * keeps its name (`step`) and reads in its words.
  */
 function readTasks(level, wordSets, positions) {
   const { builds, fact, intro: _intro, after: _after, ...base } = level
+  const publisher = level.tasks.findLastIndex(task => task.publishes?.some(({ part }) => part === builds))
   return taskLevels(base, positions).map((t, k, all) => {
     const last = k === all.length - 1
-    const one = { ...(last && builds ? { builds } : {}), ...(last && fact ? { fact } : {}), ...t, ...(level.tasks[k].step ? { step: level.tasks[k].step } : {}) }
+    const one = { ...(k === publisher ? { builds } : {}), ...(last && fact ? { fact } : {}), ...t, ...(level.tasks[k].step ? { step: level.tasks[k].step } : {}) }
     return { ...one, ...(one.words ? { words: wordsOf(one.words, wordSets) } : {}) }
   })
 }

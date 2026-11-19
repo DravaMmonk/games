@@ -7,8 +7,8 @@
       "id": "base",
       "reference": {
         "kind": "logic/gates",
-        "solution": ["n1 = gNot(Rain)", "n2 = gNot(Wind)", "a = gAnd(n1, n2)", "n3 = gNot(a)", "out <- n3"],
-        "target": "Rain ∨ Wind"
+        "target": "Rain ∨ Wet",
+        "solution": ["n1 = gNot(Rain)", "n2 = gNot(Wet)", "a = gAnd(n1, n2)", "n3 = gNot(a)", "out <- n3"]
       }
     }
   ],

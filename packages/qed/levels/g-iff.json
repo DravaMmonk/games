@@ -1,5 +1,6 @@
 {
   "title": "@level.g-iff.title",
+  "after": "@level.g-iff.after",
   "tray": "gates",
   "intro": [
     {

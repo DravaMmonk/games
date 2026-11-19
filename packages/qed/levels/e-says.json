@@ -1,10 +1,12 @@
 {
   "title": "@level.e-says.title",
+  "after": "@level.e-says.after",
   "tray": "gates",
   "intro": [
     {
       "t": "@level.e-says.intro.0.t"
-    }
+    },
+    { "t": "@level.e-says.intro.1.t" }
   ],
   "tasks": [
     {

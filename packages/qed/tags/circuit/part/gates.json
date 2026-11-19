@@ -6,6 +6,7 @@
     "gAnd",
     "gOr",
     "gImp",
+    "gTrue",
     "gIff"
   ]
 }

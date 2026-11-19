@@ -64,7 +64,10 @@ const CONTENT = {
   } },
   eras: [{ id: 'one', machine: null, levels: [{ id: 'or' }, { id: 'chain' }, { id: 'useChain' }, { id: 'half' }, { id: 'useHalf' }, { id: 'eqSym' }, { id: 'andDef' }, { id: 'eqUse' }, { id: 'eqTerm' }, { id: 'rows' }, { id: 'negate' }], links: [{ from: 'or', to: 'chain' }, { from: 'chain', to: 'useChain' }, { from: 'useChain', to: 'half' }, { from: 'half', to: 'useHalf' }, { from: 'useHalf', to: 'eqSym' }, { from: 'eqSym', to: 'andDef' }, { from: 'andDef', to: 'eqUse' }, { from: 'eqUse', to: 'eqTerm' }, { from: 'eqTerm', to: 'rows' }, { from: 'rows', to: 'negate' }], chapter: { title: L('c'), question: L('q') } }],
   levels: [
-    one({ id: 'or', publishes: [{ part: 'gOr', variant: 'base' }], kind: 'logic/gates', title: L('or'), target: 'Rain ∨ Wind', brief: L('b'), solution: ['n1 = gNot(Rain)', 'n2 = gNot(Wind)', 'a = gAnd(n1, n2)', 'n3 = gNot(a)', 'out <- n3'] }),
+    { id: 'or', title: L('or'), tasks: [
+      { ...GATE, id: 'or', step: L('build'), publishes: [{ part: 'gOr', variant: 'base' }] },
+      { id: 'or-use', step: L('use'), kind: 'logic/gates', target: 'Rain ∨ Wet', solution: ['o = gOr(Rain, Wet)', 'out <- o'] },
+    ] },
     proofLevel('chain', { publishes: [{ part: 'chain', variant: 'base' }], title: L('接起来', 'Join them'), tests: [{ premises: { p: 'A → B', q: 'B → C' }, goal: 'A → C' }], cases: [{ A: 'Rain', B: 'Wet', C: 'Slip' }],
       solution: box('f = impI[A=A](body: m2)', ["m1 = mp(p, f.body)", "m2 = mp(q, m1)"], 'f') }),
     proofLevel('useChain', { tests: [{ premises: { p: 'A → B', q: 'B → C' }, goal: 'A → C' }], cases: [{ A: 'Wind', B: 'Wet', C: 'Slip' }], solution: ['c = chain(p, q)', 'goal <- c'] }),
@@ -214,8 +217,8 @@ test('a level reads its letters in the word sets it names, merged in order', () 
   assert.match(words.P.zh, /具有该性质/)
 })
 
-test('a gate the player built runs the board it passed with; one that no longer passes leaves the reference', () => {
-  const builder = only('or')
+test('a gate used in a later task runs its publishing task’s passing board or reference', () => {
+  const [builder, practice] = level('or').tasks
   const gates = builder.gates
   const primitives = primitivesOnly(GATE_BOARD, { gNot: gates.gNot, gAnd: gates.gAnd })
   const or = (board) => {
@@ -230,6 +233,7 @@ test('a gate the player built runs the board it passed with; one that no longer 
   assert.equal(checkGates(builder, own).pass, true)
   assert.deepEqual(or(own), truth)
   assert.ok(gates.gOr.opens().circuit.nodes.some((n) => n.id === 'c'))
+  assert.equal(checkGates(practice, practice.solution).pass, true)
   // A board changed after passing (it now gives "and") is not the gate.
   const broken = GATE_BOARD.fromText(['c = gAnd(Rain, Wind)', 'out <- c'], builder, primitives)
   assert.deepEqual(or(broken), truth)

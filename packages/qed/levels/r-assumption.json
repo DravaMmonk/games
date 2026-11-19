@@ -1,7 +1,7 @@
 {
   "title": "@level.r-assumption.title",
   "adds": [
-    "assumption"
+    "logic/assumption"
   ],
   "tray": "machine",
   "intro": [
@@ -39,11 +39,12 @@
         "@level.r-assumption.tasks.r-assumption.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = impI()",
         "c1r0 = impI()",
         "c0 = rule(in, c0r0)",
         "c1 = rule(c0, c1r0)",
-        "c2 = assumption(c1)",
+        "c2 = rule(c1, hypRule)",
         "out <- c2"
       ]
     }

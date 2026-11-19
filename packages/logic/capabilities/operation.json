@@ -587,20 +587,6 @@
         "fields": {}
       }
     },
-    "assumption": {
-      "about": "@capability.operation.items.assumption.about",
-      "args": [
-        {
-          "name": "in",
-          "type": "logic/machine-value"
-        }
-      ],
-      "returns": "logic/machine-value",
-      "params": {
-        "type": "obj",
-        "fields": {}
-      }
-    },
     "defer": {
       "about": "@capability.operation.items.defer.about",
       "args": [

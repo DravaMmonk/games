@@ -43,6 +43,7 @@
         "@level.in-loop.tasks.in-loop.hint.1"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = mp[use=[cut]]()",
         "c1r0 = math[use=[succNeq]]()",
         "c2r0 = allE[use=[spec]]()",
@@ -53,7 +54,7 @@
         "c2 = frule(c1, c2r0)",
         "c3 = frule(c2, c3r0)",
         "c4 = erule(c3, c4r0)",
-        "c5 = assumption(c4)",
+        "c5 = rule(c4, hypRule)",
         "out <- c5"
       ]
     }

@@ -39,10 +39,11 @@
         "@level.r-lemma.tasks.r-lemma-1.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = chain()",
         "c0 = rule(in, c0r0)",
-        "c1 = assumption(c0)",
-        "c2 = assumption(c1)",
+        "c1 = rule(c0, hypRule)",
+        "c2 = rule(c1, hypRule)",
         "out <- c2"
       ]
     },
@@ -76,9 +77,10 @@
         "@level.r-lemma.tasks.r-lemma-2.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = swap()",
         "c0 = rule(in, c0r0)",
-        "c1 = assumption(c0)",
+        "c1 = rule(c0, hypRule)",
         "out <- c1"
       ]
     },
@@ -112,9 +114,10 @@
         "@level.r-lemma.tasks.r-lemma-3.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = merge()",
         "c0 = rule(in, c0r0)",
-        "c1 = assumption(c0)",
+        "c1 = rule(c0, hypRule)",
         "out <- c1"
       ]
     }

@@ -41,6 +41,7 @@
         "@level.r-frule.tasks.r-frule.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = allE[use=[spec]]()",
         "c1r0 = allE[use=[spec]]()",
         "c2r0 = mp[use=[mp]]()",
@@ -49,7 +50,7 @@
         "c1 = frule(c0, c1r0)",
         "c2 = erule(c1, c2r0)",
         "c3 = erule(c2, c3r0)",
-        "c4 = assumption(c3)",
+        "c4 = rule(c3, hypRule)",
         "out <- c4"
       ]
     }

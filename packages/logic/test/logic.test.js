@@ -443,7 +443,7 @@ test('a search does not follow a step that gives nothing new, so using givens ag
 })
 
 test('a machine backtracks once its level says so, and a search finds every answer to a question', async () => {
-  const script = machine({ a: ['rule', { rule: 'exI' }], b: ['rule', { rule: 'conjI' }], c: ['assumption'], d: ['assumption'] }, ['in>a.in', 'a>b.in', 'b>c.in', 'c>d.in', 'd>out'])
+  const script = machine({ a: ['rule', { rule: 'exI' }], b: ['rule', { rule: 'conjI' }], c: ['rule', { rule: 'assumption' }], d: ['rule', { rule: 'assumption' }] }, ['in>a.in', 'a>b.in', 'b>c.in', 'c>d.in', 'd>out'])
   const test1 = { goal: '∃x. Human(x) ∧ Likes(x, ann)', hyps: ['Human(cy)', 'Human(bo)', 'Likes(bo, ann)'] }
   const level = { kind: 'logic/machine', want: 'logic/proved', tests: [test1] }
   assert.equal(runOutputTests(MACHINE_TESTS, onMachine(level), wireRules(script, level)).pass, false)
@@ -453,9 +453,9 @@ test('a machine backtracks once its level says so, and a search finds every answ
     rules: { grand: { name: { zh: '祖父母', en: 'Grandparent' }, premises: ['Parent(?x, ?y)', 'Parent(?y, ?z)'], conclusion: 'Grand(?x, ?z)' } },
     tests: [{ goal: 'Grand(ann, ?w)', hyps: ['Parent(ann, bo)', 'Parent(bo, cy)', 'Parent(bo, dee)'], answers: ['cy', 'dee'] }],
   }
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine(ask), wireRules(machine({ g: ['rule', { rule: 'grand' }], a: ['assumption'], b: ['assumption'] }, ['in>g.in', 'g>a.in', 'a>b.in', 'b>out']), ask)).pass, true)
+  assert.equal(runOutputTests(MACHINE_TESTS, onMachine(ask), wireRules(machine({ g: ['rule', { rule: 'grand' }], a: ['rule', { rule: 'assumption' }], b: ['rule', { rule: 'assumption' }] }, ['in>g.in', 'g>a.in', 'a>b.in', 'b>out']), ask)).pass, true)
   // A card wired a list of rules uses the first that applies.
-  const either = wireRules(machine({ g: ['rule', { rule: 'conjI,grand' }], a: ['assumption'], b: ['assumption'] }, ['in>g.in', 'g>a.in', 'a>b.in', 'b>out']), ask)
+  const either = wireRules(machine({ g: ['rule', { rule: 'conjI,grand' }], a: ['rule', { rule: 'assumption' }], b: ['rule', { rule: 'assumption' }] }, ['in>g.in', 'g>a.in', 'a>b.in', 'b>out']), ask)
   assert.equal(either.nodes.filter((n) => n.type === 'grand' || n.type === 'andI').length, 2)
   assert.equal(runOutputTests(MACHINE_TESTS, onMachine(ask), either).pass, true)
 })
@@ -463,7 +463,7 @@ test('a machine backtracks once its level says so, and a search finds every answ
 test('ordinary wires retain each alternative for a later proof step', () => {
   const level = onMachine({ kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain ∨ Wind', hyps: ['Wind'] }] })
   const board = wireRules(machine({
-    left: ['rule', { rule: 'disjI1' }], right: ['rule', { rule: 'disjI2' }], join: ['append'], finish: ['assumption'],
+    left: ['rule', { rule: 'disjI1' }], right: ['rule', { rule: 'disjI2' }], join: ['append'], finish: ['rule', { rule: 'assumption' }],
   }, ['in>left', 'in>right', 'left>join.first', 'right>join.second', 'join>finish', 'finish>out']), level)
   const junction = board.nodes.find(({ id }) => id === 'join')
   assert.deepEqual(machineParts('append').inputs(junction), ['first', 'second'])
@@ -477,13 +477,24 @@ test('ordinary wires retain each alternative for a later proof step', () => {
   assert.equal(merge.value.more[0].goals.length, 1)
 })
 
+test('the hypothesis rule closes only a goal with a matching given and retains every match', () => {
+  const board = machine({ fact: ['logic/assumption'], use: ['rule'] }, ['in>use.in', 'fact>use.rules', 'use>out'])
+  const task = { kind: 'logic/machine', want: 'logic/answers', backtrack: true, tests: [
+    { goal: 'Human(?w)', hyps: ['Human(ann)', 'Human(bo)'], answers: ['ann', 'bo'] },
+  ] }
+  const report = runMachine(onMachine(task), board, { traced: true })
+  assert.equal(report.pass, true)
+  assert.equal(report.runs[0].trace.find(({ id }) => id === 'use').value.did.op, 'assumption')
+  assert.equal(runMachine(onMachine({ ...task, want: 'logic/proved', tests: [{ goal: 'Rain' }] }), board).pass, false)
+})
+
 test('a machine uses the same evaluation for its playback and the final board', () => {
   const evaluated = []
   const task = onMachine({
     kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }],
     parts(type) {
       const part = machineParts(type)
-      if (type !== 'assumption') return part
+      if (type !== 'rule') return part
       return {
         ...part,
         eval(ins, node, ctx, key) {
@@ -493,7 +504,7 @@ test('a machine uses the same evaluation for its playback and the final board', 
       }
     },
   })
-  const board = machine({ spare: ['assumption'], end: ['assumption'] }, ['in>spare.in', 'in>end.in', 'end>out'])
+  const board = wireRules(machine({ spare: ['rule', { rule: 'assumption' }], end: ['rule', { rule: 'assumption' }] }, ['in>spare.in', 'in>end.in', 'end>out']), task)
   const report = runMachine(task, board, { traced: true })
   assert.equal(report.pass, true)
   assert.deepEqual(evaluated, ['end', 'spare'])
@@ -503,7 +514,7 @@ test('a machine uses the same evaluation for its playback and the final board', 
 
 test('a proof machine must meet its card budget after its cases pass', () => {
   const task = { kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }] }
-  const board = machine({ a: ['assumption'] }, ['in>a.in', 'a>out'])
+  const board = wireRules(machine({ a: ['rule', { rule: 'assumption' }] }, ['in>a.in', 'a>out']), task)
   assert.equal(runMachine(onMachine({ ...task, budget: 1 }), board).pass, true)
   const report = runMachine(onMachine({ ...task, budget: 0 }), board)
   assert.deepEqual(report.runs.map((run) => run.pass), [true])

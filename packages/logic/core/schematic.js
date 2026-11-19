@@ -304,8 +304,12 @@ function premiseText(p, say) {
 /** A rule's premises as written before its ⟹: every group of premises in ⟦⟧, ⟦?A; ⟦?B⟧ ⟹ ?C⟧. */
 export const premisesText = (premises, say = show) => `⟦${premises.map((p) => premiseText(p, say)).join('; ')}⟧`
 
+// The identity rule checks a hypothesis in scope instead of reducing the goal to a premise.
+export const ASSUMPTION_RULE = { key: 'assumption', part: 'logic/assumption', name: T('假设规则'), fromHypothesis: true }
+
 /** A rule written in Isabelle-style notation, with its binders and premises. */
 export function ruleText(rule, say = show) {
+  if (rule.fromHypothesis) return 'Γ, A ⊢ A'
   const goal = say(rule.conclusion)
   const text = rule.premises.length ? `${premisesText(rule.premises, say)} ⟹ ${goal}` : goal
   return withBinders(rule.fixes, text)

@@ -24,8 +24,6 @@
   "part.append.inputs.3.label": "第 4 路",
   "part.append.inputs.4.label": "第 5 路",
   "part.append.inputs.5.label": "第 6 路",
-  "part.assumption.desc": "第一个目标与它的一条已知合一：成功时这个目标证完，相应的 ?-字母随之确定。从上往下查找，用第一条合得上的已知。",
-  "part.assumption.name": "由假设得证",
   "part.botE.desc": "由矛盾 ⊥ 得到元件上选定的任意一句。",
   "part.botE.inputs.0.label": "⊥",
   "part.botE.name": "爆炸",

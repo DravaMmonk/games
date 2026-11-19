@@ -8,9 +8,10 @@
       "reference": {
         "kind": "logic/machine",
         "solution": [
+          "hypRule = logic/assumption()",
           "c0 = search(in, body: c1) {",
           "  body {",
-          "    c2 = assumption(c0.body)",
+          "    c2 = rule(c0.body, hypRule)",
           "    c3 = introRules(c0.body)",
           "    c4 = elimRules(c0.body)",
           "    c1 = append[ways=\"3\"](first: c2, second: c3, third: c4)",

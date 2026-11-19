@@ -58,9 +58,10 @@
         "@level.s-loop.tasks.s-loop.hint.1"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0 = search[depth=\"3\"](in, body: c1) {",
         "  body {",
-        "    c2 = assumption(c0.body)",
+        "    c2 = rule(c0.body, hypRule)",
         "    c3r0 = trans()",
         "    c3 = rule(c0.body, c3r0)",
         "    c1 = append(first: c2, second: c3)",
@@ -69,9 +70,10 @@
         "out <- c0"
       ],
       "naive": [
+        "hypRule = logic/assumption()",
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c2 = assumption(c0.body)",
+        "    c2 = rule(c0.body, hypRule)",
         "    c3r0 = trans()",
         "    c3 = rule(c0.body, c3r0)",
         "    c1 = append(first: c2, second: c3)",

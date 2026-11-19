@@ -46,13 +46,14 @@
         "@level.s-defer.tasks.s-defer.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = exI()",
         "c1r0 = andI()",
         "c0 = rule(in, c0r0)",
         "c1 = rule(c0, c1r0)",
         "c2 = defer(c1)",
-        "c3 = assumption(c2)",
-        "c4 = assumption(c3)",
+        "c3 = rule(c2, hypRule)",
+        "c4 = rule(c3, hypRule)",
         "out <- c4"
       ]
     }

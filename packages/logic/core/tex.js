@@ -3,6 +3,7 @@
 // math letter, and every other run of words (it rains, 下雨, Human) as upright text.
 
 const SIGNS = {
+  'Γ': '\\Gamma',
   '→': '\\to', '↔': '\\leftrightarrow', '∧': '\\land', '∨': '\\lor', '¬': '\\lnot', '∀': '\\forall', '∃': '\\exists',
   '⊥': '\\bot', '⊤': '\\top', '⊢': '\\vdash', '⟹': '\\Longrightarrow', '⟵': '\\longleftarrow', '←': '\\leftarrow',
   '≡': '\\equiv', '↷': '\\curvearrowright', '↻': '\\circlearrowright', '↪': '\\hookrightarrow',
@@ -15,7 +16,7 @@ const ESCAPE = { '\\': '\\textbackslash{}', '{': '\\{', '}': '\\}', $: '\\$', '&
 const MATH_PUNCT = new Set(['(', ')', '[', ']', ',', ':', ';', '=', '+', '-', '<', '>', '|', '!', '/', '*'])
 // A word: letters and digits of any script, an apostrophe or hyphen inside; a ?-letter keeps its question mark.
 const WORD = /[\p{L}\p{N}'’?-]/u
-const isWord = (c) => Boolean(c) && WORD.test(c) && !SUBS.includes(c)
+const isWord = (c) => Boolean(c) && !SIGNS[c] && WORD.test(c) && !SUBS.includes(c)
 const letter = (w) => /^\??[A-Za-z][0-9]*$/.test(w) || /^\?[A-Za-z][A-Za-z0-9]*$/.test(w) || /^[0-9]+$/.test(w)
 
 /** One line of the machine's text as TeX (math mode, without the $). */

@@ -36,6 +36,7 @@
         "@level.r-order.tasks.r-order.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = exE()",
         "c1r0 = andE[use=[conjE]]()",
         "c2r0 = exI()",
@@ -44,11 +45,12 @@
         "c1 = erule(c0, c1r0)",
         "c2 = rule(c1, c2r0)",
         "c3 = rule(c2, c3r0)",
-        "c4 = assumption(c3)",
-        "c5 = assumption(c4)",
+        "c4 = rule(c3, hypRule)",
+        "c5 = rule(c4, hypRule)",
         "out <- c5"
       ],
       "naive": [
+        "hypRule = logic/assumption()",
         "c0r0 = exI()",
         "c1r0 = exE()",
         "c2r0 = andE[use=[conjE]]()",
@@ -57,8 +59,8 @@
         "c1 = erule(c0, c1r0)",
         "c2 = erule(c1, c2r0)",
         "c3 = rule(c2, c3r0)",
-        "c4 = assumption(c3)",
-        "c5 = assumption(c4)",
+        "c4 = rule(c3, hypRule)",
+        "c5 = rule(c4, hypRule)",
         "out <- c5"
       ]
     }

@@ -80,10 +80,11 @@
         "@level.pl-grand.tasks.pl-grand.hint.1"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = grand()",
         "c0 = rule(in, c0r0)",
-        "c1 = assumption(c0)",
-        "c2 = assumption(c1)",
+        "c1 = rule(c0, hypRule)",
+        "c2 = rule(c1, hypRule)",
         "out <- c2"
       ]
     }

@@ -46,6 +46,7 @@
         "@level.s-orelse.tasks.s-orelse.hint.1"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c1r0 = impI()",
         "c1 = rule(in, c1r0)",
         "c2r0 = mp[use=[mp]]()",
@@ -53,7 +54,7 @@
         "c0 = append(first: c1, second: c2)",
         "c3 = repeat(c0, body: c4) {",
         "  body {",
-        "    c4 = assumption(c3.body)",
+        "    c4 = rule(c3.body, hypRule)",
         "  }",
         "}",
         "out <- c3"

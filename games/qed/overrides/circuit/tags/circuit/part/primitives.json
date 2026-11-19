@@ -33,7 +33,7 @@
       "qed/repeat",
       "qed/uPattern",
       "qed/rule",
-      "qed/assumption",
+      "logic/assumption",
       "qed/append",
       "qed/each",
       "qed/defer",

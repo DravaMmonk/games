@@ -66,7 +66,7 @@ export function didText(did, run) {
   if (did.op === 'rule') return `${goal} ⟵ ${rules}`
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
   if (did.op === 'rwHyps') return T("{goal} 的已知 ≡ {rules}", { goal, rules })
-  if (did.op === 'assumption') return `${goal} ✓`
+  if (did.op === 'assumption') return `${goal} ✓ ${rules}`
   if (did.op === 'alternatives') return null
   return `${goal} ⤓`
 }

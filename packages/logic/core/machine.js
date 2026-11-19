@@ -45,8 +45,8 @@ import { OperationError } from 'kernel'
 import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, all, fn, subst, tvar } from './formula.js'
-import { KERNEL, answerOf, asValue, assumption, defer, depthFirst, resultsOf, rule, startState } from './tactics.js'
-import { FULL, UNIFY_RULES, instantiate, lemmaRules, parseEquation, parseS, ruleOf, ruleText, sameSide, sideText, solveEqs, solved } from './schematic.js'
+import { KERNEL, answerOf, asValue, defer, depthFirst, resultsOf, rule, startState } from './tactics.js'
+import { ASSUMPTION_RULE, FULL, UNIFY_RULES, instantiate, lemmaRules, parseEquation, parseS, ruleOf, ruleText, sameSide, sideText, solveEqs, solved } from './schematic.js'
 import { rewrite, rewriteBookOf, rewriteText, simplify } from './rewrite.js'
 import { datatypesRules } from './datatype.js'
 import { clausesOfState, oracleRound, parseClause, refuted, replay, resolveRound, saturate } from './resolution.js'
@@ -74,7 +74,8 @@ export function ruleBookOf(level) {
     const shaped = (type, l) => (r) => !l.forms || !level.forms?.[type] || level.forms[type].includes(r.key.split('.')[1] ?? l.forms[0].key)
     const lemmas = Object.entries(level.lemmas ?? {}).filter(([type]) => has(type)).flatMap(([type, l]) => lemmaRules(type, l).filter(shaped(type, l)))
     const facts = factsOf(level).map(([type, f]) => ({ ...ruleOf(type, f.name, f.rule?.premises ?? [], f.rule?.conclusion ?? f.statement), fact: true }))
-    books.set(level, Object.fromEntries([...Object.values(KERNEL).map((r) => ({ ...r, part: level.ruleParts?.[`logic/${r.part}`] ?? r.part })).filter((r) => has(r.part)), ...datatypesRules(level.datatypes), ...lemmas, ...facts, ...own].map((r) => [r.key, r])))
+    const contextRules = has(ASSUMPTION_RULE.part) && level.kind !== 'logic/script' ? [ASSUMPTION_RULE] : []
+    books.set(level, Object.fromEntries([...contextRules, ...Object.values(KERNEL).map((r) => ({ ...r, part: level.ruleParts?.[`logic/${r.part}`] ?? r.part })).filter((r) => has(r.part)), ...datatypesRules(level.datatypes), ...lemmas, ...facts, ...own].map((r) => [r.key, r])))
   }
   return books.get(level)
 }
@@ -156,9 +157,11 @@ const firstOf = (s) => ({ ...s, more: undefined })
 // ⊢₁ ⊢₂ …; a tactic works on the first). ./circuit-readouts.js didText writes it.
 const keysOf = (by) => [...new Set(by.map((b) => b.rule))]
 const DID = {
-  rule: (by) => ({ op: 'rule', rules: keysOf(by) }),
+  rule: (by) => {
+    const rules = keysOf(by)
+    return { op: rules.length === 1 && rules[0] === ASSUMPTION_RULE.key ? 'assumption' : 'rule', rules }
+  },
   rw: (by, node) => ({ op: atOf(node) === 'hyps' ? 'rwHyps' : 'rw', rules: keysOf(by) }),
-  assumption: () => ({ op: 'assumption' }),
   defer: () => ({ op: 'defer' }),
 }
 const unsaid = (s) => (s.did === undefined && s.didBy === undefined ? s : { ...s, did: undefined, didBy: undefined })
@@ -397,7 +400,6 @@ const BODIES = {
   repeat,
   // Tactics (chapters 8 and 9).
   rule: ruleCard(rule, DID.rule),
-  assumption: tactic(assumption, DID.assumption),
   defer: tactic(defer, DID.defer),
   search,
   each,
@@ -532,6 +534,7 @@ const MATH_NAME = T('数理规则书')
 function rulePartName(level, type) {
   if (type === MATH) return MATH_NAME
   const r = rulePartsOf(level).get(type)[0].rule
+  if (r.fromHypothesis) return r.name
   if (r.part || level.lemmas?.[type]) return level.lemmas?.[type]?.name ?? level.partDefs?.[type]?.name ?? { zh: type, en: type }
   return r.group === 'def' ? inWords(level, (text) => defText(r.text, text)) : r.name
 }
@@ -559,6 +562,7 @@ export function ruleParts(level) {
   return Object.fromEntries([...rulePartsOf(level).keys()].map((type) => {
     const several = choicesOfPart(rulePartsOf(level).get(type)).length > 1
     const desc = type === MATH ? joined(T('给出这一关的数与列表规则：类型声明生成的规则、定义中的等式和已证出的等式。在元件上添加要给出的规则，按添加顺序排列。'), AFTER)
+      : type === ASSUMPTION_RULE.part ? joined(T('接给逆用规则。当前目标和一条已知对上时，这个目标就证完了。'), AFTER)
       : several ? RULE_DEFINITION.desc : joined(T('给出这个元件的规则。'), AFTER)
     // A part with one rule gives it, with nothing to add (ownRules): no setting to show.
     return [type, { ...RULE_DEFINITION, name: rulePartName(level, type), desc, ...(!several && { settings: [] }) }]

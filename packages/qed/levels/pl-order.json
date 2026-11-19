@@ -78,9 +78,10 @@
         "@level.pl-order.tasks.pl-order.hint.1"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c2 = assumption(c0.body)",
+        "    c2 = rule(c0.body, hypRule)",
         "    c3r0 = anc1()",
         "    c3 = rule(c0.body, c3r0)",
         "    c4r0 = anc3()",
@@ -92,9 +93,10 @@
         "out <- c0"
       ],
       "naive": [
+        "hypRule = logic/assumption()",
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c2 = assumption(c0.body)",
+        "    c2 = rule(c0.body, hypRule)",
         "    c3r0 = anc1()",
         "    c3 = rule(c0.body, c3r0)",
         "    c4r0 = anc3()",

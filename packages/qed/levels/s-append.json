@@ -43,19 +43,21 @@
         "@level.s-append.tasks.s-append.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c1r0 = orI[use=[disjI1]]()",
         "c1 = rule(in, c1r0)",
         "c2r0 = orI[use=[disjI2]]()",
         "c2 = rule(in, c2r0)",
         "c0 = append(first: c1, second: c2)",
-        "c3 = assumption(c0)",
+        "c3 = rule(c0, hypRule)",
         "out <- c3"
       ],
       "step": "@level.s-append.tasks.s-append.step",
       "naive": [
+        "hypRule = logic/assumption()",
         "c1r0 = orI[use=[disjI1]]()",
         "c1 = rule(in, c1r0)",
-        "c3 = assumption(c1)",
+        "c3 = rule(c1, hypRule)",
         "out <- c3"
       ]
     },
@@ -96,16 +98,18 @@
         "@level.s-append-both.hint"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "join = andI()",
         "split = rule(in, join)",
-        "left = assumption(split)",
-        "right = assumption(left)",
+        "left = rule(split, hypRule)",
+        "right = rule(left, hypRule)",
         "out <- right"
       ],
       "naive": [
+        "hypRule = logic/assumption()",
         "join = andI()",
         "split = rule(in, join)",
-        "left = assumption(split)",
+        "left = rule(split, hypRule)",
         "out <- left"
       ]
     }

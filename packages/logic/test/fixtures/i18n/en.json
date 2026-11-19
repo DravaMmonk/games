@@ -24,8 +24,6 @@
   "part.append.inputs.3.label": "Route 4",
   "part.append.inputs.4.label": "Route 5",
   "part.append.inputs.5.label": "Route 6",
-  "part.assumption.desc": "Unifies the first goal with one of its hypotheses: on success the goal is closed and its ?-letters are fixed. It searches from the top and uses the first that fits.",
-  "part.assumption.name": "Assumption",
   "part.botE.desc": "From the contradiction ⊥, gives whatever sentence is chosen on the part.",
   "part.botE.inputs.0.label": "⊥",
   "part.botE.name": "Explosion",

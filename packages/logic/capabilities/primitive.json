@@ -1,6 +1,16 @@
 {
   "extends": "primitive",
   "items": {
+    "assumption": {
+      "about": "@capability.primitive.items.assumption.about",
+      "inputs": [
+        {
+          "name": "before",
+          "type": "logic/machine-value"
+        }
+      ],
+      "outputType": "logic/machine-value"
+    },
     "hyp": {
       "about": "@capability.primitive.items.hyp.about",
       "inputs": [

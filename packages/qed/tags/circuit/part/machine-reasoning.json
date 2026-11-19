@@ -2,7 +2,7 @@
   "title": "@tag.machine-reasoning.title",
   "values": [
     "rule",
-    "assumption-s-results-desc",
+    "logic/assumption",
     "erule-s-results-desc",
     "frule",
     "introRules",

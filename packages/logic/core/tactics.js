@@ -100,6 +100,7 @@ function after(s, σ, goals, scopes, fixed = []) {
 
 /** rule: the first goal unified with the rule's conclusion, and replaced by its premises. */
 export function rule(s, R) {
+  if (R.fromHypothesis) return assumption(s)
   const g = s.goals[0]
   if (!g) return { fail: NO_GOALS }
   const r = renamed(R, metasOfState(s))

@@ -35,6 +35,7 @@
         "@level.in-cases.tasks.in-cases.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = allI()",
         "c1r0 = math[use=[\"nat.exhaust\"]]()",
         "c2r0 = orI[use=[disjI1]]()",
@@ -43,10 +44,10 @@
         "c0 = rule(in, c0r0)",
         "c1 = rule(c0, c1r0)",
         "c2 = rule(c1, c2r0)",
-        "c3 = assumption(c2)",
+        "c3 = rule(c2, hypRule)",
         "c4 = rule(c3, c4r0)",
         "c5 = rule(c4, c5r0)",
-        "c6 = assumption(c5)",
+        "c6 = rule(c5, hypRule)",
         "out <- c6"
       ]
     }

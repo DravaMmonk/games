@@ -8,6 +8,7 @@
       "reference": {
         "kind": "logic/machine",
         "solution": [
+          "hypRule = logic/assumption()",
           "c0r0 = math[use=[\"nat.induct\"]]()",
           "c1r0 = impI()",
           "c2r0 = math[use=[\"nat.distinct1\"]]()",
@@ -20,7 +21,7 @@
           "c3 = rule(c2, c3r0)",
           "c4 = erule(c3, c4r0)",
           "c5 = erule(c4, c5r0)",
-          "c6 = assumption(c5)",
+          "c6 = rule(c5, hypRule)",
           "out <- c6"
         ],
         "want": "logic/proved",

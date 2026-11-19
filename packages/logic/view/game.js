@@ -78,9 +78,8 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
   const catalog = logicPartCatalog(logic)
   const primitives = catalog.primitives.map(part => {
     const type = part.part
-    const text = logic.defs[type] ?? parts[type]
-    const rules = kernelRules(type)
-    return { ...part, icon: cards[type]?.icon ?? partIcon(text?.icon) ?? Cpu, ...(rules.length ? { rules } : {}) }
+    const rules = part.rules ?? kernelRules(type)
+    return { ...part, icon: cards[type]?.icon ?? partIcon(part.icon) ?? Cpu, ...(rules.length ? { rules } : {}) }
   })
   // A part is new in the level that first brings its idea in (`adds`); everything else carries (../../course.js reach).
   const levels = LEVELS.map((L, index) => ({

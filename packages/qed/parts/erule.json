@@ -8,8 +8,9 @@
       "reference": {
         "kind": "logic/machine",
         "solution": [
+          "hypRule = logic/assumption()",
           "c0 = rule(in, rules)",
-          "c1 = assumption(c0)",
+          "c1 = rule(c0, hypRule)",
           "out <- c1"
         ],
         "want": "logic/becomes",

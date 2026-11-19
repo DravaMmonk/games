@@ -33,14 +33,15 @@
         "@level.r-subgoals.tasks.r-subgoals.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = impI()",
         "c1r0 = impI()",
         "c2r0 = andI()",
         "c0 = rule(in, c0r0)",
         "c1 = rule(c0, c1r0)",
         "c2 = rule(c1, c2r0)",
-        "c3 = assumption(c2)",
-        "c4 = assumption(c3)",
+        "c3 = rule(c2, hypRule)",
+        "c4 = rule(c3, hypRule)",
         "out <- c4"
       ]
     }

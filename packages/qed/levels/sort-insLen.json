@@ -45,6 +45,7 @@
         "@level.sort-insLen.tasks.sort-insLen.hint.2"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = math[use=[\"list.induct\"]]()",
         "c1r0 = math[use=[\"def.0\", \"def.1\", \"def.2\", \"def.3\", \"def.4\", \"def.5\", \"def.6\", \"def.7\", \"def.8\", \"def.9\", \"def.10\"]]()",
         "c2r0 = allI()",
@@ -69,11 +70,11 @@
         "c7 = rw(c6, c7r0)",
         "c8 = simp(c7, c8r0)",
         "c9 = rule(c8, c9r0)",
-        "c10 = assumption(c9)",
+        "c10 = rule(c9, hypRule)",
         "c11 = rw(c10, c11r0)",
         "c12 = simp(c11, c12r11)",
         "c13 = rule(c12, c13r0)",
-        "c14 = assumption(c13)",
+        "c14 = rule(c13, hypRule)",
         "out <- c14"
       ],
       "publishes": [

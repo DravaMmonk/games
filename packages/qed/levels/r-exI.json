@@ -45,12 +45,13 @@
         "@level.r-exI.tasks.r-exI.hint.0"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = exI()",
         "c1r0 = andI()",
         "c0 = rule(in, c0r0)",
         "c1 = rule(c0, c1r0)",
-        "c2 = assumption(c1)",
-        "c3 = assumption(c2)",
+        "c2 = rule(c1, hypRule)",
+        "c3 = rule(c2, hypRule)",
         "out <- c3"
       ]
     }

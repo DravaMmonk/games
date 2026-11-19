@@ -39,11 +39,12 @@
         "@level.r-false.tasks.r-false.hint.1"
       ],
       "solution": [
+        "hypRule = logic/assumption()",
         "c0r0 = botE()",
         "c1r0 = mp[use=[mp]]()",
         "c0 = rule(in, c0r0)",
         "c1 = erule(c0, c1r0)",
-        "c2 = assumption(c1)",
+        "c2 = rule(c1, hypRule)",
         "out <- c2"
       ]
     }

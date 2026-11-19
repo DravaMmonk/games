@@ -5,11 +5,8 @@ import { Halt, MISSING, evaluate } from '../core/index.js'
 import { OperationError } from 'kernel'
 import { packed, runBoard, sink, source } from '../core/index.js'
 import { tableAt, walk } from '../core/index.js'
-import { paceOf } from '../../../games/kit/engine/playback-pace.js'
 import { insideAt } from '../core/index.js'
 import { viewAt } from '../core/trace.js'
-import { reportRuns, runOutputTests } from '../../../games/kit/engine/test-run.js'
-import { withHidden } from '../../../games/kit/engine/tests.js'
 
 const PARTS = {
   input: source(),
@@ -151,31 +148,6 @@ test('a walk in rounds settles', () => {
   assert.deepEqual(tableAt(r, r.steps.length), r.table)
 })
 
-test('a level runs its tests through the domain, hidden ones too', () => {
-  const domain = {
-    runTest: (level, circuit, t) => runBoard(circuit, { parts: PARTS, bind: t.inputs }),
-    check: (level, t, outputs) => Object.entries(t.expected).map(([name, v]) => ({ name, pass: outputs[name] === v })),
-    score: (level, circuit) => ({ nodes: circuit.nodes.length - 2 }),
-  }
-  const level = { tests: [{ inputs: { in: 1 }, expected: { out: -1 } }], hidden: [{ inputs: { in: 2 }, expected: { out: -2 } }], constraint: (s) => (s.nodes > 1 ? 'too many' : '') }
-  const good = io([{ id: 'n', type: 'neg' }], w('in>n n>out'))
-  assert.equal(runOutputTests(domain, withHidden(level), good).pass, true)
-  const long = io([{ id: 'n', type: 'neg' }, { id: 'm', type: 'neg' }, { id: 'k', type: 'neg' }], w('in>n n>m m>k k>out'))
-  const run = runOutputTests(domain, level, long)
-  assert.equal(run.runs[0].pass, true)
-  assert.equal(run.constraint, 'too many')
-  assert.equal(run.pass, false)
-})
-
-test('a task report keeps the complete run and gives the first case failure precedence over the final constraint', () => {
-  const caseError = { en: 'Cannot evaluate this case' }
-  const runs = [{}, { error: caseError }, { fail: { why: 'later' } }, {}]
-  const constraint = 'too many parts'
-  const score = { nodes: 5 }
-  assert.deepEqual(reportRuns(runs, { score, constraint }), { runs, fail: { check: 1, why: caseError }, pass: false, score, constraint })
-  assert.deepEqual(reportRuns([{}], { constraint }).fail, { why: constraint })
-})
-
 test('a traced run lists every node in the order it ran, and replays to any step', () => {
   const c = io([{ id: 'a', type: 'add' }, { id: 'n', type: 'neg' }, { id: 'h', type: 'half' }, { id: 'stray', type: 'neg' }], w('in>a.a in>a.b a>n n>h h>out'))
   const trace = []
@@ -187,16 +159,4 @@ test('a traced run lists every node in the order it ran, and replays to any step
   const odd = []
   runBoard(c, { parts: PARTS, bind: { in: 1.5 }, targets: ['out'], ctx: { trace: odd } })
   assert.deepEqual(odd.at(-1), { id: 'h', key: null, error: { zh: '奇数', en: 'odd' } })
-})
-
-test('a run plays its first test slowly and the rest fast, at a pace that does not depend on its length', () => {
-  assert.deepEqual(paceOf(0, 5, 1), { per: 650, stride: 1 })
-  assert.deepEqual(paceOf(1, 5, 1), { per: 110, stride: 1 })
-  const long = paceOf(0, 1000, 1)
-  assert.equal(long.per, 650)
-  assert.ok(long.stride > 1)
-  assert.ok(long.per * (Math.ceil(1000 / long.stride) - 1) <= 12000)
-  assert.deepEqual(paceOf(0, 1000, 0.5), { ...long, per: 1300 })
-  assert.deepEqual(paceOf(0, 1000, 2), { ...long, per: 325 })
-  assert.deepEqual(paceOf(1, 1000, 2), { ...paceOf(1, 1000, 1), per: 55 })
 })

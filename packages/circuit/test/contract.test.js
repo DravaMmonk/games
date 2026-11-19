@@ -15,7 +15,7 @@ const fixture = () => {
     levels: [{ id: 'sample/sum', title: 'Sum', tasks: [{
       id: 'sample/task', play: 'circuit/board', brief: 'Add both inputs',
       inputs: [{ name: 'a', label: 'A' }, { name: 'b', label: 'B' }], outputs: [{ name: 'out', label: 'Result' }],
-      tests: [{ inputs: { a: 2, b: 3 }, expect: { out: 5 } }],
+      tests: [{ inputs: { a: 2, b: 0 }, expect: { out: 2 } }],
       hidden: [{ inputs: { a: -1, b: 4 }, expect: { out: 3 } }],
       solution: ['sum = sample/add(a, b)', 'out <- sum'], naive: ['out <- a'],
     }] }],
@@ -35,7 +35,10 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   const graph = boardPlay.read(task.solution, context)
   assert.deepEqual(boardPlay.read(boardPlay.write(graph), context), graph)
   assert.deepEqual(evaluatePlay(kernel, task, task.solution, context).verdict, { pass: true, score: 1 })
-  assert.equal(evaluatePlay(kernel, task, task.naive, context).verdict.pass, false)
+  const naive = evaluatePlay(kernel, task, task.naive, context)
+  assert.deepEqual(naive.report.runs.map(run => run.outputs.out), [2, -1])
+  assert.equal(naive.report.fail.check, 1)
+  assert.equal(naive.verdict.pass, false)
   const agent = kernel.tables.agent.get('circuit/board')
   assert.equal(agent.observe(context).solution, undefined)
   assert.equal(agent.act(context, task.solution).verdict.pass, true)

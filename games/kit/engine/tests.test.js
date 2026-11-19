@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { runOutputTests } from './test-run.js'
+import { reportRuns, runOutputTests } from './test-run.js'
+import { paceOf } from './playback-pace.js'
 import { runTestGroups, splitTests } from './tests.js'
 
 const task = { tests: [{ label: 'example' }], hidden: [{ label: 'held back' }] }
@@ -50,4 +51,25 @@ test('one report scores both groups and keeps replay only for visible cases', ()
   assert.equal(revealed.hidden, null)
   assert.equal(revealed.checked.fail.check, 1)
   assert.deepEqual(revealed.checked.runs.map(({ trace }) => trace), [['example'], ['held back']])
+})
+
+test('a task report keeps the complete run and gives the first case failure precedence over the final constraint', () => {
+  const caseError = { en: 'Cannot evaluate this case' }
+  const runs = [{}, { error: caseError }, { fail: { why: 'later' } }, {}]
+  const constraint = 'too many parts'
+  const score = { nodes: 5 }
+  assert.deepEqual(reportRuns(runs, { score, constraint }), { runs, fail: { check: 1, why: caseError }, pass: false, score, constraint })
+  assert.deepEqual(reportRuns([{}], { constraint }).fail, { why: constraint })
+})
+
+test('a run plays its first test slowly and the rest fast, at a pace that does not depend on its length', () => {
+  assert.deepEqual(paceOf(0, 5, 1), { per: 650, stride: 1 })
+  assert.deepEqual(paceOf(1, 5, 1), { per: 110, stride: 1 })
+  const long = paceOf(0, 1000, 1)
+  assert.equal(long.per, 650)
+  assert.ok(long.stride > 1)
+  assert.ok(long.per * (Math.ceil(1000 / long.stride) - 1) <= 12000)
+  assert.deepEqual(paceOf(0, 1000, 0.5), { ...long, per: 1300 })
+  assert.deepEqual(paceOf(0, 1000, 2), { ...long, per: 325 })
+  assert.deepEqual(paceOf(1, 1000, 2), { ...paceOf(1, 1000, 1), per: 55 })
 })

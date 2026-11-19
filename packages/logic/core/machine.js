@@ -4,8 +4,8 @@ import { workNodes } from 'circuit'
 // The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
 // clause sets instead of proved judgments. Its sources (`in` cards, one per input the level names) give the test's
 // inputs, its sink `out` is checked against what the level wants. A part is a rule of unification, a tactic, a frame
-// that runs what it holds again and again (repeat, depth-first search, every goal) or tries several things (the
-// alternatives frame), a rewrite, or a step on clauses (resolution.js); the level's parts come from the course as
+// that runs what it holds again and again (repeat, depth-first search, every goal), a junction for alternative
+// routes, a rewrite, or a step on clauses (resolution.js); the level's parts come from the course as
 // on every board. A part the player builds (the unifier, erule, frule, the introduction and elimination steps, auto,
 // simp, the clause machines) runs the board that built it: the player's, as it last passed (builtMachine).
 //
@@ -361,31 +361,21 @@ const keepBound = {
   },
 }
 
-// Alternatives (Isabelle's APPEND, ORELSE when only the first result is followed): every region opens with the value;
-// every result of the first region, then every result of the next, those that failed left out. How many regions is
-// the card's setting.
+// Each incoming wire is a candidate route. The junction preserves input order and leaves each candidate's goals
+// and substitutions together. A later step can continue every candidate when backtracking is open.
 const WAYS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
-export const waysOf = (node) => WAYS.slice(0, Math.min(WAYS.length, Math.max(2, Number(node?.params?.ways) || 2)))
-/**
- * Alternatives: each region in turn gets the state the frame does, and only when the ones before it failed: the first
- * that does not fail gives the result (ORELSE), and the regions after it are not tried. Once the level backtracks,
- * every region is tried, and every result of each, in order, is the frame's (APPEND). Every region failing, the first
- * one's failure is the frame's.
- */
 const append = {
-  inputs: ['in'],
-  eval: ({ in: v }, node, ctx, key) => {
-    if (key || v?.error) return v
-    const got = []
-    for (const way of waysOf(node)) {
-      // A traced run sees each region tried: what it opens with, then its cards.
-      ctx.trace?.push({ id: node.id, key: way, value: v })
-      const out = ctx.region(way)(v)
-      got.push(out)
-      if (!out.error && !ctx.backtrack) break
+  circuitPart: (settingsOf) => ({ inputs: (node) => WAYS.slice(0, Number(settingsOf(node).ways)) }),
+  run(values, { ways }, ctx) {
+    const routes = values.slice(0, Number(ways)).flatMap((value, index) => value == null ? [] : [{ state: stateIn(value), route: index + 1 }])
+    const open = routes.filter(({ state }) => !state.error)
+    if (!open.length) return unsaid(routes[0].state)
+    const results = ctx.backtrack ? open.flatMap(({ state }) => resultsOf(state)) : [firstOf(open[0].state)]
+    return {
+      ...asValue(results.map(unsaid)),
+      did: { op: 'alternatives', remaining: open.map(({ route }) => route), results: results.length, backtrack: ctx.backtrack },
+      didBy: ctx.node.id,
     }
-    const ok = got.filter((x) => !x.error)
-    return ok.length ? asValue(ok.flatMap(resultsOf)) : got[0]
   },
 }
 
@@ -409,7 +399,6 @@ const BODIES = {
   rule: ruleCard(rule, DID.rule),
   assumption: tactic(assumption, DID.assumption),
   defer: tactic(defer, DID.defer),
-  append,
   search,
   each,
   // Rewriting (chapter 10): one rule once, on the goal or the hypotheses.
@@ -424,7 +413,7 @@ const BODIES = {
   // A rule part: the rules wired in before it, then its own (machine.js ruleParts).
   rules: RULE_PART,
 }
-export const MACHINE_PARTS = ruleImplementations(BODIES)
+export const MACHINE_PARTS = { ...ruleImplementations(BODIES), append }
 
 // The fixed things Skolem's ∃ out of a hypothesis may name, in order.
 const FRESH = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'k', 'm', 'n']

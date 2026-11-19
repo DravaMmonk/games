@@ -91,16 +91,11 @@
         "@level.sp-laws.tasks.sp-laws-2.hint.1"
       ],
       "solution": [
-        "c0 = append(in, first: c1, second: c2) {",
-        "  first {",
-        "    c1r0 = dist[use=[\"dist.orAndR\"]]()",
-        "    c1 = rw(c0.first, c1r0)",
-        "  }",
-        "  second {",
-        "    c2r0 = dist[use=[\"dist.orAndL\"]]()",
-        "    c2 = rw(c0.second, c2r0)",
-        "  }",
-        "}",
+        "c1r0 = dist[use=[\"dist.orAndR\"]]()",
+        "c1 = rw(in, c1r0)",
+        "c2r0 = dist[use=[\"dist.orAndL\"]]()",
+        "c2 = rw(in, c2r0)",
+        "c0 = append(first: c1, second: c2)",
         "out <- c0"
       ]
     }

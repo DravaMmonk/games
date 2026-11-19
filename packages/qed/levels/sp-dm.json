@@ -43,16 +43,11 @@
         "@level.sp-dm.tasks.sp-dm-1.hint.1"
       ],
       "solution": [
-        "c0 = append(in, first: c1, second: c2) {",
-        "  first {",
-        "    c1r0 = dm[use=[\"dm.notOr\"]]()",
-        "    c1 = rw(c0.first, c1r0)",
-        "  }",
-        "  second {",
-        "    c2r0 = dm[use=[\"dm.notAnd\"]]()",
-        "    c2 = rw(c0.second, c2r0)",
-        "  }",
-        "}",
+        "c1r0 = dm[use=[\"dm.notOr\"]]()",
+        "c1 = rw(in, c1r0)",
+        "c2r0 = dm[use=[\"dm.notAnd\"]]()",
+        "c2 = rw(in, c2r0)",
+        "c0 = append(first: c1, second: c2)",
         "out <- c0"
       ]
     },
@@ -91,16 +86,11 @@
         "@level.sp-dm.tasks.sp-dm-2.hint.0"
       ],
       "solution": [
-        "c0 = append(in, first: c1, second: c2) {",
-        "  first {",
-        "    c1r0 = dm[use=[\"dm.notAll\"]]()",
-        "    c1 = rw(c0.first, c1r0)",
-        "  }",
-        "  second {",
-        "    c2r0 = dm[use=[\"dm.notEx\"]]()",
-        "    c2 = rw(c0.second, c2r0)",
-        "  }",
-        "}",
+        "c1r0 = dm[use=[\"dm.notAll\"]]()",
+        "c1 = rw(in, c1r0)",
+        "c2r0 = dm[use=[\"dm.notEx\"]]()",
+        "c2 = rw(in, c2r0)",
+        "c0 = append(first: c1, second: c2)",
         "out <- c0"
       ]
     }

@@ -44,16 +44,11 @@
       "solution": [
         "c0r0 = impI()",
         "c0 = rule(in, c0r0)",
-        "c1 = append(c0, first: c2, second: c3) {",
-        "  first {",
-        "    c2r0 = math[use=[\"nat.distinct1\"]]()",
-        "    c2 = erule(c1.first, c2r0)",
-        "  }",
-        "  second {",
-        "    c3r0 = math[use=[\"nat.distinct2\"]]()",
-        "    c3 = erule(c1.second, c3r0)",
-        "  }",
-        "}",
+        "c2r0 = math[use=[\"nat.distinct1\"]]()",
+        "c2 = erule(c0, c2r0)",
+        "c3r0 = math[use=[\"nat.distinct2\"]]()",
+        "c3 = erule(c0, c3r0)",
+        "c1 = append(first: c2, second: c3)",
         "out <- c1"
       ]
     }

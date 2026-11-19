@@ -12,8 +12,8 @@ const declarations = readCopy(declarationsSource)
 
 const implementations = { ...RULES, lemma: LEMMA, ...MACHINE_PARTS, ...OPTIONS, ruleChoices: RULE_CHOICES }
 
-export const OPS = Object.fromEntries(Object.entries(implementations).map(([name, { run }]) => [
-  `logic/${name}`, { ...declarations.items[name], run },
+export const OPS = Object.fromEntries(Object.entries(implementations).map(([name, implementation]) => [
+  `logic/${name}`, { ...declarations.items[name], ...implementation },
 ]))
 
 /** A game's parts (../../engine/parts/define.js defineParts): its parts.json's, and those its lemmas make. */

@@ -37,12 +37,9 @@
       "solution": [
         "c0r0 = impI()",
         "c0 = rule(in, c0r0)",
-        "c1 = append(c0, first: c2, second: c1.second) {",
-        "  first {",
-        "    c2r0 = andE[use=[conjE]]()",
-        "    c2 = erule(c1.first, c2r0)",
-        "  }",
-        "}",
+        "c2r0 = andE[use=[conjE]]()",
+        "c2 = erule(c0, c2r0)",
+        "c1 = append(first: c2, second: c0)",
         "c3 = assumption(c1)",
         "out <- c3"
       ]

@@ -619,13 +619,6 @@
       "about": "@capability.operation.items.append.about",
       "args": [
         {
-          "name": "in",
-          "type": "logic/machine-value"
-        }
-      ],
-      "returns": "logic/machine-value",
-      "regions": [
-        {
           "name": "first",
           "type": "logic/machine-value"
         },
@@ -635,21 +628,26 @@
         },
         {
           "name": "third",
-          "type": "logic/machine-value"
+          "type": "logic/machine-value",
+          "optional": true
         },
         {
           "name": "fourth",
-          "type": "logic/machine-value"
+          "type": "logic/machine-value",
+          "optional": true
         },
         {
           "name": "fifth",
-          "type": "logic/machine-value"
+          "type": "logic/machine-value",
+          "optional": true
         },
         {
           "name": "sixth",
-          "type": "logic/machine-value"
+          "type": "logic/machine-value",
+          "optional": true
         }
       ],
+      "returns": "logic/machine-value",
       "params": {
         "type": "obj",
         "fields": {

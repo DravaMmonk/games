@@ -33,3 +33,4 @@
 {"seq":33,"at":"2026-11-18T23:49:19.442Z","why":"Run report: a step's number, card, name and note sit on one centre line.","adopt":true,"files":[]}
 {"seq":34,"at":"2026-11-18T23:53:20.757Z","why":"Repeat frame decisions read ↻ / ↪; a goal moved to the end reads ⊢ ⤓ (an underlined down arrow in TeX).","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"276a7d14d75f34c6"}]}
 {"seq":35,"at":"2026-11-19T00:26:32.314Z","why":"Cards show only propositions; report steps get an ⓘ explanation and baseline-aligned marks; desktop cards numbered like the phone.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"e0bcc6273ef9029e"}]}
+{"seq":36,"at":"2026-11-19T19:05:13.704Z","why":"Evaluate alternative proof routes through ordinary circuit inputs","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"98e6202b00279520"},{"file":"packages/logic/capabilities/operation.json","after":"24bd60e30a0e9a80"}]}

@@ -67,6 +67,7 @@ export function didText(did, run) {
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
   if (did.op === 'rwHyps') return T("{goal} 的已知 ≡ {rules}", { goal, rules })
   if (did.op === 'assumption') return `${goal} ✓`
+  if (did.op === 'alternatives') return null
   return `${goal} ⤓`
 }
 /**
@@ -80,6 +81,10 @@ export function stepExplained(entry, run) {
   if (entry.inner && entry.label === '↪') return T('停下来：这一轮没有改变、做不成，或者已经证完。交出的是最后的状态。')
   const did = v?.didBy === entry.id ? v.did : null
   if (!did) return null
+  if (did.op === 'alternatives') {
+    if (!did.backtrack) return T('继续走第 {route} 条路。', { route: did.remaining[0] })
+    return T('从路线 {routes} 保留 {count} 个候选结果。', { routes: did.remaining.join(punctuation('、')), count: did.results })
+  }
   const goal = goalMark(0, did.goals)
   const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.rules ?? did.rules)).join(' ')
   if (did.op === 'rule') return T('倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。', { rules, goal })

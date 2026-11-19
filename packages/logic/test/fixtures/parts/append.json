@@ -1,8 +1,8 @@
 {
   "name": "@part.append.name",
   "desc": "@part.append.desc",
-  "icon": "Box",
-  "family": "logic/loop",
+  "icon": "GitMerge",
+  "family": "logic/tactic",
   "settings": {
     "ways": {
       "label": "@part.append.settings.ways.label",
@@ -30,41 +30,31 @@
       ]
     }
   },
-  "regions": [
+  "op": "logic/append",
+  "inputs": [
     {
       "name": "first",
-      "label": "@part.append.regions.0.label",
-      "opens": true
+      "label": "@part.append.inputs.0.label"
     },
     {
       "name": "second",
-      "label": "@part.append.regions.1.label",
-      "opens": true
+      "label": "@part.append.inputs.1.label"
     },
     {
       "name": "third",
-      "label": "@part.append.regions.2.label",
-      "opens": true,
-      "when": "numlib/ge($ways, 3)"
+      "label": "@part.append.inputs.2.label"
     },
     {
       "name": "fourth",
-      "label": "@part.append.regions.3.label",
-      "opens": true,
-      "when": "numlib/ge($ways, 4)"
+      "label": "@part.append.inputs.3.label"
     },
     {
       "name": "fifth",
-      "label": "@part.append.regions.4.label",
-      "opens": true,
-      "when": "numlib/ge($ways, 5)"
+      "label": "@part.append.inputs.4.label"
     },
     {
       "name": "sixth",
-      "label": "@part.append.regions.5.label",
-      "opens": true,
-      "when": "numlib/ge($ways, 6)"
+      "label": "@part.append.inputs.5.label"
     }
-  ],
-  "op": "logic/append"
+  ]
 }

@@ -460,6 +460,23 @@ test('a machine backtracks once its level says so, and a search finds every answ
   assert.equal(runOutputTests(MACHINE_TESTS, onMachine(ask), either).pass, true)
 })
 
+test('ordinary wires retain each alternative for a later proof step', () => {
+  const level = onMachine({ kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain ∨ Wind', hyps: ['Wind'] }] })
+  const board = wireRules(machine({
+    left: ['rule', { rule: 'disjI1' }], right: ['rule', { rule: 'disjI2' }], join: ['append'], finish: ['assumption'],
+  }, ['in>left', 'in>right', 'left>join.first', 'right>join.second', 'join>finish', 'finish>out']), level)
+  const junction = board.nodes.find(({ id }) => id === 'join')
+  assert.deepEqual(machineParts('append').inputs(junction), ['first', 'second'])
+  assert.deepEqual(machineParts('append').inputs({ ...junction, params: { ways: '3' } }), ['first', 'second', 'third'])
+  assert.equal(runMachine(level, board).pass, false)
+  const traced = runMachine({ ...level, backtrack: true }, board, { traced: true })
+  assert.equal(traced.pass, true)
+  const merge = traced.runs[0].trace.find(({ id }) => id === 'join')
+  assert.deepEqual(merge.value.did.remaining, [1, 2])
+  assert.equal(merge.value.goals.length, 1)
+  assert.equal(merge.value.more[0].goals.length, 1)
+})
+
 test('a machine uses the same evaluation for its playback and the final board', () => {
   const evaluated = []
   const task = onMachine({

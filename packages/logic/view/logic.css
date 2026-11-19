@@ -119,6 +119,7 @@
 .mr-name { gap: var(--sp-2); font: 600 11.5px/1 var(--sans); color: var(--muted); }
 .mr-name .step-card { margin-right: 0; }
 .mr-note { color: var(--accent); white-space: nowrap; font-size: 12.5px; }
+.mr-note.is-prose { white-space: normal; line-height: var(--lh-ui); }
 /* KaTeX's box holds room under its baseline, so centred it sits high: down to the name's baseline. */
 .mr-note .katex { position: relative; top: 0.12em; }
 .mr-why { flex-basis: 100%; min-height: 0; display: block; font: 500 11.5px/1.45 var(--sans); color: var(--fail); }

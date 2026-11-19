@@ -60,12 +60,15 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
           // the next box. A card that cannot run at all (an input missing) says why, and nothing follows.
           const broken = s.failed
           const refused = !broken && s.value?.kind === 'state' && s.value.error ? s.value.error : null
+          const explained = stepExplained(s.entry, run)
+          const junction = s.value?.didBy === s.entry.id && s.value.did?.op === 'alternatives'
           return [
             <li key={`s${k}`} className={`mr-step ${k === at ? 'is-on' : ''} ${broken || refused ? 'is-fail' : ''} ${refused ? 'is-refused' : ''}`}>
               <span className="mr-num">{n + 1}</span>
               <span className="mr-name">{s.mark}{L(s.label)}</span>
               {refused ? <span className="mr-wrong" aria-label={L(refused)}>✗</span> : s.detail && <Formula text={s.detail} className="mr-note" />}
-              {stepExplained(s.entry, run) && (
+              {junction && <span className="mr-note is-prose">{L(explained)}</span>}
+              {explained && !junction && (
                 <button type="button" className="mr-info" aria-label={tr('这一步做了什么')} aria-expanded={told?.k === k} onClick={(event) => setTold(told?.k === k ? null : { k, anchor: event.currentTarget })}>
                   <Info size={13} />
                 </button>

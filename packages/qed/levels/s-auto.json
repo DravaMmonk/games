@@ -24,6 +24,12 @@
       "backtrack": true,
       "tests": [
         {
+          "goal": "Rain ∨ Wind",
+          "hyps": [
+            "Wind"
+          ]
+        },
+        {
           "goal": "Rain ∧ (Wind ∨ Wet) → (Rain ∧ Wind) ∨ (Rain ∧ Wet)"
         },
         {
@@ -44,17 +50,10 @@
       "solution": [
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c1 = append[ways=\"3\"](c0.body, first: c2, second: c3, third: c4) {",
-        "      first {",
-        "        c2 = assumption(c1.first)",
-        "      }",
-        "      second {",
-        "        c3 = introRules(c1.second)",
-        "      }",
-        "      third {",
-        "        c4 = elimRules(c1.third)",
-        "      }",
-        "    }",
+        "    c2 = assumption(c0.body)",
+        "    c3 = introRules(c0.body)",
+        "    c4 = elimRules(c0.body)",
+        "    c1 = append[ways=\"3\"](first: c2, second: c3, third: c4)",
         "  }",
         "}",
         "out <- c0"

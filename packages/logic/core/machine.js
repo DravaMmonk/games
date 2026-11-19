@@ -79,8 +79,9 @@ export function ruleBookOf(level) {
   return books.get(level)
 }
 
-/** A list of rules, by key in the level's books (rule parts give these), with each one's entry ({ book, rule }) to write it out. */
-export const rulesValue = (entries) => ({ kind: 'rules', keys: entries.map((e) => e.key), entries })
+/** A list of rules, by key in the level's books (rule parts give these), with each one's entry ({ book, rule }) to write
+ *  it out; `own`: how many at its end the rule part that gives it adds (its card shows only those). */
+export const rulesValue = (entries, own) => ({ kind: 'rules', keys: entries.map((e) => e.key), entries, ...(own !== undefined && { own }) })
 const rulesIn = (v) => {
   if (v?.kind !== 'rules') throw fail('「规则」口要接规则元件', 'The rules port takes rule parts')
   return v
@@ -141,7 +142,7 @@ const RULE_PART = {
     if (!entries) throw fail('这一关没有这条规则', 'This level has no such rule')
     const own = ownRules(entries, node.params?.use).map((k) => entries.find((e) => e.key === k))
     if (!own.length) throw fail('这块规则元件没有加上规则', 'This rule part has no rule added')
-    return rulesValue([...(before ? rulesIn(before).entries : []), ...own])
+    return rulesValue([...(before ? rulesIn(before).entries : []), ...own], own.length)
   },
 }
 
@@ -704,6 +705,21 @@ const ctxOf = (level, circuit, extra = {}) => ({ graph: circuit, partForRule: le
  *  `keys` wired in when it uses rules. */
 export const runTactic = (level, type, state, keys = null) => level.parts(type).eval({ in: state, ...(keys ? { rules: rulesValue(keys.map((key) => ({ key }))) } : {}) }, { id: type, params: {} }, ctxOf(level, { nodes: [], wires: [] }, { engine: { parts: level.parts } }))
 
+/**
+ * The rules on a board, numbered once for it (R₁ R₂ …: each rule one number, wherever it is wired): those added on its
+ * rule parts, card by card in the board's order, each part's in the order added, after those a test gives on its 「规则」
+ * input. `ruleEntries`: how to write each.
+ */
+export function boardRules(level, circuit, test) {
+  const parts = rulePartsOf(level)
+  const given = test ? inputsOf(test, level).rules?.entries ?? [] : []
+  const ruleEntries = [...given, ...circuit.nodes.flatMap((n) => {
+    const entries = parts.get(n.type)
+    return entries ? ownRules(entries, n.params?.use).map((k) => entries.find((e) => e.key === k)) : []
+  })]
+  return { rules: [...new Set(ruleEntries.map((e) => e.key))], ruleEntries }
+}
+
 /** How a machine level runs and is judged, for the shared engine (../../engine/test-run.js). */
 export const MACHINE_TESTS = {
   runTest: (level, circuit, test, { traced = false, workshopParts } = {}) => {
@@ -718,10 +734,7 @@ export const MACHINE_TESTS = {
     // Rule parts are not steps: what they give is on their cards from the start. The rules on the board, numbered
     // once for the whole run (R₁ R₂ …, in the order of their cards on the board): `rules`, their keys, and
     // `ruleEntries`, what the cards give.
-    const at = new Map(circuit.nodes.map((n, k) => [n.id, k]))
-    const given = trace.filter((e) => e.value?.kind === 'rules').map((e, k) => ({ e, k, place: at.get(e.path?.[0] ?? e.id) ?? Infinity }))
-    const ruleEntries = given.sort((a, b) => a.place - b.place || a.k - b.k).flatMap(({ e }) => e.value.entries)
-    const rules = [...new Set(ruleEntries.map((e) => e.key))]
+    const { rules, ruleEntries } = boardRules(level, circuit, test)
     // A repeat frame is a step only where it decides (its `inner` entries); the board's own entries for it (what it
     // opens with, what it gives) say nothing more.
     const said = (e) => e.inner || e.error !== undefined || e.path?.length || !framesDeciding.has(e.id)

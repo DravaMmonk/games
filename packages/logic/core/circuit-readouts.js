@@ -38,7 +38,8 @@ export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
 const goalText = (g, text) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(punctuation("；"))} ⊢ ${text(g.goal)}` : text(g.goal))
 // Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
-// numbered once for the whole board (R₁ R₂ …: the run's `rules`, ./machine.js; a lone rule plain R). A goal with no
+// numbered once for the whole board (R₁ R₂ …: the run's `rules`, ./machine.js boardRules; a lone rule plain R). A rule
+// part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no
 // hypotheses keeps its turnstile in front.
 const SUB = '₀₁₂₃₄₅₆₇₈₉'
 const sub = (n) => String(n).replace(/\d/g, (d) => SUB[d])
@@ -110,7 +111,8 @@ export function machineLines(v, { task, run }) {
   if (v.kind === 'list') return formulas(v.items.map((x, k) => `${k + 1}. ${genValueText(x, text)}`))
   if (v.kind === 'rules') {
     const order = orderOf(v, run)
-    return formulas(v.entries.map((e) => `${ruleMark(e.key, order)} ${ruleWritten(e, text, term)}`))
+    const shown = v.own === undefined ? v.entries : v.entries.slice(v.entries.length - v.own)
+    return formulas(shown.map((e) => `${ruleMark(e.key, order)} ${ruleWritten(e, text, term)}`))
   }
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0

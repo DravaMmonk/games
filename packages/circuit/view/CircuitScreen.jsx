@@ -335,10 +335,12 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   }
   // A defined part shows each output's value; with several, none of its own (its detail, `inspect`'s).
   // What the task holds of a defined part's setting (../course.js holds): null when every value, [] when not the
-  // setting itself, else the values it holds.
+  // setting itself, else the values it holds. A setting the course's part has none of is the board's own (a machine
+  // board's rule part picks its rules on a part the course knows as a lemma): the course holds nothing back of it.
   const allowed = useMemo(() => (type, key) => {
     const setting = defined?.of(type)?.setting[key]
     if (!setting) return null
+    if (has.definition && !has.definition(type)?.setting?.[key]) return null
     if (!has(type, key)) return []
     const open = setting.options?.map((o) => o.value).filter((v) => has(type, key, String(v)))
     return !open || open.length === setting.options.length ? null : open

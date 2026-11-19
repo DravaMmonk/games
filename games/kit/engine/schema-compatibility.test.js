@@ -17,6 +17,9 @@ test('a version may add items, values and optional fields, and nothing else', ()
   assert.match(structureProblems(describe(v1), next({ level: S.obj({ mode: S.oneOf(['run', 'read']), n: S.str() }) }))[0], /"int" became "str"/)
   // Keys made to name items narrow a map as a pattern does.
   assert.match(structureProblems(describe(S.map(S.int())), describe(S.map(S.int(), { key: S.ref('world') })))[0], /\.key is a new bound/)
+  const patterned = S.str({ pattern: '^[a-z]+$', about: 'An identifier' })
+  assert.deepEqual(structureProblems(patterned, S.str({ pattern: patterned.pattern })), [])
+  assert.deepEqual(structureProblems(S.str(), patterned), ['surface.pattern is a new bound'])
 })
 
 test('adding an alternative preserves the existing schema', () => {

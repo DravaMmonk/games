@@ -4,7 +4,6 @@ import { S, find, shapeAt, validate } from './schema.js'
 import { describe } from './content-schemas.js'
 import { qualifyVocabulary } from './capabilities.js'
 import { withKindDeclarations } from './plugin-kinds.js'
-import { structureProblems } from './release-data.js'
 
 const about = { en: 'The result appears after submitting.', zh: '提交后才显示这个结果。' }
 const declaration = { declares: 'package', overrides: {} }
@@ -48,12 +47,12 @@ test('shape references qualify, reject missing shapes and reject cycles even whe
   assert.throws(() => withKindDeclarations(vocab, [{ id: 'sample', objects: [shape('a', S.text({ about: { en: 'Missing Chinese' } }))] }]), /needs Chinese text/)
 })
 
-test('expansion retains string patterns and schema compatibility ignores tooltip removal', () => {
+test('expansion retains the pattern of a named string shape', () => {
   const authored = S.str({ pattern: '^[a-z_][a-z_0-9]*$', about })
   const vocabulary = { shapes: { 'sample/word': authored } }
   const word = S.shape('sample/word')
   assert.deepEqual(validate(word, '_item1', { vocabulary }), [])
-  assert.deepEqual(validate(word, '1item', { vocabulary }), validate(authored, '1item'))
-  assert.deepEqual(structureProblems(authored, S.str({ pattern: authored.pattern })), [])
-  assert.deepEqual(structureProblems(S.str(), authored), ['surface.pattern is a new bound'])
+  assert.deepEqual(validate(word, '1item', { vocabulary }), [
+    { at: '(root)', says: '"1item" does not match ^[a-z_][a-z_0-9]*$' },
+  ])
 })

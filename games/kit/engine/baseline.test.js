@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { baselineValue, nestedPlayBaseline, versionMetadataBaseline, differences, nameNormalizer as normalizeNames, packBaseline, unpackBaseline } from './baseline-value.js'
+import { baselineValue, dependencyPaletteBaseline, differences, existenceBaseline, nameNormalizer as normalizeNames, nestedPlayBaseline, packBaseline, unpackBaseline, versionMetadataBaseline } from './baseline-value.js'
 
 import migration from '../../../tools/baseline-migrations/modules-baseline.json' with { type: 'json' }
 
@@ -12,7 +12,6 @@ test('stable serialization keeps nonfinite values, sets, maps and ordered trace 
   const b = baselineValue({ zero: -0, data: new Float32Array([0.5]), trace: [2, 1], m: new Map([['a', NaN], ['b', undefined]]), z: new Set(['a', 'b']) })
   assert.equal(JSON.stringify(a), JSON.stringify(b))
   assert.deepEqual(a.m.$map[0][1], { $number: 'NaN' })
-  assert.notDeepEqual(a.m.$map[0][1], null)
   assert.deepEqual(a.trace, [2, 1])
   assert.deepEqual(differences(a, b), [])
   assert.equal(differences(a, { ...b, trace: [1, 2] }).length, 2)
@@ -35,11 +34,12 @@ test('migration names normalize without erasing real differences or ambiguous id
 test('disk encoding retains shared terms and comparison ignores object sharing', () => {
   const term = { op: 'atom', name: 'A' }
   const shared = { steps: Array.from({ length: 100 }, () => ({ term })) }
-  const restored = unpackBaseline(JSON.parse(JSON.stringify(packBaseline(shared))))
+  const encoded = JSON.parse(JSON.stringify(packBaseline(shared)))
+  const restored = unpackBaseline(encoded)
   assert.equal(restored.steps[0].term, restored.steps[99].term)
-  assert.deepEqual(differences(restored, structuredClone(JSON.parse(JSON.stringify(shared)))) , [])
+  assert.deepEqual(differences(restored, JSON.parse(JSON.stringify(shared))), [])
   assert.deepEqual(differences(baselineValue(restored), baselineValue(shared)), [])
-  assert.equal(JSON.stringify(packBaseline(shared)), JSON.stringify(packBaseline(shared)))
+  assert.deepEqual(packBaseline(restored), encoded)
 })
 
 test('namespace normalization reorders unordered maps after relocation', () => {
@@ -91,8 +91,7 @@ test('typed tag inventory aliases and only the five retired QED grant edges norm
   assert.notEqual(nameNormalizer(['qed/proof', 'level:other/proof'])('qed/proof'), 'proof')
 })
 
-test('step 3 normalization is limited to tag copy keys and missing-target diagnostic wording', async () => {
-  const { existenceBaseline, differences } = await import('./baseline-value.js')
+test('step 3 normalization is limited to tag copy keys and missing-target diagnostic wording', () => {
   const before = { title: { en: 'Same', $key: 'sample/glossary.groups.basics.title' }, tray: { $key: 'sample/tray.basics.title' }, check: { status: 1, stdout: '  FAIL content: tags/sample/all: unknown level sample/missing\n' } }
   const after = { ...before, title: { en: 'Same', $key: 'sample/tag.basics.title' }, check: { status: 1, stdout: '  FAIL content: tags/sample/all: missing target level sample/missing\n' } }
   assert.deepEqual(differences(existenceBaseline(before), existenceBaseline(after)), [])
@@ -136,8 +135,7 @@ test('table extraction normalizes only its declared play fields and migrated cap
  assert.equal(normalize('state-graph:circuit-extra'), 'state-graph:circuit-extra')
 })
 
-test('absent providers change only standalone primitive availability, preserving executions and declared content', async () => {
-  const { dependencyPaletteBaseline } = await import('./baseline-value.js')
+test('absent providers change only standalone primitive availability, preserving executions and declared content', () => {
   const availability = { usable: ['table:add', 'consumer/add'], emptyProgress: ['table:add'], definitions: { 'table:add': { $undefined: true }, 'consumer/add': { op: 'table:add' } }, tray: { types: ['table:add', 'consumer/add'], folded: ['table:add'], shown: ['consumer/add'] } }
   const report = { reference: { work: ['n = table:add(a, b)'], report: { pass: true } } }
   const data = { structure: { parts: ['table:add'] }, records: [{ availability }, { report }] }

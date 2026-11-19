@@ -37,6 +37,9 @@
 .node-inputs:not(:empty) { padding-right: var(--sp-4); }
 .node-outputs:not(:empty) { padding-left: var(--sp-4); }
 .node-body { min-width: 120px; }
+/* A card keeps its width until what it holds is long; then it grows to about a phone's tile (300px), and wraps there. A
+   frame holds a board, and is as wide as that. */
+.node:not(.is-frame) { width: max-content; max-width: 300px; }
 .node-body:empty { min-width: 0; }
 .node-body > :is(.cs-card, .pf-face.is-card) { padding: 0; }
 .node-port-label { position: relative; height: 20px; display: flex; align-items: center; color: var(--muted); font-family: var(--mono); font-size: 10px; white-space: nowrap; }

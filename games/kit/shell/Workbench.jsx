@@ -18,14 +18,15 @@ import { usePointerSession } from '../views/usePointerSession.js'
  *
  * `results` left out: the level has no results pane (the run bar alone, at the right); null: the pane is there, empty
  * until there is something to show. The line along the strip's top drags it taller or shorter, and the height is
- * remembered for every game.
+ * remembered for every game. `resultsHeight`: the share of the screen the strip starts at with a results pane (a play's
+ * own; else 0.35).
  */
-export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, dock }) {
+export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, dock, resultsHeight }) {
   const own = useRef(null)
   const rootRef = given ?? own
   const pane = results !== undefined
   return (
-    <div ref={rootRef} className={`level ${className}`}>
+    <div ref={rootRef} className={`level ${className}`} style={resultsHeight ? { '--world-start-share': `${resultsHeight * 100}dvh` } : undefined}>
       <aside className="brief">{taskNav}{brief}</aside>
       <div className={`stage-pane ${scroll ? 'is-scroll' : 'is-board'}`}>
         {tools && <div className="wb-toolbar" aria-label={tr("工具")}>{tools}</div>}
@@ -84,6 +85,7 @@ const WORLD_KEY = 'kit.world-h'
 const setHeight = (el, h) => {
   el.style.setProperty('--world-h', `${h}px`)
   el.style.setProperty('--world-max', 'none')
+  el.style.setProperty('--world-start', '0px')
 }
 
 function WorldHandle({ rootRef }) {
@@ -93,25 +95,21 @@ function WorldHandle({ rootRef }) {
     try { h = Number(localStorage.getItem(WORLD_KEY)) || null } catch { /* storage may be off */ }
     if (h && rootRef.current) setHeight(rootRef.current, h)
   }, [rootRef])
-  // The strip's height when it just fits what it holds (read with the dragged height taken off for a moment).
-  const natural = (el) => {
-    const world = el.querySelector('.wb-strip')
-    const h = el.style.getPropertyValue('--world-h')
-    const max = el.style.getPropertyValue('--world-max')
-    el.style.removeProperty('--world-h')
-    el.style.removeProperty('--world-max')
-    const fit = world.getBoundingClientRect().height
-    if (h) el.style.setProperty('--world-h', h)
-    if (max) el.style.setProperty('--world-max', max)
-    return fit
+  // The least a drag leaves: the tests' header and the run column, so the results pane comes down level with the
+  // buttons and no shorter.
+  const leastOf = (el) => {
+    const strip = el.querySelector('.wb-strip')
+    const body = strip.querySelector('.wb-strip-body')
+    const pad = getComputedStyle(body)
+    const head = strip.querySelector('.wb-strip-head')?.getBoundingClientRect().height ?? 0
+    const dock = body.querySelector('.run-foot')?.getBoundingClientRect().height ?? 0
+    return Math.ceil(head + parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom) + dock + parseFloat(getComputedStyle(strip).borderTopWidth))
   }
-  // A drag goes no shorter than the strip's least height, or than what it holds when that is less: it never jumps
-  // taller on being touched, and can always be brought back to its fitting height.
   const size = (h) => {
     const el = rootRef.current
     if (!el) return null
     const top = el.getBoundingClientRect().top
-    const least = Math.min(parseFloat(getComputedStyle(el).getPropertyValue('--world-min')) || 270, natural(el))
+    const least = leastOf(el)
     const next = Math.round(Math.min(Math.max(h, least), (window.innerHeight - top) * 0.78))
     setHeight(el, next)
     return next
@@ -124,7 +122,7 @@ function WorldHandle({ rootRef }) {
     event.preventDefault()
     const el = rootRef.current
     const bottom = el.getBoundingClientRect().bottom
-    const original = ['--world-h', '--world-max'].map((key) => [key, el.style.getPropertyValue(key)])
+    const original = ['--world-h', '--world-max', '--world-start'].map((key) => [key, el.style.getPropertyValue(key)])
     let last = null
     track(event, {
       move(next) { last = size(bottom - next.clientY) },
@@ -138,6 +136,7 @@ function WorldHandle({ rootRef }) {
   const fit = () => {
     rootRef.current?.style.removeProperty('--world-h')
     rootRef.current?.style.removeProperty('--world-max')
+    rootRef.current?.style.removeProperty('--world-start')
     try { localStorage.removeItem(WORLD_KEY) } catch { /* storage may be off */ }
   }
   const key = (event) => {

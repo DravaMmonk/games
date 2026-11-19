@@ -158,7 +158,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, resultsHeight, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -481,6 +481,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
           types={types}
           defaults={defaults}
           tileSettings={tileSettings}
+          resultsHeight={resultsHeight}
           view={view}
           card={{
             body,
@@ -551,6 +552,6 @@ export function circuitScreen(config, { play, course, ...declared }) {
   const revealOnPass = config.checks === 'afterPass'
   return function Screen(screen) {
     return <CircuitScreen screen={screen} course={course(screen.game)} defined={screen.game.defined} {...played} {...declared}
-      judged={judged} revealOnPass={revealOnPass} showResults={config.results !== 'hidden'} reportOnly={config.results === 'report'} outputTarget={config.output === 'target'} tileSettings={config.tileSettings !== 'hidden'} taskBoard={config.taskBoard} className={config.layout} />
+      judged={judged} revealOnPass={revealOnPass} showResults={config.results !== 'hidden'} reportOnly={config.results === 'report'} outputTarget={config.output === 'target'} tileSettings={config.tileSettings !== 'hidden'} resultsHeight={config.resultsHeight} taskBoard={config.taskBoard} className={config.layout} />
   }
 }

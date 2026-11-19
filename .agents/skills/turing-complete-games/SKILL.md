@@ -24,7 +24,7 @@ description: Design, extend or review the learning games in the games repository
 - 包提供机制与内容，可带 `core/index.js` 和 `view/index.jsx`，两边均导出 `register(kernel)`。游戏只用数据选包、编排章、路线图、文案与允许的覆盖。
 - 独立功能放进功能包，依托已有功能的场景机制放进拓展包。只供一个包使用的实现留在该包，第二个包需要时再提到被依赖的包。
 - 核心登记 `play`、`kind`、`state`、`check`、`agent`、对象与标签读者；视图登记配对 `play`、`editor`、`display`。作品格式由核心定义。
-- 检查、基线、文字试玩只加载核心；游戏与 Studio 按 `uses` 拓扑加载两边。
+- 游戏、Studio 和文字试玩按 `uses` 拓扑加载核心与视图。平台检查先验证核心与内容，打开游戏或独立关卡时核对视图登记。
 - 公开导入为 `kernel`、`kernel/view`、直接依赖的 `<包>`、`<包>/view`。核心只读本核心与无界面导出；视图可读本核心。包内部路径、传递依赖、计算导入、核心中的 JSX/CSS/界面库与 Node I/O 均由边界检查拒绝。
 - 判定确定，随机使用传入种子。数据经操作集修改，代码经提交与审查修改。
 - 专用 Studio 编辑器由包的视图登记。内核保留三工作区、三栏、辅助抽屉、通用 schema/JSON 编辑、文案、编排、覆盖审计和日志。
@@ -91,7 +91,10 @@ description: Design, extend or review the learning games in the games repository
 - 任务内最后一次运行保存在内存，按任务和存档切换恢复；离关清除。兼容旧版 iOS Safari。
 - 按第 7.0 节选择验证范围。纯文档检查 diff 和引用；界面或交互变化检查桌面与手机实际流程。
 - 内核测试用测试现写的小内容，机制组合显式安装夹具；真实包与游戏分别 `check`。带代码的包提供核心、视图配对与跨包契约。
-- 内核改动运行 `npm test`、`npm run lint:kit`、`npm run words -- --check`。零内容验收运行 `npm run test:zero`，首次先 `npx playwright install chromium`。命令均在 `site/`。
+- 日常改动只跑受影响的测试文件（按第 7.0 节）、`npm run lint:kit` 和 `npm run words -- --check`；完整 `npm test` 与受影响目标的 `npm run check` 在合并到 `main` 前运行一次，接口、注册表或依赖变化时也运行。CI 的 Test kit 工作流在内核、包的核心、视图、测试、清单或站点变更时跑测试、lint 和翻译检查。零内容验收运行 `npm run test:zero`，首次先 `npx playwright install chromium`。命令均在 `site/`。
+- 新增测试或检查前说明它能发现的失败，以及现有测试、lint、契约或 `check` 为何发现不了；说不出就不加。一个行为放在一个测试里，扩展已有测试优先于新开文件或新写辅助脚本。
+- 只查导出存在、`typeof` 或配置键的断言不加；只为断言类型而启动 Vite 或子进程的测试不加。CLI 与 HTTP 层各留一处入口测试，工具行为在进程内测。
+- 精简时先确认被删内容另有覆盖，不删唯一覆盖的核心行为、边界条件或关键集成路径；"删除后仍全部通过"不足以作为依据。不为验证体系增设框架、依赖、缓存层或 CI 步骤，除非有具体需要并在提交说明里写明。
 - 行为迁移运行 `npm run baseline -- compare`，保留锁定语料。报告检查范围、结果和未验证项。
 - 上线前版本保持 `0.0.0`，范围 `^0.0.0`。源目录哈希漂移允许继续工作，归档保持严格校验。`deps -- lock` 刷新快照，`deps -- upgrade` 显式升级。
 - 首发须明确执行 `publish -- <包|kernel> --launch`，自动定为 `1.0.0`。版本随后由公开面与依赖方检查观察计算，平台行为探测待补。`releases/` 排除在 Git 外。

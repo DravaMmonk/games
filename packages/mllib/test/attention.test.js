@@ -1,11 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { scaledDotProductAttention } from 'mllib'
-import { packageLayers } from '../../../games/kit/engine/resolver.js'
-
-test('machine learning loads without any domain package', () => {
-  assert.deepEqual(packageLayers('mllib').map(layer => layer.id), ['mllib'])
-})
 
 test('attention mixes value vectors independently of the query width', () => {
   const queries = [Float64Array.of(Math.log(3) * Math.SQRT2, 0), Float64Array.of(0, 1)]

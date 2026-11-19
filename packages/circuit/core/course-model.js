@@ -26,15 +26,28 @@ export function contentCourse(content, {
   const tasks = (at) => source.get(at.id)?.tasks ?? []
   const task = (at) => tasks(at)[at.task]
   const level = (at) => source.get(at.id) ?? {}
-  const awards = (at) => publications.filter((entry) => entry.level === at.id
-    && (at.task === undefined || entry.taskIndex <= at.task)).map((entry) => entry.type)
+  // A level's (or task's) awards, unlocks and builds follow from facts fixed once read: each is worked out once.
+  const once = (fn) => {
+    const known = new Map()
+    return (at) => {
+      const key = `${at.id}\0${at.task ?? ''}`
+      if (!known.has(key)) known.set(key, fn(at))
+      return known.get(key)
+    }
+  }
+  const awards = once((at) => publications.filter((entry) => entry.level === at.id
+    && (at.task === undefined || entry.taskIndex <= at.task)).map((entry) => entry.type))
   const flagOf = (part) => parts[part]?.unlock ?? (publications.some(entry => entry.type === part) ? part : null)
-  const unlocked = (at) => [
+  const unlocked = once((at) => [
     ...(at.task === undefined || at.task === tasks(at).length - 1 ? level(at).unlocks ?? [] : []),
     ...tasks(at).slice(0, at.task === undefined ? undefined : at.task + 1).flatMap((task) => task.unlocks ?? []),
     ...awards(at),
-  ]
-  const build = (at) => unique([...(builds?.(at) ?? []), ...awards(at), ...Object.keys(parts).filter((part) => parts[part].unlock && unlocked(at).includes(parts[part].unlock))])
+  ])
+  const flagged = Object.keys(parts).filter((part) => parts[part].unlock)
+  const build = once((at) => {
+    const flags = new Set(unlocked(at))
+    return unique([...(builds?.(at) ?? []), ...awards(at), ...flagged.filter((part) => flags.has(parts[part].unlock))])
+  })
   const definitions = { ...(content.partDefs?.parts ?? content.registries?.['circuit/part'] ?? {}) }
   const course = defineCourse({
     parts: definitions,
@@ -80,13 +93,16 @@ export function readWorkSet(content, readers) {
   const all = pending.map(({ facts }) => facts)
   const source = new Map(content.levels.map(level => [level.id, level]))
   const plan = content.coursePlan ?? all[0]?.plan ?? courseLayout(content)
+  // Each reader's levels by id, looked up on every question the course asks of a level.
+  const firstById = (levels) => levels.reduce((map, level) => (map.has(level.id) ? map : map.set(level.id, level)), new Map())
+  const indexed = pending.map((entry) => ({ ...entry, read: new Set(entry.facts.levels.map(level => level.id)), own: firstById(entry.scope.levels) }))
   const call = (key, fallback) => (at) => {
     const id = source.get(at.id)?.tasks[at.task]?.id
-    const values = pending.filter(({ scope, facts }) => facts.levels.some(level => level.id === at.id) && scope.levels.some(level => level.id === at.id
-      && (at.task === undefined || level.tasks.some(task => task.id === id))))
-      .map(({ facts, scope }) => {
+    const values = indexed.filter(({ read, own }) => read.has(at.id) && own.has(at.id)
+      && (at.task === undefined || own.get(at.id).tasks.some(task => task.id === id)))
+      .map(({ facts, scope, own }) => {
         if (key !== 'additions' || facts.additions) return facts[key]?.(at)
-        const level = scope.levels.find(level => level.id === at.id)
+        const level = own.get(at.id)
         return unique([...(level.adds ?? []), ...level.tasks.flatMap((task, index) =>
           at.task === undefined || (scope.taskPositions?.get(task.id) ?? index) <= at.task ? task.adds ?? [] : [])])
       }).filter(value => value !== undefined)

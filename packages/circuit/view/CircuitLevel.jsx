@@ -197,6 +197,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *                   wireState (wire, ctx), regionNote / resultNote (node, region, ctx); on a phone thumb, tileExtra,
  *                   sinkBody, sinkClass, nodeClass, phoneRegionLabel (node, index)
  *   tileSettings    show configuration summaries on phone tiles (the details always show the settings)
+ *   resultsHeight   the share of the screen the desktop results strip starts at (Workbench.jsx)
  *   canvas          more for the desktop editor: height, emptyNote, corner, minFit
  *   brief           the task board's content (Layout.jsx Brief), or the workshop shelf
  *   results, resultsTitle, resultsAside   what a run gives (the strip on a desktop, below the board on a phone)
@@ -214,7 +215,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *   tabs            false: the tests are picked in the results, not in tabs
  *   scope           names the board for undo (a level's stage; default the level)
  */
-export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsTitle, resultsAside, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef }) {
+export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsTitle, resultsAside, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, resultsHeight, scope, className = '', rootRef }) {
   const { game, level, phone } = screen
   const stored = board.circuit
   const ownRoot = useRef(null)
@@ -318,6 +319,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     <Workbench
       rootRef={root}
       className={`cl-level ${className}`}
+      resultsHeight={resultsHeight}
       brief={brief}
       taskNav={taskNav}
       tools={(trayControl || trayItems.length > 0 || all.length > 0 || edit) && <>{(trayControl || trayItems.length > 0 || all.length > 0) && <Palette compact start={trayControl} items={trayItems} folded={display.folded} onAdd={add} />}<PickMark at="adds" scope="level" label={catalogText("带来的元件")} /></>}

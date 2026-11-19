@@ -71,6 +71,15 @@ export function defineCourse({ parts = {}, trays = {}, ...options }) {
  */
 export function met(course, level) {
   if (course.available) return course.available(level)
+  // A course's levels and parts are fixed once made: what each level has met is worked out once (a copy each time).
+  const known = metKnown.get(course) ?? metKnown.set(course, new Map()).get(course)
+  const key = `${level.id}\0${level.task ?? ''}`
+  if (!known.has(key)) known.set(key, metUncached(course, level))
+  return [...known.get(key)]
+}
+const metKnown = new WeakMap()
+
+function metUncached(course, level) {
   const own = [...course.adds(level), ...builtBefore(course, level)]
   const external = [...(course.plan?.externalItems?.get(level.id) ?? [])].map(course.partOf)
   const earlier = [...external, ...course.levels.filter((l) => course.before(l.id, level.id)).flatMap((l) => [...course.adds(l), ...course.builds(l)].filter((p) => !course.local(p, l)))]

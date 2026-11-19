@@ -129,10 +129,10 @@ export function rulePartOf(level, key) {
 }
 /** The keys a rule part offers to choose from (a law is one choice, rule and rewrite rule alike). */
 export const choicesOfPart = (entries) => [...new Set(entries.map((e) => e.key))]
-/** The keys a rule part gives of its own: those added on it (`use`), in that order; its first until any is. */
+/** The keys a rule part gives of its own: its one rule when it has one; else those added on it (`use`), in that order. */
 export const ownRules = (entries, use) => {
   const keys = choicesOfPart(entries)
-  return use?.length ? use.filter((k) => keys.includes(k)) : keys.slice(0, 1)
+  return keys.length === 1 ? keys : (use ?? []).filter((k) => keys.includes(k))
 }
 /** A rule part: the list wired into it (`before`), then its own rules. */
 const RULE_PART = {
@@ -564,7 +564,8 @@ export function ruleParts(level) {
     const several = choicesOfPart(rulePartsOf(level).get(type)).length > 1
     const desc = type === MATH ? joined(T('给出这一关的数与列表规则：类型声明生成的规则、定义中的等式和已证出的等式。在元件上添加要给出的规则，按添加顺序排列。'), AFTER)
       : several ? RULE_DEFINITION.desc : joined(T('给出这个元件的规则。'), AFTER)
-    return [type, { ...RULE_DEFINITION, name: rulePartName(level, type), desc }]
+    // A part with one rule gives it, with nothing to add (ownRules): no setting to show.
+    return [type, { ...RULE_DEFINITION, name: rulePartName(level, type), desc, ...(!several && { settings: [] }) }]
   }))
 }
 /** The rules a rule part offers to add, each written out in the test's words (ctx: the task, its text, the card). */

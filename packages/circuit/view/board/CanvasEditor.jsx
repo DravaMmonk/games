@@ -653,7 +653,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
           if (picking) clickCard(node.id)
           else openDetail()
         } : undefined}
-        style={{ left: node.x, top: node.y, [regions.length ? 'minWidth' : 'width']: widthOf(node), ...parts.cardStyle?.(node) }}
+        style={{ left: node.x, top: node.y, minWidth: widthOf(node), ...parts.cardStyle?.(node) }}
       >
         {regions.length > 0 && <div className="frame-back" />}
         <div className="node-head" data-drag onPointerDown={() => choose(node)}>

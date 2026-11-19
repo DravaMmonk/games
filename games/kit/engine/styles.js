@@ -1,6 +1,6 @@
 /* global process */
 // npm run styles — how far the kit's styles still write sizes, colours, spacing and corners out instead of taking the
-// tokens (../tokens.css, games/design/README.md 6.9): in style sheets, every font size written in pixels (`font-size: 13px`,
+// tokens (../tokens.css, games/design/engine-ui.md): in style sheets, every font size written in pixels (`font-size: 13px`,
 // or in a `font:` shorthand), every padding, margin or gap written in pixels (`padding: 10px`) and every corner radius
 // written in pixels; in style sheets and screens, every colour written out (`#3f7fb5`, `rgb(…)`). A `var(--…)`
 // fallback counts too: the token is what a style names. A hairline nudge of 1px or less is not spacing, and a custom
@@ -9,8 +9,8 @@
 //   rawStyles(paths) → { sizes, colours, spacing, radii }   counted over the .css, .jsx and .js files at `paths`
 //                                                           (files, or directories walked whole)
 //   measure(kit) → { key: counts }   the kit's own sheets (key `kit`), each shared part of the interface (`shell`,
-//                                    `views`, `strip`), with package styles owned by their providers. The studio keeps its own denser scale (DESIGN.md 6.7).
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+//                                    `views`), with package styles owned by their providers. Studio has its own denser scale.
+import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -18,7 +18,7 @@ const SIZE = /font(?:-size)?\s*:[^;{}]*?\d+(?:\.\d+)?px/g
 const COLOUR = /#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?\b|rgba?\(/g
 const SPACING = /(?<![-\w])(?:(?:padding|margin|scroll-padding|scroll-margin)(?:-[a-z-]+)?|gap|row-gap|column-gap)\s*:\s*([^;{}]+)/g
 const RADIUS = /(?<![-\w])border(?:-[a-z]+)*-radius\s*:\s*([^;{}]+)/g
-const SHARED = ['shell', 'views', 'strip']
+const SHARED = ['shell', 'views']
 
 function files(path) {
   if (!statSync(path).isDirectory()) return [path]
@@ -50,7 +50,7 @@ export function rawStyles(paths) {
 export function measure(kit) {
   const areas = [
     ['kit', readdirSync(kit).filter((name) => name.endsWith('.css') && name !== 'tokens.css').map((name) => resolve(kit, name))],
-    ...SHARED.filter((name) => existsSync(resolve(kit, name))).map((name) => [name, resolve(kit, name)]),
+    ...SHARED.map((name) => [name, resolve(kit, name)]),
   ]
   return Object.fromEntries(areas.map(([key, paths]) => [key, rawStyles(paths)]))
 }

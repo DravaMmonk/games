@@ -61,7 +61,6 @@ export function runtimeSpec(content, runtimes) {
     id: content.id, title: content.title, course: works[0].course,
     levels: plan.order.map((id) => levels.get(id)), specs,
     blueprints: specs.flatMap((spec) => spec.blueprints ?? []),
-    syncOwn: (built) => specs.forEach((spec) => spec.syncOwn?.(built)),
     texts: {
       ...Object.fromEntries(specs.map((spec, index) => [scopes[index].id, spec.texts ?? {}])),
     },

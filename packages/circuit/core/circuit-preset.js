@@ -60,7 +60,6 @@ export const circuitSpec = (courseOf) => (content, circuit = courseOf(content)) 
     levels: circuit.LEVELS,
     circuit,
     blueprints: circuit.blueprints,
-    syncOwn: circuit.syncOwn,
     texts: { chapters: circuit.CHAPTERS },
   }
 }

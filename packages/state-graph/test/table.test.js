@@ -285,5 +285,4 @@ test('reading a course never writes into its content', async () => {
   const spec = domain.spec(deepFreeze({ ...readStarter(resolve(import.meta.dirname)), tableWorlds: WORLDS }));
   assert.deepEqual(spec.table.wrong, []);
   assert.ok(domain.validate(spec).every(l => !l.fail));
-  spec.syncOwn({});
 });

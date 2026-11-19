@@ -192,7 +192,6 @@ test('a packed image trace and its test verdict share the evaluated output', () 
 // The domain's starter read frozen: a write into its content anywhere in the read throws.
 test('a course read writes nothing into its content', () => {
   const spec = domain.spec(deepFreeze(content))
-  spec.syncOwn({})
   for (const level of spec.levels) assert.ok(level.tasks.length && level.tasks.every((t) => t.key && t.palette), level.id)
 })
 

@@ -33,7 +33,6 @@ function spec(content, works = logicWorks(content)) {
     levels: logic.LEVELS,
     logic,
     blueprints: logic.blueprints,
-    syncOwn: logic.syncOwn,
     texts: { chapters: logic.CHAPTERS, ...logic.texts },
   }
 }

@@ -20,7 +20,6 @@ function spec(content, works = tableWorks(content)) {
     levels: table.LEVELS,
     table,
     blueprints: table.blueprints,
-    syncOwn: table.syncOwn,
     texts: { chapters: table.CHAPTERS, parts: table.PARTS },
   };
 }

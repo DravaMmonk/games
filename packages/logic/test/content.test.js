@@ -280,7 +280,6 @@ test('reading a game on the domain never writes into its content', () => {
   const spec = domain.spec(deepFreeze(readStarter(resolve(import.meta.dirname, '../../logic/test'))))
   assert.deepEqual(spec.logic.wrong, [])
   // The parts the player builds run the boards kept for them, or their levels' reference boards.
-  spec.syncOwn({})
   for (const shapes of Object.values(spec.logic.proofs)) for (const { board } of Object.values(shapes)) assert.ok(board().nodes)
   for (const gate of Object.values(spec.logic.gates)) assert.ok(gate.opens().circuit.nodes)
 })

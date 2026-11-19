@@ -24,8 +24,6 @@ function spec(content, works = imageWorks(content)) {
     blueprints: image.blueprints,
     kit: image.kit,
     publishedBy: image.publishedBy,
-    // The board each built part runs, by its task's key: the screens keep it as that task's passed board.
-    syncOwn: image.syncOwn,
     texts: { chapters: image.CHAPTERS, intros: image.intros },
   }
 }

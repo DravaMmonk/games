@@ -232,9 +232,9 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const cardShow = typeset ? (v) => (v === undefined || v === null || typeof v === 'string' ? show(v) : typeset(v, { task: level, test: onView, run: runOf })) : show
   const at = !run.run ? (timed ? 0 : -1) : shown.list.length ? (shown.at >= 0 ? shown.at : shown.list.length - 1) : -1
   const tick = timed && at >= 0 ? timeline.steps(runOf)[at] : null
-  // A board whose results are only the run's report shows nothing of a run beyond the step it is on: before one, the
-  // test's inputs, what no test changes (a rule part's rules) and which cards are unwired; a card not reached yet reads —.
+  // Report boards preview a test until playback reaches it. Once reached, cards show only that test's played steps.
   const stepwise = reportOnly && !whole && !timed
+  const hasPlayback = Boolean(run.run && (!stepwise || run.at <= run.run.test))
   const tested = useMemo(() => {
     const reached = new Set(drawn.nodes.filter((n) => kind.isFixed(n.type) && !drawn.wires.some((w) => w.to === n.id)).map((n) => n.id))
     for (let grew = true; grew;) {
@@ -244,11 +244,12 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
     return reached
   }, [drawn, kind])
   const inputs = () => [...runOf.values ?? []].filter(([from]) => !tested.has(srcNode(from)) || kind.isFixed(drawn.nodes.find((n) => n.id === srcNode(from))?.type))
-  const reached = (v) => ({ values: new Map([...inputs(), ...v.values]), errors: v.errors, idle: true })
-  const computed = stepwise
-    ? reached(run.run ? viewAt(runOf.trace, at) : { values: new Map(), errors: new Map([...runOf.errors ?? []].filter(([, e]) => e === MISSING)) })
-    : timed ? tick ?? undefined : whole || !run.run ? runOf : viewAt(runOf.trace, at)
-  const ended = whole ? run.over : Boolean(run.run && (run.run.test > run.at || run.run.over))
+  const played = () => {
+    const view = viewAt(runOf.trace, at)
+    return stepwise ? { ...view, values: new Map([...inputs(), ...view.values]), idle: true } : view
+  }
+  const computed = timed ? tick ?? undefined : whole || !hasPlayback ? runOf : played()
+  const ended = whole ? run.over : hasPlayback && Boolean(run.run.test > run.at || run.run.over)
 
   const failWorld = ({ panel, ...info }) => screen.fail(panel ? { ...info, extra: <TracePanel panel={panel} /> } : info)
   const surface = useWorld({ screen: { ...screen, fail: failWorld, solve: (score) => pass(score, drawn) }, workshopParts: hasPersonal?.(drawn) ? resolve : undefined, task: level, test: onView, run, report: runOf, held, at, ended, circuit: drawn, change, version: run.revision })
@@ -395,7 +396,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
     <TracePanel panel={surface.after} /></> : figure?.({ task: level, test, run: (timed ? run.run : ended || onSample) ? runOf : null, at: timed && run.run ? at : -1 })
   // The step log of a board run once: the steps shown so far, each card named on the board it is on (a built part's
   // inside, at any depth), its value in the words of the task and the test on view.
-  const logged = showResults && log && !timed && !whole && run.run && runOf?.trace
+  const logged = showResults && log && !timed && !whole && hasPlayback && runOf?.trace
   const named = useMemo(() => {
     if (!logged) return []
     const boardAt = lookupBoard({ circuit: drawn, level, parts }, packed.open)
@@ -423,13 +424,13 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const stepLog = logged && <StepLog steps={named.slice(0, shown.list.length).map((s) => ({ label: s.label, mark: s.mark, detail: s.detail, value: s.value === undefined ? null : <Show value={s.value} scene="card" text={show} />, failed: s.failed }))} at={shown.at} />
   const final = judged
     ? ended && (checked.constraint || (run.hidden?.failed && run.hidden.note))
-    : run.run?.over && run.run.final
+    : hasPlayback && run.run.over && run.run.final
   const outcome = <Results key={run.at} rows={rows} text={show} verdict={[verdict, final]} at={timed && run.run ? at : -1} count={timed && test ? timeline.count(test) : 0} marks={timed && ended && runOf.fail?.at?.tick !== undefined ? [runOf.fail.at.tick] : []} />
   const results = reportOnly
     // Only the run's report: a box of one size under the board, there before any run.
     ? <div className="cs-report">{outcome}{Report
-      ? <Report steps={logged ? named.slice(0, shown.list.length) : []} at={logged ? shown.at : -1} started={Boolean(run.run)} run={runOf} task={level} test={test} show={show} />
-      : stepLog || (!run.run && <p className="cs-report-empty">{L(WORDS.reportEmpty)}</p>)}</div>
+      ? <Report steps={logged ? named.slice(0, shown.list.length) : []} at={logged ? shown.at : -1} started={hasPlayback} run={runOf} task={level} test={test} show={show} />
+      : stepLog || (!hasPlayback && <p className="cs-report-empty">{L(WORDS.reportEmpty)}</p>)}</div>
     : <>{outcome}{stepLog}</>
   // A table of cases: a row a test, what the board gives on each as the run reaches it (before a run, on the row picked).
   const ins = kind.portsIn(level)

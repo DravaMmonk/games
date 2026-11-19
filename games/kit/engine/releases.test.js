@@ -45,9 +45,21 @@ test('structural additions, schema breaks and behavioral changes drive automatic
   assert.equal(nextVersion('1.2.3', compatibility(before, required)), '2.0.0')
   assert.equal(nextVersion('1.2.3', { type: 'behavior' }), '2.0.0')
   assert.equal(nextVersion('1.2.3', compatibility(before, before)), '1.2.4')
-  const platform = platformManifest()
-  assert.ok(platform.surface.operations)
-  assert.ok(platform.surface.exports.value.core.includes('createPluginKernel'))
+})
+
+test('the platform release surface tracks removal of authoring operations and public exports', () => {
+  const before = platformManifest()
+  const { operations, exports } = before.surface
+  assert.deepEqual(Object.keys(operations.value['level.set'].fields).sort(), ['level', 'path', 'value'])
+  assert.ok(exports.value.core.includes('createPluginKernel'))
+
+  const after = { surface: { ...before.surface,
+    operations: entry(Object.fromEntries(Object.entries(operations.value).filter(([id]) => id !== 'level.set'))),
+    exports: entry({ ...exports.value, core: exports.value.core.filter(name => name !== 'createPluginKernel') }),
+  } }
+  const result = compatibility(before, after)
+  assert.equal(result.type, 'breaking')
+  assert.deepEqual(result.changes, ['operations', 'exports'])
 })
 
 test('locks report missing pins, range drift, extra dependencies and content hash drift as structured problems', () => {

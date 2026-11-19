@@ -228,24 +228,6 @@ test('game tag patches update the assembled route and undo cleanly', () => {
   assert.equal(result.after.eras[0].levels.find(level => level.id === 'toy/a2').optional, true)
 })
 
-test('named-object operations persist typed tags, relations and sections and preserve translations', async () => {
-  const { root } = toy({ write: true })
-  const ws = openGame('toy', root)
-  const result = await runChangeset(ws, { ops: [
-    { op: 'tag.put', tag: 'basics', member: 'level', data: { title: { en: 'Basics' }, values: ['a1', 'a2'] } },
-    { op: 'relation.put', relation: 'path', data: { kind: 'requires', edges: [{ from: 'a1', to: 'a2' }] } },
-    { op: 'section.put', section: 'words', data: { title: { en: 'Words' }, values: ['e'] } },
-  ] }, { write: true, check: false, domain: DOMAIN })
-  assert.equal(result.ok, true, result.problems.join('\n'))
-  const reopened = openGame('toy', root)
-  assert.equal(reopened.content().tags['level:toy/basics'].title.en, 'Basics')
-  assert.deepEqual(reopened.content().sections['toy/words'].values, ['toy/e'])
-  for (const kind of ['tag', 'relation', 'section']) {
-    const key = { tag: 'basics', relation: 'path', section: 'words' }[kind]
-    roundTrip(reopened, `${kind}.set`, { [kind]: key, ...(kind === 'tag' && { member: 'level' }), path: kind === 'tag' ? 'values' : kind === 'relation' ? 'edges' : 'values', value: [] })
-  }
-})
-
 test('a game puts its own wording over a package text, which the package keeps; the package workspace reads its own', async () => {
   const { root, ws } = toy({ write: true })
   const original = level(ws, 'b1').title
@@ -532,21 +514,27 @@ test('assembled part selectors and registry paths address layer-local source obj
   assert.ok(result.content.registries['circuit/part']['ptoy/other'])
 })
 
-test('package tags, relations and sections persist and reopen with full names', async () => {
+test('package objects retain qualified names and translations across writes and reversible field edits', async () => {
   const { root } = toy({ write: true })
   const ws = openGame('toy', root)
   const result = await runChangeset(ws, { ops: [
     { op: 'relation.put', relation: 'toy/package-path', data: { kind: 'requires', edges: [{ from: 'a1', to: 'a2' }] } },
-    { op: 'tag.put', tag: 'toy/pick', member: 'level', data: { values: ['toy/a1', 'toy/a2'] } },
-    { op: 'section.put', section: 'toy/words', data: { title: 'Words', values: ['toy/e'] } },
+    { op: 'tag.put', tag: 'toy/pick', member: 'level', data: { title: { en: 'Basics' }, values: ['toy/a1', 'toy/a2'] } },
+    { op: 'section.put', section: 'toy/words', data: { title: { en: 'Words' }, values: ['toy/e'] } },
   ] }, { write: true, check: false, domain: DOMAIN })
   assert.equal(result.ok, true, result.problems.join('\n'))
   assert.ok(result.files.includes('packages/toy/tags/level/pick.json'))
   assert.ok(result.files.includes('packages/toy/sections/words.json'))
-  const content = openGame('toy', root).content()
+  const reopened = openGame('toy', root)
+  const content = reopened.content()
   assert.deepEqual(content.sections['toy/words'].values, ['toy/e'])
+  assert.equal(content.sections['toy/words'].title.en, 'Words')
   assert.deepEqual(content.tags['level:toy/pick'].values, ['toy/a1', 'toy/a2'])
+  assert.equal(content.tags['level:toy/pick'].title.en, 'Basics')
   assert.deepEqual(content.relationEdges.requires, [{ from: 'toy/a1', to: 'toy/a2' }])
+  roundTrip(reopened, 'tag.set', { tag: 'pick', member: 'level', path: 'values', value: [] })
+  roundTrip(reopened, 'relation.set', { relation: 'package-path', path: 'edges', value: [] })
+  roundTrip(reopened, 'section.set', { section: 'words', path: 'values', value: [] })
   const refused = await runChangeset(ws, { ops: [{ op: 'tag.put', tag: '@toy/forbidden', member: 'level', data: { values: [] } }] }, { check: false, domain: DOMAIN })
   assert.equal(refused.ok, false)
 })

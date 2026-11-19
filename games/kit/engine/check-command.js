@@ -1,6 +1,7 @@
 /* global process */
 // npm run check [-- <game or package>…] checks games and unplayed packages by default.
 // --package and --game disambiguate shared names. GAMES_ROOT selects an isolated content project.
+// One run reads the workspace once: every game's resolution and its siblings' content are shared (read-cache.js).
 // --mutants adds, for each supported task, how many mutants of its answer the tests tell from it (mutate.js).
 // The domain's checks of a level that has not changed are read from the game's kept checks (check-cache.js); --fresh
 // runs them all.
@@ -16,6 +17,7 @@ import { driftOf } from './ops/log.js'
 import { checkCache } from './check-cache.js'
 import { packageExportWarnings } from './plugin-boundaries.js'
 import { packageWords } from './manifests.js'
+import { withReadCache } from './read-cache.js'
 
 const root = contentRoot()
 let problems = 0
@@ -28,37 +30,39 @@ const all = !asked.length && !selection.package && !selection.game
 const directories = all
   ? ['games', 'packages', 'templates', 'scaffolds', '.agents', 'site', 'tools'].map(dir => resolve(root, dir))
   : targets.map(({ id, kind }) => (kind === 'package' ? packageDirectory : gameDirectory)(id, root))
-for (const problem of sourceJsonProblems(root, directories)) {
-  console.log(`FAIL ${problem}`)
-  problems++
-}
-if (all) {
-  for (const warning of packageExportWarnings(root)) console.warn(`WARN ${warning}`)
-}
-// One game whose domain throws is reported as such; the others are still checked.
-for (const { id, kind } of targets) {
-  const packaged = kind === 'package'
-  let lines
-  let head = id
-  try {
-    // Read frozen: nothing that checks a game may write into its content.
-    const ws = (packaged ? openPackage : openGame)(id, root)
-    const content = deepFreeze((packaged ? readPackage : readContent)(id, root))
-    for (const layer of content.resolvedDependencies.layers) {
-      if (!layer.missing && !layer.id.startsWith('@')) packageWords(layer)
-    }
-    head = `${firstText(content.title ?? id)} (${id})`
-    lines = await checkGame(content, { domain: await runtimeOf(content), mutants, cache: packaged || !workspaceCheckCache() ? null : checkCache(id, { fresh }), root })
-    // Files changed outside the operation set since its log last says: noted, not failed (adopt takes them).
-    const drift = driftOf(ws, ws.onDisk())
-    if (drift.length) lines.push({ text: `OPEN log: changed outside the operation set: ${drift.join(', ')} (npm run op -- ${packaged ? `--package ${id}` : id} adopt --why "…")` })
-  } catch (error) {
-    lines = [{ fail: true, text: `the check threw: ${error.stack}` }]
+await withReadCache(root, async () => {
+  for (const problem of sourceJsonProblems(root, directories)) {
+    console.log(`FAIL ${problem}`)
+    problems++
   }
-  problems += lines.filter((l) => l.fail).length
-  console.log(`\n${head}`)
-  for (const line of lines) console.log(`  ${line.fail ? 'FAIL ' : ''}${line.text}`)
-}
+  if (all) {
+    for (const warning of packageExportWarnings(root)) console.warn(`WARN ${warning}`)
+  }
+  // One game whose domain throws is reported as such; the others are still checked.
+  for (const { id, kind } of targets) {
+    const packaged = kind === 'package'
+    let lines
+    let head = id
+    try {
+      // Read frozen: nothing that checks a game may write into its content.
+      const ws = (packaged ? openPackage : openGame)(id, root)
+      const content = deepFreeze((packaged ? readPackage : readContent)(id, root))
+      for (const layer of content.resolvedDependencies.layers) {
+        if (!layer.missing && !layer.id.startsWith('@')) packageWords(layer)
+      }
+      head = `${firstText(content.title ?? id)} (${id})`
+      lines = await checkGame(content, { domain: await runtimeOf(content), mutants, cache: packaged || !workspaceCheckCache() ? null : checkCache(id, { fresh }), root })
+      // Files changed outside the operation set since its log last says: noted, not failed (adopt takes them).
+      const drift = driftOf(ws, ws.onDisk())
+      if (drift.length) lines.push({ text: `OPEN log: changed outside the operation set: ${drift.join(', ')} (npm run op -- ${packaged ? `--package ${id}` : id} adopt --why "…")` })
+    } catch (error) {
+      lines = [{ fail: true, text: `the check threw: ${error.stack}` }]
+    }
+    problems += lines.filter((l) => l.fail).length
+    console.log(`\n${head}`)
+    for (const line of lines) console.log(`  ${line.fail ? 'FAIL ' : ''}${line.text}`)
+  }
+})
 
 console.log(problems ? `\n${problems} problem(s)` : '\nall games ok')
 await closeGames()

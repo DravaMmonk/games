@@ -7,9 +7,9 @@
 //     memo(content, spec)        → memo(id, name, run): run()'s lines, or what it said last time. id names a level or
 //                                  one of its tasks; anything else is run every time.
 //
-// A level's key is a hash of the kernel (every .js, .jsx and .json under games/kit but the tests), the game as a whole
-// but its levels, the level itself, and every level it comes after without their words: a level's check may run what
-// an earlier one built, never what a later one did. So a level's own wording changes only its own key; its puzzle or
+// A level's key is a hash of the code and data under games/kit and packages/*/core, excluding tests, the
+// game as a whole but its levels, the level itself, and every level it comes after without their words: a level's check
+// may run what an earlier one built, never what a later one did. So a level's own wording changes only its own key; its puzzle or
 // answers change the keys of every level after it; the kernel's or a domain's code changes them all.
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
@@ -29,13 +29,15 @@ const sources = (dir) => readdirSync(dir).sort().flatMap((name) => {
   const path = join(dir, name)
   if (name === 'node_modules') return []
   if (statSync(path).isDirectory()) return sources(path)
-  return /\.(js|jsx|json)$/.test(name) && !/\.test\.js$/.test(name) ? [path] : []
+  return /\.(mjs|js|jsx|json)$/.test(name) && !/\.test\.(mjs|js|jsx)$/.test(name) ? [path] : []
 })
 
+const ROOT = resolve(KIT, '../..')
+const codeDirs = () => [KIT, ...readdirSync(resolve(ROOT, 'packages')).sort().map((id) => resolve(ROOT, 'packages', id, 'core')).filter(existsSync)]
 let kit = null
-/** The kernel's version: a hash of its code and data. */
+/** The code's version: a hash of the kernel's and the packages' core code and data. */
 export function kitVersion() {
-  kit ??= digest(...sources(KIT).flatMap((path) => [path.slice(KIT.length), readFileSync(path, 'utf8')]))
+  kit ??= digest(...codeDirs().flatMap(sources).flatMap((path) => [path.slice(ROOT.length), readFileSync(path, 'utf8')]))
   return kit
 }
 
@@ -48,10 +50,11 @@ const wordless = (value) => JSON.stringify(value, (_k, v) => (
 export function levelKeys(content, course) {
   const { levels, ...rest } = content
   const whole = digest(kitVersion(), rest)
-  const known = (id) => course?.index?.has(id)
-  const keys = new Map(levels.map((level) => {
-    const before = levels.filter((l) => l.id !== level.id && (!known(level.id) || !known(l.id) || course.before(l.id, level.id)))
-    return [level.id, digest(whole, level, ...before.map((l) => `${l.id}:${wordless(l)}`))]
+  const inputs = levels.map(level => ({ level, known: course?.index?.has(level.id), signature: `${level.id}:${wordless(level)}` }))
+  const keys = new Map(inputs.map(({ level, known }) => {
+    const before = inputs.filter(other => other.level.id !== level.id
+      && (!known || !other.known || course.before(other.level.id, level.id)))
+    return [level.id, digest(whole, level, ...before.map(other => other.signature))]
   }))
   const home = new Map(levels.flatMap((level) => [[level.id, level.id], ...(level.tasks ?? []).map((task) => [task.id, level.id])]))
   return { keys, home }

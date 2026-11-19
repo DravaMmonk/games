@@ -1,7 +1,8 @@
 import { existsSync, mkdtempSync, mkdirSync, cpSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
-import { installImageFixture, lockFixture } from '../../qed/test/fixture.js'
+import { installImageFixture } from '../../qed/test/fixture.js'
+import { lockTarget } from '../../../games/kit/engine/releases.js'
 import { readPackage } from '../../../games/kit/engine/resolver.js'
 import { packageLevel } from '../../../games/kit/engine/package-play.js'
 
@@ -29,7 +30,7 @@ export function imageFixture(owner = 'sample') {
       solution: ['out <- in'], naive: ['a = image/shift[dir=right](in)', 'out <- a'],
     }],
   })
-  lockFixture(root)
+  lockTarget({ kind: 'package', id: owner }, root)
   const content = readPackage(owner, root)
   return { root, content, shell: packageLevel(content, `${owner}/copy`), cleanup: () => rmSync(root, { recursive: true, force: true }) }
 }

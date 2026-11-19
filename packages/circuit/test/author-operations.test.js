@@ -4,9 +4,8 @@ import { circuitFixtureSchema } from '../../qed/test/fixture.js'
 // refuses, and that its inverse puts the content back exactly.
 import { after, test } from 'node:test'
 import { closeGames } from '../../../games/kit/engine/games.mjs'
-after(closeGames)
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { eraLevels } from '../../../games/kit/course.js'
@@ -43,8 +42,27 @@ const DOMAIN = {
   },
 }
 
-function toy() {
-  const root = mkdtempSync(join(tmpdir(), 'ops-toy-'))
+const roots = []
+after(async () => {
+  await closeGames()
+  roots.forEach(root => rmSync(root, { recursive: true, force: true }))
+})
+function temporaryRoot(prefix) {
+  const root = mkdtempSync(join(tmpdir(), prefix))
+  roots.push(root)
+  return root
+}
+
+// Each operation gets a fresh workspace. Tests that write files clone the fixture.
+let toyTemplate
+function toy({ write = false } = {}) {
+  toyTemplate ??= writeToy()
+  const root = write ? temporaryRoot('ops-toy-') : toyTemplate
+  if (write) cpSync(toyTemplate, root, { recursive: true })
+  return { root, ws: openWorkspace('toy', root, { vocabulary: VOCAB }) }
+}
+function writeToy() {
+  const root = temporaryRoot('ops-toy-template-')
   const game = {
     vocabulary: 1, title: { en: 'Toy' },
     chapters: [{ id: 'one', levels: ['toy/a1', 'toy/a2', 'toy/a3'] }, { id: 'two', levels: ['b1', 'b2', 'c1'] }],
@@ -55,7 +73,7 @@ function toy() {
     title: { en: id }, tests: [1], ...(id === 'b1' && { from: 'a2', brief: { en: 'after <level-ref to="a2"></level-ref>', zh: '接着 <level-ref to="a2"></level-ref>' } }), tasks: [{ id }],
   }]))
   writeContentFixture(root, 'toy', { game, glossary, levels, tagOverrides: { 'progress/tags/level/optional': ['toy/a3'] } }, VOCAB)
-  return { root, ws: openWorkspace('toy', root, { vocabulary: VOCAB }) }
+  return root
 }
 const run = (ws, op, args) => {
   const vocabulary = ws.schemas ?? circuitFixtureSchema(VOCAB)
@@ -218,7 +236,7 @@ test('game.set and game.unset edit the assembled configuration', () => {
 })
 
 test('named-object operations persist typed tags, relations and sections and preserve translations', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const ws = openGame('toy', root)
   const result = await runChangeset(ws, { ops: [
     { op: 'tag.put', tag: 'basics', member: 'level', data: { title: { en: 'Basics' }, values: ['a1', 'a2'] } },
@@ -236,7 +254,7 @@ test('named-object operations persist typed tags, relations and sections and pre
 })
 
 test('a game puts its own wording over a package text, which the package keeps; the package workspace reads its own', async () => {
-  const { root, ws } = toy()
+  const { root, ws } = toy({ write: true })
   const original = level(ws, 'b1').title
   roundTrip(ws, 'text.override', { level: 'b1', path: 'title', lang: 'en', value: 'Ours' })
   assert.equal(ws.content().levels.find(({ id }) => id === 'toy/b1').title.en, 'Ours')
@@ -270,7 +288,7 @@ test('text.set edits one language at a field path and round trips', () => {
 })
 
 test('preview, apply and undo a locale edit across a workspace reopen', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const ws = openGame('toy', root)
   const source = join(root, 'packages', 'toy', 'levels', 'b1.json')
   const catalog = 'packages/toy/i18n/fr.json'
@@ -315,7 +333,7 @@ test('entry.put, entry.patch and entry.remove edit the encyclopedia', () => {
 })
 
 test('the log keeps each file’s hashes; a write lands only on the files and the log it was made on', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const ws = openGame('toy', root)
   const one = { ops: [{ op: 'level.set', level: 'a1', path: 'brief', value: 'one' }] }
   const done = await runChangeset(ws, one, { write: true, check: false, domain: DOMAIN })
@@ -344,7 +362,7 @@ test('the log keeps each file’s hashes; a write lands only on the files and th
 })
 
 test('undo crosses a compact adoption of unrelated changes but refuses an adopted edit to its file', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const open = () => openGame('toy', root)
   const options = { write: true, check: false, domain: DOMAIN }
   const edit = { ops: [{ op: 'level.set', level: 'a1', path: 'brief', value: 'one' }] }
@@ -369,7 +387,7 @@ test('a changeset whose domain throws while it is settled is refused and leaves 
   const op = { ops: [{ op: 'level.set', level: 'a1', path: 'tests', value: [9] }] }
   // The domain's spec throws, or its checks do, while the whole game is checked.
   for (const broken of [{ ...DOMAIN, spec: () => { throw new Error('the domain broke') } }, { ...DOMAIN, validate: () => { throw new Error('the checks broke') } }]) {
-    const { root } = toy()
+    const { root } = toy({ write: true })
     const ws = openGame('toy', root)
     const before = JSON.stringify(ws.content())
     const files = () => ['game.json', 'levels/a1.json'].map((f) => readFileSync(join(root, f.startsWith('levels/') ? 'packages' : 'games', 'toy', f), 'utf8')).join()
@@ -384,7 +402,7 @@ test('a changeset whose domain throws while it is settled is refused and leaves 
 })
 
 test('a package changeset is checked atomically, logged and undone independently of its game', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const ws = openGame('toy', root)
   const options = { write: true, check: false, domain: DOMAIN }
   const refused = await runChangeset(ws, { ops: [{ op: 'level.set', level: 'a1', path: 'from', value: 'gone' }] }, options)
@@ -447,14 +465,19 @@ const PVOCAB = defineVocabulary({
   level: S.obj({ title: S.text(), brief: S.opt(S.text()), adds: S.opt(S.list(S.ref('primitive', { reference: 'circuit/part' }))), solution: S.opt(S.board()), uses: S.opt(S.map(S.str(), { key: S.ref('primitive', { reference: 'circuit/part' }) })) }),
 })
 const sum = { name: { en: '和' }, desc: { en: 'a + b' }, icon: 'Plus', family: 'value', inputs: [{ name: 'a', type: 'kernel/number' }, { name: 'b', type: 'kernel/number' }], outputType: 'kernel/number', op: 'add' }
+let partsTemplate
 function partsToy() {
-  const root = mkdtempSync(join(tmpdir(), 'ops-ptoy-'))
+  partsTemplate ??= writePartsToy()
+  return openWorkspace('ptoy', partsTemplate, { vocabulary: PVOCAB })
+}
+function writePartsToy() {
+  const root = temporaryRoot('ops-ptoy-')
   const game = { vocabulary: 1, title: { en: 'Toy' }, chapters: [{ id: 'one', levels: ['a1'] }] }
   const glossary = { groups: [], entries: [] }
   const partDefs = { parts: { sum } }
   const levels = { a1: { title: 'A', brief: { en: '用 <part-ref to="sum"></part-ref>' }, adds: ['sum'], solution: ['s = sum(a, b)', 'out <- s'] } }
   writeContentFixture(root, 'ptoy', { game, glossary, partDefs, levels, tagOverrides: { 'circuit/tags/circuit/part/primitives': ['ptoy/sum'] } }, PVOCAB)
-  return openWorkspace('ptoy', root, { vocabulary: PVOCAB })
+  return root
 }
 const prun = (ws, op, args) => operationsFor(circuitFixtureSchema(PVOCAB))[op].apply(ws, args, { vocabulary: withParts(circuitFixtureSchema(PVOCAB), ws.partDefs), domain: { vocabulary: PVOCAB } })
 
@@ -526,7 +549,7 @@ test('assembled part selectors and registry paths address layer-local source obj
 })
 
 test('package tags, relations and sections persist and reopen with full names', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const ws = openGame('toy', root)
   const result = await runChangeset(ws, { ops: [
     { op: 'relation.put', relation: 'toy/package-path', data: { kind: 'requires', edges: [{ from: 'a1', to: 'a2' }] } },
@@ -569,7 +592,7 @@ test('entry identity and membership cannot be hidden by the encyclopedia project
 
 
 test('package operations write collection tags and local items on levels and tasks', async () => {
-  const { root } = toy()
+  const { root } = toy({ write: true })
   const ws = openPackage('toy', root, { vocabulary: VOCAB })
   const result = await runChangeset(ws, { why: 'Declare package-owned progression.', ops: [
     { op: 'tag.put', tag: 'numbers', member: 'circuit/part', data: { values: ['a', 'b'] } },

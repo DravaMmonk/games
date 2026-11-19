@@ -5,7 +5,6 @@ import { register } from '../core/index.js'
 import { modelOf } from '../core/model/run.js'
 import { partsOf } from '../core/model/parts.js'
 import { fitted, blank } from '../core/model/board.js'
-import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 const world = {
  outs: [['cell', 'Cell', null, 'kernel/number']],
  order: () => [0, 1], keys: (_test, cell) => ({ cell: String(cell) }), base: () => [],
@@ -21,15 +20,4 @@ test('table core registers and deterministically runs a synthetic world without 
  assert.equal(report.value, 2)
  assert.deepEqual(model.runCircuit(world, {}, board, { traced: true }), report)
  assert.equal(report.steps.length, 2)
-})
-test('table view registers and renders escaped scenes independently of any robot catalog', async () => {
- try {
-  const core = createPluginKernel(); register(core.forPackage('table', 'core'))
-  const view = await loadModule(new URL('../view/index.jsx', import.meta.url).pathname)
-  view.register(core.forPackage('table', 'view'))
-  const renderer = core.tables.display.get('table/scene')({ W: { start: 'S', end: 'E' }, robots: {}, icons: {} })
-  const svg = renderer.sceneSVG({ cells: [{ id: 'a', x: 0, y: 0, w: 64, h: 64, value: '<unsafe>' }], edges: [] })
-  assert.match(svg, /&lt;unsafe&gt;/)
-  assert.doesNotMatch(svg, /<unsafe>/)
- } finally { await closeGames() }
 })

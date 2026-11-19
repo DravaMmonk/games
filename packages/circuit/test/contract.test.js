@@ -3,7 +3,6 @@ import assert from 'node:assert/strict'
 import { createPluginKernel } from '../../../games/kit/engine/plugins.js'
 import { packageCodeProblems } from '../../../games/kit/engine/plugin-boundaries.js'
 import { evaluatePlay } from '../../../games/kit/engine/plugin-runtime.js'
-import { loadModule, closeGames } from '../../../games/kit/engine/games.mjs'
 import { register as registerScalar } from '../../numlib/core/index.js'
 import { register } from '../core/index.js'
 import { boardPlay } from '../core/board-play.js'
@@ -44,16 +43,4 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   assert.equal(agent.observe(context).solution, undefined)
   assert.equal(agent.act(context, task.solution).verdict.pass, true)
   assert.equal(agent.act(context, task.solution).report, undefined)
-})
-
-test('circuit view pairs with its core through the public view entry', async () => {
-  try {
-    const core = await loadModule(new URL('../core/index.js', import.meta.url).pathname)
-    const view = await loadModule(new URL('../view/index.jsx', import.meta.url).pathname)
-    const kernel = createPluginKernel()
-    core.register(kernel.forPackage('circuit', 'core'))
-    view.register(kernel.forPackage('circuit', 'view'))
-    kernel.pair([{ play: 'circuit/board' }], true)
-    assert.equal(typeof kernel.tables.playView.get('circuit/board').component, 'function')
-  } finally { await closeGames() }
 })

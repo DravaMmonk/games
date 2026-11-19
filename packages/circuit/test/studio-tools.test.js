@@ -1,6 +1,5 @@
-import { installGlossaryFixture } from '../../../games/kit/engine/test-fixture.js'
 import { itemOf } from '../../../games/kit/studio/worklist.js'
-import { installCircuitFixture, installScalarFixture, lockFixture, readStarter } from '../../qed/test/fixture.js'
+import { readStarter, starterRoot } from '../../qed/test/fixture.js'
 // node --test games/kit/studio — the studio's tools, pure parts: bulk edits as operations (bulk.js), the command
 // palette's index and ranking (palette.js), the check's lines as a worklist (worklist.js), the copy
 // table's rows (copy.js); and on every domain's starter game (package-owned test fixtures, copied to a temp folder), that
@@ -9,9 +8,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { S } from '../../../games/kit/engine/schema.js'
 import { defineVocabulary } from '../../../games/kit/engine/vocabulary.js'
-import { cpSync, mkdirSync, readFileSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import { runtimeOf } from '../../../games/kit/engine/resolver.js'
 import { eraLevels } from '../../../games/kit/course.js'
 import { openPackage } from '../../../games/kit/engine/ops/workspace.js'
@@ -61,29 +58,9 @@ test('bulk edits are one operation a level, and the levels an edit does not fit 
 // Every domain's starter game, as content.js assembles it; and one opened for operations in a temp games folder.
 const DOMAINS = resolve(import.meta.dirname, '../..')
 const STARTERS = ['circuit', 'logic']
-const starter = d => readStarter(resolve(DOMAINS, d, 'test'))
-function openStarter(template) {
-  const d = `sample-${template}`
-  const root = mkdtempSync(join(tmpdir(), 'studio-tools-'))
-  const dir = join(root, 'games', d)
-  const pkg = join(root, 'packages', d)
-  mkdirSync(dir, { recursive: true })
-  const source = resolve(DOMAINS, template, 'test/starter')
-  cpSync(source, pkg, { recursive: true, filter: (file) => !['game.json', 'chapters', 'i18n'].map((name) => resolve(source, name)).includes(file) })
-  cpSync(resolve(source, 'chapters'), join(dir, 'chapters'), { recursive: true })
-  cpSync(resolve(source, 'i18n/course'), resolve(dir, 'i18n'), { recursive: true })
-  cpSync(resolve(source, 'i18n/package'), resolve(pkg, 'i18n'), { recursive: true })
-  const game = JSON.parse(readFileSync(resolve(source, 'game.json'), 'utf8'))
-  writeFileSync(join(dir, 'game.json'), JSON.stringify({ kernel: '^0.0.0', packages: { [d]: '^1.0.0' }, ...game }))
-  for (const folder of [dir, pkg]) {
-    const rename = (folder) => { for (const entry of readdirSync(folder, { withFileTypes: true })) { const file = join(folder, entry.name); if (entry.isDirectory()) rename(file); else if (file.endsWith('.json')) writeFileSync(file, readFileSync(file, 'utf8').replaceAll('starter/', `${d}/`)) } }; rename(folder)
-  }
-  installCircuitFixture(root)
-  installScalarFixture(root)
-  installGlossaryFixture(root)
-  lockFixture(root)
-  return openPackage(d, root)
-}
+const starterDir = domain => resolve(DOMAINS, domain, 'test')
+const starter = domain => readStarter(starterDir(domain))
+const openStarter = domain => openPackage('starter', starterRoot(starterDir(domain)))
 
 test('on every starter: a bulk edit of its package levels runs as a changeset, and they go into a group in order', async () => {
   for (const d of STARTERS) {

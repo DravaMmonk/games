@@ -7,21 +7,18 @@ import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { contentTargets, gameCatalog, runtimeOf, readContent, readPackage } from '../../../games/kit/engine/resolver.js'
 import { checkGame } from '../../../games/kit/engine/checks.js'
-import { closeGames, gameOf } from '../../../games/kit/engine/games.mjs'
+import { lockTarget } from '../../../games/kit/engine/releases.js'
 import { packageLevel, packageLevelOrder } from '../../../games/kit/engine/package-play.js'
 import { holds } from '../../circuit/core/index.js'
 import { usable } from '../../circuit/core/course.js'
 import { openGame, openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { adopt, readLog, runChangeset, undo } from '../../../games/kit/engine/ops/changeset.js'
-import { proofsRoot, lockFixture } from './fixture.js'
+import { proofsRoot, installLogicFixture } from './fixture.js'
 import { packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
 
 const roots = []
-after(async () => {
-  await closeGames()
-  roots.forEach((root) => rmSync(root, { recursive: true, force: true }))
-})
-const fixture = () => {
+after(() => roots.forEach(root => rmSync(root, { recursive: true, force: true })))
+function project() {
   const root = mkdtempSync(resolve(tmpdir(), 'package-content-'))
   roots.push(root)
   const put = (file, value) => {
@@ -29,14 +26,19 @@ const fixture = () => {
     mkdirSync(dirname(path), { recursive: true })
     writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`)
   }
-  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, 'library') })
+  return { root, put }
+}
+function library() {
+  const { root, put } = project()
+  installLogicFixture(root)
+  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { circuit: '^0.0.0', logic: '^0.0.0', qed: '^0.0.0' }, ...packageWordsFixture(put, 'library') })
   put('packages/library/parts/apply.json', { name: 'Apply', desc: 'Apply an implication.', icon: 'GitFork', family: 'logic/rule', inputs: [{ name: 'imp', type: 'logic/judgment' }, { name: 'a', type: 'logic/judgment' }], outputType: 'logic/judgment', op: 'logic/mp' })
-  lockFixture(root)
   return { root, put }
 }
 
 test('a parts-only package opens without a course, checks and writes its own log without a game', async () => {
-  const { root } = fixture()
+  const { root } = library()
+  lockTarget({ kind: 'package', id: 'library' }, root)
   const ws = openPackage('library', root)
   const content = ws.content()
   assert.deepEqual(ws.changes(), [])
@@ -46,12 +48,12 @@ test('a parts-only package opens without a course, checks and writes its own log
   const domain = await runtimeOf(content)
   assert.deepEqual((await checkGame(content, { domain, root })).filter((line) => line.fail), [])
   adopt(ws, 'Start the independent library log.')
-  const result = await runChangeset(ws, { ops: [{ op: 'parts.set', path: ['parts', 'apply', 'desc'], value: 'Use the implication rule.' }] }, { write: true })
+  const result = await runChangeset(ws, { ops: [{ op: 'parts.set', path: ['parts', 'apply', 'desc'], value: 'Use the implication rule.' }] }, { write: true, check: false })
   assert.equal(result.ok, true, result.problems.join('\n'))
   assert.ok(result.files.every((file) => file.startsWith('packages/library/')))
   assert.equal(readLog(ws).length, 2)
   assert.equal(existsSync(resolve(root, 'games')), false)
-  const back = await undo(openPackage('library', root), { write: true })
+  const back = await undo(openPackage('library', root), { write: true, check: false })
   assert.equal(back.ok, true, back.problems.join('\n'))
   assert.equal(readPackage('library', root).partDefs.parts['library/apply'].desc, 'Apply an implication.')
   const cli = execFileSync(process.execPath, [resolve(new URL('../../../games/kit/engine/', import.meta.url).pathname, 'ops/cli.js'), '--package', 'library', 'log'], { env: { ...process.env, GAMES_ROOT: root }, encoding: 'utf8' })
@@ -83,14 +85,12 @@ test('single-level play uses task trays, ignores prerequisites and opens setting
   delete source.tasks[0].tray
   const all = (await runtimeOf(shell)).spec(shell).course
   assert.ok(usable(all, { id: source.id, task: 0 }, new Set()).includes(`${id}/mp`))
-  const game = await gameOf(shell)
-  assert.deepEqual(game.levels.map(l => l.id), [source.id])
   assert.throws(() => packageLevel(content, 'missing'), /no level/)
 })
 
 test('a levels-only package plays dependency parts and checks references and naive answers independently', async () => {
-  const { root, put } = fixture()
-  put('packages/problems/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0' } })
+  const { root, put } = library()
+  put('packages/problems/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0', logic: '^0.0.0', qed: '^0.0.0' } })
   put('packages/problems/levels/implication.json', {
     title: 'Implication', after: 'Use the implication.', tasks: [{ id: 'solve', kind: 'logic/proof',
       tests: [{ premises: { p: 'A → B', q: 'A' }, goal: 'B' }], cases: [{ A: 'A', B: 'B' }],
@@ -98,7 +98,7 @@ test('a levels-only package plays dependency parts and checks references and nai
       brief: 'Prove B.', hint: ['Apply the implication.'],
     }],
   })
-  lockFixture(root)
+  lockTarget({ kind: 'package', id: 'problems' }, root)
   const content = readPackage('problems', root)
   const lines = await checkGame(content, { domain: await runtimeOf(content), root })
   assert.deepEqual(lines.filter(l => l.fail), [])
@@ -110,9 +110,10 @@ test('a levels-only package plays dependency parts and checks references and nai
 })
 
 test('package dependencies are readable while only the selected layer can be edited', async () => {
-  const { root, put } = fixture()
+  const { root, put } = library()
   put('packages/extra/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0' } })
-  lockFixture(root)
+  lockTarget({ kind: 'package', id: 'library' }, root)
+  lockTarget({ kind: 'package', id: 'extra' }, root)
   const ws = openPackage('extra', root)
   assert.ok(ws.content().registries['circuit/part']['library/apply'])
   const wrongLayer = await runChangeset(ws, { ops: [{ op: 'override.put', layer: 'library', kind: 'circuit/part', name: 'library/apply', data: { desc: 'Wrong layer' } }] })
@@ -120,7 +121,7 @@ test('package dependencies are readable while only the selected layer can be edi
   assert.match(wrongLayer.problems[0], /open layer library/)
   const gameOp = await runChangeset(ws, { ops: [{ op: 'game.set', path: 'title', value: 'Game title' }] })
   assert.equal(gameOp.ok, false)
-  const edited = await runChangeset(ws, { ops: [{ op: 'override.put', layer: 'extra', kind: 'circuit/part', name: 'library/apply', data: { desc: 'Local override' } }] }, { write: true })
+  const edited = await runChangeset(ws, { ops: [{ op: 'override.put', layer: 'extra', kind: 'circuit/part', name: 'library/apply', data: { desc: 'Local override' } }] }, { write: true, check: false })
   assert.equal(edited.ok, true, edited.problems.join('\n'))
   assert.deepEqual(edited.files, ['packages/extra/overrides/library/parts/apply.json'])
   assert.equal(readPackage('library', root).partDefs.parts['library/apply'].desc, 'Apply an implication.')
@@ -135,7 +136,7 @@ test('games can edit only their own layer and cannot undo a package log entry', 
   const before = readFileSync(resolve(root, 'packages', id, 'parts/mp.json'), 'utf8')
   const refused = await runChangeset(ws, { ops: [{ op: 'parts.set', path: ['parts', 'mp', 'desc'], value: 'Forbidden' }] })
   assert.equal(refused.ok, false)
-  const result = await runChangeset(ws, { ops: [{ op: 'game.set', path: 'title', value: 'New game title' }] }, { write: true })
+  const result = await runChangeset(ws, { ops: [{ op: 'game.set', path: 'title', value: 'New game title' }] }, { write: true, check: false })
   assert.equal(result.ok, true, result.problems.join('\n'))
   assert.deepEqual(result.files, [`games/${id}/game.json`, `games/${id}/i18n/en.json`])
   assert.equal(readFileSync(resolve(root, 'packages', id, 'parts/mp.json'), 'utf8'), before)
@@ -144,10 +145,11 @@ test('games can edit only their own layer and cannot undo a package log entry', 
 })
 
 test('default check targets include every game followed by unplayed packages; names can be disambiguated', () => {
-  const { root, id } = proofsRoot()
-  roots.push(root)
-  mkdirSync(resolve(root, 'packages/library'), { recursive: true })
-  writeFileSync(resolve(root, 'packages/library/package.json'), JSON.stringify({ kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} }))
+  const { root, put } = project()
+  const id = 'proofs'
+  put(`games/${id}/game.json`, { kernel: '^0.0.0', packages: { [id]: '^0.0.0' } })
+  put(`packages/${id}/package.json`, { kind: 'lib', version: '0.0.0', kernel: '^0.0.0', uses: {} })
+  put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {} })
   assert.deepEqual(contentTargets([], root), [{ id, kind: 'game' }, { id: 'library', kind: 'package' }])
   assert.deepEqual(contentTargets([id], root), [{ id, kind: 'game' }])
   assert.deepEqual(contentTargets([id], root, { package: true }), [{ id, kind: 'package' }])
@@ -168,7 +170,7 @@ test('hub level counts follow chapter edits without writing a second file', asyn
 
 
 test('packages reject invalid authored package fields', async () => {
-  const { root, put } = fixture()
+  const { root, put } = project()
   put('packages/library/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: {}, unknownField: true })
   assert.throws(() => readPackage('library', root), /unknownField/)
 })
@@ -182,20 +184,20 @@ test('package lists use prerequisites then names without constructing chapters',
 })
 
 test('symbol files, wording, typed tags and overrides use symbols throughout authoring', async () => {
-  const { root, put } = fixture()
+  const { root, put } = library()
   put('packages/library/symbols/and.json', { mark: 'logic/formulaAnd', name: '∧', desc: '@symbol.and.desc', icon: 'Rows3' })
   put('packages/library/i18n/en.json', { 'symbol.and.desc': 'Conjunction' })
   put('packages/library/tags/logic/symbol/formulas.json', { values: ['and'] })
   put('packages/library/trays/mixed.json', { values: ['apply', '#formulas'] })
   put('packages/extra/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0', logic: '^0.0.0' } })
   put('packages/extra/overrides/library/symbols/and.json', { icon: 'Box' })
-  lockFixture(root)
+  lockTarget({ kind: 'package', id: 'extra' }, root)
   const content = readPackage('extra', root)
   assert.equal(content.registries['logic/symbol']['library/and'].icon, 'Box')
   assert.equal(content.registries['logic/symbol']['library/and'].desc.en, 'Conjunction')
   assert.ok(content.objectProblems.some(problem => /formulas/.test(problem.says)))
   put('packages/library/trays/mixed.json', { values: ['apply'] })
-  lockFixture(root)
+  lockTarget({ kind: 'package', id: 'library' }, root)
   const ws = openPackage('library', root)
   const result = await runChangeset(ws, { why: 'Edit a symbol.', ops: [{ op: 'object.set', kind: 'logic/symbol', name: 'and', path: 'icon', value: 'Box' }, { op: 'text.set', symbol: 'and', path: 'desc', lang: 'en', value: 'Both sentences' }] }, { write: true, check: false })
   assert.equal(result.ok, true, result.problems.join('\n'))

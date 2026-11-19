@@ -11,6 +11,7 @@
       "id": "e-says-translate",
       "kind": "logic/translate",
       "step": "@level.e-says.tasks.e-says-translate.step",
+      "brief": "@level.e-says.tasks.e-says-translate.brief",
       "say": "@level.e-says.tasks.e-says-translate.say",
       "target": "KA ↔ KB",
       "hint": [

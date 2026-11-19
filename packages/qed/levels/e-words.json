@@ -14,6 +14,7 @@
       "id": "e-words-translate",
       "kind": "logic/translate",
       "step": "@level.e-words.tasks.e-words-translate.step",
+      "brief": "@level.e-words.tasks.e-words-translate.brief",
       "say": "@level.e-words.tasks.e-words-translate.say",
       "target": "¬(KA ∧ KB)",
       "hint": [

@@ -223,8 +223,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
   // Up to four sinks to a row, the rows as even as they can be: five go 3 + 2, eight 4 + 4.
   const cols = (n) => ({ '--cols': n <= 4 ? n : Math.ceil(n / Math.ceil(n / 4)) })
 
-  // Wires are drawn after layout from where the dots really are, and again while a wire is dragged. A card's entry
-  // animation moves its dots without resizing the board, so wires are drawn again once it ends.
+  // Draw from the committed layout. The drag preview also measures the live port positions.
   useLayoutEffect(() => {
     const el = board.current
     if (!el) return undefined
@@ -232,12 +231,10 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
     draw()
     const observer = new ResizeObserver(draw)
     observer.observe(el)
-    el.addEventListener('animationend', draw)
     document.fonts?.addEventListener('loadingdone', draw)
     return () => {
       observer.disconnect()
       document.fonts?.removeEventListener('loadingdone', draw)
-      el.removeEventListener('animationend', draw)
     }
   })
 

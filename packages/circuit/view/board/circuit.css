@@ -93,7 +93,8 @@
 .choice.is-roomy.is-pad button, .choice.is-roomy.is-grid button { padding: 0; font-size: 20px; }
 .node-carries { position: relative; height: 20px; display: flex; align-items: center; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .04em; pointer-events: none; }
 .node-carries.is-input { justify-content: flex-end; }
-@keyframes card-in { from { opacity: 0; transform: translateY(6px) scale(.97); } }
+/* Keep wire anchors stationary while a card fades in. */
+@keyframes card-in { from { opacity: 0; } }
 .board-zoom { position: absolute; z-index: 5; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 1px; padding: var(--sp-1); border-radius: var(--r-md); background: color-mix(in srgb, var(--paper) 88%, transparent); box-shadow: 0 0 0 1px var(--hairline), 0 6px 18px -12px rgba(0, 0, 0, .4); backdrop-filter: blur(10px); }
 .board-zoom button, .board-zoom output { min-width: 30px; height: 28px; display: grid; place-items: center; border: 0; border-radius: var(--r-md); color: var(--muted); background: transparent; font-family: var(--mono); font-size: 11px; }
 .board-zoom button { cursor: pointer; }

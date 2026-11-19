@@ -790,7 +790,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
       onPointerDown={beginPan} onPointerMove={movePointer} onPointerUp={endPan} onPointerCancel={endPan} onLostPointerCapture={endPan}>
       <div className="board-grid" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${20 * view.zoom}px ${20 * view.zoom}px` }} />
       {!placed && emptyNote && <p className="board-empty">{L(emptyNote)}</p>}
-      <div className="board-layer" ref={layer} onAnimationEnd={redraw} style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})`, transformOrigin: '0 0' }}>
+      <div className="board-layer" ref={layer} style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})`, transformOrigin: '0 0' }}>
         {groups.map(stageFrame)}
         <svg className="board-wires" width="4000" height="3000">
           {graph.wires.map((wire) => {

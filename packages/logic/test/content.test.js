@@ -370,3 +370,21 @@ test('proof-board lemma cards expose packed boards and selected forms to worksho
   assert.equal(openPackedPart(view, node).circuit, own)
   assert.equal(workshop.open(node, { level: use }).opened.circuit, own)
 })
+
+test('the logic starter projects its text and proof work into Studio', async () => {
+  const { runtimeOf } = await import('../../../games/kit/engine/resolver.js')
+  const { contentVocabulary } = await import('../../../games/kit/studio/editors.js')
+  const { boardPaths, fieldAt, formOf, textsOf } = await import('../../../games/kit/studio/form.js')
+  const content = readStarter(import.meta.dirname)
+  const vocabulary = contentVocabulary((await runtimeOf(content)).vocabulary, content)
+  const levels = content.levels.map(level => level.id)
+  for (const { id, ...level } of content.levels) {
+    const form = formOf(vocabulary.level, level, { vocabulary, levels })
+    for (const { path } of textsOf(vocabulary.level, level, vocabulary)) {
+      assert.equal(fieldAt(form, path)?.field?.kind, 'text', `${id} ${path.join('.')}`)
+    }
+    for (const path of boardPaths(vocabulary, level)) {
+      assert.equal(fieldAt(form, path)?.field?.kind, 'board', `${id} ${path.join('.')}`)
+    }
+  }
+})

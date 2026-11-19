@@ -42,10 +42,12 @@ export function validate({ levels, intros, kit, publishedBy, packageTarget = fal
     const inspect = (graph) => runLevel(all, graph)
     const visible = (run) => run.runs.slice(0, level.tests.length)
     const describe = (run) => visible(run).map((r, i) => `${keyOf(level.tests[i].label)}:${r.checks.map((c) => `${c.pass ? '✓' : '✗'}${c.wrong}/${Number.isFinite(c.worst) ? c.worst.toFixed(3) : '∞'}`).join(',')}`).join('  ')
-    // An output that expects the same flat image in every test can be met by a constant, whatever the circuit.
-    for (const name of Object.keys(level.tests[0]?.expected ?? {})) {
-      const first = level.tests[0].expected[name]?.data?.[0]
-      if (level.tests.every((t) => t.expected[name]?.data?.every((v) => Math.abs(v - first) < 1e-9))) fail(`${level.id}: every test expects the same flat ${name}, so a constant passes`)
+    // Check the output targets over the same visible and hidden cases that are graded.
+    for (const [name, expected] of Object.entries(all.tests[0]?.expected ?? {})) {
+      const first = expected?.data?.[0]
+      if (first !== undefined && all.tests.every(test => test.expected[name]?.data?.every(value => Math.abs(value - first) < 1e-9))) {
+        fail(`${level.id}: every test expects the same flat ${name}`)
+      }
     }
     // Every circuit level keeps tests back: a run must pass them too, and they are shown only once it is solved.
     const hidden = level.hidden ?? []

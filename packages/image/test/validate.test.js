@@ -3,11 +3,11 @@ import { test } from 'node:test'
 import { reportRuns } from '../../../games/kit/engine/test-run.js'
 import { validate } from '../core/validate.js'
 
-test('the image author check accepts a naive board caught only by a hidden case', () => {
-  const expected = { out: { data: [0, 1] } }
+test('a hidden case can distinguish a flat visible target and reject the naive board', () => {
+  const flat = { out: { data: [0, 0] } }
   const task = {
     id: 'puzzle', kind: 'image/graph', title: 'Puzzle',
-    tests: [{ label: 'shown', expected }], hidden: [{ label: 'hidden', expected }],
+    tests: [{ label: 'shown', expected: flat }], hidden: [{ label: 'hidden', expected: { out: { data: [0, 1] } } }],
     solution: 'reference', naive: 'naive',
   }
   const inspected = []
@@ -19,13 +19,16 @@ test('the image author check accepts a naive board caught only by a hidden case'
     })
     return reportRuns(runs, { score: { nodes: 1, cost: 1 } })
   }
-  const lines = validate({ levels: [{ id: task.id, tasks: [task] }], intros: {}, kit: { runLevel }, packageTarget: { id: "sample" }, publishedBy: () => [] })
+  const check = task => validate({ levels: [{ id: task.id, tasks: [task] }], intros: {}, kit: { runLevel }, packageTarget: { id: 'sample' }, publishedBy: () => [] })
+  const lines = check(task)
   assert.equal(lines.some((line) => line.fail), false)
   assert.match(lines.at(-1).text, /naive fails \(hidden test\)/)
   assert.deepEqual(inspected, [
     { board: 'reference', cases: ['shown', 'hidden'] },
     { board: 'naive', cases: ['shown', 'hidden'] },
   ])
+  const identical = check({ ...task, naive: undefined, hidden: [{ label: 'hidden', expected: flat }] })
+  assert.deepEqual(identical.filter(line => line.fail).map(line => line.text), ['puzzle: every test expects the same flat out'])
 })
 
 test('package previews allow omitted introductions but still check authored pages and tasks', () => {

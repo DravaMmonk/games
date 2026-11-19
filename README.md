@@ -21,3 +21,6 @@ Pushing to `main` builds the site and publishes it to this repository's `gh-page
 © 2026 DravaMmonk. The code is open source under the [MIT License](LICENSE); the game content (levels, text,
 illustrations) is licensed under [CC BY-NC-SA 4.0](LICENSE-CONTENT). "Turing Complete" belongs to its owners; this
 platform borrows its style of play and is not affiliated with it.
+
+The bundled [Impeccable skill](.agents/skills/impeccable/SKILL.md) is distributed under its
+[Apache 2.0 license](.agents/skills/impeccable/LICENSE).

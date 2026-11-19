@@ -32,3 +32,4 @@
 {"seq":32,"at":"2026-11-18T23:46:54.118Z","why":"Repeat frame is a step only where it decides (继续/跳出); a refused step reads ✗ and gives its state back; import dialog shows its errors.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"dd271ab471e015ca"}]}
 {"seq":33,"at":"2026-11-18T23:49:19.442Z","why":"Run report: a step's number, card, name and note sit on one centre line.","adopt":true,"files":[]}
 {"seq":34,"at":"2026-11-18T23:53:20.757Z","why":"Repeat frame decisions read ↻ / ↪; a goal moved to the end reads ⊢ ⤓ (an underlined down arrow in TeX).","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"276a7d14d75f34c6"}]}
+{"seq":35,"at":"2026-11-19T00:26:32.314Z","why":"Cards show only propositions; report steps get an ⓘ explanation and baseline-aligned marks; desktop cards numbered like the phone.","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"e0bcc6273ef9029e"}]}

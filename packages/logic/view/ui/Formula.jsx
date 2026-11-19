@@ -15,12 +15,16 @@ export function Formula({ text, className = '' }) {
   return <span className={`tx-line ${className}`.trim()}><Typeset tex={texOf(line)} plain={<span className="tx-plain">{line}</span>} /></span>
 }
 
-/** A machine value as a card shows it: its lines, the formulas typeset. */
-export const typesetMachine = (v, ctx) => (
-  <span className="tx-lines">
-    {machineLines(v, ctx).map((l, k) => (l.formula ? <Formula key={k} text={l.s} /> : <span key={k} className="tx-prose">{l.s}</span>))}
-  </span>
-)
+/** A machine value as a card shows it: only what it is (its formulas, typeset, or 证明完毕), never a note on it (why a
+ *  step failed, how many results: the run report says those). */
+export const typesetMachine = (v, ctx) => {
+  const lines = machineLines(v, ctx).filter((l) => l.formula || l.result)
+  return (
+    <span className="tx-lines">
+      {lines.length ? lines.map((l, k) => (l.formula ? <Formula key={k} text={l.s} /> : <span key={k} className="tx-prose">{l.s}</span>)) : '—'}
+    </span>
+  )
+}
 
 /** A value that is one formula (a proof board's sentence, with its proof term), as a card shows it. */
 export const typesetOne = (show) => (v, ctx) => <span className="tx-lines"><Formula text={show(v, ctx)} /></span>

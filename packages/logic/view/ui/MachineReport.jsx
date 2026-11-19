@@ -3,11 +3,12 @@
 // box, and for each step a link down to the next box: the step's number, the card's name and, apart from it, what the
 // card did in marks (⊢ ⟵ R₁, ⊢ ✓ …, ../../core/circuit-readouts.js didText). A box holds only goals (⊢₁ ⊢₂ …). A step
 // that fails says why, and no box follows it. The current step is marked and kept in view, inside the report only.
-import { useEffect, useRef } from 'react'
-import { L } from 'kernel/view'
+import { useEffect, useRef, useState } from 'react'
+import { Info } from 'lucide-react'
+import { L, Popover } from 'kernel/view'
 import { T, tr } from 'kernel/words'
 import { inputsOf, inputsOfLevel } from '../../core/machine.js'
-import { goalLines, ruleLines } from '../../core/circuit-readouts.js'
+import { goalLines, ruleLines, stepExplained } from '../../core/circuit-readouts.js'
 import { Formula } from './Formula.jsx'
 
 const PROVED = T('证明完毕')
@@ -29,6 +30,7 @@ function Box({ value, task, show, on = false }) {
 
 export default function MachineReport({ steps, at, run, task, test, show }) {
   const box = useRef(null)
+  const [told, setTold] = useState(null) // { k, anchor }: the step whose ⓘ is open
   const inputs = new Set(inputsOfLevel(task).map((i) => i.name))
   // The test's inputs are the first box; the result card adds nothing to the last.
   const shown = steps.map((s, k) => ({ s, k })).filter(({ s }) => !s.entry.path?.length ? !inputs.has(s.entry.id) && s.entry.id !== 'out' : true)
@@ -62,13 +64,23 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
             <li key={`s${k}`} className={`mr-step ${k === at ? 'is-on' : ''} ${broken || refused ? 'is-fail' : ''} ${refused ? 'is-refused' : ''}`}>
               <span className="mr-num">{n + 1}</span>
               <span className="mr-name">{s.mark}{L(s.label)}</span>
-              {refused ? <span className="mr-wrong" title={L(refused)} aria-label={L(refused)}>✗</span> : s.detail && <Formula text={s.detail} className="mr-note" />}
+              {refused ? <span className="mr-wrong" aria-label={L(refused)}>✗</span> : s.detail && <Formula text={s.detail} className="mr-note" />}
+              {stepExplained(s.entry, run) && (
+                <button type="button" className="mr-info" aria-label={tr('这一步做了什么')} aria-expanded={told?.k === k} onClick={(event) => setTold(told?.k === k ? null : { k, anchor: event.currentTarget })}>
+                  <Info size={13} />
+                </button>
+              )}
               {broken && <span className="mr-why">{L(broken)}</span>}
             </li>,
             !broken && s.value !== undefined && <Box key={`b${k}`} value={refused ? { ...s.value, error: undefined } : s.value} task={task} show={show} on={k === at} />,
           ]
         })}
       </ol>
+      {told && steps[told.k] && (
+        <Popover anchor={told.anchor} title={tr('这一步做了什么')} placement="above" onClose={() => setTold(null)}>
+          <p className="mr-told">{L(stepExplained(steps[told.k].entry, run))}</p>
+        </Popover>
+      )}
     </div>
   )
 }

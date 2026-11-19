@@ -37,3 +37,4 @@
 {"seq":37,"at":"2026-11-18T23:18:06.850Z","why":"Formulas typeset in TeX across the game; prose stays text (manual 6.9).","adopt":true,"files":[]}
 {"seq":38,"at":"2026-11-18T23:46:54.395Z","why":"Repeat frame is a step only where it decides (继续/跳出); a refused step reads ✗ and gives its state back; import dialog shows its errors.","adopt":true,"files":[]}
 {"seq":39,"at":"2026-11-18T23:49:19.712Z","why":"Import dialog shows its errors.","adopt":true,"files":[]}
+{"seq":40,"at":"2026-11-19T00:26:32.578Z","why":"Cards show only propositions; report steps get an ⓘ explanation and baseline-aligned marks; desktop cards numbered like the phone.","adopt":true,"files":[]}

@@ -119,8 +119,14 @@
 .mr-name { gap: var(--sp-2); font: 600 11.5px/1 var(--sans); color: var(--muted); }
 .mr-name .step-card { margin-right: 0; }
 .mr-note { color: var(--accent); white-space: nowrap; font-size: 12.5px; }
+/* KaTeX's box holds room under its baseline, so centred it sits high: down to the name's baseline. */
+.mr-note .katex { position: relative; top: 0.12em; }
 .mr-why { flex-basis: 100%; min-height: 0; display: block; font: 500 11.5px/1.45 var(--sans); color: var(--fail); }
-.mr-wrong { font: 600 13px/1 var(--formula-face); color: var(--fail); cursor: help; }
+.mr-wrong { font: 600 13px/1 var(--formula-face); color: var(--fail); }
+/* ⓘ after a step's marks: what the step did, in a sentence, in a small window over it. */
+.mr-info { justify-content: center; width: 22px; padding: 0; border: 0; border-radius: var(--r-full); background: none; color: var(--faint); cursor: pointer; }
+.mr-info:hover, .mr-info[aria-expanded='true'] { color: var(--accent); }
+.mr-told { margin: 0; max-width: 260px; font: 500 12.5px/1.5 var(--sans); color: var(--ink); }
 .mr-step.is-on { border-left-color: var(--accent); }
 .mr-step.is-on::after { border-top-color: var(--accent); }
 .mr-step.is-on .mr-num { background: var(--accent); color: var(--paper); box-shadow: none; }

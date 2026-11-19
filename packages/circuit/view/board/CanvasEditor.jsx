@@ -16,7 +16,7 @@ import { useSetting } from 'kernel/view'
 
 import { useWorkspaceKeys } from 'kernel/view'
 
-import { useEffect, useEffectEvent, useLayoutEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { foldedPartsOf } from "../../core/board/folding.js"
 import { ClearButton } from 'kernel/view'
 import { labelledConnections, sourceLabel, blockOwners, wireKey } from "../../core/board/connections.js"
@@ -37,6 +37,8 @@ import { cardPorts, namesPorts, NO_CARD_PORT, portOnCard } from "../../core/boar
 import { moveInto } from "../../core/board/frames.js"
 import { isOpenRegion, regionAddress, regionsOf } from "../../core/board/regions.js"
 import { canRemoveCard, clearSpot, rowSpot, connectWire, ends, inPort, isPart, outPort, parsePort, removeNode, unplugWire, wireRefusal } from "../../core/board/model.js"
+import { cardOrder, numberAt } from "../../core/board/card-order.js"
+import { phoneBlockBoard, withNewSlots } from "../../core/board/blocks.js"
 import { leavesLockedRegion, lockedCards, lockedRefusal, PRESET_CARD_REFUSAL } from "../../core/board/presets.js"
 import { useCircuitEdits } from "./useCircuitEdits.js"
 import { historyKey } from 'kernel/view'
@@ -164,6 +166,9 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const layer = useRef(null)
   const pointers = useRef(new Map())
   const byId = new Map(graph.nodes.map((n) => [n.id, n]))
+  // A part is numbered as the phone board numbers it (① ②…, its reading order there), so a run's report and a phone
+  // name the same card the same way.
+  const order = useMemo(() => cardOrder(phoneBlockBoard(withNewSlots(graph, parts), parts), parts), [graph, parts])
   const size = useElementSize(surface)
   const available = size?.width || Infinity
   const widthOf = (node) => node.hiddenBlock ? node.w : cardWidth(parts, node, available)
@@ -658,6 +663,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
               </button>
             )}
             {icon && <i className="family-chip"><Glyph icon={icon} size={12} /></i>}
+            {isPart(parts, node) && order.includes(node.id) && <span className="node-num">{numberAt(order.indexOf(node.id))}</span>}
             <span className="node-title">{L(parts.label(node))}</span>
           </div>
           <div className="node-actions">

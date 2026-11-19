@@ -68,6 +68,25 @@ export function didText(did, run) {
   if (did.op === 'assumption') return `${goal} ✓`
   return `${goal} ⤓`
 }
+/**
+ * What a step of the run report did, in a sentence (its ⓘ): a tactic's work (machine.js `did`), a repeat frame's
+ * decision (↻ once more, ↪ out), or why a card could not do its step. Null for a step with nothing to say.
+ */
+export function stepExplained(entry, run) {
+  const v = entry.value
+  if (v?.kind === 'state' && v.error && !v.didBy) return v.error
+  if (entry.inner && entry.label === '↻') return T('这一轮改变了证明状态，再做一轮。')
+  if (entry.inner && entry.label === '↪') return T('停下来：这一轮没有改变、做不成，或者已经证完。交出的是最后的状态。')
+  const did = v?.didBy === entry.id ? v.did : null
+  if (!did) return null
+  const goal = goalMark(0, did.goals)
+  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.rules ?? did.rules)).join(' ')
+  if (did.op === 'rule') return T('倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。', { rules, goal })
+  if (did.op === 'rw') return T('用 {rules} 改写目标 {goal}。', { rules, goal })
+  if (did.op === 'rwHyps') return T('用 {rules} 改写目标 {goal} 的已知。', { rules, goal })
+  if (did.op === 'assumption') return T('目标 {goal} 和它的一条已知对上，证完了。', { goal })
+  return T('把目标 {goal} 移到最后，先做后面的。', { goal })
+}
 // A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
 const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))
 
@@ -78,7 +97,9 @@ const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind ==
  * Each line is prose or a formula (`formula`: what the board typesets); showMachine joins them as text.
  */
 export function machineLines(v, { task, run }) {
+  // Prose is a note on the value (why a step failed, how many results) or, `result`, the value itself said in words.
   const prose = (list) => list.filter(Boolean).map((s) => ({ s, formula: false }))
+  const result = (s) => (s ? [{ s, formula: false, result: true }] : [])
   const formulas = (list) => list.map((s) => ({ s, formula: true }))
   if (v === undefined || v === null) return prose(['—'])
   if (typeof v === 'string') return prose([v])
@@ -93,15 +114,16 @@ export function machineLines(v, { task, run }) {
   }
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0
-    return [...prose([
-      v.error && `${tr("这一步失败")}：${L(v.error)}`,
-      !v.goals.length && tr('证明完毕'),
-      others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1}),
-    ]), ...formulas(goalLines(v, task))]
+    return [
+      ...prose([v.error && `${tr("这一步失败")}：${L(v.error)}`]),
+      ...result(!v.goals.length && tr('证明完毕')),
+      ...prose([others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1})]),
+      ...formulas(goalLines(v, task)),
+    ]
   }
-  if (v.kind === 'eqs') return [...prose([v.fail && `${tr('合一失败')}：${L(v.fail)}`, !v.eqs.length && tr('没有等式了')]), ...formulas(v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))]
+  if (v.kind === 'eqs') return [...prose([v.fail && `${tr('合一失败')}：${L(v.fail)}`]), ...result(!v.eqs.length && tr('没有等式了')), ...formulas(v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))]
   const shown = certificate(v.set) ?? v.set.map((_, i) => i)
-  return [...prose([refuted(v.set) && tr('推出了空子句 ⊥'), v.endless && tr("仍在增加")]), ...formulas(shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(punctuation("、"))}` : ''}`))]
+  return [...result(refuted(v.set) && tr('推出了空子句 ⊥')), ...prose([v.endless && tr("仍在增加")]), ...formulas(shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(punctuation("、"))}` : ''}`))]
 }
 const showMachine = (v, ctx) => machineLines(v, ctx).map((l) => l.s).join('\n')
 

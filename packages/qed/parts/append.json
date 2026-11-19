@@ -40,27 +40,27 @@
   "inputs": [
     {
       "name": "first",
-      "label": "@part.append.inputs.0.label"
+      "label": "①"
     },
     {
       "name": "second",
-      "label": "@part.append.inputs.1.label"
+      "label": "②"
     },
     {
       "name": "third",
-      "label": "@part.append.inputs.2.label"
+      "label": "③"
     },
     {
       "name": "fourth",
-      "label": "@part.append.inputs.3.label"
+      "label": "④"
     },
     {
       "name": "fifth",
-      "label": "@part.append.inputs.4.label"
+      "label": "⑤"
     },
     {
       "name": "sixth",
-      "label": "@part.append.inputs.5.label"
+      "label": "⑥"
     }
   ]
 }

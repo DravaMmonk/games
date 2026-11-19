@@ -2,7 +2,7 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/g-iff",
+      "from": "e-words",
       "to": "qed/copy"
     },
     {

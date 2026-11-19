@@ -11,15 +11,24 @@
   ],
   "tasks": [
     {
+      "id": "e-words-translate",
+      "kind": "logic/translate",
+      "step": "@level.e-words.tasks.e-words-translate.step",
+      "say": "@level.e-words.tasks.e-words-translate.say",
+      "target": "¬(KA ∧ KB)",
+      "hint": [
+        "@level.e-words.tasks.e-words-translate.hint.0",
+        "@level.e-words.tasks.e-words-translate.hint.1"
+      ]
+    },
+    {
       "id": "e-words",
+      "step": "@level.e-words.tasks.e-words.step",
       "kind": "logic/gates",
       "target": "¬(KA ∧ KB)",
       "blind": true,
       "brief": "@level.e-words.tasks.e-words.brief",
-      "hint": [
-        "@level.e-words.tasks.e-words.hint.0",
-        "@level.e-words.tasks.e-words.hint.1"
-      ],
+      "hint": ["@level.e-words.tasks.e-words.hint.0"],
       "solution": [
         "a = gAnd(KA, KB)",
         "n = gNot(a)",

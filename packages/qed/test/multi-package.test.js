@@ -3,7 +3,7 @@ import { after, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { dirname, join } from 'node:path'
 import { mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
-import { proofsRoot, installImageFixture } from './fixture.js'
+import { proofsRoot, copyProofsRoot, installImageFixture } from './fixture.js'
 import { lockTarget } from '../../../games/kit/engine/releases.js'
 import { checkGame } from '../../../games/kit/engine/checks.js'
 import { readContent, readPackage, runtimeOf } from '../../../games/kit/engine/resolver.js'
@@ -14,11 +14,12 @@ import { createPlay } from '../../../games/kit/engine/play/play.js'
 import { checkPlaytest, newSession } from '../../../games/kit/engine/play/session.js'
 import { fresh } from '../../../games/kit/shell/progress.js'
 
-const roots = []
+const proofSeed = proofsRoot()
+const roots = [proofSeed.root]
 after(async () => { await closeGames(); roots.forEach(root => rmSync(root, { recursive: true, force: true })) })
 
 test('logic and image compose in one game and retain layered text in standalone play', async () => {
-  const { root, id } = proofsRoot()
+  const { root, id } = copyProofsRoot(proofSeed)
   roots.push(root)
   installImageFixture(root)
   const put = (file, value) => {
@@ -67,28 +68,26 @@ test('logic and image compose in one game and retain layered text in standalone 
 })
 
 test('installed package references solve a textual session without exposing hidden work', async () => {
-  const { root, id } = proofsRoot()
-  try {
-    const content = readContent(id, root)
-    const { shell, hook, course } = await loadPlay(content)
-    const record = newSession({ game: id, session: 'test', player: { kind: 'script' }, attempts: 50, progress: fresh() })
-    const play = createPlay({ game: shell, course, hook, record })
-    let solved = 0
-    for (let guard = 0; guard < 20; guard++) {
-      const view = play.view()
-      if (!view.level) break
-      const level = content.levels.find(level => level.id === view.level)
-      const task = level.tasks[view.task]
-      if (task.id === 'apply') assert.equal(play.attempt('goal <- r').pass, false)
-      const answer = task.solution.join('\n')
-      assert.ok(!view.text.includes(answer))
-      const result = play.attempt(answer)
-      assert.equal(result.pass, true, result.text)
-      play.explain('The reference establishes the goal from the premises.')
-      solved++
-    }
-    assert.equal(solved, content.levels.length)
-    assert.equal(play.view().level, null)
-    assert.deepEqual(checkPlaytest(record), [])
-  } finally { rmSync(root, { recursive: true, force: true }) }
+  const { root, id } = proofSeed
+  const content = readContent(id, root)
+  const { shell, hook, course } = await loadPlay(content)
+  const record = newSession({ game: id, session: 'test', player: { kind: 'script' }, attempts: 50, progress: fresh() })
+  const play = createPlay({ game: shell, course, hook, record })
+  let solved = 0
+  for (let guard = 0; guard < 20; guard++) {
+    const view = play.view()
+    if (!view.level) break
+    const level = content.levels.find(level => level.id === view.level)
+    const task = level.tasks[view.task]
+    if (task.id === 'apply') assert.equal(play.attempt('goal <- r').pass, false)
+    const answer = task.solution.join('\n')
+    assert.ok(!view.text.includes(answer))
+    const result = play.attempt(answer)
+    assert.equal(result.pass, true, result.text)
+    play.explain('The reference establishes the goal from the premises.')
+    solved++
+  }
+  assert.equal(solved, content.levels.length)
+  assert.equal(play.view().level, null)
+  assert.deepEqual(checkPlaytest(record), [])
 })

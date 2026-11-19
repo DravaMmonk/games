@@ -16,7 +16,7 @@ import { objectFiles, packageIds, contentTargets, resolveLayers, readContent } f
 //
 // The game: `given` (the given is the goal), `apply` (two Applies in a row), `suppose` (an assumption box around them);
 // every brief and hint in everyday words, the English side naming “Saturday” and “Assume” for search and replace.
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, cpSync, existsSync, readdirSync, rmSync } from 'node:fs'
+import { constants, mkdirSync, mkdtempSync, readFileSync, writeFileSync, cpSync, existsSync, readdirSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { catalogsOf, normalizeText } from '../../../games/kit/engine/content-text.js'
@@ -201,6 +201,18 @@ export function proofsRoot() {
   const root = mkdtempSync(join(tmpdir(), 'games-'))
   writeContentFixture(root, ID, { game: { ...GAME, contentObjects: { ...GAME.contentObjects, 'logic/symbol': { formulaImplies: { mark: 'logic/formulaImplies', icon: 'Rows3', name: '→', desc: T('Implication'), at: 'apply' } } } }, glossary: GLOSSARY, partDefs: PARTS, levels: LEVELS, tagOverrides: { 'circuit/tags/circuit/part/primitives': ['proofs/mp', 'proofs/impI'] }, relations: { path: { kind: 'requires', edges: [{ from: 'given', to: 'apply' }, { from: 'apply', to: 'suppose' }] } } }, proofVocabulary)
   return { root, id: ID }
+}
+
+/** Copy a locked proof workspace before changing its files. */
+export function copyProofsRoot({ root: seed, id }) {
+  const root = mkdtempSync(join(tmpdir(), 'games-'))
+  try {
+    cpSync(seed, root, { recursive: true, mode: constants.COPYFILE_FICLONE })
+    return { root, id }
+  } catch (error) {
+    rmSync(root, { recursive: true, force: true })
+    throw error
+  }
 }
 
 /** Source definitions for unit tests that compose their own small content over the starter's resources. */

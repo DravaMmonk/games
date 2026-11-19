@@ -16,11 +16,22 @@ import { holds } from '../../circuit/core/index.js'
 import { usable } from '../../circuit/core/course.js'
 import { openGame, openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { adopt, readLog, runChangeset, undo } from '../../../games/kit/engine/ops/changeset.js'
-import { proofsRoot, installLogicFixture } from './fixture.js'
+import { proofsRoot, copyProofsRoot, installLogicFixture } from './fixture.js'
 import { packageWordsFixture } from '../../../games/kit/engine/test-fixture.js'
 
 const roots = []
 after(() => roots.forEach(root => rmSync(root, { recursive: true, force: true })))
+let proofSeed
+function proofWorkspace() {
+  if (!proofSeed) {
+    proofSeed = proofsRoot()
+    roots.push(proofSeed.root)
+  }
+  const workspace = copyProofsRoot(proofSeed)
+  roots.push(workspace.root)
+  return workspace
+}
+
 function project() {
   const root = mkdtempSync(resolve(tmpdir(), 'package-content-'))
   roots.push(root)
@@ -64,8 +75,7 @@ test('a parts-only package opens without a course, checks and writes its own log
 })
 
 test('single-level play uses task trays, ignores prerequisites and opens settings without progress', async () => {
-  const { root, id } = proofsRoot()
-  roots.push(root)
+  const { root, id } = proofWorkspace()
   const dir = resolve(root, 'packages', id, 'trays')
   mkdirSync(dir, { recursive: true })
   writeFileSync(resolve(dir, 'tools.json'), JSON.stringify({ values: ['impI'] }))
@@ -132,8 +142,7 @@ test('package dependencies are readable while only the selected layer can be edi
 })
 
 test('games can edit only their own layer, and log in their own log', async () => {
-  const { root, id } = proofsRoot()
-  roots.push(root)
+  const { root, id } = proofWorkspace()
   const ws = openGame(id, root)
   const before = readFileSync(resolve(root, 'packages', id, 'parts/mp.json'), 'utf8')
   const refused = await runChangeset(ws, { ops: [{ op: 'parts.set', path: ['parts', 'mp', 'desc'], value: 'Forbidden' }] })
@@ -161,8 +170,7 @@ test('default check targets include every game followed by unplayed packages; na
 
 
 test('hub level counts follow chapter edits without writing a second file', async () => {
-  const { root, id } = proofsRoot()
-  roots.push(root)
+  const { root, id } = proofWorkspace()
   writeFileSync(resolve(root, 'games/hub-order.json'), JSON.stringify([id]))
   const ws = openGame(id, root)
   const result = await runChangeset(ws, { ops: [{ op: 'chapter.set', chapter: 'ground', path: 'levels', value: [`${id}/given`, `${id}/apply`] }] }, { write: true, check: false })

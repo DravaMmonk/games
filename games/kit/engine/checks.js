@@ -65,37 +65,50 @@ async function checkPackageLevels(content, domain, mutants) {
 export async function checkGame(content, { domain, mutants = false, cache = null, root }) {
   const invalid = checkContentLines(content, { domain, root })
   if (invalid.length) return invalid
-  const lines = meaningsOf(contentSchemas.get(content)).flatMap(meaning => meaning.contentChecks?.({ content }) ?? [])
+  const meanings = meaningsOf(contentSchemas.get(content))
+  const lines = meanings.flatMap(meaning => meaning.contentChecks?.({ content }) ?? [])
   if (content.packageTarget) return [...lines, ...await checkPackageLevels(content, domain, mutants)]
   const fail = text => lines.push({ fail: true, text })
   const spec = domain.spec(content)
   lines.push(...await domain.checkPhase?.({ phase: 'course', spec, content }) ?? [])
 
+  const placed = new Set(spec.levels.map(level => level.id))
   const seen = new Set()
   for (const level of spec.levels) {
     if (seen.has(level.id)) fail(`${level.id}: duplicate id`)
     seen.add(level.id)
-    for (const r of level.requires ?? []) if (!spec.levels.some((l) => l.id === r)) fail(`${level.id}: requires missing level ${r}`)
+    for (const r of level.requires ?? []) if (!placed.has(r)) fail(`${level.id}: requires missing level ${r}`)
   }
 
   // References to levels, parts and entries: the names come from the game as the shell gets it.
   const game = await gameOf(content)
   const names = {
     ...registeredReferenceNames(content, { level: game.levels }),
-    ...Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.textNames?.({ content, game, vocabulary: domain.vocabulary }))),
+    ...Object.assign({}, ...meanings.map(meaning => meaning.textNames?.({ content, game, vocabulary: domain.vocabulary }))),
   }
-  const extraTexts = Object.assign({}, ...meaningsOf(contentSchemas.get(content)).map(meaning => meaning.texts?.({ content, game, spec })))
-  const placed = new Set(spec.levels.map(level => level.id))
+  const extraTexts = Object.assign({}, ...meanings.map(meaning => meaning.texts?.({ content, game, spec })))
   for (const [name, value] of Object.entries({ levels: spec.levels, ...spec.texts, ...extraTexts })) for (const problem of refProblems(value, name, names)) fail(`text ${problem}`)
 
   // An entry is linked only where it is open already: in a level it opens at or after, in an entry opening no earlier.
   // The links are read off every text of the content, by its schema, whatever its fields are called.
-  const vocabulary = meaningsOf(contentSchemas.get(content)).reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, content }) ?? vocabulary, domain.vocabulary)
+  const vocabulary = meanings.reduce((vocabulary, meaning) => meaning.validationVocabulary?.({ vocabulary, content }) ?? vocabulary, domain.vocabulary)
   const opensBy = (at, where) => !at || at === where || (where && spec.course.before(at, where))
-  const linked = (schema, value, kind) => find(schema, value, 'text', { vocabulary })
+  const references = (schema, value) => find(schema, value, 'text', { vocabulary })
     .flatMap(({ value }) => typeof value === 'string' ? [value] : textEntries(value).map(([, text]) => text))
-    .flatMap((s) => [...s.matchAll(REF)].filter((m) => m[1] === kind).map((m) => m[2]))
-  const levelLinks = (kind) => content.levels.filter(({ id }) => placed.has(id)).map(({ id, ...level }) => [id, [...new Set(linked(vocabulary.level, level, kind))]])
+    .flatMap(text => [...text.matchAll(REF)])
+  const linked = (schema, value, kind) => references(schema, value).filter(match => match[1] === kind).map(match => match[2])
+  let linksByLevel
+  const levelLinks = (kind) => {
+    linksByLevel ??= content.levels.filter(({ id }) => placed.has(id)).map(({ id, ...level }) => {
+      const byKind = new Map()
+      for (const [, type, target] of references(vocabulary.level, level)) {
+        if (!byKind.has(type)) byKind.set(type, new Set())
+        byKind.get(type).add(target)
+      }
+      return [id, byKind]
+    })
+    return linksByLevel.map(([id, byKind]) => [id, [...byKind.get(kind) ?? []]])
+  }
   lines.push(...await domain.checkPhase?.({ phase: 'references', spec, content, game, levelLinks, opensBy, linked, placed }) ?? [])
 
   // Mutation reports are requested explicitly because providers may perform expensive checks.

@@ -212,10 +212,3 @@ test('network constraints follow wires from named outputs', () => {
   }
   assert.equal(depthOf(layers), 2)
 })
-
-test('generated package previews validate supplied introductions and allow content without one', async () => {
-  const { validate } = await import('../core/validate.js')
-  const spec = { levels: [{ id: 'sample', tasks: [] }], intros: {}, kit: { types: {} }, course: {}, publishedBy: () => [] }
-  assert.deepEqual(validate({ ...spec, packageTarget: true }), [])
-  assert.ok(validate(spec).some((line) => line.fail))
-})

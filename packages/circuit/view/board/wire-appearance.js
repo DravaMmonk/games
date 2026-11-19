@@ -1,21 +1,26 @@
 import { inPort, outPort, parsePort } from '../../core/board/model.js'
 import { splitSource } from '../../core/wire-source.js'
 
-export function portPattern(parts, node, input, output = null) {
-  const pattern = node && parts.portPattern?.(node, input, output)
-  return ['solid', 'dashed', 'double'].includes(pattern) ? pattern : undefined
+export const DEFAULT_WIRE_PATTERN = 'solid'
+
+export function portAppearance(parts, node, input, output = null) {
+  const { shape, wire } = (node && parts.portAppearance?.(node, input, output)) ?? {}
+  return {
+    shape: shape === 'compact' ? 'compact' : 'standard',
+    wire: [DEFAULT_WIRE_PATTERN, 'dashed', 'double'].includes(wire) ? wire : undefined,
+  }
 }
 
-export function patternAt(parts, find, port) {
+export function appearanceAt(parts, find, port) {
   const { side, id, port: input } = parsePort(port)
-  if (side === 'in') return portPattern(parts, find(id), input)
+  if (side === 'in') return portAppearance(parts, find(id), input)
   const [node, key] = splitSource(id)
-  return portPattern(parts, find(node), null, key)
+  return portAppearance(parts, find(node), null, key)
 }
 
 export function wirePattern(parts, find, wire) {
-  return patternAt(parts, find, inPort(wire.to, wire.port))
-    ?? patternAt(parts, find, outPort(wire.from)) ?? 'solid'
+  return appearanceAt(parts, find, inPort(wire.to, wire.port)).wire
+    ?? appearanceAt(parts, find, outPort(wire.from)).wire ?? DEFAULT_WIRE_PATTERN
 }
 
 // The string renderers use the same SVG layers and CSS as the editable canvas.

@@ -509,13 +509,15 @@ const clauseSetOf = (texts) => [...new Map(texts.map((c) => parseClause(c, parse
 /** The names and labels of a level's inputs. */
 export const inputsOfLevel = (level) => level.inputs ?? [{ name: 'in', label: catalogText("输入") }]
 
+const RULE_PORT_APPEARANCE = { shape: 'compact', wire: 'dashed' }
+
 /** A machine board: an `in` card for each of a level's inputs on the left, `out` on the right (it shows what is wanted). */
 export const MACHINE_BOARD = circuitBoard({
   text: FORMULA_TEXT,
-  portPattern: (node, input, _output, task) => {
+  portAppearance: (node, input, _output, task) => {
     if (task.want === 'logic/elim') return
-    if (input != null) return ['rules', 'before'].includes(input) ? 'dashed' : undefined
-    if (node.type === 'in' ? node.params?.name === 'rules' : rulePartsOf(task).has(node.type)) return 'dashed'
+    if (input != null) return ['rules', 'before'].includes(input) ? RULE_PORT_APPEARANCE : undefined
+    if (node.type === 'in' ? node.params?.name === 'rules' : rulePartsOf(task).has(node.type)) return RULE_PORT_APPEARANCE
   },
   cards: [
     { type: 'in', side: 'left', of: (task) => inputsOfLevel(task) },

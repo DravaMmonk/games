@@ -292,15 +292,15 @@
 .pb-dot.over i { transform: scale(1.5); background: var(--accent); }
 @keyframes pb-pulse { 50% { box-shadow: inset 0 0 0 2.5px var(--accent-ink), 0 0 0 9px color-mix(in srgb, var(--accent) 12%, transparent); } }
 
-/* Ordinary inputs show an inner ring until wired. Secondary ports use a single, smaller ring. */
+/* Ordinary inputs show an inner ring until wired. Compact ports use a single, smaller ring. */
 .port > i { display: none; }
-.port-in:not(.is-wired, [data-wire-pattern='dashed'], [data-wire-pattern='double']) > i,
-.pb-dot.is-in:not(.is-wired, [data-wire-pattern='dashed'], [data-wire-pattern='double']) i::after { content: ''; display: block; position: absolute; border-radius: var(--port-mark-radius, var(--r-full)); box-shadow: inset 0 0 0 1.5px var(--port-mark); pointer-events: none; }
+.port-in:not(.is-wired, [data-port-shape='compact']) > i,
+.pb-dot.is-in:not(.is-wired, [data-port-shape='compact']) i::after { content: ''; display: block; position: absolute; border-radius: var(--port-mark-radius, var(--r-full)); box-shadow: inset 0 0 0 1.5px var(--port-mark); pointer-events: none; }
 .port-in > i { inset: 3px; }
 .pb-dot.is-in i { position: relative; }
 .pb-dot.is-in i::after { inset: var(--sp-2); }
-.port:is([data-wire-pattern='dashed'], [data-wire-pattern='double']) { --port-outline: inset 0 0 0; }
-.pb-dot:is([data-wire-pattern='dashed'], [data-wire-pattern='double']) i { width: var(--phone-alt-port-dot-size); height: var(--phone-alt-port-dot-size); }
+.port[data-port-shape='compact'] { --port-outline: inset 0 0 0; }
+.pb-dot[data-port-shape='compact'] i { width: var(--phone-compact-port-dot-size); height: var(--phone-compact-port-dot-size); }
 /* A part's sheet ends with this: take the block off the board. */
 .sheet-actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sp-4); }
 .sheet-actions > button { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: inherit; }

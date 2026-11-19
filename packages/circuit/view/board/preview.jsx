@@ -1,4 +1,4 @@
-import { portPattern } from './wire-appearance.js'
+import { portAppearance } from './wire-appearance.js'
 import { Fragment, useMemo } from 'react'
 import SlotBoard from "./SlotBoard.jsx"
 import { L } from "kernel/view"
@@ -55,7 +55,9 @@ function CanvasCard({ node, parts, body }) {
   const named = namesPorts(parts, node, (label) => String(L(label)))
   const plain = outputs.length === 1 && outputs[0].key === null && !named
   const icon = parts.icon?.(node)
-  const dot = (side, extra = '', pattern) => <i className={`port port-${side} ${extra}`} data-wire-pattern={pattern}><i /></i>
+  const dot = (side, extra = '', input = null, output = null) => (
+    <i className={`port port-${side} ${extra}`} data-port-shape={portAppearance(parts, node, input, output).shape}><i /></i>
+  )
   return (
     <div data-family={parts.family(node)} className={`node is-${parts.role(node)} ${parts.packed?.(node) ? 'is-packed' : ''} ${regions.length ? 'is-frame' : ''}`} style={parts.cardStyle?.(node)}>
       {regions.length > 0 && <div className="frame-back" />}
@@ -67,27 +69,27 @@ function CanvasCard({ node, parts, body }) {
       </div>
       <div className="node-ports">
         <div className="node-inputs">
-          {inputs.map((port) => <span key={port} className="node-port-label">{dot('in', parts.portClass?.(node, port) ?? '', portPattern(parts, node, port))}{L(parts.portLabel?.(node, port)) ?? ''}</span>)}
+          {inputs.map((port) => <span key={port} className="node-port-label">{dot('in', parts.portClass?.(node, port) ?? '', port)}{L(parts.portLabel?.(node, port)) ?? ''}</span>)}
         </div>
         <div className="node-body">{body()}</div>
         <div className="node-outputs">
           {!plain && outputs.map((o) => (
             <span key={o.key} className="node-port-out">
               {o.glyph ? <span className="node-out-name is-glyph" title={L(o.label)} dangerouslySetInnerHTML={{ __html: o.glyph }} /> : <span className="node-out-name" title={L(o.label)}>{L(o.short ?? o.label)}</span>}
-              {dot('out', parts.portClass?.(node, null, o.key) ?? '', portPattern(parts, node, null, o.key))}
+              {dot('out', parts.portClass?.(node, null, o.key) ?? '', null, o.key)}
             </span>
           ))}
         </div>
-        {plain && dot('out', parts.portClass?.(node, null) ?? '', portPattern(parts, node, null))}
+        {plain && dot('out', parts.portClass?.(node, null) ?? '')}
       </div>
       {regions.length > 0 && (
         <div className="frame-regions">
           {regions.map((r) => (
             <section key={r.name} className="frame-region">
               <header className="frame-region-head">
-                {r.opens && dot('out', 'frame-open')}
+                {r.opens && dot('out', 'frame-open', null, r.name)}
                 <span className="frame-region-name">{L(r.label)}</span>
-                <span className="frame-region-result">{L(parts.portLabel?.(node, r.name)) ?? ''}{dot('in', 'frame-close')}</span>
+                <span className="frame-region-result">{L(parts.portLabel?.(node, r.name)) ?? ''}{dot('in', 'frame-close', r.name)}</span>
               </header>
               <div className="frame-field" />
             </section>

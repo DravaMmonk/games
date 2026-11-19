@@ -44,7 +44,7 @@ import { useCircuitEdits } from "./useCircuitEdits.js"
 import { historyKey } from 'kernel/view'
 
 import { usePickedPort } from "./usePickedPort.js"
-import { patternAt, wirePattern } from './wire-appearance.js'
+import { appearanceAt, DEFAULT_WIRE_PATTERN, wirePattern } from './wire-appearance.js'
 import { alignTerminals, spaceNodes } from "../../core/board/spacing.js"
 
 // The desktop circuit board, the same in every game: parts are cards, wires run from a card's output (a dot on its
@@ -168,7 +168,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const pointers = useRef(new Map())
   const byId = new Map(graph.nodes.map((n) => [n.id, n]))
   const findNode = (id) => byId.get(id)
-  const pattern = (port) => patternAt(parts, findNode, port)
+  const appearanceOf = (port) => appearanceAt(parts, findNode, port)
   // A part is numbered as the phone board numbers it (① ②…, its reading order there), so a run's report and a phone
   // name the same card the same way.
   const order = useMemo(() => cardOrder(phoneBlockBoard(withNewSlots(graph, parts), parts), parts), [graph, parts])
@@ -630,10 +630,10 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const plainOutput = outputs.length === 1 && outputs[0].key === null && !named
     const icon = parts.icon?.(node)
     const wired = (src) => graph.wires.some((w) => w.from === src)
-    const outDot = (src, extra = '') => <i className={`port port-out ${wired(src) ? 'is-wired' : ''} ${portClass(outPort(src))} ${extra}`} data-p={outPort(src)} data-wire-pattern={pattern(outPort(src))} title={tr('点击后再点击另一个元件的输入口，也可以直接拖动连接')} onClick={() => clickPort(outPort(src))}><i /></i>
+    const outDot = (src, extra = '') => <i className={`port port-out ${wired(src) ? 'is-wired' : ''} ${portClass(outPort(src))} ${extra}`} data-p={outPort(src)} data-port-shape={appearanceOf(outPort(src)).shape} title={tr('点击后再点击另一个元件的输入口，也可以直接拖动连接')} onClick={() => clickPort(outPort(src))}><i /></i>
     const inDot = (port, extra = '') => {
       const wired = graph.wires.some((w) => w.to === node.id && w.port === port)
-      return <i className={`port port-in ${wired ? 'is-wired' : ''} ${portClass(inPort(node.id, port))} ${extra}`} data-p={inPort(node.id, port)} data-wire-pattern={pattern(inPort(node.id, port))} title={wired && !picking ? tr('点击取下这根连线，再点击其他输入口重新连接') : undefined} onClick={() => clickPort(inPort(node.id, port))}><i /></i>
+      return <i className={`port port-in ${wired ? 'is-wired' : ''} ${portClass(inPort(node.id, port))} ${extra}`} data-p={inPort(node.id, port)} data-port-shape={appearanceOf(inPort(node.id, port)).shape} title={wired && !picking ? tr('点击取下这根连线，再点击其他输入口重新连接') : undefined} onClick={() => clickPort(inPort(node.id, port))}><i /></i>
     }
     return (
       <div
@@ -738,7 +738,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const reveal=(id)=>{blocks.open(block.id);setFocus(id);choose(byId.get(id))}
     return <section key={block.id} data-block={block.id} data-node={hidden ? `hidden:${block.id}` : undefined} className={`circuit-block ${hidden?'is-hidden':''} ${dropBlock===block.id?'is-drop':''}`} style={{ left: x, top: y, width: w, ...(hidden ? { minHeight: h } : { height: h }) }}>
       <BlockHeader block={block} editable={!readOnly} onEdit={(patch)=>blocks.edit(block.id,patch)} onDragStart={readOnly?undefined:e=>dragBlock(e,block)} />
-      {hidden&&<><span className="block-stubs is-input" onPointerDown={e=>e.stopPropagation()}>{block.ins.map(w=><button type="button" key={`${w.to}.${w.port}`} className="port port-in is-wired" data-p={inPort(w.to,w.port)} data-wire-pattern={pattern(inPort(w.to, w.port))} title={L(parts.label(byId.get(w.to)))} aria-label={L(parts.label(byId.get(w.to)))} onClick={()=>reveal(w.to)}><i /></button>)}</span><span className="block-stubs is-output" onPointerDown={e=>e.stopPropagation()}>{[...new Set(block.outs.map(w=>w.from))].map(src=><button type="button" key={src} className="port port-out is-wired" data-p={outPort(src)} data-wire-pattern={pattern(outPort(src))} title={L(parts.label(byId.get(srcNode(src))))} aria-label={L(parts.label(byId.get(srcNode(src))))} onClick={()=>reveal(srcNode(src))}><i /></button>)}</span></>}
+      {hidden&&<><span className="block-stubs is-input" onPointerDown={e=>e.stopPropagation()}>{block.ins.map(w=><button type="button" key={`${w.to}.${w.port}`} className="port port-in is-wired" data-p={inPort(w.to,w.port)} data-port-shape={appearanceOf(inPort(w.to, w.port)).shape} title={L(parts.label(byId.get(w.to)))} aria-label={L(parts.label(byId.get(w.to)))} onClick={()=>reveal(w.to)}><i /></button>)}</span><span className="block-stubs is-output" onPointerDown={e=>e.stopPropagation()}>{[...new Set(block.outs.map(w=>w.from))].map(src=><button type="button" key={src} className="port port-out is-wired" data-p={outPort(src)} data-port-shape={appearanceOf(outPort(src)).shape} title={L(parts.label(byId.get(srcNode(src))))} aria-label={L(parts.label(byId.get(srcNode(src))))} onClick={()=>reveal(srcNode(src))}><i /></button>)}</span></>}
     </section>
   }
 
@@ -778,7 +778,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const canDelete = !selectionRefusal && (Boolean(selectedWire) || removable(selectedNode))
 
   const draft = (port, d) => {
-    const appearance = pattern(port)
+    const appearance = appearanceOf(port).wire ?? DEFAULT_WIRE_PATTERN
     return <g className="kw is-draft" data-wire-pattern={appearance}>
       <path className="kw-line" d={d} />
       {appearance === 'double' && <path className="kw-gap" d={d} />}

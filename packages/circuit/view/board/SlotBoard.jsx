@@ -29,7 +29,7 @@ import Glyph from "./Glyph.jsx"
 import { feeding, inPort, layout, outPort, parsePort, placement } from "../../core/board/model.js"
 import { regionAddress } from "../../core/board/regions.js"
 import { cardAt } from '../drag.js'
-import { patternAt, wireMarkup, wirePattern } from './wire-appearance.js'
+import { appearanceAt, DEFAULT_WIRE_PATTERN, wireMarkup, wirePattern } from './wire-appearance.js'
 
 
 // The phone circuit board, the same in every game: the sources on top, parts in a grid of slots that
@@ -91,7 +91,7 @@ export function drawWires(el, graph, parts, live) {
     if (a) {
       const b = [live.x - origin.left, live.y - origin.top]
       const d = live.from.startsWith('o|') ? curve(a, b) : curve(b, a)
-      markup += wireMarkup(d, patternAt(parts, find, live.from) ?? 'solid', { draft: true, casing: false })
+      markup += wireMarkup(d, appearanceAt(parts, find, live.from).wire ?? DEFAULT_WIRE_PATTERN, { draft: true, casing: false })
     }
   }
   // Translated parts and the SVG itself must not permanently enlarge the board's scroll extent.
@@ -278,7 +278,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
       type="button"
       className={`pb-dot ${dotClass(p, extra)}`}
       data-p={p}
-      data-wire-pattern={patternAt(parts, (id) => graph.nodes.find((node) => node.id === id), p)}
+      data-port-shape={appearanceAt(parts, (id) => graph.nodes.find((node) => node.id === id), p).shape}
       onClick={(event) => {
         event.stopPropagation()
         onPort(p)

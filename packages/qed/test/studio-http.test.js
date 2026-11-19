@@ -1,5 +1,5 @@
 // Exercise the Studio HTTP transport, including one real package write and undo.
-import { test, before, after } from 'node:test'
+import { test, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import { readFileSync, rmSync } from 'node:fs'
@@ -8,9 +8,10 @@ import { join } from 'node:path'
 import { bridge } from '../../../games/kit/app/studio.js'
 import { proofsRoot } from './fixture.js'
 
-const { root, id: GAME } = proofsRoot()
+let fixture
 let base
 let server
+let opening
 
 async function listen(middleware) {
   const server = createServer((req, res) => middleware(req, res, () => {
@@ -30,17 +31,23 @@ async function close(server) {
   await closed
 }
 
-before(async () => {
-  process.env.GAMES_ROOT = root
-  const { TOOLS, lacking } = await import('../../../games/kit/engine/ops/tools.js')
-  server = await listen(bridge(TOOLS, lacking))
-  base = origin(server)
-})
+function start() {
+  opening ??= (async () => {
+    fixture = proofsRoot()
+    process.env.GAMES_ROOT = fixture.root
+    const { TOOLS, lacking } = await import('../../../games/kit/engine/ops/tools.js')
+    server = await listen(bridge(TOOLS, lacking))
+    base = origin(server)
+    return fixture.id
+  })()
+  return opening
+}
+
 after(async () => {
   try {
     await close(server)
   } finally {
-    rmSync(root, { recursive: true, force: true })
+    if (fixture) rmSync(fixture.root, { recursive: true, force: true })
   }
 })
 
@@ -48,9 +55,10 @@ const post = async (tool, args, raw = null) => {
   const res = await fetch(`${base}/studio/api/${tool}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: raw ?? JSON.stringify(args) })
   return { status: res.status, body: await res.json() }
 }
-const onDisk = file => readFileSync(join(root, 'packages', GAME, file), 'utf8')
+const onDisk = file => readFileSync(join(fixture.root, 'packages', fixture.id, file), 'utf8')
 
 test('the bridge lists the tools, and says what is wrong with a call', async () => {
+  const game = await start()
   const list = await (await fetch(`${base}/studio/api/`)).json()
   assert.ok(['preview', 'modify', 'seed', 'undo', 'log', 'vocabulary'].every((t) => list[t]?.about))
   assert.equal((await fetch(`${base}/elsewhere`)).status, 404)
@@ -61,25 +69,26 @@ test('the bridge lists the tools, and says what is wrong with a call', async () 
   const unknown = await post('preview', { game: 'nope' })
   assert.equal(unknown.status, 422)
   assert.match(unknown.body.error, /no game nope/)
-  assert.equal((await post('preview', { game: GAME, package: GAME })).status, 422)
+  assert.equal((await post('preview', { game, package: game })).status, 422)
 })
 
 test('apply, read the log, undo: the content comes back as it was', async () => {
+  const game = await start()
   const before = onDisk('i18n/en.json')
   const source = onDisk('levels/given.json')
   const ops = [{ op: 'text.set', level: 'given', path: 'tasks[0].brief', lang: 'en', value: 'Assume “Today is Saturday” and prove the claim.' }]
-  const done = (await post('modify', { package: GAME, changeset: { why: 'a shorter brief', ops } })).body
+  const done = (await post('modify', { package: game, changeset: { why: 'a shorter brief', ops } })).body
   assert.equal(done.written, true, done.problems.join('\n'))
   assert.notEqual(onDisk('i18n/en.json'), before)
   assert.equal(onDisk('levels/given.json'), source)
-  const { log, undoable } = (await post('log', { package: GAME })).body
+  const { log, undoable } = (await post('log', { package: game })).body
   assert.equal(log.at(-1).why, 'a shorter brief')
   assert.equal(undoable, log.at(-1).seq)
-  const undone = (await post('undo', { package: GAME })).body
+  const undone = (await post('undo', { package: game })).body
   assert.equal(undone.written, true, undone.problems.join('\n'))
   // The same content; a line the change rewrote keeps the file format (../engine/ops/json.js), as every write does.
   assert.deepEqual(JSON.parse(onDisk('i18n/en.json')), JSON.parse(before))
-  assert.equal((await post('log', { package: GAME })).body.undoable, null, 'an undo is not itself undone')
+  assert.equal((await post('log', { package: game })).body.undoable, null, 'an undo is not itself undone')
 })
 
 test('the slow reads go to the second lane: a quick preview is not held up by a whole check, a write waits for both', async t => {

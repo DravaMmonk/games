@@ -305,7 +305,7 @@ function premiseText(p, say) {
 export const premisesText = (premises, say = show) => `⟦${premises.map((p) => premiseText(p, say)).join('; ')}⟧`
 
 // The identity rule checks a hypothesis in scope instead of reducing the goal to a premise.
-export const ASSUMPTION_RULE = { key: 'assumption', part: 'logic/assumption', name: T('假设规则'), fromHypothesis: true }
+export const ASSUMPTION_RULE = { key: 'assumption', part: 'logic/assumption', name: T('引用假设'), fromHypothesis: true }
 
 /** A rule written in Isabelle-style notation, with its binders and premises. */
 export function ruleText(rule, say = show) {

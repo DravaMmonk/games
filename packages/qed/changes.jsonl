@@ -63,3 +63,4 @@
 {"seq":63,"at":"2026-11-19T19:40:34.687Z","why":"保留未修改词条的原有顺序","adopt":true,"files":[{"file":"packages/qed/i18n/en.json","after":"b23df88a36866938"},{"file":"packages/qed/i18n/zh.json","after":"1ee5b394f0442c87"}]}
 {"seq":64,"at":"2026-11-19T19:40:51.786Z","why":"沿用 1-8 拼句任务标识检验旧进度，并整理移入任务的文案键","adopt":true,"files":[{"file":"packages/qed/levels/e-words.json","after":"48b5e66a6f26102a"},{"file":"packages/qed/i18n/en.json","after":"31d66f3381624c06"},{"file":"packages/qed/i18n/zh.json","after":"ecb32a61521b0daf"}]}
 {"seq":65,"at":"2026-11-19T19:43:20.542Z","why":"对齐英文任务说明与电路输出口名称","adopt":true,"files":[{"file":"packages/qed/i18n/en.json","after":"f2dfa38eca52a716"}]}
+{"seq":66,"at":"2026-11-19T19:53:44.295Z","why":"Update references to the renamed Use a given card","adopt":true,"files":[{"file":"packages/qed/i18n/en.json","after":"887fdbb7064ee0d7"},{"file":"packages/qed/i18n/zh.json","after":"3b30a24e483bd6b7"}]}

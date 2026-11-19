@@ -103,7 +103,6 @@
 .mr { position: relative; overflow: auto; overscroll-behavior: contain; display: grid; align-content: start; gap: var(--sp-3); scrollbar-width: thin; }
 .mr-rules { list-style: none; margin: 0; padding: 0 0 var(--sp-3); display: grid; gap: 2px; border-bottom: 1px dashed var(--rule); }
 .mr-rules li { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); align-items: baseline; color: var(--ink); }
-.mr-rules .mr-rule-mark { color: var(--accent); }
 .mr-flow { list-style: none; margin: 0; padding: 0; display: grid; }
 .mr-box { display: grid; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule); color: var(--ink); min-width: 0; }
 .mr-box.is-on { box-shadow: inset 0 0 0 1.5px var(--accent); }
@@ -118,7 +117,7 @@
 .mr-num { position: absolute; left: -10px; top: calc(var(--sp-3) + var(--mr-row) / 2); transform: translateY(-50%); min-height: 0; width: 18px; height: 18px; display: grid; place-items: center; border-radius: var(--r-full); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--rule); font: 600 10px var(--mono); color: var(--muted); }
 .mr-name { gap: var(--sp-2); font: 600 11.5px/1 var(--sans); color: var(--muted); }
 .mr-name .step-card { margin-right: 0; }
-.mr-note { color: var(--accent); white-space: nowrap; font-size: 12.5px; }
+.mr-note { white-space: nowrap; font-size: 12.5px; }
 .mr-note.is-prose { white-space: normal; line-height: var(--lh-ui); }
 /* KaTeX's box holds room under its baseline, so centred it sits high: down to the name's baseline. */
 .mr-note .katex { position: relative; top: 0.12em; }
@@ -137,9 +136,13 @@
 /* A refused step still goes on (its state is given back), so its line keeps its arrow. */
 .mr-step.is-refused::after { content: ''; border-top-color: var(--fail); }
 
-/* Formulas typeset in TeX (ui/Tex.jsx): one face for every sign; a value's lines left-aligned, prose in the page's face. */
+/* Formulas typeset in TeX: one face for every sign; a value's lines left-aligned, prose in the page's face. */
 .tx-lines { display: grid; gap: 1px; justify-items: start; text-align: left; min-width: 0; }
 .tx-line { display: block; max-width: 100%; text-align: left; }
+.tx-marked > .tx-line { display: inline; }
+.tx-marked > .tx-mark { margin-inline-end: var(--sp-2); }
+.tx-marked > .tx-line + .tx-mark { margin-inline-start: var(--sp-2); }
+.tx-mark, .mr-note { color: var(--accent-ink); }
 .tx-line .katex { font-size: 1.12em; line-height: 1.35; white-space: normal; }
 .tx-prose { font: 500 11px/1.4 var(--sans); }
-.mr-note .katex, .mr-rule-mark .katex { font-size: 1.05em; }
+.mr-note .katex, .mr-rules .tx-mark .katex { font-size: 1.05em; }

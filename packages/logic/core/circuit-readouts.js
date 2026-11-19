@@ -44,13 +44,14 @@ const goalText = (g, text) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map
 const SUB = '₀₁₂₃₄₅₆₇₈₉'
 const sub = (n) => String(n).replace(/\d/g, (d) => SUB[d])
 const goalMark = (k, count) => (count > 1 ? `⊢${sub(k + 1)}` : '⊢')
-const markedGoal = (g, text, mark) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(punctuation("；"))} ${mark} ${text(g.goal)}` : `${mark} ${text(g.goal)}`)
 const ruleMark = (key, order) => (order.length > 1 ? `R${sub(order.indexOf(key) + 1)}` : 'R')
 const orderOf = (v, run) => (run?.rules && v.keys.every((k) => run.rules.includes(k)) ? run.rules : [...new Set(v.entries.map((e) => e.key))])
+const markedLine = (mark, text, before = '') => ({ s: [before, mark, text].filter(Boolean).join(' '), formula: true, before, mark, text })
 /** A state's goals, a line each, marked ⊢₁ ⊢₂ … (the run report's boxes hold only these). */
 export const goalLines = (v, task) => {
   const text = machineTextOf(task)
-  return v.goals.map((g, k) => markedGoal(g, text, goalMark(k, v.goals.length)))
+  return v.goals.map((g, k) => markedLine(goalMark(k, v.goals.length), text(g.goal),
+    withBinders(g.fixes, g.hyps.map(text).join(punctuation("；"))).trimEnd()))
 }
 /** The rules on the board, a line each, marked R₁ R₂ … (the run report lists them first). */
 export const ruleLines = ({ ruleEntries: entries = [], rules: order = [] }, task) => {
@@ -117,7 +118,7 @@ export function machineLines(v, { task, run }) {
   if (v.kind === 'rules') {
     const order = orderOf(v, run)
     const shown = v.own === undefined ? v.entries : v.entries.slice(v.entries.length - v.own)
-    return formulas(shown.map((e) => `${ruleMark(e.key, order)} ${ruleWritten(e, text, term)}`))
+    return shown.map((e) => markedLine(ruleMark(e.key, order), ruleWritten(e, text, term)))
   }
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0
@@ -125,7 +126,7 @@ export function machineLines(v, { task, run }) {
       ...prose([v.error && `${tr("这一步失败")}：${L(v.error)}`]),
       ...result(!v.goals.length && tr('证明完毕')),
       ...prose([others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1})]),
-      ...formulas(goalLines(v, task)),
+      ...goalLines(v, task),
     ]
   }
   if (v.kind === 'eqs') return [...prose([v.fail && `${tr('合一失败')}：${L(v.fail)}`]), ...result(!v.eqs.length && tr('没有等式了')), ...formulas(v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))]

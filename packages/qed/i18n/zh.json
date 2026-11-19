@@ -1724,7 +1724,7 @@
   "level.s-results.intro.0.t": "第一个案例里，两条已知都能帮助证明「路滑」。先用「下雨 → 路滑」会留下「下雨」要证，可这条路走不通。另一个案例也有同样的选择。",
   "level.s-results.intro.1.t": "从这一关起，<part-ref to=\"part:rule\"></part-ref>保留所有对得上的结果。用<part-ref to=\"part:logic/assumption\"></part-ref>时，每条匹配的已知都可以继续走，后续步骤会检验哪些路线能走完。",
   "level.s-results.tasks.s-results.brief": "设计一个证明助手，证完每一个目标。",
-  "level.s-results.tasks.s-results.hint.0": "接法不用变：套用倒着用一次，再由假设得证两次。",
+  "level.s-results.tasks.s-results.hint.0": "接法不用变。先倒着用一次套用规则，再用两次<part-ref to=\"part:logic/assumption\"></part-ref>。",
   "level.s-results.tasks.s-results.inputs.0.label": "目标",
   "level.s-results.title": "一串结果",
   "level.s-search.after": "这就是一台简单的证明助手：三种步骤，加上回溯搜索。它找到的每个证明都只用了证明核的规则，所以照样可信。它也有做不到的：已知里还套着「若」时（像交换要用的「下雨 → (刮风 → 地湿)」），倒着套用一次对不上目标。而且它只认识「若…则…」：接下来证明核要认识新的连接词，证明助手也会跟着学会用它们。",

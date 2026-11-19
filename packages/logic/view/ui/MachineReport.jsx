@@ -9,7 +9,7 @@ import { L, Popover } from 'kernel/view'
 import { T, tr } from 'kernel/words'
 import { inputsOf, inputsOfLevel } from '../../core/machine.js'
 import { goalLines, ruleLines, stepExplained } from '../../core/circuit-readouts.js'
-import { Formula } from './Formula.jsx'
+import { Formula, MarkedFormula } from './Formula.jsx'
 
 const PROVED = T('证明完毕')
 
@@ -18,7 +18,7 @@ function Box({ value, task, show, on = false }) {
   const state = value?.kind === 'state'
   const more = state ? value.more?.length ?? 0 : 0
   const lines = state && value.goals.length
-    ? goalLines(value, task).map((line, k) => <Formula key={k} text={line} className="mr-line" />)
+    ? goalLines(value, task).map((line, k) => <MarkedFormula key={k} line={line} className="mr-line" />)
     : [<span key="0" className="mr-line">{state ? L(PROVED) : L(show(value))}</span>]
   return (
     <li className={`mr-box ${on ? 'is-on' : ''} ${state && !value.goals.length ? 'is-done' : ''}`}>
@@ -50,7 +50,7 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
     <div className="mr" ref={box}>
       {rules.length > 0 && (
         <ul className="mr-rules" aria-label={tr('规则')}>
-          {rules.map((r) => <li key={r.mark}><Formula text={r.mark} className="mr-rule-mark" /><Formula text={r.text} /></li>)}
+          {rules.map((r) => <li key={r.mark}><Formula text={r.mark} className="tx-mark" /><Formula text={r.text} /></li>)}
         </ul>
       )}
       <ol className="mr-flow" aria-label={tr('运行步骤')}>

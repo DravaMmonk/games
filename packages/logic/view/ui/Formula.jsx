@@ -15,13 +15,27 @@ export function Formula({ text, className = '' }) {
   return <span className={`tx-line ${className}`.trim()}><Typeset tex={texOf(line)} plain={<span className="tx-plain">{line}</span>} /></span>
 }
 
+/** A rule or goal with its reference mark distinct from the formula it labels. */
+export function MarkedFormula({ line: { before, mark, text }, className = '' }) {
+  return (
+    <span className={`tx-marked ${className}`.trim()}>
+      {before && <><Formula text={before} />{' '}</>}
+      <Formula text={mark} className="tx-mark" />{' '}
+      <Formula text={text} />
+    </span>
+  )
+}
+
 /** A machine value as a card shows it: only what it is (its formulas, typeset, or 证明完毕), never a note on it (why a
  *  step failed, how many results: the run report says those). */
 export const typesetMachine = (v, ctx) => {
   const lines = machineLines(v, ctx).filter((l) => l.formula || l.result)
   return (
     <span className="tx-lines">
-      {lines.length ? lines.map((l, k) => (l.formula ? <Formula key={k} text={l.s} /> : <span key={k} className="tx-prose">{l.s}</span>)) : '—'}
+      {lines.length ? lines.map((line, k) => {
+        if (line.mark) return <MarkedFormula key={k} line={line} />
+        return line.formula ? <Formula key={k} text={line.s} /> : <span key={k} className="tx-prose">{line.s}</span>
+      }) : '—'}
     </span>
   )
 }

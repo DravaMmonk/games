@@ -6,10 +6,25 @@ import { definePlays } from '../../../games/kit/engine/plays.js'
 import { defineParts } from 'circuit'
 import { gateCourse } from '../core/gates.js'
 import { play } from '../core/play.js'
+import { truth } from '../core/truthValues.js'
 
 // The gate the level holds, as a game's parts.json defines it.
 const gNot = { name: { zh: '非' }, desc: { zh: 'd' }, icon: 'ToggleLeft', family: 'logic/gate', inputs: [{ name: 'a' }], op: 'numlib/not' }
 const gates = { gNot: { ...defineParts({ parts: { gNot } }, scalar).PARTS.gNot, name: gNot.name, desc: gNot.desc } }
+
+test('truth exercises distinguish missing and incorrect answers', () => {
+  for (const [ask, field, formulas, correct] of [
+    ['fill', 'fill', ['A'], [true, false]],
+    ['valid', 'marks', ['A', 'A → A'], [false, true]],
+  ]) {
+    const { judge } = truth({ ask, formulas })
+    const missing = judge({ [field]: [undefined, !correct[1]] })
+    assert.equal(missing.pass, false)
+    assert.deepEqual(missing.unanswered, new Set([0]))
+    assert.deepEqual(missing.wrong, new Set([1]))
+    assert.equal(judge({ [field]: correct }).pass, true)
+  }
+})
 
 test('the circuit template requires an explicit target column policy', () => {
   const circuit = { editor: 'circuit', judge: 'cases', resources: 'logic/gates' }

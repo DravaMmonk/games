@@ -15,10 +15,15 @@ export default function ValueTables({ screen, resource, play }) {
     write: (state) => state,
   }, resource.judge)
   const update = (patch) => change({ ...state, ...patch })
+  const rowStatus = (k) => {
+    if (checked?.unanswered.has(k)) return tr('未作答')
+    if (checked?.wrong.has(k)) return tr('答错')
+    return null
+  }
   const tryRow = (f, k) => {
     const next = { ...state, tried: { ...state.tried, [`${f}:${k}`]: true } }
     change(next)
-    if (resource.hit(f, k)) record({ pass: true, wrong: new Set() }, next)
+    if (resource.hit(f, k)) record({ pass: true, unanswered: new Set(), wrong: new Set() }, next)
   }
 
   const table = (fi, { fill = false } = {}) => {
@@ -31,12 +36,17 @@ export default function ValueTables({ screen, resource, play }) {
             const tried = state.tried[`${fi}:${k}`]
             const guess = state.fill[k]
             const bad = fill && checked?.wrong.has(k)
+            const status = fill && rowStatus(k)
+            const answer = guess === undefined ? tr('未作答') : tf(guess)
             return (
               <tr key={k} className={bad ? 'is-wrong' : ''}>
                 {given.map((item, j) => <td key={j} className={item ? 'is-t' : 'is-f'}>{tf(item)}</td>)}
                 <td className="is-value">
                   {fill ? (
-                    <button type="button" className={`vt-cell ${guess === undefined ? '' : guess ? 'is-t' : 'is-f'}`} onClick={() => update({ fill: { ...state.fill, [k]: guess === undefined ? true : guess ? false : undefined } })} aria-label={tr("第 {k} 行", {k: k + 1})}>{guess === undefined ? '?' : tf(guess)}</button>
+                    <div className="vt-answer">
+                      <button type="button" className={`vt-cell ${guess === undefined ? '' : guess ? 'is-t' : 'is-f'}`} onClick={() => update({ fill: { ...state.fill, [k]: guess === undefined ? true : guess ? false : undefined } })} aria-label={tr('第 {k} 行：{value}', { k: k + 1, value: bad ? `${answer} · ${status}` : answer })}>{guess === undefined ? '?' : answer}</button>
+                      {status && <span className="vt-answer-status" aria-hidden="true">{status}</span>}
+                    </div>
                   ) : tried ? (
                     <span className={`vt-cell is-shown ${value ? 'is-t' : 'is-f'}`}>{tf(value)}</span>
                   ) : (
@@ -59,6 +69,7 @@ export default function ValueTables({ screen, resource, play }) {
         <section key={k} className={`vt-claim ${checked?.wrong.has(k) ? 'is-wrong' : ''}`}>
           <header>
             <b><FormulaText text={title} /></b>
+            {rowStatus(k) && <span className="vt-answer-status">{rowStatus(k)}</span>}
             <span className="vt-mark-pick" role="group">
               {[[true, L(labels.classify[1])], [false, L(labels.classify[0])]].map(([v, label]) => (
                 <button key={label} type="button" aria-pressed={state.marks[k] === v} onClick={() => update({ marks: { ...state.marks, [k]: v } })}>{label}</button>
@@ -72,7 +83,15 @@ export default function ValueTables({ screen, resource, play }) {
   )
   // Trying rows needs no check: each row tried shows its value, and the one asked for passes the level.
   const tried = mode === 'try' && play.checks === 'shown'
-  const results = checked ? <Verdict pass={checked.pass}>{L(checked.pass ? resource.accepted : resource.wrong(checked.wrong.size))}</Verdict> : null
+  const results = checked && (
+    <Verdict pass={checked.pass}>
+      {checked.pass ? L(resource.accepted) : mode === 'try' ? L(resource.retry) : <>
+        {checked.unanswered.size > 0 && tr('还有 {count} 项未作答。', { count: checked.unanswered.size })}
+        {checked.unanswered.size > 0 && checked.wrong.size > 0 && ' '}
+        {checked.wrong.size > 0 && tr('有 {count} 项答错。', { count: checked.wrong.size })}
+      </>}
+    </Verdict>
+  )
   const dock = !tried && <RunDock go={checkAction(check, Boolean(checked?.pass))} />
   return <PlayLayout screen={screen} play={play} stage={tried ? <>{stage}{results}</> : stage} results={tried ? undefined : results} dock={dock} />
 }

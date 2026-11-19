@@ -713,6 +713,8 @@ level-ref, wiki-ref { display: inline; }
 .vt-table td.is-t { color: var(--status); }
 .vt-table td.is-f { color: var(--fail); }
 .vt-table tr.is-wrong td { background: color-mix(in srgb, var(--fail) 10%, var(--paper)); }
+.vt-answer { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--sp-2) var(--sp-4); padding-block: var(--sp-2); }
+.vt-answer-status { color: var(--body); font-size: var(--fs-ui); }
 .vt-cell { min-width: 64px; height: 30px; padding: 0 var(--sp-4); border: 0; border-radius: var(--r-full); color: var(--muted); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline); font: inherit; font-size: 13px; cursor: pointer; }
 .vt-cell.is-t { color: var(--paper); background: var(--status); box-shadow: none; }
 .vt-cell.is-f { color: var(--paper); background: var(--fail); box-shadow: none; }

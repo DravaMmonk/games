@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { display, pixel, pixelLabels } from '../../engine/grid.js'
 import { paintPixels } from '../canvas.js'
 import { AXIS, numberSize } from './layout.js'
@@ -22,6 +22,22 @@ export default function GridView({ value, numbers = false, axes = false, grid = 
   const { w, h } = value
   const cell = given ?? (numbers ? ((value.c ?? 1) === 3 ? 58 : 36) : Math.max(4, Math.floor(220 / Math.max(w, h))))
   const off = axes ? AXIS : 0
+  const [focused, setFocused] = useState(0)
+  const tabCell = Math.min(focused, w * h - 1)
+  const moveFocus = (event, x, y) => {
+    let nextX = x
+    let nextY = y
+    switch (event.key) {
+      case 'ArrowLeft': nextX = Math.max(x - 1, 0); break
+      case 'ArrowRight': nextX = Math.min(x + 1, w - 1); break
+      case 'ArrowUp': nextY = Math.max(y - 1, 0); break
+      case 'ArrowDown': nextY = Math.min(y + 1, h - 1); break
+      case 'Enter': case ' ': event.preventDefault(); onPick(x, y, event); return
+      default: return
+    }
+    event.preventDefault()
+    event.currentTarget.parentElement.querySelector(`[data-cell="${nextY * w + nextX}"]`)?.focus()
+  }
   const cells = []
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
@@ -30,7 +46,16 @@ export default function GridView({ value, numbers = false, axes = false, grid = 
       const labels = numbers ? pixelLabels(p) : null
       const longest = labels?.reduce((a, b) => b.length > a.length ? b : a, '')
       cells.push(
-        <g key={`${x},${y}`} transform={`translate(${off + x * cell} ${off + y * cell})`} onClick={onPick ? (e) => onPick(x, y, e) : undefined} onPointerEnter={onHover ? (e) => { if (e.pointerType === 'mouse') onHover(x, y, e) } : undefined} role={onPick ? 'button' : undefined} tabIndex={onPick ? 0 : undefined} aria-label={onPick ? cellLabel?.(x, y, p) ?? `(${x}, ${y})` : undefined} onKeyDown={onPick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(x, y, e) } } : undefined} className={[onPick ? 'gv-pick' : '',cellClass?.(x,y) ?? ''].filter(Boolean).join(' ') || undefined}>
+        <g key={`${x},${y}`} transform={`translate(${off + x * cell} ${off + y * cell})`}
+          data-cell={onPick ? y * w + x : undefined} role={onPick ? 'button' : undefined}
+          tabIndex={onPick ? (y * w + x === tabCell ? 0 : -1) : undefined}
+          aria-label={onPick ? cellLabel?.(x, y, p) ?? `(${x}, ${y})` : undefined}
+          aria-keyshortcuts={onPick ? 'ArrowLeft ArrowRight ArrowUp ArrowDown' : undefined}
+          onFocus={onPick ? () => setFocused(y * w + x) : undefined}
+          onKeyDown={onPick ? (event) => moveFocus(event, x, y) : undefined}
+          onClick={onPick ? (event) => onPick(x, y, event) : undefined}
+          onPointerEnter={onHover ? (event) => { if (event.pointerType === 'mouse') onHover(x, y, event) } : undefined}
+          className={[onPick ? 'gv-pick' : '', cellClass?.(x, y) ?? ''].filter(Boolean).join(' ') || undefined}>
           <rect width={cell} height={cell} fill={fill} />
           {labels && <text x={cell / 2} y={cell / 2} className={`gv-num ${light ? 'is-dark' : 'is-light'}`} style={{ fontSize: numberSize(longest, cell) }}>
             {labels.length > 1 ? labels.map((label, k) => <tspan key={k} x={cell / 2} y={cell / 2 + (k - 1) * 14}>{label}</tspan>) : labels[0]}

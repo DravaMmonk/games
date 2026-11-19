@@ -220,7 +220,7 @@
   "glossary.entries.wave.body.1": "A wave in an image also has a direction: kx cycles across and ky cycles down. The stripes always run perpendicular to the arrow (kx, ky), and the longer the arrow, the denser the stripes.",
   "glossary.entries.wave.body.2": "The smoothest waves are sinusoids (cos or sin). Any pattern, however complex, is many such waves added together.",
   "glossary.entries.wave.title": "Waves: amplitude, frequency, phase and direction",
-  "level.0-1.after": "Every image you see is just a grid of numbers, cell by cell. Hover over any cell to see its value.",
+  "level.0-1.after": "Every image you see is a grid of numbers. Select a cell to read its value.",
   "level.0-1.intro.0.t": "Inside a computer, a photo is not a picture but a table of numbers: the image is cut into many small squares called <b>pixels</b>, and each one records a brightness. In this game 0 is black, 1 is white, and in between are shades of grey.",
   "level.0-1.intro.1.t": "Computer vision works out useful information from this table of numbers: where the edges are, whether there is a person in the picture, how far away things are. Every method in this course comes down to arithmetic on these numbers.",
   "level.0-1.intro.2.fig.caption": "Set 1: input and expected",

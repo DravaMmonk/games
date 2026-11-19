@@ -19,20 +19,20 @@ let unmount = [];
 
 function render() {
   const en = currentLang() === 'en', pick = x => (typeof x === 'string' ? x : en ? x.en : x.zh);
-  document.querySelector('#games').innerHTML = GAMES.filter(g => !g.hidden).map((g, i) => {
+  document.querySelector('#games').innerHTML = GAMES.filter(g => !g.hidden).map(g => {
     const done = Math.min(solvedCount(g.id), g.levels), started = done > 0;
-    return `<a class="game" href="${g.id}/index.html">
+    return `<article class="game">
       <div class="game-art"${g.art ? ` data-art="${g.art}"` : ''}></div>
-      <div class="game-body">
-        <p class="game-meta"><span class="game-no">${String(i + 1).padStart(2, '0')}</span>${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr("开发中")}</em>` : ''}${g.author ? `<span class="game-author">${tr("作者")} <b>${g.author}</b></span>` : ''}</p>
-        <h2 class="game-title">${pick(g.title)}<small lang="${en ? 'zh-CN' : 'en'}">${en ? g.title.zh : g.title.en}</small></h2>
+      <a class="game-body" href="${g.id}/index.html" aria-labelledby="game-title-${g.id}">
+        <p class="game-meta">${pick(g.topic)}${g.dev ? `<em class="dev-tag">${tr("开发中")}</em>` : ''}${g.author ? `<span class="game-author">${tr("作者")} <b>${g.author}</b></span>` : ''}</p>
+        <h2 class="game-title"><span id="game-title-${g.id}">${pick(g.title)}</span><small lang="${en ? 'zh-CN' : 'en'}">${en ? g.title.zh : g.title.en}</small></h2>
         <p class="game-desc">${pick(g.lede)}</p>
         <div class="game-foot">
-          <span class="meter" aria-label="${tr("已通过 {done} / {levels} 关", {done, levels: g.levels})}"><i style="width:${(done / g.levels) * 100}%"></i></span>
+          <span class="meter" aria-hidden="true"><i style="width:${(done / g.levels) * 100}%"></i></span>
           <span class="game-count">${tr("{done} / {levels} 关", {done, levels: g.levels})}</span>
           <b class="game-go">${started ? tr("继续") : tr("开始")}<span aria-hidden="true">→</span></b>
         </div>
-      </div></a>`;
+      </a></article>`;
   }).join('');
   unmount.forEach(stop => stop());
   unmount = [...document.querySelectorAll('#games [data-art]')].map(el => ART[el.dataset.art](el, { lang: currentLang() }));

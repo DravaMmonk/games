@@ -2,7 +2,7 @@
    where it is edited; or its fields as rows, its copy, a comparison, the changes), the field picked in the side panel
    on the right, the audit in a drawer under the middle; each scrolls on its own, the tree, the side panel and the
    drawer resize and fold (the drawer to its one-line bar, which long check lines need the width for). On a narrow
-   screen they follow each other. Tokens from ../tokens.css, the bar
+   screen, the arrangement workspace switches between panels and the other workspaces stack them. Tokens from ../tokens.css, the bar
    and buttons from ../ui.css; the studio's own denser scale below. Density comes from removing chrome: a field's
    label sits beside it, short fields share a row, folded things fold to one line. */
 
@@ -86,6 +86,7 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .studio-resize:hover, .studio-resize:focus-visible { outline: none; background: var(--accent); }
 .studio-resize.is-shut { cursor: e-resize; background: var(--line); }
 .studio-resize.is-shut::after { content: ''; position: absolute; inset: 40% 1px; border-radius: 2px; background: var(--rule); }
+.arrange-panels { display: none; }
 
 @media (max-width: 760px) {
   .studio { height: auto; min-height: 100vh; }
@@ -102,6 +103,18 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
   .studio-bar > .studio-tabs { order: 10; flex: 1 1 100%; }
   .arrange-bar { flex-wrap: nowrap; }
   .arrange-bar > .studio-game { flex: 1 1 0; min-width: 0; max-width: none; }
+  .game-studio .studio-panel-toggle { display: none; }
+  .game-studio .arrange-panels { position: sticky; top: 0; z-index: 4; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--gutter); background: var(--rail); border-block: 1px solid var(--hairline); }
+  .arrange-panels > button { flex: 1; min-height: 44px; border: 1px solid transparent; border-radius: var(--r-sm); background: none; color: var(--body); font: 600 var(--fs-ui)/1.2 var(--sans); cursor: pointer; }
+  .arrange-panels > button[aria-pressed='true'] { border-color: var(--hairline); background: var(--paper); color: var(--ink); }
+  .game-studio .studio-body > .studio-tree { max-height: none; overflow: visible; visibility: visible; }
+  .game-studio .studio-body > .studio-side { visibility: visible; }
+  .game-studio .studio-body[data-mobile-panel='side'] > .studio-side { display: block; }
+  .game-studio .studio-body:not([data-mobile-panel='tree']) > .studio-tree,
+  .game-studio .studio-body:not([data-mobile-panel='main']) > :is(.studio-main, .studio-audit),
+  .game-studio .studio-body:not([data-mobile-panel='side']) > .studio-side { display: none; }
+  .game-studio .studio-tree > .side-tabs { top: calc(46px + 2 * var(--sp-2)); }
+  .game-studio .studio-body > :is(.studio-tree, .studio-main, .studio-side):focus { outline: none; }
 }
 
 /* ---- the left panel: the tree, or search ---- */

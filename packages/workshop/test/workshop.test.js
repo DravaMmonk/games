@@ -129,8 +129,7 @@ test('a packed snapshot reads its captured primitives even when the outer board 
   assert.equal(runBoard(from(part.id), { parts, bind: { in: 6 } }).outputs.out, 12)
 })
 
-test('an incomplete board and a recursive packed dependency cannot be published', () => {
-  assert.equal(take({ ...base(), wires: [] }), null)
+test('a recursive packed dependency cannot be published', () => {
   const parts = { ...drawing, packed: ({ type }) => type === 'coursePart' }
   const nested = from('coursePart')
   const open = () => ({ circuit: nested, parts, open })

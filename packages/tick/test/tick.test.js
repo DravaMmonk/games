@@ -41,9 +41,12 @@ test('a board keeps a register and says it a tick late', () => {
   assert.throws(() => fromText(['x = counter(b)'], level, plain), (e) => e.line === 1)
 })
 
-test('a board that says what it hears this very tick has a loop', () => {
+test('a blueprint that echoes the same tick fails the authored run with a line-loop diagnostic', () => {
   const level = { listens: true, talks: true, want: wantOf({ say: 'tick/line' }), tests: [{ line: bitsOf('01') }] }
-  assert.ok(runLevel(level, fromText(['say <- line'], level, plain), partOf).runs[0].error)
+  const result = runLevel(level, fromText(['say <- line'], level, plain), partOf)
+  assert.equal(result.pass, false)
+  assert.equal(result.runs[0].ticks.length, 0)
+  assert.match(result.fail.why.en, /cannot hear before it speaks/)
 })
 
 test('a workshop part preserves independent register state for each instance', () => {

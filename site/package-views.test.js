@@ -4,7 +4,9 @@ import assert from 'node:assert/strict'
 import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import { createPluginKernel } from '../games/kit/engine/plugins.js'
-import { loadModule, closeGames } from '../games/kit/engine/games.mjs'
+import { loadModule, gameOf, closeGames } from '../games/kit/engine/games.mjs'
+import { readPackage } from '../games/kit/engine/resolver.js'
+import { packageLevel } from '../games/kit/engine/package-play.js'
 import { register as registerTable } from '../packages/table/core/index.js'
 import { content, task } from '../packages/tick/test/contract-fixture.js'
 
@@ -63,4 +65,17 @@ test('table view registers and renders escaped scenes independently of any robot
   const svg = renderer.sceneSVG({ cells: [{ id: 'a', x: 0, y: 0, w: 64, h: 64, value: '<unsafe>' }], edges: [] })
   assert.match(svg, /&lt;unsafe&gt;/)
   assert.doesNotMatch(svg, /<unsafe>/)
+})
+
+test('text answers pair with the shell and render the registered preview', async () => {
+  const text = packageLevel(readPackage('text'), 'text/exact')
+  const game = await gameOf(text, { view: true })
+  assert.deepEqual(game.levels.map(({ id }) => id), ['text/exact'])
+  const { preview } = game.pluginKernel.tables.playView.get('text/answer')
+  const task = text.levels[0].tasks[0]
+  const input = renderToString(createElement(preview, { task, work: 'sample answer' }))
+  assert.match(input, /<input[^>]*value="sample answer"/)
+  const choices = renderToString(createElement(preview, { task: { ...task, choices: ['First', 'Second'] }, work: 'Second' }))
+  assert.match(choices, /role="radio" aria-checked="false"[^>]*>First<\/button>/)
+  assert.match(choices, /role="radio" aria-checked="true"[^>]*>Second<\/button>/)
 })

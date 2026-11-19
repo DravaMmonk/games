@@ -56,15 +56,6 @@ test('a board says from its registers and hears the line', () => {
   assert.deepEqual(steps.map((s) => s.line), [1, 0, 0, 0])
 })
 
-test('a packed part that holds registers keeps them per instance', () => {
-  const counter = packRegisters({ circuit: COUNTER, inputs: [], outputs: ['out'] })
-  const parts = { ...PARTS, counter }
-  // Two counters on one board, each counting on its own: their sum is twice the tick.
-  const board = { nodes: [{ id: 'c1', type: 'counter' }, { id: 'c2', type: 'counter' }, { id: 'a', type: 'add' }, { id: 'out', type: 'output', params: { name: 'out' } }], wires: w('c1>a.a c2>a.b a>out') }
-  const { steps } = runTicks({ nodes: [boardNode({ id: 'p', circuit: board, parts })], ticks: 3, line: bus })
-  assert.deepEqual(steps.map((s) => s.heard.p.outputs.out), [0, 2, 4])
-})
-
 test('a packed part with several outputs says from its registers before it hears', () => {
   // Inside: says what it heard the tick before (kept in a register), and gives the line it hears as `got`.
   const inner = {

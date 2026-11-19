@@ -1,9 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readPackage, runtimeOf } from '../../../games/kit/engine/resolver.js'
-import { packageLevel } from '../../../games/kit/engine/package-play.js'
 import { checkGame } from '../../../games/kit/engine/checks.js'
-import { gameOf, closeGames } from '../../../games/kit/engine/games.mjs'
 import { loadPlugins } from '../../../games/kit/engine/plugin-node.js'
 import { evaluatePlay } from '../../../games/kit/engine/plugin-runtime.js'
 
@@ -24,18 +22,6 @@ test('text core registers in Node, checks and blind-plays every example without 
     assert.equal(runtime.play.attempt(ctx, task.referenceAnswer).verdict.pass, true)
     for (const answer of task.wrongAnswers) assert.equal(runtime.play.attempt(ctx, answer).verdict.pass, false)
   }
-})
-
-test('text view pairs and mounts through the same shell projection as other package plays', async () => {
-  try {
-    const content = readPackage(packageId)
-    for (const level of content.levels) {
-      const game = await gameOf(packageLevel(content, level.id), { view: true })
-      assert.equal(typeof game.kinds['text/answer'].Screen, 'function')
-      assert.equal(game.levels.length, 1)
-      assert.equal(typeof game.pluginKernel.tables.playView.get('text/answer').preview, 'function')
-    }
-  } finally { await closeGames() }
 })
 
 test('answer work round-trips and judging is deterministic at tolerance boundaries', async () => {

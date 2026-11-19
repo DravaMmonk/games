@@ -10,17 +10,27 @@ import { content, task } from '../packages/tick/test/contract-fixture.js'
 
 after(closeGames)
 
-test('circuit view pairs with its core through the public view entry, with its progression and Studio adapters', async () => {
+test('the circuit view registers the stage editor and renders the selected stage', async () => {
   const core = await loadModule(new URL('../packages/circuit/core/index.js', import.meta.url).pathname)
   const view = await loadModule(new URL('../packages/circuit/view/index.jsx', import.meta.url).pathname)
   const kernel = createPluginKernel()
   core.register(kernel.forPackage('circuit', 'core'))
   view.register(kernel.forPackage('circuit', 'view'))
   kernel.pair([{ play: 'circuit/board' }], true)
-  assert.equal(typeof kernel.tables.playView.get('circuit/board').component, 'function')
-  assert.equal(typeof kernel.tables.kind.get('circuit/progression').circuitProgress, 'function')
-  assert.equal(typeof kernel.tables.game.get('circuit/stages'), 'function')
-  assert.equal(typeof kernel.tables.editorExtension.get('circuit/stages').stageChain, 'function')
+  const { installStudioPlugins, editorSlot } = await loadModule(new URL('../games/kit/studio/editors.js', import.meta.url).pathname)
+  installStudioPlugins(kernel)
+  try {
+    const content = { objectKinds: { 'circuit/stages': {} } }
+    const StageChain = editorSlot(content, 'circuit/part', 'stageChain')
+    const html = renderToString(createElement(StageChain, {
+      part: 'sample/lift', namespace: 'sample', stage: 'sample/lift-free',
+      raw: { stages: [{ id: 'lift-free', desc: 'Lift freely' }] },
+    }))
+    assert.match(html, /aria-selected="true"[^>]*><small>1<\/small><code>lift-free<\/code>/)
+    assert.match(html, /Lift freely/)
+  } finally {
+    installStudioPlugins(null)
+  }
 })
 
 test('tick core and view compose with circuit through public entries', async () => {
@@ -34,14 +44,14 @@ test('tick core and view compose with circuit through public entries', async () 
   core.register(kernel.forPackage('tick', 'core'))
   view.register(kernel.forPackage('tick', 'view'))
   kernel.pair([task], true)
-  assert.equal(kernel.tables.playView.get('tick/board').component, view.BusBoard)
+  const { preview } = kernel.tables.playView.get('tick/board')
   const game = view.default(content)
   const context = { content, task }
   globalThis.getComputedStyle ??= () => ({ getPropertyValue: () => '16' })
-  const html = renderToString(createElement(view.BusBoard, { context, task, work: core.busPlay.initial(context), onChange: () => {} }))
-  assert.ok(html.length > 100, 'the paired preview renders the editable work')
-  assert.equal(game.levels.length, 1)
-  assert.equal(typeof Object.values(game.kinds)[0].Screen, 'function')
+  const html = renderToString(createElement(preview, { context, task, work: core.busPlay.initial(context), onChange: () => {} }))
+  assert.match(html, /class="cl-board"/)
+  assert.match(html, />Bit</)
+  assert.deepEqual(game.levels.map(level => level.id), [content.levels[0].id])
 })
 
 test('table view registers and renders escaped scenes independently of any robot catalog', async () => {

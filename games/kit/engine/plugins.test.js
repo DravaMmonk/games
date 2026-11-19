@@ -1,6 +1,7 @@
 import { lockFixture } from './test-fixture.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { createRequire } from 'node:module'
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
@@ -132,7 +133,11 @@ test('Node core imports and paired Vite entries compose two dependent plugins in
       contentRoots.set(scope, root)
       const game = await gameOf(scope, { view: true })
       assert.deepEqual(game.levels[0].tasks.map(task => task.kind), ['alpha/answer', 'beta/answer'])
-      assert.equal(typeof game.kinds['beta/answer'].Screen, 'function')
+      const require = createRequire(new URL('../../../site/package.json', import.meta.url))
+      const { createElement } = require('react')
+      const { renderToString } = require('react-dom/server')
+      const { preview } = game.pluginKernel.tables.playView.get('beta/answer')
+      assert.equal(renderToString(createElement(preview)), '<p>Answer</p>')
 
     } finally { await closeGames() }
   } finally { rmSync(root, { recursive: true, force: true }) }

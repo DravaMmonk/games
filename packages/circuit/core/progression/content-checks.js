@@ -2,24 +2,30 @@ import { holds } from '../course.js'
 import { policyFor } from 'progress'
 import { RULE_TEXT, againstOpen, audit } from './course.js'
 
-function unavailableParts(course, work, at, flags, checks) {
+function unavailableParts(course, works, at, flags, checks) {
   const holding = holds(course, at, flags)
   const given = new Set(course.available ? course.gives(at).map(course.partOf) : [])
-  return [...new Set((work?.nodes ?? []).map(node => node.type))]
+  return [...new Set(works.flatMap(work => (work?.nodes ?? []).map(node => node.type)))]
     .filter(type => course.stages.has(type) && checks(course.partOf(type), 'availability') && !holding(type) && !given.has(course.partOf(type)))
-    .map(type => `circuit/part ${type} is unavailable to the reference work`)
 }
 function referenceGrantChecks(spec, checks) {
   const lines = []
+  const reported = new Set()
   for (const fragment of spec.specs ?? [spec]) {
     const course = fragment.course
     const works = fragment.logic ?? fragment.circuit ?? fragment.image ?? fragment.table
-    for (const level of fragment.levels) for (const [index, task] of (level.tasks ?? []).entries()) {
-      const at = { id: level.id, task: task.task ?? index }
+    for (const level of fragment.levels) {
+      if (!level.tasks?.length) continue
       const flags = new Set(course.levels.filter(prior => course.before(prior.id, level.id)).flatMap(prior => prior.unlocks ?? []))
-      const runtimeTask = works?.LEVELS?.find(entry => entry.id === level.id)?.tasks[index] ?? task
-      for (const work of [runtimeTask, ...course.boards(at)]) for (const text of unavailableParts(course, work, at, flags, checks)) {
-        lines.push({ fail: true, level: level.id, text: `${level.id}: ${text}` })
+      const runtimeTasks = works?.LEVELS?.find(entry => entry.id === level.id)?.tasks
+      for (const [index, task] of level.tasks.entries()) {
+        const at = { id: level.id, task: task.task ?? index }
+        for (const type of unavailableParts(course, [runtimeTasks?.[index] ?? task, ...course.boards(at)], at, flags, checks)) {
+          const text = `${level.id}: circuit/part ${type} is unavailable to the reference work`
+          if (reported.has(text)) continue
+          reported.add(text)
+          lines.push({ fail: true, level: level.id, text })
+        }
       }
     }
   }
@@ -52,13 +58,14 @@ export function referenceChecks({ game, content, levelLinks, opensBy }) {
   const lines = []
   const fail = text => lines.push({ fail: true, text })
   // A part likewise: linked in the level that earns it or one after (that level's own intro may name what it builds).
-  const earnedAt = (part) => game.levels.find((l) => l.unlocks?.includes(part.key) || part.at?.includes(l.id))?.id
   const partsByKey = new Map((game.parts?.all ?? []).map((p) => [p.key, p]))
+  const earnedAt = new Map()
   for (const [id, links] of levelLinks('part')) for (const key of links) {
     const part = partsByKey.get(key)
-    if (part && policyFor(content, 'circuit/part', part.part ?? key).checks.has('references') && !opensBy(earnedAt(part), id)) {
-      fail(`${id} links the part ${key}, earned later (at ${earnedAt(part)})`)
-    }
+    if (!part || !policyFor(content, 'circuit/part', part.part ?? key).checks.has('references')) continue
+    if (!earnedAt.has(key)) earnedAt.set(key, game.levels.find(level => level.unlocks?.includes(key) || part.at?.includes(level.id))?.id)
+    const earned = earnedAt.get(key)
+    if (!opensBy(earned, id)) fail(`${id} links the part ${key}, earned later (at ${earned})`)
   }
   return lines
 }

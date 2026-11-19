@@ -31,6 +31,13 @@ const reportNaive = (out, { id: level }, naive) => {
   if (naive) out.push({ level, fail: !naive.ok, text: `  naive ${naive.ok ? 'fails' : 'PASSES (bad)'}` })
 }
 
+function checkSolutionParts(out, level, available) {
+  const preset = new Set(presetIds(level))
+  const missing = [...new Set(level.solution.nodes
+    .filter(node => !preset.has(node.id) && !available.has(node.type)).map(node => node.type))]
+  if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: the solution uses ${missing.join(', ')}, which the level cannot have yet` })
+}
+
 /** spec: domain.js spec(content). Returns [{ text, fail?, level? }]: a line about one level names it. */
 export function validate({ levels: given, course, logic, memo = (_id, _name, f) => f() }) {
   const out = logic.wrong.map((text) => ({ fail: true, text }))
@@ -143,9 +150,10 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     out.push(...memo(level.id, `machine ${level.task ?? 0}`, () => {
       const out = []
       // Every part of the answer is one its tray holds, a rule part one its books have.
-      const holds = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), 'in', 'out'])
-      const missing = [...new Set(level.solution.nodes.filter((n) => !presetIds(level).includes(n.id)).map((n) => n.type).filter((t) => !holds.has(t) && !(level.task > 0 && t === builder.get(level.id))))]
-      if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: the solution uses ${missing.join(', ')}, which the level cannot have yet` })
+      const available = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), 'in', 'out'])
+      const own = builder.get(level.id)
+      if (level.task > 0 && own) available.add(own)
+      checkSolutionParts(out, level, available)
       const all = withHidden(level)
       const { reference: good, naive } = compare((work) => runMachine(all, work), level)
       const failures = good.runs.filter((r) => !r.pass).map((r) => keyOf(r.checks[0].reason))
@@ -228,19 +236,24 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
         if (m) out.push({ level: level.id, fail: true, text: `${level.id}: ${test.goal} has a countermodel, so no proof can exist` })
       }
       // What the task holds of each lemma's shapes (../../course.js holds).
-      const has = course ? holds(course, { id: level.id, task: level.task }, new Set()) : () => true
-      const carried = level.lemmas ? reach(course, { id: level.id, task: level.task }).filter((p) => level.lemmas[p] && course.builder(p) !== level.id && !level.without?.includes(p)) : []
-      for (const p of carried) {
-        // A test that asks for a term asks for one proof in particular, not just any.
-        const l = level.lemmas[p]
-        const forms = l.forms ? l.forms.map((f) => f.key).filter((key) => has(p, 'form', key)) : null
-        const gives = (t) => !t.term && lemmaGives(l, Object.values(t.premises ?? {}).map((x) => parse(x, { consts })), parse(t.goal, { consts }), forms)
-        if (!course?.available && level.tests.every(gives)) out.push({ level: level.id, fail: true, text: `${level.id}: the lemma ${p} it carries proves it in one step` })
+      const at = { id: level.id, task: level.task }
+      const has = course ? holds(course, at, new Set()) : () => true
+      if (course) {
+        const reached = reach(course, at)
+        if (!course.available && level.lemmas) for (const part of reached) {
+          const lemma = level.lemmas[part]
+          if (!lemma || course.builder(part) === level.id || level.without?.includes(part)) continue
+          // A test that asks for a term asks for one proof in particular, not just any.
+          const forms = lemma.forms ? lemma.forms.map(form => form.key).filter(key => has(part, 'form', key)) : null
+          const gives = test => !test.term && lemmaGives(lemma, Object.values(test.premises ?? {}).map(text => parse(text, { consts })), parse(test.goal, { consts }), forms)
+          if (level.tests.every(gives)) out.push({ level: level.id, fail: true, text: `${level.id}: the lemma ${part} it carries proves it in one step` })
+        }
+        // A later task of a level may use what the level builds.
+        const allowed = new Set([...reached, 'premise', 'goal'])
+        const own = builder.get(level.id)
+        if (level.task > 0 && own) allowed.add(own)
+        checkSolutionParts(out, level, allowed)
       }
-      // A later task of a level may use what the level builds.
-      const held = course && new Set([...reach(course, { id: level.id, task: level.task }), 'premise', 'goal', ...(level.task > 0 && builder.get(level.id) ? [builder.get(level.id)] : [])])
-      const missing = held ? [...new Set(level.solution.nodes.filter((n) => !presetIds(level).includes(n.id)).map((n) => n.type).filter((t) => !held.has(t)))] : []
-      if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: the solution uses ${missing.join(', ')}, which the level cannot have yet` })
       // Every sentence, term or variable the reference proof picks on a card is one the card offers (choices.js).
       const offer = choicesOf(level)
       const offered = Object.fromEntries(Object.entries(offer).map(([kind, list]) => [kind, new Set(list.map((x) => (typeof x === 'string' ? x : show(x))))]))

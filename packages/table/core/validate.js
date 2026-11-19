@@ -19,21 +19,30 @@ export function validate({ levels, table }) {
 
   for (const L of levels) {
     const tasks = table.played.get(L.id);
+    const builder = L.builds && tasks.find(s => s.taskId === L.builds.task);
+    let builtReferences;
     for (const s of tasks.filter(x => playOf(x).editor === 'circuit')) {
       const where = tasks.length > 1 ? `${L.id} task ${s.taskId}` : L.id;
+      const reference = [];
       if (s.solution) {
         const why = robotConstraint(s, s.solution);
         if (why) bad(L.id, `${where}: ${String(why)}`);
+        const options = { ...s, traced: false };
         s.tests.forEach((_, i) => {
           runs++;
-          const { res, ok } = inspectRobotCase(run, s, s.solution, i);
-          if (!ok) bad(L.id, `${where} test ${i + 1}: the reference gives ${res.error ? JSON.stringify(res.error) : res.value}, expected ${s.expected[i]}`);
+          const { res, pass } = runRobotCase(run, s, s.solution, i, options);
+          reference.push(res);
+          if (!pass) bad(L.id, `${where} test ${i + 1}: the reference gives ${res.error ? JSON.stringify(res.error) : res.value}, expected ${s.expected[i]}`);
         });
+        if (s === builder) builtReferences = reference;
       }
       // A challenge's naive board must fail somewhere: the challenge is what it takes beyond the obvious.
       if (s.naive) {
-        runs++;
-        if (s.tests.every((_, i) => inspectRobotCase(run, s, s.naive, i).ok) && !robotConstraint(s, s.naive)) bad(L.id, `${where}: its naive board passes every test`);
+        const passes = s.tests.every((_, i) => {
+          runs++;
+          return inspectRobotCase(run, s, s.naive, i, { reference: reference[i] }).ok;
+        });
+        if (passes && !robotConstraint(s, s.naive)) bad(L.id, `${where}: its naive board passes every test`);
       }
     }
     for (const s of tasks.filter(x => playOf(x).editor !== 'circuit')) {
@@ -41,12 +50,11 @@ export function validate({ levels, table }) {
       const reference = judgeHand(s, examples.reference), naive = judgeHand(s, examples.naive);
       out.push({ level: L.id, text: `${L.id} task ${s.taskId}: ${s.play} reference ${reference.pass ? 'PASS' : 'FAIL'}, naive ${naive.pass ? 'PASSES (bad)' : 'fails'}`, fail: !reference.pass || naive.pass });
     }
-    const builder = L.builds && tasks.find(s => s.taskId === L.builds.task);
-    if (builder?.solution && playOf(builder).editor === 'circuit') checkBuilt(L, builder);
+    if (builtReferences) checkBuilt(L, builder, builtReferences);
   }
 
   /** The part a level builds against the board it stands for, its task's. */
-  function checkBuilt(L, s) {
+  function checkBuilt(L, s, reference) {
     const b = table.model.built[L.unlock];
     const consts = s.solution.nodes.filter(n => n.type === 'table/const');
     if (b.setting !== undefined && (consts.length !== 1 || consts[0].params?.value !== b.setting)) bad(L.id, `${L.id}: a part with a setting (${b.setting}) is built from a board with that one constant`);
@@ -57,7 +65,7 @@ export function validate({ levels, table }) {
     const box = read([`p = ${L.unlock}${b.setting !== undefined ? `[value=${b.setting}]` : ''}(${args.join(', ')})`, `${b.out} <- p`]);
     s.tests.forEach((_, i) => {
       runs++;
-      const { res: a, pass } = runRobotCase(run, s, box, i), { res: ref } = runRobotCase(run, s, s.solution, i);
+      const { res: a, pass } = runRobotCase(run, s, box, i), ref = reference[i];
       if (!pass) bad(L.id, `${L.id}: its part gives ${a.error ? JSON.stringify(a.error) : a.value} on test ${i + 1}, expected ${s.expected[i]}`);
       else if (ref.table && [...ref.table].some(([key, v]) => !sameJson(a.table.get(key), v))) bad(L.id, `${L.id}: its part fills the table differently from the level's board on test ${i + 1}`);
     });

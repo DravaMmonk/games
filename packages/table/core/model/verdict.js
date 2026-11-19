@@ -16,9 +16,7 @@ import { lazy, tr } from '../lang.js';
 export const testLabel = (L, V, t) => (L.testLabel ? fill(L.testLabel, t) : V.label(t));
 
 /** First step whose outputs differ from the reference board's; scanning in rounds, the first cell that settled wrong. */
-function firstMismatch(run, s, t, res, o) {
-  if (!s.solution || s.noTrace) return null
-  const ref = run(worldOf(s), t, s.solution, { ...o, traced: false })
+function firstMismatch(s, res, ref) {
   if (ref.error) return null
   if (s.rounds) {
     const key = [...ref.table.keys()].find((x) => res.table.get(x) !== ref.table.get(x))
@@ -40,11 +38,11 @@ export function runRobotCase(run, task, board, index, options = task) {
 }
 
 /** Judge the robot's answer and any required cell checks. Live and text play can also locate an output mismatch. */
-export function inspectRobotCase(run, s, b, k, { traced = false, diagnose = traced } = {}) {
+export function inspectRobotCase(run, s, b, k, { traced = false, diagnose = traced, reference } = {}) {
   const options = { ...s, traced }
   const { t, res, pass } = runRobotCase(run, s, b, k, options)
-  const compare = b !== s.solution && !res.error && !s.onFail && (s.checkAll || (!pass && diagnose))
-  const mm = compare ? firstMismatch(run, s, t, res, options) : null
+  const compare = s.solution && !s.noTrace && b !== s.solution && !res.error && !s.onFail && (s.checkAll || (!pass && diagnose))
+  const mm = compare ? firstMismatch(s, res, reference ?? run(worldOf(s), t, s.solution, { ...options, traced: false })) : null
   const ok = pass && !mm
   const stop = mm && mm.key === undefined ? mm.q + 1 : res.steps?.length ?? 0
   return { t, res, mm, ok, stop, view: { res, k: 0, pass: ok, end: false, halt: Boolean(res.error && !res.error.diverge) || (Boolean(mm) && mm.key === undefined), focus: null, badKey: mm ? mm.key : undefined } }

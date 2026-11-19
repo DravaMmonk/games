@@ -38,8 +38,11 @@ test('author checks use intermediate cells when the task grades the entire table
   assert.equal(inspectRobotCase(run, task, naive, 0).ok, false);
   assert.equal(inspectRobotCase(run, task, naive, 0, { traced: true }).ok, false);
   const levels = [{ id: 'example' }];
-  const check = (task) => validate({ levels, table: { run, wrong: [], played: new Map([['example', [task]]]) } });
+  const boards = [];
+  const record = (...args) => { boards.push(args[2]); return run(...args); };
+  const check = (task) => validate({ levels, table: { run: record, wrong: [], played: new Map([['example', [task]]]) } });
   assert.deepEqual(check(task), [{ text: '2 runs' }]);
+  assert.deepEqual(boards, [solution, naive]);
   assert.match(check({ ...task, checkAll: false })[0].text, /naive board passes every test/);
 });
 
@@ -219,14 +222,27 @@ test('carried boards use the reference until the prerequisite has passed', async
   assert.equal(table.opening(target, passed).nodes.find(n => n.id === 'k').params.value, 7);
 });
 
-test('a task’s answers are written, and the reference board is checked against them', async () => {
-  const { validate } = await import('../../table/core/validate.js');
+test('reference runs check authored answers and supply the cells checked against the published board', () => {
   const course = twoLevels();
   course.levels[1].tasks[0].expected = [8, 12, 11];
   const table = tableWorks(course);
   assert.deepEqual(table.wrong, []);
-  const lines = validate({ levels: table.LEVELS, table }).filter(l => l.fail).map(l => l.text);
-  assert.deepEqual(lines, ['reuse test 3: the reference gives 10, expected 11']);
+  const builder = table.played.get('build')[0];
+  let referenceRuns = 0;
+  const run = (...args) => {
+    if (args[2] === builder.solution) referenceRuns++;
+    const result = table.run(...args);
+    if (!args[2].nodes.some(node => node.id === 'p' && node.type === 'counter')) return result;
+    const cells = new Map(result.table);
+    cells.set(cells.keys().next().value, -1);
+    return { ...result, table: cells };
+  };
+  const lines = validate({ levels: table.LEVELS, table: { ...table, run } }).filter(l => l.fail).map(l => l.text);
+  assert.deepEqual(lines, [
+    "build: its part fills the table differently from the level's board on test 1",
+    'reuse test 3: the reference gives 10, expected 11',
+  ]);
+  assert.equal(referenceRuns, builder.tests.length);
   course.levels[1].tasks[0].expected = [8, 12];
   assert.match(tableWorks(course).wrong[0], /reuse: gives 2 expected answers for 3 tests/);
 });

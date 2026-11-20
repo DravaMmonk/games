@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import { Strip } from 'sentence/view'
 import { CheckScenario } from './Checks.jsx'
+import { translationStatements } from '../ui/translation.js'
 import { L, T, Markup, RunDock, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
 
 /** Write a scenario, then play it against the given works. */
@@ -42,5 +43,6 @@ export default function ScenarioCheck({ screen, resource, play }) {
   )
   const results = verdict ? <Verdict pass={passed} compact>{verdict}</Verdict> : null
   const dock = <RunDock {...playback.dock({ go: L(resource.go), done: L(resource.done) })} />
-  return <PlayLayout screen={screen} play={play} stage={stage} results={results} dock={dock} />
+  return <PlayLayout screen={screen} play={play} stage={stage} results={results} dock={dock}
+    statements={translationStatements(screen.level.source, screen.progress)} />
 }

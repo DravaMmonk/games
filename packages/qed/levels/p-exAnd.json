@@ -26,6 +26,7 @@
       "id": "p-exAnd-2",
       "kind": "logic/model",
       "step": "@level.p-exAnd.tasks.p-exAnd-2.step",
+      "translationFrom": "p-exAnd-1",
       "say": "@level.p-exAnd.tasks.p-exAnd-2.say",
       "brief": "@level.p-exAnd.tasks.p-exAnd-2.brief",
       "given": [

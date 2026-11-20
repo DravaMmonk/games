@@ -886,7 +886,7 @@
   "level.fo-nested.tasks.fo-nested-2.hint.0": "For every x, if x is human, then some y is a parent of x.",
   "level.fo-nested.tasks.fo-nested-2.say": "Everyone has a parent.",
   "level.fo-nested.tasks.fo-nested-2.step": "Second",
-  "level.fo-nested.tasks.fo-nested-3.brief": "You built this sentence as a formula; this is someone else’s. Build a world where the two differ in truth.",
+  "level.fo-nested.tasks.fo-nested-3.brief": "Someone else translated the first sentence too. Build a world where their formula and yours differ in truth.",
   "level.fo-nested.tasks.fo-nested-3.hint.0": "Think of it as a game: the opponent picks for ∀, you pick for ∃. In the first, the opponent picks x first, then you pick y; in the second you pick y first, then the opponent picks x.",
   "level.fo-nested.tasks.fo-nested-3.hint.1": "Let each thing like itself.",
   "level.fo-nested.tasks.fo-nested-3.say": "Everything likes something.",

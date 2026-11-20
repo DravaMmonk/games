@@ -185,6 +185,9 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .task-steps button:disabled { opacity: .5; cursor: not-allowed; }
 .task-steps button:not(:disabled):not(.is-on):hover { color: var(--ink); background: var(--hover); }
 .brief-text { margin: calc(var(--sp-4) * -1) 0 0; color: var(--heading); font-family: var(--sans); font-size: 17px; line-height: 1.7; }
+.task-statement { margin: 0; color: var(--muted); font-size: var(--fs-ui); white-space: pre-wrap; }
+.task-statement b { margin: 0 var(--sp-2); color: var(--ink); }
+.task-statement .formula { display: block; max-width: 100%; overflow-x: auto; color: var(--ink); font-size: var(--fs-small); }
 .hint-block { margin-top: calc(var(--sp-4) * -1); }
 .hint-toggle { padding: var(--sp-2) 0; display: inline-flex; align-items: center; gap: var(--sp-2); border: 0; color: var(--accent-ink); background: none; font-size: 12.5px; cursor: pointer; }
 .hint { margin: var(--sp-4) 0 0; padding: var(--sp-4) var(--sp-5); color: var(--body); border-radius: var(--r-md); background: color-mix(in srgb, var(--accent) 8%, var(--paper)); font-size: 13px; line-height: 1.65; animation: rise-in 220ms ease; }

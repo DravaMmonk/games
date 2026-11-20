@@ -26,6 +26,7 @@
       "step": "@level.e-says.tasks.e-says.step",
       "kind": "logic/gates",
       "target": "KA ↔ KB",
+      "translationFrom": "e-says-translate",
       "blind": true,
       "brief": "@level.e-says.tasks.e-says.brief",
       "hint": ["@level.e-says.tasks.e-says.hint.0"],

@@ -37,6 +37,7 @@
       "id": "fo-some-2",
       "kind": "logic/model",
       "step": "@level.fo-some.tasks.fo-some-2.step",
+      "translationFrom": "fo-some-1",
       "say": "@level.fo-some.tasks.fo-some-2.say",
       "meant": "∃x. Bird(x) ∧ Flies(x)",
       "brief": "@level.fo-some.tasks.fo-some-2.brief",

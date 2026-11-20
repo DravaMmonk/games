@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, ChevronDown, Lightbulb, Lock } from 'lucide-react'
 import { L, tr } from './i18n.js'
 import { Markup } from './Markup.jsx'
+import { FormulaText } from './FormulaText.jsx'
 import { RunResults } from './RunDock.jsx'
 import { useEdit, useMark } from './edit.js'
 import { AddMark } from './EditMarks.jsx'
@@ -16,6 +17,15 @@ import { TASK_BOARD_SECTIONS } from '../engine/plays.js'
  *  studio edits (edit.js). */
 export function Text({ as: Tag = 'p', className, text, onClick, mark = {}, sentences = true }) {
   return <Tag className={className} onClick={onClick} {...mark}><Markup text={text ?? ''} sentences={sentences} /></Tag>
+}
+
+export function TaskStatements({ lines = [] }) {
+  return lines.map((line, k) => (
+    <p key={k} className="task-statement">
+      {line.label && <>{L(line.label)} </>}
+      {line.formula ? <FormulaText text={line.formula} /> : <b>{L(line.text)}</b>}
+    </p>
+  ))
 }
 
 /** A level whose stage is the same on both: the phone page or the desktop workbench (a stage that scrolls), each given

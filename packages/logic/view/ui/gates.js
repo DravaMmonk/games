@@ -4,10 +4,9 @@
 // down the table a row at a time, stopping on the first row it gets wrong; a blind puzzle hides the sentence. A gate
 // the player built opens to show the board it runs.
 import { T } from 'kernel/words'
-import { parse } from '../../core/formula.js'
-import { say } from '../../core/notation.js'
 import { runGates } from '../../core/gates.js'
 import { gatesPlayFor } from '../../core/plays.js'
+import { translationStatements } from './translation.js'
 
 const TF = (v) => (v === undefined || v === null ? '—' : v ? T("真") : T("假"))
 
@@ -15,7 +14,7 @@ export const gatesScreen = {
   course: (game) => game.logic.truthCircuits,
   play: { runLevel: runGates, show: TF },
   table: gatesPlayFor,
-  told: (level) => (level.blind ? [] : [{ label: T('这句话'), text: say(parse(level.target), level.notation) }]),
+  told: (level, _test, { progress }) => translationStatements(level, progress),
   readouts: (level, _circuit, { score }) => [{ value: score.steps, label: T('门') }, level.budget !== undefined && { value: level.budget, label: T('最多') }],
   says: {
     go: T('逐行运行'),

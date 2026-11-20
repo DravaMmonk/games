@@ -28,6 +28,7 @@ export { numberText } from '../engine/number.js'
 export { workSignature } from '../engine/stamp.js'
 // Public view tools.
 export { defineGame, GameShell, Text, Brief, Level, Field, ChoiceField, tr, L, useLang } from '../shell/index.js'
+export { TaskStatements } from '../shell/Layout.jsx'
 export { default as RunDock } from '../shell/RunDock.jsx'
 export { useElementSize } from '../views/useElementSize.js'
 export { useSetting } from '../shell/useSetting.js'

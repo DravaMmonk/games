@@ -41,6 +41,7 @@
       "target": "(Rain → Wet) ∧ (Rain ∧ ¬Wet)",
       "brief": "@level.e-words.tasks.g-always-2.brief",
       "hint": ["@level.e-words.tasks.g-always-2.hint.0"],
+      "translationFrom": "e-words-translate",
       "blind": true,
       "solution": [
         "i = gImp(Rain, Wet)",

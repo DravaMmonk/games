@@ -32,6 +32,7 @@
       "id": "m-counter-2",
       "kind": "logic/model",
       "step": "@level.m-counter.tasks.m-counter-2.step",
+      "translationFrom": "m-counter-1",
       "say": "@level.m-counter.tasks.m-counter-2.say",
       "brief": "@level.m-counter.tasks.m-counter-2.brief",
       "given": [

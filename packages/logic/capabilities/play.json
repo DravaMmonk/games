@@ -11,6 +11,7 @@
         "taskBoard": [
           "title",
           "brief",
+          "statement",
           "hints"
         ]
       }
@@ -117,6 +118,7 @@
         "taskBoard": [
           "title",
           "brief",
+          "statement",
           "hints"
         ]
       }

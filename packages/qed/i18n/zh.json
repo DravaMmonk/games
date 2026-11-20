@@ -886,7 +886,7 @@
   "level.fo-nested.tasks.fo-nested-2.hint.0": "对所有 x，若 x 是人，则有一个 y 是 x 的父母。",
   "level.fo-nested.tasks.fo-nested-2.say": "每个人都有父母。",
   "level.fo-nested.tasks.fo-nested-2.step": "第二句",
-  "level.fo-nested.tasks.fo-nested-3.brief": "上一段你把这句话拼成了公式；这是别人拼的。造一个世界，让两份译文真假不同。",
+  "level.fo-nested.tasks.fo-nested-3.brief": "有人也翻译了「第一句」。造一个世界，让两份译文的真假不同。",
   "level.fo-nested.tasks.fo-nested-3.hint.0": "把它想成一个游戏：∀ 由对手挑，∃ 由你挑。第一句是对手先挑 x，你再挑 y；第二句是你先挑 y，对手再挑 x。",
   "level.fo-nested.tasks.fo-nested-3.hint.1": "每样东西各喜欢自己就行。",
   "level.fo-nested.tasks.fo-nested-3.say": "每样东西都喜欢某样东西。",

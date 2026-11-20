@@ -1013,6 +1013,11 @@
                 "type": "bool",
                 "optional": true
               },
+              "translationFrom": {
+                "type": "task",
+                "section": "read",
+                "optional": true
+              },
               "blind": {
                 "type": "bool",
                 "optional": true
@@ -2115,6 +2120,11 @@
               },
               "brief": {
                 "type": "text",
+                "optional": true
+              },
+              "translationFrom": {
+                "type": "task",
+                "section": "read",
                 "optional": true
               },
               "words": {

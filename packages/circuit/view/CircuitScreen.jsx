@@ -1,7 +1,7 @@
 import { partsFor, packedView } from './board/board-parts.js'
 import { sourceOf, srcNode } from "../core/wire-source.js"
 import { openCircuit } from "../core/board-view.js"
-import { VIEWS, valueText } from 'kernel/view'
+import { TaskStatements, VIEWS, valueText } from 'kernel/view'
 
 import { useMemo, useState } from 'react'
 import { Dock } from 'kernel/view'
@@ -459,7 +459,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   )
   const brief = (
     <Brief game={game} level={entry} sections={taskBoard} text={surface?.text} tip={surface?.tip} hint={surface?.hint ?? level.hint}
-      statement={(told?.(level, onView) ?? []).map((line, k) => <p key={k} className="cs-said">{line.label && <>{L(line.label)} </>}<b>{L(line.text)}</b></p>)}
+      statement={<TaskStatements lines={told?.(level, onView, screen)} />}
       readouts={readouts && <Readouts items={readouts(level, drawn, checked)} />}>
       {!onPhone && practice.panel}
     </Brief>

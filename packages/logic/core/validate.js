@@ -51,6 +51,13 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     const lost = presetIds(level).filter((id) => !level.solution?.nodes.some((n) => n.id === id))
     if (lost.length) out.push({ level: level.id, fail: true, text: `${level.id}: its preset names ${lost.join(', ')}, which its reference answer does not have` })
   }
+  for (const level of given) {
+    for (const task of level.tasks.filter((task) => task.translationFrom)) {
+      if (!level.tasks.some((source) => source.taskId === task.translationFrom && source.task < task.task && source.kind === 'logic/translate')) {
+        out.push({ level: level.id, fail: true, text: `${task.taskId}: translationFrom must name an earlier translation task in this level` })
+      }
+    }
+  }
   // A level in everyday words has a sentence for every letter it uses.
   for (const level of levels.filter((l) => l.notation?.words && !l.vocab)) {
     const texts = level.kind === 'logic/define' ? [] : level.kind === 'logic/truth' ? level.formulas : level.kind === 'logic/gates' ? [level.target] : level.kind === 'logic/iso' ? [...level.sentences, ...level.tests.flatMap((t) => [...t.given, ...(t.goal ? [t.goal] : [])])] : level.kind === 'logic/script' ? [...Object.values(level.premises ?? {}), level.goal, ...(level.sentences ?? [])] : level.kind === 'logic/machine' ? level.tests.flatMap((t) => (t.eqs || t.term || t.ways ? [] : t.goal ? [t.goal, ...(t.hyps ?? [])] : t.clauses)) : level.tests.flatMap((t) => [...Object.values(t.premises ?? {}), t.goal])

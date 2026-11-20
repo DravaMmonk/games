@@ -5,6 +5,7 @@
 // Every edit is at once an operation of the pending changeset (undone and redone from the studio's bar or ⌘Z), and the
 // board shows it before the preview comes back (pending-view.js), so wiring never waits.
 // The list of relations is the left column's (ObjectLists.jsx); its file the right's.
+import CopyId from './CopyId.jsx'
 import { useMemo, useState } from 'react'
 import { ArrowRight, Plus, Trash2 } from 'lucide-react'
 import { L, tr } from '../shell/i18n.js'
@@ -116,6 +117,7 @@ function OneRelation({ full, name, relation, own, content, namespace, vocabulary
     <article className="arrange relation-board">
       <div className="arrange-group">
         <code className="editor-id">{shownName(namespace, full)}</code>
+        <CopyId id={full} />
         <SourceMark content={content} kind="relation" full={full} own={own} overriding={overriding} pending={pending} onOverride={() => setOverriding(true)} />
         {editable && candidates.length > 0 && <Picker options={candidates} icon={Plus} label={tr("放上板")} placeholder={tr("放上板")}
           onPick={(id) => setPlaced([...placed, id])} />}

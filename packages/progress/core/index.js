@@ -26,6 +26,15 @@ export const progressMeaning = {
       return kinds?.length ? kinds : undefined
     }
   },
+  studio: {
+    /** The stages the studio lists under object `name` of `kind`: [{ id, index, title, path }], or null without them. */
+    stages(content, kind, name) {
+      if (excluded.has(kind) || !policyFor(content, kind, name).stages) return null
+      const stages = objectsOf(content)[kind]?.[name]?.stages
+      if (!Array.isArray(stages) || !stages.length) return null
+      return stages.map((stage, index) => ({ id: stageName(name, stage.id), index: index + 1, title: stage.title ?? stage.name ?? null, path: ['stages', index] }))
+    },
+  },
   identities: ({ kind, value }) => excluded.has(kind) ? [] : (Array.isArray(value.stages) ? value.stages : []).filter(stage => typeof stage.id === 'string').map(stage => ({ kind, name: stage.id, value: stage })),
   names: ({ name }) => ({
     rewrite: ({ value, schema }) => schema?.stageId ? { value: name(value) } : undefined,

@@ -50,7 +50,8 @@ import { WORDS } from './words.js'
 
 import { circuitWorkStamp, lookupBoard } from "../core/board/packed-boards.js"
 import { definedItem } from "./parts/faces.jsx"
-import { defaultOf, optionsOf } from "../core/parts/define.js"
+import { optionsOf } from "../core/parts/define.js"
+import { withDefinitions } from "./defined.js"
 import { useEdit } from 'kernel/view'
 
 import { PHONE, useMedia } from 'kernel/view'
@@ -171,10 +172,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
   const partState = useParts({ screen, course, base, cards, portLabels, defined: gameDefined, defaults, settings, ready })
   const { has, known, circuit, resolve, parts, packed, palette, folded, types, held, hasPersonal,
     hold, publish, library, notice, render } = partState
-  const defined = useMemo(() => rawDefined && ({ ...rawDefined, of: type => has.definition?.(type, rawDefined.of(type)) ?? rawDefined.of(type), defaults: type => {
-    const definition = has.definition?.(type, rawDefined.of(type))
-    return definition ? Object.fromEntries(definition.settings.map(setting => [setting.key, defaultOf(setting)])) : rawDefined.defaults(type)
-  } }), [rawDefined, has])
+  const defined = useMemo(() => rawDefined && withDefinitions(rawDefined, (type, base) => has.definition?.(type, base)), [rawDefined, has])
   const pass = (score, graph) => { publish?.(graph); screen.solve(score, graph) }
   const opening = () => circuit.opening(level, progress)
   const state = useLevelBoard(screen, {

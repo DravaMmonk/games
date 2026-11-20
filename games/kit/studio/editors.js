@@ -32,7 +32,11 @@ export const contentVocabulary = (vocabulary, content) => !content ? vocabulary 
 export const memberInfo = (content, kind, name) => registeredMeanings().map(meaning => meaning.studio?.member?.(content, kind, name)).find(Boolean) ?? content?.registries?.[kind]?.[name]
 export const memberOwners = content => new Map(registeredMeanings().flatMap(meaning => meaning.studio?.owners?.(content) ?? []))
 export const collectionProvider = type => registeredMeanings().map(meaning => meaning.studio?.collections?.[type]).find(Boolean)
+/** The stages a meaning lists under an object ([{ id, index, title, path }]); none when no meaning tracks its stages. */
+export const objectStages = (content, kind, name) => (content && registeredMeanings().map(meaning => meaning.studio?.stages?.(content, kind, name)).find(Boolean)) || []
 export const relationType = name => registeredMeanings().map(meaning => meaning.studio?.relations?.[name]).find(Boolean)
 
+/** An editor extension's `slot` for objects of `type`, from a package the content is made of (its layers). */
 export const editorSlot = (content, type, slot) => [...(plugins?.tables.editorExtension ?? [])]
-  .find(([id, extension]) => content?.objectKinds?.[id.replace(':', '/')] && extension.type === type && extension[slot])?.[1][slot]
+  .find(([id, extension]) => extensionLoaded(content, id) && extension.type === type && extension[slot])?.[1][slot]
+const extensionLoaded = (content, id) => Boolean(content?.layerOrder?.includes(id.split('/')[0]) || content?.objectKinds?.[id.replace(':', '/')])

@@ -8,7 +8,8 @@ import { S } from "../../../../games/kit/engine/schema.js"
 import { progressMeaning as genericProgress } from 'progress'
 import { partStages, progressMeaning } from '../../core/progression/index.js'
 import { stageForSettings } from '../../core/progression/part-stages.js'
-import { partDefinition, holds } from '../../core/index.js'
+import { partDefinition, stagedDefinition, holds } from '../../core/index.js'
+import { withDefinitions } from '../../view/defined.js'
 import { defineParts, partProblems } from '../../core/index.js'
 import { audit, defineCourse } from '../../core/progression/index.js'
 import { contentCourse } from '../../core/course-model.js'
@@ -45,6 +46,31 @@ test('stage deltas inherit signatures and reset settings without mutating the pa
   assert.equal(division.setting.gain.default, 4)
   assert.equal(division.desc, 'Choose the gain.')
   assert.deepEqual(part, before)
+})
+
+test('a stage card draws over the compiled part, and the studio previews it with that card', (context) => {
+  Object.assign(registeredOperations, operations)
+  context.after(() => delete registeredOperations['toy/scale'])
+  const stages = partStages({ 'sample/scale': part })
+  const base = partDefinition(stages.get('sample/scale'))
+  const compiled = { ...base, compiled: true, setting: { ...base.setting, gain: { ...base.setting.gain, label: 'Gain' } } }
+  const division = stagedDefinition(stages.get('sample/division'), compiled)
+  assert.equal(division.stage, 'sample/division')
+  assert.equal(division.desc, 'Choose the gain.')
+  assert.deepEqual(division.views, { card: [{ show: 'settings' }] })
+  assert.equal(division.compiled, true, 'what the game compiled stays')
+  assert.equal(division.setting.gain.label, 'Gain', 'a setting keeps what the stage does not change')
+  assert.equal(division.setting.gain.default, 4)
+  assert.deepEqual(division.setting.mode.options.map(option => option.value), ['up', 'down'])
+  assert.equal(stagedDefinition(null, compiled), compiled)
+
+  const defined = { of: type => type === 'sample/scale' ? compiled : null, defaults: () => ({ fallback: true }), ops: {} }
+  const staged = withDefinitions(defined, (type, card) => type === 'sample/scale' ? stagedDefinition(stages.get('sample/division'), card) : null)
+  assert.equal(staged.of('sample/scale').desc, 'Choose the gain.')
+  assert.deepEqual(staged.defaults('sample/scale'), { gain: 4, mode: 'up' })
+  assert.equal(staged.of('other'), null)
+  assert.deepEqual(staged.defaults('other'), { fallback: true })
+  assert.equal(staged.ops, defined.ops)
 })
 
 test('part and stage identities share a namespace and reject collisions', () => {

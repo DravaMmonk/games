@@ -54,7 +54,8 @@ test('the circuit view registers the stage editor and renders the selected stage
   const { installStudioPlugins, editorSlot } = await loadModule(new URL('../games/kit/studio/editors.js', import.meta.url).pathname)
   installStudioPlugins(kernel)
   try {
-    const content = { objectKinds: { 'circuit/stages': {} } }
+    assert.equal(editorSlot({ layerOrder: ['progress', 'sample'], objectKinds: { 'circuit/part': {} } }, 'circuit/part', 'stageChain'), undefined, 'without the circuit layer there is no stage chain')
+    const content = { layerOrder: ['progress', 'circuit', 'sample'], objectKinds: { 'circuit/part': {} } }
     const StageChain = editorSlot(content, 'circuit/part', 'stageChain')
     const html = renderToString(createElement(StageChain, {
       part: 'sample/lift', namespace: 'sample', stage: 'sample/lift-free',
@@ -62,6 +63,57 @@ test('the circuit view registers the stage editor and renders the selected stage
     }))
     assert.match(html, /aria-selected="true"[^>]*><small>1<\/small><code>lift-free<\/code>/)
     assert.match(html, /Lift freely/)
+  } finally {
+    installStudioPlugins(null)
+  }
+})
+
+test('a stage edited on the part page writes into that stage, starting from what it inherits', async () => {
+  const { onPartPage, previewPartFace } = await loadModule(new URL('../packages/circuit/view/studio/part-page.js', import.meta.url).pathname)
+  const raw = { name: 'Apply', rules: [{ set: { a: '1' } }], views: { card: [{ show: 'value' }] }, stages: [{ id: 'mp-bot', desc: 'Later' }, { id: 'mp-more' }] }
+  const content = { partDefs: { parts: { 'qed/mp': raw } } }
+  const page = (m) => {
+    const edits = [], picks = []
+    onPartPage({ part: 'qed/mp', ...m }, { content, ops: [], shown: { ops: [] }, edit: (op) => edits.push(op), pickField: (...args) => picks.push(args), vocabulary: null, playOrder: [] })
+    return { edits, picks }
+  }
+  assert.deepEqual(page({ type: 'pick', stage: 'qed/mp-bot', path: ['desc'] }).picks, [[['parts', 'qed/mp', 'stages', 0, 'desc'], true]])
+  assert.deepEqual(page({ type: 'pick', path: ['desc'] }).picks, [[['parts', 'qed/mp', 'desc'], true]], 'the part itself as before')
+  const face = page({ type: 'add', stage: 'qed/mp-more', path: ['views', 'card'] })
+  assert.deepEqual(face.edits, [{ op: 'parts.set', path: ['parts', 'qed/mp', 'stages', 1, 'views'], value: { card: [{ show: 'value' }] } }],
+    'a stage with no views gets them, its first face the one it inherits')
+  assert.deepEqual(face.picks[0][0], ['parts', 'qed/mp', 'stages', 1, 'views', 'card'])
+  assert.deepEqual(page({ type: 'pick', stage: 'qed/missing', path: ['desc'] }), { edits: [], picks: [] }, 'a stage the part lacks edits nothing')
+  const drafted = previewPartFace(content, ['parts', 'qed/mp', 'stages', 0, 'views', 'card'], [{ show: 'value' }])
+  assert.deepEqual(drafted.partDefs.parts['qed/mp'].stages[0].views, { card: [{ show: 'value' }] })
+  assert.deepEqual(drafted.partDefs.parts['qed/mp'].views, raw.views, 'the part keeps its own faces')
+})
+
+test('a build list shows the stages progress records under their object, and none without a stage policy', async () => {
+  const progress = await loadModule(new URL('../packages/progress/core/index.js', import.meta.url).pathname)
+  const kernel = createPluginKernel()
+  progress.register(kernel.forPackage('progress', 'core'))
+  const { installStudioPlugins } = await loadModule(new URL('../games/kit/studio/editors.js', import.meta.url).pathname)
+  const { default: GroupedList } = await loadModule(new URL('../games/kit/studio/GroupedList.jsx', import.meta.url).pathname)
+  installStudioPlugins(kernel)
+  try {
+    const entries = {
+      'story/clue': { title: 'Clue', stages: [{ id: 'learned', title: 'Clue unlocked' }, { id: 'practised' }] },
+      'story/note': { title: 'Note', stages: [{ id: 'kept' }] },
+    }
+    const policy = { 'story/entries': { kind: 'entry', targets: ['story/clue'], stages: true } }
+    const list = (registries, props = {}) => renderToString(createElement(GroupedList, {
+      kind: 'entry', name: 'Entries', content: { levels: [], registries: { entry: entries, ...registries } }, namespace: 'story', game: 'story',
+      items: Object.keys(entries), label: id => entries[id].title, row: id => createElement('button', { key: id }, entries[id].title),
+      groupings: [], by: 'tag', onBy() {}, onStage() {}, ...props,
+    }))
+    const html = list({ 'progress/policy': policy }, { stage: { of: 'story/clue', id: 'story/practised' } })
+    assert.match(html, /aria-label="[^"]*Clue[^"]*"/)
+    assert.match(html, /<small>1<\/small><span>Clue unlocked<\/span>/)
+    assert.match(html, /class="tree-task tree-stage is-on"[^>]*aria-current="true"[^>]*><small>2<\/small><span>practised<\/span>/)
+    assert.doesNotMatch(html, /kept/, 'an object outside the policy lists no stages')
+    assert.doesNotMatch(list({}), /tree-stage/, 'without a progress policy no stages are listed')
+    assert.doesNotMatch(list({ 'progress/policy': policy }, { onStage: null }), /tree-stage/, 'a list that cannot open stages lists none')
   } finally {
     installStudioPlugins(null)
   }

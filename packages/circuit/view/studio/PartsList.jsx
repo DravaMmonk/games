@@ -15,7 +15,7 @@ import { partReference } from '../../core/parts.js'
  * The package's parts (games/design/README.md 6.7), in the order the course first gives them, grouped by their tags, the
  * trays or the relations that gather them (GroupedList.jsx); a new part from the kernel's creation options.
  */
-export default function PartsList({ content, vocabulary, namespace, game, levelOptions, order = [], earned = new Map(), at, found, by, onBy, heading, onHeading, newOptions, onNew, onSelect, onOps }) {
+export default function PartsList({ content, vocabulary, namespace, game, levelOptions, order = [], earned = new Map(), at, found, by, onBy, heading, onHeading, newOptions, onNew, onSelect, onOps, stage, onStage }) {
   const file = content.partDefs ?? { parts: {} }
   const parts = Object.entries(file.parts ?? {})
   const tasks = levelOptions ? taskOptionsOf(levelOptions) : []
@@ -68,6 +68,6 @@ export default function PartsList({ content, vocabulary, namespace, game, levelO
   return (
     <GroupedList kind="circuit/part" content={content} namespace={namespace} game={game} items={items} label={(id) => L(file.parts[id]?.name)} row={row}
       groupings={groupingsFor('circuit/part')} by={by} onBy={onBy} heading={heading} onHeading={onHeading} newOptions={newOptions} onNew={onNew}
-      addOptions={[...choices, { value: 'copy', label: tr("复制所选元件"), disabled: !picked }]} addLabel={tr("元件", {}, "parts-list")} onAdd={create} />
+      addOptions={[...choices, { value: 'copy', label: tr("复制所选元件"), disabled: !picked }]} addLabel={tr("元件", {}, "parts-list")} onAdd={create} stage={stage} onStage={onStage} />
   )
 }

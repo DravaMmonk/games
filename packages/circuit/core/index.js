@@ -32,7 +32,7 @@ export function register(kernel) {
 
 /** Component definitions, operations and parameter descriptors for plays that build their own cards. */
 export { defaultOf, defineParts, partProblems, applyRules, shows, compileParts } from './parts/define.js'
-export { partDefinition } from './part-definition.js'
+export { partDefinition, stagedDefinition } from './part-definition.js'
 export { operationPart, operationsOf } from './parts/operation.js'
 export { builtParts, publications, registerParts, cardOf, partReferences, settingsOf, resolveSettings } from './parts.js'
 export { parameterSetting, resolveSettings as settingsResolveSettings, settingParameters } from './parts/settings.js'

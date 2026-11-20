@@ -1,3 +1,4 @@
+import CopyId from './CopyId.jsx'
 import { definitionOfKind } from '../engine/plugin-kinds.js'
 // The tray and section editors of the build workspace (games/MODULES.md 5.3.1): objects that gather parts (a tray,
 // with its menus) or encyclopedia entries (a section). What they hold, and the order they show it in, is their own
@@ -62,6 +63,7 @@ export function GatherHead({ kind, full, value, own, overriding, setOverriding, 
     <>
       <div className="object-head">
         <code className="editor-id is-static">{shownName(namespace, full)}</code>
+        <CopyId id={full} />
         <SourceMark content={content} kind={kind} full={full} own={own} overriding={overriding} pending={pending} onOverride={() => setOverriding(true)} />
         {children}
         <span className="kit-spacer" />

@@ -3,6 +3,7 @@
 // it holds), members added from what the kind offers and taken out, nested tags refused when they would close a ring;
 // Another layer's tags are read only. The list of tags is the left column's
 // (ObjectLists.jsx); its file the right's.
+import CopyId from './CopyId.jsx'
 import { useState } from 'react'
 import { ChevronDown, ChevronRight, Layers, Trash2, X } from 'lucide-react'
 import { L, getLang, tr } from '../shell/i18n.js'
@@ -78,6 +79,7 @@ function OneTag({ full, tag, own, content, namespace, pending, onSelect, onEdit,
     <div className="tag-editor">
       <div className="object-head">
         <code className="editor-id is-static">{shownName(namespace, full)}</code>
+        <CopyId id={full} />
         <span className="object-kind">{tagKindWord(tag.kind)}</span>
         <span className="object-count" title={tr("展开后的成员数")}>{count}</span>
         <SourceMark content={content} kind="tag" full={full} own={own} overriding={overriding} pending={pending} onOverride={() => setOverriding(true)} />

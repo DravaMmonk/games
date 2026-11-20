@@ -5,6 +5,7 @@ import { Fragment, useMemo, useState } from 'react'
 import { L, tr } from '../shell/i18n.js'
 import { groupTree, levelTags, stays } from './groups.js'
 import SidebarListTools from './SidebarListTools.jsx'
+import StageRows from './StageRows.jsx'
 import { Flag } from 'lucide-react'
 import SidebarSection, { useSidebarFolds } from './SidebarSection.jsx'
 import { sidebarSearch, sidebarSortOptions, sortSidebarIds } from './sidebar-list.js'
@@ -13,8 +14,11 @@ import { shownName } from './objects-edit.js'
 import { shifted } from './list-order.js'
 import { useDragOrder } from './useDragOrder.js'
 
-/** `grouping`: the grouping's part of the list's tools (SidebarListTools.jsx: the levels grouped by tags here; by relations the workspace shows GroupedList). */
-export default function Tree({ game, namespace, content, order: playOrder = [], at, selectedTask, picked, setPicked, onSelect, moving, setMoving, onMove, onGroupMove, onReorder, labels = null, onTask, onTaskMove, addOptions, onAdd, grouping = null }) {
+/**
+ * `grouping`: the grouping's part of the list's tools (SidebarListTools.jsx: the levels grouped by tags here; by relations
+ * the workspace shows GroupedList); `stage`/`onStage` a level's stages under its tasks (StageRows.jsx).
+ */
+export default function Tree({ game, namespace, content, order: playOrder = [], at, selectedTask, picked, setPicked, onSelect, moving, setMoving, onMove, onGroupMove, onReorder, labels = null, onTask, onTaskMove, addOptions, onAdd, grouping = null, stage = null, onStage = null }) {
   const [taskDrag, setTaskDrag] = useState(null) // the id of the task being dragged
   const [taskOver, setTaskOver] = useState(null)
   const tree = useMemo(() => groupTree(content, playOrder), [content, playOrder])
@@ -162,6 +166,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
     <div key={id} className="tree-run">
       {level(id)}
       {tasksOf(id)}
+      <StageRows content={content} kind="level" of={id} name={L(byId.get(id)?.title)} namespace={namespace} stage={stage} onStage={onStage} />
     </div>
   )
   const list = (levels, slots, destination) => (

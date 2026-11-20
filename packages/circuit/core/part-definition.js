@@ -10,3 +10,14 @@ export function partDefinition(entry, operations) {
     setting: Object.fromEntries(settings.map(setting => [setting.key, setting])),
     outputNames: part.outputs?.map(port => port.name) ?? null }
 }
+
+/**
+ * A stage's card over the part's compiled one (`fallback`): the stage's fields win, its settings merged over the
+ * part's key by key; without a stage, the part's own.
+ */
+export function stagedDefinition(entry, fallback) {
+  const resolved = partDefinition(entry)
+  if (!resolved) return fallback
+  const settings = Object.values({ ...fallback?.setting, ...Object.fromEntries(resolved.settings.map(setting => [setting.key, { ...fallback?.setting?.[setting.key], ...setting }])) })
+  return { ...fallback, ...resolved, settings, setting: Object.fromEntries(settings.map(setting => [setting.key, setting])) }
+}

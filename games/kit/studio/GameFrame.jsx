@@ -6,15 +6,17 @@
 //
 //   play: { level, seed, take }  a level opened afresh (on a board, or taking one), at `task`;  go: { task } a task to go to
 //   object: { kind, full } shown by its registered preview instead of a level; stage: an optional preview revision
+//           (an object's page is always edited: no edit/play switch; a level has one)
 //   onRoot(): the name of what is shown, clicked in edit mode: every field of it in the side panel, those the screen
-//         does not draw too;  footer: what goes under the page (a part's way through the course, Flow.jsx)
+//         does not draw too;  header: what goes over the page (a part's stages);  footer: what goes under it (where it is used)
 //   editable: false for a frame that is only played (the arrange workspace's: no edit mode, no fields picked);
 //   tools: buttons of the workspace's own at the bar's right end
+import CopyId from './CopyId.jsx'
 import { useEffect, useRef, useState } from 'react'
 import { CirclePlay, MousePointerClick, Play, X } from 'lucide-react'
 import { getLang, tr } from '../shell/i18n.js'
 
-export default function GameFrame({ visible, content, play, object, stage = null, task, go, edit, picked, onEdit, onMessage, onRoot, onReference, onCancelTake, reference, footer = null, editable = true, tools = null }) {
+export default function GameFrame({ visible, content, play, object, stage = null, task, go, edit, picked, onEdit, onMessage, onRoot, onReference, onCancelTake, reference, header = null, footer = null, editable = true, tools = null }) {
   const frame = useRef(null)
   const [ready, setReady] = useState(false)
   const said = useRef(onMessage)
@@ -78,11 +80,12 @@ export default function GameFrame({ visible, content, play, object, stage = null
   return (
     <section className={`studio-play ${visible ? '' : 'is-hidden'}`}>
       <div className="studio-play-bar">
-        {editable && <span className="play-mode" role="radiogroup" aria-label={tr('模式')}>
+        {editable && object === undefined && <span className="play-mode" role="radiogroup" aria-label={tr('模式')}>
           <button type="button" role="radio" aria-checked={edit} className={edit ? 'is-on' : ''} onClick={() => onEdit(true)} title={tr('点画面上的字段在侧栏里改')}><MousePointerClick size={13} aria-hidden="true" />{tr("编辑", {}, "game-frame")}</button>
           <button type="button" role="radio" aria-checked={!edit} className={!edit ? 'is-on' : ''} onClick={() => onEdit(false)}><Play size={13} aria-hidden="true" />{tr('试玩')}</button>
         </span>}
         <button type="button" className="play-root" disabled={!edit} onClick={onRoot} title={editable ? tr('全部字段') : undefined}>{object !== undefined ? object.full : play?.level ?? content?.id}</button>
+        <CopyId id={object !== undefined ? object.full : play?.level ?? content?.id} />
         {play?.take && <code>{play.take.label}</code>}
         <span className="kit-spacer" />
         {object === undefined && play?.level && reference && !play.take && (
@@ -93,6 +96,7 @@ export default function GameFrame({ visible, content, play, object, stage = null
         {play?.take && <button type="button" className="kit-btn is-label" onClick={onCancelTake}><X size={14} aria-hidden="true" />{tr('不用这块板')}</button>}
         {tools}
       </div>
+      {header}
       <iframe ref={frame} title={tr("游戏", {}, "game-frame")} src="/studio.html?play" />
       {footer}
     </section>

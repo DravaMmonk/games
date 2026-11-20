@@ -1,5 +1,5 @@
 import { layout } from 'kernel'
-import { partDefinition } from './part-definition.js'
+import { stagedDefinition } from './part-definition.js'
 import { trayMembers } from './trays.js'
 
 export function defineCourse({ levels, eras = null, plan: suppliedPlan = null, complete = true, trays = {}, tray: trayOf = () => null, primitives = [], adds = () => [], needs = () => null, builds = () => [], opens = () => [], gives = () => [], withholds = () => [], machine = () => null, uses = () => [], can = () => null, replaces = () => [], local = () => false, needed = () => null, featured = () => [], boards = () => [], carries = () => [], references = null, available = null, availableItems = null, parts = {}, awards = () => [] }) {
@@ -61,12 +61,7 @@ export function usable(course, level, flags) {
 export function holds(course, level, flags) {
   const parts = new Set(usable(course, level, flags))
   const selected = course.selectedPart?.(level, flags) ?? (part => course.stages.get(part))
-  const definition = (part, fallback) => {
-    const resolved = partDefinition(selected(part))
-    if (!resolved) return fallback
-    const settings = Object.values({ ...fallback?.setting, ...Object.fromEntries(resolved.settings.map(setting => [setting.key, { ...fallback?.setting?.[setting.key], ...setting }])) })
-    return { ...fallback, ...resolved, settings, setting: Object.fromEntries(settings.map(setting => [setting.key, setting])) }
-  }
+  const definition = (part, fallback) => stagedDefinition(selected(part), fallback)
   const has = (part, key, value) => {
     if (key === undefined) {
       const stage = course.stages.get(part)

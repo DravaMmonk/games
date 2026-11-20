@@ -3,6 +3,7 @@ import { installStageViews } from './progression/game-stages.js'
 import { partAtStage } from '../core/progression/studio-stages.js'
 import { partUnlocks } from '../core/progression/unlocks.js'
 import StageChain from './progression/studio/StageChain.jsx'
+import PartUses from './progression/studio/PartUses.jsx'
 import './progression/studio/stages.css'
 import './board/wires.css'
 import { displays } from './mechanism/displays.js'
@@ -32,7 +33,7 @@ export function register(kernel) {
       game.progressUnlockSources = [...(game.progressUnlockSources ?? []), { kind: 'circuit/part', read: partUnlocks }]
     }
   })
-  kernel.editorExtension('circuit/stages', { type: 'circuit/part', stageChain: StageChain })
+  kernel.editorExtension('circuit/stages', { type: 'circuit/part', stageChain: StageChain, uses: PartUses })
 
   kernel.implement('display', 'circuit/screen', displays['circuit/screen'])
   kernel.shell('circuit/parts', useCircuitShell)

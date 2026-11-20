@@ -1,3 +1,4 @@
+import CopyId from './CopyId.jsx'
 import { referenceCatalog } from './reference-catalog.js'
 import { PackageDependencies, PackageName, packageKindLabel, packageSidebarGroups } from './PackageGroups.jsx'
 // The game workspace of the studio (games/design/README.md 6.7): where a course designer makes a game on a package and
@@ -294,6 +295,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 : <>
                   <header className="editor-head chapter-head" onClick={() => pickField([])}>
                     <code className="editor-id is-static">{chapterName(eras[e].id)}</code>
+                    <CopyId id={eras[e].id} />
                     <h1><TitleEdit value={chapterTitle(eras[e])} label={tr("章名")} disabled={busyEditing} onSet={(text) => retitle(e, text)} /></h1>
                   </header>
                   <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} onPlay={playGame} />

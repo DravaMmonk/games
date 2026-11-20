@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { S } from 'kernel'
-import { newStageId, partAtStage, stageChain, stageChanges, stageId } from '../../core/progression/studio-stages.js'
+import { newStageId, partAtStage, stageChain, stageChanges, stageId, stagePath, withinStage } from '../../core/progression/studio-stages.js'
 
 const operations = { 'demo/blur': { params: S.obj({ sigma: S.num({ min: 0, max: 5, default: 1 }), border: S.oneOf(['zero', 'edge']) }) } }
 const raw = {
@@ -35,4 +35,15 @@ test('a part’s stages: what each changes, and every setting declared, narrowed
   assert.deepEqual(partAtStage('p/blur', raw, 'p/blur-border').stages.map((s) => s.id), ['blur-free'])
   assert.equal(partAtStage('p/blur', raw, 'p/blur-border').settings.border.fixed, false)
   assert.equal(newStageId('p/blur', ['p/blur-2']), 'blur-3')
+})
+
+test('a stage edited on its card is found in its part file, and paths read from inside it', () => {
+  const raw = { desc: 'Base', stages: [{ id: 'blur-border' }, { id: 'blur-free' }] }
+  assert.deepEqual(stagePath('p/blur', raw, 'p/blur-free'), ['stages', 1])
+  assert.equal(stagePath('p/blur', raw, 'p/blur-missing'), null)
+  assert.equal(stagePath('p/blur', raw, null), null)
+  assert.deepEqual(withinStage(['stages', 1, 'desc'], ['stages', 1]), ['desc'])
+  assert.equal(withinStage(['stages', 0, 'desc'], ['stages', 1]), null, 'another stage is not marked')
+  assert.equal(withinStage(['desc'], ['stages', 1]), null, 'the part\'s own field is not the stage\'s')
+  assert.deepEqual(withinStage(['desc'], null), ['desc'])
 })

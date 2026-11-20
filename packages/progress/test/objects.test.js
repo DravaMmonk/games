@@ -62,6 +62,14 @@ test('a text course configures inline stages and grants by object type without c
   assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('entry'), { awards: ['story/bonus'], introduced: ['story/given'] })
   assert.deepEqual(progress({ passed: [], solved: ['story/given'] }).grants('level').awards, [])
   assert.deepEqual(progressMeaning.contentChecks({ content }), [])
+  const stages = progressMeaning.studio.stages
+  assert.deepEqual(stages(content, 'entry', 'story/given'), [
+    { id: 'story/learned', index: 1, title: 'Clue unlocked', path: ['stages', 0] },
+    { id: 'story/practised', index: 2, title: null, path: ['stages', 1] },
+  ])
+  assert.deepEqual(stages(content, 'level', 'story/given'), [{ id: 'story/introduced', index: 1, title: null, path: ['stages', 0] }])
+  assert.equal(stages(content, 'entry', 'story/bonus'), null, 'a tracked object with no stages lists none')
+  assert.equal(stages(content, 'entry', 'story/other'), null, 'stages outside a stage policy are not listed')
   assert.ok(courseLayout(content).dependencyLinks.some(link => link.from === 'story/given' && link.to === 'story/review' && link.source === 'reference'))
 
   level.tasks[0].awards = ['another']

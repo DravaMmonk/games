@@ -1,15 +1,46 @@
-.stage-chain { display: grid; gap: 6px; padding: 8px 10px; border-top: 1px solid var(--hairline); background: var(--paper); max-height: 40vh; overflow: auto; }
-.stage-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-.stage-step { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px; border: 1px solid var(--hairline); border-radius: 12px; color: var(--ink); background: none; cursor: pointer; }
-.stage-step small { color: var(--faint); font: var(--fs-mini)/1 var(--mono); }
-.stage-step code { font: var(--fs-mini)/1 var(--mono); }
-.stage-step.is-on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
-.stage-changes { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
-.stage-changes li { display: flex; gap: 8px; min-width: 0; font-size: 12px; }
-.stage-changes code { flex: none; color: var(--accent-ink); font: var(--fs-mini)/1.5 var(--mono); }
-.stage-changes span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* A part's stage bar over its page in the studio (StageChain.jsx): the stages as tabs, what the one picked writes, the
+   settings table folded out on demand. */
+.stage-bar { flex: none; display: grid; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--hairline); background: var(--paper); }
+.stage-row { display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
+.stage-steps { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.stage-step { display: inline-flex; align-items: center; gap: 5px; height: 24px; max-width: 100%; padding: 0 8px; border: 1px solid var(--hairline); border-radius: 12px; color: var(--ink); background: none; cursor: pointer; }
+.stage-step.is-base { width: 30px; justify-content: center; padding: 0; color: var(--muted); }
+.stage-step:hover { background: var(--hover); }
+.stage-step:focus-visible, .stage-tool:focus-visible, .stage-change:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.stage-step small { color: var(--faint); font: var(--fs-mini)/1 var(--mono); font-variant-numeric: tabular-nums; }
+.stage-step code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--fs-mini)/1 var(--mono); }
+.stage-step.is-on { border-color: var(--accent); color: var(--ink); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.stage-step.is-on small { color: inherit; opacity: .7; }
+.stage-tool { flex: none; width: 24px; height: 24px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; color: var(--muted); background: none; cursor: pointer; }
+.stage-tool:hover:not(:disabled) { color: var(--ink); background: var(--hover); }
+.stage-tool.is-on { color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.stage-tool:disabled { opacity: .45; cursor: default; }
+.stage-changes { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.stage-mark { display: inline-grid; place-items: center; width: 24px; height: 20px; color: var(--faint); }
+.stage-change { display: inline-flex; align-items: center; height: 20px; max-width: 100%; padding: 0 6px; border: 1px solid var(--hairline); border-radius: 4px; color: var(--accent-ink); background: none; cursor: pointer; }
+.stage-change:hover { background: var(--hover); }
+.stage-change code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--fs-mini)/1 var(--mono); }
+.stage-none { color: var(--faint); font: var(--fs-mini)/1 var(--mono); }
+.stage-table { max-height: 32vh; overflow: auto; }
 .stage-settings { width: 100%; border-collapse: collapse; font-size: 12px; }
-.stage-settings th, .stage-settings td { padding: 2px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
-.stage-settings thead th { color: var(--muted); font: 600 11px/1.4 var(--sans); }
+.stage-settings th, .stage-settings td { padding: 3px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.stage-settings thead th { position: sticky; top: 0; color: var(--muted); background: var(--paper); font: 600 11px/1.4 var(--sans); }
+.stage-settings tbody th code { font: var(--fs-mini)/1.4 var(--mono); }
 .stage-settings tr.is-changed { background: color-mix(in srgb, var(--accent) 10%, transparent); }
-@media (max-width: 760px) { .stage-settings { display: block; overflow-x: auto; } }
+@media (max-width: 760px) {
+  .stage-table { overflow-x: auto; }
+  .stage-settings { min-width: 520px; }
+  .stage-steps, .stage-changes { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+  .stage-step, .stage-change { flex: none; }
+}
+
+/* Where the part comes into the course, under its page (PartUses.jsx); the links the workspace adds follow on as one strip. */
+.part-uses { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 10px; border-top: 1px solid var(--hairline); background: var(--paper); max-height: 22vh; overflow: auto; }
+.studio-play > .part-uses + .object-links { padding-top: 0; border-top: 0; background: var(--paper); }
+.part-uses-mark { display: inline-grid; place-items: center; width: 22px; height: 22px; color: var(--faint); }
+.part-use { gap: 5px; }
+.part-use-kinds { display: inline-flex; gap: 2px; color: var(--accent-ink); }
+.part-use small { color: var(--faint); font: var(--fs-mini)/1 var(--mono); font-variant-numeric: tabular-nums; }
+.part-use-stages { display: inline-flex; gap: 2px; }
+.part-use-stages b { min-width: 14px; height: 14px; display: inline-grid; place-items: center; padding: 0 3px; border-radius: 7px; color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 16%, transparent); font: 600 10px/1 var(--mono); font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) { .part-uses { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; } .part-uses > * { flex: none; } }

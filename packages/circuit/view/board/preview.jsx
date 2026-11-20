@@ -9,7 +9,7 @@ import { definitionPorts, evalSettings } from "../../core/parts/define.js"
 import PartFace, { blocksOf } from "../parts/PartFace.jsx"
 import { nextParams } from "../parts/faces.jsx"
 import { withPartLabels } from "./board-parts.js"
-import PartSheet, { Implementations, Ports, Settings, marker } from "../parts/PartSheet.jsx"
+import PartSheet, { Fact, Facts, Implementations, Ports, ROWS, Settings, marker } from "../parts/PartSheet.jsx"
 import { cardPorts, namesPorts } from "../../core/board/card-ports.js"
 import Glyph from "./Glyph.jsx"
 
@@ -22,8 +22,9 @@ import Glyph from "./Glyph.jsx"
 // The Sheet is the fields no scene draws: a primitive's revisions, ports, every setting, what it computes and its
 // interaction as parts.json writes them; a built part's own fields (../shell/parts/PartSheet.jsx).
 //
-//   preview(part, { game, scene, edit?, state?, entry?, phone?, progress? })   part: parts.json's entry with its `type`;
-//     state [params, set] the settings the scenes share; entry the parts box's entry it is shown in
+//   preview(part, { game, defined?, scene, edit?, state?, entry?, phone?, progress? })   part: parts.json's entry with its
+//     `type`; defined the cards drawn from (game.defined unless a stage's are shown); state [params, set] the settings
+//     the scenes share; entry the parts box's entry it is shown in
 
 import SampleCircuit from './SampleCircuit.jsx'
 import PartExperiment from './PartExperiment.jsx'
@@ -100,9 +101,8 @@ function CanvasCard({ node, parts, body }) {
   )
 }
 
-function Face({ part, game, scene, edit, state }) {
+function Face({ part, defined, scene, edit, state }) {
   const { type } = part
-  const defined = game.defined
   const def = defined.of(type)
   const params = paramsOf(type, defined, state)
   const setParams = state[1]
@@ -141,43 +141,53 @@ function Face({ part, game, scene, edit, state }) {
 // other built part shows the board it runs.
 const faced = (part, game) => Boolean(game.defined?.of(part.type))
 
-export function preview(part, { game, scene, edit = null, state = [undefined, () => {}], entry = null, phone = false, progress = {} }) {
-  if (!entry && faced(part, game)) return <Face part={part} game={game} scene={scene} edit={edit} state={state} />
+export function preview(part, { game, defined = game.defined, scene, edit = null, state = [undefined, () => {}], entry = null, phone = false, progress = {} }) {
+  if (!entry && faced(part, game)) return <Face part={part} defined={defined} scene={scene} edit={edit} state={state} />
   // In the parts box (`entry`), and for a built part without faces, the detail is what the game draws to try the
   // part on: a built part's board, a bench.
   if (scene !== 'detail' || (!entry && !part.inside)) return null
   const shown = entry ?? game.parts?.all.find((p) => p.part === part.type) ?? { key: part.type, part: part.type }
   const { sample, experiment, inside, structureOnly } = game.parts?.preview?.(shown, { progress }) ?? {}
-  if (entry && structureOnly) return inside ? <BuiltBoard key={shown.key} type={shown.part} defined={game.defined} {...inside} /> : null
+  if (entry && structureOnly) return inside ? <BuiltBoard key={shown.key} type={shown.part} defined={defined} {...inside} /> : null
   if (sample || experiment || inside) return <Fragment key={shown.key}>
-    {sample && <SampleCircuit example={sample} defined={game.defined} phone={phone} />}
+    {sample && <SampleCircuit example={sample} defined={defined} phone={phone} />}
     {experiment && <PartExperiment spec={experiment} phone={phone} />}
-    {inside && <BuiltBoard type={shown.part} defined={game.defined} {...inside} />}
+    {inside && <BuiltBoard type={shown.part} defined={defined} {...inside} />}
   </Fragment>
-  return faced(part, game) ? <Face part={part} game={game} scene={scene} edit={edit} state={state} /> : null
+  return faced(part, game) ? <Face part={part} defined={defined} scene={scene} edit={edit} state={state} /> : null
 }
 
 /** The fields no scene draws: a faced part's rows of fields and what it computes, or a built part's sheet. */
-export function Sheet({ part, game, edit, state = [undefined, () => {}] }) {
+export function Sheet({ part, game, defined = game.defined, edit, state = [undefined, () => {}] }) {
   if (!faced(part, game)) return <PartSheet def={part} edit={edit} />
-  const defined = game.defined
   const def = defined.of(part.type)
   const params = paramsOf(part.type, defined, state)
+  const { add } = marker(edit)
   // What it computes, one expression an output; a part that keeps an input computes nothing.
   const operations = typeof def.op === 'string' ? [['', def.op]] : Object.entries(def.op ?? {})
+  const rules = def.rules ?? []
+  const checks = def.checks ?? []
   return (
     <div className="pp-logic">
-      {part.inside ? <Implementations def={part} edit={edit} /> : <Ports def={part} edit={edit} />}
-      <Settings def={part} edit={edit} />
-      {operations.map(([o, text]) => <Code key={o || 'out'} path={['op', ...(o ? [o] : [])]} label={o || null} text={text} picked={edit?.picked} />)}
-      {(def.rules ?? []).map((r, k) => <Code key={`r${k}`} path={['rules', k]} label={r.on ? `on ${r.on}` : 'on *'} picked={edit?.picked} text={`${r.when ? `when ${r.when} → ` : ''}${Object.entries(r.set).map(([key, text]) => `${key} = ${text}`).join('; ')}`} />)}
-      {(def.checks ?? []).map((c, k) => <Code key={`c${k}`} path={['checks', k]} label="check" picked={edit?.picked} text={c.holds} ok={Boolean(evalSettings(c.holds, def, params, defined.ops))} />)}
-      {edit && (
-        <div className="pp-adds">
-          <button type="button" onClick={() => edit.add(['rules'])}>+ rule</button>
-          <button type="button" onClick={() => edit.add(['checks'])}>+ check</button>
-        </div>
-      )}
+      <Facts>
+        {part.inside ? <Implementations def={part} edit={edit} /> : <Ports def={part} card={def} edit={edit} />}
+        <Settings def={part} card={def} edit={edit} />
+        {operations.length > 0 && (
+          <Fact row="op" list={operations.length > 1}>
+            {operations.map(([o, text]) => <Code key={o || 'out'} path={['op', ...(o ? [o] : [])]} label={o || null} text={text} picked={edit?.picked} />)}
+          </Fact>
+        )}
+        {(rules.length > 0 || edit) && (
+          <Fact row="rules" list empty={!rules.length} add={add(['rules'], L(ROWS.rules[2]))}>
+            {rules.map((r, k) => <Code key={k} path={['rules', k]} label={r.on ? `on ${r.on}` : 'on *'} picked={edit?.picked} text={`${r.when ? `when ${r.when} → ` : ''}${Object.entries(r.set).map(([key, text]) => `${key} = ${text}`).join('; ')}`} />)}
+          </Fact>
+        )}
+        {(checks.length > 0 || edit) && (
+          <Fact row="checks" list empty={!checks.length} add={add(['checks'], L(ROWS.checks[2]))}>
+            {checks.map((c, k) => <Code key={k} path={['checks', k]} picked={edit?.picked} text={c.holds} ok={Boolean(evalSettings(c.holds, def, params, defined.ops))} />)}
+          </Fact>
+        )}
+      </Facts>
     </div>
   )
 }

@@ -57,3 +57,15 @@ export function newStageId(part, taken) {
   while (taken.includes(stageId(part, `${short}-${k}`))) k += 1
   return `${short}-${k}`
 }
+
+/** Where stage `stage` of part `part` is in its file (`raw`): ['stages', index], or null for the part itself or a stage it lacks. */
+export function stagePath(part, raw, stage) {
+  const index = stage ? (raw?.stages ?? []).findIndex((entry) => stageId(part, entry.id) === stage) : -1
+  return index < 0 ? null : ['stages', index]
+}
+
+/** A path in the part's file (`path`) read from inside the stage at `at` (stagePath): the rest of it, or null outside. */
+export function withinStage(path, at) {
+  if (!at) return path
+  return path.length >= at.length && at.every((key, k) => path[k] === key) ? path.slice(at.length) : null
+}

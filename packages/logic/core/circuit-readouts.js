@@ -36,7 +36,6 @@ const proofEntries = ({ task, test, run }) => {
 
 export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
-const goalText = (g, text) => withBinders(g.fixes, g.hyps.length ? `${g.hyps.map(text).join(punctuation("；"))} ⊢ ${text(g.goal)}` : text(g.goal))
 // Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
 // numbered once for the whole board (R₁ R₂ …: the run's `rules`, ./machine.js boardRules; a lone rule plain R). A rule
 // part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no
@@ -47,11 +46,12 @@ const goalMark = (k, count) => (count > 1 ? `⊢${sub(k + 1)}` : '⊢')
 const ruleMark = (key, order) => (order.length > 1 ? `R${sub(order.indexOf(key) + 1)}` : 'R')
 const orderOf = (v, run) => (run?.rules && v.keys.every((k) => run.rules.includes(k)) ? run.rules : [...new Set(v.entries.map((e) => e.key))])
 const markedLine = (mark, text, before = '') => ({ s: [before, mark, text].filter(Boolean).join(' '), formula: true, before, mark, text })
+const goalLine = (g, text, mark) => markedLine(mark, text(g.goal),
+  withBinders(g.fixes, g.hyps.map(text).join(punctuation("；"))).trimEnd())
 /** A state's goals, a line each, marked ⊢₁ ⊢₂ … (the run report's boxes hold only these). */
 export const goalLines = (v, task) => {
   const text = machineTextOf(task)
-  return v.goals.map((g, k) => markedLine(goalMark(k, v.goals.length), text(g.goal),
-    withBinders(g.fixes, g.hyps.map(text).join(punctuation("；"))).trimEnd()))
+  return v.goals.map((g, k) => goalLine(g, text, goalMark(k, v.goals.length)))
 }
 /** The rules on the board, a line each, marked R₁ R₂ … (the run report lists them first). */
 export const ruleLines = ({ ruleEntries: entries = [], rules: order = [] }, task) => {
@@ -154,7 +154,14 @@ function wantOf(task, test) {
   const formula = (s) => ({ s, formula: true })
   if (test.becomes) {
     if (!test.becomes.length) return tr("这一步失败", {}, "circuit-readouts")
-    const ways = test.becomes.map((r) => (r.length ? formula(r.map((g) => goalText(parseGoal(g), text)).join(' | ')) : prose(tr('证完'))))
+    const ways = test.becomes.map((way) => {
+      if (!way.length) return prose(tr('证完'))
+      const goals = way.map((source) => {
+        const goal = parseGoal(source)
+        return goalLine(goal, text, goal.hyps.length ? '⊢' : '')
+      })
+      return { ...formula(goals.map((goal) => goal.s).join(' | ')), goals }
+    })
     return { kind: 'want', lines: ways.flatMap((w, k) => (k ? [prose(tr('或者')), w] : [w])) }
   }
   if (test.elim) return { kind: 'want', lines: [prose(tr('消去规则 ').trim()), formula(ruleText(elimOf(test), text))] }

@@ -6,6 +6,7 @@
 // in a strip) is a native control and keeps the page's face.
 import { Typeset } from 'kernel/view'
 import { L } from 'kernel/view'
+import { Fragment } from 'react'
 import { texOf } from '../../core/tex.js'
 import { machineLines } from '../../core/circuit-readouts.js'
 
@@ -26,16 +27,29 @@ export function MarkedFormula({ line: { before, mark, text }, className = '' }) 
   )
 }
 
+function MachineFormula({ line }) {
+  if (line.goals) return (
+    <span className="tx-marked">
+      {line.goals.map((goal, k) => (
+        <Fragment key={k}>
+          {k > 0 && <> <Formula text="|" /> </>}
+          <MachineFormula line={goal} />
+        </Fragment>
+      ))}
+    </span>
+  )
+  return line.mark ? <MarkedFormula line={line} /> : <Formula text={line.s} />
+}
+
 /** A machine value as a card shows it: only what it is (its formulas, typeset, or 证明完毕), never a note on it (why a
  *  step failed, how many results: the run report says those). */
 export const typesetMachine = (v, ctx) => {
   const lines = machineLines(v, ctx).filter((l) => l.formula || l.result)
   return (
     <span className="tx-lines">
-      {lines.length ? lines.map((line, k) => {
-        if (line.mark) return <MarkedFormula key={k} line={line} />
-        return line.formula ? <Formula key={k} text={line.s} /> : <span key={k} className="tx-prose">{line.s}</span>
-      }) : '—'}
+      {lines.length ? lines.map((line, k) => line.formula
+        ? <MachineFormula key={k} line={line} />
+        : <span key={k} className="tx-prose">{line.s}</span>) : '—'}
     </span>
   )
 }

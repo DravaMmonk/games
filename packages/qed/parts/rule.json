@@ -6,7 +6,7 @@
   "inputs": [
     {
       "name": "rules",
-      "label": "@part.rule.inputs.1.label"
+      "label": "R"
     }
   ],
   "op": "logic/rule"

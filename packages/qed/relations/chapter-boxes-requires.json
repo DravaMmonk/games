@@ -2,7 +2,7 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/decl-bot",
+      "from": "qed/s-search",
       "to": "qed/and"
     },
     {
@@ -10,7 +10,7 @@
       "to": "qed/curry"
     },
     {
-      "from": "qed/decl-bot",
+      "from": "qed/s-search",
       "to": "qed/or"
     },
     {
@@ -22,7 +22,7 @@
       "to": "qed/orSwap"
     },
     {
-      "from": "qed/decl-bot",
+      "from": "qed/s-search",
       "to": "qed/bot"
     },
     {

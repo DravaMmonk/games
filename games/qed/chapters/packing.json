@@ -5,6 +5,7 @@
     "question": "@course.eras.packing.chapter.question"
   },
   "levels": [
+    "qed/read-rules",
     "qed/decl-and",
     "qed/decl-check",
     "qed/decl-strength",

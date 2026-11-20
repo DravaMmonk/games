@@ -43,6 +43,12 @@ const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic/iso') ?? null
 // board.
 const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic/proof')
 
+// These proof-board operations are not entries in the machine board's rule book.
+const proofRules = {
+  'logic/rewrite': '⟦?s = ?t; ?P(?s)⟧ ⟹ ?P(?t)',
+  'logic/natInd': '⟦?P(0); ⋀a. ⟦?P(a)⟧ ⟹ ?P(S(a))⟧ ⟹ ∀x. ?P(x)',
+}
+
 /**
  * content (../../engine/content.js; vocabulary.js GAME): { id, title, kicker, lede, …the course (course.js), levels,
  * glossary }.
@@ -73,7 +79,11 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
   // The parts box lists circuit parts, each from the levels that bring it in.
   // The rules a proof-board part gives as a rule part on the machine board (the kernel's rules it is), and those a
   // lemma gives, one for each of its shapes: a shape after the first only once the player has earned it (`form`).
-  const kernelRules = (type) => KERNEL_RULES.filter((r) => `logic/${r.part}` === logic.partResources[type]).map((r) => ({ text: ruleText(r) }))
+  const kernelRules = (type) => {
+    const resource = logic.partResources[type]
+    if (proofRules[resource]) return [{ text: proofRules[resource] }]
+    return KERNEL_RULES.filter((r) => `logic/${r.part}` === resource).map((r) => ({ text: ruleText(r) }))
+  }
   const lemmaRows = (type) => lemmaRules(type, lemmas[type]).map((r, k) => ({ text: ruleText(r), ...(k ? { form: r.key.split('.')[1] } : {}) }))
   const catalog = logicPartCatalog(logic)
   const primitives = catalog.primitives.map(part => {
@@ -145,13 +155,13 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
         ...catalog.gates.map(part => ({ ...part, icon: CircuitBoard })),
         ...catalog.lemmas.map(part => ({ ...part, icon: cards[part.part].icon, rules: lemmaRows(part.part) })),
         ...catalog.machines.map(part => ({ ...part, icon: CircuitBoard })),
-      ],
+      ].map(part => ({ ...part, rulesAt: content.partRulesAt })),
       // A built part shows the board it runs: the one the player passed its task with, else the reference.
       preview: (part, { progress }) => {
         const shown = part.part && boardOf(part.part)
-        if (!shown) return null
+        if (!shown) return { structureOnly: true }
         logic.syncOwn(progress?.built)
-        return { inside: { course: shown, cards } }
+        return { inside: { course: shown, cards }, structureOnly: true }
       },
     },
     // Fewer steps (proof steps, or gates) is better; fewer cases, where the player writes them (audit-cases.js).

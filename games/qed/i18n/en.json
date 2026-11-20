@@ -1,5 +1,5 @@
 {
-  "course.eras.assistant.chapter.question": "With only Apply and the assumption box, can a proof assistant find a proof by working back from the goal?",
+  "course.eras.assistant.chapter.question": "Once we know a rule’s premises and conclusion, can we work back from the goal to find a proof?",
   "course.eras.assistant.chapter.title": "A simple proof assistant",
   "course.eras.automation.chapter.question": "Can a proof assistant be left to find proofs, and why believe what it finds?",
   "course.eras.automation.chapter.title": "Automation and certificates",
@@ -15,8 +15,8 @@
   "course.eras.kernel.chapter.title": "The kernel",
   "course.eras.metavars.chapter.question": "Can a part read off the goal what to fill in?",
   "course.eras.metavars.chapter.title": "Rules and metavariables",
-  "course.eras.packing.chapter.question": "How do “and”, “or” and “not” come into the kernel?",
-  "course.eras.packing.chapter.title": "Declarations",
+  "course.eras.packing.chapter.question": "What rule does each proof-board part follow? How can we add a new rule?",
+  "course.eras.packing.chapter.title": "Rules",
   "course.eras.paper.chapter.question": "When does a statement always hold?",
   "course.eras.paper.chapter.title": "Pen and paper",
   "course.eras.qrules.chapter.question": "How do you prove a sentence holds in every world?",

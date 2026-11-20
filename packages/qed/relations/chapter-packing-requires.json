@@ -2,7 +2,11 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/s-search",
+      "from": "qed/mergeUse",
+      "to": "qed/read-rules"
+    },
+    {
+      "from": "qed/read-rules",
       "to": "qed/decl-and"
     },
     {

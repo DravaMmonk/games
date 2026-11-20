@@ -147,7 +147,8 @@ export function preview(part, { game, scene, edit = null, state = [undefined, ()
   // part on: a built part's board, a bench.
   if (scene !== 'detail' || (!entry && !part.inside)) return null
   const shown = entry ?? game.parts?.all.find((p) => p.part === part.type) ?? { key: part.type, part: part.type }
-  const { sample, experiment, inside } = game.parts?.preview?.(shown, { progress }) ?? {}
+  const { sample, experiment, inside, structureOnly } = game.parts?.preview?.(shown, { progress }) ?? {}
+  if (entry && structureOnly) return inside ? <BuiltBoard key={shown.key} type={shown.part} defined={game.defined} {...inside} /> : null
   if (sample || experiment || inside) return <Fragment key={shown.key}>
     {sample && <SampleCircuit example={sample} defined={game.defined} phone={phone} />}
     {experiment && <PartExperiment spec={experiment} phone={phone} />}

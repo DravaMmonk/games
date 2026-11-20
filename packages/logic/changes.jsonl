@@ -39,3 +39,4 @@
 {"seq":39,"at":"2026-11-19T20:10:40.454Z","why":"将规则卡引用假设改名为引用已知","adopt":true,"files":[{"file":"packages/logic/i18n/en.json","after":"b0928bc8e5cf2030"},{"file":"packages/logic/i18n/zh.json","after":"3dbeb33f1af24265"}]}
 {"seq":40,"at":"2026-11-20T03:52:13.564Z","why":"允许真值电路显示前置翻译任务的已通过公式","adopt":true,"files":[{"file":"packages/logic/shapes/level.json","after":"cf71ed0196d46843"},{"file":"packages/logic/i18n/en.json","after":"56645d125ffa0382"},{"file":"packages/logic/capabilities/play.json","after":"827eb586c0d1b8e7"}]}
 {"seq":41,"at":"2026-11-20T04:05:15.530Z","why":"在造反例任务中复用已检查译文的显示方式","adopt":true,"files":[{"file":"packages/logic/shapes/level.json","after":"0e85157d0d294ecf"},{"file":"packages/logic/capabilities/play.json","after":"0093176d83a9056b"}]}
+{"seq":42,"at":"2026-11-20T04:43:21.336Z","why":"Declare where proof part rules unlock","adopt":true,"files":[{"file":"packages/logic/kinds/game.json","after":"782c10a8ed916bef"}]}

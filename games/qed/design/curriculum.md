@@ -31,17 +31,17 @@
 | 0 | 纸笔 | 读公式、手填真值表 | — | — | — | — |
 | 1 | 真值电路 | 门电路、逐行扫所有赋值 | **或**、**若…则…**、**等价**（门） | 把谜题接成电路 | 只有一样 | — |
 | 2 | 证明核 | 套用和假设框；封装即定义 | **串联**、**交换**、**合并** | K、S（用框证出）；拆掉框 | — | `thm`；Pure 的 ⟹；`theorem` 就是 `def` |
-| 2½ | 简单的证明助手 | 倒着用规则、证明状态；组合子、回溯、深度优先搜索（只有 →） | — | — | — | `apply`、`assumption`；`REPEAT`、`ORELSE`、`DEPTH_FIRST` |
-| 3 | 声明 | 在规则表上写出连接词的引入规则（声明），从「并且」开始（→ 是证明核自带的，就是假设框和套用）；消去规则由引入规则生成，通关时点明为什么能生成 | ∧、∨、⊥ 的声明 | 更多声明；消去规则生成器 | — | `structure And`、`inductive Or`、`inductive False`；`conjE`、`disjE` |
-| 4 | 连接词的运用 | 用声明生成的引入、消去规则，分情况，矛盾与否定 | — | HOL 怎样定义连接词 | — | `And.intro`、`And.left`、`Or.elim`；`conjE`、`conjunct1`；HOL 的 `and_def`… |
-| 5 | 量词的语言与反例 | 翻译、世界、找反例 | — | 查族谱 | — | `nitpick`；`#eval` |
-| 6 | 量词规则 | 选定一例、任取框、概括、实例框、相等 | — | 卡罗尔的推理题 | — | ⋀、`allI`；`∀`、`Exists.intro` |
-| 7 | 规则与元变量 | 合一（拆开规则卡）、规则作用于假设、高阶模式合一 | **合一器**、**规则作用于假设**（`erule`）、**前向推理**（`frule`） | — | 先拿出来 | `?P`；`apply`、`?m` |
-| 8 | 策略 | 可做可不做、目标后移、一条路还是两个目标、按形状分解 | **分解目标**、**分解假设**、**自建 auto** | 用规则推族谱 | 停不下来的搜索 | `THEN`、`back`；tactic、`<;>` |
-| 9 | 经典逻辑 | 反证法（新的核规则） | **排中律**、**说谎者悖论**（R6 造出，专题「机器做不到的事」用）；等价律：**双重否定律**、**蕴涵析取互化**、**分配律**、**德摩根律**（命题和量词的八个形状） | 骑士与无赖 | 皮尔士律、酒鬼悖论 | HOL 是经典的；Lean 的 `Classical.em` |
-| 10 | 化简器 | 改写一处、化简、范式 | **化简** | — | — | `simp add:`、`simp only` |
-| 11 | 自动化与证书 | 子句形式、归结、证书重建、Skolem 化 | **完整子句化**、**归结**、**饱和器**、**证明重建器** | 岛民变多；机器做不到的事 | 只标被迫的 | `sledgehammer`、`metis`；`decide`、`aesop` |
-| 12 | 数与列表 | 声明类型（自然数、列表、真假）和定义函数（定义板），声明给的规则（互不相同、按情况分、归纳）和证出的一对一；手算、定义当规则、条件改写、拿已知改写；为什么要终止 | 数与列表的等式 | 生成器遇上自然数；插入排序；真的，却证不出（六关） | 会绕圈的化简 | `datatype`、`fun`、`induction`；`inductive`、`Nat.rec` |
+| 3 | 规则 | 把套用、假设框和封装元件读成规则，通关解锁元件箱的规则表；然后声明新连接词、检验规则 | ∧、∨、⊥ 的声明 | 更多声明；消去规则生成器 | — | `structure And`、`inductive Or`、`inductive False`；`conjE`、`disjE` |
+| 4 | 简单的证明助手 | 倒着用规则、证明状态；组合子、回溯、深度优先搜索（只有 →） | — | — | — | `apply`、`assumption`；`REPEAT`、`ORELSE`、`DEPTH_FIRST` |
+| 5 | 连接词的运用 | 用声明生成的引入、消去规则，分情况，矛盾与否定 | — | HOL 怎样定义连接词 | — | `And.intro`、`And.left`、`Or.elim`；`conjE`、`conjunct1`；HOL 的 `and_def`… |
+| 6 | 量词的语言与反例 | 翻译、世界、找反例 | — | 查族谱 | — | `nitpick`；`#eval` |
+| 7 | 量词规则 | 选定一例、任取框、概括、实例框、相等 | — | 卡罗尔的推理题 | — | ⋀、`allI`；`∀`、`Exists.intro` |
+| 8 | 规则与元变量 | 合一（拆开规则卡）、规则作用于假设、高阶模式合一 | **合一器**、**规则作用于假设**（`erule`）、**前向推理**（`frule`） | — | 先拿出来 | `?P`；`apply`、`?m` |
+| 9 | 策略 | 可做可不做、目标后移、一条路还是两个目标、按形状分解 | **分解目标**、**分解假设**、**自建 auto** | 用规则推族谱 | 停不下来的搜索 | `THEN`、`back`；tactic、`<;>` |
+| 10 | 经典逻辑 | 反证法（新的核规则） | **排中律**、**说谎者悖论**（R6 造出，专题「机器做不到的事」用）；等价律：**双重否定律**、**蕴涵析取互化**、**分配律**、**德摩根律**（命题和量词的八个形状） | 骑士与无赖 | 皮尔士律、酒鬼悖论 | HOL 是经典的；Lean 的 `Classical.em` |
+| 11 | 化简器 | 改写一处、化简、范式 | **化简** | — | — | `simp add:`、`simp only` |
+| 12 | 自动化与证书 | 子句形式、归结、证书重建、Skolem 化 | **完整子句化**、**归结**、**饱和器**、**证明重建器** | 岛民变多；机器做不到的事 | 只标被迫的 | `sledgehammer`、`metis`；`decide`、`aesop` |
+| 13 | 数与列表 | 声明类型（自然数、列表、真假）和定义函数（定义板），声明给的规则（互不相同、按情况分、归纳）和证出的一对一；手算、定义当规则、条件改写、拿已知改写；为什么要终止 | 数与列表的等式 | 生成器遇上自然数；插入排序；真的，却证不出（六关） | 会绕圈的化简 | `datatype`、`fun`、`induction`；`inductive`、`Nat.rec` |
 
 ### 3.2 各章
 
@@ -50,14 +50,14 @@
 - [第 0 章 · 纸笔　已做](curriculum-paper.md)
 - [第 1 章 · 真值电路（语义）　已做](curriculum-truth-circuits.md)
 - [第 2 章 · 证明核　已做](curriculum-proof-kernel.md)
-- [第 2½ 章 · 简单的证明助手　已做](curriculum-assistant.md)（地图上是第 3 章，此后地图编号加一）
-- [第 3 章 · 声明　已做](curriculum-declarations.md)
-- [第 4 章 · 连接词的运用　已做](curriculum-connectives.md)
-- [第 5 章 · 量词的语言与反例　（约 13 关）](curriculum-quantifier-language.md)
-- [第 6 章 · 量词规则　已做](curriculum-quantifier-rules.md)
-- [第 7 章 · 规则与元变量　（25 关）　已做](curriculum-rule-resolution.md)
-- [第 8 章 · 策略　（15 关）　已做](curriculum-strategies.md)
-- [第 9 章 · 经典逻辑　（12 关，加专题和挑战）　已做](curriculum-classical.md)
-- [第 10 章 · 化简器　（10 关）　已做](curriculum-simplifier.md)
-- [第 11 章 · 自动化与证书　（23 关）　已做](curriculum-automation.md)
-- [第 12 章 · 数与列表](curriculum-induction.md)
+- [第 3 章 · 规则](curriculum-declarations.md)
+- [第 4 章 · 简单的证明助手](curriculum-assistant.md)
+- [第 5 章 · 连接词的运用　已做](curriculum-connectives.md)
+- [第 6 章 · 量词的语言与反例　（约 13 关）](curriculum-quantifier-language.md)
+- [第 7 章 · 量词规则　已做](curriculum-quantifier-rules.md)
+- [第 8 章 · 规则与元变量　（25 关）　已做](curriculum-rule-resolution.md)
+- [第 9 章 · 策略　（15 关）　已做](curriculum-strategies.md)
+- [第 10 章 · 经典逻辑　（12 关，加专题和挑战）　已做](curriculum-classical.md)
+- [第 11 章 · 化简器　（10 关）　已做](curriculum-simplifier.md)
+- [第 12 章 · 自动化与证书　（23 关）　已做](curriculum-automation.md)
+- [第 13 章 · 数与列表](curriculum-induction.md)

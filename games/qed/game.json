@@ -18,8 +18,8 @@
     "@qed/paper",
     "@qed/circuits",
     "@qed/kernel",
-    "@qed/assistant",
     "@qed/packing",
+    "@qed/assistant",
     "@qed/boxes",
     "@qed/quantifiers",
     "@qed/qrules",
@@ -30,6 +30,7 @@
     "@qed/automation",
     "@qed/inductive"
   ],
+  "partRulesAt": "qed/read-rules",
   "encyclopedia": [
     "@qed/play",
     "qed/prop",

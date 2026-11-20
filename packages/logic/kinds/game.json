@@ -1,0 +1,15 @@
+{
+  "extends": "game",
+  "declares": "package",
+  "overrides": {
+    "package": ["*"],
+    "game": ["$text"]
+  },
+  "fields": {
+    "partRulesAt": {
+      "type": "level",
+      "optional": true,
+      "scaffold": false
+    }
+  }
+}

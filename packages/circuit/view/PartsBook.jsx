@@ -1,7 +1,7 @@
 import { T as catalogText } from 'kernel/words'
 import { punctuation } from 'kernel'
 import { createElement, useEffect, useState } from 'react'
-import { L, sideOf } from "kernel/view"
+import { FormulaText, L, sideOf } from "kernel/view"
 import { tr } from 'kernel/words'
 
 import { Lock } from 'lucide-react'
@@ -77,7 +77,8 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
     const definition = { type: part.part, ...game.partDefs?.parts?.[part.part] }
     const demo = editorFor(definition).preview(definition, { game, scene: 'detail', entry: part, phone, progress: box.progress })
     // A rule a shape gives shows once the part has that shape.
-    const rules = (part.rules ?? []).filter((r) => !r.form || part.forms?.includes(r.form))
+    const rulesOpen = !part.rulesAt || box.progress.all || box.progress.solved.includes(part.rulesAt)
+    const rules = rulesOpen ? (part.rules ?? []).filter((r) => !r.form || part.forms?.includes(r.form)) : []
     const settings = game.parts.settings?.(part, box.progress, narrow?.key) ?? []
     return (
       <article className="wiki-article parts-article" key={key} data-family={part.family}>
@@ -88,7 +89,7 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
         {rules.length > 0 && (
           <section className="parts-rules">
             <h3>{tr("给出的规则")}</h3>
-            <table><tbody>{rules.map((r) => <tr key={r.text}><td><code>{r.text}</code></td></tr>)}</tbody></table>
+            <table><tbody>{rules.map((r) => <tr key={r.text}><td><FormulaText text={r.text} /></td></tr>)}</tbody></table>
           </section>
         )}
         {settings.length > 0 && (

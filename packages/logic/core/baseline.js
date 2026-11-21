@@ -5,12 +5,13 @@ import { runGates, gateTests } from './gates.js'
 import { truth } from './truthValues.js'
 import { checkDefine } from './define.js'
 import { checkDeclaration, readRuleRows } from './ruleLines.js'
-import { checkIso, sentenceOf } from './iso.js'
+import { checkIso, readPremise } from './iso.js'
 import { runAudit } from './audit-cases.js'
 import { translation, query } from './formulaWork.js'
 import { worldCheck } from './worldValues.js'
 import { inspectScript } from './script.js'
 import { parse } from './formula.js'
+import { ruleStatement } from './ruleStatement.js'
 import { say } from './notation.js'
 
 const judged = fail => ({ pass: !fail, fail, steps: [{ pass: !fail, fail }] })
@@ -18,7 +19,7 @@ const observed = ({ fail, run }) => ({ ...judged(fail), run })
 const examples = (task, run, reference = task.solution ?? task.answer, naive = task.naive) => exampleReports(reference, naive, run)
 
 function logicReport(task) {
-  const words = sentence => say(sentenceOf(task, sentence), task.notation)
+  const words = sentence => say(readPremise(task, sentence), task.notation)
   switch (task.kind) {
     case 'logic/proof': case 'logic/machine': {
       const all = withHidden(task)
@@ -40,6 +41,10 @@ function logicReport(task) {
       return examples(task, work => judged(judge(typeof work === 'string' ? parse(work, { consts: task.vocab.names }) : work)), task.target)
     }
     case 'logic/iso': {
+      if (task.play === 'logic/rule') {
+        const { initial, reference, judge } = ruleStatement(task)
+        return examples(task, work => judged(judge(work)), reference, initial())
+      }
       const audit = task.play === 'logic/audit'
       const naiveRules = !audit && task.naive?.every(rule => rule.needs) ? task.naive : null
       const judge = audit ? checkIso(task, words) : rules => checkDeclaration(task)(readRuleRows(task, rules))

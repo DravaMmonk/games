@@ -89,6 +89,7 @@ export function TreeList({ value, onChange, build, title, addLabel, scope, kept 
             type="button"
             ref={(el) => { boxes.current[k] = el }}
             className={`rr-slot ${s === null ? 'is-blank' : ''}`}
+            aria-label={s === null ? L(blank) : L(build.text(s))}
             aria-expanded={open?.at === k}
             disabled={s !== null && kept.includes(s)}
             onClick={(event) => setOpen({ at: k, anchor: event.currentTarget, cleared: false })}

@@ -1,0 +1,25 @@
+{
+  "title": "@level.try-rule-box.title",
+  "intro": [{ "t": "@level.try-rule-box.intro.0.t" }, { "t": "@level.try-rule-box.intro.1.t" }],
+  "after": "@level.try-rule-box.after",
+  "tasks": [
+    {
+      "id": "try-rule-box",
+      "kind": "logic/iso",
+      "play": "logic/audit",
+      "ruleAudit": true,
+      "words": [],
+      "target": "A → B",
+      "sentences": ["B", "⟦A⟧ ⟹ B"],
+      "brief": "@level.try-rule-box.tasks.try-rule-box.brief",
+      "hint": ["@level.try-rule-box.tasks.try-rule-box.hint.0"],
+      "tests": [{ "given": ["⟦A⟧ ⟹ B"], "goal": "A → B", "make": true }],
+      "solution": [{ "binds": [], "needs": ["⟦A⟧ ⟹ B"] }],
+      "boards": [{ "rules": [{ "binds": [], "needs": ["B"] }] }],
+      "want": "logic/expose",
+      "slots": [{ "given": ["B"], "goal": "A → B", "make": true, "fixed": ["goal", "make"] }],
+      "answer": [{ "given": ["⟦A⟧ ⟹ B"], "goal": "A → B", "make": true }],
+      "naive": [{ "given": ["B"], "goal": "A → B", "make": true }]
+    }
+  ]
+}

@@ -2,61 +2,44 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/mergeUse",
-      "to": "qed/read-rules"
+      "from": "decl-and",
+      "to": "decl-check"
     },
     {
-      "from": "qed/read-rules",
-      "to": "qed/decl-and"
+      "from": "decl-check",
+      "to": "decl-strength"
     },
     {
-      "from": "qed/decl-and",
-      "to": "qed/decl-check"
+      "from": "decl-strength",
+      "to": "decl-or"
     },
     {
-      "from": "qed/decl-check",
-      "to": "qed/decl-strength"
+      "from": "decl-or",
+      "to": "decl-bot"
     },
     {
-      "from": "qed/decl-strength",
-      "to": "qed/decl-or"
-    },
-    {
-      "from": "qed/decl-or",
-      "to": "qed/decl-bot"
-    },
-    {
-      "from": "qed/decl-bot",
-      "to": "qed/decl-true"
+      "from": "decl-bot",
+      "to": "decl-true"
     },
     {
       "required": true,
-      "from": "qed/decl-true",
-      "to": "qed/decl-iff"
+      "from": "decl-true",
+      "to": "decl-iff"
     },
     {
       "required": true,
-      "from": "qed/decl-iff",
-      "to": "qed/decl-three"
+      "from": "decl-iff",
+      "to": "decl-three"
     },
     {
       "required": true,
-      "from": "qed/decl-three",
-      "to": "qed/decl-order"
+      "from": "decl-three",
+      "to": "decl-order"
     },
     {
       "required": true,
-      "from": "qed/decl-order",
-      "to": "qed/decl-two"
-    },
-    {
-      "from": "qed/decl-bot",
-      "to": "qed/gen-one"
-    },
-    {
-      "required": true,
-      "from": "qed/gen-one",
-      "to": "qed/gen-each"
+      "from": "decl-order",
+      "to": "decl-two"
     }
   ]
 }

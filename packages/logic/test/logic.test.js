@@ -890,35 +890,6 @@ test('using a declaration: what follows is what every way in gives, a sentence n
   assert.ok(follows(level('⊥'), declaration(), { given: ['⊥'], goal: 'C' }))
 })
 
-test('the elimination rule generator: one case for each way in, its conclusion any ?R; none for ⊥; things taken kept', () => {
-  const level = { kind: 'logic/machine', want: 'logic/elim', inputs: [{ name: 'it' }, { name: 'ways' }] }
-  const board = machine({ r: ['anyR'], e: ['eachOf'], s: ['swapConcl', {}, 'e'], c: ['consFront'], m: ['mkRule'] }, ['ways>e.in', 'e#body>s.rule', 'r>s.to', 's>e.body', 'it>c.first', 'e>c.rest', 'c>m.premises', 'r>m.conclusion', 'm>out'], { inputs: ['it', 'ways'] })
-  const decl = (it, ways, elim) => ({ it, ways, elim })
-  const tests = [
-    decl('?A ∧ ?B', ['⟦?A; ?B⟧ ⟹ ?A ∧ ?B'], ['?A ∧ ?B', '⟦?A; ?B⟧ ⟹ ?R']),
-    decl('?A ∨ ?B', ['⟦?A⟧ ⟹ ?A ∨ ?B', '⟦?B⟧ ⟹ ?A ∨ ?B'], ['?A ∨ ?B', '⟦?A⟧ ⟹ ?R', '⟦?B⟧ ⟹ ?R']),
-    decl('⊥', [], ['⊥']),
-  ]
-  assert.ok(runOutputTests(MACHINE_TESTS, onMachine({ ...level, tests }), board).pass)
-  // A way that takes things first comes in as a rule inside them: Swap conclusion needs Keep ⋀ around it, which
-  // keeps them in the case, one thing or two.
-  const any = [
-    decl('∃y. ?P(y)', ['⋀x. ⟦?P(x)⟧ ⟹ ∃y. ?P(y)'], ['∃y. ?P(y)', '⋀x. ⟦?P(x)⟧ ⟹ ?R']),
-    decl('∃u. ∃v. ?P(u, v)', ['⋀x y. ⟦?P(x, y)⟧ ⟹ ∃u. ∃v. ?P(u, v)'], ['∃u. ∃v. ?P(u, v)', '⋀x y. ⟦?P(x, y)⟧ ⟹ ?R']),
-  ]
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine({ ...level, tests: any }), board).pass, false)
-  const through = machine({ r: ['anyR'], e: ['eachOf'], a: ['keepBound', {}, 'e'], s: ['swapConcl', {}, 'a'], c: ['consFront'], m: ['mkRule'] }, ['ways>e.in', 'e#body>a.in', 'a#body>s.rule', 'r>s.to', 's>a.body', 'a>e.body', 'it>c.first', 'e>c.rest', 'c>m.premises', 'r>m.conclusion', 'm>out'], { inputs: ['it', 'ways'] })
-  assert.ok(runOutputTests(MACHINE_TESTS, onMachine({ ...level, tests: [...tests, ...any] }), through).pass)
-  // Without For each, a list of ways does not fit Swap conclusion.
-  const one = machine({ r: ['anyR'], s: ['swapConcl'], c: ['consFront'], m: ['mkRule'] }, ['ways>s.rule', 'r>s.to', 'it>c.first', 's>c.rest', 'c>m.premises', 'r>m.conclusion', 'm>out'], { inputs: ['it', 'ways'] })
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine({ ...level, tests }), one).pass, false)
-  assert.ok(runOutputTests(MACHINE_TESTS, onMachine({ ...level, single: true, tests: tests.slice(0, 1) }), one).pass)
-  // The elimination rule comes out as a value of the board.
-  const out = MACHINE_TESTS.runTest(onMachine({ ...level, tests }), board, tests[1]).outputs.out
-  assert.equal(ruleText(out.rule), '⟦?A ∨ ?B; ⟦?A⟧ ⟹ ?R; ⟦?B⟧ ⟹ ?R⟧ ⟹ ?R')
-})
-
-
 test('a ∀ over sentences: R is bound, a test case leaves it, a sentence goes in for it, and it is true when its body is for R true and false', async () => {
   const { parse, replaceAtoms, same, show, substSentence } = await import('../core/formula.js')
   const { holds } = await import('../core/models.js')

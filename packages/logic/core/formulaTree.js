@@ -129,7 +129,9 @@ export function chipsFrom(formulas, { consts = [], notation = {} } = {}) {
   const vars = [...needed].filter((k) => k.startsWith('v:')).map((k) => k.slice(2))
   const parts = { kind: 'logic/translate', consts, vars, vocab, notation: { ...notation, symbols: ['∀', '∃'] } }
   const free = new Set(formulas.flatMap((formula) => [...freeVars(formula)]))
-  return chipsOf(parts).filter((c) => needed.has(c.key)).map((chip) => chip.group === 'var' && free.has(chip.text) ? { ...chip, free: true } : chip)
+  const scope = { key: '⟹', kind: 'formula', group: 'conn', text: '⟦□⟧ ⟹ □', make: () => bin('⟹', null, null) }
+  const chips = [...chipsOf(parts), scope]
+  return chips.filter((c) => needed.has(c.key)).map((chip) => chip.group === 'var' && free.has(chip.text) ? { ...chip, free: true } : chip)
 }
 
 /**

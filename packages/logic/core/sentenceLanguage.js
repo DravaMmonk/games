@@ -34,9 +34,10 @@ function segmentOf(node, path, kind, notation, bracket = false) {
   if (node.t) return { ...part(node.t === 'var' ? 'var' : 'name', [node.t === 'var' ? node.name : L(notation.words?.[node.f] ?? node.f)]), bad: kind === 'formula' }
   switch (node.op) {
     case 'atom': {
-      const words = notation.words?.[node.pred] ? L(notation.words[node.pred]) : node.pred === '=' ? '{0} = {1}' : `${node.pred}(${node.args.map((_, k) => `{${k}}`).join(', ')})`
+      const words = notation.words?.[node.pred] ? L(notation.words[node.pred]) : node.pred === '=' ? '{0} = {1}' : node.args.length ? `${node.pred}(${node.args.map((_, k) => `{${k}}`).join(', ')})` : node.pred
       return part('pred', template(words, (k) => kid(k)))
     }
+    case '⟹': return part('conn', ['⟦', kid(0), '⟧ ⟹ ', kid(1)])
     case '⊥': return part('conn', ['⊥'])
     case '¬': return part('conn', ['¬', kid(0, true)])
     case '∀': case '∃': return part('quant', [`${node.op}${node.v}. `, { region: [kid(0)] }])
@@ -56,6 +57,7 @@ export function sentenceLanguage(notation, root = 'formula', free) {
     label: root === 'term' ? T("式子") : T('公式'),
     line: (tree) => [segmentOf(tree, [], root, notation)],
     refuse: (tree, path, chip) => {
+      if (chip.key === '⟹' && path.length) return T('假设卡须放在前提的起点。')
       if (chip.kind === 'formula' && kindAt(tree, path) === 'term') return T('这里须填入一样东西：名字或变量。')
       if (root === 'formula' && chip.group === 'var' && !(free?.includes(chip.text) ?? chip.free) && !bindsAt(tree, path, chip.text)) return OUTSIDE
       return null

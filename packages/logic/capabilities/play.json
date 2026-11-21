@@ -168,6 +168,21 @@
           "hints"
         ]
       }
+    },
+    "rule": {
+      "configuration": {
+        "editor": "tree",
+        "judge": "once",
+        "checks": "hidden",
+        "resources": "ruleStatement",
+        "stage": "fo-stage",
+        "layout": "fo-level lg-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
     }
   }
 }

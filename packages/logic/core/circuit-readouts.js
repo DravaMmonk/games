@@ -8,8 +8,7 @@ import { say, sayTerm } from './notation.js'
 import { printTerm } from './pterm.js'
 import { typeText } from './datatype.js'
 import { certificate, clauseFormula, refuted } from './resolution.js'
-import { elimOf } from './elimgen.js'
-import { equationText, ruleText, sideText, withBinders } from './schematic.js'
+import { withBinders } from './schematic.js'
 
 // The words a test reads in: its last test (the bare letters) in the letters' own words.
 const wordsOf = (task, test) => (test?.symbolic ? { ...task.notation, words: task.symbolicWords ?? null, propertyWords: false } : task.notation)
@@ -90,14 +89,12 @@ export function stepExplained(entry, run) {
   if (did.op === 'assumption') return T('目标 {goal} 和它的一条已知对上，证完了。', { goal })
   return null
 }
-// A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
-const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))
 const proofComplete = () => ({ s: tr('证明完毕'), formula: true, upright: true })
 
 /**
- * A value in words, a line each: a sentence, a rule, a list; the rules a rule part gives (R₁ …, numbered for the board
+ * A value in words, a line each: the rules a rule part gives (R₁ …, numbered for the board
  * when a run is given); a proof state's goals (⊢₁ …) (or that
- * it is proved, or that the step failed, and why); equations; a clause set, once ⊥ is in only the clauses ⊥ comes from.
+ * it is proved, or that the step failed, and why); a clause set, once ⊥ is in only the clauses ⊥ comes from.
  * Each line is prose or a formula (`formula`: what the board typesets); showMachine joins them as text.
  */
 export function machineLines(v, { task, run }) {
@@ -110,8 +107,6 @@ export function machineLines(v, { task, run }) {
   if (v.kind === 'want') return v.lines
   const text = machineTextOf(task)
   const term = machineTermOf(task)
-  if (v.kind === 'sentence' || v.kind === 'rule' || v.kind === 'any') return formulas([genValueText(v, text)])
-  if (v.kind === 'list') return formulas(v.items.map((x, k) => `${k + 1}. ${genValueText(x, text)}`))
   if (v.kind === 'rules') {
     const slots = run?.ruleSlots ?? v.entries.map((entry) => ({ entry }))
     const shown = v.own === undefined ? v.entries : v.entries.slice(v.entries.length - v.own)
@@ -126,23 +121,20 @@ export function machineLines(v, { task, run }) {
       ...goalLines(v, task),
     ]
   }
-  if (v.kind === 'eqs') return [...prose([v.fail && `${tr('合一失败')}：${L(v.fail)}`]), ...result(!v.eqs.length && tr('没有等式了')), ...formulas(v.eqs.map((e) => equationText(e, (side) => sideText(side, text, term))))]
   const shown = certificate(v.set) ?? v.set.map((_, i) => i)
   return [...result(refuted(v.set) && tr('推出了空子句 ⊥')), ...prose([v.endless && tr("仍在增加")]), ...formulas(shown.map((i) => `${i + 1}. ${text(clauseFormula(v.set[i]))}${v.set[i].from ? ` ← ${v.set[i].from.map((k) => k + 1).join(punctuation("、"))}` : ''}`))]
 }
 const showMachine = (v, ctx) => machineLines(v, ctx).map((l) => l.s).join('\n')
 
 const WANT = {
-  'logic/elim': T('这份声明的消去规则'),
   'logic/clauses': T('拆成的子句'),
   'logic/refuted': T('推出空子句 ⊥'),
   'logic/decide': T('能推出 ⊥ 时推出 ⊥；否则饱和至不再产生新子句'),
-  'logic/unify': T('解完的等式（能合一时），或者「失败」（不能时）'),
   'logic/answers': T('找出所有答案'),
   'logic/fails': T('证不出时停止，并报告证不出'),
 }
-/** What a test wants of the result, in words: the results a step makes, the elimination rule, or the level's want. */
-// What a test wants, as lines (`kind: 'want'`, machineLines): words, and the goals or the rule wanted as formulas, so a
+/** What a test wants of the result, in words: the results a step makes or the level's want. */
+// What a test wants, as lines (`kind: 'want'`, machineLines): words, and the goals as formulas, so a
 // card typesets them as it does every other formula.
 function wantOf(task, test) {
   const text = machineTextOf(task)
@@ -160,7 +152,6 @@ function wantOf(task, test) {
     })
     return { kind: 'want', lines: ways.flatMap((w, k) => (k ? [prose(tr('或者')), w] : [w])) }
   }
-  if (test.elim) return { kind: 'want', lines: [prose(tr('消去规则 ').trim()), formula(ruleText(elimOf(test), text))] }
   const want = test.want ?? task.want
   if (want === 'logic/proved') return { kind: 'want', lines: [proofComplete()] }
   return L(WANT[want])

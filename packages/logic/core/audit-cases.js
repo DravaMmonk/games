@@ -41,7 +41,9 @@ export function runAudit(level, cases, words) {
     }
     if (level.want === 'logic/expose') {
       const k = mismatch(board, true)
-      return k < 0 ? null : atRow(k, T("第 {k} 条条例上，这份声明的结果与预期相符，没有暴露它的错误。", {k: k + 1}))
+      return k < 0 ? null : atRow(k, level.ruleAudit
+        ? T("实际结果与预期相符。请换一种前提再试。")
+        : T("第 {k} 条条例上，这份声明的结果与预期相符，没有暴露它的错误。", {k: k + 1}))
     }
     return caught[board] >= 0 ? null : { why: T('各条条例的预期都正确，但这份声明在每一条上都得出了正确结论，还没有暴露它的错误。') }
   }
@@ -61,7 +63,7 @@ function openCase(level, slot) {
   const fixed = slot?.fixed ?? []
   const goal = level.caseGoal ?? (fixed.includes('goal') ? slot.goal : '')
   return {
-    given: fixed.includes('given') ? slot.given ?? [] : slot?.keep ?? [],
+    given: [...new Set([...(slot?.keep ?? []), ...(slot?.given ?? [])])],
     goal,
     make: fixed.includes('make') ? slot.make ?? null : null,
     fixed: level.caseGoal !== undefined && !fixed.includes('goal') ? [...fixed, 'goal'] : fixed,

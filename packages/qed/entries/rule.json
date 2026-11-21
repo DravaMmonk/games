@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.rule.title",
-  "at": "read-rules",
+  "at": "try-rules",
   "body": ["@glossary.entries.rule.body.0"],
   "see": ["proof", "kernel"]
 }

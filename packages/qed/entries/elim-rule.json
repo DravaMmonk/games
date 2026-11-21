@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.elim-rule.title",
-  "at": "read-rules",
+  "at": "try-rule-elim",
   "body": ["@glossary.entries.elim-rule.body.0"],
   "see": ["intro-rule", "normal-form"]
 }

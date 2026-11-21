@@ -2,7 +2,8 @@ import { L } from "kernel"
 import { T } from 'kernel/words'
 import { passedWork } from 'circuit'
 import { AUDIT_CASE_LIMIT, auditResult, blankCase, restoreAuditCases, runAudit } from './audit-cases.js'
-import { sentenceOf } from './iso.js'
+import { readPremise } from './iso.js'
+import { ruleOf, statedRule } from './schematic.js'
 import { say } from './notation.js'
 import { checkDeclaration, linesOf, readRuleRows } from './ruleLines.js'
 import { caseCells, DERIVABLE } from './auditCells.js'
@@ -17,12 +18,12 @@ export function audit(source, { game, progress, saved }) {
   const [board] = level.boards
   // The tabs are the level's cases and its letters (work.js caseViews): the same declaration and cases read in other
   // words; each runs the cases and says what it finds in its own.
-  const tabs = level.views?.map(({ label }) => ({ label })) ?? [{ label: T("这份声明") }]
+  const tabs = level.views?.map(({ label }) => ({ label })) ?? [{ label: level.ruleAudit ? T("待检验规则") : T("这份声明") }]
   const reports = new Map()
   const report = (work, k = 0) => {
     if (reports.get(k)?.work !== work) {
       const seen = inView(level, k)
-      reports.set(k, { work, report: runAudit(seen, work, (sentence) => say(sentenceOf(seen, sentence), seen.notation)) })
+      reports.set(k, { work, report: runAudit(seen, work, (sentence) => say(readPremise(seen, sentence), seen.notation)) })
     }
     return reports.get(k).report
   }
@@ -32,7 +33,9 @@ export function audit(source, { game, progress, saved }) {
     judge: (k, work) => report(work, k).runs[0].fail?.why,
     stepsOf: (k, work) => report(work, k).runs[0].steps.map((step) => step.failed ? { failed: L(step.failed) } : step),
     rows: (k) => declarationValues(inView(level, k), readRuleRows(level, board.rules)),
-    lines: (k, read) => ruleLines(inView(level, k), board.rules, read),
+    lines: (k, read) => level.ruleAudit
+      ? board.rules.map(({ needs }) => ({ name: read(T('待检验规则')), text: statedRule(ruleOf(null, null, needs, level.target)) }))
+      : ruleLines(inView(level, k), board.rules, read),
     completion: auditResult,
     result: (work, _tab, reached) => {
       const { rows } = report(work)
@@ -45,6 +48,7 @@ export function audit(source, { game, progress, saved }) {
       }
     },
     passed: (work) => {
+      if (level.ruleAudit) return T('这条条例找出了规则漏掉的情形。')
       if (level.want === 'logic/agree') return T('每一条条例的预期都符合需求，这份声明的结果也都和预期相符。')
       if (level.want === 'logic/expose') return T('每一条条例的预期都符合需求，这份声明的结果都和预期不符。')
       const { caught } = report(work)

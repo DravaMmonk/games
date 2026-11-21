@@ -23,12 +23,6 @@
     "answers": {
       "about": "@capability.want.items.answers.about"
     },
-    "unify": {
-      "about": "@capability.want.items.unify.about"
-    },
-    "elim": {
-      "about": "@capability.want.items.elim.about"
-    },
     "clauses": {
       "about": "@capability.want.items.clauses.about"
     },

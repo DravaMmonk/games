@@ -1,0 +1,34 @@
+{
+  "title": "@level.try-rules.title",
+  "intro": [
+    { "t": "@level.try-rules.intro.0.t" },
+    { "t": "@level.try-rules.intro.1.t" }
+  ],
+  "after": "@level.try-rules.after",
+  "tasks": [
+    {
+      "id": "try-rules-apply",
+      "kind": "logic/iso",
+      "play": "logic/rule",
+      "words": [],
+      "step": "@level.try-rules.tasks.try-rules-apply.step.2",
+      "brief": "@level.try-rules.tasks.try-rules-apply.brief.2",
+      "hint": [
+        "@level.try-rules.tasks.try-rules-apply.hint.0.2"
+      ],
+      "sentences": ["A → B"],
+      "rule": { "premises": ["A → B", "A"], "conclusion": "B" }
+    },
+    {
+      "id": "try-rules-chain",
+      "kind": "logic/iso",
+      "play": "logic/rule",
+      "words": [],
+      "step": "@level.try-rules.tasks.try-rules-chain.step.2",
+      "brief": "@level.try-rules.tasks.try-rules-chain.brief.2",
+      "hint": ["@level.try-rules.tasks.try-rules-chain.hint.0.2"],
+      "sentences": ["A → B", "B → C"],
+      "rule": { "premises": ["A → B", "B → C"], "conclusion": "A → C" }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "title": "@level.try-rule-elim.title",
+  "intro": [{ "t": "@level.try-rule-elim.intro.0.t" }],
+  "after": "@level.try-rule-elim.after",
+  "tasks": [
+    {
+      "id": "try-rule-elim",
+      "kind": "logic/iso",
+      "play": "logic/rule",
+      "words": [],
+      "brief": "@level.try-rule-elim.tasks.try-rule-elim.brief",
+      "hint": ["@level.try-rule-elim.tasks.try-rule-elim.hint.0"],
+      "fixedPremises": 1,
+      "fixedConclusion": true,
+      "sentences": ["A → B", "⟦B⟧ ⟹ R"],
+      "rule": { "premises": ["A → B", "A", "⟦B⟧ ⟹ R"], "conclusion": "R" }
+    }
+  ]
+}

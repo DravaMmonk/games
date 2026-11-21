@@ -316,6 +316,14 @@ export function ruleText(rule, say = show) {
 }
 
 /**
+ * A rule or a sentence as it is stated to a player (a part's rule, a declaration's, a rule on a wire): each of its
+ * letters is any sentence and stands bare (A, P(x), R). The ? marks a letter only where a run of the machine leaves
+ * it still to be found: in a proof state, or an equation to solve.
+ */
+export const stated = (text) => text.replace(/\?(?=[A-Za-z])/g, '')
+export const statedRule = (rule, say = show) => stated(ruleText(rule, say))
+
+/**
  * The kernel's rules as rules with metavariables, in the order a card lists them, each with the name of the card it
  * is on the proof board: introduction rules first (used on a goal), then elimination rules (the first premise a
  * hypothesis to use up), then the rest.

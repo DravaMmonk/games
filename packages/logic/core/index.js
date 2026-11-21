@@ -15,9 +15,10 @@ import { scriptJudge } from './script.js'
 import { checkDefine } from './define.js'
 import { lemmaPortProblems } from './validate.js'
 import { checkDeclaration, readRuleRows, blankRule } from './ruleLines.js'
-import { sentenceOf } from './iso.js'
+import { readPremise, sentenceOf } from './iso.js'
 import { say } from './notation.js'
 import { auditResult, runAudit, restoreAuditCases } from './audit-cases.js'
+import { ruleStatement } from './ruleStatement.js'
 import { declarationResult } from './rowValues.js'
 import { parse } from './formula.js'
 export { registerWordSets } from './wordsets.js'
@@ -55,6 +56,7 @@ export function register(kernel) {
       initial(context) {
         const { task } = logicContext(context)
         if (boards[name]) return boards[name](task)
+        if (name === 'logic/rule') return ruleStatement(task).initial()
         if (name === 'logic/iso') return { rules: [blankRule()] }
         if (name === 'logic/audit') return restoreAuditCases(task)
         if (name === 'logic/define') return task.rows.map(() => null)
@@ -82,11 +84,18 @@ export function register(kernel) {
           case 'logic/model': return judged(worldCheck(task).judge, work)
           case 'logic/script': return judged(scriptJudge(task), work)
           case 'logic/define': return judged(checkDefine(task), work)
+          case 'logic/rule': {
+            const rule = ruleStatement(task)
+            const board = typeof work.conclusion === 'string' ? {
+              conclusion: sentenceOf(task, work.conclusion), rules: readRuleRows(task, work.rules),
+            } : work
+            return { ...judged(rule.judge, board), result: rule.completion(board) }
+          }
           case 'logic/iso': {
             const rules = readRuleRows(task, work.rules ?? work)
             return { ...judged(checkDeclaration(task), rules), result: declarationResult(rules) }
           }
-          case 'logic/audit': return { ...runAudit(task, work, sentence => say(sentenceOf(task, sentence), task.notation)), result: auditResult(work) }
+          case 'logic/audit': return { ...runAudit(task, work, sentence => say(readPremise(task, sentence), task.notation)), result: auditResult(work) }
           default: throw new Error(`unknown logic play ${name}`)
         }
       },

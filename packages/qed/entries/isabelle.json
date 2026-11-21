@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.isabelle.title",
-  "at": "r-match",
+  "at": "r-rule",
   "body": ["@glossary.entries.isabelle.body.0"],
   "see": ["lcf", "lean"]
 }

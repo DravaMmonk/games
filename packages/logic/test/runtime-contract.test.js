@@ -10,7 +10,7 @@ import runtime from '../core/runtime.js'
 test('the logic runtime and its registered capabilities satisfy the package contract', () => {
   assert.deepEqual(moduleProblems(logicModule, registry, runtime), [])
   assert.deepEqual(Object.keys(registry.tables.board).filter(name => name.startsWith('logic/')).sort(), ['logic/gates', 'logic/machine', 'logic/proof'])
-  assert.deepEqual(Object.keys(runtime.languages).sort(), ['logic/condition', 'logic/formula', 'logic/side'])
+  assert.deepEqual(Object.keys(runtime.languages).sort(), ['logic/condition', 'logic/formula', 'logic/premise', 'logic/side'])
   assert.equal(registry.tables.operation['logic/append'].params.fields.ways.default, '2')
   assert.deepEqual(registry.tables.operation['logic/resolve'].params.fields.unit.values, ['any', 'unit'])
 })

@@ -4,6 +4,9 @@
     "formula": {
       "about": "@capability.language.items.formula.about"
     },
+    "premise": {
+      "about": "@capability.language.items.premise.about"
+    },
     "side": {
       "about": "@capability.language.items.side.about"
     },

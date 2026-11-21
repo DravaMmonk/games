@@ -65,6 +65,7 @@
 /* The rules a declaration gives, as they stand: each named at the left, written out beside it. */
 /* A sentence being built for one of them in the sentence editor. */
 /* The rule table's for-any switch takes the quantifiers' colour. */
+.lg-rule-table { --rr-label-width: 8em; }
 .lg-rule-table .rr-lead button[aria-pressed='true'] { background: color-mix(in srgb, var(--fam-quant, var(--accent)) 13%, transparent); box-shadow: inset 0 0 0 1.5px var(--fam-quant, var(--accent)); }
 
 /* The checks a player writes in the results area (Checks.jsx): the rows, then what the run said. */

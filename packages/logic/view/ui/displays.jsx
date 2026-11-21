@@ -7,12 +7,12 @@ import { gatesScreen } from './gates.js'
 import { machineScreen } from './machine.js'
 import { declaredRules, typeOf } from '../../core/iso.js'
 import { datatypeRules, typeText } from '../../core/datatype.js'
-import { ruleText } from '../../core/schematic.js'
+import { statedRule } from '../../core/schematic.js'
 import { machineTermOf, machineTextOf } from '../../core/circuit-readouts.js'
 
 function passedDeclaration(level) {
   const text = machineTextOf(level)
-  const rule = (r, label) => <>{label}<FormulaText text={ruleText(r, text)} /></>
+  const rule = (r, label) => <>{label}<FormulaText text={statedRule(r, text)} /></>
   const label = T('声明给出的规则')
   if (level.datatype) {
     const name = level.datatype.type

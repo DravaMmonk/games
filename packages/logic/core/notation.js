@@ -56,6 +56,7 @@ export function render(f, notation, lang, outer = -1) {
       return f.args.length ? `${f.pred}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : show(f)
     }
     case 'meta': return f.args?.length ? `${f.name}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : f.name
+    case '⟹': return `⟦${render(f.a, notation, lang)}⟧ ⟹ ${render(f.b, notation, lang)}`
     case '⊥': return known('⊥') ? '⊥' : sideOf(catalogText('矛盾', {}, 'notation'), lang)
     case '¬': return known('¬') ? `¬${render(f.a, notation, lang, 9)}` : sideOf(catalogText('并非{formula}', { formula: part(f.a) }), lang)
     case '∀': case '∃': {

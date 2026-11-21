@@ -31,7 +31,7 @@
     "@qed/simplifier",
     "@qed/automation"
   ],
-  "partRulesAt": "qed/read-rules",
+  "partRulesAt": "qed/try-rules",
   "encyclopedia": [
     "@qed/play",
     "qed/prop",

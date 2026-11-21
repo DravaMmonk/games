@@ -4,13 +4,20 @@
 // A test gives some premises and asks whether its goal follows. An introduction rule may make the goal from these
 // premises. Otherwise Apply, Take one, Example and the declaration's elimination rule decide what follows.
 // A specification is tested on cases, not proved. Audit tasks (audit-cases.js) test given declarations instead.
-import { asImp, fn, matchThings, meta, parse, same, showTerm, subst, substMany, unfoldConnective } from './formula.js'
+import { asImp, bin, fn, matchThings, meta, parse, same, showTerm, subst, substMany, unfoldConnective } from './formula.js'
 import { ruleOf } from './schematic.js'
 import { T } from 'kernel/words'
 import { cases, failureReason, hidden, inOrder, sameAs } from 'kernel'
 
 /** A sentence of the level, its things read as names (not variables). */
 export const sentenceOf = (level, text) => parse(text, { consts: level.things ?? [] })
+// A rule-board premise may be a derivation scoped under one assumption.
+export function parsePremise(text, options) {
+  const scoped = /^⟦([^⟦⟧]+)⟧\s*⟹\s*(.+)$/.exec(text.trim())
+  return scoped ? bin('⟹', parse(scoped[1], options), parse(scoped[2], options)) : parse(text, options)
+}
+
+export const readPremise = (level, text) => parsePremise(text, { consts: level.things ?? [] })
 const knows = (facts, formula) => facts.some((fact) => same(fact, formula))
 
 // Satisfy a rule by instantiating its variables and looking up the premises it takes.
@@ -130,6 +137,14 @@ function closure(level, rules, given) {
  * Apply already; otherwise the elimination rule and Apply decide (follows).
  */
 export function derives(level, rules, test) {
+  if (level.ruleAudit) {
+    const facts = test.given.map((s) => readPremise(level, s))
+    // A result proved outside the box can also be cited under its assumption.
+    const has = (need) => knows(facts, need) || (need.op === '⟹' && knows(facts, need.b))
+    return same(sentenceOf(level, test.goal ?? level.target), sentenceOf(level, level.target))
+      ? { derived: rules.some((rule) => rule.needs.every((s) => has(readPremise(level, s)))) }
+      : { derived: false }
+  }
   const read = (s) => sentenceOf(level, s)
   const target = read(level.target)
   const goal = test.goal ? read(test.goal) : target

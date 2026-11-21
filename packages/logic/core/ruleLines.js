@@ -1,4 +1,4 @@
-import { checkIso, sentenceOf } from './iso.js'
+import { checkIso, readPremise } from './iso.js'
 import { freeVars, show } from './formula.js'
 import { chipsFrom, complete, missingChips, straysOf } from './formulaTree.js'
 import { say } from './notation.js'
@@ -8,7 +8,7 @@ import { inOrder } from 'kernel'
 export const blankRule = () => ({ binds: [], needs: [] })
 
 /** The chips a premise can use on the rule table. */
-export const premiseChips = (level) => chipsFrom(level.sentences.map((s) => sentenceOf(level, s)), { consts: level.things ?? [], notation: level.notation })
+export const premiseChips = (level) => chipsFrom(level.sentences.map((s) => readPremise(level, s)), { consts: level.things ?? [], notation: level.notation })
 
 /** Rules go through the same checks whether read from content or written on the rule table. */
 export function problemsOf(level, rules, chips = premiseChips(level)) {
@@ -26,7 +26,7 @@ export function problemsOf(level, rules, chips = premiseChips(level)) {
 }
 
 /** The editor stores trees. Authored rules and the derivability checks use sentences. */
-export const readRuleRows = (level, lines) => lines.map((rule) => ({ binds: rule.binds, needs: rule.needs.map((need) => sentenceOf(level, need)) }))
+export const readRuleRows = (level, lines) => lines.map((rule) => ({ binds: rule.binds, needs: rule.needs.map((need) => readPremise(level, need)) }))
 export const linesOf = (rules) => rules.map((rule) => ({ binds: rule.binds, needs: rule.needs.map((need) => show(need)) }))
 
 function problemText({ row, slot, why, missing }) {
@@ -41,7 +41,7 @@ function problemText({ row, slot, why, missing }) {
 /** Check that the rules can be written on this table before running the hidden derivability cases. */
 export function checkDeclaration(level) {
   const chips = premiseChips(level)
-  const words = (sentence) => say(sentenceOf(level, sentence), level.notation)
+  const words = (sentence) => say(readPremise(level, sentence), level.notation)
   const judge = checkIso(level, words)
   const form = (rules) => {
     const problem = problemsOf(level, rules, chips)[0]

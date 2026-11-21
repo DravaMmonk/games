@@ -3,25 +3,22 @@ import { ruleImplementations } from './rule-implementations.js'
 import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 import { countMachineSteps, finishProof, machineEvents, proofStep, stopProof, traceFlow, traceProof } from './proof-tree.js'
-// The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
+// The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry proof states, rule lists or
 // clause sets instead of proved judgments. Its sources (`in` cards, one per input the level names) give the test's
-// inputs, its sink `out` is checked against what the level wants. A part is a rule of unification, a tactic, a frame
+// inputs, its sink `out` is checked against what the level wants. A part is a tactic, a frame
 // that runs what it holds again and again (repeat, depth-first search, every goal), a junction for alternative
 // routes, a rewrite, or a step on clauses (resolution.js); the level's parts come from the course as
-// on every board. A part the player builds (the unifier, erule, frule, the introduction and elimination steps, auto,
+// on every board. A part the player builds (erule, frule, the introduction and elimination steps, auto,
 // simp, the clause machines) runs the board that built it: the player's, as it last passed (builtMachine).
 //
-//   value   { kind: 'eqs', eqs: [equation], fail } (schematic.js) | { kind: 'state', … } (tactics.js)
+//   value   { kind: 'state', … } (tactics.js)
 //           | { kind: 'clauses', set, from?, endless? } (resolution.js) | { kind: 'rules', keys, entries }
-//           | { kind: 'sentence' | 'rule' | 'list', … } (elimgen.js: the elimination-rule generator, chapter 12)
 //   level   { kind: 'logic/machine', want, inputs?: [{ name, label }] (default one, `in`),
 //             rules?: { key: { name, premises: [text], conclusion: text } }, backtrack?,
-//             tests: [{ eqs: [equation text] } | { goal, hyps?, answers?, becomes?, clauses?, budget? }
+//             tests: [{ goal, hyps?, answers?, becomes?, clauses?, budget? }
 //             | { clauses: [clause text], budget? }, want?] }
 //
-// What a level wants of its output (`want`, or a test's own): 'elim' (the declaration's elimination rule, elimgen.js),
-// 'unify' (the solved equations, when the input has a
-// unifier, or a failure when it has none), 'proved' (no goal left), 'becomes' (the results the test lists, each its
+// Output checks include 'proved' (no goal left), 'becomes' (the results the test lists, each with its
 // goals written '⋀a. h1; h2 ⊢ goal', its ?-letters named as the machine likes: none, for a step that must fail),
 // 'answers' (every way of proving the goal, as a
 // question's answers: the test's `answers`, the things its ?-letters become), 'fails' (the goal cannot be proved, and
@@ -48,11 +45,10 @@ import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, all, fn, subst, tvar } from './formula.js'
 import { KERNEL, answerOf, asValue, defer, depthFirst, resultsOf, rule, startState } from './tactics.js'
-import { ASSUMPTION_RULE, FULL, UNIFY_RULES, instantiate, lemmaRules, parseEquation, parseS, ruleOf, ruleText, sameSide, sideText, solveEqs, solved } from './schematic.js'
+import { ASSUMPTION_RULE, instantiate, lemmaRules, parseS, ruleOf, ruleText, sideText, stated } from './schematic.js'
 import { lemmaRewrites, localRewrites, rewrite, rewriteBookOf, rewriteText, simplify } from './rewrite.js'
 import { datatypesRules } from './datatype.js'
 import { clausesOfState, oracleRound, parseClause, refuted, replay, resolveRound, saturate } from './resolution.js'
-import { GEN_PARTS, anyValue, elimInputs, judgeElim, listValue } from './elimgen.js'
 import { L } from "kernel"
 import { T } from 'kernel/words'
 import { circuitBoard } from 'circuit'
@@ -60,7 +56,6 @@ import { say } from './notation.js'
 
 const fail = (zh, en) => new OperationError({ zh, en })
 export const clausesValue = (set, extra = {}) => ({ kind: 'clauses', set, ...extra })
-export const eqsValue = (eqs, fail = null) => ({ kind: 'eqs', eqs, fail })
 
 const books = new WeakMap()
 /**
@@ -254,21 +249,9 @@ const clausesIn = (v) => {
   if (v.kind !== 'clauses') throw fail('这里要一组子句：先用析出子句把证明状态化为子句', 'This needs a clause set: split the proof state into clauses first')
   return v
 }
-const eqsIn = (v) => {
-  if (v.kind !== 'eqs') throw fail('这里要一组等式', 'This needs a set of equations')
-  return v
-}
-// A unification rule card: the rule once, where it first applies; a set already failed passes through.
-const unifyCard = (r) => ({ inputs: ['in'], eval: ({ in: v }, node, ctx) => {
-  const e = eqsIn(v)
-  if (e.fail || !e.eqs.length) { traceFlow(ctx, node); return e }
-  const next = UNIFY_RULES[r](e.eqs, {})
-  return next ? eqsValue(next.eqs, next.fail ?? null) : e
-} })
-
 /**
  * The repeat frame: what its region makes from the value it opens with is fed back in, again and again, until it
- * stops changing (or a clause set holds ⊥, an equation set fails, no goal is left, or a tactic fails: then the round
+ * stops changing (or a clause set holds ⊥, no goal is left, or a tactic fails: then the round
  * before stands). On proof states it follows the first result only. Its region shows the first round; the frame gives
  * the last.
  */
@@ -278,7 +261,7 @@ const repeat = {
     traceFlow(ctx, node, key ?? null)
     if (key) return v
     const first = (x) => (x.kind === 'state' ? firstOf(x) : x)
-    const over = (x) => (x.kind === 'clauses' && refuted(x.set)) || (x.kind === 'eqs' && (x.fail || !x.eqs.length)) || (x.kind === 'state' && (x.error || !x.goals.length))
+    const over = (x) => (x.kind === 'clauses' && refuted(x.set)) || (x.kind === 'state' && (x.error || !x.goals.length))
     // Comparing states is a decision. Forwarding a completed or failed proof needs no comparison.
     const decide = (out, value, decision) => {
       const step = { inner: true, label: out ? OUT : AGAIN, transient: true, decision }
@@ -364,40 +347,6 @@ const each = {
   },
 }
 
-/**
- * For each (the generator's frame, chapter 12): the region run on every item of the list it is handed, in order, each
- * result an item of the list it gives.
- */
-const eachOf = {
-  inputs: ['in'],
-  eval: ({ in: v }, node, ctx, key) => {
-    traceFlow(ctx, node, key ?? null)
-    if (v?.kind !== 'list') throw fail('这里要一串：框对其中的每一样各做一遍', 'This needs a list: the frame works on each of its items')
-    if (key) {
-      if (!v.items.length) throw fail('这一串是空的：框里一次也不做', 'The list is empty: nothing inside runs')
-      return v.items[0]
-    }
-    const round = ctx.region('body')
-    return listValue(v.items.map(item => round(item)))
-  },
-}
-
-/**
- * Keep ⋀ (the generator's frame, chapter 6): a value's bound variables set aside, its region run on the rule after
- * them, and the same bound variables put back in front of what comes out; a value with none runs through as it is.
- */
-const keepBound = {
-  inputs: ['in'],
-  eval: ({ in: v }, node, ctx, key) => {
-    traceFlow(ctx, node, key ?? null)
-    if (!v) throw fail('这里要接进一样东西', 'Something has to be wired in here')
-    const inner = v.kind === 'any' ? v.body : v
-    if (key) return inner
-    const out = ctx.region('body')(inner)
-    return v.kind === 'any' ? anyValue(v.vars, out) : out
-  },
-}
-
 // Each incoming wire is a candidate route. The junction preserves input order and leaves each candidate's goals
 // and substitutions together. A later step can continue every candidate when backtracking is open.
 const WAYS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
@@ -423,20 +372,6 @@ const forwardPart = part => ({
   },
 })
 const BODIES = {
-  // The elimination-rule generator (chapter 12, elimgen.js): rules taken apart and put together, and for each.
-  ...GEN_PARTS,
-  anyR: forwardPart(GEN_PARTS.anyR),
-  consFront: forwardPart(GEN_PARTS.consFront),
-  eachOf,
-  keepBound,
-  // Unification (chapter 8): its rules, and patterns.
-  uDelete: unifyCard('delete'),
-  uDecompose: unifyCard('decompose'),
-  uConflict: unifyCard('conflict'),
-  uSwap: unifyCard('swap'),
-  uCheck: unifyCard('check'),
-  uEliminate: unifyCard('eliminate'),
-  uPattern: unifyCard('pattern'),
   repeat,
   // Tactics (chapters 8 and 9).
   rule: ruleCard(rule, DID.rule),
@@ -531,11 +466,9 @@ function clausify(s0, ctx) {
 
 /** A test's inputs as values, by name. */
 export function inputsOf(test, level) {
-  if (test.ways) return elimInputs(test, level)
   // A level that builds a part taking rules gives them as an input of its own: the test's rules (`rules`, keys).
   const rules = test.rules ? { rules: rulesValue(test.rules.map((key) => rulePartsOf(level).get(rulePartOf(level, key).type).find((e) => e.key === key))) } : {}
   if (test.goal) return { in: startState(parseS(test.goal), (test.hyps ?? []).map(parseS)), ...rules }
-  if (test.eqs) return { in: eqsValue(test.eqs.map(parseEquation)) }
   return { in: clausesValue(clauseSetOf(test.clauses)) }
 }
 const clauseSetOf = (texts) => [...new Map(texts.map((c) => parseClause(c, parseS)).map((c) => [c.key, c])).values()]
@@ -548,7 +481,6 @@ const RULE_PORT_APPEARANCE = { shape: 'compact', wire: 'dashed' }
 export const MACHINE_BOARD = circuitBoard({
   text: FORMULA_TEXT,
   portAppearance: (node, input, _output, task) => {
-    if (task.want === 'logic/elim') return
     if (input != null) return ['rules', 'before'].includes(input) ? RULE_PORT_APPEARANCE : undefined
     if (node.type === 'in' ? node.params?.name === 'rules' : rulePartsOf(task).has(node.type)) return RULE_PORT_APPEARANCE
   },
@@ -581,7 +513,7 @@ function rulePartName(level, type, entries = rulePartsOf(level).get(type)) {
   return r.group === 'def' ? inWords(level, (text) => defText(r.text, text)) : r.name
 }
 /** A rule of a rule part's, written out: an inference rule, or a rewrite rule (an equation given goes by its name). */
-export const ruleWritten = (e, text, term) => (e.book === 'rule' ? ruleText(e.rule, text) : rewriteText(e.rule, text, term) || L(e.rule.name))
+export const ruleWritten = (e, text, term) => stated(e.book === 'rule' ? ruleText(e.rule, text) : rewriteText(e.rule, text, term) || L(e.rule.name))
 const AFTER = T('接入其他规则元件时，本元件的规则排在它们之后。')
 const joined = (a, b) => T("{zh}{zh2}", {zh: { zh: String(a.zh), en: String(a.en) }, zh2: { zh: String(b.zh), en: String(b.en) }})
 /** A rule part as every one is (machine.js RULE_PART): the rules wired in before it, then those added on it. */
@@ -727,7 +659,6 @@ const canonical = (goals) => {
 export function judge(want, test, out, level = {}) {
   const input = inputsOf(test, level).in
   if (!out) return T('还没有东西接到「结果」')
-  if (want === 'logic/elim') return judgeElim(test, out)
   if (want === 'logic/proved') {
     if (out.kind !== 'state') return T('结果要一个证明状态')
     if (out.error) return out.error
@@ -759,15 +690,6 @@ export function judge(want, test, out, level = {}) {
     const list = (xs) => (xs.length ? xs.join('、') : '没有')
     const listEn = (xs) => (xs.length ? xs.join(', ') : 'none')
     return T("找到的答案是 {value}，应该是 {value2}", {value: { zh: String(list(got)), en: String(listEn(got)) }, value2: { zh: String(list(wanted)), en: String(listEn(wanted)) }})
-  }
-  if (want === 'logic/unify') {
-    if (out.kind !== 'eqs') return T('结果要一组等式')
-    const ref = solveEqs(input.eqs, { rules: FULL })
-    if (ref.fail) return out.fail ? '' : T('这组等式其实合一不了，结果却没有说「失败」')
-    if (out.fail) return T('这组等式能合一，结果却说失败了')
-    if (!solved(out.eqs)) return T('还没解完：要每个等式左边都是一个 ?，右边里没有这些 ?')
-    const σ = Object.fromEntries(out.eqs.map((e) => [e.s.name, e.t]))
-    return input.eqs.every((e) => sameSide(instantiate(e.s, σ), instantiate(e.t, σ))) ? '' : T('结果代回去，原来的等式两边还不一样')
   }
   if (out.kind !== 'clauses') return T('结果要一组子句')
   if (want === 'logic/clauses') {

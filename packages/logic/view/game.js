@@ -9,14 +9,14 @@ import { displays as ui } from './ui/displays.jsx'
 // A logic game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the logic domain's screens (a proof on the circuit editor, a truth table,
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
-import { CircuitBoard, ClipboardCheck, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
+import { CircuitBoard, ClipboardCheck, ClipboardPen, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
 import { defineGame } from 'circuit/view'
 import { fresh, isCore } from 'circuit'
 import { logicPartCatalog } from '../core/part-catalog.js'
 import { worldCheck } from '../core/worldValues.js'
 import { query, translation } from '../core/formulaWork.js'
 import { script } from '../core/scriptValues.js'
-import { KERNEL_RULES, lemmaRules, ruleText } from '../core/schematic.js'
+import { KERNEL_RULES, lemmaRules, statedRule } from '../core/schematic.js'
 import { RULES } from '../core/proof.js'
 import { logicWorks } from '../core/work.js'
 import { playKinds, resourceScreen } from 'kernel/view'
@@ -25,6 +25,7 @@ import { OPS } from '../core/ops.js'
 import { plays } from '../core/plays.js'
 import { declaration, definition } from '../core/rowValues.js'
 import { audit } from '../core/auditWork.js'
+import { ruleStatement } from '../core/ruleStatement.js'
 import { truth } from '../core/truthValues.js'
 
 import Rows from './plays/Rows.jsx'
@@ -42,6 +43,7 @@ export const playPresentation = {
   'logic/query': { icon: Search, label: catalogText("查询") },
   'logic/model': { icon: FileSignature, label: catalogText("造世界") },
   'logic/audit': { icon: ClipboardCheck, label: catalogText("声明审计") },
+  'logic/rule': { icon: ClipboardPen, label: catalogText("写规则") },
   'logic/script': { icon: ScrollText, label: catalogText("写脚本") },
 }
 
@@ -54,15 +56,15 @@ const bindings = {
 }
 
 // A level's declaration task, if it has one: a declaration on the rule board (iso.js).
-const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic/iso') ?? null
+const isoOf = (level) => level.tasks.find((t) => t.kind === 'logic/iso' && t.play !== 'logic/rule' && !t.ruleAudit) ?? null
 // A level that gives proof-board rules by passing it (a declaration, a generator), rather than by playing on the proof
 // board.
 const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic/proof')
 
 // These proof-board operations are not entries in the machine board's rule book.
 const proofRules = {
-  'logic/rewrite': '⟦?s = ?t; ?P(?s)⟧ ⟹ ?P(?t)',
-  'logic/natInd': '⟦?P(0); ⋀a. ⟦?P(a)⟧ ⟹ ?P(S(a))⟧ ⟹ ∀x. ?P(x)',
+  'logic/rewrite': '⟦s = t; P(s)⟧ ⟹ P(t)',
+  'logic/natInd': '⟦P(0); ⋀a. ⟦P(a)⟧ ⟹ P(S(a))⟧ ⟹ ∀x. P(x)',
 }
 
 /**
@@ -98,9 +100,9 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
   const kernelRules = (type) => {
     const resource = logic.partResources[type]
     if (proofRules[resource]) return [{ text: proofRules[resource] }]
-    return KERNEL_RULES.filter((r) => `logic/${r.part}` === resource).map((r) => ({ text: ruleText(r) }))
+    return KERNEL_RULES.filter((r) => `logic/${r.part}` === resource).map((r) => ({ text: statedRule(r) }))
   }
-  const lemmaRows = (type) => lemmaRules(type, lemmas[type]).map((r, k) => ({ text: ruleText(r), ...(k ? { form: r.key.split('.')[1] } : {}) }))
+  const lemmaRows = (type) => lemmaRules(type, lemmas[type]).map((r, k) => ({ text: statedRule(r), ...(k ? { form: r.key.split('.')[1] } : {}) }))
   const catalog = logicPartCatalog(logic)
   const primitives = catalog.primitives.map(part => {
     const type = part.part
@@ -143,7 +145,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),
     intro: (level) => level.source.intro,
     kinds: playKinds(plays, {
-      declaration, definition, audit, truth, translation, query, script, worldCheck,
+      declaration, definition, audit, ruleStatement, truth, translation, query, script, worldCheck,
       proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
     }, playPresentation, bindings),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its

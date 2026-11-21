@@ -2,38 +2,6 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/q-trans",
-      "to": "qed/r-match"
-    },
-    {
-      "from": "qed/r-match",
-      "to": "qed/r-deep"
-    },
-    {
-      "from": "qed/r-deep",
-      "to": "qed/r-delete"
-    },
-    {
-      "from": "qed/r-delete",
-      "to": "qed/r-clash"
-    },
-    {
-      "from": "qed/r-clash",
-      "to": "qed/r-twice"
-    },
-    {
-      "from": "qed/r-twice",
-      "to": "qed/r-both"
-    },
-    {
-      "from": "qed/r-both",
-      "to": "qed/r-occurs"
-    },
-    {
-      "from": "qed/r-occurs",
-      "to": "qed/r-unifier"
-    },
-    {
       "from": "qed/r-elim",
       "to": "qed/r-cases"
     },
@@ -42,19 +10,7 @@
       "to": "qed/r-false"
     },
     {
-      "from": "qed/r-unifier",
-      "to": "qed/r-pattern"
-    },
-    {
-      "from": "qed/r-pattern",
-      "to": "qed/r-patterns"
-    },
-    {
       "from": "qed/r-false",
-      "to": "qed/r-allI"
-    },
-    {
-      "from": "qed/r-patterns",
       "to": "qed/r-allI"
     },
     {
@@ -85,10 +41,6 @@
     {
       "from": "qed/r-exE",
       "to": "qed/r-order"
-    },
-    {
-      "from": "qed/r-unifier",
-      "to": "qed/r-subgoals"
     },
     {
       "from": "qed/r-subgoals",

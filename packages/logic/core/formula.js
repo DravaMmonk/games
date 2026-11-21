@@ -137,6 +137,7 @@ export function show(f, outer = -1) {
     case 'meta': return f.args?.length ? `${f.name}(${f.args.map(showTerm).join(', ')})` : f.name
     case '⊥': return '⊥'
     case '¬': return `¬${show(f.a, 9)}`
+    case '⟹': return `⟦${show(f.a)}⟧ ⟹ ${show(f.b)}`
     case '∀': case '∃': return wrap(`${f.op}${f.v}. ${show(f.body, -1)}`, -1)
     default: {
       const p = BIN[f.op]

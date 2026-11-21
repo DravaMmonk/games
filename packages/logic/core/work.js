@@ -323,8 +323,6 @@ export function* prepareLogicWorks(content) {
   // rule books (every rule part the same engine part, RULE_DEFINITION).
   const machineParts = onBoard('logic/tactic', 'logic/loop')
   const RULE_ENGINE = compileParts({ rules: RULE_DEFINITION }, OPS).PARTS.rules
-  // The rule parts a task holds (none on the generator's board, which carries rules as values).
-  const ruleTypes = (task) => (task.want === 'logic/elim' ? new Map() : rulePartsOf(task))
   // The proofs the lemmas run, filled in the same way (lemmaWorks).
   const lemmaParts = {}
   const gatePorts = Object.fromEntries(Object.entries(gates).map(([type, g]) => [type, { inputs: g.ports }]))
@@ -428,21 +426,21 @@ export function* prepareLogicWorks(content) {
     grants: (l) => {
       const task = byId.get(l.id).tasks.find(task => task.task === l.task)
       return task?.kind === 'logic/machine'
-        ? [...ruleTypes(task).keys()].filter((p) => !machineParts[p]) : []
+        ? [...rulePartsOf(task).keys()].filter((p) => !machineParts[p]) : []
     },
     machine: (l) => eras[eraOf.get(l.id)]?.machine ?? null,
     needed: (l) => { const answers = answersOf(l); return answers.length ? answers.flatMap(rulesIn) : null },
     references, boards: answersOf,
   }
   for (const one of TASKS) {
-    const availableSymbols = symbolsAt(symbols, course, one.id, content.standalone)
+    // Rule boards draw their tray from the formulas in the task, even before an operator is introduced.
+    const ruleBoard = one.kind === 'logic/iso'
+    const availableSymbols = symbolsAt(symbols, course, one.id, content.standalone || ruleBoard)
     const formulaSymbols = Object.fromEntries(availableSymbols.map(part => [symbolFor[part.mark], part]))
     for (const symbol of unavailableSymbols(one, symbols, availableSymbols)) {
       wrong.push(`${one.id}: logic/symbol ${symbol.type} is unavailable to the reference work`)
     }
-    const marks = Object.keys(formulaSymbols)
-    // Declaration worksheets show disjunction as a formula even before its symbol is available to the player.
-    if (one.kind === 'logic/iso' && !marks.includes('∨')) marks.push('∨')
+    const marks = ruleBoard ? Object.values(symbolFor) : Object.keys(formulaSymbols)
     const notation = {
       words: one.words ?? words,
       symbols: marks,
@@ -506,7 +504,7 @@ export function* prepareLogicWorks(content) {
     return directParts.get(task)
   }
   const machineBlueprint = (task) => primitivesOnly(MACHINE_BOARD, {
-    ...Object.fromEntries([...ruleTypes(task).keys()].map((type) => [type, RULE_ENGINE])),
+    ...Object.fromEntries([...rulePartsOf(task).keys()].map((type) => [type, RULE_ENGINE])),
     ...declaredMachines,
     ...machineParts,
     ...directPartsOf(task).PARTS,
@@ -565,7 +563,7 @@ export function* prepareLogicWorks(content) {
     return [type, { name, desc, icon: 'CircuitBoard', family: 'logic/built', inputs: p.inputs.map((port) => ({ name: port, type: p.inputTypes?.[port] ?? 'logic/machine-value', ...(port === 'rules' ? { label: T("规则") } : {}) })), settings, outputType: p.outputType ?? 'logic/machine-value', op: 'numlib/zero' }]
   }))
   /** What a task's tray holds for a player with `flags`, as what it shows and what it folds away. */
-  course.registerParts(Object.fromEntries(TASKS.filter(task => task.kind === 'logic/machine').flatMap(task => [...ruleTypes(task).keys()].map(type => [type, RULE_DEFINITION]))))
+  course.registerParts(Object.fromEntries(TASKS.filter(task => task.kind === 'logic/machine').flatMap(task => [...rulePartsOf(task).keys()].map(type => [type, RULE_DEFINITION]))))
   const offerIn = (task, flags) => {
     const { shown, folded, types } = offer(course, at(task), flags)
     const circuit = (type) => course.stages.has(type) && (task.kind !== 'logic/gates' || Object.hasOwn(task.gates, type))
@@ -583,7 +581,7 @@ export function* prepareLogicWorks(content) {
   // assumption box's region and assumption, Apply's two inputs) does not define it there.
   const machineHoldsIn = (task, flags) => {
     const has = holdsIn(task, flags)
-    const rules = ruleTypes(task)
+    const rules = rulePartsOf(task)
     const direct = directPartsOf(task).defs
     const definition = (type, fallback) => direct[type] ?? (rules.has(type) && !machineParts[type] ? fallback : has.definition(type, fallback))
     return Object.assign((type, key, value) => {
@@ -596,7 +594,7 @@ export function* prepareLogicWorks(content) {
   }
   const machineOfferIn = (task, flags) => {
     const base = offerIn(task, flags)
-    const sources = directTray(task) ? ruleTypes(task) : new Map()
+    const sources = directTray(task) ? rulePartsOf(task) : new Map()
     const shown = base.shown.filter((type) => !sources.has(type))
     const folded = base.folded.filter((type) => !sources.has(type))
     const needed = new Set(course.needed(at(task)))
@@ -626,7 +624,7 @@ export function* prepareLogicWorks(content) {
   // The machines: the parts the player built as packed parts, a task's rule parts registered for it.
   const machineBoards = boardView({
     board: MACHINE_BOARD,
-    parts: (task) => ({ ...machineParts, ...Object.fromEntries([...ruleTypes(task).keys()].filter((t) => !machineParts[t]).map((t) => [t, RULE_ENGINE])), ...directPartsOf(task).PARTS, ...builtOf(task) }),
+    parts: (task) => ({ ...machineParts, ...Object.fromEntries([...rulePartsOf(task).keys()].filter((t) => !machineParts[t]).map((t) => [t, RULE_ENGINE])), ...directPartsOf(task).PARTS, ...builtOf(task) }),
     built: builtOf,
     builder: (type, task) => task?.built?.[type]?.opens().level ?? null,
     defined: (task) => ({ of: (type) => directPartsOf(task).defs[type] ?? taskPartsOf(task)[type] ?? defs[type] ?? null, defaults: (type) => directPartsOf(task).PARTS[type]?.defaults ?? (taskPartsOf(task)[type] ? {} : defaultsOf(type)), ops: OPS }),

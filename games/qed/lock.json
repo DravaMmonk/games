@@ -3,7 +3,7 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "d260038eb220f4f401088a854183a59773a03992302b97c23e615ceaa212c5fa"
+      "hash": "644d23deef257243293da3fa919df427776d230514b7abb7762a59e6faf1a5c2"
     },
     "notation": {
       "version": "0.0.0",
@@ -23,11 +23,11 @@
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "40a99dc01ccf7174844581749f714e3b3d781c8330e3352550761f29115e48c2"
+      "hash": "72b002c689f82e0527c1754b708dcf6a7c6174db2abcbb9630ce922c6061b5ff"
     },
     "sentence": {
       "version": "0.0.0",
-      "hash": "860815dd56fb21bee64fce6dcdd9aa3737ecdee21d9c01f67807c69c1ee84dfe"
+      "hash": "8e2d63797d5b5344bdbade94c4576def7b0d970328df8d2cb8a7c296b1a39f13"
     },
     "wiki": {
       "version": "0.0.0",
@@ -35,7 +35,7 @@
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "80d27dd9a4643e11f00ecca170748680332b105f40f87d988fb624dea9f2d29a"
+      "hash": "2820933111d25ab2c630f2b4352dabb7204c24f6a502ced511589941c08be8b6"
     },
     "workshop": {
       "version": "0.0.0",
@@ -43,7 +43,7 @@
     },
     "qed": {
       "version": "0.0.0",
-      "hash": "f14d108d9d8300bfc852fe24f56bdc0486c4c0c85211b59f91055550641a2707"
+      "hash": "c807b80d202cfd89558a6d31a97647d27494d3b2c7e98744413c44e596ff96df"
     }
   }
 }

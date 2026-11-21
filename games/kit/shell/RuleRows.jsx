@@ -13,7 +13,7 @@ import { FormulaText } from './FormulaText.jsx'
 // function's rows, each right side a term) are both this.
 //
 //   head     { name, body } | null
-//   rows     [{ name, lead?, slots: [{ text (null: nothing whole yet), bad? }], end?, empty? (what a row with no slot
+//   rows     [{ name, head?, slots: [{ text (null: nothing whole yet), bad?, fixed? }], end?, empty? (what a row with no slot
 //             says when only read), add?: { label, text?, run() }, drop?: { label, run() } }]
 //   editor   { title(row, slot), render(row, slot), close?(row, slot) } | null
 //   more     { text, run() } | null       blank   what an unfinished slot says       wide   names as wide as they read
@@ -44,7 +44,7 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
         </div>
       )}
       {rows.map((row, k) => (
-        <div key={k} className="rr-row">
+        <div key={k} className={`rr-row${row.head ? ' is-head' : ''}`}>
           <span className="rr-name">{row.when && <>{L(row.when)} ⟹ </>}{row.equation ? <><b><FormulaText text={row.name} /></b> =</> : L(row.name)}{row.mark !== undefined && <i>{row.mark}</i>}</span>
           <span className="rr-body">
             {row.toggle && <span className="rr-lead"><button type="button" aria-pressed={row.toggle.on} disabled={!editor} onClick={row.toggle.run}>{L(row.toggle.label)}</button></span>}
@@ -55,8 +55,9 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
                   type="button"
                   ref={(el) => { buttons.current[`${k}.${j}`] = el }}
                   className={`rr-slot ${slot.text === null ? 'is-blank' : ''} ${slot.bad ? 'is-bad' : ''}`}
+                  aria-label={L(slot.text ?? blank)}
                   aria-expanded={sheet?.row === k && sheet?.slot === j}
-                  disabled={!editor}
+                  disabled={!editor || slot.fixed}
                   onClick={(event) => setSheet({ row: k, slot: j, anchor: event.currentTarget })}
                 >
                   {slot.text === null ? L(blank) : <FormulaText text={slot.text} />}

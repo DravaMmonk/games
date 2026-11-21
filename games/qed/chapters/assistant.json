@@ -5,7 +5,9 @@
     "question": "@course.eras.assistant.chapter.question"
   },
   "levels": [
-    "qed/read-rules",
+    "qed/try-rules",
+    "qed/try-rule-box",
+    "qed/try-rule-elim",
     "qed/r-rule",
     "qed/r-assumption",
     "qed/r-meta",
@@ -17,7 +19,9 @@
     "qed/s-search"
   ],
   "rows": [
-    ["qed/read-rules"],
+    ["qed/try-rules"],
+    ["qed/try-rule-box"],
+    ["qed/try-rule-elim"],
     ["qed/r-rule"],
     ["qed/r-assumption"],
     ["qed/r-meta", "qed/s-repeat"],

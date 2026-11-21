@@ -1,7 +1,7 @@
 {
   "edges": {
     "add": [
-      { "from": "qed/read-rules", "to": "qed/r-rule" },
+      { "from": "qed/try-rule-elim", "to": "qed/r-rule" },
       { "from": "qed/p-only", "to": "qed/q-children" },
       { "from": "qed/p-only", "to": "qed/p-split" },
       { "from": "qed/r-lemma", "to": "qed/s-results" },

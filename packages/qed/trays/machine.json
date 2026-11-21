@@ -5,27 +5,6 @@
   "values": [],
   "menus": [
     {
-      "id": "machine-rule-building",
-      "title": "@tray.machine.menu.machine-rule-building.title",
-      "values": [
-        "#machine-rule-building"
-      ]
-    },
-    {
-      "id": "machine-lists",
-      "title": "@tray.machine.menu.machine-lists.title",
-      "values": [
-        "#machine-lists"
-      ]
-    },
-    {
-      "id": "machine-unification",
-      "title": "@tray.machine.menu.machine-unification.title",
-      "values": [
-        "#machine-unification"
-      ]
-    },
-    {
       "id": "machine-flow",
       "title": "@tray.machine.menu.machine-flow.title",
       "values": [

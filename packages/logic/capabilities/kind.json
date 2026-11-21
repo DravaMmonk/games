@@ -4,6 +4,9 @@
     "audit": {
       "about": "@capability.kind.items.audit.about"
     },
+    "rule": {
+      "about": "@capability.kind.items.rule.about"
+    },
     "proof": {
       "about": "@capability.kind.items.proof.about"
     },

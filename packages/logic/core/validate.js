@@ -20,10 +20,11 @@ import { directCardsOf, inputsOfLevel, rulePartsOf, runMachine } from './machine
 import { SETTING_KINDS, choiceKey, choicesOf } from './choices.js'
 import { chipsFrom, chipsOf, missingChips } from './formulaTree.js'
 import { checkGates, rowsFor, startGates } from './gates.js'
-import { checkIso, sentenceOf } from './iso.js'
+import { checkIso, readPremise } from './iso.js'
 import { auditCaseProblems, runAudit } from './audit-cases.js'
 import { checkDefine } from './define.js'
 import { say } from './notation.js'
+import { ruleStatement } from './ruleStatement.js'
 import { presetIds } from './work.js'
 
 const compare = (inspect, level) => checkWorks(inspect, { reference: level.solution, naive: level.naive })
@@ -60,11 +61,11 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
   }
   // A level in everyday words has a sentence for every letter it uses.
   for (const level of levels.filter((l) => l.notation?.words && !l.vocab)) {
-    const texts = level.kind === 'logic/define' ? [] : level.kind === 'logic/truth' ? level.formulas : level.kind === 'logic/gates' ? [level.target] : level.kind === 'logic/iso' ? [...level.sentences, ...level.tests.flatMap((t) => [...t.given, ...(t.goal ? [t.goal] : [])])] : level.kind === 'logic/script' ? [...Object.values(level.premises ?? {}), level.goal, ...(level.sentences ?? [])] : level.kind === 'logic/machine' ? level.tests.flatMap((t) => (t.eqs || t.term || t.ways ? [] : t.goal ? [t.goal, ...(t.hyps ?? [])] : t.clauses)) : level.tests.flatMap((t) => [...Object.values(t.premises ?? {}), t.goal])
+    const texts = level.kind === 'logic/define' ? [] : level.kind === 'logic/truth' ? level.formulas : level.kind === 'logic/gates' ? [level.target] : level.kind === 'logic/iso' ? [...level.sentences, ...(level.tests ?? []).flatMap((t) => [...t.given, ...(t.goal ? [t.goal] : [])])] : level.kind === 'logic/script' ? [...Object.values(level.premises ?? {}), level.goal, ...(level.sentences ?? [])] : level.kind === 'logic/machine' ? level.tests.flatMap((t) => (t.eqs || t.term || t.ways ? [] : t.goal ? [t.goal, ...(t.hyps ?? [])] : t.clauses)) : level.tests.flatMap((t) => [...Object.values(t.premises ?? {}), t.goal])
     // The pattern's own letters stand bare in its last test; a machine's tests may end on bare letters too.
     const bare = new Set(level.kind === 'logic/machine' ? 'ABCDEFGHPQRS'.split('') : Object.keys(level.cases?.[0] ?? {}))
-    const missing = lettersOf(texts.map((t) => parse(t))).filter((l) => !level.notation.words[l] && !bare.has(l))
-    if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: no words for ${missing.join(', ')}` })
+    const missing = lettersOf(texts.map((t) => level.kind === 'logic/iso' ? readPremise(level, t) : parse(t))).filter((l) => !level.notation.words[l] && !bare.has(l))
+    if (missing.length && !level.ruleAudit && level.play !== 'logic/rule') out.push({ level: level.id, fail: true, text: `${level.id}: no words for ${missing.join(', ')}` })
     if (level.kind === 'logic/proof' && !level.cases) out.push({ level: level.id, fail: true, text: `${level.id}: a proof level needs test cases` })
   }
   // First-order levels: every predicate and name has words; a query picks something out in some world; a model level's
@@ -130,7 +131,15 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
   for (const level of levels.filter((l) => l.kind === 'logic/iso')) {
     out.push(...memo(level.id, `iso ${level.task ?? 0}`, () => {
       const out = []
-      const words = (sentence) => say(sentenceOf(level, sentence), level.notation)
+      if (level.play === 'logic/rule') {
+        if (!level.rule || !level.sentences || (level.fixedPremises ?? 0) > level.rule.premises.length) {
+          return [{ level: level.id, fail: true, text: `${level.id}: invalid reference rule or fixed premises` }]
+        }
+        const { reference, judge } = ruleStatement(level)
+        const fail = judge(reference)
+        return [{ level: level.id, fail: Boolean(fail), text: `${level.id} ${keyOf(level.title)}: rule ${fail ? `FAIL ${keyOf(failureText(fail))}` : 'PASS'}` }]
+      }
+      const words = (sentence) => say(readPremise(level, sentence), level.notation)
       const audit = level.play === 'logic/audit'
       const check = audit ? checkIso(level, words) : checkDeclaration(level)
       const inspect = audit ? check : (rules) => check(readRuleRows(level, rules))

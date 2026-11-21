@@ -1,6 +1,6 @@
 import { T } from 'kernel/words'
 import { show } from './formula.js'
-import { propositionsOf, sentenceOf } from './iso.js'
+import { propositionsOf, readPremise } from './iso.js'
 import { say } from './notation.js'
 import { sentencePicker } from './sentenceLanguage.js'
 
@@ -11,7 +11,7 @@ export const DERIVABLE = [
 const fixed = (name) => (row) => row.fixed?.includes(name)
 
 export function caseCells(level) {
-  const read = (value) => sentenceOf(level, value)
+  const read = (value) => readPremise(level, value)
   const build = sentencePicker(propositionsOf(level).map(read), { read, notation: level.notation, consts: level.things ?? [], text: (value) => say(read(value), level.notation) })
   const target = show(read(level.target))
   return [

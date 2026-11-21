@@ -14,7 +14,7 @@ function display(cell, row, phone) {
     case 'tree': return value ? <Formula text={cell.build.text(value)} /> : placeholder(cell)
     case 'tree-list': return value.length
       ? <span className="ck-lines">{value.map((item, k) => (
-        <span key={k}><span className="ck-number">{k + 1}.</span><Formula text={cell.build.text(item)} /></span>
+        <span key={k}>{value.length > 1 && <span className="ck-number">{k + 1}.</span>}<Formula text={cell.build.text(item)} /></span>
       ))}</span>
       : placeholder(cell)
     case 'choice': return phone

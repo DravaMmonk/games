@@ -11,7 +11,7 @@
   "BoYes": "@course.wordSets.everyday.BoYes",
   "CyYes": "@course.wordSets.everyday.CyYes",
   "Motion": "@course.wordSets.everyday.Motion",
-  "Truth": "@course.wordSets.everyday.Truth",
+  "Truth": "⊤",
   "Nat": "@course.wordSets.everyday.Nat",
   "List": "@course.wordSets.everyday.List",
   "Bool": "@course.wordSets.everyday.Bool",

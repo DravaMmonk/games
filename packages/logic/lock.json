@@ -24,6 +24,10 @@
     "wiki": {
       "version": "0.0.0",
       "hash": "2e947cee3536d2d74540b0b628c0a6e4869460a461233461f5493bbbbd565fcc"
+    },
+    "notation": {
+      "version": "0.0.0",
+      "hash": "febbab0e2d828c840ae79150c9cef111c92aab58ecc5e5c0d0175f29e2a5e87e"
     }
   }
 }

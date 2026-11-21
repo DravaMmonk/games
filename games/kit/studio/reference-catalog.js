@@ -2,7 +2,7 @@
 export function referenceCatalog(raw, onLevel) {
   if (!raw) return null
   const groups = raw.references
-  const byKind = Object.fromEntries(groups.map(({ kind, items }) => [kind, new Map(items.map(item => [item.id, item]))]))
+  const byKind = Object.fromEntries(groups.map(({ kind, items }) => [kind, new Map(items.flatMap(item => [item.id, ...(item.aliases ?? [])].map(id => [id, item])))]))
   const options = groups.flatMap(({ kind, label: group, items }) => items.map(({ id, label, title }) => ({
     value: `${kind}:${id}`, label: label ?? id, title, group,
   })))

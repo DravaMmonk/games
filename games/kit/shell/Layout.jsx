@@ -23,7 +23,7 @@ export function TaskStatements({ lines = [] }) {
   return lines.map((line, k) => (
     <p key={k} className="task-statement">
       {line.label && <>{L(line.label)} </>}
-      {line.formula ? <FormulaText text={line.formula} /> : <b>{L(line.text)}</b>}
+      {line.formula ? <FormulaText text={line.formula} /> : <b><Markup text={line.text} /></b>}
     </p>
   ))
 }
@@ -93,7 +93,7 @@ export function Brief({ game, level, sections = TASK_BOARD_SECTIONS, text, tip, 
       {sections.includes('title') && (
         <header className="brief-head">
           <span className="brief-id">{game.levelLabel(level)}</span>
-          <h1 {...mark('title', 'level')}>{L(level.title)}</h1>
+          <h1 {...mark('title', 'level')}><Markup text={level.title} /></h1>
         </header>
       )}
       {sections.includes('brief') && paragraphs.map((p, k) => <Text key={k} className="brief-text" text={p} sentences mark={mark(many ? `brief[${k}]` : 'brief')} />)}
@@ -146,7 +146,7 @@ function TaskSteps({ steps }) {
           <li key={k}>
             <button type="button" {...(k === steps.at ? mark('step') : {})} className={`${k === steps.at ? 'is-on' : ''} ${done ? 'is-done' : ''}`} disabled={!open} aria-current={k === steps.at ? 'step' : undefined} onClick={() => k !== steps.at && steps.go(k)} title={open ? undefined : tr('请先完成前一个任务')}>
               <i>{done ? <Check size={12} strokeWidth={2.6} /> : open ? k + 1 : <Lock size={11} strokeWidth={2.2} />}</i>
-              <span>{name ? L(name) : tr("任务 {k}", {k: k + 1})}{steps.optional?.[k] && ` · ${tr('可选')}`}</span>
+              <span>{name ? <Markup text={name} /> : tr("任务 {k}", {k: k + 1})}{steps.optional?.[k] && ` · ${tr('可选')}`}</span>
             </button>
           </li>
         )

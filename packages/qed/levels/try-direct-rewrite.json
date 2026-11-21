@@ -1,0 +1,21 @@
+{
+  "title": "@level.try-direct-rewrite.title",
+  "intro": [{ "t": "@level.try-direct-rewrite.intro.0.t" }],
+  "after": "@level.try-direct-rewrite.after",
+  "requires": ["sp-rw"],
+  "tasks": [
+    {
+      "id": "try-direct-rewrite",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
+      "brief": "@level.try-direct-rewrite.tasks.try-direct-rewrite.brief",
+      "hint": ["@level.try-direct-rewrite.tasks.try-direct-rewrite.hint.0"],
+      "tests": [
+        { "goal": "Wind ∧ ¬¬Rain", "becomes": [["Wind ∧ Rain"]] },
+        { "goal": "¬¬Wet → Slip", "becomes": [["Wet → Slip"]] }
+      ],
+      "solution": ["change = logic/directRewrite-qed_dneg[use=[\"dneg.elim\"]](in)", "out <- change"]
+    }
+  ],
+  "tray": "prover"
+}

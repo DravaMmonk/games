@@ -12,7 +12,7 @@ import { checkDeclaration, linesOf, premiseChips, problemsOf, readRuleRows } fro
 import { runOutputTests } from '../../../games/kit/engine/test-run.js'
 import { parse, same, show, subst, substMany, tvar } from '../core/formula.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
-import { MACHINE_BOARD, MACHINE_TESTS, RULE_DEFINITION, rulePartOf, runMachine } from '../core/machine.js'
+import { MACHINE_BOARD, MACHINE_TESTS, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
 import { OPS } from '../core/ops.js'
 import { PROOF_BOARD, RULES, lemmaGives, runProof } from '../core/proof.js'
@@ -548,6 +548,55 @@ test('a rewrite changes the first place its left side fits, under quantifiers to
   const simp = simplify(startState(parseS('plus(s(s(zero)), s(zero)) = s(s(s(zero)))')), [book['def.0'], book['def.1']])
   assert.deepEqual(goals(simp), ['s(s(s(zero))) = s(s(s(zero)))'])
   assert.ok(simplify(startState(parseS('¬(Rain ∨ Wind)')), [book['dm.notOr'], book['dm.andNot']]).fail)
+})
+
+test('a direct rewrite uses only the first rule in an older multi-rule selection', () => {
+  const level = {
+    kind: 'logic/machine', directRuleCards: true, want: 'logic/becomes',
+    lemmas: { dneg: { name: { zh: '双重否定律', en: 'Double negation' }, metas: ['A'], forms: [
+      { key: 'elim', label: '', statement: 'A', premises: ['¬¬A'] },
+      { key: 'intro', label: '', statement: '¬¬A', premises: ['A'] },
+    ] } },
+    tests: [{ goal: 'Rain', becomes: [['¬¬Rain']] }],
+  }
+  const cards = directCardsOf(level)
+  const type = 'logic/directRewrite-dneg'
+  const compiled = compileParts({ [type]: cards.get(type).definition }, OPS).PARTS
+  level.parts = (name) => compiled[name] ?? machineParts(name)
+  const board = machine({ change: [type, { use: ['dneg.elim', 'dneg.intro'] }] }, ['in>change', 'change>out'])
+  assert.deepEqual(boardRules(level, board).rules, ['dneg.elim'])
+  assert.equal(runMachine(level, board).pass, false)
+  board.nodes.find(({ id }) => id === 'change').params.use = ['dneg.intro']
+  assert.deepEqual(boardRules(level, board).rules, ['dneg.intro'])
+  assert.equal(runMachine(level, board).pass, true)
+})
+
+test('direct cards follow each source part and its declared proof operation', () => {
+  const task = {
+    directRuleCards: true,
+    holds: ['firstBox', 'secondBox'],
+    partDefs: {
+      firstBox: { name: { zh: '甲框', en: 'First box' } },
+      secondBox: { name: { zh: '乙框', en: 'Second box' } },
+    },
+    proofOperations: { firstBox: ['logic/impI', 'logic/impI'], secondBox: ['logic/impI'] },
+  }
+  const cards = directCardsOf(task)
+  for (const source of ['firstBox', 'secondBox']) {
+    const card = cards.get(`logic/directBackward-${source}`)
+    assert.equal(card.source, source)
+    assert.deepEqual(card.entries.map((entry) => entry.key), ['impI'])
+  }
+  assert.ok(!cards.has('logic/directBackward-mp'))
+  const type = 'logic/directBackward-firstBox'
+  const compiled = compileParts({ [type]: cards.get(type).definition }, OPS).PARTS
+  const board = machine({ step: [type] }, ['in>step', 'step>out'])
+  const level = {
+    ...task, kind: 'logic/machine', want: 'logic/becomes',
+    tests: [{ goal: 'Rain → Rain', becomes: [['Rain ⊢ Rain']] }],
+    parts: (name) => compiled[name] ?? machineParts(name),
+  }
+  assert.equal(runMachine(level, board).pass, true)
 })
 
 test('rule and equation displays keep complete term wording', async () => {

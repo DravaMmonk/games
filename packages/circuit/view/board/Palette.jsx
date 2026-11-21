@@ -1,5 +1,7 @@
+import { Markup, usePlainProse } from 'kernel/view'
 import { useState } from 'react'
 import Glyph from "./Glyph.jsx"
+import BoardLabel from './BoardLabel.jsx'
 import { ChevronRight, Plus } from 'lucide-react'
 import { L } from "kernel/view"
 import { tr } from 'kernel/words'
@@ -12,6 +14,7 @@ import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
 // about: ../course.js offer) wait behind a 「更多」 button at the end. A packed part (`packed`: one that runs a circuit the
 // player built) has a solid family chip, as on the board.
 export default function Palette({ items, folded = [], onAdd, compact = false, start }) {
+  const plain = usePlainProse()
   const [more, setMore] = useState(false)
   // A tooltip opens to the right of its part, or to the left when the right would run past the board (or the window).
   const aim = (event) => {
@@ -22,18 +25,18 @@ export default function Palette({ items, folded = [], onAdd, compact = false, st
     item.dataset.tip = item.getBoundingClientRect().right + 12 + tip.offsetWidth > edge ? 'left' : 'right'
   }
   const part = (item, tooltip = compact) => (
-    <button key={item.type} className={`palette-item ${item.folded ? 'is-folded' : ''} ${item.packed ? 'is-packed' : ''}`} data-family={item.family} style={item.style} onClick={item.onPick ?? (() => onAdd(item.type))} title={tooltip ? undefined : L(item.desc)} onPointerEnter={tooltip ? aim : undefined} onFocus={tooltip ? aim : undefined} aria-description={tooltip ? L(item.desc) : undefined}>
+    <button key={item.type} className={`palette-item ${item.folded ? 'is-folded' : ''} ${item.packed ? 'is-packed' : ''}`} data-family={item.family} style={item.style} onClick={item.onPick ?? (() => onAdd(item.type))} title={tooltip ? undefined : plain(item.desc)} onPointerEnter={tooltip ? aim : undefined} onFocus={tooltip ? aim : undefined} aria-description={tooltip ? L(item.desc) : undefined}>
       <i className="family-chip"><Glyph icon={item.icon} size={14} /></i>
       <span className="palette-text">
-        <span>{L(item.label)}{item.fresh && <em className="pb-new">{tr('新')}</em>}</span>
-        {compact ? item.tag && <small>{L(item.tag)}</small> : <small>{L(item.desc)}</small>}
+        <span><BoardLabel label={L(item.label)} />{item.fresh && <em className="pb-new">{tr('新')}</em>}</span>
+        {compact ? item.tag && <small>{L(item.tag)}</small> : <small><Markup text={item.desc} /></small>}
       </span>
       <Plus size={14} className="palette-add" />
-      {tooltip && item.desc && <span className="palette-tip" role="tooltip">{L(item.desc)}</span>}
+      {tooltip && item.desc && <span className="palette-tip" role="tooltip"><Markup text={item.desc} /></span>}
     </button>
   )
   const entry = (item, hidden = false) => item.children
-    ? <TrayMenu key={item.menu} entry={item} className="palette-more" compact={compact} renderPart={(child) => part({ ...child, folded: hidden }, false)} />
+    ? <TrayMenu key={item.menu} entry={item} className={`palette-item ${hidden ? 'is-folded' : ''}`} compact={compact} renderPart={(child) => part({ ...child, folded: hidden }, false)} />
     : part({ ...item, folded: hidden })
   const count = trayItemCount(folded)
   if (!start && !items.length && !folded.length) return <p className="panel-note">{tr('这一关不需要元件。')}</p>

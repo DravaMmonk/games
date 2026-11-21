@@ -32,7 +32,7 @@
 | 1 | 真值电路 | 门电路、逐行扫所有赋值 | **或**、**若…则…**、**等价**（门） | 把谜题接成电路 | 只有一样 | — |
 | 2 | 证明核 | 套用和假设框；封装即定义 | **串联**、**交换**、**合并** | K、S（用框证出）；拆掉框 | — | `thm`；Pure 的 ⟹；`theorem` 就是 `def` |
 | 3 | 规则 | 把套用、假设框和封装元件读成规则，通关解锁元件箱的规则表；然后声明新连接词、检验规则 | ∧、∨、⊥ 的声明 | 更多声明；消去规则生成器 | — | `structure And`、`inductive Or`、`inductive False`；`conjE`、`disjE` |
-| 4 | 简单的证明助手 | 倒着用规则、证明状态；组合子、回溯、深度优先搜索（只有 →） | — | — | — | `apply`、`assumption`；`REPEAT`、`ORELSE`、`DEPTH_FIRST` |
+| 4 | 简单的证明器 | 倒着用规则、证明状态；组合子、回溯、深度优先搜索（只有 →） | — | — | — | `apply`、`assumption`；`REPEAT`、`ORELSE`、`DEPTH_FIRST` |
 | 5 | 连接词的运用 | 用声明生成的引入、消去规则，分情况，矛盾与否定 | — | HOL 怎样定义连接词 | — | `And.intro`、`And.left`、`Or.elim`；`conjE`、`conjunct1`；HOL 的 `and_def`… |
 | 6 | 量词的语言与反例 | 翻译、世界、找反例 | — | 查族谱 | — | `nitpick`；`#eval` |
 | 7 | 量词规则 | 选定一例、任取框、概括、实例框、相等 | — | 卡罗尔的推理题 | — | ⋀、`allI`；`∀`、`Exists.intro` |
@@ -51,7 +51,7 @@
 - [第 1 章 · 真值电路（语义）　已做](curriculum-truth-circuits.md)
 - [第 2 章 · 证明核　已做](curriculum-proof-kernel.md)
 - [第 3 章 · 规则](curriculum-declarations.md)
-- [第 4 章 · 简单的证明助手](curriculum-assistant.md)
+- [第 4 章 · 简单的证明器](curriculum-assistant.md)
 - [第 5 章 · 连接词的运用　已做](curriculum-connectives.md)
 - [第 6 章 · 量词的语言与反例　（约 13 关）](curriculum-quantifier-language.md)
 - [第 7 章 · 量词规则　已做](curriculum-quantifier-rules.md)

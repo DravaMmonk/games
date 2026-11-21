@@ -1,8 +1,14 @@
 import { createContext, useContext, useSyncExternalStore } from 'react'
 import { PHONE, useMedia } from './useMedia.js'
 import { settings } from './settings.js'
+import { L } from './i18n.js'
 
 export const SettingsContext = createContext({ id: '', views: null })
+/** Localize text for attributes and native controls that cannot render markup. */
+export function usePlainProse() {
+  const { plainProse = L } = useContext(SettingsContext)
+  return plainProse
+}
 export function useSetting(key) {
   const game = useContext(SettingsContext)
   const phone = useMedia(PHONE)

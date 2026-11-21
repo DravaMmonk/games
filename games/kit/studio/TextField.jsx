@@ -23,7 +23,7 @@ const TRIGGERS = ['[[', '【【']
 
 function chipText(names, kind, id, lang) {
   const item = names?.byKind[kind]?.get(id)
-  return item ? [item.label, sideOf(item.title, lang)].filter(Boolean).join(' ') : null
+  return item ? [item.label !== item.id && item.label, sideOf(item.title, lang)].filter(Boolean).join(' ') : null
 }
 
 /* ---------- a side as DOM: text nodes and chips; and back ---------- */
@@ -35,7 +35,7 @@ function chip(kind, id, names, lang) {
   span.contentEditable = 'false'
   span.dataset.ref = kind
   span.dataset.to = id
-  span.textContent = text ?? id
+  span.textContent = text || tr('引用不可用')
   return span
 }
 

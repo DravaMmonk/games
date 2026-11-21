@@ -39,7 +39,7 @@ export default function IntroSheet({ game, level, pages, marks = [], step, theme
           <span className="intro-kicker">{game.levelLabel(level)} · {tr('引言')} {page + 1}/{pages.length}</span>
           <button className="intro-close" onClick={onClose} aria-label={tr('关闭')}><X size={18} /></button>
         </header>
-        <h2 id="intro-title">{L(level.title)}{step && <small className="intro-step">{L(step)}</small>}</h2>
+        <h2 id="intro-title"><Markup text={level.title} />{step && <small className="intro-step"><Markup text={step} /></small>}</h2>
         <div className="intro-body" key={page}>
           {current.fig && game.IntroFigure && createElement(game.IntroFigure, { fig: current.fig, level, theme })}
           {current.show && <Show {...readShow(current.show)} scene="figure" />}

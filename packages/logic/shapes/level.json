@@ -2656,6 +2656,10 @@
                 "type": "bool",
                 "optional": true
               },
+              "directRuleCards": {
+                "type": "bool",
+                "optional": true
+              },
               "rules": {
                 "type": "map",
                 "of": {

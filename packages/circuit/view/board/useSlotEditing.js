@@ -14,7 +14,8 @@ import { drawWires } from "./SlotBoard.jsx"
 import { blockAtSlot, movePhonePart, placeInPhoneSlot, transferBlockMembers } from "../../core/board/blocks.js"
 import { regionsFit } from "../../core/board/regions.js"
 import { usePickedPort } from "./usePickedPort.js"
-import { cardOrder, numberAt } from "../../core/board/card-order.js"
+import { cardOrder } from "../../core/board/card-order.js"
+import { useBoardNumber } from './BoardLabel.jsx'
 import { visibleSlot } from "../../core/board/visibleSlot.js"
 
 const buzz = (pattern = 8) => navigator.vibrate?.(pattern)
@@ -41,6 +42,7 @@ const NO_VISIBLE_SLOT = catalogText("眼前没有能放这个元件的空格位�
 const DOES_NOT_FIT = catalogText("这个元件放不进这一格。")
 
 export function useSlotEditing({ graph, onChange, parts, create, label, openNode, openSlot, root, scroller, history, canMove = () => true }) {
+  const boardNumber = useBoardNumber()
   const [picking, setPicking] = usePickedPort(graph, parts)
   const [moving, setMoving] = useState(null) // a part's id, while choosing the slot it moves to
   const [toast, setToast] = useState(null) // a { zh, en } pair, read in the current language when shown
@@ -56,7 +58,7 @@ export function useSlotEditing({ graph, onChange, parts, create, label, openNode
     if (!node) return ''
     if (!isPart(parts, node)) return L(label(node))
     const index = order.indexOf(node.id)
-    return `${numberAt(index)} ${L(label(node))}`
+    return `${boardNumber(index)} ${L(label(node))}`
   }
   const nameOf = (node) => nameIn(graph, node)
   const edit = (next, note) => {

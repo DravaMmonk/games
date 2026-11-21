@@ -36,6 +36,10 @@
     "qed": {
       "version": "0.0.0",
       "hash": "6a6608b02f4e69a4c453ac86e99aa31118e17ff77b719e6cdf7aa5a78178adac"
+    },
+    "notation": {
+      "version": "0.0.0",
+      "hash": "febbab0e2d828c840ae79150c9cef111c92aab58ecc5e5c0d0175f29e2a5e87e"
     }
   }
 }

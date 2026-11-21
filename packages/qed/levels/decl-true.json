@@ -12,6 +12,9 @@
       "kind": "logic/iso",
       "declare": "@level.decl-true.tasks.decl-true.declare",
       "target": "Truth",
+      "symbolicWords": {
+        "Truth": "⊤"
+      },
       "sentences": [
         "A"
       ],

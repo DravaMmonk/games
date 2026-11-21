@@ -58,12 +58,6 @@
           ],
           "optional": true
         },
-        "resultsHeight": {
-          "type": "num",
-          "min": 0.1,
-          "max": 0.6,
-          "optional": true
-        },
         "taskBoard": {
           "type": "list",
           "of": {
@@ -136,12 +130,6 @@
           "values": [
             "hidden"
           ],
-          "optional": true
-        },
-        "resultsHeight": {
-          "type": "num",
-          "min": 0.1,
-          "max": 0.6,
           "optional": true
         },
         "taskBoard": {
@@ -218,12 +206,6 @@
           ],
           "optional": true
         },
-        "resultsHeight": {
-          "type": "num",
-          "min": 0.1,
-          "max": 0.6,
-          "optional": true
-        },
         "taskBoard": {
           "type": "list",
           "of": {
@@ -296,12 +278,6 @@
           "values": [
             "hidden"
           ],
-          "optional": true
-        },
-        "resultsHeight": {
-          "type": "num",
-          "min": 0.1,
-          "max": 0.6,
           "optional": true
         },
         "taskBoard": {
@@ -383,12 +359,6 @@
           "values": [
             "hidden"
           ],
-          "optional": true
-        },
-        "resultsHeight": {
-          "type": "num",
-          "min": 0.1,
-          "max": 0.6,
           "optional": true
         },
         "taskBoard": {

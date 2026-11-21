@@ -39,6 +39,7 @@ export function composeGame(content, modules) {
 export function configureGame(game, content, kernel) {
   game.pluginKernel = kernel
   game.contentVocabulary = contentSchemas.get(content)
+  if (content.libraryLevels) game.libraryLevelTitles = new Map(content.libraryLevels.map(({ id, title }) => [id, title]))
   game.shellExtensions = [...kernel.tables.shell]
   for (const configure of kernel.tables.game.values()) configure(game, content)
   return game

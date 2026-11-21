@@ -1,3 +1,5 @@
+import BoardLabel from './BoardLabel.jsx'
+import { usePlainProse } from 'kernel/view'
 import { useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ListTree } from 'lucide-react'
@@ -11,6 +13,7 @@ import { useOverlay } from 'kernel/view'
 export const trayItemCount = (entries) => entries.reduce((total, entry) => total + (entry.children?.length ?? 1), 0)
 
 export default function TrayMenu({ entry, className, compact, phoneHost, renderPart }) {
+  const plain = usePlainProse()
   const [anchor, setAnchor] = useState(null)
   const id = useId()
   const toggle = useRef(null)
@@ -23,12 +26,14 @@ export default function TrayMenu({ entry, className, compact, phoneHost, renderP
     <div className="tray-menu">
       <button ref={toggle} type="button" className={`${className} tray-menu-toggle`} aria-expanded={Boolean(anchor)} aria-controls={anchor ? id : undefined}
         onClick={(event) => setAnchor(anchor ? null : event.currentTarget)}>
-        <ListTree size={14} className="tray-menu-icon" aria-hidden="true" />
-        <span>{L(entry.label)}</span>
+        {phone
+          ? <ListTree size={14} className="tray-menu-icon" aria-hidden="true" />
+          : <i className="family-chip"><ListTree size={14} aria-hidden="true" /></i>}
+        <span className={phone ? undefined : 'palette-text'}><span><BoardLabel label={L(entry.label)} /></span></span>
       </button>
       {anchor && (phone
-        ? createPortal(<div id={id} ref={panel} className="tray-menu-row" role="group" aria-label={L(entry.label)}>{entry.children.map(renderPart)}</div>, phoneHost.current)
-        : <Popover anchor={anchor} title={L(entry.label)} placement="below" className="tray-menu-pop" onClose={close}>
+        ? createPortal(<div id={id} ref={panel} className="tray-menu-row" role="group" aria-label={plain(entry.label)}>{entry.children.map(renderPart)}</div>, phoneHost.current)
+        : <Popover anchor={anchor} title={plain(entry.label)} placement="below" className="tray-menu-pop" onClose={close}>
           <div id={id} className={`palette ${compact ? 'is-compact' : ''}`}>{entry.children.map(renderPart)}</div>
         </Popover>)}
     </div>

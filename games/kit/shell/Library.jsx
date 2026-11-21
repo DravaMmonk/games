@@ -1,3 +1,5 @@
+import { Markup } from './Markup.jsx'
+import { usePlainProse } from './useSetting.js'
 import { punctuation } from './i18n.js'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { ArrowLeft, Lock, Search, X } from 'lucide-react'
@@ -82,7 +84,8 @@ export default function Library({ title, subtitle, label, groups, initial, lastK
     setReading(true)
   }
   const q = query.trim().toLowerCase()
-  const titleText = (item) => (typeof item.title === 'object' && item.title && 'zh' in item.title ? `${item.title.zh} ${item.title.en}` : String(L(item.title)))
+  const plain = usePlainProse()
+  const titleText = (item) => (typeof item.title === 'object' && item.title && 'zh' in item.title ? `${plain(item.title.zh)} ${plain(item.title.en)}` : String(plain(item.title)))
   const shown = groups
     .map((group) => ({ ...group, items: group.items.filter((item) => !q || (item.open && titleText(item).toLowerCase().includes(q))) }))
     .filter((group) => group.items.length)
@@ -103,7 +106,7 @@ export default function Library({ title, subtitle, label, groups, initial, lastK
                 {item.open ? (
                   <button type="button" className={`wiki-item ${item.id === current && showsArticle ? 'is-current' : ''}`} onClick={() => show(item.id, true)} aria-current={item.id === current ? 'true' : undefined}>
                     {item.lead}
-                    <span>{L(item.title)}</span>
+                    <span><Markup text={item.title} /></span>
                     {item.unread && <i className="wiki-dot" aria-label={tr('未读')} />}
                   </button>
                 ) : (

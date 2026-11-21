@@ -1,6 +1,8 @@
+import { usePlainProse } from 'kernel/view'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import Glyph from "./Glyph.jsx"
+import BoardLabel from './BoardLabel.jsx'
 import { L } from "kernel/view"
 import { tr } from 'kernel/words'
 
@@ -10,6 +12,7 @@ import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
 // it onto a slot. Dragging a placed block back onto the tray removes it ([data-trash]). `folded` parts wait behind a
 // 「更多」 chip at the end, as in the desktop Palette.
 export default function Tray({ items, folded = [], onPick, start }) {
+  const plain = usePlainProse()
   const [more, setMore] = useState(false)
   const host = useRef(null)
   // How far the tray's top stands above the bottom of the screen, an open menu's row included (it rises above the
@@ -37,9 +40,9 @@ export default function Tray({ items, folded = [], onPick, start }) {
     }
   }, [])
   const part = (item) => (
-    <button key={item.type} type="button" className={`pb-part ${item.folded ? 'is-folded' : ''} ${item.packed ? 'is-packed' : ''}`} data-tray={item.onPick ? undefined : item.type} data-family={item.family} onClick={item.onPick ?? (() => onPick(item.type))} title={L(item.desc)}>
+    <button key={item.type} type="button" className={`pb-part ${item.folded ? 'is-folded' : ''} ${item.packed ? 'is-packed' : ''}`} data-tray={item.onPick ? undefined : item.type} data-family={item.family} onClick={item.onPick ?? (() => onPick(item.type))} title={plain(item.desc)}>
       {item.icon && <i className="family-chip"><Glyph icon={item.icon} size={13} /></i>}
-      <b>{L(item.label)}</b>
+      <b><BoardLabel label={L(item.label)} /></b>
       {item.fresh && <em className="pb-new">{tr('新')}</em>}
     </button>
   )

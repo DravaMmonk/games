@@ -331,6 +331,7 @@
     "开发中": "In development",
     "开始": "Start",
     "开放所有关卡和任务。": "Open all levels and tasks.",
+    "引用不可用": "Reference unavailable",
     "引言": "Intro",
     "引言或通关文案旁显示的一个值": "a value shown beside an introduction page or a pass text",
     "当前配置的语言文件里没有文案键 @{key}。": "No text for @{key} in this configuration's language files.",

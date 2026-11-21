@@ -88,6 +88,55 @@ test('single-level play uses task trays, ignores prerequisites and opens setting
   assert.throws(() => packageLevel(content, 'missing'), /no level/)
 })
 
+test('single-level play offers direct rule cards only for parts in its declared tray', async () => {
+  const { root, id } = proofsRoot()
+  roots.push(root)
+  const dir = resolve(root, 'packages', id, 'trays')
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(resolve(dir, 'tools.json'), JSON.stringify({ values: ['impI'] }))
+  const content = readPackage(id, root)
+  const level = content.levels.find(l => l.id === `${id}/suppose`)
+  level.tasks[0] = {
+    id: `${id}/direct`, kind: 'logic/machine', tray: `${id}/tools`, directRuleCards: true,
+    want: 'logic/proved', tests: [{ goal: 'Rain → Rain' }],
+    solution: ['box = logic/directBackward-proofs_impI(in)', 'out <- box'],
+  }
+  const shell = packageLevel(content, level.id)
+  const domain = await runtimeOf(shell)
+  const { logic } = domain.spec(shell)
+  const task = logic.LEVELS[0].tasks[0]
+  const view = logic.machineBoards.forTask(task)
+  const offer = view.offerIn(task, new Set())
+  assert.ok(offer.types.includes('logic/directBackward-proofs_impI'))
+  assert.ok(!offer.types.includes('logic/directBackward-proofs_mp'))
+  assert.ok(!offer.types.includes('logic/directBackward-logic_assumption'))
+  assert.equal(view.holdsIn(task, new Set())('logic/directBackward-proofs_impI'), true)
+  assert.equal(view.holdsIn(task, new Set())('logic/directBackward-logic_assumption'), false)
+})
+
+test('a direct rule tray offers the bound cards instead of their rule sources', async () => {
+  const { root, id } = proofsRoot()
+  roots.push(root)
+  const dir = resolve(root, 'packages', id, 'trays')
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(resolve(dir, 'tools.json'), JSON.stringify({ values: ['impI'], directRuleCards: true }))
+  const content = readPackage(id, root)
+  const level = content.levels.find(l => l.id === `${id}/suppose`)
+  const card = `logic/directBackward-${id}_impI`
+  level.tasks[0] = {
+    id: `${id}/direct`, kind: 'logic/machine', tray: `${id}/tools`,
+    want: 'logic/becomes', tests: [{ goal: 'Rain → Rain', becomes: [['Rain ⊢ Rain']] }],
+    solution: [`box = ${card}(in)`, 'out <- box'],
+  }
+  const shell = packageLevel(content, level.id)
+  const domain = await runtimeOf(shell)
+  const { logic } = domain.spec(shell)
+  const task = logic.LEVELS[0].tasks[0]
+  const view = logic.machineBoards.forTask(task)
+  assert.deepEqual(view.offerIn(task, new Set()), { shown: [card], folded: [], types: [card] })
+  assert.equal(view.holdsIn(task, new Set())(`${id}/impI`), false)
+})
+
 test('a levels-only package plays dependency parts and checks references and naive answers independently', async () => {
   const { root, put } = library()
   put('packages/problems/package.json', { kind: 'lib', version: '1.0.0', kernel: '^0.0.0', uses: { library: '^1.0.0', circuit: '^0.0.0', logic: '^0.0.0', qed: '^0.0.0' } })

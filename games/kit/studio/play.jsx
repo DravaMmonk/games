@@ -15,6 +15,7 @@
 //                  { type: 'map-view', chapter, rows, compact, graph } draws the live route.
 //   page → studio  { type: 'ready' } once it listens; { type: 'take', level, path, text };
 //                  { type: 'pick' | 'add', level, task, at, scope, index? }; { type: 'task', level, task };
+//                  { type: 'open-level', level, task } opens a linked level from a single-level preview;
 //                  { type: 'start', level, task, port, view } the view a port's value starts in, switched on the page;
 //                  { type: 'pick' | 'add', part | setting, path } a field of a part (or of a setting definition, shown
 //                  as the part settings/<name>) picked, an item added to one;
@@ -161,6 +162,7 @@ export default function Play() {
   } : null), [edit])
   const author = useMemo(() => ({
     level,
+    openLevel: (target, task) => say({ type: 'open-level', level: target, task }),
     take: take && { label: take.label, use: (text) => say({ type: 'take', level, path: take.path, text }) },
     edit: editing,
     go,

@@ -274,7 +274,7 @@ export function unify(pairs, σ = {}, opts = {}) {
   if (set.fail) return { fail: set.fail }
   if (!solved(set.eqs)) {
     const e = nonPattern(set.eqs)
-    return { fail: e ? T("{value}：{name} 后面跟的不都是不同的约束变量，解不止一个，证明助手不猜", {value: equationText(e), name: (flexApp(e.s) ?? flexApp(e.t)).name}) : T('合一不了') }
+    return { fail: e ? T("{value}：{name} 后面跟的不都是不同的约束变量，解不止一个，证明器不猜", {value: equationText(e), name: (flexApp(e.s) ?? flexApp(e.t)).name}) : T('合一不了') }
   }
   // A solved set may still give a metavariable a thing fixed after it was left.
   const late = UNIFY_RULES.check(set.eqs, opts)
@@ -320,31 +320,30 @@ export function ruleText(rule, say = show) {
  * is on the proof board: introduction rules first (used on a goal), then elimination rules (the first premise a
  * hypothesis to use up), then the rest.
  */
+// Each kernel rule belongs to the proof operation implemented by its source part.
+const partRule = (part, key, name, premises, conclusion) => ({ ...ruleOf(key, name, premises, conclusion), part })
 export const KERNEL_RULES = [
-  ruleOf('conjI', T("拼接"), ['?A', '?B'], '?A ∧ ?B'),
-  ruleOf('impI', T("假设框"), ['⟦?A⟧ ⟹ ?B'], '?A → ?B'),
-  ruleOf('disjI1', T("补充（左边）"), ['?A'], '?A ∨ ?B'),
-  ruleOf('disjI2', T("补充（右边）"), ['?B'], '?A ∨ ?B'),
-  ruleOf('allI', T("任取框"), ['⋀x. ?P(x)'], '∀x. ?P(x)'),
-  ruleOf('exI', T("概括"), ['?P(?t)'], '∃x. ?P(x)'),
-  ruleOf('mp', T("套用"), ['?A → ?B', '?A'], '?B'),
-  ruleOf('conjE', T("拆解"), ['?A ∧ ?B', '⟦?A; ?B⟧ ⟹ ?C'], '?C'),
-  ruleOf('conjunct1', T("拆解（左边）"), ['?A ∧ ?B'], '?A'),
-  ruleOf('conjunct2', T("拆解（右边）"), ['?A ∧ ?B'], '?B'),
-  ruleOf('disjE', T("分类讨论"), ['?A ∨ ?B', '⟦?A⟧ ⟹ ?C', '⟦?B⟧ ⟹ ?C'], '?C'),
-  ruleOf('impE', T("用上「若…则…」"), ['?A → ?B', '?A', '⟦?B⟧ ⟹ ?C'], '?C'),
-  ruleOf('botE', T("爆炸"), ['⊥'], '?C'),
-  ruleOf('spec', T("选定一例"), ['∀x. ?P(x)'], '?P(?t)'),
-  ruleOf('allE', T("选定一例后再使用"), ['∀x. ?P(x)', '⟦?P(?t)⟧ ⟹ ?C'], '?C'),
-  ruleOf('exE', T("实例框"), ['∃x. ?P(x)', '⋀x. ⟦?P(x)⟧ ⟹ ?C'], '?C'),
-  ruleOf('raa', T("反证法"), ['¬¬?A'], '?A'),
+  partRule('andI', 'conjI', T("拼接"), ['?A', '?B'], '?A ∧ ?B'),
+  partRule('impI', 'impI', T("假设框"), ['⟦?A⟧ ⟹ ?B'], '?A → ?B'),
+  partRule('orI', 'disjI1', T("补充（左边）"), ['?A'], '?A ∨ ?B'),
+  partRule('orI', 'disjI2', T("补充（右边）"), ['?B'], '?A ∨ ?B'),
+  partRule('allI', 'allI', T("任取框"), ['⋀x. ?P(x)'], '∀x. ?P(x)'),
+  partRule('exI', 'exI', T("概括"), ['?P(?t)'], '∃x. ?P(x)'),
+  partRule('mp', 'mp', T("套用"), ['?A → ?B', '?A'], '?B'),
+  partRule('andE', 'conjE', T("拆解"), ['?A ∧ ?B', '⟦?A; ?B⟧ ⟹ ?C'], '?C'),
+  partRule('andE', 'conjunct1', T("拆解（左边）"), ['?A ∧ ?B'], '?A'),
+  partRule('andE', 'conjunct2', T("拆解（右边）"), ['?A ∧ ?B'], '?B'),
+  partRule('orE', 'disjE', T("分类讨论"), ['?A ∨ ?B', '⟦?A⟧ ⟹ ?C', '⟦?B⟧ ⟹ ?C'], '?C'),
+  partRule('mp', 'impE', T("用上「若…则…」"), ['?A → ?B', '?A', '⟦?B⟧ ⟹ ?C'], '?C'),
+  partRule('botE', 'botE', T("爆炸"), ['⊥'], '?C'),
+  partRule('allE', 'spec', T("选定一例"), ['∀x. ?P(x)'], '?P(?t)'),
+  partRule('allE', 'allE', T("选定一例后再使用"), ['∀x. ?P(x)', '⟦?P(?t)⟧ ⟹ ?C'], '?C'),
+  partRule('exE', 'exE', T("实例框"), ['∃x. ?P(x)', '⋀x. ⟦?P(x)⟧ ⟹ ?C'], '?C'),
+  partRule('raa', 'raa', T("反证法"), ['¬¬?A'], '?A'),
   // A sentence proved on the way and then used, as a wire on the proof board does (Lean's have).
-  ruleOf('cut', T("先证一句"), ['?A', '⟦?A⟧ ⟹ ?C'], '?C'),
-  ruleOf('refl', T("自反律"), [], '?t = ?t'),
+  partRule('mp', 'cut', T("先证一句"), ['?A', '⟦?A⟧ ⟹ ?C'], '?C'),
+  partRule('refl', 'refl', T("自反律"), [], '?t = ?t'),
 ]
-// The proof-board part each kernel rule is (a level has the rule once it holds the part); Have is Apply and a box.
-const PART = { conjI: 'andI', impI: 'impI', disjI1: 'orI', disjI2: 'orI', allI: 'allI', exI: 'exI', mp: 'mp', conjE: 'andE', conjunct1: 'andE', conjunct2: 'andE', disjE: 'orE', impE: 'mp', botE: 'botE', spec: 'allE', allE: 'allE', exE: 'exE', raa: 'raa', cut: 'mp', refl: 'refl' }
-for (const r of KERNEL_RULES) r.part = PART[r.key]
 /** The introduction rules (a goal taken apart by its shape) and the elimination rules (a given used), in order. */
 export const INTRO_RULES = ['conjI', 'impI', 'disjI1', 'disjI2', 'allI', 'exI']
 export const ELIM_RULES = ['conjE', 'disjE', 'impE', 'botE', 'exE', 'allE']

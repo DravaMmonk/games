@@ -22,6 +22,60 @@ after(async () => {
   }
 })
 
+test('notation labels keep accessible text and use vectors for signs and circled numbers', async () => {
+  const entry = new URL('../packages/notation/view/index.jsx', import.meta.url).pathname
+  const { NotationLabel } = await loadModule(entry)
+  const label = String.raw`\mark{circle-2} \mark{backward} 引用已知 \mark{rewrite}`
+  const html = renderToString(createElement(NotationLabel, { label }))
+  assert.match(html, /notation-label-text">2 (?:逆用|backward) 引用已知 (?:改写|rewrite)<\/span>/)
+  assert.match(html, /notation-label-art" aria-hidden="true"/)
+  assert.deepEqual([...html.matchAll(/<svg [^>]*data-mark="([^"]+)"/g)].map((match) => match[1]), ['circle-2', 'backward', 'rewrite'])
+  assert.equal(renderToString(createElement(NotationLabel, { label: 'Given' })), 'Given')
+  assert.equal(renderToString(createElement(NotationLabel, { label: '⟵ Given' })), '⟵ Given')
+})
+
+test('opt-in prose draws notation inline and keeps literal code intact', async () => {
+  const load = path => loadModule(new URL(path, import.meta.url).pathname)
+  const { NotationText } = await load('../packages/notation/view/index.jsx')
+  const { Markup } = await load('../games/kit/shell/Markup.jsx')
+  const { SettingsContext } = await load('../games/kit/shell/useSetting.js')
+  const text = String.raw`Use <strong>\mark{backward} Given</strong> or \mark{rewrite}. Type <code>\mark{rewrite}</code>.`
+  const markup = createElement(Markup, { text })
+  const regular = renderToString(markup)
+  assert.doesNotMatch(regular, /<svg/)
+  const html = renderToString(createElement(SettingsContext.Provider, { value: { renderProse: NotationText } }, markup))
+  assert.match(html, /<strong><span class="notation-inline">/)
+  assert.match(html, /<code>\\mark\{rewrite\}<\/code>/)
+  assert.deepEqual([...html.matchAll(/<svg [^>]*data-mark="([^"]+)"/g)].map(match => match[1]), ['backward', 'rewrite'])
+})
+
+test('a single-level preview retains titles for references outside the played level', async () => {
+  const load = path => loadModule(new URL(path, import.meta.url).pathname)
+  const { configureGame } = await load('../games/kit/app/compose-game.js')
+  const { packageLevel } = await load('../games/kit/engine/package-play.js')
+  const title = { zh: '另一关', en: 'Another level' }
+  const levels = [{ id: 'sample/played', title: 'Played' }, { id: 'sample/other', title }]
+  const content = structuredClone(packageLevel({ id: 'sample', packageTarget: true, levels }, levels[0].id))
+  const byId = { [levels[0].id]: levels[0] }
+  const game = configureGame({ byId }, content, createPluginKernel())
+  assert.deepEqual(game.libraryLevelTitles.get(levels[1].id), title)
+  assert.deepEqual(Object.keys(game.byId), [levels[0].id])
+})
+
+test('standalone part references use authored names outside the earned parts catalog', async () => {
+  const entry = new URL('../packages/circuit/view/shell.jsx', import.meta.url).pathname
+  const { useCircuitShell } = await loadModule(entry)
+  function Probe({ all }) {
+    const game = { id: 'sample', levels: [], partDefs: { parts: { 'sample/apply': { name: 'Apply' } } } }
+    const shell = useCircuitShell({ game, progress: { all } })
+    assert.equal(shell.reference('part', 'part:sample/apply').title, 'Apply')
+    assert.equal(shell.reference('part', 'part:sample/apply').open, all)
+    assert.equal(shell.reference('part', 'part:sample/missing'), undefined)
+    return null
+  }
+  for (const all of [true, false]) renderToString(createElement(Probe, { all }))
+})
+
 async function registeredBoardPreview(packages, level, data = {}) {
   const [task] = level.tasks
   const entries = await Promise.all(packages.map(async id => ({

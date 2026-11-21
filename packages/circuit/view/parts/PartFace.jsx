@@ -1,3 +1,4 @@
+import { FormulaText, Markup } from 'kernel/view'
 import "./parts.css"
 import { L } from 'kernel/view'
 
@@ -74,6 +75,12 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
         return b.as === 'label' ? <span key={key} className="pf-words" {...at}>{words(hit[0])}</span> : <div key={key} {...at}>{setting(...hit)}</div>
       }
       case 'summary': {
+        const single = shown.find(([s]) => s.control === 'list' && s.single)
+        if (!b.text && single) {
+          const rule = words(single[0])
+          const rest = shown.filter(([s]) => s !== single[0]).map(([s]) => words(s)).filter(Boolean).join(' · ')
+          return rule || rest ? <span key={key} className="pf-summary" {...at}>{rule && <FormulaText text={rule} />}{rule && rest && ' · '}{rest}</span> : null
+        }
         const text = b.text ? L(b.text).replace(/\{([^}]*)\}/g, (_, k) => (def.setting[k] ? words(def.setting[k]) : '')) : shown.map(([s]) => words(s)).join(' · ')
         return text ? <span key={key} className="pf-summary" {...at}>{text}</span> : null
       }
@@ -90,12 +97,12 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
       case 'text':
         return <p key={key} className="pf-text" {...at}>{L(b.text)}</p>
       case 'desc':
-        return <p key={key} className="pf-desc" {...at}>{L(partDesc(def, (k) => defined.allowed?.(def.type, k) ?? null))}</p>
+        return <p key={key} className="pf-desc" {...at}><Markup text={partDesc(def, (k) => defined.allowed?.(def.type, k) ?? null)} /></p>
       case 'ports':
         return (
           <dl key={key} className="pf-ports" {...at}>
-            {holesOf(def).map((p) => <div key={`in-${p.name}`}><dt>{L(p.label ?? p.name)}</dt><dd>{p.about ? L(p.about) : ''}</dd></div>)}
-            {outletsOf(def).map((p) => <div key={`out-${p.name}`} className="is-out"><dt>{L(p.label ?? p.name)}</dt><dd>{p.about ? L(p.about) : ''}</dd></div>)}
+            {holesOf(def).map((p) => <div key={`in-${p.name}`}><dt><Markup text={p.label ?? p.name} /></dt><dd>{p.about ? L(p.about) : ''}</dd></div>)}
+            {outletsOf(def).map((p) => <div key={`out-${p.name}`} className="is-out"><dt><Markup text={p.label ?? p.name} /></dt><dd>{p.about ? L(p.about) : ''}</dd></div>)}
           </dl>
         )
       case 'widget': {

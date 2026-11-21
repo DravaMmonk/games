@@ -18,6 +18,34 @@ test('tray menus show only available parts; every folded part in a menu goes int
 const part = (type) => ({ type })
 const flat = ({ items, folded }) => ({ items: items.map((item) => item.children ? { menu: item.label, of: item.children.map(({ type }) => type) } : item.type), folded: folded.map((item) => item.children ? { menu: item.label, of: item.children.map(({ type }) => type) } : item.type) })
 
+test('variants inherit the original menu while shown cards remain visible below the threshold', () => {
+  const trays = {
+    machine: { items: [{ id: 'machine-rules', title: 'Reasoning', items: ['assumption'] }] },
+    proof: { items: [
+      { id: 'implication', title: 'Implication', items: ['impI-stage', 'assumption'] },
+      { id: 'laws', title: 'Laws', items: ['dneg'] },
+    ] },
+  }
+  const shown = [{ type: 'backImpI', traySource: 'impI' }]
+  const folded = [
+    part('assumption'),
+    { type: 'backAssumption', traySource: 'assumption' },
+    { type: 'backDneg', traySource: 'dneg' },
+    { type: 'rewriteDneg', traySource: 'dneg' },
+    { type: 'backUnlisted', traySource: 'unlisted' },
+  ]
+  const partOf = type => type === 'impI-stage' ? 'impI' : type
+  assert.deepEqual(flat(trayDisplay(trays, ['machine'], shown, folded, partOf)), {
+    items: ['backImpI'],
+    folded: [{ menu: 'Reasoning', of: ['assumption', 'backAssumption'] }, { menu: 'Laws', of: ['backDneg', 'rewriteDneg'] }, 'backUnlisted'],
+  })
+  assert.deepEqual(trayDisplay({}, [], shown, folded), { items: shown, folded })
+  const grouped = { ...trays, machine: { ...trays.machine, menuThreshold: 2 } }
+  const both = [...shown, { type: 'backImpI2', traySource: 'impI' }]
+  assert.deepEqual(flat(trayDisplay(grouped, ['machine'], both, folded, partOf)).items,
+    [{ menu: 'Implication', of: ['backImpI', 'backImpI2'] }])
+})
+
 test('below the threshold (7 by default) the shown parts stand on their own', () => {
   const trays = { t: { items: [{ id: 'm', title: 'M', items: ['a', 'b', 'c'] }, 'x', 'y', 'z'] } }
   assert.deepEqual(flat(trayDisplay(trays, ['t'], ['a', 'b', 'c', 'x', 'y', 'z'].map(part), [])).items, ['a', 'b', 'c', 'x', 'y', 'z'])

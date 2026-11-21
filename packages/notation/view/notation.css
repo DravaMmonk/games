@@ -1,0 +1,55 @@
+.notation-label {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+/* Keep one text equivalent without changing the size of the visible label. */
+.notation-label-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.notation-label-art {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  white-space: break-spaces;
+  vertical-align: top;
+}
+
+/* A standalone sign occupies the same line box as a sign next to text. */
+.notation-label-art::before {
+  content: '\00a0';
+  flex: none;
+  width: 0;
+  overflow: hidden;
+}
+
+.notation-label-art > span {
+  min-width: 0;
+  overflow-wrap: inherit;
+}
+
+.notation-inline {
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -.15em;
+}
+
+.notation-inline > svg.notation-mark,
+.notation-label-art > svg.notation-mark {
+  display: block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  margin: 0;
+  color: inherit;
+}

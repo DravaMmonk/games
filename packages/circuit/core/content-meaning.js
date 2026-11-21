@@ -87,7 +87,7 @@ export const partMeaning = {
       object: part.part ?? (part.key.startsWith('part:') ? part.key.slice(5) : part.key),
       at: part.at?.[0] ?? game.levels.find(level => (level.unlocks ?? []).includes(part.key))?.id ?? null,
     })) : Object.entries(content.partDefs?.parts ?? {}).map(([object, part]) => ({
-      id: `part:${object}`, title: part.name, object,
+      id: `part:${object}`, aliases: [object, `lemma:${object}`], title: part.name, object,
     }))
     return [{ kind: 'part', targetKind: 'circuit/part', label: T('元件'), items }]
   },

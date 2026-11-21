@@ -32,6 +32,10 @@
     "workshop": {
       "version": "0.0.0",
       "hash": "48a5f9db25082e6149902b54db5594b2bfbab0066b8b218e4733ae05e0daffa4"
+    },
+    "notation": {
+      "version": "0.0.0",
+      "hash": "febbab0e2d828c840ae79150c9cef111c92aab58ecc5e5c0d0175f29e2a5e87e"
     }
   }
 }

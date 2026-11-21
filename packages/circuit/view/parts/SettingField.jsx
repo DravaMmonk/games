@@ -1,8 +1,8 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { X } from 'lucide-react'
 import Choice from "../board/Choice.jsx"
 
-import { NumberField } from 'kernel/view'
+import { FormulaText, NumberField, Popover } from 'kernel/view'
 
 import { L } from "kernel/view"
 import { T, tr } from 'kernel/words'
@@ -23,11 +23,35 @@ import { numberText } from 'kernel/view'
 const stop = (e) => e.stopPropagation()
 const optionsOf = (setting, allowed) => setting.options.filter((o) => !allowed || allowed.includes(o.value))
 
+function SingleRule({ options, value, onChange, readOnly, label }) {
+  const [anchor, setAnchor] = useState(null)
+  const selected = options.find((option) => String(option.value) === value?.[0]) ?? (options.length === 1 ? options[0] : null)
+  const text = selected && L(selected.label ?? selected.value)
+  if (readOnly || options.length === 1) return text ? <span className="pf-rule-pick pf-rule-fixed"><FormulaText text={text} /></span> : null
+  return (
+    <>
+      <button type="button" className={`pf-rule-pick ${selected ? '' : 'is-empty'}`} aria-label={label} aria-expanded={Boolean(anchor)}
+        onPointerDown={stop} onClick={(event) => setAnchor(event.currentTarget)}>
+        {selected ? <FormulaText text={text} /> : label}
+      </button>
+      {anchor && <Popover anchor={anchor} title={label} onClose={() => setAnchor(null)} className="pf-rule-pop">
+        <div className="pf-rule-options">
+          {options.map((option) => <button key={option.value} type="button" className="pf-rule-option" aria-pressed={option === selected}
+            onClick={() => { onChange([option.value]); setAnchor(null) }}>
+            <FormulaText text={L(option.label ?? option.value)} />
+          </button>)}
+        </div>
+      </Popover>}
+    </>
+  )
+}
+
 /** The values picked, in order: × takes one off, the menu after them adds one. */
-function ListControl({ options, value, onChange, readOnly, label }) {
+function ListControl({ options, value, onChange, readOnly, label, single }) {
   const kept = (value ?? []).filter((v) => options.some((o) => String(o.value) === v))
   const rest = options.filter((o) => !kept.includes(String(o.value)))
   const labelOf = (v) => L(options.find((o) => String(o.value) === v).label ?? v)
+  if (single) return <SingleRule options={options} value={kept} onChange={onChange} readOnly={readOnly} label={label} />
   return (
     <span className="pf-list" role="group" aria-label={label} onPointerDown={stop}>
       {kept.map((v) => (
@@ -78,7 +102,7 @@ function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone,
         </button>
       )
     case 'list':
-      return <ListControl options={optionsOf(s, allowed)} value={value} onChange={onChange} readOnly={readOnly} label={label} />
+      return <ListControl options={optionsOf(s, allowed)} value={value} onChange={onChange} readOnly={readOnly} label={label} single={s.single} />
     case 'tree':
       return <code>{value || '—'}</code>
     case 'custom': {
@@ -106,7 +130,10 @@ export default function SettingField({ setting, value, onChange, allowed = null,
 
 /** The words for a setting's value: its option's label, a number (rounded as the kit writes numbers) with its unit, the side of a toggle. */
 export function valueWords(setting, value) {
-  if (setting.control === 'list') return (Array.isArray(value) ? value : []).map((v) => L(setting.options?.find((x) => String(x.value) === v)?.label ?? v)).join(' ')
+  if (setting.control === 'list') {
+    const values = Array.isArray(value) && value.length ? value : setting.single && setting.options?.length === 1 ? [setting.options[0].value] : []
+    return (setting.single ? values.slice(0, 1) : values).map((v) => L(setting.options?.find((x) => String(x.value) === v)?.label ?? v)).join(' ')
+  }
   if (setting.options) {
     const o = setting.options.find((x) => String(x.value) === String(value))
     return o ? L(o.label ?? o.value) : String(value ?? '')

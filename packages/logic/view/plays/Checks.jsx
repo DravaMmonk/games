@@ -13,7 +13,9 @@ function display(cell, row) {
   switch (cell.shape) {
     case 'tree': return value ? <Formula text={cell.build.text(value)} /> : placeholder(cell)
     case 'tree-list': return value.length
-      ? <span className="ck-lines">{value.map((item, k) => <span key={k}>{k + 1}. <Formula text={cell.build.text(item)} /></span>)}</span>
+      ? <span className="ck-lines">{value.map((item, k) => (
+        <span key={k}><span className="ck-number">{k + 1}.</span><Formula text={cell.build.text(item)} /></span>
+      ))}</span>
       : placeholder(cell)
     case 'choice': return <InlineChoice label={cell.fixedLabel ?? cell.label} options={cell.options} value={value} disabled />
   }

@@ -12,6 +12,8 @@ import { assignBlock, rectangleMembers } from "../../core/board/blocks.js"
 import { WORDS } from '../words.js'
 
 import BlockHeader from "./BlockHeader.jsx"
+import BoardLabel, { useBoardNumber } from './BoardLabel.jsx'
+import { usePlainProse } from 'kernel/view'
 import { useSetting } from 'kernel/view'
 
 import { useWorkspaceKeys } from 'kernel/view'
@@ -37,7 +39,7 @@ import { cardPorts, namesPorts, NO_CARD_PORT, portOnCard } from "../../core/boar
 import { moveInto } from "../../core/board/frames.js"
 import { isOpenRegion, regionAddress, regionsOf } from "../../core/board/regions.js"
 import { canRemoveCard, clearSpot, rowSpot, connectWire, ends, inPort, isPart, outPort, parsePort, removeNode, unplugWire, wireRefusal } from "../../core/board/model.js"
-import { cardOrder, numberAt } from "../../core/board/card-order.js"
+import { cardOrder } from "../../core/board/card-order.js"
 import { phoneBlockBoard, withNewSlots } from "../../core/board/blocks.js"
 import { leavesLockedRegion, lockedCards, lockedRefusal, PRESET_CARD_REFUSAL } from "../../core/board/presets.js"
 import { useCircuitEdits } from "./useCircuitEdits.js"
@@ -106,6 +108,8 @@ function pointerPose(pointers) {
  * receives both its change callback and its history. A display without them only pans, zooms and fits.
  */
 export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, emptyNote, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect, placing = null }) {
+  const boardNumber = useBoardNumber()
+  const plain = usePlainProse()
   const [connectionLabels] = useSetting('connectionLabels')
   const readOnly = !onChange
   const [view, setView] = useState({ x: 0, y: 0, zoom: 1 })
@@ -645,7 +649,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         className={`node is-${role} ${parts.packed?.(node) ? 'is-packed' : ''} ${regions.length ? 'is-frame' : ''} ${node.fold ? 'is-folded' : ''} ${folded ? 'is-body-folded' : ''} ${selected?.node === node.id ? 'is-selected' : ''} ${cardClass?.(node) ?? ''}`}
         role={openDetail ? 'button' : undefined}
         tabIndex={openDetail ? 0 : undefined}
-        aria-label={openDetail ? tr("查看 {value} 的详情", {value: L(parts.label(node))}) : undefined}
+        aria-label={openDetail ? tr("查看 {value} 的详情", {value: plain(parts.label(node))}) : undefined}
         onKeyDown={openDetail && ((event) => {
           if (event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) return
           event.preventDefault()
@@ -667,8 +671,8 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
               </button>
             )}
             {icon && <i className="family-chip"><Glyph icon={icon} size={12} /></i>}
-            {isPart(parts, node) && order.includes(node.id) && <span className="node-num">{numberAt(order.indexOf(node.id))}</span>}
-            <span className="node-title">{L(parts.label(node))}</span>
+            {isPart(parts, node) && order.includes(node.id) && <span className="node-num"><BoardLabel label={boardNumber(order.indexOf(node.id))} /></span>}
+            <span className="node-title"><BoardLabel label={L(parts.label(node))} /></span>
           </div>
           <div className="node-actions">
             {head?.(node)}
@@ -685,7 +689,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
             {ports.map((port) => (
               <span key={port} className="node-port-label">
                 {inDot(port, parts.portClass?.(node, port) ?? '')}
-                {node.terminal && !named ? '' : L(parts.portLabel?.(node, port)) ?? ''}
+                {(!node.terminal || named) && <BoardLabel label={L(parts.portLabel?.(node, port))} />}
               </span>
             ))}
           </div>
@@ -696,7 +700,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
           <div className="node-outputs">
             {!plainOutput && outputs.map((o) => (
               <span key={o.key} className="node-port-out">
-                {o.glyph ? <span className="node-out-name is-glyph" title={L(o.label)} dangerouslySetInnerHTML={{ __html: o.glyph }} /> : <span className="node-out-name" title={L(o.label)}>{L(o.short ?? o.label)}</span>}
+                {o.glyph ? <span className="node-out-name is-glyph" title={plain(o.label)} dangerouslySetInnerHTML={{ __html: o.glyph }} /> : <span className="node-out-name" title={plain(o.label)}><BoardLabel label={L(o.short ?? o.label)} /></span>}
                 {!folded && outNote?.(node, o.key)}
                 {outDot(sourceOf(node.id, o.key), parts.portClass?.(node, null, o.key) ?? '')}
               </span>
@@ -715,9 +719,9 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
                 <section key={r.name} className={`frame-region ${target === key ? 'is-target' : ''} ${dropInto === key ? 'is-drop' : ''}`}>
                   <header className="frame-region-head">
                     {r.opens && outDot(sourceOf(node.id, r.name), 'frame-open')}
-                    <span className="frame-region-name">{L(r.label)}</span>
+                    <span className="frame-region-name"><BoardLabel label={L(r.label)} /></span>
                     {regionNote?.(node, r.name)}
-                    <span className="frame-region-result">{L(parts.portLabel?.(node, r.name)) ?? ''}{resultNote?.(node, r.name)}{inDot(r.name, 'frame-close')}</span>
+                    <span className="frame-region-result"><BoardLabel label={L(parts.portLabel?.(node, r.name))} />{resultNote?.(node, r.name)}{inDot(r.name, 'frame-close')}</span>
                   </header>
                   <div className="frame-field" data-region={key} style={{ width: w, height: h }}>
                     {layered(inside).map(card)}

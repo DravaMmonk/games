@@ -74,7 +74,9 @@
 .ck-wrong { color: var(--fail); font-weight: 600; }
 .ck-right { color: var(--status); font-weight: 600; }
 .ck-placeholder { color: var(--faint); font-style: normal; font-size: var(--fs-small); }
-.ck-lines > span { display: block; }
+.ck-lines > span { display: flex; align-items: baseline; gap: var(--sp-2); }
+.ck-number { flex: none; }
+.ck-lines .tx-line { min-width: 0; }
 
 /* A scenario as a player-written check. */
 .ck-scenarios { display: grid; gap: var(--sp-4); }
@@ -96,6 +98,7 @@
 /* A state's goals and a part's rules are numbered lines, read from the left. */
 .lg-machine-level .vw-value, .mr-line, .mr-rules .tx-line { font: 500 11px/1.4 var(--sans); letter-spacing: -0.01em; word-spacing: -0.06em; text-align: left; }
 .lg-machine-level .vw-value { color: inherit; }
+.lg-machine-level { --world-extra: 0.20; }
 .lg-machine-level :is(.pf-face.is-tile, .pb-term) > :is(.pf-value, .pb-thumb) { justify-self: stretch; }
 
 /* The prover's run report (ui/MachineReport.jsx): the rules, then a chart of goal boxes joined by the steps between
@@ -104,6 +107,8 @@
 .mr { position: relative; overflow: auto; overscroll-behavior: contain; display: grid; align-content: start; gap: var(--sp-3); scrollbar-width: thin; }
 .mr-rules { list-style: none; margin: 0; padding: 0 0 var(--sp-3); display: grid; gap: 2px; border-bottom: 1px dashed var(--rule); }
 .mr-rules li { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); align-items: baseline; color: var(--ink); }
+/* A rule number sits slightly above the visual center of the surrounding math delimiters. */
+.mr-rules .tx-mark { position: relative; inset-block-start: .07em; }
 .mr-flow { list-style: none; margin: 0; padding: 0; display: grid; }
 .mr-box { display: grid; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule); color: var(--ink); min-width: 0; }
 .mr-box.is-on { box-shadow: inset 0 0 0 1.5px var(--accent); }

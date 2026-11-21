@@ -19,7 +19,7 @@ import { keyOf } from 'kernel'
 import { readWorks } from 'circuit'
 import { parse, replaceAtoms, show } from './formula.js'
 import { claimSentences, vocabulary } from './fol.js'
-import { MACHINE_BOARD, RULE_DEFINITION, axiomPartsOf, builtMachine, inputsOfLevel, rulePartsOf, ruleParts, startMachine } from './machine.js'
+import { MACHINE_BOARD, RULE_DEFINITION, axiomPartsOf, builtMachine, directCardsOf, inputsOfLevel, rulePartsOf, ruleParts, startMachine } from './machine.js'
 import { operationsOf } from 'circuit'
 import { compileParts } from 'circuit'
 import { presetCardIds, presetOf, withPreset } from 'circuit'
@@ -312,6 +312,7 @@ export function* prepareLogicWorks(content) {
   const { PARTS, defs, defaultsOf } = partsOf(content.partDefs, lemmas)
   const resourcesOf = operationsOf
   const partResources = Object.fromEntries(Object.entries(defs).map(([type, def]) => [type, resourcesOf(def)[0]]))
+  const partRuleResources = Object.fromEntries(Object.entries(defs).map(([type, def]) => [type, resourcesOf(def)]))
   const partsForResource = Object.fromEntries(Object.entries(defs).flatMap(([type, def]) => resourcesOf(def).map((resource) => [resource, type])))
   const onBoard = (...families) => Object.fromEntries(Object.entries(PARTS).filter(([type]) => families.includes(defs[type].family)))
   const primitiveGates = onBoard('logic/gate')
@@ -476,6 +477,8 @@ export function* prepareLogicWorks(content) {
   // ruleBookOf): the kernel's rules opened by chapter, the lemmas built before it, each in the shapes it has gained by
   // then. A task after the first may use what its level proves already (a law proved on the proof board, then put to
   // work), in every shape it proves.
+  const directTray = (task) => (course.tray({ id: task.id, task: task.task }) ?? [])
+    .some((name) => content.registries?.['circuit/tray']?.[name]?.directRuleCards)
   for (const level of LEVELS.filter((l) => l.tasks.some((t) => t.kind === 'logic/machine' || t.kind === 'logic/script'))) {
     // The equations proved before it (by the levels it comes after), and in a later task its own.
     const proven = content.standalone ? Object.keys(facts) : Object.keys(facts).filter((type) => references.prior('fact', { id: level.id, task: 0 }).some((entry) => entry.type === type))
@@ -484,6 +487,8 @@ export function* prepareLogicWorks(content) {
       // A task has what the tasks before it in its level proved.
       const before = references.prior('fact', one).filter(({ task }) => task.id === one.id).map(({ type }) => type)
       one.ruleParts = partsForResource
+      one.proofOperations = partRuleResources
+      if (one.kind === 'logic/machine' && directTray(one)) one.directRuleCards = true
       one.holds = content.standalone ? Object.keys(content.registries['circuit/part']) : met(course, { id: level.id, task: one.task })
       one.proven = [...new Set([...proven, ...before, ...(later && level.fact ? [level.fact] : [])])]
       const has = holds(course, { id: level.id, task: one.task }, new Set())
@@ -493,15 +498,23 @@ export function* prepareLogicWorks(content) {
   // A built machine part's ports are the inputs of the board of the first task it refers to.
   const builtPorts = Object.fromEntries(machines.map((type) => [type, inputsOfLevel(taskById.get(built.publishers[type][0]) ?? built.parts[type].inside[0].reference).map((i) => i.name)]))
   const declaredMachines = Object.fromEntries(Object.entries(builtPorts).map(([type, inputs]) => [type, { inputs }]))
+  const directParts = new WeakMap()
+  const directPartsOf = (task) => {
+    if (!directParts.has(task)) directParts.set(task, compileParts(Object.fromEntries(
+      [...directCardsOf(task)].map(([type, { definition }]) => [type, definition]),
+    ), OPS))
+    return directParts.get(task)
+  }
   const machineBlueprint = (task) => primitivesOnly(MACHINE_BOARD, {
     ...Object.fromEntries([...ruleTypes(task).keys()].map((type) => [type, RULE_ENGINE])),
     ...declaredMachines,
     ...machineParts,
+    ...directPartsOf(task).PARTS,
   })
   // A machine's answers are read now that its rule book, and so its rule parts, are known.
   for (const one of TASKS.filter((t) => t.kind === 'logic/machine')) Object.assign(one, readAnswers(one, machineBlueprint(one)))
   for (const { type, variant, task, reference } of built.machineRefs) if (!taskById.has(task)) {
-    const one = { ...reference, ...declarations(reference, type), lemmas, facts, ruleParts: partsForResource, partDefs: defs }
+    const one = { ...reference, ...declarations(reference, type), lemmas, facts, ruleParts: partsForResource, proofOperations: partRuleResources, partDefs: defs }
     references.register([{ kind: 'logic/machine', type, form: null, task: standalone(`${type}:${variant}`, one, machineBlueprint(one)) }])
   }
   // The gates the levels build run their boards (gates.js builtGates).
@@ -533,7 +546,10 @@ export function* prepareLogicWorks(content) {
     one.built = Object.fromEntries(machineTypes.map((type) => [type, part(type, false)]))
     if (one.kind === 'logic/machine' && machineTypes.includes(one.builds)) one.upgrades = part(one.builds, true) ?? undefined
     // What a machine (and a script's `by`) runs: the board's own cards, the parts built, the machine's and rule parts.
-    if (one.kind === 'logic/machine' || one.kind === 'logic/script') one.parts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? (builtPorts[type] ? one.built[type] ?? undefined : machineParts[type] ?? RULE_ENGINE)
+    if (one.kind === 'logic/machine' || one.kind === 'logic/script') {
+      const direct = directPartsOf(one).PARTS
+      one.parts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? (builtPorts[type] ? one.built[type] ?? undefined : direct[type] ?? machineParts[type] ?? RULE_ENGINE)
+    }
   }
   const at = (task) => ({ id: task.id, task: task.task })
   // The parts a machine task has built, named.
@@ -557,13 +573,36 @@ export function* prepareLogicWorks(content) {
   }
   /** Whether a task holds a part, or a shape of one: has(part), has(part, 'form', shape) (../../course.js holds). */
   const holdsIn = (task, flags) => holds(course, at(task), flags)
+  const directOffered = (task, type, flags) => {
+    const direct = directCardsOf(task).get(type)
+    if (!direct) return false
+    return course.availableParts(at(task), flags).includes(course.partOf(direct.source))
+  }
   // On the machine board a rule part is only the rules it gives: the proof-board part of the same type (the
   // assumption box's region and assumption, Apply's two inputs) does not define it there.
   const machineHoldsIn = (task, flags) => {
     const has = holdsIn(task, flags)
     const rules = ruleTypes(task)
-    const definition = (type, fallback) => (rules.has(type) && !machineParts[type] ? fallback : has.definition(type, fallback))
-    return Object.assign((...args) => has(...args), has, { definition })
+    const direct = directPartsOf(task).defs
+    const definition = (type, fallback) => direct[type] ?? (rules.has(type) && !machineParts[type] ? fallback : has.definition(type, fallback))
+    return Object.assign((type, key, value) => {
+      if (!direct[type]) return (!directTray(task) || !rules.has(type)) && has(type, key, value)
+      if (!directOffered(task, type, flags)) return false
+      if (key === undefined) return true
+      const setting = direct[type].setting[key]
+      return Boolean(setting && (value === undefined || !setting.options || setting.options.some(option => String(option.value) === String(value))))
+    }, has, { definition })
+  }
+  const machineOfferIn = (task, flags) => {
+    const base = offerIn(task, flags)
+    const sources = directTray(task) ? ruleTypes(task) : new Map()
+    const shown = base.shown.filter((type) => !sources.has(type))
+    const folded = base.folded.filter((type) => !sources.has(type))
+    const needed = new Set(course.needed(at(task)))
+    for (const type of directCardsOf(task).keys()) {
+      if (directOffered(task, type, flags)) (needed.has(type) ? shown : folded).push(type)
+    }
+    return { shown, folded, types: [...shown, ...folded] }
   }
   // The truth circuits as the kernel's circuit screen reads them (gates.js gateCourse).
   const truthCircuits = gateCourse({ built: gateParts, builders: gateBuilders, offerIn, holdsIn, syncOwn: kept.sync })
@@ -586,11 +625,11 @@ export function* prepareLogicWorks(content) {
   // The machines: the parts the player built as packed parts, a task's rule parts registered for it.
   const machineBoards = boardView({
     board: MACHINE_BOARD,
-    parts: (task) => ({ ...machineParts, ...Object.fromEntries([...ruleTypes(task).keys()].filter((t) => !machineParts[t]).map((t) => [t, RULE_ENGINE])), ...builtOf(task) }),
+    parts: (task) => ({ ...machineParts, ...Object.fromEntries([...ruleTypes(task).keys()].filter((t) => !machineParts[t]).map((t) => [t, RULE_ENGINE])), ...directPartsOf(task).PARTS, ...builtOf(task) }),
     built: builtOf,
     builder: (type, task) => task?.built?.[type]?.opens().level ?? null,
-    defined: (task) => ({ of: (type) => taskPartsOf(task)[type] ?? defs[type] ?? null, defaults: (type) => (taskPartsOf(task)[type] ? {} : defaultsOf(type)), ops: OPS }),
-    offerIn,
+    defined: (task) => ({ of: (type) => directPartsOf(task).defs[type] ?? taskPartsOf(task)[type] ?? defs[type] ?? null, defaults: (type) => directPartsOf(task).PARTS[type]?.defaults ?? (taskPartsOf(task)[type] ? {} : defaultsOf(type)), ops: OPS }),
+    offerIn: machineOfferIn,
     holdsIn: machineHoldsIn,
     syncOwn: kept.sync,
     // A machine level that upgrades a part opens on the board that part runs; a preset stays locked in.

@@ -19,6 +19,7 @@ import { isPart, outputsOf } from "../core/board/model.js"
 import { cardOrder, numberAt } from "../core/board/card-order.js"
 import { phoneBlockBoard, withNewSlots } from "../core/board/blocks.js"
 import Glyph from "./board/Glyph.jsx"
+import BoardLabel, { BoardLabelContext } from './board/BoardLabel.jsx'
 import { isFixed } from "../core/board/presets.js"
 import { runTestGroups, TEST_WORDS } from 'kernel/view'
 
@@ -81,6 +82,7 @@ import "./training.css"
 //                         `defined`, when it registers parts of its own per task: engine/board-view.js)
 //   cards                 { type: { name, desc, icon, family } } its cards as the tray and boards show them (a fixed
 //                         card it leaves out is drawn as a source in the family 'given', or a sink in 'end')
+//   traySource?(task, type) original part of a task-local card, for tray grouping
 //   run(task, board, partOf, { traced, traceCount }) → { runs, fail, pass, score?, constraint? }   each run holds fail?, error?, ticks? | trace?, …
 //   (trace only the first `traceCount` tests; a test with a `label` is called by it)
 //   once?(task)           on a tick board, whether this task's tests each run the board once (a run then holds a trace,
@@ -159,7 +161,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, resultsHeight, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -365,6 +367,11 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
     if (defined?.of(type)) return definedItem(type, defined.of(type), { fresh }, allowed)
     return { type, label: cards[type].name, desc: cards[type].desc, icon: cards[type].icon, family: cards[type].family, fresh }
   }
+  const trayItemOf = (type) => {
+    const item = itemOf(type)
+    const source = traySource?.(level, type)
+    return source ? { ...item, traySource: source } : item
+  }
 
   const verdict = !sampled && ended && (reportedFailure(runOf) ?? (runOf.fail?.at?.tick !== undefined ? failureText(runOf.fail) : null))
   // A task may draw a shape in views of its own (its `views`): on its cards, in its results and its details.
@@ -407,7 +414,7 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
       if (!node || !isPart(at.parts, node)) return null
       const icon = at.parts.icon?.(node)
       const index = e.path?.length ? -1 : order.indexOf(node.id)
-      return <span className="step-card">{icon && <Glyph icon={icon} size={12} strokeWidth={2} />}{index >= 0 && <span className="step-card-num">{numberAt(index)}</span>}</span>
+      return <span className="step-card">{icon && <Glyph icon={icon} size={12} strokeWidth={2} />}{index >= 0 && <span className="step-card-num"><BoardLabel label={(game.formatCardNumber ?? numberAt)(index)} /></span>}</span>
     }
     return traceSteps(runOf.trace, {
       nameAt: (path, id) => {
@@ -475,12 +482,11 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
           parts={parts}
           trayParts={definedFaces ? undefined : { ...kind.wiring(level, course), valueView: () => 'value' }}
           defined={definedFaces}
-          items={palette.map(itemOf)}
-          folded={folded.map(itemOf)}
+          items={palette.map(trayItemOf)}
+          folded={folded.map(trayItemOf)}
           types={types}
           defaults={defaults}
           tileSettings={tileSettings}
-          resultsHeight={resultsHeight}
           view={view}
           card={{
             body,
@@ -545,12 +551,14 @@ export default function CircuitScreen({ screen, course, cards, run: runOn, show:
  *   says, portLabels?, words?, canvas?, sample?, table?, figure?, told?, readouts?   as CircuitScreen
  *                takes them
  */
-export function circuitScreen(config, { play, course, ...declared }) {
+export function circuitScreen(config, { play, course, labelRenderer, ...declared }) {
   const played = { run: play.runLevel, entries: play.entries, show: play.show ?? valueText, once: play.once }
   const judged = config.judge === 'once' || config.judge === 'outputs'
   const revealOnPass = config.checks === 'afterPass'
   return function Screen(screen) {
-    return <CircuitScreen screen={screen} course={course(screen.game)} defined={screen.game.defined} {...played} {...declared}
-      judged={judged} revealOnPass={revealOnPass} showResults={config.results !== 'hidden'} reportOnly={config.results === 'report'} outputTarget={config.output === 'target'} tileSettings={config.tileSettings !== 'hidden'} resultsHeight={config.resultsHeight} taskBoard={config.taskBoard} className={config.layout} />
+    return <BoardLabelContext.Provider value={labelRenderer ?? null}>
+      <CircuitScreen screen={screen} course={course(screen.game)} defined={screen.game.defined} {...played} {...declared}
+        judged={judged} revealOnPass={revealOnPass} showResults={config.results !== 'hidden'} reportOnly={config.results === 'report'} outputTarget={config.output === 'target'} tileSettings={config.tileSettings !== 'hidden'} taskBoard={config.taskBoard} className={config.layout} />
+    </BoardLabelContext.Provider>
   }
 }

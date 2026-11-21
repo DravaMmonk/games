@@ -27,7 +27,7 @@ export function declarationValues(level, rules, change, scope) {
       toggle: level.thing && { on: rule.binds.length > 0, label: T("任取 {binder}", {binder}), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },
       slots: rule.needs.map((need, j) => ({ text: whole(need) ? words(need) : null, bad: problems.some((p) => p.row === k && p.slot === j) })),
       end: rule.needs.length > 1 ? T('均为真。') : T('为真。'),
-      empty: T('无前提'),
+      empty: T('无需前提'),
       add: { label: T("给可推导情形 {k} 添加前提", {k: k + 1}), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
       drop: { label: T("删除可推导情形 {k}", {k: k + 1}), run: () => change(without(rules, k)) },
     })),

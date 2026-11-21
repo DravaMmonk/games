@@ -1,3 +1,4 @@
+import { Markup } from 'kernel/view'
 import { T as catalogText } from 'kernel/words'
 import { punctuation } from 'kernel'
 import { createElement, useEffect, useState } from 'react'
@@ -61,14 +62,18 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
     const kicker = (lang) => (chapter.kicker ? chapter.kicker[lang] ?? chapter.kicker : lang === 'zh' ? `第 ${chapter.number ?? chapter.id} 章` : `Chapter ${chapter.number ?? chapter.id}`)
     return { zh: `${kicker('zh')} · ${sideOf(chapter.title, 'zh')}`, en: `${kicker('en')} · ${sideOf(chapter.title, 'en')}` }
   }
+  const listItem = (part) => {
+    const level = levelOf(game, part)
+    return { id: part.key, title: part.name, lead: chip(part, 13), open: earned.has(part.key), unread: !seen.has(part.key), lock: level ? game.levelLabel(level) : null }
+  }
   const groups = game.chapters.map((chapter) => ({
     id: String(chapter.id),
     title: heading(chapter),
-    items: all.filter((part) => levelOf(game, part)?.chapter === chapter.id).sort((a, b) => order(a) - order(b)).map((part) => {
-      const level = levelOf(game, part)
-      return { id: part.key, title: part.name, lead: chip(part, 13), open: earned.has(part.key), unread: !seen.has(part.key), lock: level ? game.levelLabel(level) : null }
-    }),
+    items: all.filter((part) => levelOf(game, part)?.chapter === chapter.id).sort((a, b) => order(a) - order(b)).map(listItem),
   })).filter((group) => group.items.length)
+  const placed = new Set(groups.flatMap(({ items }) => items.map(({ id }) => id)))
+  const unplaced = all.filter(({ key }) => !placed.has(key))
+  if (unplaced.length) groups.push({ id: 'unplaced', items: unplaced.map(listItem) })
 
   const article = (key, back) => {
     const part = all.find((p) => p.key === key)
@@ -84,8 +89,8 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
       <article className="wiki-article parts-article" key={key} data-family={part.family}>
         {back}
         {level && <span className="panel-label">{tr("第 {value} 关 · {value2}", {value: game.levelLabel(level), value2: L(level.title)})}</span>}
-        <h2>{chip(part, 18)}{L(part.name)}</h2>
-        {part.desc && <p>{String(L(part.desc))}</p>}
+        <h2>{chip(part, 18)}<Markup text={part.name} /></h2>
+        {part.desc && <p><Markup text={part.desc} /></p>}
         {rules.length > 0 && (
           <section className="parts-rules">
             <h3>{tr("给出的规则")}</h3>

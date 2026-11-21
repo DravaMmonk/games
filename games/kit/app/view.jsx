@@ -42,7 +42,7 @@ export { checkAction } from '../shell/useCheckOnce.js'
 export { useCheckOnce } from '../shell/useCheckOnce.js'
 export { default as InteractiveDrawing } from '../shell/InteractiveDrawing.jsx'
 
-export { SettingsContext } from '../shell/useSetting.js'
+export { SettingsContext, usePlainProse } from '../shell/useSetting.js'
 export { default as Results } from '../views/Results.jsx'
 export { ViewScope } from '../views/choice.js'
 export { valueKey } from '../views/picks.js'

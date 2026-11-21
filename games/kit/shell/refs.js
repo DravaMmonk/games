@@ -29,14 +29,20 @@ function registerReference(kind, { icon = '', action = name => name } = {}) {
           hooks?.open(kind, this.getAttribute('to'))
         })
       }
+      static observedAttributes = ['to']
+      attributeChangedCallback() {
+        if (this.isConnected) this.render()
+      }
       connectedCallback() {
         this.render()
       }
       render() {
-        const { label = '', title = this.getAttribute('to') } = hooks?.name(kind, this.getAttribute('to')) ?? {}
+        const ref = hooks?.name(kind, this.getAttribute('to'))
+        const label = ref?.label ?? ''
+        const title = ref?.title || tr('引用不可用')
         const name = `${label} ${title}`.trim()
         const { icon, action } = displays.get(kind)
-        this.innerHTML = `<button type="button" class="ref-chip is-${kind}" title="${escape((GO[kind] ?? action)(name))}">${ICONS[kind] ?? icon}${label ? `<b>${escape(label)}</b>` : ''}<span>${escape(title)}</span></button>`
+        this.innerHTML = `<button type="button" class="ref-chip is-${kind}" title="${escape(ref?.title ? (GO[kind] ?? action)(name) : title)}"${ref?.title ? '' : ' disabled'}>${ICONS[kind] ?? icon}${label ? `<b>${escape(label)}</b>` : ''}<span>${escape(title)}</span></button>`
       }
     })
   }

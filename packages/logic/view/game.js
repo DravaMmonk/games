@@ -1,5 +1,8 @@
 import { T as catalogText } from 'kernel/words'
 import { sentenceScreen } from 'sentence/view'
+import { NotationText } from 'notation/view'
+import { notationNumber, notationPlain } from 'notation'
+import { L } from 'kernel/view'
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.js'
@@ -113,6 +116,9 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
   }))
   const game = defineGame({
     id: content.id,
+    renderProse: NotationText,
+    plainProse: (value) => notationPlain(L(value)),
+    formatCardNumber: notationNumber,
     course: logic.course,
     glossary: content.glossary,
     title: content.title,
@@ -128,7 +134,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
       proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
     }, {
       'logic/proof': { icon: Workflow, label: catalogText("证明") },
-      'logic/machine': { icon: Cog, label: catalogText("证明助手") },
+      'logic/machine': { icon: Cog, label: catalogText("证明器") },
       'logic/truth': { icon: Grid2x2Check, label: catalogText("真值表") },
       'logic/gates': { icon: Cpu, label: catalogText("真值电路") },
       'logic/iso': { icon: FileSignature, label: catalogText("规则板") },

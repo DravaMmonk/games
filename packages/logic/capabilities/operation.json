@@ -587,6 +587,34 @@
         "fields": {}
       }
     },
+    "directBackward": {
+      "about": "@capability.operation.items.directBackward.about",
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "directRewrite": {
+      "about": "@capability.operation.items.directRewrite.about",
+      "args": [
+        {
+          "name": "in",
+          "type": "logic/machine-value"
+        }
+      ],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
     "defer": {
       "about": "@capability.operation.items.defer.about",
       "args": [

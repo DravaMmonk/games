@@ -1,3 +1,4 @@
+import { Markup } from './Markup.jsx'
 import { playId } from '../engine/plays.js'
 import { Fragment, createElement, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { ArrowLeft, BookOpen, PanelLeft } from 'lucide-react'
@@ -14,6 +15,7 @@ import { firstTask as openTask, nextRequiredTask } from './progress.js'
 import { playedTask, taskContext } from './played-task.js'
 import { addSlot, dropSlot, openSlot, renameSlot, slotsOf } from './slots.js'
 import { SlotsContext } from './slots-context.js'
+import { ResultLayoutContext } from './Workbench.jsx'
 import { isTextField, playFrame } from './viewport.js'
 import { SheetHost } from './Sheet.jsx'
 import { EditContext, same } from './edit.js'
@@ -222,19 +224,31 @@ function GameShellInstance({ game, store, author = null }) {
   const [goTo, setGoTo] = useState(null)
   const [sheetAt, setSheetAt] = useState(null) // { id } the box or the encyclopedia opens at
   const [locked, setLocked] = useState(null) // { title, at } an object the player cannot open yet
+  const plain = game.plainProse ?? L
   const reference = extension.reference
-  const refName = (kind, id) => kind === 'level'
-    ? game.byId[id] && { label: game.levelLabel(game.byId[id]), title: L(game.byId[id].title) }
-    : reference(kind, id)
+  const refName = (kind, id) => {
+    if (kind !== 'level') return reference(kind, id)
+    const target = game.byId[id]
+    if (target) return { label: game.levelLabel(target), title: target.title }
+    const title = game.libraryLevelTitles?.get(id)
+    return title ? { title } : null
+  }
   const refOpen = (kind, id, task) => {
-    if (kind === 'level') return game.byId[id] && setGoTo({ id, task })
+    if (kind === 'level') {
+      if (game.byId[id]) return setGoTo({ id, task })
+      if (game.libraryLevelTitles?.has(id)) return author?.openLevel?.(id, task)
+      return
+    }
     const value = reference(kind, id)
     if (!value) return
     if (!value.open) return setLocked({ title: value.title, at: value.at })
     setSheetAt({ id })
     setSheet(value.panel)
   }
-  useEffect(() => setRefs({ name: refName, open: refOpen, displays: [...game.pluginKernel?.tables.display.values() ?? []] }))
+  useEffect(() => setRefs({ name: (kind, id) => {
+    const ref = refName(kind, id)
+    return ref && { ...ref, title: plain(ref.title) }
+  }, open: refOpen, displays: [...game.pluginKernel?.tables.display.values() ?? []] }))
   const target = goTo && game.byId[goTo.id]
   const atTarget = target?.id === level?.id && (goTo?.task === undefined || goTo.task === taskAt)
   const go = () => {
@@ -279,7 +293,8 @@ function GameShellInstance({ game, store, author = null }) {
   const pageMarks = pages.map((_, k) => (k < own.length ? { at: `intro[${k}]`, scope: 'level' } : { at: `intro[${k - own.length}]`, scope: 'task' }))
   const introKey = level && (taskAt === 0 ? level.id : key)
   const intro = pages.length > 0
-  const kind = level && game.kinds[playId(played)]
+  const play = level && playId(played)
+  const kind = play && game.kinds[play]
 
   // The studio's editor: what is picked, and every pick or + said with the level and the task played.
   const authoring = author?.edit ?? null
@@ -330,9 +345,9 @@ function GameShellInstance({ game, store, author = null }) {
           {level && (
             <span className="game-level-title">
               <b>{game.levelLabel(level)}</b>
-              <span {...titleMark}>{L(level.title)}</span>
+              <span {...titleMark}><Markup text={level.title} /></span>
               {game.kinds[level.kind]?.icon && <i className="game-level-kind" role="img" aria-label={L(game.kinds[level.kind].label)} title={L(game.kinds[level.kind].label)}>{createElement(game.kinds[level.kind].icon, { size: 14 })}</i>}
-              {chapter && <small>{L(chapter.title)}</small>}
+              {chapter && <small><Markup text={chapter.title} /></small>}
             </span>
           )}
           {area && <span className="game-level-title bench-title"><span>{area.title}</span></span>}
@@ -373,9 +388,11 @@ function GameShellInstance({ game, store, author = null }) {
               />
             )}
             <EditContext.Provider value={edit}>
-              {kind
-                ? <SlotsContext.Provider value={slotsCtl}>{createElement(kind.Screen, { ...task.screen, key: `${level.id}#${runAt}#${game.stamp ?? ''}`, level: played, solve, fail, ...run, theme, phone, ...extension.taskProps })}</SlotsContext.Provider>
-                : <div className="board-loading">{tr('这类关卡尚在制作中。')}</div>}
+              <ResultLayoutContext.Provider value={play && `${store.key}:${play}`}>
+                {kind
+                  ? <SlotsContext.Provider value={slotsCtl}>{createElement(kind.Screen, { ...task.screen, key: `${level.id}#${runAt}#${game.stamp ?? ''}`, level: played, solve, fail, ...run, theme, phone, ...extension.taskProps })}</SlotsContext.Provider>
+                  : <div className="board-loading">{tr('这类关卡尚在制作中。')}</div>}
+              </ResultLayoutContext.Provider>
             </EditContext.Provider>
           </div>
         )}

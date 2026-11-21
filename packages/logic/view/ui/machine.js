@@ -6,7 +6,7 @@
 // clause sets, rules) read as lines of text.
 import { T } from 'kernel/words'
 import { withPreset } from 'circuit'
-import { runMachine } from '../../core/machine.js'
+import { directCardsOf, runMachine } from '../../core/machine.js'
 import { presetFor } from '../../core/work.js'
 import { didText, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
 import MachineReport from './MachineReport.jsx'
@@ -14,6 +14,7 @@ import { typesetMachine } from './Formula.jsx'
 
 export const machineScreen = {
   course: (game) => game.logic.machineBoards,
+  traySource: (task, type) => directCardsOf(task).get(type)?.source,
   play: { ...machineReadout, runLevel: (task, board, _parts, options) => runMachine(task, board, { traced: true, ...options }) },
   context: (task) => ({ task, text: machineTextOf(task), term: machineTermOf(task) }),
   // A preset (a level's locked cards) stays on the board whatever is saved.

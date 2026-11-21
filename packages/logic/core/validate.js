@@ -16,7 +16,7 @@ import { lemmaGives, runProof, startProof } from './proof.js'
 import { paramsOf } from 'circuit'
 import { scriptJudge, methodsOf, sentencesOf } from './script.js'
 import { lettersOf, tautology } from './truth.js'
-import { inputsOfLevel, rulePartsOf, runMachine } from './machine.js'
+import { directCardsOf, inputsOfLevel, rulePartsOf, runMachine } from './machine.js'
 import { SETTING_KINDS, choiceKey, choicesOf } from './choices.js'
 import { chipsFrom, chipsOf, missingChips } from './formulaTree.js'
 import { checkGates, rowsFor, startGates } from './gates.js'
@@ -157,7 +157,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     out.push(...memo(level.id, `machine ${level.task ?? 0}`, () => {
       const out = []
       // Every part of the answer is one its tray holds, a rule part one its books have.
-      const available = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), 'in', 'out'])
+      const available = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), ...directCardsOf(level).keys(), 'in', 'out'])
       const own = builder.get(level.id)
       if (level.task > 0 && own) available.add(own)
       checkSolutionParts(out, level, available)

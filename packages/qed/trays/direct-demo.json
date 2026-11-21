@@ -1,0 +1,8 @@
+{
+  "title": "@tray.direct-demo.title",
+  "desc": "@tray.direct-demo.desc",
+  "includeUnlisted": true,
+  "values": ["logic/assumption", "impI", "dneg"],
+  "menus": [],
+  "workshop": false
+}

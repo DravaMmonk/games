@@ -19,6 +19,7 @@ test("a step's marks: a rule backwards, a goal closed", () => {
   assert.equal(texOf('⊢ ⤓'), '\\vdash \\underline{\\downarrow}')
   assert.equal(texOf('↻'), '\\circlearrowright')
   assert.equal(texOf('↪'), '\\hookrightarrow')
+  assert.equal(texOf('¬¬?A ⟼ ?A'), '\\lnot \\lnot ?A\\longmapsto ?A')
 })
 
 test("TeX's own characters inside words are escaped", () => {

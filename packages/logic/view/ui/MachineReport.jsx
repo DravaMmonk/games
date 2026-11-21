@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Info } from 'lucide-react'
 import { L, Popover } from 'kernel/view'
 import { T, tr } from 'kernel/words'
+import { NotationLabel } from 'notation/view'
+import { mark } from 'notation'
 import { inputsOf, inputsOfLevel } from '../../core/machine.js'
 import { goalLines, ruleLines, stepExplained } from '../../core/circuit-readouts.js'
 import { Formula, MarkedFormula } from './Formula.jsx'
@@ -65,8 +67,8 @@ export default function MachineReport({ steps, at, run, task, test, show }) {
           return [
             <li key={`s${k}`} className={`mr-step ${k === at ? 'is-on' : ''} ${broken || refused ? 'is-fail' : ''} ${refused ? 'is-refused' : ''}`}>
               <span className="mr-num">{n + 1}</span>
-              <span className="mr-name">{s.mark}{L(s.label)}</span>
-              {refused ? <span className="mr-wrong" aria-label={L(refused)}>✗</span> : s.detail && <Formula text={s.detail} className="mr-note" />}
+              <span className="mr-name">{s.mark}<NotationLabel label={L(s.label)} /></span>
+              {refused ? <span className="mr-wrong" aria-label={L(refused)}><NotationLabel label={mark('cross')} /></span> : s.detail && <Formula text={s.detail} className="mr-note" />}
               {junction && <span className="mr-note is-prose">{L(explained)}</span>}
               {explained && !junction && (
                 <button type="button" className="mr-info" aria-label={tr('这一步做了什么')} aria-expanded={told?.k === k} onClick={(event) => setTold(told?.k === k ? null : { k, anchor: event.currentTarget })}>

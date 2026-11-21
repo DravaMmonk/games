@@ -1,0 +1,9 @@
+{
+  "target": "notation",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "3c5390a567a117ddd96bd4574201b782818d204716429232e7218426cbe19afc"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "version": "0.0.0",
+  "kernel": "^0.0.0",
+  "uses": {},
+  "title": "@package.title",
+  "desc": "@package.desc",
+  "kind": "lib",
+  "type": "module"
+}

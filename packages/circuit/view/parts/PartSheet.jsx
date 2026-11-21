@@ -1,3 +1,4 @@
+import { Markup } from 'kernel/view'
 import { Boxes, Cpu, LogIn, LogOut, Plus, ShieldCheck, SlidersHorizontal, SquareFunction, Workflow } from 'lucide-react'
 import { L } from "kernel/view"
 import { T, tr } from 'kernel/words'
@@ -85,7 +86,7 @@ export function Chips({ def, edit, keys, name, entries = (key) => written(def, k
 const written = (def, key) => (Array.isArray(def[key]) ? def[key].map((item, k) => [k, item]) : Object.entries(def[key] ?? {}))
   .map(([k, item]) => ({ key: k, item, path: [key, k] }))
 
-const portName = (p) => (p.label ? L(p.label) : p.name)
+const portName = (p) => (p.label ? <Markup text={p.label} /> : p.name)
 const settingName = (s) => (s.label ? L(s.label) : s.key)
 const typeName = (type) => String(type ?? '').split('/').at(-1)
 const brought = () => tr('来自运算')
@@ -135,7 +136,7 @@ export function Named({ def, edit }) {
         {Icon && <i className="family-chip" data-family={def.family} {...mark([def.icon ? 'icon' : 'family'])}><Icon size={13} aria-hidden="true" /></i>}
         <h3 {...mark(['name'])}>{L(def.name)}</h3>
       </header>
-      <p className="pf-desc" {...mark(['desc'])}>{L(def.desc)}</p>
+      <p className="pf-desc" {...mark(['desc'])}><Markup text={def.desc} /></p>
     </>
   )
 }

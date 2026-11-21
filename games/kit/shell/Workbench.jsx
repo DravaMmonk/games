@@ -1,8 +1,6 @@
 import { EyeOff } from 'lucide-react'
-import { useLayoutEffect, useRef } from 'react'
+import { createContext, useContext, useLayoutEffect, useRef } from 'react'
 import { L, tr } from './i18n.js'
-
-
 import { usePointerSession } from '../views/usePointerSession.js'
 
 
@@ -17,25 +15,46 @@ import { usePointerSession } from '../views/usePointerSession.js'
  *              it) and, in a narrow column at the bottom right, the run bar (dock)
  *
  * `results` left out: the level has no results pane (the run bar alone, at the right); null: the pane is there, empty
- * until there is something to show. The line along the strip's top drags it taller or shorter, and the height is
- * remembered for every game. `resultsHeight`: the share of the screen the strip starts at with a results pane (a play's
- * own; else 0.35).
+ * until there is something to show. The strip fits its contents up to the automatic limit. Dragging its top edge
+ * sets a height remembered for every game, and double-clicking restores automatic sizing.
  */
-export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, dock, resultsHeight }) {
+export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, dock }) {
   const own = useRef(null)
   const rootRef = given ?? own
   const pane = results !== undefined
+  const hasHeader = Boolean(tests || status)
+  const hasDock = Boolean(dock)
+  const hasStrip = pane || hasHeader || hasDock
+  const stripRef = useRef(null)
+  useLayoutEffect(() => {
+    if (!hasStrip) return
+    const strip = stripRef.current
+    const body = strip.querySelector('.wb-strip-body')
+    const head = strip.querySelector('.wb-strip-head')
+    const dock = strip.querySelector('.run-foot')
+    const updateMinimum = () => {
+      const pad = getComputedStyle(body)
+      const controls = (head?.getBoundingClientRect().height ?? 0) + (dock?.getBoundingClientRect().height ?? 0)
+      const trim = parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom) + parseFloat(getComputedStyle(strip).borderTopWidth)
+      strip.style.setProperty('--world-min', `${controls + trim}px`)
+    }
+    updateMinimum()
+    const observer = new ResizeObserver(updateMinimum)
+    if (head) observer.observe(head)
+    if (dock) observer.observe(dock)
+    return () => observer.disconnect()
+  }, [hasStrip, hasHeader, hasDock])
   return (
-    <div ref={rootRef} className={`level ${className}`} style={resultsHeight ? { '--world-start-share': `${resultsHeight * 100}dvh` } : undefined}>
+    <div ref={rootRef} className={`level ${className}`}>
       <aside className="brief">{taskNav}{brief}</aside>
       <div className={`stage-pane ${scroll ? 'is-scroll' : 'is-board'}`}>
         {tools && <div className="wb-toolbar" aria-label={tr("工具")}>{tools}</div>}
         <div className="wb-stage">{stage}</div>
       </div>
-      {(pane || dock || tests || status) && (
-        <section className="wb-strip">
-          {pane && <WorldHandle rootRef={rootRef} />}
-          {(tests || status) && (
+      {hasStrip && (
+        <section ref={stripRef} className="wb-strip">
+          {pane && <WorldHandle />}
+          {hasHeader && (
             <header className="wb-strip-head">
               <div className="wb-tests">{tests}</div>
               {status}
@@ -78,72 +97,60 @@ export function TestStatus({ states, hidden }) {
   )
 }
 
-const WORLD_KEY = 'kit.world-h'
+export const ResultLayoutContext = createContext(null)
 
-// The strip fits what it holds until the player drags its edge; that height is kept (for every level and game), and a
-// double click on the edge goes back to fitting.
-const setHeight = (el, h) => {
-  el.style.setProperty('--world-h', `${h}px`)
-  el.style.setProperty('--world-max', 'none')
-  el.style.setProperty('--world-start', '0px')
-}
+// A manual height applies to its own play and workspace. Double-clicking restores automatic sizing.
+const setShare = (strip, share) => strip.style.setProperty('--world-h', `${share}cqh`)
 
-function WorldHandle({ rootRef }) {
+function WorldHandle() {
   const { track } = usePointerSession()
+  const handle = useRef(null)
+  const scope = useContext(ResultLayoutContext)
+  const storageKey = scope && `kit.results-share:${scope}`
   useLayoutEffect(() => {
-    let h = null
-    try { h = Number(localStorage.getItem(WORLD_KEY)) || null } catch { /* storage may be off */ }
-    if (h && rootRef.current) setHeight(rootRef.current, h)
-  }, [rootRef])
-  // The least a drag leaves: the tests' header and the run column, so the results pane comes down level with the
-  // buttons and no shorter.
-  const leastOf = (el) => {
-    const strip = el.querySelector('.wb-strip')
-    const body = strip.querySelector('.wb-strip-body')
-    const pad = getComputedStyle(body)
-    const head = strip.querySelector('.wb-strip-head')?.getBoundingClientRect().height ?? 0
-    const dock = body.querySelector('.run-foot')?.getBoundingClientRect().height ?? 0
-    return Math.ceil(head + parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom) + dock + parseFloat(getComputedStyle(strip).borderTopWidth))
+    const strip = handle.current.parentElement
+    let share = 0
+    try { if (storageKey) share = Number(localStorage.getItem(storageKey)) } catch { /* storage may be off */ }
+    if (Number.isFinite(share) && share > 0) setShare(strip, share)
+    return () => strip.style.removeProperty('--world-h')
+  }, [storageKey])
+  const size = (height) => {
+    const strip = handle.current.parentElement
+    const workspace = strip.parentElement.getBoundingClientRect().height
+    if (!workspace) return 0
+    setShare(strip, Math.max(0, height / workspace * 100))
+    const actual = strip.getBoundingClientRect().height / workspace * 100
+    setShare(strip, actual)
+    return actual
   }
-  const size = (h) => {
-    const el = rootRef.current
-    if (!el) return null
-    const top = el.getBoundingClientRect().top
-    const least = leastOf(el)
-    const next = Math.round(Math.min(Math.max(h, least), (window.innerHeight - top) * 0.78))
-    setHeight(el, next)
-    return next
-  }
-  const keep = (h) => {
-    try { if (h) localStorage.setItem(WORLD_KEY, String(h)) } catch { /* storage may be off */ }
+  const keep = (share) => {
+    try { if (storageKey && share) localStorage.setItem(storageKey, String(share)) } catch { /* storage may be off */ }
   }
   const down = (event) => {
     if (event.button > 0 || !event.isPrimary) return
     event.preventDefault()
-    const el = rootRef.current
-    const bottom = el.getBoundingClientRect().bottom
-    const original = ['--world-h', '--world-max', '--world-start'].map((key) => [key, el.style.getPropertyValue(key)])
+    const strip = handle.current.parentElement
+    const bottom = strip.getBoundingClientRect().bottom
+    const original = strip.style.getPropertyValue('--world-h')
     let last = null
     track(event, {
       move(next) { last = size(bottom - next.clientY) },
       finish(commit) {
         if (commit) keep(last)
-        else for (const [key, value] of original) el.style.setProperty(key, value)
+        else strip.style.setProperty('--world-h', original)
       },
       escape: true,
     })
   }
   const fit = () => {
-    rootRef.current?.style.removeProperty('--world-h')
-    rootRef.current?.style.removeProperty('--world-max')
-    rootRef.current?.style.removeProperty('--world-start')
-    try { localStorage.removeItem(WORLD_KEY) } catch { /* storage may be off */ }
+    handle.current.parentElement.style.removeProperty('--world-h')
+    try { if (storageKey) localStorage.removeItem(storageKey) } catch { /* storage may be off */ }
   }
   const key = (event) => {
     const step = event.key === 'ArrowUp' ? 40 : event.key === 'ArrowDown' ? -40 : 0
     if (!step) return
     event.preventDefault()
-    keep(size(rootRef.current.querySelector('.wb-strip').getBoundingClientRect().height + step))
+    keep(size(handle.current.parentElement.getBoundingClientRect().height + step))
   }
-  return <div className="wb-resize" role="separator" aria-orientation="horizontal" aria-label={tr('拖动调整结果区高度，双击恢复自动高度')} title={tr('拖动调整高度 · 双击恢复自动高度')} tabIndex={0} onPointerDown={down} onDoubleClick={fit} onKeyDown={key} />
+  return <div ref={handle} className="wb-resize" role="separator" aria-orientation="horizontal" aria-label={tr('拖动调整结果区高度，双击恢复自动高度')} title={tr('拖动调整高度 · 双击恢复自动高度')} tabIndex={0} onPointerDown={down} onDoubleClick={fit} onKeyDown={key} />
 }

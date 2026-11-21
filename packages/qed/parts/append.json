@@ -40,27 +40,27 @@
   "inputs": [
     {
       "name": "first",
-      "label": "①"
+      "label": "\\mark{circle-1}"
     },
     {
       "name": "second",
-      "label": "②"
+      "label": "\\mark{circle-2}"
     },
     {
       "name": "third",
-      "label": "③"
+      "label": "\\mark{circle-3}"
     },
     {
       "name": "fourth",
-      "label": "④"
+      "label": "\\mark{circle-4}"
     },
     {
       "name": "fifth",
-      "label": "⑤"
+      "label": "\\mark{circle-5}"
     },
     {
       "name": "sixth",
-      "label": "⑥"
+      "label": "\\mark{circle-6}"
     }
   ]
 }

@@ -4,6 +4,7 @@ import { Markup } from './Markup.jsx'
 import { readShow } from '../engine/views.js'
 import Show from '../views/Show.jsx'
 import { useOverlay } from './useOverlay.js'
+import { usePlainProse } from './useSetting.js'
 
 // Content text: bilingual pairs or a list of them; blank lines separate explanation and formula paragraphs.
 function Paragraphs({ text }) {
@@ -15,11 +16,12 @@ function Paragraphs({ text }) {
  *  overlay (a reference clicked inside one). */
 export function Dialog({ title, lines, actions, intro, top, onClose }) {
   const overlay = useOverlay(onClose)
+  const plain = usePlainProse()
   return (
     <div ref={overlay} className={`dialog-scrim ${top ? 'is-top' : ''}`}>
-      <div className={`dialog ${intro ? 'is-intro' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
-        <h2>{title}</h2>
-        {lines.map((line, index) => <p key={index} style={{ '--line': index }}>{line}</p>)}
+      <div className={`dialog ${intro ? 'is-intro' : ''}`} role="dialog" aria-modal="true" aria-label={plain(title)}>
+        <h2><Markup text={title} /></h2>
+        {lines.map((line, index) => <p key={index} style={{ '--line': index }}>{typeof line === 'string' ? <Markup text={line} /> : line}</p>)}
         <div className="dialog-actions">
           {actions.map(([label, action], index) => (
             <button key={label} className={index === actions.length - 1 ? 'is-primary' : ''} onClick={action} autoFocus={index === actions.length - 1}>{label}</button>
@@ -37,12 +39,12 @@ export function TaskDoneDialog({ game, level, task, index, next, revisit, onStay
     <div ref={overlay} className="dialog-scrim">
       <div className="dialog is-solved" role="dialog" aria-modal="true" aria-label={tr('任务完成')}>
         <div className="solved-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><path d="M12 20.5l5.5 5.5L28.5 14" /></svg></div>
-        <h2>{game.levelLabel(level)} {L(level.title)} · {tr("任务 {index} 完成", {index: index + 1})}</h2>
+        <h2>{game.levelLabel(level)} <Markup text={level.title} /> · {tr("任务 {index} 完成", {index: index + 1})}</h2>
         <Paragraphs text={task.after} />
         {revisit && <p>{tr('本关还有未完成的必做任务，完成后才能通过整关。')}</p>}
         <div className="dialog-actions">
           <button onClick={onStay}>{tr('留在这里')}</button>
-          <button className="is-primary" onClick={onNext} autoFocus>{!next ? tr('返回关卡地图') : revisit ? (next.step ? tr("返回未完成任务：{value}", {value: L(next.step)}) : tr('返回未完成任务')) : (next.step ? tr("下一个任务：{value}", {value: L(next.step)}) : tr('下一个任务'))}</button>
+          <button className="is-primary" onClick={onNext} autoFocus><Markup text={!next ? tr('返回关卡地图') : revisit ? (next.step ? tr("返回未完成任务：{value}", {value: L(next.step)}) : tr('返回未完成任务')) : (next.step ? tr("下一个任务：{value}", {value: L(next.step)}) : tr('下一个任务'))} /></button>
         </div>
       </div>
     </div>
@@ -63,7 +65,7 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
     <div ref={overlay} className="dialog-scrim">
       <div className="dialog is-solved" role="dialog" aria-modal="true" aria-label={tr("通过")}>
         <div className="solved-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><path d="M12 20.5l5.5 5.5L28.5 14" /></svg></div>
-        <h2>{tr("通过")} · {game.levelLabel(level)} {L(level.title)}</h2>
+        <h2>{tr("通过")} · {game.levelLabel(level)} <Markup text={level.title} /></h2>
         {level.afterTitle && <h3 className="dialog-title"><Markup text={level.afterTitle} /></h3>}
         <Paragraphs text={level.after} />
         {level.afterShow && <Show {...readShow(level.afterShow)} scene="figure" />}

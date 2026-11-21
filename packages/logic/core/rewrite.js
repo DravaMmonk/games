@@ -219,6 +219,24 @@ function defRule(text, k) {
 }
 
 const books = new WeakMap()
+/** The rewrite directions supported by a lemma's available converse forms. */
+export function lemmaRewrites(type, lemma, held) {
+  if (!lemma.forms) return []
+  const available = held ?? lemma.forms.map((form) => form.key)
+  const rules = lemmaRules(type, lemma).filter((rule) => rule.premises.length === 1 && available.includes(rule.key.split('.')[1] ?? lemma.forms[0].key))
+  const sides = rules.map((rule) => [plain(rule.premises[0].show), plain(rule.conclusion)])
+  return rules.filter((_, k) => sides.some(([premise, conclusion]) => premise === sides[k][1] && conclusion === sides[k][0]))
+    .map((rule) => ({ key: rule.key, name: rule.name, lhs: rule.premises[0].show, rhs: rule.conclusion, conditions: [], group: 'law' }))
+}
+
+/** Rewrites supplied by a task's definitions, proved equations, and current givens. */
+export function localRewrites(level) {
+  const defs = (level.defs ?? []).map(defRule)
+  const facts = Object.entries(level.facts ?? {}).filter(([type]) => !level.proven || level.proven.includes(type)).map(([type, f]) => [type, f, factRewrite(parseS(f.statement))]).filter(([, , r]) => r)
+    .map(([type, f, r]) => ({ key: type, name: f.name, ...r, group: 'fact' }))
+  const hyp = { key: 'hyp', name: T('已知里的等式'), lhs: null, rhs: null, conditions: [], group: 'hyp' }
+  return [...facts, ...defs, hyp]
+}
 /**
  * A level's rewrite rules by key: each shape of a lemma whose converse shape the level holds too (keyed as the rule
  * book keys it, machine.js), the level's definitions, and 'hyp' (the goal's hypotheses).
@@ -226,18 +244,9 @@ const books = new WeakMap()
 export function rewriteBookOf(level) {
   if (!books.has(level)) {
     const has = (p) => !level.holds || level.holds.includes(p)
-    const laws = Object.entries(level.lemmas ?? {}).filter(([type, l]) => l.forms && has(type)).flatMap(([type, l]) => {
-      const held = level.forms?.[type] ?? l.forms.map((f) => f.key)
-      const rules = lemmaRules(type, l).filter((r) => r.premises.length === 1 && held.includes(r.key.split('.')[1] ?? l.forms[0].key))
-      const sides = rules.map((r) => [plain(r.premises[0].show), plain(r.conclusion)])
-      return rules.filter((_, k) => sides.some(([p, c]) => p === sides[k][1] && c === sides[k][0]))
-        .map((r) => ({ key: r.key, name: r.name, lhs: r.premises[0].show, rhs: r.conclusion, conditions: [], group: 'law' }))
-    })
-    const defs = (level.defs ?? []).map(defRule)
-    const facts = Object.entries(level.facts ?? {}).filter(([type]) => !level.proven || level.proven.includes(type)).map(([type, f]) => [type, f, factRewrite(parseS(f.statement))]).filter(([, , r]) => r)
-      .map(([type, f, r]) => ({ key: type, name: f.name, ...r, group: 'fact' }))
-    const hyp = { key: 'hyp', name: T('已知里的等式'), lhs: null, rhs: null, conditions: [], group: 'hyp' }
-    books.set(level, Object.fromEntries([...laws, ...facts, ...defs, hyp].map((r) => [r.key, r])))
+    const laws = Object.entries(level.lemmas ?? {}).filter(([type]) => has(type))
+      .flatMap(([type, lemma]) => lemmaRewrites(type, lemma, level.forms?.[type]))
+    books.set(level, Object.fromEntries([...laws, ...localRewrites(level)].map((r) => [r.key, r])))
   }
   return books.get(level)
 }

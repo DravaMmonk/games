@@ -1,0 +1,13 @@
+{
+  "extends": "circuit/tray",
+  "fields": {
+    "directRuleCards": {
+      "type": "bool",
+      "optional": true
+    }
+  },
+  "declares": "package",
+  "overrides": {
+    "package": ["*"]
+  }
+}

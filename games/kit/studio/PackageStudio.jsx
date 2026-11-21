@@ -547,6 +547,11 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const onPage = (m) => {
     if (m.type === 'take') return onTake(m)
     if (m.type === 'task-go') return onTaskGo(m)
+    if (m.type === 'open-level' && levelValue(m.level)) {
+      select({ level: m.level })
+      if (m.task !== undefined) setPageTask(m.task)
+      return
+    }
     if (m.file) return onFilePage(m)
     if (m.type === 'start') return onStart(m)
     if (editorRoute(m)) return onObjectPage(m)

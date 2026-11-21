@@ -93,7 +93,7 @@
 
 ### 2.8 一关手里有什么
 
-**托盘与进度。** `circuit/tray` 在 `trays/<名>.json` 声明元件、顺序和二级菜单。关卡或任务选一个 `tray`。`circuit` 默认直接提供托盘里的元件。启用 `progress` 时，托盘默认只显示其成员中已持有的元件。旧课程里还要显示已持有的未分组元件时，托盘声明 `includeUnlisted: true`，这些元件排在声明成员之后。参考解用到的元件和 `featuredParts` 进入主区，其余折进「更多」。
+**托盘与进度。** `circuit/tray` 在 `trays/<名>.json` 声明元件、顺序和二级菜单。关卡或任务选一个 `tray`。`circuit` 默认直接提供托盘里的元件。启用 `progress` 时，托盘默认只显示其成员中已持有的元件。旧课程里还要显示已持有的未分组元件时，托盘声明 `includeUnlisted: true`，这些元件排在声明成员之后。参考解用到的元件和 `featuredParts` 进入主区，其余折进「更多」。包的单关试玩按关卡或任务声明的托盘提供元件，元件变体按其来源元件判断是否属于托盘；没有声明托盘时提供全部元件。
 
 - `progress` 声明 `adds`、`local`、`gives`、`withholds`、`opens` 和 `awards`，从先修关系与任务通过记录推导可用元件。未安装该包时，使用这些字段、元件的 `stages` 或托盘的 `workshop` 会报错。
 - `adds` 带来元件，`local` 将它留在引入处。`gives` 给当前任务加元件或阶段，`withholds` 收起元件或限制阶段。`opens` 在任务开始时开放阶段，`awards` 在任务通过后开放阶段。关卡的 `awards` 在整关通过时生效。

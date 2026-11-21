@@ -1,3 +1,5 @@
+import { Markup } from './Markup.jsx'
+import { usePlainProse } from './useSetting.js'
 import { Text } from './Layout.jsx'
 import { GAMES } from 'virtual:game-catalog'
 import { mapRows } from '../course.js'
@@ -86,12 +88,12 @@ function LevelButton({ game, level, style, solved, all, best, current, next, nee
   const score = won && best(level.id) && game.bestLabel?.(best(level.id))
   const here = level.id === current
   return (
-    <button data-level={level.id} style={style} title={L(level.title)} aria-current={here ? 'page' : undefined} className={`map-node ${state} ${game.core(level) ? '' : 'is-minor'} ${level.optional ? 'is-optional' : ''} ${next?.id === level.id ? 'is-next' : ''} ${here ? 'is-here' : ''} ${needed?.ids.has(level.id) ? 'is-needed' : ''} ${needed?.asked === level.id ? 'is-asked' : ''}`} aria-disabled={!open} onClick={() => (open ? onOpen(level.id) : needed?.ask(level.id))}>
+    <button data-level={level.id} style={style} title={(game.plainProse ?? L)(level.title)} aria-current={here ? 'page' : undefined} className={`map-node ${state} ${game.core(level) ? '' : 'is-minor'} ${level.optional ? 'is-optional' : ''} ${next?.id === level.id ? 'is-next' : ''} ${here ? 'is-here' : ''} ${needed?.ids.has(level.id) ? 'is-needed' : ''} ${needed?.asked === level.id ? 'is-asked' : ''}`} aria-disabled={!open} onClick={() => (open ? onOpen(level.id) : needed?.ask(level.id))}>
       <span className="map-pad" aria-hidden="true">{won ? <Check size={11} strokeWidth={2.6} /> : open ? null : <Lock size={9} />}</span>
       <span className="map-node-number">
         <span className="map-node-id">{game.levelLabel(level)}</span>
       </span>
-      <span className="map-node-title">{L(level.title)}</span>
+      <span className="map-node-title"><Markup text={level.title} /></span>
       {score ? <span className="map-node-best">{score}</span> : kind?.icon && !compact && <span className="map-node-kind" aria-label={L(kind.label)}>{createElement(kind.icon, { size: game.core(level) ? 13 : 12 })}</span>}
       {/* An optional level shows as one by its look (is-optional), without a word for it. */}
       {level.skippable && <span className="map-node-tags">
@@ -187,17 +189,18 @@ export function MapChapter({ game, chapter, k, solved, all, best, next, compact,
 
 /** Rewards shown by the game, with names hidden until their reveal condition holds. */
 function UnlockChip({ items, style }) {
+  const plain = usePlainProse()
   if (!items.length) return null
-  const names = items.map((item) => (item.open ? L(item.label) : '？？？'))
+  const firstName = items[0].open ? items[0].label : '？？？'
   const [first] = items
-  const fresh = items.filter((item) => item.fresh && item.open).map((item) => L(item.label))
-  const built = items.filter((item) => !item.fresh && item.open).map((item) => L(item.label))
+  const fresh = items.filter((item) => item.fresh && item.open).map((item) => plain(item.label))
+  const built = items.filter((item) => !item.fresh && item.open).map((item) => plain(item.label))
   const title = [fresh.length && tr("这一关新带来：{value}", {value: { zh: String(fresh.join('、')), en: String(fresh.join(', ')) }}), built.length && tr("已解锁：{value}", {value: { zh: String(built.join('、')), en: String(built.join(', ')) }}), items.some((item) => !item.open) && tr('通关后解锁')].filter(Boolean).join('\n')
   return (
     <span className={`map-unlock ${first.open ? 'is-open' : 'is-locked'} ${first.fresh ? 'is-fresh' : ''}`} style={style} title={title}>
       {first.open ? <Package size={11} /> : <Lock size={10} />}
-      <span>{names[0]}</span>
-      {names.length > 1 && <b>+{names.length - 1}</b>}
+      <span><Markup text={firstName} /></span>
+      {items.length > 1 && <b>+{items.length - 1}</b>}
     </span>
   )
 }
@@ -229,8 +232,8 @@ export function NeededNote({ game, needed, onOpen }) {
   return (
     <div className="map-needed" role="status">
       <p>
-        {tr("{value}「{value2}」还需先通过 {count} 关。", {value: game.levelLabel(level), value2: L(level.title), count, value3: count === 1 ? '' : 's'})}
-        {needed.ready.length > 0 && <>{tr('现在可以进行：')}{needed.ready.map((r) => <button key={r.id} type="button" onClick={() => { needed.clear(); onOpen(r.id) }}>{game.levelLabel(r)} {L(r.title)}</button>)}</>}
+        <Markup text={tr("{value}「{value2}」还需先通过 {count} 关。", {value: game.levelLabel(level), value2: L(level.title), count, value3: count === 1 ? '' : 's'})} />
+        {needed.ready.length > 0 && <>{tr('现在可以进行：')}{needed.ready.map((r) => <button key={r.id} type="button" onClick={() => { needed.clear(); onOpen(r.id) }}>{game.levelLabel(r)} <Markup text={r.title} /></button>)}</>}
         {needed.external.map(({ game: id, level }) => {
           const entry = GAMES.find(({ id: candidate }) => candidate === id)
           return <a key={`${id}:${level}`} href={`../${id}/index.html?level=${encodeURIComponent(level)}`}>{L(entry?.title ?? id)} · {level}</a>
@@ -284,7 +287,7 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
           {next && (
             <button className="map-continue" onClick={() => onOpen(next.id)}>
               <span>{done ? tr('继续') : tr('开始')}</span>
-              <b>{game.levelLabel(next)} · {L(next.title)}</b>
+              <b>{game.levelLabel(next)} · <Markup text={next.title} /></b>
               <ArrowRight size={16} />
             </button>
           )}

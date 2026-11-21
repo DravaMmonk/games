@@ -1,0 +1,22 @@
+{
+  "title": "@level.try-direct-backward.title",
+  "intro": [{ "t": "@level.try-direct-backward.intro.0.t" }],
+  "after": "@level.try-direct-backward.after",
+  "requires": ["r-assumption"],
+  "tasks": [
+    {
+      "id": "try-direct-backward",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.try-direct-backward.tasks.try-direct-backward.brief",
+      "hint": ["@level.try-direct-backward.tasks.try-direct-backward.hint.0"],
+      "tests": [{ "goal": "Rain → Rain" }, { "goal": "Wet → Wet" }],
+      "solution": [
+        "box = logic/directBackward-qed_impI(in)",
+        "done = logic/directBackward-logic_assumption(box)",
+        "out <- done"
+      ]
+    }
+  ],
+  "tray": "prover"
+}

@@ -16,26 +16,48 @@ export const MENU_THRESHOLD = 7
  * set), the menu holding the most of them gathers them into one entry (on ties, the first in the tray), then the next,
  * until the entries — menus and parts on their own — are fewer, or nothing gathers any more: the menus alone reach
  * the threshold, or no menu holds two of the parts still on their own. A menu gathered holds its folded parts too.
+ * A variant with a traySource inherits its original part's menu. Selected trays take priority when the original is
+ * in more than one menu.
  *
  * Folded parts: every one in a menu goes into it (one entry for each menu); the rest stand on their own.
  */
 export function trayDisplay(trays, names, shown, folded, partOf = id => id) {
   const set = names.map((name) => trays[name]?.menuThreshold).filter(Number.isInteger)
   const threshold = set.length ? Math.min(...set) : MENU_THRESHOLD
-  const menus = names.flatMap((name) => (trays[name]?.items ?? [])
-    .filter((entry) => typeof entry !== 'string').map((entry) => ({ ...entry, items: entry.items.map(partOf), key: JSON.stringify([name, entry.id]) })))
+  const menusIn = (name) => (trays[name]?.items ?? []).filter((entry) => typeof entry !== 'string')
+    .map((entry) => ({ ...entry, items: entry.items.map(partOf), key: JSON.stringify([name, entry.id]) }))
+  const menus = names.flatMap(menusIn)
   const menuOf = new Map()
   for (const menu of menus) for (const type of menu.items) if (!menuOf.has(type)) menuOf.set(type, menu)
   const items = new Map([...shown, ...folded].map((item) => [item.type, item]))
   const visible = [...new Map(shown.map((item) => [item.type, item])).values()]
+  const sourceMenus = new Map(menuOf)
+  if ([...items.values()].some(({ traySource }) => traySource)) {
+    const otherMenus = Object.keys(trays).filter((name) => !names.includes(name)).flatMap(menusIn)
+    for (const menu of otherMenus) for (const type of menu.items) if (!sourceMenus.has(type)) sourceMenus.set(type, menu)
+  }
+  const assignedMenu = ({ traySource }) => traySource ? sourceMenus.get(partOf(traySource)) : undefined
+  const groupingMenus = [...new Set([...menus, ...visible.map(assignedMenu).filter(Boolean)])]
+  for (const item of items.values()) {
+    const menu = assignedMenu(item)
+    if (menu) menuOf.set(item.type, menu)
+  }
   const members = (menu, of) => of.filter(({ type }) => menuOf.get(type) === menu)
+  const childrenOf = (menu) => {
+    const ordered = [
+      ...visible.filter((item) => assignedMenu(item) === menu).map(({ type }) => type),
+      ...menu.items,
+      ...folded.filter((item) => assignedMenu(item) === menu).map(({ type }) => type),
+    ]
+    return [...new Set(ordered)].flatMap((type) => menuOf.get(type) === menu && items.has(type) ? [items.get(type)] : [])
+  }
   const entry = (menu, children) => ({ menu: menu.key, label: menu.title, children })
 
   // Gather the shown parts, the fullest menu first, while the tray holds too many entries.
   const gathered = new Set()
   let count = visible.length
   while (count >= threshold && gathered.size < threshold) {
-    const next = menus.filter((menu) => !gathered.has(menu)).map((menu) => [menu, members(menu, visible).length])
+    const next = groupingMenus.filter((menu) => !gathered.has(menu)).map((menu) => [menu, members(menu, visible).length])
       .reduce((best, candidate) => (candidate[1] > (best?.[1] ?? 1) ? candidate : best), null)
     if (!next) break
     gathered.add(next[0])
@@ -48,8 +70,7 @@ export function trayDisplay(trays, names, shown, folded, partOf = id => id) {
     if (!gathered.has(menu)) out.push(item)
     else if (!placed.has(menu)) {
       placed.add(menu)
-      // In the menu's own order: its shown parts, then its folded ones.
-      out.push(entry(menu, [...new Set(menu.items)].flatMap((type) => menuOf.get(type) === menu && items.has(type) ? [items.get(type)] : [])))
+      out.push(entry(menu, childrenOf(menu)))
     }
   }
 
@@ -63,7 +84,7 @@ export function trayDisplay(trays, names, shown, folded, partOf = id => id) {
     if (!menu) more.push(item)
     else if (!gathered.has(menu) && !foldedMenus.has(menu)) {
       foldedMenus.add(menu)
-      more.push(entry(menu, [...new Set(menu.items)].flatMap((type) => menuOf.get(type) === menu && items.has(type) && !shownTypes.has(type) ? [items.get(type)] : [])))
+      more.push(entry(menu, childrenOf(menu).filter(({ type }) => !shownTypes.has(type))))
     }
   }
   return { items: out, folded: more }

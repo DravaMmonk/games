@@ -3,6 +3,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { L } from 'kernel/view'
 
 import Glyph from "./Glyph.jsx"
+import BoardLabel from './BoardLabel.jsx'
 import { cardPorts } from "../../core/board/card-ports.js"
 import { schematic } from "../../core/board/schematic.js"
 import { inPort, outPort } from "../../core/board/model.js"
@@ -92,7 +93,7 @@ export default function Schematic({ graph, parts, value, param, outNote, regionN
   const ins = (node, ports) => {
     if (!ports.length) return null
     const named = ports.length > 1 && ports.some((p) => parts.portLabel?.(node, p))
-    return <span className={`sk-ins ${named ? 'is-named' : ''}`}>{ports.map((p) => <span key={p}>{anchor(inPort(node.id, p))}{named && L(parts.portLabel?.(node, p) ?? '')}</span>)}</span>
+    return <span className={`sk-ins ${named ? 'is-named' : ''}`}>{ports.map((p) => <span key={p}>{anchor(inPort(node.id, p))}{named && <BoardLabel label={L(parts.portLabel?.(node, p))} />}</span>)}</span>
   }
   // Outputs along the bottom edge: one in the middle, or each under its name and what it carries.
   const outs = (node, list) => {
@@ -102,7 +103,7 @@ export default function Schematic({ graph, parts, value, param, outNote, regionN
       <span className="sk-outs is-named">
         {list.map((o) => (
           <span key={o.key}>
-            {o.glyph ? <em dangerouslySetInnerHTML={{ __html: o.glyph }} /> : <em>{L(o.short ?? o.label)}</em>}
+            {o.glyph ? <em dangerouslySetInnerHTML={{ __html: o.glyph }} /> : <em><BoardLabel label={L(o.short ?? o.label)} /></em>}
             {outNote?.(node, o.key)}
             {anchor(outPort(sourceOf(node.id, o.key)))}
           </span>
@@ -121,7 +122,7 @@ export default function Schematic({ graph, parts, value, param, outNote, regionN
       },
     } : {}),
   })
-  const name = (node) => <span className="sk-name">{icon(node)}{L(parts.label(node))}</span>
+  const name = (node) => <span className="sk-name">{icon(node)}<BoardLabel label={L(parts.label(node))} /></span>
 
   function chip(node, ports) {
     const role = parts.role(node)
@@ -146,15 +147,15 @@ export default function Schematic({ graph, parts, value, param, outNote, regionN
         {ports.regions.map((r) => (
           <section key={r.name} className="sk-region">
             <header>
-              {ports.regions.length > 1 && <b>{L(r.label)}</b>}
-              {r.opens && <em>{L(r.output?.label ?? '')}</em>}
+              {ports.regions.length > 1 && <b><BoardLabel label={L(r.label)} /></b>}
+              {r.opens && <em><BoardLabel label={L(r.output?.label)} /></em>}
               {regionNote?.(node, r.name)}
               {r.opens && anchor(outPort(sourceOf(node.id, r.name)))}
             </header>
             {rows(regionAddress(node.id, r.name))}
             <footer>
               {anchor(inPort(node.id, r.name))}
-              <em>{L(parts.portLabel?.(node, r.name) ?? '')}</em>
+              <em><BoardLabel label={L(parts.portLabel?.(node, r.name))} /></em>
               {resultNote?.(node, r.name)}
             </footer>
           </section>

@@ -85,7 +85,9 @@
       "qed/gd-true",
       "qed/gd-con",
       "qed/gd-second",
-      "qed/in-circle"
+      "qed/in-circle",
+      "qed/try-direct-backward",
+      "qed/try-direct-rewrite"
     ]
   }
 }

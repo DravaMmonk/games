@@ -1,0 +1,23 @@
+{
+  "title": "@tray.prover.title",
+  "desc": "@tray.prover.desc",
+  "directRuleCards": true,
+  "workshop": false,
+  "values": [
+    "logic/assumption",
+    "logic/hyp",
+    "#proof-implication",
+    "#proof-and",
+    "#proof-or",
+    "#proof-contradiction",
+    "#proof-forall",
+    "#proof-exists",
+    "#proof-equality",
+    "#proof-classical",
+    "#proof-equivalences",
+    "#induction",
+    "repeat",
+    "search"
+  ],
+  "menus": []
+}

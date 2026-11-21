@@ -1,3 +1,5 @@
+import { Markup } from './Markup.jsx'
+import { usePlainProse } from './useSetting.js'
 import { createContext, useContext, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
@@ -80,6 +82,7 @@ function Overlay({ onClose, className, phone, inPlay, layer, children }) {
 // A centered dialog on desktop and a draggable bottom sheet on phones.
 // What it holds knows it is in a sheet (Entries.jsx: longer lists).
 export default function Sheet({ title, onClose, children, footer, actions, className = '', initialFocus }) {
+  const plain = usePlainProse()
   const [drag, setDrag] = useState(0)
   const { track } = usePointerSession()
   const phone = useMedia(PHONE)
@@ -103,12 +106,12 @@ export default function Sheet({ title, onClose, children, footer, actions, class
 
   return (
     <SheetOverlay onClose={onClose}>
-      <div ref={sheet} className={`ph-sheet ${className}`} role="dialog" aria-modal="true" aria-label={title} style={{ transform: drag ? `translateY(${drag}px)` : undefined }} onClick={(event) => event.stopPropagation()}>
+      <div ref={sheet} className={`ph-sheet ${className}`} role="dialog" aria-modal="true" aria-label={plain(title)} style={{ transform: drag ? `translateY(${drag}px)` : undefined }} onClick={(event) => event.stopPropagation()}>
         <div className="ph-handle" onPointerDown={swipe}>
           <i />
         </div>
         <header className="ph-sheet-head">
-          <h2>{title}</h2>
+          <h2>{typeof title === 'string' ? <Markup text={title} /> : title}</h2>
           {actions && <div className="ph-sheet-actions">{actions}</div>}
           <button className="ph-icon" onClick={onClose} aria-label={tr('关闭')}><X size={18} /></button>
         </header>

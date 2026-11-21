@@ -96,7 +96,7 @@ export default function Encyclopedia({ game, wiki, level, phone, start, edit = n
       <article className="wiki-article" key={entry.id}>
         {back}
         {group && <span className="panel-label">{L(group.title)}</span>}
-        <h2 {...fileMark(edit, 'glossary', ['entries', entry.id, 'title'])}>{L(titleOf(entry))}</h2>
+        <h2 {...fileMark(edit, 'glossary', ['entries', entry.id, 'title'])}><Markup text={titleOf(entry)} /></h2>
         {entry.body.map((paragraph, k) => <p key={k} {...fileMark(edit, 'glossary', ['entries', entry.id, 'body', k])}><Markup text={paragraph} /></p>)}
         {entry.see?.length > 0 && (
           <footer className="wiki-see" {...fileMark(edit, 'glossary', ['entries', entry.id, 'see'])}>
@@ -104,7 +104,7 @@ export default function Encyclopedia({ game, wiki, level, phone, start, edit = n
             <div>
               {entry.see.map((other) => entries.find((e) => e.id === other)).filter(Boolean).map((e) =>
                 isOpen(e)
-                  ? <button key={e.id} type="button" className="wiki-chip" onClick={() => pick(e.id)}><span>{L(titleOf(e))}</span></button>
+                  ? <button key={e.id} type="button" className="wiki-chip" onClick={() => pick(e.id)}><span><Markup text={titleOf(e)} /></span></button>
                   : <span key={e.id} className="wiki-chip is-locked">{punctuation("？？？")}</span>,
               )}
             </div>

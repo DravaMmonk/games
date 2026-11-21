@@ -765,6 +765,7 @@
     "回到文案": "Back to copy",
     "从选中文字所在的这一关开始": "Start at the level of the text picked",
     "再试一次": "Try again",
+    "无法读取工作区": "Could not load the workspace",
     "还不对，再试一次": "Not yet. Try again",
     "当前配置无法预览。请在配置区检查任务字段。": "This configuration cannot be previewed. Check the task fields in the inspector.",
     "玩法界面": "Play views",

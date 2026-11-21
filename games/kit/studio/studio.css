@@ -17,6 +17,7 @@ html, body { margin: 0; background: var(--canvas); color: var(--body); font: var
   height: 100vh; display: flex; flex-direction: column; font-size: var(--fs);
 }
 .studio-loading { padding: 40px var(--gutter); color: var(--muted); }
+.studio-load-error { overflow-wrap: anywhere; }
 kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 
 /* ---- the bar ---- */

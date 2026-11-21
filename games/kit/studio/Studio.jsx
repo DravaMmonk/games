@@ -23,6 +23,7 @@ export default function Studio() {
   const [game, setGame] = useState(QUERY.get('game'))
   const [packages, setPackages] = useState(null)
   const [pkg, setPkg] = useState(QUERY.get('package'))
+  const [loadError, setLoadError] = useState(null)
   // What the copy workspace opens: a package or a game.
   const [copyOpen, setCopyOpen] = useState(() => (space === 'copy' && QUERY.get('game') ? 'game' : space === 'copy' && QUERY.get('package') === 'kernel' ? 'kernel' : 'package'))
   const reload = () => call('games', {}).then((list) => {
@@ -35,12 +36,20 @@ export default function Studio() {
     setPkg((id) => (list.some((p) => p.id === id) ? id : list[0]?.id ?? null))
     return list
   })
-  useEffect(() => {
-    reload()
-    reloadPackages()
-  }, [])
+  const load = () => {
+    setLoadError(null)
+    Promise.all([reload(), reloadPackages()]).catch(setLoadError)
+  }
+  useEffect(() => { load() }, [])
   // A package just made: listed, and opened unless the author keeps the one open (`stay`).
   const madePackage = (id, stay = false) => reloadPackages().then(() => { if (!stay) setPkg(id) })
+  if (loadError) return <main className="studio-loading">
+    <div role="alert">
+      <strong>{tr('无法读取工作区')}</strong>
+      <p className="studio-load-error">{loadError.message}</p>
+    </div>
+    <button className="kit-btn" type="button" onClick={load}>{tr('再试一次')}</button>
+  </main>
   if (!games || !packages) return <div className="studio-loading">{tr('读取中……')}</div>
   if (!packages.length || (space === 'arrange' && !games.length)) return <div className="studio-loading">{tr("没有内容")}</div>
   const switcher = { value: space, onChange: setSpace }

@@ -2,6 +2,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { cardColumns, slotColumns, slotWidth, traySize } from '../../core/board/card-size.js'
 
+import { placement } from '../../core/board/model.js'
+
 const parts = {
   inputs: (node) => node.type === 'wide' ? ['a', 'b', 'c', 'd', 'e'] : [],
   valueView: (node) => node.type.startsWith('image') ? 'pixels' : 'value',
@@ -22,4 +24,13 @@ test('slot width and height use separate modes, with smaller sizes winning ties'
   assert.equal(slotWidth(366, 2), 177)
   assert.equal(slotWidth(100, 2), 60)
   assert.equal(cardColumns({ ...parts, traySize: tie }, { type: 'wide' }, 450, 3), 2)
+})
+
+
+test('a growing phone card keeps its reading order and reserves both slots', () => {
+  const graph = { nodes: ['a', 'b', 'c'].map((id, slot) => ({ id, type: 'short', slot })), wires: [] }
+  const layout = placement(graph, { ...parts, role: () => 'part', availableWidth: 366, wideTextCards: new Set(['b']) })
+  assert.deepEqual([...layout.cell], [['a', 0], ['b', 2], ['c', 4]])
+  assert.deepEqual(layout.span.get('b'), [2, 1])
+  assert.ok(!layout.free.includes(3))
 })

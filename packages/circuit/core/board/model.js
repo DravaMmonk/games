@@ -257,8 +257,17 @@ export function placement(graph, parts, region = null, { fixed = false } = {}) {
       grid.take(at, size)
     }
     const here = ancestors ? steps.filter((n) => (n.in ?? null) === r) : []
-    for (const node of here) {
-      if (!Number.isInteger(node.slot) || node.slot < 0) continue
+    const slotted = here.filter(node => Number.isInteger(node.slot) && node.slot >= 0)
+    if (cols > 1 && slotted.some(node => parts.wideTextCards?.has(node.id))) {
+      // Reflow in reading order so a card growing from the second column cannot jump past later cards.
+      let cursor = 0
+      for (const node of slotted.sort((a, b) => a.slot - b.slot)) {
+        const size = sizeOf(node)
+        const at = grid.firstFree(size, Math.max(node.slot, cursor))
+        take(node, at, size)
+        cursor = at + 1
+      }
+    } else for (const node of slotted) {
       const size = sizeOf(node)
       if (grid.fits(node.slot, size)) take(node, node.slot, size)
     }

@@ -10,6 +10,7 @@ import { trayDisplay } from "../core/trays.js"
 import { useSetting } from 'kernel/view'
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useWideTextCards } from './board/useWideTextCards.js'
 import { blockPreset, blocksOf, createBlock, editBlock, withNewSlots, phoneBlockBoard, blockOfPart } from "../core/board/blocks.js"
 import CanvasEditor from "./board/CanvasEditor.jsx"
 import Notice from "./board/Notice.jsx"
@@ -406,8 +407,10 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
   const { circuit: sourceCircuit, change } = board
   const boardRef = useRef(null)
   const availableWidth = useElementSize(boardRef)?.width || Infinity
-  const parts = { ...givenParts, availableWidth, traySize: size }
-  const circuit = useMemo(() => phoneBlockBoard(withNewSlots(sourceCircuit, parts), parts), [sourceCircuit, parts])
+  const wideTextCards = useWideTextCards(boardRef)
+  const geometry = { ...givenParts, availableWidth, traySize: size }
+  const parts = { ...geometry, wideTextCards }
+  const circuit = useMemo(() => phoneBlockBoard(withNewSlots(sourceCircuit, geometry), parts), [sourceCircuit, geometry, parts])
   const [manualBlocks] = useSetting('manualBlocks')
   const canMove = (id) => manualBlocks || !blockOfPart(circuit,id)?.startsWith('course:')
   const [sheet, setSheet] = useState(null) // { node } or { slot, region }

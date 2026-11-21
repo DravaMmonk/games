@@ -177,10 +177,9 @@
 
 /* ---- phone board ---- */
 .ph-toast { position: fixed; z-index: 30; left: 16px; right: 16px; bottom: calc(86px + env(safe-area-inset-bottom)); min-height: 48px; padding: 0 var(--sp-3) 0 var(--sp-6); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); border-radius: var(--r-lg); color: var(--paper); background: var(--ink); box-shadow: 0 16px 30px -16px rgba(0, 0, 0, .7); font-size: 14px; animation: rise-in 200ms ease; }
-.ph-toast button { min-height: 40px; padding: 0 var(--sp-5); border: 0; border-radius: var(--r-md); color: var(--accent); background: transparent; font: inherit; font-weight: 600; }
+:is(.pb-banner, .ph-toast) > button { flex: none; display: grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0; border: 0; border-radius: var(--r-md); color: var(--accent); background: transparent; cursor: pointer; }
 .pb-banner { position: fixed; z-index: 30; left: 12px; right: 12px; bottom: calc(132px + env(safe-area-inset-bottom)); min-height: 44px; padding: var(--sp-3) var(--sp-2) var(--sp-3) var(--sp-5); display: flex; align-items: center; gap: var(--sp-3); border-radius: var(--r-lg); color: var(--paper); background: var(--ink); box-shadow: 0 12px 24px -14px rgba(0, 0, 0, .6); font-size: 13px; line-height: 1.5; animation: rise-in 180ms ease; }
-.pb-banner span { flex: 1; min-width: 0; }
-.pb-banner button { min-width: 52px; min-height: 36px; border: 0; border-radius: var(--r-md); color: var(--accent); background: transparent; font: inherit; font-weight: 600; }
+:is(.pb-banner, .ph-toast) > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .pb-board { --pb-row-gap: calc(var(--pb-dot) + var(--pb-port-label)); --pb-io-overhang: 9px; position: relative; min-width: 0; max-width: 100%; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--pb-row-gap); padding: var(--sp-2) 0; }
 /* Wires run over the blocks, lifted off the board by a soft shadow; the dots and their tags sit on top of them. */
 .pb-wires { position: absolute; z-index: 3; top: 0; left: 0; overflow: visible; pointer-events: none; filter: drop-shadow(0 3px 2.5px rgba(0, 0, 0, .22)) drop-shadow(0 1px .5px rgba(0, 0, 0, .14)); }
@@ -223,6 +222,7 @@
 .pb-part.ghost { position: fixed; z-index: 80; top: 0; left: 0; pointer-events: none; opacity: .94; box-shadow: inset 0 0 0 1.5px var(--accent), 0 14px 28px -12px rgba(0, 0, 0, .5); }
 .pb-part.armed { box-shadow: inset 0 0 0 2px var(--accent); }
 .pb-thumb { min-width: 0; max-width: 100%; line-height: 1.45; }
+.pb-tile > :is(.pb-thumb, .pb-param) { min-width: 0; overflow-x: auto; }
 .pb-thumb:empty { display: none; }
 .pb-thumb [data-card-sentence] { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .pb-thumb canvas, .pb-thumb img { max-width: 100%; height: auto; }

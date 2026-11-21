@@ -8,7 +8,7 @@ const placeholder = (cell) => <span className="ck-placeholder">{L(cell.placehold
 // In a form, a list of sentences reads as a rule row (strip/TreePick.jsx SentenceRow); a table keeps text.
 const sentences = (cell, value) => <SentenceRow texts={value.map((item) => L(cell.build.text(item)))} end={cell.end} />
 
-function display(cell, row) {
+function display(cell, row, phone) {
   const value = read(cell, row)
   switch (cell.shape) {
     case 'tree': return value ? <Formula text={cell.build.text(value)} /> : placeholder(cell)
@@ -17,7 +17,9 @@ function display(cell, row) {
         <span key={k}><span className="ck-number">{k + 1}.</span><Formula text={cell.build.text(item)} /></span>
       ))}</span>
       : placeholder(cell)
-    case 'choice': return <InlineChoice label={cell.fixedLabel ?? cell.label} options={cell.options} value={value} disabled />
+    case 'choice': return phone
+      ? L(cell.options.find((option) => option.value === value)?.label) ?? '—'
+      : <InlineChoice label={cell.fixedLabel ?? cell.label} options={cell.options} value={value} disabled />
   }
 }
 
@@ -75,8 +77,8 @@ export function CheckScenario({ fields }) {
 /** Each row is a check. The shape of a value chooses its table display and editor. */
 export default function Checks({ cells, rows, onChange, result, rowClass, onPick, verdict, phone, ...table }) {
   const columns = cells.map((cell) => ({
-    key: cell.name, label: cell.label, align: cell.align, inlineOnPhone: cell.shape === 'choice',
-    cell: (row) => display(cell, row),
+    key: cell.name, label: cell.label, align: cell.align,
+    cell: (row) => display(cell, row, phone),
     edit: (row, set, at) => cell.fixed?.(row) ? display(cell, row) : edit(cell, row, set, at, false),
   }))
   if (result) columns.push({

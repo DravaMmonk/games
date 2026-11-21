@@ -49,5 +49,5 @@ export function cardColumns(parts, node, available, columns) {
     (cardWidth(parts, node) + SLOT_GUTTER) / (preferred + SLOT_GUTTER),
     (portCount(parts, node) * PORT_TARGET + SLOT_GUTTER) / (slot + SLOT_GUTTER),
   )
-  return Math.min(columns, Math.max(1, Math.ceil(span)))
+  return Math.min(columns, Math.max(parts.wideTextCards?.has(node.id) ? 2 : 1, Math.ceil(span)))
 }

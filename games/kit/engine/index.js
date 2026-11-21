@@ -40,6 +40,7 @@ export { wouldCycle } from '../graph.js'
 export { canonicalJson } from './json-value.js'
 // Public headless API for package authors. No view modules are exported here.
 export { createPluginKernel, registerPlugins } from './plugins.js'
+export { completionResult } from './completion-result.js'
 export { evaluatePlay, describeTask } from './plugin-runtime.js'
 export { objectOf, readTag, referenceResolver, relationOrder, orderedMembers } from './objects.js'
 export { contentSchemas } from './content.js'

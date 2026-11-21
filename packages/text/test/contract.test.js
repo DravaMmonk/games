@@ -48,7 +48,7 @@ test('answer work preserves whitespace and judges finite numbers at the toleranc
   const task = { play: 'text/answer', answerRule: { type: 'number', answer: 5, tolerance: 0.5 } }
   for (const [answer, pass] of [['5.5', true], ['5.50001', false], ['', false], ['Infinity', false]]) {
     assert.deepEqual(evaluatePlay(kernel, task, answer), {
-      work: answer, report: { answer, pass }, verdict: { pass, score: Number(pass) },
+      work: answer, report: { answer, pass }, verdict: { pass },
     })
   }
 })

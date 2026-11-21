@@ -1,0 +1,9 @@
+{
+  "target": "optimization",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "d260038eb220f4f401088a854183a59773a03992302b97c23e615ceaa212c5fa"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "package.title": "Optimization",
+  "package.desc": "Record and display the best results for configurable numeric objectives.",
+  "kind.goal.name": "Optimization goals"
+}

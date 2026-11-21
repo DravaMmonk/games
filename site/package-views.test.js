@@ -283,3 +283,27 @@ test('text answers pair with the shell and render the registered preview', async
   assert.match(choices, /role="radio" aria-checked="false"[^>]*>First<\/button>/)
   assert.match(choices, /role="radio" aria-checked="true"[^>]*>Second<\/button>/)
 })
+
+test('the installed optimization view settles a task pass and supplies its map label', async () => {
+  const { contentRoot, resolveLayers } = await import('../games/kit/engine/resolver.js')
+  const { packageEntries } = await import('../games/kit/engine/plugin-node.js')
+  const { completionResult } = await import('../games/kit/engine/completion-result.js')
+  const { fresh, passed } = await import('../games/kit/shell/progress.js')
+  const contentDir = contentRoot()
+  const { layers } = resolveLayers({ package: 'optimization', root: contentDir })
+  const entries = await Promise.all(packageEntries(layers, contentDir).map(async ({ id, core, view }) => ({
+    id, core: await loadModule(core), view: view && await loadModule(view),
+  })))
+  const kernel = await registerPlugins(entries, { view: true })
+  const { configureGame } = await loadModule(new URL('../games/kit/app/compose-game.js', import.meta.url).pathname)
+  const level = { id: 'sample/level', tasks: [{ key: 'sample/first' }, { key: 'sample/second' }] }
+  const content = { registries: { 'optimization/goal': {
+    'sample/time': { rank: [{ metric: 'time', direction: 'min' }], label: '{time} s' },
+  } } }
+  const game = configureGame({ byId: { [level.id]: level } }, content, kernel)
+  const first = passed(game, fresh(), level, 0, completionResult({ time: 4 }))
+  const second = passed(game, first, level, 1)
+  assert.deepEqual(second.solved, [level.id])
+  assert.deepEqual(second.results, { 'sample/first': { 'sample/time': { values: { time: 4 } } } })
+  assert.equal(game.completionLabel(second, level.tasks), '4 s')
+})

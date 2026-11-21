@@ -1,0 +1,4 @@
+{
+  "rank": [{ "metric": "cost", "direction": "min" }, { "metric": "nodes", "direction": "min" }],
+  "label": "{nodes} · {cost}"
+}

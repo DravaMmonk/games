@@ -35,5 +35,7 @@
   "glossary.entries.proofBoard.body.0": "需要设置命题时，从元件提供的本关选项中选择。",
   "glossary.entries.proofBoard.body.1": "每关有几组<b>测试</b>：一组使用题目的字母形式，其余组将字母替换为日常命题。同一电路必须通过各组测试。测试有助于发现不匹配；一般性结论依赖于证明结构及其替换规则，而不是仅凭几个具体例子。",
   "glossary.entries.proofBoard.title": "证明板与替换测试",
+  "goal.audit-cases.label": "{cases} 条",
+  "goal.proof-steps.label": "{steps} 步",
   "section.play.title": "玩法"
 }

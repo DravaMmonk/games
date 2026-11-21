@@ -699,8 +699,9 @@ export const RULE_CHOICES = {
     const type = ctx.node?.type
     const entries = directCardsOf(ctx.task).get(type)?.entries ?? rulePartsOf(ctx.task).get(type) ?? []
     const choices = choicesOfPart(entries)
-    const order = ctx.ruleOrder ?? choices
-    return choices.map((key) => ({ value: key, mark: ruleMark(key, order), label: ruleWritten(entries.find((e) => e.key === key), ctx.text, ctx.term) }))
+    const slots = ctx.ruleSlots ?? []
+    const nodeId = ctx.node?.id
+    return choices.map((key) => ({ value: key, mark: ruleMark(key, slots, nodeId), label: ruleWritten(entries.find((e) => e.key === key), ctx.text, ctx.term) }))
   },
 }
 
@@ -833,24 +834,38 @@ const ctxOf = (level, circuit, extra = {}) => ({ graph: circuit, partForRule: le
 export const runTactic = (level, type, state, keys = null) => level.parts(type).eval({ in: state, ...(keys ? { rules: rulesValue(keys.map((key) => ({ key }))) } : {}) }, { id: type, params: {} }, ctxOf(level, { nodes: [], wires: [] }, { engine: { parts: level.parts } }))
 
 export const subscript = (n) => String(n).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])
-export const ruleMark = (key, order) => {
-  const index = order.indexOf(key)
-  return order.length > 1 && index >= 0 ? `R${subscript(index + 1)}` : 'R'
+export const slotMark = (index, count) => count > 1 && index >= 0 ? `R${subscript(index + 1)}` : 'R'
+export function ruleMark(key, slots, nodeId) {
+  const own = nodeId === undefined ? -1 : slots.findIndex((slot) => slot.nodeId === nodeId)
+  const shared = own >= 0 ? own : slots.findIndex((slot) => slot.nodeId === undefined && slot.entry?.key === key)
+  const index = shared >= 0 ? shared : slots.findIndex((slot) => slot.entry?.key === key)
+  return slotMark(index, slots.length)
 }
 
-/** The rules in use and the stable numbering of all choices offered by the board's rule cards. */
+/** A direct card reserves one rule number. Shared rules are numbered once per selected key. */
 export function boardRules(level, circuit, test) {
   const parts = rulePartsOf(level)
-  const given = test ? inputsOf(test, level).rules?.entries ?? [] : []
-  const order = given.map((e) => e.key)
-  const ruleEntries = [...given, ...circuit.nodes.flatMap((n) => {
-    const direct = directCardsOf(level).get(n.type)
-    const entries = direct?.entries ?? parts.get(n.type)
-    if (entries) order.push(...choicesOfPart(entries))
-    const selected = entries ? ownRules(entries, n.params?.use) : []
-    return (direct ? selected.slice(0, 1) : selected).map((k) => entries.find((e) => e.key === k))
-  })]
-  return { rules: [...new Set(ruleEntries.map((e) => e.key))], ruleEntries, ruleOrder: [...new Set(order)] }
+  const directCards = directCardsOf(level)
+  const slots = []
+  const shared = new Set()
+  const addShared = (entry) => {
+    if (shared.has(entry.key)) return
+    shared.add(entry.key)
+    slots.push({ entry })
+  }
+  if (test) (inputsOf(test, level).rules?.entries ?? []).forEach(addShared)
+  for (const node of circuit.nodes) {
+    const direct = directCards.get(node.type)
+    const entries = direct?.entries ?? parts.get(node.type)
+    if (!entries) continue
+    const selected = ownRules(entries, node.params?.use)
+    if (direct) {
+      slots.push({ nodeId: node.id, entry: entries.find((e) => e.key === selected[0]) })
+    } else {
+      selected.forEach((key) => addShared(entries.find((e) => e.key === key)))
+    }
+  }
+  return slots
 }
 
 /** How a machine level runs and is judged, for the shared engine (../../engine/test-run.js). */
@@ -868,20 +883,16 @@ export const MACHINE_TESTS = {
       ctx: ctxOf(level, circuit, { trace: traced ? trace : null, traceForwarding: traced, proof }),
       traceTargets: ['out'],
     })
-    // Rule parts are not steps. All choices have a number before playback; only selected or executed rules appear in the report.
-    const { rules, ruleEntries, ruleOrder } = boardRules(level, circuit, test)
+    const ruleSlots = boardRules(level, circuit, test)
     for (const entry of trace.flatMap(step => step.proofRules ?? [])) {
-      if (rules.includes(entry.key)) continue
-      rules.push(entry.key)
-      ruleEntries.push(entry)
-      if (!ruleOrder.includes(entry.key)) ruleOrder.push(entry.key)
+      if (!ruleSlots.some(slot => slot.entry?.key === entry.key)) ruleSlots.push({ entry })
     }
     const events = machineEvents(trace)
     const report = proof
       ? finishProof(proof, events, run.outputs.out, want, showTree ? judge(want, test, run.outputs.out, level) : '')
       : { trace: countMachineSteps(events) }
     if (!showTree) delete report.proofRoot
-    return { ...run, ...report, rules, ruleEntries, ruleOrder }
+    return { ...run, ...report, ruleSlots }
   },
   check: (level, test, outputs) => {
     const problem = judge(test.want ?? level.want, test, outputs.out, level)

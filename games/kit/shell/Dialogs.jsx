@@ -55,7 +55,7 @@ export function TaskDoneDialog({ game, level, task, index, next, revisit, onStay
 export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
   const overlay = useOverlay(onStay)
   const note = game.note(level)
-  // What else passing it gives, as the game says it: a label and its lines (rules declared, a sentence's skeleton…).
+  // What else passing it gives, as the game says it: a label and rendered lines.
   const passed = game.passed(level)
   const opened = [
     ...unlocked.levels.map((next) => ({ key: `level:${next.id}`, kind: 'level', chip: game.levelLabel(next), label: next.title })),
@@ -73,7 +73,7 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
         {passed && (
           <div className="dialog-note">
             <span className="panel-label">{L(passed.label)}</span>
-            <div className="dialog-lines">{passed.lines.map((line, k) => <code key={k}>{L(line)}</code>)}</div>
+            <div className="dialog-lines">{passed.lines.map((line, k) => <div key={k}>{line}</div>)}</div>
           </div>
         )}
         {opened.length > 0 && (

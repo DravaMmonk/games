@@ -31,7 +31,7 @@ function tablePlay(mode) {
    const { task, works } = tableContext(context)
    return circuit ? robotReport(works.model.runCircuit, task, work) : judgeHand(task, work)
   },
-  judge: report => ({ pass: report.pass, score: report.pass ? 1 : 0 }),
+  judge: report => ({ pass: report.pass }),
   runtime,
  }
 }

@@ -7,7 +7,7 @@ import TreeRows from './TreeRows.jsx'
 export default function Rows({ screen, resource, play }) {
   const { level: entry, phone } = screen
   const [at, select] = useState(0)
-  const { work, verdict, check, change } = useCheckedWork(screen, { read: resource.initial, write: resource.keep }, inspectWork(play, (rows) => resource.judge(rows, at)), resource.score)
+  const { work, verdict, check, change } = useCheckedWork(screen, { read: resource.initial, write: resource.keep }, inspectWork(play, (rows) => resource.judge(rows, at)), resource.completion)
   const results = verdict && <Verdict pass={verdict.pass} failure={verdict.failure}>{L(resource.passed)}</Verdict>
   const dock = <RunDock go={checkAction(check, Boolean(verdict?.pass))} />
   const stage = (

@@ -28,7 +28,7 @@ export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
       const check = () => {
         const result = evaluatePlay(kernel, task, work, context)
         setResult(result.verdict)
-        if (result.verdict.pass) solve(result.verdict.score, result.work)
+        if (result.verdict.pass) solve(result.verdict.result, result.work)
         else fail?.({ body: tr("再试一次") })
       }
       const pass = Boolean(result?.pass)

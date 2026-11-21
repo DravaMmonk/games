@@ -1,3 +1,4 @@
+import { completionResult } from 'kernel'
 // The image domain's play hook for a blind session (../../engine/play/): a circuit level of 《视觉完备》 as its screen
 // (ui/circuit.js) shows it, in words — the level's inputs and outputs, the parts it holds with their settings,
 // and every test's pictures (each input and the output it should become) — and an attempt run as the Run button runs
@@ -60,7 +61,7 @@ const circuit = circuitPlay({
       hidden: hidden && { ...hidden, says: TEST_WORDS.failed(hidden.failed, hidden.count) },
       constraint: checked.constraint,
       pass,
-      score: checked.score,
+      result: pass ? completionResult(checked.score) : null,
     }
   },
 })

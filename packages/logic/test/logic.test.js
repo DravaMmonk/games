@@ -609,15 +609,23 @@ test('a direct rewrite uses only the first rule in an older multi-rule selection
   const compiled = compileParts({ [type]: cards.get(type).definition }, OPS).PARTS
   level.parts = (name) => compiled[name] ?? machineParts(name)
   const board = machine({ change: [type, { use: ['dneg.elim', 'dneg.intro'] }] }, ['in>change', 'change>out'])
-  const { ruleOrder } = boardRules(level, board)
-  const markOptions = () => RULE_CHOICES.run([], {}, { task: level, node: { type }, ruleOrder }).map(({ value, mark }) => [value, mark])
-  assert.deepEqual(markOptions(), [['dneg.elim', 'R₁'], ['dneg.intro', 'R₂']])
-  assert.deepEqual(boardRules(level, board).rules, ['dneg.elim'])
+  const change = board.nodes.find(({ id }) => id === 'change')
+  board.nodes.push({ ...change, id: 'other', params: { use: ['dneg.intro'] } })
+  const keys = () => boardRules(level, board).map(({ entry }) => entry?.key)
+  const markOptions = (id) => RULE_CHOICES.run([], {}, {
+    task: level, node: { id, type }, ruleSlots: boardRules(level, board),
+  }).map(({ value, mark }) => [value, mark])
+  assert.deepEqual(markOptions('change'), [['dneg.elim', 'R₁'], ['dneg.intro', 'R₁']])
+  assert.deepEqual(markOptions('other'), [['dneg.elim', 'R₂'], ['dneg.intro', 'R₂']])
+  assert.deepEqual(keys(), ['dneg.elim', 'dneg.intro'])
   assert.equal(runMachine(level, board).pass, false)
-  board.nodes.find(({ id }) => id === 'change').params.use = ['dneg.intro']
-  assert.deepEqual(boardRules(level, board).ruleOrder, ruleOrder)
-  assert.deepEqual(boardRules(level, board).rules, ['dneg.intro'])
+  change.params.use = ['dneg.intro']
+  assert.deepEqual(keys(), ['dneg.intro', 'dneg.intro'])
+  assert.deepEqual(markOptions('change'), [['dneg.elim', 'R₁'], ['dneg.intro', 'R₁']])
   assert.equal(runMachine(level, board).pass, true)
+  change.params.use = []
+  assert.deepEqual(keys(), [undefined, 'dneg.intro'])
+  assert.deepEqual(markOptions('change'), [['dneg.elim', 'R₁'], ['dneg.intro', 'R₁']])
 })
 
 test('direct cards follow each source part and its declared proof operation', () => {

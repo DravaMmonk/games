@@ -23,15 +23,7 @@ export function solvedCount(id) {
   }
 }
 
-const blank = () => ({ stamps: {}, solved: [], passed: [], skippedTasks: [], data: {}, slots: {}, best: {}, seenPower: false, introSeen: {}, all: false })
-
-/** A saved result holds the values supplied by its play, without assigning them a meaning. */
-export const resultOf = values => ({ values: typeof values === 'object' ? values : { value: values } })
-
-// Convert the previous unwrapped records when loading a save.
-const resultsOf = best => Object.fromEntries(Object.entries(best ?? {}).map(([id, result]) =>
-  [id, result && typeof result === 'object' && Object.hasOwn(result, 'values') ? result : resultOf(result)]))
-export const normalizeResults = progress => ({ ...progress, best: resultsOf(progress.best) })
+const blank = () => ({ stamps: {}, solved: [], passed: [], skippedTasks: [], data: {}, slots: {}, results: {}, seenPower: false, introSeen: {}, all: false })
 
 const without = (kept, gone) => Object.fromEntries(Object.entries(kept ?? {}).filter(([key]) => !gone.has(key)))
 
@@ -47,7 +39,7 @@ export function current(stored, tasks, invalidate = value => value) {
     skippedTasks: (stored.skippedTasks ?? []).filter((key) => !gone.has(key)),
     data: without(stored.data, gone),
     slots: without(stored.slots, gone),
-    best: without(stored.best, levels),
+    results: without(stored.results, gone),
   }, gone)
 }
 
@@ -73,7 +65,7 @@ export function createProgress({ id, tasks = {}, initial = () => ({}), restore =
     try {
       const stored = JSON.parse(raw)
       if (!stored?.stamps) return (snapshot = empty())
-      const progress = { ...current(normalizeResults({ ...blank(), ...initial(), ...stored }), tasks, invalidate), stamps }
+      const progress = { ...current({ ...blank(), ...initial(), ...stored }, tasks, invalidate), stamps }
       snapshot = restore(progress)
     } catch {
       snapshot = empty()
@@ -174,19 +166,17 @@ export function skipOptionalTask(progress, level, at) {
 }
 
 /** Save the judged draft and record its pass. */
-export function passed(game, progress, level, taskAt, score = null, passingWork) {
+export function passed(game, progress, level, taskAt, result = null, passingWork) {
   const p = passingWork === undefined ? progress : saved(progress, level, taskAt, passingWork)
-  return recordPass(game, p, level, taskAt, score, p.data[taskKey(level, taskAt)])
+  return recordPass(game, p, level, taskAt, result, p.data[taskKey(level, taskAt)])
 }
 
 /** Record the exact work judged on this pass and finish the level when its required tasks have passed. */
-export function recordPass(game, p, level, taskAt, score, work) {
+export function recordPass(game, p, level, taskAt, result, work) {
   const key = taskKey(level, taskAt)
   p = game.progress?.beforePass?.(p, level, taskAt, work) ?? p
-  const result = score == null ? null : resultOf(score)
-  const best = taskAt === level.tasks.length - 1 && result && game.better(result, p.best[level.id])
-    ? { ...p.best, [level.id]: result } : p.best
-  const now = { ...p, best, passed: [...new Set([...p.passed, key])], skippedTasks: (p.skippedTasks ?? []).filter(skipped => skipped !== key) }
+  if (result) p = game.progress?.recordResult?.(p, key, result) ?? p
+  const now = { ...p, passed: [...new Set([...p.passed, key])], skippedTasks: (p.skippedTasks ?? []).filter(skipped => skipped !== key) }
   const required = level.tasks.map((task, k) => task.optional ? null : k).filter((k) => k !== null)
   const allRequiredPassed = (required.length ? required : level.tasks.map((_, k) => k)).every((k) => taskPassed(game, now, level.id, k))
   const mayFinish = p.all && !level.tasks[taskAt].optional ? nextRequiredTask(game, now, level.id, taskAt) === -1 : allRequiredPassed

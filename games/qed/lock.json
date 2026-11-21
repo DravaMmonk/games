@@ -3,19 +3,27 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "b4018af375ec04862ff89939bc935b23c7f1fa9dbc7e7af8975e11102abd05dc"
+      "hash": "d260038eb220f4f401088a854183a59773a03992302b97c23e615ceaa212c5fa"
+    },
+    "notation": {
+      "version": "0.0.0",
+      "hash": "febbab0e2d828c840ae79150c9cef111c92aab58ecc5e5c0d0175f29e2a5e87e"
     },
     "numlib": {
       "version": "0.0.0",
-      "hash": "bee56843f8a478b7cea4df1dbc20485cc2c47acea154555153791f43822562a4"
+      "hash": "89184c96b363bcc60809bd8f5ca62ae976133269092cbbba9ae1bb5534dab239"
+    },
+    "optimization": {
+      "version": "0.0.0",
+      "hash": "bab5aa379da44f0f524c5b7a746e36946a1365f1c56962c94437f0610b5fda4f"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "119f51db4306b05585fa4b11e16ed959342d793be4897257f3924c703f9118ff"
+      "hash": "e388c133458703f1d2bf22f5154f9a349f0d5e09cb6b53852ce0a90934420620"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "db536fca852d897fd16296727305dd9638c16e0f483ec53fe45a9a263dc95dc0"
+      "hash": "40a99dc01ccf7174844581749f714e3b3d781c8330e3352550761f29115e48c2"
     },
     "sentence": {
       "version": "0.0.0",
@@ -23,23 +31,19 @@
     },
     "wiki": {
       "version": "0.0.0",
-      "hash": "2e947cee3536d2d74540b0b628c0a6e4869460a461233461f5493bbbbd565fcc"
+      "hash": "5642d5e4427a84dbb8d3b3f30caf61adc3070dba2f6071968febd0802e62d05a"
     },
     "logic": {
       "version": "0.0.0",
-      "hash": "232927f0d2b569e67f80e39ed00d13676e2bc669da6ca8d0abaca5aaaaa5b168"
+      "hash": "80d27dd9a4643e11f00ecca170748680332b105f40f87d988fb624dea9f2d29a"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "48a5f9db25082e6149902b54db5594b2bfbab0066b8b218e4733ae05e0daffa4"
+      "hash": "7d996b32200f20705de620a4b7666688a739b3b14ae2bfbd61c9d5fc02997a2a"
     },
     "qed": {
       "version": "0.0.0",
-      "hash": "6a6608b02f4e69a4c453ac86e99aa31118e17ff77b719e6cdf7aa5a78178adac"
-    },
-    "notation": {
-      "version": "0.0.0",
-      "hash": "febbab0e2d828c840ae79150c9cef111c92aab58ecc5e5c0d0175f29e2a5e87e"
+      "hash": "9a28db0969f57d846ea854cd48758ad12141f1028dc64b5b88c7cfb4d115b391"
     }
   }
 }

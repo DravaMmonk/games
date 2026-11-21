@@ -13,7 +13,7 @@ import { T as catalogText } from 'kernel/words'
 // level data beyond what the screen draws.
 
 import { meaningsOf } from '../kind-meanings.js'
-import { firstTask, normalizeResults, passed, saved } from '../../shell/progress.js'
+import { firstTask, passed, saved } from '../../shell/progress.js'
 import { taskContext } from '../../shell/played-task.js'
 import { close, outcomeOf } from './session.js'
 import { plain, side } from './words.js'
@@ -28,7 +28,7 @@ import { plain, side } from './words.js'
 const EXPLAIN = catalogText("用本领域的术语写一两句：这一关你弄明白了什么？（./play --explain \"…\"）")
 
 export function createPlay({ game, hook, record, now = () => new Date() }) {
-  record.progress = normalizeResults(game.progress?.normalize?.(record.progress) ?? record.progress)
+  record.progress = game.progress?.normalize?.(record.progress) ?? record.progress
   const lang = record.lang
   const textProviders = meaningsOf(game.contentVocabulary).map(meaning => meaning.blindText?.(game)).filter(Boolean)
   const solved = () => new Set(record.progress.solved)
@@ -58,8 +58,8 @@ export function createPlay({ game, hook, record, now = () => new Date() }) {
   const ctxOf = ({ level, task }) => taskContext(game, record.progress, level, task,
     record.levels.find((e) => e.level === level.id && e.task === task)?.attempts ?? 0)
 
-  const pass = (at, data, score = null) => {
-    record.progress = passed(game, record.progress, at.level, at.task, score, data)
+  const pass = (at, data, result = null) => {
+    record.progress = passed(game, record.progress, at.level, at.task, result, data)
   }
 
   /** The level played now, skipping the plays the hook does not cover. Returns { at, opened, skipped: [lines] }. */
@@ -165,7 +165,7 @@ export function createPlay({ game, hook, record, now = () => new Date() }) {
     if (r.keep !== undefined) record.progress = saved(record.progress, at.level, at.task, r.keep)
     if (r.pass) {
       close(entry, 'solved', now())
-      pass(at, r.board, r.score ?? null)
+      pass(at, r.board, r.result)
       const last = at.task === at.level.tasks.length - 1
       const after = at.level.tasks[at.task].after ?? (last ? at.level.after : null)
       return { pass: true, text: `${says}\n\n${!last ? (en ? 'Task passed.' : '这一段通过了。') : en ? 'Level passed.' : '通关。'}${after ? `\n${say(after)}` : ''}\n\n${EXPLAIN[lang]}` }

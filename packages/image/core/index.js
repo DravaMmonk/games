@@ -1,3 +1,4 @@
+import { completionResult } from 'kernel'
 import { PICTURES } from './items/pictures.js'
 import { TARGETS } from './items/targets.js'
 import { CONSTRAINTS } from './items/constraints.js'
@@ -28,20 +29,20 @@ const graphPlay = {
   write: work => work,
   normalize: work => work,
   run(work, context) { const { task, works } = imageContext(context); return works.kit.runLevel(withHidden(task), work) },
-  judge: report => ({ pass: report.pass, score: report.score }),
+  judge: report => ({ pass: report.pass, result: report.pass ? completionResult(report.score) : null }),
   runtime,
 }
 const benchPlay = {
   initial(context) { return startValues(imageContext(context).task.bench) },
   read: work => work, write: work => work, normalize: work => work,
   run(work, context) { const { task } = imageContext(context); return benchRun(task.bench, task.model, work) },
-  judge: report => ({ pass: report.pass, score: report.pass ? 1 : 0 }), runtime,
+  judge: report => ({ pass: report.pass }), runtime,
 }
 const probePlay = {
   initial: () => null,
   read: work => work, write: work => work, normalize: work => work,
   run(work, context) { const { task } = imageContext(context); return { pass: task.probe.judge(work) } },
-  judge: report => ({ pass: report.pass, score: report.pass ? 1 : 0 }), runtime,
+  judge: report => ({ pass: report.pass }), runtime,
 }
 export function register(kernel) {
   Object.assign(registeredOperations, IMAGE_OPS)

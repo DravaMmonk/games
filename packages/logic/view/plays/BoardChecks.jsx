@@ -19,7 +19,7 @@ export default function BoardChecks({ screen, resource, play }) {
     count: tabs.length,
     stepsOf: (k) => stepsOf(k, work),
     check: (k) => L(judge(k, work) ?? ''),
-    onSolve: () => finish(resource.score(work)),
+    onSolve: () => finish(resource.completion(work)),
     onTest: select,
     board: work,
     kept: history.lastRun,

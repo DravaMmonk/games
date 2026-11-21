@@ -8,7 +8,8 @@ import { layoutProofTree } from './proof-tree-layout.js'
 function Branch({ node, run, selected, open }) {
   const { id, parent, s, number, current, children, resultPath, error } = node
   const did = s && s.value?.didBy === s.entry.id ? s.value.did : null
-  const symbol = (did && didText(did, run, { marksOnly: true })) || s?.entry.label || (s?.entry.round ? '↻' : '⊢')
+  const nodeId = s?.entry.path?.length ? undefined : s?.entry.id
+  const symbol = (did && didText(did, run, { marksOnly: true, nodeId })) || s?.entry.label || (s?.entry.round ? '↻' : '⊢')
   const label = number ? `${number} · ${L(s.label)} · ${symbol}` : symbol
   return (
     <li className={`mr-branch ${resultPath ? 'is-result' : ''} ${error && !resultPath ? 'is-error' : ''}`}>
@@ -29,9 +30,10 @@ export function ProofTree({ root, steps, ended, run, task }) {
   const previous = useRef(null)
   const [edges, setEdges] = useState([])
   const [detail, setDetail] = useState(null)
+  const showResultPath = ended || (steps.length > 0 && steps.length === run.trace.length)
   const nodes = useMemo(() => {
     const visible = (proof, step) => ({
-      ...proof, ...step, children: [], resultPath: ended && proof.resultPath,
+      ...proof, ...step, children: [], resultPath: showResultPath && proof.resultPath,
       error: step?.s.failed || step?.s.value?.error || (ended && (proof.reason || proof.stopReason)),
     })
     const start = visible(root)
@@ -45,7 +47,7 @@ export function ProofTree({ root, steps, ended, run, task }) {
       byId.set(node.id, node)
     }
     return byId
-  }, [root, steps, ended])
+  }, [root, steps, showResultPath, ended])
   useLayoutEffect(() => {
     const el = chart.current
     const viewport = el.parentElement

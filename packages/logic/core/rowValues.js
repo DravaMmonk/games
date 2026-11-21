@@ -1,3 +1,4 @@
+import { completionResult } from 'kernel'
 import { T } from 'kernel/words'
 import { showTerm } from './formula.js'
 import { parseS, parseSide, ruleText } from './schematic.js'
@@ -12,6 +13,8 @@ const blank = T('未写完')
 const changeAt = (items, at, fn) => items.map((item, k) => k === at ? fn(item) : item)
 const without = (items, at) => items.filter((_, k) => k !== at)
 const whole = (tree) => Boolean(tree) && complete(tree) && !straysOf(tree).length
+
+export const declarationResult = rules => completionResult({ steps: rules.length })
 
 export function declarationValues(level, rules, change, scope) {
   const binder = level.binder ?? 'x'
@@ -76,7 +79,7 @@ export function declaration(level) {
     rows: (rules, change, scope, at = 0) => declarationValues(inView(level, at), rules, change, scope),
     lines: (rules, read, at = 0) => problemsOf(level, rules).length ? [] : ruleLines(inView(level, at), linesOf(rules), read),
     passed: T('这份声明符合需求。'),
-    score: (rules) => ({ steps: rules.length }),
+    completion: declarationResult,
   }
 }
 
@@ -105,6 +108,5 @@ export function definition(level) {
       blank,
     }),
     passed: T('每个值都正确，每次递归调用的参数都更小，因此这条定义必定终止。'),
-    score: () => null,
   }
 }

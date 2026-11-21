@@ -1,3 +1,4 @@
+import { completionResult } from 'kernel'
 import { partsFor, packedView } from './board/board-parts.js'
 import { sourceOf, srcNode } from "../core/wire-source.js"
 import { openCircuit } from "../core/board-view.js"
@@ -176,7 +177,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const { has, known, circuit, resolve, parts, packed, palette, folded, types, held, hasPersonal,
     hold, publish, library, notice, render } = partState
   const defined = useMemo(() => rawDefined && withDefinitions(rawDefined, (type, base) => has.definition?.(type, base)), [rawDefined, has])
-  const pass = (score, graph) => { publish?.(graph); screen.solve(score, graph) }
+  const pass = (result, graph) => { publish?.(graph); screen.solve(result, graph) }
   const opening = () => circuit.opening(level, progress)
   const state = useLevelBoard(screen, {
     open: (saved) => openCircuit(circuit, level, progress, saved, hold),
@@ -200,7 +201,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
     signature,
     tests: [...tests.map((t, k) => ({ label: L(t.label ?? testLabel?.(level, t, k) ?? words.label(k)), hidden: t.hidden })), ...(judged && level.sample ? [{ label: L(WORDS.sample), sample: true }] : [])],
     ...(judged
-      ? { judge: () => ({ pass: checked.pass, score: checked.score, results: report.runs.map((r) => ({ pass: !failureOf(r), reason: L(finalFailure(r)) ?? '' })) }) }
+      ? { judge: () => ({ pass: checked.pass, results: report.runs.map((r) => ({ pass: !failureOf(r), reason: L(finalFailure(r)) ?? '' })) }) }
       : { steps: { of: (k) => (table ? [] : stepsOf(checked.runs[k])), check: (k) => finalFailure(checked.runs[k]) ?? '', final: L(checked.constraint) } }),
     hidden: hidden && {
       ...hidden,
@@ -209,12 +210,12 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
         failed: (n) => L(words.failed(n, hidden.count)),
       },
     },
-    score: () => checked.score,
-    onSolve: (score) => pass(score, drawn),
+    result: () => completionResult(checked.score),
+    onSolve: (result) => pass(result, drawn),
     ...(useWorld !== noWorld && {
       guard: () => surface.guard?.(),
       onFail: (last) => surface.fail?.(last, checked.runs),
-      onSolve: (score) => surface.solve ? surface.solve(score) : pass(score, drawn),
+      onSolve: (result) => surface.solve ? surface.solve(result) : pass(result, drawn),
     }),
   })
 
@@ -253,7 +254,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const ended = whole ? run.over : hasPlayback && Boolean(run.run.test > run.at || run.run.over)
 
   const failWorld = ({ panel, ...info }) => screen.fail(panel ? { ...info, extra: <TracePanel panel={panel} /> } : info)
-  const surface = useWorld({ screen: { ...screen, fail: failWorld, solve: (score) => pass(score, drawn) }, workshopParts: hasPersonal?.(drawn) ? resolve : undefined, task: level, test: onView, run, report: runOf, held, at, ended, circuit: drawn, change, version: run.revision })
+  const surface = useWorld({ screen: { ...screen, fail: failWorld, solve: (result) => pass(result, drawn) }, workshopParts: hasPersonal?.(drawn) ? resolve : undefined, task: level, test: onView, run, report: runOf, held, at, ended, circuit: drawn, change, version: run.revision })
   const view = surface?.value ?? computed
 
   // Entries provide the expected values. The runner owns each output's correctness, including checks beyond equality.

@@ -90,16 +90,16 @@ export function useLevelBoard(screen, { open, fresh, clearable }) {
  *   tests     [{ label, hidden?, sample? }] the tests shown (a hidden test is listed once the level is solved; a sample,
  *             after the tests, is a larger picture the board also runs on, never judged; judge levels only)
  *   steps     { of(k) → test k's steps, check(k) → why test k is wrong or '', final? → why the whole run fails }
- *   judge()   → { pass, results: [{ pass, reason }], score? }: every test checked at once
+ *   judge()   → { pass, results: [{ pass, reason }] }: every test checked at once
  *   hidden    { count, failed, words: { note, failed(n) } } hidden tests run with every run and
  *             only say how many fail
- *   score()   the score the level is passed with (judge: the verdict's)
+ *   result()  the optional completion result recorded on a pass
  *   signature the judged work and its resolved dependencies, unchanged by presentation edits
  *   onSolve?  instead of passing the level when every test passes (another stage follows, the board must still be made
  *             a part…); onFail?(run) when a stepped run stops short; guard?() → true when a run may not start yet
  *   at        the test a level opens on
  */
-export function useLevelRun(screen, board, { tests, steps = null, judge = null, hidden = null, score, signature, onSolve, onFail, guard, at: first = 0 }) {
+export function useLevelRun(screen, board, { tests, steps = null, judge = null, hidden = null, result, signature, onSolve, onFail, guard, at: first = 0 }) {
   const [at, setAt] = useState(null)
   const history = useRunHistory(screen, board.circuit, signature)
   const revision = useMemo(() => ({ version: board.version, signature }), [board.version, signature])
@@ -115,7 +115,7 @@ export function useLevelRun(screen, board, { tests, steps = null, judge = null, 
     stepsOf: (k) => (steps ? steps.of(k) : []),
     check: (k) => steps?.check(k) ?? '',
     final: () => steps?.final || missed(hiddenFails),
-    onSolve: () => solve(score?.()),
+    onSolve: () => solve(result?.()),
     onFail,
     onTest: setAt,
     board: revision,
@@ -127,7 +127,7 @@ export function useLevelRun(screen, board, { tests, steps = null, judge = null, 
     return { ...v, hiddenFailed: v.pass ? hiddenFails : 0 }
   }
   const { verdict, check, reset } = useCheckOnce(steps ? {} : history, judged, (v) => {
-    if (v.pass && !v.hiddenFailed) solve(v.score ?? score?.())
+    if (v.pass && !v.hiddenFailed) solve(result?.())
     else if (!v.pass) setAt(failureAt(v))
   })
   // A change to what the board computes drops the verdict on it.

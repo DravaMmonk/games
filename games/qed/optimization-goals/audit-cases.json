@@ -1,0 +1,4 @@
+{
+  "rank": [{ "metric": "cases", "direction": "min" }],
+  "label": "@goal.audit-cases.label"
+}

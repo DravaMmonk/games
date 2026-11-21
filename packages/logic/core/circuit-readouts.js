@@ -3,7 +3,7 @@ import { punctuation } from 'kernel'
 import { L } from "kernel"
 import { T, tr } from 'kernel/words'
 import { parse } from './formula.js'
-import { inputsOf, inputsOfLevel, parseGoal, ruleMark, ruleWritten, subscript } from './machine.js'
+import { inputsOf, inputsOfLevel, parseGoal, ruleMark, ruleWritten, slotMark, subscript } from './machine.js'
 import { say, sayTerm } from './notation.js'
 import { printTerm } from './pterm.js'
 import { typeText } from './datatype.js'
@@ -37,11 +37,10 @@ const proofEntries = ({ task, test, run }) => {
 export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
 // Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
-// numbered once for the whole board (R₁ R₂ …: the run's `ruleOrder`, ./machine.js boardRules; a lone rule plain R). A rule
+// numbered by the board's rule slots (R₁ R₂ …: ./machine.js boardRules; a lone slot plain R). A rule
 // part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no
 // hypotheses keeps its turnstile in front.
 const goalMark = (k, count) => (count > 1 ? `⊢${subscript(k + 1)}` : '⊢')
-const orderOf = (v, run) => (run?.ruleOrder && v.keys.every((k) => run.ruleOrder.includes(k)) ? run.ruleOrder : [...new Set(v.entries.map((e) => e.key))])
 const markedLine = (mark, text, before = '') => ({ s: [before, mark, text].filter(Boolean).join(' '), formula: true, before, mark, text })
 const goalLine = (g, text, mark) => markedLine(mark, text(g.goal),
   withBinders(g.fixes, g.hyps.map(text).join(punctuation("；"))).trimEnd())
@@ -51,16 +50,16 @@ export const goalLines = (v, task) => {
   return v.goals.map((g, k) => goalLine(g, text, goalMark(k, v.goals.length)))
 }
 /** The rules on the board, a line each, marked R₁ R₂ … (the run report lists them first). */
-export const ruleLines = ({ ruleEntries: entries = [], rules = [], ruleOrder = rules }, task) => {
+export const ruleLines = ({ ruleSlots = [] }, task) => {
   const text = machineTextOf(task)
   const term = machineTermOf(task)
-  return ruleOrder.filter((key) => rules.includes(key)).map((key) => ({ mark: ruleMark(key, ruleOrder), text: ruleWritten(entries.find((e) => e.key === key), text, term) }))
+  return ruleSlots.flatMap(({ entry }, index) => entry ? [{ mark: slotMark(index, ruleSlots.length), text: ruleWritten(entry, text, term) }] : [])
 }
 /** What a tactic did (machine.js `did`), in marks: ⊢ ⟵ R₁ (a rule backwards), ⊢ ≡ R₁ (a rewrite), ⊢ ✓ (a hypothesis
  *  closes it), ⊢ ⤓ (moved to the end). */
-export function didText(did, run, { marksOnly = false } = {}) {
+export function didText(did, run, { marksOnly = false, nodeId } = {}) {
   const goal = goalMark(0, did.goals)
-  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleOrder ?? run?.rules ?? did.rules)).join(' ')
+  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleSlots ?? [], nodeId)).join(' ')
   if (did.op === 'rule') return `${goal} ⟵ ${rules}`
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
   if (did.op === 'rwHyps') return marksOnly ? `Γ ${goal} ≡ ${rules}` : T("{goal} 的已知 ≡ {rules}", { goal, rules })
@@ -84,7 +83,7 @@ export function stepExplained(entry, run) {
     ? T('这一步的目标没有比路径上已有的目标更容易证明。')
     : T('检查了路径上已有的目标，这个候选可以继续搜索。')
   const goal = goalMark(0, did.goals)
-  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleOrder ?? run?.rules ?? did.rules)).join(' ')
+  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleSlots ?? [], entry.path?.length ? undefined : entry.id)).join(' ')
   if (did.op === 'rule') return T('倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。', { rules, goal })
   if (did.op === 'rw') return T('用 {rules} 改写目标 {goal}。', { rules, goal })
   if (did.op === 'rwHyps') return T('用 {rules} 改写目标 {goal} 的已知。', { rules, goal })
@@ -114,9 +113,9 @@ export function machineLines(v, { task, run }) {
   if (v.kind === 'sentence' || v.kind === 'rule' || v.kind === 'any') return formulas([genValueText(v, text)])
   if (v.kind === 'list') return formulas(v.items.map((x, k) => `${k + 1}. ${genValueText(x, text)}`))
   if (v.kind === 'rules') {
-    const order = orderOf(v, run)
+    const slots = run?.ruleSlots ?? v.entries.map((entry) => ({ entry }))
     const shown = v.own === undefined ? v.entries : v.entries.slice(v.entries.length - v.own)
-    return shown.map((e) => markedLine(ruleMark(e.key, order), ruleWritten(e, text, term)))
+    return shown.map((e) => markedLine(ruleMark(e.key, slots), ruleWritten(e, text, term)))
   }
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0

@@ -84,8 +84,6 @@ export default function imageGame(content, image = imageWorks(content), { kernel
       },
     },
     // A better circuit costs less, or as much with fewer parts.
-    better: ({ values }, best) => !best || values.cost < best.values.cost || (values.cost === best.values.cost && values.nodes < best.values.nodes),
-    bestLabel: ({ values }) => `${values.nodes} · ${values.cost}`,
   })
   game.circuit = boards
   game.image = image

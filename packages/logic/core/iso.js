@@ -5,11 +5,8 @@
 // premises. Otherwise Apply, Take one, Example and the declaration's elimination rule decide what follows.
 // A specification is tested on cases, not proved. Audit tasks (audit-cases.js) test given declarations instead.
 import { asImp, fn, matchThings, meta, parse, same, showTerm, subst, substMany, unfoldConnective } from './formula.js'
-import { say, sayTerm } from './notation.js'
-import { datatypeRules, typeText } from './datatype.js'
-import { ruleOf, ruleText } from './schematic.js'
-import { L } from "kernel"
-import { T, tr } from 'kernel/words'
+import { ruleOf } from './schematic.js'
+import { T } from 'kernel/words'
 import { cases, failureReason, hidden, inOrder, sameAs } from 'kernel'
 
 /** A sentence of the level, its things read as names (not variables). */
@@ -228,22 +225,4 @@ export function declaredRules(level, ways, g = general(level)) {
       ? ruleOf('take', null, level.take.premises, level.take.conclusion)
       : { premises: [premise(g(sentenceOf(level, level.target))), ...ways.map((way) => premise(R, way.needs.map((n) => g(sentenceOf(level, n))), way.binds))], conclusion: R },
   }
-}
-
-/**
- * What passing a declaration gives, said when it is passed (the passed dialog's lines): its rules for any sentences,
- * those that make it (one for each way), and the one that takes it apart, made from them (declaredRules); for a type
- * (chapter 12), its constructors and the rules the kernel makes of them.
- */
-export function declaredLines(level) {
-  const text = (f) => L(say(f, level.notation))
-  if (level.datatype) {
-    const type = typeOf(level)
-    return {
-      label: T('声明给出的规则'),
-      lines: [typeText(level.datatype.type, type, (t) => L(sayTerm(t, level.notation))), ...datatypeRules(level.datatype.type, type).map((r) => `${L(r.name)}：${ruleText(r, text)}`)],
-    }
-  }
-  const rules = declaredRules(level, level.solution)
-  return { label: T('声明给出的规则'), lines: [...rules.make.map((r, k) => `${tr("引入规则 {k}：", {k: k + 1})}${ruleText(r, text)}`), `${tr('消去规则：')}${ruleText(rules.take, text)}`] }
 }

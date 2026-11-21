@@ -55,7 +55,6 @@ export function defineGame(def) {
     passed: () => null,
     core: () => true,
     note: (level) => level.note ?? level.after,
-    better: (score, best) => !best,
     ...def,
     levels,
     byId,

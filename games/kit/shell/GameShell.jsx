@@ -33,7 +33,7 @@ const SITE = { games: '../index.html' }
  * defineGame) brings only its content: chapters, levels, intro figures and, for each kind of level, the screen
  * that plays it. A level screen gets
  *
- *   { game, level, saved, save(data, { quiet }), solved, solve(score?, work?), fail(info), lastRun, keepRun(mark), flags,
+ *   { game, level, saved, save(data, { quiet }), solved, solve(result?, work?), fail(info), lastRun, keepRun(mark), flags,
  *     progress, theme, phone }
  *
  * `lastRun` is how the screen marked its board's last run (per task and slot, while the level stays open), or
@@ -198,9 +198,9 @@ function GameShellInstance({ game, store, author = null }) {
 
   // What a level screen can do to the shell.
   // Keep each passed board; out-of-order play can finish a level on any task.
-  const solve = (score, work) => {
+  const solve = (result, work) => {
     const before = store.load()
-    const done = task.screen.solve(score, work)
+    const done = task.screen.solve(result, work)
     if (!done) return
     setFailure(null)
     // What the level opens, measured from the progress without it, so passing it again shows the same as the first time.

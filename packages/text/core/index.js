@@ -34,7 +34,7 @@ export const answerPlay = {
     }
     return { answer, pass }
   },
-  judge: report => ({ pass: report.pass, score: report.pass ? 1 : 0 }),
+  judge: report => ({ pass: report.pass }),
 }
 
 export function register(kernel) {

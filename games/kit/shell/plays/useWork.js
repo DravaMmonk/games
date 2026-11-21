@@ -12,7 +12,7 @@ export function useSavedWork(screen, { read, write }) {
     setWork(next)
     save(write(next))
   }
-  return { work, change, history, finish: (score, checked = work) => solve(score, write(checked)) }
+  return { work, change, history, finish: (result, checked = work) => solve(result, write(checked)) }
 }
 
 /** A first-failure judge presented as a one-shot verdict. */
@@ -25,10 +25,10 @@ export function inspectWork(play, judge) {
 }
 
 /** Check the saved work once, and clear that verdict whenever the work changes. */
-export function useCheckedWork(screen, storage, inspect, score = () => null) {
+export function useCheckedWork(screen, storage, inspect, result) {
   const { work, change, history, finish } = useSavedWork(screen, storage)
   const { verdict, check, record, reset } = useCheckOnce(history, () => inspect(work), ({ pass }, checked = work) => {
-    if (pass) finish(score(checked), checked)
+    if (pass) finish(result?.(checked), checked)
   })
   return {
     work, verdict, check, record,

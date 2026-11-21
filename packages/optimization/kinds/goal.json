@@ -1,0 +1,24 @@
+{
+  "folder": "optimization-goals",
+  "declares": ["package", "game"],
+  "overrides": { "package": ["*"], "game": ["*"] },
+  "schema": {
+    "type": "obj",
+    "fields": {
+      "rank": {
+        "type": "list",
+        "min": 1,
+        "of": {
+          "type": "obj",
+          "fields": {
+            "metric": { "type": "str" },
+            "direction": { "type": "oneOf", "values": ["min", "max"] }
+          }
+        }
+      },
+      "label": { "type": "text" }
+    }
+  },
+  "text": ["label"],
+  "studio": { "name": "@kind.goal.name", "icon": "Target" }
+}

@@ -36,7 +36,7 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   assert.equal(start.nodes.length, 3)
   const graph = boardPlay.read(task.solution, context)
   assert.deepEqual(boardPlay.read(boardPlay.write(graph), context), graph)
-  assert.deepEqual(evaluatePlay(kernel, task, task.solution, context).verdict, { pass: true, score: 1 })
+  assert.deepEqual(evaluatePlay(kernel, task, task.solution, context).verdict, { pass: true })
   const naive = evaluatePlay(kernel, task, task.naive, context)
   assert.deepEqual(naive.report.runs.map(run => run.outputs.out), [2, -1])
   assert.equal(naive.report.fail.check, 1)
@@ -45,7 +45,7 @@ test('circuit core registers, checks, round-trips and blind-plays in Node', asyn
   const { brief, inputs, outputs } = task
   assert.deepEqual(agent.observe(context), { brief, inputs, outputs })
   const attempt = agent.act(context, task.solution)
-  assert.deepEqual(attempt, { work: graph, verdict: { pass: true, score: 1 } })
+  assert.deepEqual(attempt, { work: graph, verdict: { pass: true } })
 
   // Reusing an authored object must pick up an edited hidden case on the next evaluation.
   task.hidden[0].expect.out = 4

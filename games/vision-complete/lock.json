@@ -3,43 +3,47 @@
   "dependencies": {
     "kernel": {
       "version": "0.0.0",
-      "hash": "b4018af375ec04862ff89939bc935b23c7f1fa9dbc7e7af8975e11102abd05dc"
+      "hash": "d260038eb220f4f401088a854183a59773a03992302b97c23e615ceaa212c5fa"
     },
     "imglib": {
       "version": "0.0.0",
-      "hash": "a33324fa724baa7da2207f3115c77119d65e252c355a6cf73050989332413b72"
+      "hash": "92557850a45bf6fff2bb8b6d7b03564fd337cc83e482df8a75198991d1f55417"
     },
     "mllib": {
       "version": "0.0.0",
-      "hash": "604a4d27e964a505182baea476820fef64b738b6dbd71e044db2caca40224828"
+      "hash": "dcff34d9382fbf0ed31644c6ce9c4acc0d655528589c73a7bde40033ada8f53e"
     },
     "cvlib": {
       "version": "0.0.0",
-      "hash": "a4b31e81a69c78cb6d54437bf6c6a41be894c90a962cd19cff85b0db9d596ea0"
+      "hash": "658958450e1e3e2133cd5d519fa79d787ad6aaa6b607f6cff599b8837c242c58"
+    },
+    "optimization": {
+      "version": "0.0.0",
+      "hash": "bab5aa379da44f0f524c5b7a746e36946a1365f1c56962c94437f0610b5fda4f"
     },
     "progress": {
       "version": "0.0.0",
-      "hash": "119f51db4306b05585fa4b11e16ed959342d793be4897257f3924c703f9118ff"
+      "hash": "e388c133458703f1d2bf22f5154f9a349f0d5e09cb6b53852ce0a90934420620"
     },
     "circuit": {
       "version": "0.0.0",
-      "hash": "db536fca852d897fd16296727305dd9638c16e0f483ec53fe45a9a263dc95dc0"
+      "hash": "40a99dc01ccf7174844581749f714e3b3d781c8330e3352550761f29115e48c2"
     },
     "wiki": {
       "version": "0.0.0",
-      "hash": "2e947cee3536d2d74540b0b628c0a6e4869460a461233461f5493bbbbd565fcc"
+      "hash": "5642d5e4427a84dbb8d3b3f30caf61adc3070dba2f6071968febd0802e62d05a"
     },
     "image": {
       "version": "0.0.0",
-      "hash": "c08cfe76432fbc6308281fd6991da563d308672dfd5da28d3f89f7fe317a7e37"
+      "hash": "5e558bae277cf01375abcbbd3a760fbc5d183ff6d89da2b7b53af9372067fbef"
     },
     "vision-complete": {
       "version": "0.0.0",
-      "hash": "96289ab044223881c45b92710abfc7ba4586023f695eed98b43650bed49b9a98"
+      "hash": "a81225a71d3420711aedf464bc982a825eb8d9d86065b5e9878b9f9c141f797d"
     },
     "workshop": {
       "version": "0.0.0",
-      "hash": "48a5f9db25082e6149902b54db5594b2bfbab0066b8b218e4733ae05e0daffa4"
+      "hash": "7d996b32200f20705de620a4b7666688a739b3b14ae2bfbd61c9d5fc02997a2a"
     }
   }
 }

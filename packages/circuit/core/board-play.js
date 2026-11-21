@@ -33,7 +33,7 @@ export function createBoardPlay({ name, board, readWorks, runLevel, starter = fa
       const { task, view } = contextOf(context)
       return runLevel({ ...task, tests: [...task.tests, ...(task.hidden ?? [])] }, work, view.partOf)
     },
-    judge: report => ({ pass: report.pass, score: report.pass ? 1 : 0 }),
+    judge: report => ({ pass: report.pass }),
     ...(runtime && { runtime }),
   }
 }

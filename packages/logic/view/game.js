@@ -5,7 +5,7 @@ import { notationNumber, notationPlain } from 'notation'
 import { L } from 'kernel/view'
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
-import { displays as ui } from './ui/displays.js'
+import { displays as ui } from './ui/displays.jsx'
 // A logic game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the logic domain's screens (a proof on the circuit editor, a truth table,
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
@@ -13,7 +13,6 @@ import { CircuitBoard, ClipboardCheck, Cog, Cpu, FileSignature, Grid2x2Check, La
 import { defineGame } from 'circuit/view'
 import { fresh, isCore } from 'circuit'
 import { logicPartCatalog } from '../core/part-catalog.js'
-import { tr } from 'kernel/words'
 import { worldCheck } from '../core/worldValues.js'
 import { query, translation } from '../core/formulaWork.js'
 import { script } from '../core/scriptValues.js'
@@ -174,8 +173,6 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
       },
     },
     // Fewer steps (proof steps, or gates) is better; fewer cases, where the player writes them (audit-cases.js).
-    better: (score, best) => !best || score.values.steps < best.values.steps,
-    bestLabel: ({ values }) => (values.unit === 'cases' ? tr("{steps} 条", {steps: values.steps}) : tr("{steps} 步", {steps: values.steps})),
   })
   game.symbolUnlocks = (level, before, after) => {
     if (before.solved.includes(level.id) || !after.solved.includes(level.id)) return []

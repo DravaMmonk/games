@@ -85,7 +85,7 @@ function LevelButton({ game, level, style, solved, all, best, current, next, nee
   const won = solved.has(level.id)
   const state = won ? 'is-solved' : open ? 'is-open' : 'is-locked'
   const kind = game.kinds[level.kind]
-  const score = won && best(level.id) && game.bestLabel?.(best(level.id))
+  const score = won && best(level)
   const here = level.id === current
   return (
     <button data-level={level.id} style={style} title={(game.plainProse ?? L)(level.title)} aria-current={here ? 'page' : undefined} className={`map-node ${state} ${game.core(level) ? '' : 'is-minor'} ${level.optional ? 'is-optional' : ''} ${next?.id === level.id ? 'is-next' : ''} ${here ? 'is-here' : ''} ${needed?.ids.has(level.id) ? 'is-needed' : ''} ${needed?.asked === level.id ? 'is-asked' : ''}`} aria-disabled={!open} onClick={() => (open ? onOpen(level.id) : needed?.ask(level.id))}>
@@ -303,7 +303,7 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
 
       <div className="map-chapters">
         {game.chapters.map((chapter, k) => (
-          <MapChapter key={chapter.id} game={game} chapter={chapter} k={k} solved={solved} all={progress.all} best={(id) => progress.best[id]} next={next} compact={phone} onOpen={onOpen} needed={needed} edit={edit} />
+          <MapChapter key={chapter.id} game={game} chapter={chapter} k={k} solved={solved} all={progress.all} best={(level) => game.completionLabel?.(progress, level.tasks)} next={next} compact={phone} onOpen={onOpen} needed={needed} edit={edit} />
         ))}
       </div>
       <NeededNote game={game} needed={needed} onOpen={onOpen} />

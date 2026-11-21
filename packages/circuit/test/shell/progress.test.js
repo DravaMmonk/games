@@ -17,11 +17,15 @@ globalThis.window = { localStorage: { getItem: (k) => storage.get(k) ?? null, se
 test('a task whose puzzle changed loses its save, its level is unsolved, and every other task keeps its own', () => {
   const tasks = { a: { level: 'one', stamp: 'aaaa' }, b: { level: 'one', stamp: 'bbbb' }, c: { level: 'two', stamp: 'cccc' } }
   const made = createProgress({ id: 'g', tasks })
-  made.update((p) => ({ ...p, solved: ['one', 'two'], passed: ['a', 'b', 'c'], data: { a: 1, b: 2, c: 3 }, built: { b: 2, c: 3 }, best: { one: 5, two: 6 } }))
+  const a = { size: { values: { size: 5 } } }
+  made.update((p) => ({
+    ...p, solved: ['one', 'two'], passed: ['a', 'b', 'c'], data: { a: 1, b: 2, c: 3 }, built: { b: 2, c: 3 },
+    results: { a, b: { size: { values: { size: 6 } } }, c: { size: { values: { size: 7 } } } },
+  }))
   assert.deepEqual(createProgress({ id: 'g', tasks }).load().solved, ['one', 'two'])
   // b's puzzle changes; a task that is gone from the content (and a new one) changes nothing else.
   const now = createProgress({ id: 'g', tasks: { a: tasks.a, b: { level: 'one', stamp: 'other' }, d: { level: 'two', stamp: 'dddd' } } }).load()
-  assert.deepEqual([now.solved, now.passed, now.data, now.built, now.best], [['two'], ['a'], { a: 1 }, {}, { two: { values: { value: 6 } } }])
+  assert.deepEqual([now.solved, now.passed, now.data, now.built, now.results], [['two'], ['a'], { a: 1 }, {}, { a }])
   assert.deepEqual(now.stamps, { a: 'aaaa', b: 'other', d: 'dddd' })
 })
 
@@ -82,7 +86,7 @@ test('a cross-game gate requires a recorded pass for the exact level', () => {
 })
 
 const level = { id: 'level', tasks: [{ key: 'first' }, { key: 'second' }, { key: 'last' }], unlocks: ['circuit/part'] }
-const game = { byId: { level }, better: () => true }
+const game = { byId: { level } }
 
 test('unlocking all opens later tasks without passing them', () => {
   const p = fresh()
@@ -93,27 +97,14 @@ test('unlocking all opens later tasks without passing them', () => {
 })
 
 test('passing the last task early completes an all-unlocked level without passing earlier tasks', () => {
-  const last = passed(game, { ...fresh(), all: true }, level, 2, { count: 4 })
+  const last = passed(game, { ...fresh(), all: true }, level, 2)
   assert.deepEqual(last.passed, ['last'])
   assert.deepEqual(last.solved, [level.id])
   assert.equal(taskPassed(game, last, level.id, 0), false)
   assert.equal(firstTask(game, last, level.id), 2)
   assert.deepEqual(last.flags, ['circuit/part'])
-  assert.deepEqual(last.best[level.id], { values: { count: 4 } })
   const normal = passed(game, fresh(), level, 2)
   assert.deepEqual(normal.solved, [])
-})
-
-test('saved results retain play-defined values and compare after an older save is loaded', () => {
-  const store = createProgress({ id: 'results' })
-  storage.set(store.key, JSON.stringify({ stamps: {}, solved: [level.id], best: { [level.id]: { count: 4, unit: 'items' } } }))
-  const compare = { ...game, better: (result, best) => !best || result.values.count < best.values.count }
-  const loaded = store.load()
-  assert.deepEqual(loaded.best[level.id], { values: { count: 4, unit: 'items' } })
-  const worse = passed(compare, loaded, level, 2, { count: 5, unit: 'items' })
-  assert.deepEqual(worse.best, loaded.best)
-  const better = passed(compare, worse, level, 2, { count: 3, unit: 'items' })
-  assert.deepEqual(better.best[level.id], { values: { count: 3, unit: 'items' } })
 })
 
 test('next required task prefers later tasks and revisits earlier ones only when needed', () => {
@@ -149,7 +140,7 @@ test('inheritance uses only judged work and never a skipped optional task in a s
 test('passing a carried task retains its passing circuit when the working board changes later', () => {
   const source = { id: 'source', tasks: [{ key: 'source-task' }], unlocks: [] }
   const target = { id: 'target', tasks: [{ key: 'target-task', source: { carry: 'source' } }], unlocks: [] }
-  const g = { byId: { source, target }, better: () => true }
+  const g = { byId: { source, target } }
   const board = { nodes: [{ id: 'passed' }], wires: [] }
   const done = passed(g, { ...fresh(), data: { 'source-task': board } }, source, 0)
   assert.deepEqual(done.built['source-task'], board)
@@ -188,7 +179,7 @@ test('parts become visible when their level is passed, including when it is repl
 
 test('optional tasks can be skipped without granting their rewards or appearing passed', () => {
   const l = { id: 'mixed', tasks: [{ key: 'extra', optional: true, opens: ['extra-part'] }, { key: 'required' }], unlocks: ['level-part', 'extra-part'] }
-  const g = { byId: { mixed: l }, better: () => true, flagsOf: (p) => p.flags, unlocksBefore: () => [] }
+  const g = { byId: { mixed: l }, flagsOf: (p) => p.flags, unlocksBefore: () => [] }
   const start = fresh()
   assert.equal(taskOpen(g, start, 'mixed', 1), true)
   assert.equal(taskPassed(g, start, 'mixed', 0), false)
@@ -216,7 +207,7 @@ test('optional tasks can be skipped without granting their rewards or appearing 
 
 test('passing only an optional task does not complete the required tasks in all-unlocked mode', () => {
   const l = { id: 'mixed', tasks: [{ key: 'required' }, { key: 'extra', optional: true }], unlocks: [] }
-  const g = { byId: { mixed: l }, better: () => true }
+  const g = { byId: { mixed: l } }
   const p = passed(g, { ...fresh(), all: true }, l, 1)
   assert.deepEqual(p.solved, [])
   assert.deepEqual(p.passed, ['extra'])

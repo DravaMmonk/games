@@ -21,8 +21,6 @@
     "{0}具有该性质": "{0} has that property",
     "{depth} 层以内都搜遍了，也没有证完": "Searched everything within {depth} levels without finishing",
     "{method} 没有证完": "{method} did not finish",
-    "{steps} 条": "{steps} cases",
-    "{steps} 步": "{steps} steps",
     "{type} 按情况分": "{type} by cases",
     "{type} 的归纳": "{type} induction",
     "{type}：{f} 不等于 {f2}": "{type}: {f} is not {f2}",

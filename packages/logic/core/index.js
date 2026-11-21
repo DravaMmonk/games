@@ -1,5 +1,5 @@
 import { symbolFor } from './symbols.js'
-import { registeredOperations, registeredValueTypes, S, withHidden, taskModule } from 'kernel'
+import { completionResult, registeredOperations, registeredValueTypes, S, withHidden, taskModule } from 'kernel'
 import { registry, meaning } from './catalog.js'
 import runtime from './runtime.js'
 import { logicContext } from './context.js'
@@ -17,7 +17,8 @@ import { lemmaPortProblems } from './validate.js'
 import { checkDeclaration, readRuleRows, blankRule } from './ruleLines.js'
 import { sentenceOf } from './iso.js'
 import { say } from './notation.js'
-import { runAudit, restoreAuditCases } from './audit-cases.js'
+import { auditResult, runAudit, restoreAuditCases } from './audit-cases.js'
+import { declarationResult } from './rowValues.js'
 import { parse } from './formula.js'
 export { registerWordSets } from './wordsets.js'
 
@@ -81,12 +82,15 @@ export function register(kernel) {
           case 'logic/model': return judged(worldCheck(task).judge, work)
           case 'logic/script': return judged(scriptJudge(task), work)
           case 'logic/define': return judged(checkDefine(task), work)
-          case 'logic/iso': return judged(checkDeclaration(task), readRuleRows(task, work.rules ?? work))
-          case 'logic/audit': return runAudit(task, work, sentence => say(sentenceOf(task, sentence), task.notation))
+          case 'logic/iso': {
+            const rules = readRuleRows(task, work.rules ?? work)
+            return { ...judged(checkDeclaration(task), rules), result: declarationResult(rules) }
+          }
+          case 'logic/audit': return { ...runAudit(task, work, sentence => say(sentenceOf(task, sentence), task.notation)), result: auditResult(work) }
           default: throw new Error(`unknown logic play ${name}`)
         }
       },
-      judge: report => ({ pass: report.pass, score: report.score ?? (report.pass ? 1 : 0) }),
+      judge: report => ({ pass: report.pass, result: report.pass ? report.result ?? completionResult(report.score) : null }),
     })
     kernel.agent(name, {
       observe: context => play.open(textContext(context)),

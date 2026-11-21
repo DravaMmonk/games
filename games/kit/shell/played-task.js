@@ -46,14 +46,14 @@ export function playedTask(context, { go, update } = {}) {
         const index = slotIndex(slotsOf(p, key).list)
         return index < 0 ? p : saveSlot(p, key, index, data)
       })),
-      solve: update && ((score, work) => {
+      solve: update && ((result, work) => {
         const done = update((p) => {
           const current = slotsOf(p, key)
           const index = slotIndex(current.list)
           if (index < 0) return p
           const draft = current.at === index ? p.data[key] : current.list[index].data
           const next = work === undefined ? p : saveSlot(p, key, index, work)
-          return recordPass(game, next, level, at, score, work === undefined ? draft : work)
+          return recordPass(game, next, level, at, result, work === undefined ? draft : work)
         })
         return slotIndex(slotsOf(done, key).list) < 0 ? null : done
       }),

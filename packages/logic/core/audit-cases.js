@@ -1,7 +1,9 @@
-import { sameJson } from 'kernel'
+import { completionResult, sameJson } from 'kernel'
 import { reportRuns } from 'kernel'
 import { T } from 'kernel/words'
 import { derives, givenText } from './iso.js'
+
+export const auditResult = cases => completionResult({ cases: cases.length })
 
 /** Judge the written cases once and record where each declaration's replay stops. */
 export function runAudit(level, cases, words) {

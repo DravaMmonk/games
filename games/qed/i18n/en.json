@@ -35,5 +35,7 @@
   "glossary.entries.proofBoard.body.0": "When a part requires a proposition, select one from the choices available in the level.",
   "glossary.entries.proofBoard.body.1": "Each level has <b>tests</b>: one uses the letter schema, while the others substitute everyday propositions. The circuit must pass each test. Tests expose mismatches; a general conclusion rests on the proof structure and its substitution rules, not on a few examples alone.",
   "glossary.entries.proofBoard.title": "Proof board and substitution tests",
+  "goal.audit-cases.label": "{cases} cases",
+  "goal.proof-steps.label": "{steps} steps",
   "section.play.title": "How to play"
 }

@@ -1,3 +1,4 @@
+import { completionResult } from 'kernel'
 // Circuit tasks as editable blueprints with the cases and verdicts the screen shows.
 import { circuitPlay, definedSettings, untilFail } from 'circuit'
 import { runTestGroups, splitTests, TEST_WORDS } from 'kernel'
@@ -59,7 +60,7 @@ const gates = circuitPlay({
       tests,
       says: over ? [checked.constraint] : checked.pass ? [T('每一行都正确：这块电路算出了这句话的完整真值表。')] : [],
       pass: checked.pass,
-      score: checked.score,
+      result: checked.pass ? completionResult(checked.score) : null,
     }
   },
 })
@@ -89,7 +90,7 @@ function derivationPlay(readout, run) {
       const tests = playFor(plays, task).judge === 'steps' ? untilFail(cases) : cases
       const constraint = checked.constraint
       return {
-        tests, pass, score: checked.score, constraint,
+        tests, pass, result: pass ? completionResult(checked.score) : null, constraint,
         says: constraint && cases.every((row) => row.pass) ? [constraint] : [],
         hidden: hidden && { ...hidden, says: TEST_WORDS.failed(hidden.failed, hidden.count) },
       }

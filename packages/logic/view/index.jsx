@@ -1,4 +1,4 @@
-import { displays } from './ui/displays.js'
+import { displays } from './ui/displays.jsx'
 import { registerEditors } from './studio/index.jsx'
 import { logicContext } from '../core/context.js'
 import { taskScreen } from 'circuit/view'

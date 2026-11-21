@@ -28,8 +28,7 @@ import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress
  *   core(level)   whether the map draws a level full size (a milestone: ../course.js isCore) or smaller
  *   note(level)   the level's key idea, shown when it is passed (default: level.note ?? level.after)
  *   glossary      the encyclopedia: { groups: [{ id, title }], entries: [{ id, group, title, body, at?, see? }] }
- *   levelLabel(level), isOpen(level, solved, all), better(result, best), bestLabel(best)
- *   Results have `values`, the play-defined data recorded on a pass.
+ *   levelLabel(level), isOpen(level, solved, all)
  *
  * Part descriptions and available forms follow the same named stages as the circuit cards.
  */

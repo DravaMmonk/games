@@ -1,0 +1,4 @@
+{
+  "rank": [{ "metric": "steps", "direction": "min" }],
+  "label": "@goal.proof-steps.label"
+}

@@ -15,5 +15,13 @@
     "qed/pl-anc",
     "qed/pl-order",
     "qed/s-loop"
+  ],
+  "rows": [
+    ["qed/s-try", "qed/s-defer"],
+    ["qed/s-append", "qed/s-intro"],
+    ["qed/s-loop", "qed/s-elim"],
+    ["qed/s-auto", "qed/pl-grand"],
+    [null, "qed/pl-anc"],
+    [null, "qed/pl-order"]
   ]
 }

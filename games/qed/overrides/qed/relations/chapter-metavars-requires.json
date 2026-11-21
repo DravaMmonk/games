@@ -1,0 +1,13 @@
+{
+  "edges": {
+    "remove": [
+      { "from": "qed/q-trans", "to": "qed/r-match" },
+      { "from": "qed/r-occurs", "to": "qed/r-unifier" },
+      { "from": "qed/r-unifier", "to": "qed/r-pattern" },
+      { "from": "qed/r-pattern", "to": "qed/r-patterns" },
+      { "from": "qed/r-patterns", "to": "qed/r-allI" },
+      { "from": "qed/r-unifier", "to": "qed/r-subgoals" },
+      { "from": "qed/r-subgoals", "to": "qed/r-elim" }
+    ]
+  }
+}

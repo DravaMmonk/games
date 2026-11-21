@@ -5,6 +5,7 @@
     "question": "@course.eras.assistant.chapter.question"
   },
   "levels": [
+    "qed/read-rules",
     "qed/r-rule",
     "qed/r-assumption",
     "qed/r-meta",
@@ -16,11 +17,12 @@
     "qed/s-search"
   ],
   "rows": [
+    ["qed/read-rules"],
     ["qed/r-rule"],
     ["qed/r-assumption"],
     ["qed/r-meta", "qed/s-repeat"],
-    ["qed/r-lemma", "qed/s-orelse", "qed/s-results"],
-    ["qed/s-mix"],
-    [null, "qed/s-search"]
+    ["qed/r-lemma", "qed/s-orelse"],
+    ["qed/s-results", "qed/s-mix"],
+    ["qed/s-search"]
   ]
 }

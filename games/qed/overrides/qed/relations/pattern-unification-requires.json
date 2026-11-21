@@ -1,0 +1,1 @@
+{ "edges": { "remove": [{ "from": "qed/r-pattern", "to": "qed/r-patterns" }] } }

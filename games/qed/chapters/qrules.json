@@ -18,7 +18,6 @@
     "qed/q-eq",
     "qed/q-sym",
     "qed/q-trans",
-    "qed/gen-ex",
     "qed/h-and-make",
     "qed/h-or-make",
     "qed/h-eq-refl",
@@ -31,5 +30,20 @@
     "qed/q-move",
     "qed/q-ancestor",
     "qed/q-bigger"
+  ],
+  "rows": [
+    ["qed/q-allI"],
+    ["qed/q-allE", "qed/decl-ex"],
+    ["qed/q-rename", "qed/q-exI"],
+    ["qed/q-allAnd", "qed/q-exE"],
+    ["qed/q-capture", "qed/q-witness"],
+    ["qed/decl-eq"],
+    [null, "qed/q-eq", "qed/h-and-make"],
+    [null, "qed/q-sym", "qed/h-or-make"],
+    [null, "qed/q-trans", "qed/h-eq-refl"],
+    ["qed/s-barbara", "qed/q-swap", "qed/h-eq-subst"],
+    ["qed/s-darii", "qed/q-move", "qed/h-eq-sym"],
+    ["qed/s-carroll", "qed/q-ancestor", null],
+    [null, "qed/q-bigger", null]
   ]
 }

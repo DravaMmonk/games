@@ -1,0 +1,6 @@
+{
+  "edges": {
+    "add": [{ "from": "qed/s-elim", "to": "qed/pl-grand" }, { "from": "qed/s-append", "to": "qed/s-elim" }],
+    "remove": [{ "from": "qed/s-append", "to": "qed/pl-grand" }]
+  }
+}

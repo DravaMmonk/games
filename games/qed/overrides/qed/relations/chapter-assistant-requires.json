@@ -1,0 +1,9 @@
+{
+  "edges": {
+    "remove": [
+      { "from": "qed/decl-bot", "to": "qed/r-rule" },
+      { "from": "qed/r-meta", "to": "qed/s-orelse" },
+      { "from": "qed/r-meta", "to": "qed/s-results" }
+    ]
+  }
+}

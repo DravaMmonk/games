@@ -1,0 +1,6 @@
+{
+  "edges": {
+    "add": [{ "from": "qed/decl-bot", "to": "qed/and" }, { "from": "qed/decl-bot", "to": "qed/or" }],
+    "remove": [{ "from": "qed/s-search", "to": "qed/bot" }]
+  }
+}

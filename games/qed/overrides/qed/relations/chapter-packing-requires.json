@@ -1,0 +1,10 @@
+{
+  "edges": {
+    "remove": [
+      { "from": "qed/mergeUse", "to": "qed/read-rules" },
+      { "from": "qed/read-rules", "to": "qed/decl-and" },
+      { "from": "qed/decl-iff", "to": "qed/decl-three", "required": true },
+      { "from": "qed/decl-three", "to": "qed/decl-order", "required": true }
+    ]
+  }
+}

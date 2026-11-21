@@ -1,0 +1,9 @@
+{
+  "edges": {
+    "add": [{ "from": "qed/decl-eq", "to": "qed/h-and-make" }],
+    "remove": [
+      { "from": "qed/q-allE", "to": "qed/h-and-make" },
+      { "from": "qed/decl-eq", "to": "qed/h-eq-refl" }
+    ]
+  }
+}

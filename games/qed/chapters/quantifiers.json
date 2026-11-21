@@ -17,5 +17,16 @@
     "qed/q-grand",
     "qed/q-none",
     "qed/q-school"
+  ],
+  "rows": [
+    ["qed/fo-atoms"],
+    ["qed/fo-all", "qed/fo-some"],
+    ["qed/m-counter", null],
+    ["qed/fo-nested"],
+    ["qed/p-only"],
+    ["qed/p-split", "qed/q-children"],
+    ["qed/p-exAnd", "qed/q-grand"],
+    [null, "qed/q-none"],
+    [null, "qed/q-school"]
   ]
 }

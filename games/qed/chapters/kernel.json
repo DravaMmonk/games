@@ -14,14 +14,29 @@
     "qed/twice",
     "qed/swap",
     "qed/mergeUse",
+    "qed/mergeLong",
+    "qed/mergeBoth",
     "qed/k",
     "qed/s",
     "qed/x-k",
     "qed/x-chain",
     "qed/x-swap",
     "qed/x-self",
-    "qed/x-merge",
-    "qed/mergeLong",
-    "qed/mergeBoth"
+    "qed/x-merge"
+  ],
+  "rows": [
+    ["qed/copy"],
+    ["qed/mp", "qed/assume"],
+    ["qed/nested", null],
+    ["qed/box"],
+    ["qed/chain", "qed/twice"],
+    ["qed/swap", null],
+    ["qed/mergeUse"],
+    ["qed/mergeLong"],
+    ["qed/mergeBoth"],
+    ["qed/k", "qed/s"],
+    ["qed/x-k"],
+    ["qed/x-chain", "qed/x-self"],
+    ["qed/x-swap", "qed/x-merge"]
   ]
 }

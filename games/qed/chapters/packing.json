@@ -5,7 +5,6 @@
     "question": "@course.eras.packing.chapter.question"
   },
   "levels": [
-    "qed/read-rules",
     "qed/decl-and",
     "qed/decl-check",
     "qed/decl-strength",
@@ -15,8 +14,18 @@
     "qed/decl-iff",
     "qed/decl-three",
     "qed/decl-order",
-    "qed/decl-two",
-    "qed/gen-one",
-    "qed/gen-each"
+    "qed/decl-two"
+  ],
+  "rows": [
+    ["qed/decl-and"],
+    ["qed/decl-check"],
+    ["qed/decl-strength"],
+    ["qed/decl-or"],
+    ["qed/decl-bot"],
+    ["qed/decl-true", "qed/decl-three"],
+    ["qed/decl-iff", "qed/decl-order"],
+    [null, "qed/decl-two"],
+    [null],
+    [null]
   ]
 }

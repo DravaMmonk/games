@@ -18,5 +18,15 @@
     "qed/contra",
     "qed/dist",
     "qed/dsyll"
+  ],
+  "rows": [
+    ["qed/and", "qed/or", "qed/bot"],
+    ["qed/curry", "qed/cases", "qed/notI"],
+    [null, "qed/orSwap", "qed/mt"],
+    ["qed/iffUse"],
+    ["qed/orImp"],
+    ["qed/contra"],
+    ["qed/dist"],
+    ["qed/dsyll"]
   ]
 }

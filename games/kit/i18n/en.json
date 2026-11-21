@@ -663,6 +663,7 @@
     "读取中……": "Loading…",
     "正在加载课程……": "Loading course…",
     "读取内容词汇表、命名形状、玩法字段和操作参数。": "What content may be made of: a game’s domain vocabulary as data (kinds, items, schemas of game.json and a level), and the operations with their arguments.",
+    "读取当前课程目录、指定章节或完整关卡。level 接受关卡全名或地图编号，chapter 接受章节全名。": "Read the current course index, a chapter, or a full level. Pass a level's qualified ID or map number, or a chapter's qualified ID.",
     "读取游戏引用和已登记对象类型的显示名称、标题和标签，供文案引用。": "The labels, titles and names shown by a game’s references and registered object kinds.",
     "读取源码和文件版本。": "Read source and its revision.",
     "读取登记的标签、关系或分组和展开后的课程路线。可预览待应用的变更集。": "Read registered tags, relations or sections and the expanded course route, optionally after a pending changeset.",

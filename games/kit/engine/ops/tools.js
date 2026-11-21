@@ -24,6 +24,7 @@ import { meaningsOf } from '../kind-meanings.js'
 import { fresh } from '../../shell/progress.js'
 import { taskContext } from '../../shell/played-task.js'
 import { drawDeps } from '../deps.js'
+import { levelLabels } from '../../course.js'
 import { getAt, parsePath, showPath } from './edit.js'
 import { objectOf, courseRoute } from '../objects.js'
 import { operationsFor } from './operations.js'
@@ -157,6 +158,37 @@ const tools = {
       const content = await contentAfter(game, changeset, scope)
       if (kind && !Object.hasOwn(content.registries, kind)) throw new Error(`unknown object kind ${kind}`)
       return { objects: name ? objectOf(content, kind, name, member) : kind ? content.registries[kind] : content.registries, route: courseRoute(content) }
+    },
+  },
+  inspect: {
+    about: catalogText("读取当前课程目录、指定章节或完整关卡。level 接受关卡全名或地图编号，chapter 接受章节全名。"),
+    params: { game: 'string', chapter: 'string?', level: 'string?' },
+    async run({ game, chapter, level }) {
+      if (chapter !== undefined && level !== undefined) throw new Error('choose chapter or level')
+      const content = readTarget(game)
+      const { chapters, edges } = courseRoute(content)
+      const labels = levelLabels(chapters)
+      const levels = new Map(content.levels.map(entry => [entry.id, entry]))
+      const summary = ({ id, ...flags }) => ({ id, label: labels.get(id) ?? id, title: levels.get(id)?.title, ...flags })
+      const target = { id: content.id, title: content.title, packages: runtimeIds(content) }
+      if (level !== undefined) {
+        const id = levels.has(level) ? level : [...labels].find(([, label]) => label === level)?.[0]
+        const value = levelIn(content, id ?? level)
+        const section = chapters.find(({ levels }) => levels.some(entry => entry.id === value.id))
+        return {
+          ...target, label: labels.get(value.id) ?? value.id, chapter: section?.id ?? null, level: value,
+          placement: section?.levels.find(entry => entry.id === value.id) ?? null,
+          edges: edges.filter(edge => edge.to === value.id || (!edge.game && edge.from === value.id)),
+          source: content.sources?.level?.[value.id],
+        }
+      }
+      if (chapter !== undefined) {
+        const section = chapters.find(({ id }) => id === chapter)
+        if (!section) throw new Error(`${content.id} has no chapter ${chapter}`)
+        return { ...target, chapter: { ...section, levels: section.levels.map(summary) } }
+      }
+      if (content.packageTarget) return { ...target, levels: packageLevelOrder(content).map(id => summary({ id })) }
+      return { ...target, chapters: chapters.map(({ id, chapter, levels }) => ({ id, title: chapter?.title, levelCount: levels.length })) }
     },
   },
   games: {
@@ -475,7 +507,7 @@ const toolMeanings = withReadCache(ROOT, () => layerVocabulary(resolveLayers({ p
 for (const meaning of toolMeanings) for (const [name, tool] of Object.entries(meaning.tools ?? {})) tools[name] = { ...tool, run: args => tool.run(args, { contentAfter, runtimeOf }) }
 
 export const TOOLS = Object.fromEntries(Object.entries(tools).map(([name, original]) => {
-  const tool = ['preview', 'vocabulary', 'names', 'games', 'packages'].includes(name)
+  const tool = ['preview', 'vocabulary', 'names', 'games', 'packages', 'inspect'].includes(name)
     ? { ...original, run: args => withReadCache(ROOT, () => original.run(args)) } : original
   if (!tool.params.game || name === 'create_game') return [name, tool]
   return [name, {

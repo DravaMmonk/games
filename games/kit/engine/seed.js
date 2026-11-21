@@ -1,5 +1,5 @@
 // Seeds for the random draws of a run. A verdict is a pure function of the content, the task and the board
-// (games/DIRECTION.md, decision 13), so nothing a part, a world or a bench model computes reads a clock or an unseeded
+// (games/design/engine-package-boundaries.md), so nothing a part, a world or a bench model computes reads a clock or an unseeded
 // random source: a part that draws takes its seed from what it was given.
 
 /** A 32-bit seed from `parts`: strings, numbers, or lists of numbers (FNV-1a over their text). */

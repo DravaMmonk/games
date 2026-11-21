@@ -20,15 +20,31 @@
 | `packages/<包>/view/` | 主区、预览、专用编辑器、显示、样式与图标 |
 | `packages/<包>/kinds/` 及对象目录 | 对象类型、字段扩展和内容数据 |
 
-添加玩法或专题时在包中实现。内核随平台或游戏流程的需要修改。仓库目前保持合一，平台独立成仓库待定。
+添加玩法或专题时在包中实现。内核随公共平台或游戏流程的需要修改。
 
 - [6.1 内容：对象、依赖和覆盖](engine-content.md)
 - [6.2 对象类型、标签与新建对象](engine-object-types.md)
 - [6.3 内核与包的边界](engine-package-boundaries.md)
-- [6.4 参数台](engine-benches.md)
-- [6.5 包的分类与职责](engine-play-packages.md)
-- [6.6 文字试玩与盲玩](engine-blind-play.md)
+- [6.4 参数玩法](#64-参数玩法)
+- [6.5 查包](#65-查包)
+- [6.6 文字试玩与盲玩](#66-文字试玩与盲玩)
 - [6.7 Studio 外壳与包编辑器](engine-studio.md)
-- [6.8 元件、设置和阶段](engine-components.md)
+- [6.8 元件与阶段](#68-元件与阶段)
 - [6.9 界面](engine-ui.md)
 - [6.10 多语言文案](engine-localization.md)
+
+### 6.4 参数玩法
+
+具体参数、显示和判定由玩法包声明。用 `vocabulary` 查询字段，用 `inspect` 查实际任务。
+
+### 6.5 查包
+
+包的类型、依赖和元数据由 `package.json` 声明，能力与对象定义分别来自 `capabilities/` 和 `kinds/`。MCP `packages` 与 `vocabulary` 从当前安装数据读取。新增或拆分包遵守 [入口与依赖约定](engine-package-boundaries.md)。
+
+### 6.6 文字试玩与盲玩
+
+玩法提供的观察和动作与玩家界面共用核心判定。文字观察只含玩家可见信息，用 MCP `play_task` 读取或提交。作者按 [作者流程](author-workflow.md) 读取完整任务。
+
+### 6.8 元件与阶段
+
+适用玩法在包中声明工具、元件、配置与阶段，并能根据任务和进度派生其可用状态。使用目标玩法的词汇表、关卡数据和核心登记核对规则。

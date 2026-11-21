@@ -64,7 +64,7 @@ export function groupMoves(levels, to, content, namespace) {
 
 /**
  * The operations a drop of `levels` at `to` (a slot of groupTree) makes: the members of the layer's own tags. A tag is
- * a set (games/MODULES.md 5.4): its members show in the order their prerequisites give, so a drop changes membership
+ * a set (games/design/engine-object-types.md): its members show in the order their prerequisites give, so a drop changes membership
  * only, never an order.
  */
 export const treeMoves = (levels, to, content, namespace) => groupMoves(levels, to, content, namespace)

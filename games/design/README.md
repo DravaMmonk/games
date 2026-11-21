@@ -1,24 +1,16 @@
-# 类图灵完备游戏设计手册
+# 游戏项目手册
 
-这份手册适用于建在共享 kit（`games/kit`）上的所有游戏，包括已有的《视觉完备》《状态之图》《证明完毕》及以后的新游戏。各游戏自己的设计文档（例如 `games/vision-complete/DESIGN.md`）记录本专题的内容；本手册是当前架构的唯一手册，汇总设计经验、引擎结构和自动检查；教学设计建议供判断参考，具体实现及检查行为单独说明。
+在 `site/` 运行 `npm run --silent inspect -- <游戏>`，或调用 MCP `inspect`，读取当前课程。查包的类型、依赖、能力、字段和公开入口时，以 `package.json`、`capabilities/`、`kinds/`、MCP `packages` 和 `vocabulary` 为准。运行行为读源码、契约测试和实际试玩。
 
-**目标**：引擎和视图做好以后，作者只需填入一个专题的教学内容，学习者就能用《图灵完备》的方式学会它：从少量能力起步，用预设承载固定计算，亲手设计有实现选择的组合，逐层建立可复用的机器。
-
-对《图灵完备》本身关卡手法的研究，见《视觉完备》设计文档的第 1 节。
-
----
-
-
-## 章节
+本手册记录共用架构和跨游戏约定。只有层职责、公开协议、持久化格式或共用平台设计发生变化时，才更新受影响的章节。每个包使用现有声明和源码注释表达接口。关卡、玩法内容、文案、包清单和依赖图均从当前数据读取。
 
 - [1. 设计取向](design-principles.md)
 - [2. 课程结构](curriculum.md)
-- [3. 基本元素和引擎里的对应](engine-elements.md)
-- [4. 一关怎么写](writing-levels.md)
+- [3. 基本元素](engine-elements.md)
+- [4. 任务设计](writing-levels.md)
 - [5. 规则与自动检查](rules-and-checks.md)
-- [6. 引擎：内核与内容](engine.md)
-- [7. 作者流程](author-workflow.md)
-- [8. 常见问题](faq.md)
-- [9. 实例：《状态之图》按代际重排（游戏章对象）](state-graph-example.md)
-- [10. 实例：《视觉完备》](vision-complete-example.md)
-- [11. 实例：《证明完毕》的章怎么排](qed-example.md)
+- [6. 共用架构](engine.md)
+- [7. 作者工具与验证](author-workflow.md)
+- [8. 教学评审](faq.md)
+
+原逐游戏设计、方案、评审和路线图可从 Git 历史查阅，例如 `git show 6473eaad:games/qed/design/curriculum.md`。

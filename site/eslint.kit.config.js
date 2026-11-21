@@ -2,7 +2,7 @@ import { importProblem } from '../games/kit/engine/plugin-boundaries.js'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 // Lint for the games kit (../games/kit), run from the repository root: npm run lint:kit. Two things only: plain
-// mistakes (undefined names, unused ones) and the layering (games/DIRECTION.md, decision 17) — a domain imports no
+// mistakes (undefined names, unused ones) and the layering (games/design/engine-package-boundaries.md) — a domain imports no
 // other domain, and the kernel imports no domain (it loads one by name: engine/resolver.js).
 import js from '@eslint/js'
 import globals from 'globals'

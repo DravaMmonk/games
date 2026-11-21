@@ -70,7 +70,7 @@ export function objectOp(object, path, edit, type = null) {
   if (!name || !folderOf(kind, declared)) return null
   const keys = parsePath(path)
   // A declared type's objects are edited through the one object operation family; the kernel's through their own.
-  // A tag's operations name it by its short name and member type (games/MODULES.md 5.4).
+  // A tag's operations name it by its short name and member type (games/design/engine-object-types.md).
   const target = kind === 'tag' ? tagTarget(namespace, full) ?? { tag: name, member: object.tagKind } : { [kind]: name }
   const set = (data) => (declared ? { op: 'object.set', kind, name, path: keys, value: data } : { op: `${kind}.set`, ...target, path: keys, value: data })
   const put = (data) => (declared ? { op: 'object.put', kind, name, data: ownObjectData(namespace, data) }

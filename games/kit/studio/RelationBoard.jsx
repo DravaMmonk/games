@@ -1,7 +1,7 @@
 // The relation board of the package workspace (games/design/README.md 6.1, 6.7): one relation at a time on the wiring board
 // (ArrangementBoard.jsx). Its endpoints are cards (a level, a part or a whole tag), its edges are wires, made and
 // taken off as on the circuit board; a prerequisite picked can require a pass. Requires and replaces (`edges` fields,
-// games/MODULES.md 5.3.1) are drawn and edited the same way. Another layer's relations are read only.
+// games/design/engine-content.md) are drawn and edited the same way. Another layer's relations are read only.
 // Every edit is at once an operation of the pending changeset (undone and redone from the studio's bar or ⌘Z), and the
 // board shows it before the preview comes back (pending-view.js), so wiring never waits.
 // The list of relations is the left column's (ObjectLists.jsx); its file the right's.

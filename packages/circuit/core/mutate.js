@@ -1,6 +1,5 @@
-// Mutants of a board: the small mechanical mistakes a test should tell from the answer (games/DIRECTION.md, decision
-// 15). A mutant the tests pass is either a board they fail to rule out or another right answer; which, a reader
-// decides. Every operator works on any board of the circuit editor ({ nodes, wires }, ./circuit.js) through its
+// Mutants of a board: the small mechanical mistakes a test should tell from the answer. A mutant that passes may
+// expose a gap in the tests or be another valid solution. Every operator works on a circuit board through its
 // parts registry, knowing no domain:
 //
 //   drop      a part taken off, whatever read it reading what its first wired input read

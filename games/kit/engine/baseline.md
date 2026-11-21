@@ -1,6 +1,6 @@
 # Mechanism migration baseline
 
-This is the behaviour lock for `games/MODULES.md` step 1, not the plugin protocol for step 2.
+This tool records and compares game behaviour across mechanism migrations.
 Run from `site/`:
 
 ```sh
@@ -71,7 +71,7 @@ These notes describe the corpus and validation at the time of each migration. St
 Only registered instance object, task and vocabulary names are normalized before comparing. Unique local names
 ignore their namespace/module and existing world/robot/port/want/family prefixes. Ambiguous local names keep
 qualified identities, and normalized key collisions fail explicitly. The mechanical `piece`/`pieces`/`parts`,
-`circuit/part`, and `@piece.`/`@part.` spellings explicitly declared equivalent in MODULES.md §10.3 also normalize, including plural/camel-case identifiers, diagnostic names and override `tag/` → `tags/` paths. The two authored English uses of `pieced` use `assembled` (with `pieced it together` → `assembled it`). Prose/formulas with arbitrary slashes
+`circuit/part`, and `@piece.`/`@part.` spellings mapped by the historical migration rules also normalize, including plural/camel-case identifiers, diagnostic names and override `tag/` → `tags/` paths. The two authored English uses of `pieced` use `assembled` (with `pieced it together` → `assembled it`). Prose/formulas with arbitrary slashes
 are not globally rewritten. Future migrations that rename a semantic local identifier need an explicit,
 reviewed observation update; the tool must not mask arbitrary renames or collapse distinct objects.
 

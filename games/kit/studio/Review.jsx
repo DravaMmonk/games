@@ -1,4 +1,4 @@
-// The changeset review (DIRECTION decision 5): the pending operations, each in the operation set's own words,
+// The changeset review: the pending operations, each in the operation set's own words,
 // removable, or the changeset taken back to just before it (and what was taken back put again: redo); why the change is made; the save migration it adds; every file it changes, read field by field (a text
 // pair side by side, a board line by line, any other value before and after) or as a line diff; then apply it, or
 // discard it. A changeset from a file (what an agent hands in) opens as the pending one. Below, the game's change log

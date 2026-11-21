@@ -1,4 +1,4 @@
-// Which object types the build workspace's left column lists (games/MODULES.md 5.4): by default what the packages'
+// Which object types the build workspace's left column lists (games/design/engine-object-types.md): by default what the packages'
 // `studio-left` tags say; each author can tick their own here, kept in their browser and never written to a package.
 import { useRef, useState } from 'react'
 import { Check, SlidersHorizontal } from 'lucide-react'

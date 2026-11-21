@@ -1,4 +1,4 @@
-// The course blueprint (games/DIRECTION.md decision 1, games/design/README.md 7.2): the first of a game's three content
+// The course blueprint (games/design/author-workflow.md): the first of a game's three content
 // products, written before any level. It is data (games/<id>/blueprint.json, written through the operation set's
 // blueprint.put / blueprint.set) and says what the course is made of and why it is in that order:
 //

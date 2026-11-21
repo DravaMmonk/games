@@ -1,4 +1,4 @@
-// Moving members within a list (games/MODULES.md 5.3.1): a list field's order is the list itself — a tray's or a
+// Moving members within a list (games/design/engine-content.md): a list field's order is the list itself — a tray's or a
 // section's `values`, a chapter's `levels` — so a drag or Alt+↑/↓ only rewrites that list (collection-edit.js for
 // another package's object). Tags are sets: the studio shows their members, and the tags of a kind, in the kernel's
 // order (engine/objects.js: prerequisites, then names) and writes no order for them.

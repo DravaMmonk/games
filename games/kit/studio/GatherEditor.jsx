@@ -1,6 +1,6 @@
 import CopyId from './CopyId.jsx'
 import { definitionOfKind } from '../engine/plugin-kinds.js'
-// The tray and section editors of the build workspace (games/MODULES.md 5.3.1): objects that gather parts (a tray,
+// The tray and section editors of the build workspace (games/design/engine-content.md): objects that gather parts (a tray,
 // with its menus) or encyclopedia entries (a section). What they hold, and the order they show it in, is their own
 // `list` fields — `values` (members, stages, tags of them) and a tray's `menus` — dragged or moved with Alt+↑/↓.
 // Another package's tray or section is read only until it is overridden here; the override then writes what changed,
@@ -16,7 +16,7 @@ import { textWith } from './tag-edit.js'
 import { reordered } from './list-order.js'
 import { useDragOrder } from './useDragOrder.js'
 
-// The collection fields of the gathering objects: how an override writes each (games/MODULES.md 5.3.1).
+// The collection fields of the gathering objects: how an override writes each (games/design/engine-content.md).
 const FIELDS = { values: 'list', menus: 'list' }
 
 /** The writes of one gathering object: its own by its object operation, another package's by an override of what changed. */

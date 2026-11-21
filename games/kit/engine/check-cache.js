@@ -1,4 +1,4 @@
-// The author checks of a game kept between runs, level by level (games/PLAN.md B.2): what a domain's checks said of a
+// The author checks of a game kept between runs, level by level: what a domain's checks said of a
 // level is said again without running them while nothing they read has changed. Kept on this machine only, never in
 // the repository: site/node_modules/.cache/games-check/<game>.json. Authoring reviews read it unless they run
 // with `--fresh`.

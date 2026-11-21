@@ -8,7 +8,7 @@ import { kindSchemas } from '../plugin-kinds.js'
 //   { why?: text, by?: who, ops: [{ op: 'tag.set', …its arguments }] }
 //
 // `by` says who made the change, as the change log keeps it: a person's hand ('studio', 'cli') or an agent
-// ('agent:<step>:<model>'). What a person changed of what an agent wrote is read from it (games/DIRECTION.md 4).
+// ('agent:<step>:<model>'). What a person changed of what an agent wrote is read from it (games/design/author-workflow.md).
 //
 // A workspace opened for one side (workspace.js `scope`: the package, or the game) runs only that side's operations
 // (operations.js opScope). Each operation's arguments are checked against its schema, then it runs on the workspace (workspace.js) in order;

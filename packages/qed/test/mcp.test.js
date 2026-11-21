@@ -4,7 +4,7 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
-import { rmSync } from 'node:fs'
+import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
 import { resolve } from 'node:path'
 import { createInterface } from 'node:readline'
@@ -54,7 +54,26 @@ test('the server speaks MCP over stdio', async () => {
   assert.equal((await ask('nothing/here')).error.code, -32601)
 
   const { tools } = (await ask('tools/list')).result
-  assert.deepEqual(tools.map((t) => t.name).sort(), ['adopt', 'audit', 'blueprint', 'create_game', 'create_package', 'deps', 'flow', 'games', 'history', 'log', 'modify', 'names', 'objects', 'overrides', 'package_compatibility', 'packages', 'play_level', 'play_task', 'preview', 'render', 'replace', 'run_reference', 'run_tests', 'search', 'seed', 'undo', 'vocabulary'])
+  assert.deepEqual(tools.map((t) => t.name).sort(), ['adopt', 'audit', 'blueprint', 'create_game', 'create_package', 'deps', 'flow', 'games', 'history', 'inspect', 'log', 'modify', 'names', 'objects', 'overrides', 'package_compatibility', 'packages', 'play_level', 'play_task', 'preview', 'render', 'replace', 'run_reference', 'run_tests', 'search', 'seed', 'undo', 'vocabulary'])
   assert.deepEqual(tools.find((t) => t.name === 'modify').inputSchema.required, ['changeset'])
   assert.equal((await call('modify', { game: GAME })).isError, true)
+})
+
+test('inspect reads manual edits on the next call in the same server', async () => {
+  const { structuredContent: index } = await call('inspect', { game: GAME })
+  const { structuredContent: { chapter } } = await call('inspect', { game: GAME, chapter: index.chapters[0].id })
+  const { id, label } = chapter.levels[0]
+  const { structuredContent: before } = await call('inspect', { game: GAME, level: label })
+  assert.equal(before.level.id, id)
+  assert.equal(before.chapter, chapter.id)
+
+  const path = resolve(root, 'packages', GAME, 'i18n/en.json')
+  const words = JSON.parse(readFileSync(path, 'utf8'))
+  const key = before.level.tasks[0].brief.$key.split('/').at(-1)
+  assert.equal(before.level.tasks[0].brief.en, words[key])
+  words[key] = 'A manual edit that changes the task brief.'
+  writeFileSync(path, JSON.stringify(words))
+
+  const { structuredContent: after } = await call('inspect', { game: GAME, level: id })
+  assert.equal(after.level.tasks[0].brief.en, words[key])
 })

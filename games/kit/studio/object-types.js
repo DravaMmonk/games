@@ -1,5 +1,5 @@
 import { T } from '../shell/i18n.js'
-// The object types the build workspace's left column lists (games/MODULES.md 5.3, 5.4): the kernel's own (levels,
+// The object types the build workspace's left column lists (games/design/engine-object-types.md): the kernel's own (levels,
 // entries) and every type a package declares in kinds/. Which
 // are listed by default comes from the tag `kernel/studio-left` (members: object types), which packages add to; each author can choose
 // their own on top (kept in the browser, never in a package). The tool lists — capabilities, overrides, search — come

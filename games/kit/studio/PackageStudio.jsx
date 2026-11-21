@@ -1,6 +1,6 @@
 import { referenceCatalog } from './reference-catalog.js'
 import { definitionOfKind } from '../engine/plugin-kinds.js'
-// The package workspace of the studio (games/design/README.md 6.7, DIRECTION decision 5): where a level designer reviews, edits
+// The package workspace of the studio (games/design/README.md 6.7): where a level designer reviews, edits
 // and plays a package's levels without code, a level group at a time. It is a thin skin over the operation set (the
 // package's side of it, useChangeset.js): the tree, the forms, the copy table, the comparisons, the game played, the
 // audit and the review all show the one answer the preview tool gives; search and replace and bulk edits only ever add
@@ -598,7 +598,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const firstTaskSchema = vocab && tasksSchema(vocab.vocabulary)
   const levelChoices = vocab ? creationChoices(firstTaskSchema ?? vocab.vocabulary.level, newLevelContext) : []
   const declaredType = (type) => definitionOfKind(content?.objectKinds, type) ?? null
-  // A new object starts blank or as a copy of any object open, this package's or one it uses (games/MODULES.md 5.5).
+  // A new object starts blank or as a copy of any object open, this package's or one it uses (games/design/engine-object-types.md).
   /** The add menu of a list of another type: a new one (blank), a copy of the one open (greyed when none is). */
   const addObjectOptions = (type) => {
     const name = typeName(types.find((info) => info.type === type)) || type

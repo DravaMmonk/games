@@ -1,4 +1,4 @@
-// Pure chapter edits of the arrange workspace (games/MODULES.md 5.3.1): a chapter is a game-layer object
+// Pure chapter edits of the arrange workspace (games/design/engine-content.md): a chapter is a game-layer object
 // (`games/<game>/chapters/<name>.json`, full name `@<game>/<name>`) with its `levels` list and route map `rows`; the
 // game's `chapters` list orders them. The chapters' order, a new chapter, and levels imported into one with what they need.
 import { importLevelOrder } from '../engine/objects.js'

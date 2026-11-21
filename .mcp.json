@@ -2,7 +2,7 @@
   "mcpServers": {
     "games": {
       "command": "node",
-      "args": ["games/kit/engine/ops/mcp.js"]
+      "args": ["--import", "./games/kit/engine/package-imports.mjs", "games/kit/engine/ops/mcp.js"]
     }
   }
 }

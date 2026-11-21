@@ -69,7 +69,7 @@ function OneTag({ full, tag, own, content, namespace, pending, onSelect, onEdit,
     if (next.has(member)) next.delete(member); else next.add(member)
     return next
   })
-  // A tag is a set (games/MODULES.md 5.4): its nested tags first, then its members in the order their prerequisites
+  // A tag is a set (games/design/engine-object-types.md): its nested tags first, then its members in the order their prerequisites
   // give, then names. Nothing here writes an order.
   const ordered = [...tag.values.filter((v) => v.startsWith('#')).sort(), ...orderedMembers(content, tag.values.filter((v) => !v.startsWith('#')), tag.kind)]
   const options = tagCandidates(content, tag.kind, full).filter((v) => !tag.values.includes(v)).map((v) => ({

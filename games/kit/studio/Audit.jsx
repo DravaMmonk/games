@@ -1,5 +1,5 @@
 import { T } from '../shell/i18n.js'
-// The audit, a tab of the fold bar under the middle (Drawer.jsx; DIRECTION decision 6): how the check stands (auditSum,
+// The audit, a tab of the fold bar under the middle (Drawer.jsx): how the check stands (auditSum,
 // on the bar) and a worklist: npm run check's lines for the game as the pending changeset
 // leaves it, recomputed on every edit, one row a line (worklist.js) — filtered by severity, rule, the level selected
 // and words; F8 and Shift+F8 step through them, each step going to the field the line is about (or its level). While

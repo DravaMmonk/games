@@ -1,5 +1,5 @@
 import { runtimeIds } from '../engine/runtime.js'
-// The agent pipeline's steps (games/DIRECTION.md 4, games/design/README.md 7.2), the same for every topic: what each step
+// The agent pipeline's steps (games/design/author-workflow.md), the same for every topic: what each step
 // reads and writes, who does it, the commands its agent gets, and the gate that decides it is done. Every gate's
 // failure names one rule; a step's product is content written through the operation set.
 //
@@ -78,7 +78,7 @@ export const STEPS = [
     id: 'blueprint',
     who: 'agent',
     role: 'curriculum designer',
-    commands: ['op', 'check', 'gate'],
+    commands: ['inspect', 'op', 'check', 'gate'],
     gate: async ({ content, noBlueprint }) => content.blueprint
       ? splitFindings(auditBlueprint(content.blueprint))
       : { failures: [noBlueprint()], reports: [] },
@@ -109,7 +109,7 @@ export const STEPS = [
     id: 'levels',
     who: 'agent',
     role: 'level designer',
-    commands: ['op', 'check', 'gate', 'deps', 'eras', 'pedagogy'],
+    commands: ['inspect', 'op', 'check', 'gate', 'deps', 'eras', 'pedagogy'],
     gate: async (inspection) => {
       const pedagogy = await inspection.pedagogy()
       return { failures: [...await inspection.checks(), ...(await inspection.conformance()).filter((f) => f.rule !== 'bp-entry'), ...pedagogy.failures], reports: pedagogy.reports }
@@ -119,7 +119,7 @@ export const STEPS = [
     id: 'copy',
     who: 'agent',
     role: 'copy writer',
-    commands: ['op', 'check', 'gate', 'pedagogy', 'terminology'],
+    commands: ['inspect', 'op', 'check', 'gate', 'pedagogy', 'terminology'],
     gate: async (inspection) => {
       const pedagogy = await inspection.pedagogy()
       const terms = await inspection.terminology()
@@ -130,7 +130,7 @@ export const STEPS = [
     id: 'review',
     who: 'agent',
     role: 'reviewer',
-    commands: ['check', 'deps', 'pedagogy', 'terminology'],
+    commands: ['inspect', 'check', 'deps', 'pedagogy', 'terminology'],
     gate: async (inspection, state) => {
       const { id } = inspection
       const terms = await inspection.terminology()
@@ -141,13 +141,13 @@ export const STEPS = [
     },
   },
   {
-    // Translation is its own work (games/DIRECTION.md, decision 20): it follows the copy, holds nothing up (`aside`:
+    // Translation is its own work: it follows the copy, holds nothing up (`aside`:
     // the queue does not wait for it) and is asked for a language at a time (run translate --scope <lang>).
     id: 'translate',
     who: 'agent',
     role: 'translator',
     aside: true,
-    commands: ['op', 'check', 'gate'],
+    commands: ['inspect', 'op', 'check', 'gate'],
     gate: async (inspection, _state, scope) => {
       const { content } = inspection
       const domain = await inspection.domain()

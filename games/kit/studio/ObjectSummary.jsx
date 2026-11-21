@@ -1,5 +1,5 @@
 import { definitionOfKind } from '../engine/plugin-kinds.js'
-// The middle for an object of a type with no editor of its own (games/MODULES.md 5.3): a type a package declares in
+// The middle for an object of a type with no editor of its own (games/design/engine-object-types.md): a type a package declares in
 // kinds/ (until its package registers an editor for it) or a content kind of the kernel's. Its fields as rows — a click
 // picks the field for the right column, where it is edited — and its place among the other objects.
 import { L, tr } from '../shell/i18n.js'

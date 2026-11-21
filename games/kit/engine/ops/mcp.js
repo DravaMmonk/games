@@ -26,7 +26,7 @@ const METHODS = {
     protocolVersion: SUPPORTED.includes(protocolVersion) ? protocolVersion : PROTOCOL,
     capabilities: { tools: { listChanged: false } },
     serverInfo: { name: 'games', version: '1.0.0' },
-    instructions: 'Tools over the Turing-Complete-style games in games/: read a game’s vocabulary first; every change is a changeset (modify), checked as a whole and written only when it passes.',
+    instructions: 'Use inspect to read the current course or level. Follow the user’s goals, consult vocabulary before writing, and submit changes through modify.',
   }),
   ping: () => ({}),
   'tools/list': () => ({ tools: Object.entries(TOOLS).map(([name, tool]) => ({ name, description: tool.about?.en, inputSchema: inputSchema(tool.params) })) }),

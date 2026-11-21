@@ -4,7 +4,7 @@ import { meaningsOf } from '../kind-meanings.js'
 import { satisfies, dependencyIds } from '../semver.js'
 import { tagKey, tagName } from '../tag-identity.js'
 import { KIND_DECLARATION, kindSchemas, objectKindNames } from '../plugin-kinds.js'
-// The operation set (games/DIRECTION.md decision 4): every change to a data game's content is one of these. The CLI
+// The operation set (games/design/author-workflow.md): every change to a data game's content is one of these. The CLI
 // (cli.js), the MCP server (mcp.js) and later the studio only ever run them, through a changeset (changeset.js).
 //
 // An operation is { about, params (schema.js: its arguments as data), apply(ws, args, ctx) }. apply edits the

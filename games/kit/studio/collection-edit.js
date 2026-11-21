@@ -1,4 +1,4 @@
-// What the studio writes for a collection field (games/MODULES.md 5.3.1): a layer's own object gets the new value
+// What the studio writes for a collection field (games/design/engine-content.md): a layer's own object gets the new value
 // whole; another package's object gets a patch, so what that package adds later still comes through — `set` and
 // `edges` by the members (edges) added and taken out, `list` also by where the moved and added members go, each
 // anchored on a member that stays. The kernel applies a patch as: take out, add at the end, insert by anchor.

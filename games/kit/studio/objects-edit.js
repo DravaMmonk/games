@@ -7,7 +7,7 @@ import { edgesOf } from './override-edit.js'
 
 export { tagKey, tagName }
 
-// A tag is known by its member type and full name (games/MODULES.md 5.4): the studio keeps it as the registry's key,
+// A tag is known by its member type and full name (games/design/engine-object-types.md): the studio keeps it as the registry's key,
 // `<member type>:<full name>` (`level:qed/basics`, `story/scene:story/cast`); the name helpers below read through it.
 const TAG_KEY = /^([a-z][a-z0-9-]*(?:\/[a-z][a-z0-9-]*)?):([^:]*\/[^:]*)$/
 /** A tag key's member type and full name, or null for any other name. */

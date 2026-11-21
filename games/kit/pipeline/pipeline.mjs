@@ -65,6 +65,7 @@ const show = ({ failures, reports = [] }, clean = 'gate clean') => {
 
 // The commands an agent's directory offers, each a script that runs one tool on this game and logs its exit.
 const COMMANDS = {
+  inspect: { run: () => `node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/ops/inspect.mjs ${JSON.stringify(game)} "$@"`, about: './inspect [chapter=<qualified id> | level=<qualified id or map number>]   read current game content as JSON' },
   op: { run: () => `if [ "$1" = list ]; then node ../games/kit/engine/ops/cli.js list; else node ../games/kit/engine/ops/cli.js ${game} "$@"; fi`, about: './op --file <changeset.json> [--dry-run]   run a changeset through the operation set (./op list: the operations; ./op log: the change log)' },
   check: { run: () => `node ../games/kit/engine/check.js --authoring ${game}`, about: './check   validate the course, its links and its authored examples' },
   gate: { run: (step) => `node ../games/kit/pipeline/pipeline.mjs ${game} gate ${step} "$@"`, about: './gate [--scope <scope>]   this step\'s gate: every failure names a rule' },
@@ -81,7 +82,7 @@ function inputs(step, state, scope) {
   const lines = [
     `- Game: ${game} (its folder: ${dir}; runtime packages: ${runtimeIds(content).join(', ')})`,
     `- Repository root: ${contentRoot()} (games/design/README.md is ${resolve(import.meta.dirname, '../../design/README.md')})`,
-    `- Course material: ${['design/README.md', 'DESIGN.md'].map(file => resolve(dir, file)).find(existsSync) ?? '(none)'}`,
+    '- Current game content: use `./inspect` to read the assembled course. Follow the supplied task and reviewer instructions when changing it.',
     // The sources the blueprint teaches from, each said to be there or not (the agent reads them; a missing one is a gap).
     ...(content.blueprint?.sources?.length ? [`- The blueprint's sources: ${content.blueprint.sources.map((f) => `${resolve(contentRoot(), f)}${existsSync(resolve(contentRoot(), f)) ? '' : ' (missing)'}`).join(', ')}`] : []),
     `- Blueprint: ${content.blueprint ? resolve(dir, 'blueprint.json') : '(none yet)'}`,

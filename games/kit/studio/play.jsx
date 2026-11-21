@@ -11,10 +11,8 @@
 //                  { type: 'content', content } the content edited, the level staying open as it is;
 //                  { type: 'edit', on, picked } edit mode and the field picked;  { type: 'go', task } go to a task;
 //                  { type: 'object', content, kind, full, stage } an object rendered by its registered preview;
-//                  { type: 'map', content, chapter, rows, compact, theme, lang } the chapter-th chapter of the map alone, as
-//                  the player sees it with every level open, on `rows` (null: the map's rules; compact: a phone's tree;
-//                  the route map's preview, MapPreview.jsx);  { type: 'map-rows', chapter, rows, compact } the same game
-//                  on other rows (a move on the map: no new game made)
+//                  { type: 'map-runtime', content } refreshes the route preview's game;
+//                  { type: 'map-view', chapter, rows, compact, graph } draws the live route.
 //   page → studio  { type: 'ready' } once it listens; { type: 'take', level, path, text };
 //                  { type: 'pick' | 'add', level, task, at, scope, index? }; { type: 'task', level, task };
 //                  { type: 'start', level, task, port, view } the view a port's value starts in, switched on the page;
@@ -32,6 +30,7 @@ import { useLang } from '../shell/useLang.js'
 import { createProgress, openAt, saved } from '../shell/progress.js'
 import { defineContent } from 'virtual:studio-domains'
 import { editorForType } from './editors.js'
+import { mapPreviewGame } from './map-preview.js'
 
 const say = (message) => window.parent.postMessage(message, window.location.origin)
 
@@ -86,26 +85,36 @@ export default function Play() {
   const [edit, setEdit] = useState({ on: false, picked: null })
   const [go, setGo] = useState(null) // { task, n }
   const [part, setPart] = useState(null) // { game, type }: a part shown instead of a level
-  const [map, setMap] = useState(null) // { game, chapter }: one chapter of the map, for the route map's preview
+  const [map, setMap] = useState(null)
+  const [mapView, setMapView] = useState(null)
+  const [mapFailed, setMapFailed] = useState(false)
   useEffect(() => {
     let no = 0
     let stamp = 0
-    let mapView = null
+    let runtimeTimer
+    let runtimeRequest = 0
+    let runtimeLoaded = false
     const onMessage = async (event) => {
       if (event.source !== window.parent) return
       const m = event.data
       if (m?.type === 'edit') return setEdit({ on: m.on, picked: m.picked ?? null })
       if (m?.type === 'go') return setGo((g) => ({ task: m.task, n: (g?.n ?? 0) + 1 }))
       if (m?.type === 'look') return look(m)
-      if (m?.type === 'map' || m?.type === 'map-rows') {
-        const view = { chapter: m.chapter, rows: m.rows ?? null, compact: Boolean(m.compact) }
-        mapView = view
-        if (m.type === 'map-rows') return setMap((now) => now?.game.stamp === stamp ? { ...now, ...view } : now)
-        look(m)
-        // The latest edit wins: a game made of an older content that comes late is not shown.
-        const mine = ++stamp
-        const game = await gameOf(m.content, mine)
-        if (mine === stamp) setMap({ game, ...mapView })
+      if (m?.type === 'map-view') return setMapView(m)
+      if (m?.type === 'map-runtime') {
+        const request = ++runtimeRequest
+        window.clearTimeout(runtimeTimer)
+        runtimeTimer = window.setTimeout(async () => {
+          try {
+            const game = await defineContent(m.content)
+            if (request !== runtimeRequest) return
+            runtimeLoaded = true
+            setMap({ game, content: m.content })
+            setMapFailed(false)
+          } catch {
+            if (request === runtimeRequest) setMapFailed(true)
+          }
+        }, runtimeLoaded ? 250 : 0)
         return undefined
       }
       if (m?.type === 'content') {
@@ -134,7 +143,11 @@ export default function Play() {
     }
     window.addEventListener('message', onMessage)
     say({ type: 'ready' })
-    return () => window.removeEventListener('message', onMessage)
+    return () => {
+      window.removeEventListener('message', onMessage)
+      window.clearTimeout(runtimeTimer)
+      runtimeRequest++
+    }
   }, [])
   const level = shown?.level
   const take = shown?.take
@@ -152,7 +165,13 @@ export default function Play() {
     edit: editing,
     go,
   }), [level, take, editing, go])
-  if (map) return <MapAlone game={map.game} k={map.chapter} rows={map.rows} compact={map.compact} />
+  const mapStamp = useMemo(() => ({ map, mapView }), [map, mapView])
+  if (mapView && map) return (
+    <DraftPreview stamp={mapStamp}>
+      <MapAlone runtime={map} view={mapView} />
+    </DraftPreview>
+  )
+  if (mapFailed) return <p className="board-loading" role="status">{tr("当前配置无法预览。请在配置区检查任务字段。")}</p>
   if (part) {
     const Preview = editorForType(part.kind).preview
     return <Preview game={part.game} type={part.type} stage={part.stage} editing={edit} say={say} />
@@ -164,22 +183,18 @@ export default function Play() {
 }
 
 /** One chapter of the map, every level open, for the route map's preview: what the player sees, nothing to click. */
-function MapAlone({ game, k, rows, compact }) {
+function MapAlone({ runtime, view }) {
   const solved = useMemo(() => new Set(), [])
-  // The chapter on the rows the editor has now (none of its own: the map's rules place its levels).
-  const chapter = useMemo(() => {
-    const at = game.chapters[k]
-    if (!at) return null
-    const { rows: _, ...rest } = at
-    return rows ? { ...rest, rows } : rest
-  }, [game, k, rows])
+  const { graph } = view
+  const game = useMemo(() => mapPreviewGame(runtime.game, runtime.content, JSON.parse(graph)), [runtime, graph])
+  const k = runtime.content.eras.findIndex(era => era.id === view.chapter)
+  const authored = game.chapters[k]
+  const chapter = authored && { ...authored, rows: view.rows }
   if (!chapter) return null
   return (
     <main className="level-map is-preview">
       <div className="map-chapters">
-        <DraftPreview stamp={game.stamp}>
-          <MapChapter game={game} chapter={chapter} k={k} solved={solved} all next={null} compact={compact} onOpen={() => {}} />
-        </DraftPreview>
+        <MapChapter game={game} chapter={chapter} k={k} solved={solved} all next={null} compact={view.compact} onOpen={() => {}} />
       </div>
     </main>
   )

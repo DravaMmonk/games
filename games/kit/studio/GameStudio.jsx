@@ -20,12 +20,14 @@ import { opFor, placesOf } from './form.js'
 import { itemOf } from './worklist.js'
 import { usePref } from './prefs.js'
 import { confirmDelete } from './delete.js'
-import { blankChapter, chapterName, chapterRetitle, chaptersOrder, courseOrderRefusal, moveChapter, newChapterName } from './course-edit.js'
+import { blankChapter, chapterName, chapterRetitle, chaptersOrder, chapterSet, moveChapter, newChapterName } from './course-edit.js'
 import { missingDependencies, packageAddOps, packageRemoveOps } from './game-packages.js'
 import { useChangeset } from './useChangeset.js'
 import StudioBar from './StudioBar.jsx'
 import PanelResizer from './PanelResizer.jsx'
 import ChapterBoard from './ChapterBoard.jsx'
+import CourseImpact from './CourseImpact.jsx'
+import { courseLinks, courseRemoval, courseReorder, singleLevelRemoval } from './course-impact.js'
 import { OverrideDetail, OverrideList, visibleOverrides } from './OverrideAudit.jsx'
 import { GAME_LISTS, OBJECT_LISTS, openParams, overrideKey, readOpen } from './left-lists.js'
 import Review from './Review.jsx'
@@ -119,7 +121,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const loaded = Boolean(content)
   // Names for the links in the copy, as the changeset leaves the game.
   const namesSeq = useRef(0)
-  const naming = useMemo(() => JSON.stringify(ops.filter((op) => op.op !== 'text.override')), [ops])
+  const naming = useMemo(() => JSON.stringify((shown?.ops ?? []).filter((op) => op.op !== 'text.override')), [shown?.ops])
   useEffect(() => {
     if (!loaded) return undefined
     const no = ++namesSeq.current
@@ -169,10 +171,88 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     addOps([{ op: 'chapter.put', chapter: name, data: fields }, chaptersOrder([...eras, { id: `${layer}/${name}` }])])
     select({ era: eras.length })
   }
-  const removeChapter = (k) => {
-    if (eras[k].levels.length || eras.length === 1 || !confirmDelete(L(eras[k].title ?? eras[k].chapter?.title) ?? String(eras[k].id))) return
-    addOps([chaptersOrder(eras.filter((_, i) => i !== k)), { op: 'chapter.remove', chapter: chapterName(eras[k].id) }])
-    select({ era: Math.max(0, k - 1) })
+  const [impact, setImpact] = useState(null)
+  const [confirmation, setConfirmation] = useState(null)
+  const [impactBusy, setImpactBusy] = useState(false)
+  const [impactProblem, setImpactProblem] = useState(null)
+  const clearImpact = () => { setImpact(null); setImpactProblem(null); setConfirmation(null) }
+  const checkImpact = async () => {
+    const plan = confirmation ?? impact
+    if (impactBusy || !plan?.run) return
+    setImpactBusy(true)
+    try {
+      const preview = await call('preview', { game, scope: SCOPE, changeset: { ops: [...ops, ...plan.run] },
+        check: false, changesOnly: true, omit: ['content', 'changes', 'log', 'drift'] })
+      if (!preview.ok) {
+        setImpactProblem(preview.problems?.join('\n') || tr("操作失败"))
+        return
+      }
+      plan.beforeAdd?.()
+      addOps(plan.run, confirmation ? plan.action : plan.title, { atomic: true })
+      plan.after?.()
+      clearImpact()
+    } catch (error) {
+      setImpactProblem(error.message)
+    } finally {
+      setImpactBusy(false)
+    }
+  }
+  const levelName = (id) => L(content.registries.level[id]?.title) || id
+  const removeFromCourse = (k, ids, wholeChapter = false) => {
+    if (saving || shown?.ops !== ops || (wholeChapter && eras.length === 1)) return
+    const chapter = eras[k]
+    const vocabulary = vocab?.vocabulary
+    const links = courseLinks(content, vocabulary)
+    const plan = courseRemoval(eras, links, ids, wholeChapter ? chapter.id : null)
+    if (!plan.ops.length) return
+    const formatLevels = (affected, statusOf) => affected.map(({ chapter, ids }) => ({
+      title: chapterTitle(chapter), items: ids.map(id => {
+        const status = statusOf?.(id)
+        return <><code>{id}</code> {levelName(id)}{status && <> · {status}</>}</>
+      }),
+    }))
+    const formatLinks = (edges) => edges.map(({ from, to }) => <>{levelName(from)} → {levelName(to)}</>)
+    const afterRemoval = (affected) => {
+      if (wholeChapter) select({ era: Math.min(k, eras.length - 2) })
+      else if (affected.some(({ ids }) => ids.includes(at?.level))) select({ era: e })
+      openDrawer('changes')
+    }
+    const count = plan.affected.reduce((total, item) => total + item.ids.length, 0)
+    const cascade = {
+      title: wholeChapter ? tr("删除章节「{name}」", {name: chapterTitle(chapter) || chapterName(chapter.id)}) : tr("确认一并移出后置关卡"),
+      message: count ? tr("将从课程移出 {count} 个关卡，含依赖它们的后置关卡。包里的关卡文件会保留。", {count}) : null,
+      groups: formatLevels(plan.affected),
+      run: plan.ops,
+      action: wholeChapter ? tr("删除章节") : tr("全部移出"),
+      after: () => afterRemoval(plan.affected),
+    }
+    if (wholeChapter) {
+      setImpact(cascade)
+      return
+    }
+
+    const [id] = ids
+    const single = singleLevelRemoval(content, vocabulary, eras, links, id)
+    const blocked = single.blocked.length > 0
+    const keep = {
+      title: tr("确认仅移出此关"),
+      message: blocked
+        ? tr("以下后置关卡仍有标签或任务内容要求的依赖。请返回并选择「全部移出」。")
+        : tr("只从当前课程移出此关，保留其余关卡和包里的关卡文件。"),
+      groups: [...formatLevels(plan.affected, level => level === id ? tr("将移出") : tr("将保留")), ...(blocked || single.disconnected.length ? [{
+        title: blocked ? tr("无法单独断开的依赖") : tr("将断开的连线"),
+        items: formatLinks(blocked ? single.blocked : single.disconnected),
+      }] : [])],
+      run: blocked ? null : single.ops,
+      action: tr("断开依赖"),
+      after: () => afterRemoval(single.affected),
+    }
+    setImpact({
+      title: tr("从课程移出关卡"),
+      message: tr("选择如何移出「{name}」。", {name: levelName(id)}),
+      groups: formatLevels(plan.affected, level => level === id ? tr("所选关卡") : null),
+      choices: count > 1 ? [keep, cascade] : [keep],
+    })
   }
   // A chapter's title is edited where it is shown (the list, double-clicked; the board's head), in the studio's language.
   const [renaming, setRenaming] = useState(null)
@@ -181,12 +261,50 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     const op = chapterRetitle(content, layer, eras[k].id, text, getLang())
     if (op) edit(op)
   }
-  // A chapter moved past a chapter it takes prerequisites from (or gives them to) is refused, as the check says it.
-  const shiftRefusal = (k, by) => courseOrderRefusal(content, moveChapter(eras, k, by), eras)
+  const reorderCourse = (next, orderOp, after = null) => {
+    if (saving || shown?.ops !== ops) return
+    const plan = courseReorder(content, vocab?.vocabulary, courseLinks(content, vocab?.vocabulary), eras, next)
+    if (!plan.removed.length) {
+      addOps([orderOp])
+      after?.()
+      return
+    }
+    const blocked = plan.blocked.length > 0
+    setImpact({
+      title: blocked ? tr("无法调整顺序") : tr("调整顺序并取消依赖"),
+      message: blocked
+        ? tr("以下先修来自标签或任务内容，课程编排无法自动取消。")
+        : tr("调整顺序会取消以下课程先修连线。"),
+      groups: [{ items: (blocked ? plan.blocked : plan.removed).map(({ from, to }) => <>{levelName(from)} → {levelName(to)}</>) }],
+      run: blocked ? null : [...plan.ops, orderOp],
+      action: tr("调整顺序"),
+      after,
+    })
+  }
+  const showRouteImpact = (plan, run, beforeAdd) => {
+    const blocked = plan.blocked.length > 0
+    setImpact({
+      title: tr("移动与先修依赖冲突"),
+      message: blocked
+        ? tr("以下先修来自标签，课程编排无法单独断开。")
+        : tr("移动到这一行需要断开以下课程先修连线。"),
+      groups: [{ items: (blocked ? plan.blocked : plan.removed).map(({ from, to }) => <>{levelName(from)} → {levelName(to)}</>) }],
+      run: blocked ? null : run,
+      action: tr("断开依赖并移动"),
+      confirmation: !blocked && {
+        title: tr("确认断开依赖并移动"),
+        message: tr("这些先修连线将从当前课程移除，并与卡片移动一起加入待定修改。"),
+      },
+      beforeAdd,
+    })
+  }
   const shift = (k, by) => {
-    if (shiftRefusal(k, by)) return
-    edit(chaptersOrder(moveChapter(eras, k, by)))
-    select({ era: k + by })
+    const next = moveChapter(eras, k, by)
+    if (next !== eras) reorderCourse(next, chaptersOrder(next), () => select({ era: k + by }))
+  }
+  const reorderMembers = (levels) => {
+    const next = eras.map((chapter, index) => index === e ? { ...chapter, levels } : chapter)
+    reorderCourse(next, chapterSet(eras[e].id, ['levels'], levels))
   }
   // Another game opened from the games list (the pending operations given up, after asking).
   const openGame = (id) => {
@@ -234,6 +352,11 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           <Play size={13} aria-hidden="true" /><span>{tr("试玩")}</span>
         </button>
       </StudioBar>
+      {impact && <CourseImpact plan={impact} busy={impactBusy} problem={confirmation ? null : impactProblem} onClose={clearImpact}
+        onChoose={setConfirmation}
+        onConfirm={impact.confirmation ? () => setConfirmation({ ...impact, ...impact.confirmation }) : checkImpact} />}
+      {confirmation && <CourseImpact plan={confirmation} busy={impactBusy} problem={impactProblem} closeLabel={tr("返回")} onConfirm={checkImpact}
+        onClose={() => { setConfirmation(null); setImpactProblem(null) }} />}
       {!ready ? <div className="studio-loading">{tr('正在加载课程……')}</div> : (
         <div className={`studio-body is-${overridesShown || packagesShown ? 'objects' : 'arrange'} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style} data-mobile-panel={mobilePanel}>
           <nav className="arrange-panels" aria-label={tr('编排面板')}>
@@ -266,11 +389,10 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                       title={chapterTitle(chapter)} id={chapterName(chapter.id)} tooltip={`${chapterTitle(chapter)} · ${chapterName(chapter.id)} · ${tr("双击改章名")}`} />}
                   <span className="chapter-tools">
                     {[[-1, ArrowUp, tr("上移"), k === 0], [1, ArrowDown, tr("下移"), k === eras.length - 1]].map(([by, Icon, label, edge]) => {
-                      const refused = !edge && shiftRefusal(k, by)
-                      return <button key={by} type="button" className="kit-btn editor-tool" disabled={busyEditing || edge || Boolean(refused)} onClick={() => shift(k, by)}
-                        title={refused ? `${label} · ${refused}` : label} aria-label={label}><Icon size={12} /></button>
+                      return <button key={by} type="button" className="kit-btn editor-tool" disabled={busyEditing || edge} onClick={() => shift(k, by)}
+                        title={label} aria-label={label}><Icon size={12} /></button>
                     })}
-                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || chapter.levels.length > 0 || eras.length === 1} onClick={() => removeChapter(k)} title={tr("删掉这一章（章里没有关卡时）")}><Trash2 size={12} /></button>
+                    <button type="button" className="kit-btn editor-tool" disabled={busyEditing || eras.length === 1} onClick={() => removeFromCourse(k, chapter.levels, true)} title={eras.length === 1 ? tr("课程至少保留一章") : tr("删除章节")}><Trash2 size={12} /></button>
                   </span>
                 </div>
               ))}
@@ -298,7 +420,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                     <CopyId id={eras[e].id} />
                     <h1><TitleEdit value={chapterTitle(eras[e])} label={tr("章名")} disabled={busyEditing} onSet={(text) => retitle(e, text)} /></h1>
                   </header>
-                  <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} onPlay={playGame} />
+                  <ChapterBoard content={content} course={course} e={e} at={at} pending={busyEditing} ops={ops} previewOps={shown?.ops} revision={rev} applying={saving} vocabulary={vocab?.vocabulary} names={names} places={places} onSelect={select} onEdit={edit} onOps={addOps} onPlay={playGame} onReorderLevels={reorderMembers} onRouteImpact={showRouteImpact} onRemoveLevel={(level) => removeFromCourse(e, [level])} />
                 </>)}
             </div>
           </main>
@@ -320,8 +442,11 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
               audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
-              panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
-                onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}
+              panel={drawerTab === 'changes' ? <Review showRemovedLevels ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
+                onRemove={(k) => {
+                  const confirmed = pending.grouped(ops[k]) ? window.confirm(tr("确定放弃这组编排操作吗？")) : confirmDelete(ops[k].op)
+                  if (confirmed) pending.remove(k)
+                }} onBack={back} onRedo={again}
                 onDiscard={discard} onOpen={pending.open} onApply={apply} onUndo={undo} onSelect={() => {}} />
                 : <Debug ops={ops} last={last} />} />
           </aside>

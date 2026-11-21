@@ -1,7 +1,7 @@
 import { T } from '../shell/i18n.js'
 // The chapter editor shares one player preview between the ordered list and the route map.
-import { useMemo, useState } from 'react'
-import { GripVertical, Play, RotateCcw, X } from 'lucide-react'
+import { useMemo, useRef, useState } from 'react'
+import { ArrowDown, ArrowUp, GripVertical, Play, RotateCcw, X } from 'lucide-react'
 import { eraLevels, mapRows } from '../course.js'
 import { L, tr } from '../shell/i18n.js'
 import { Picker } from './Picker.jsx'
@@ -13,10 +13,12 @@ import { pendingValue, writtenBy } from './pending-view.js'
 import { addEdgeOps, removeEdgeOps, tagOverrideOps } from './override-edit.js'
 import { usePref } from './prefs.js'
 import { objectsOf, tagByRef, tagKey, tagMembers, tagName } from './objects-edit.js'
-import { chapterName, chapterSet, chapterUnset, courseOrderRefusal, earlierPrerequisites, importLevels } from './course-edit.js'
-import { reordered } from './list-order.js'
+import { chapterName, chapterSet, chapterUnsetRows, courseOrderRefusal, earlierPrerequisites, importLevels } from './course-edit.js'
+import { reordered, shifted } from './list-order.js'
 import { useDragOrder } from './useDragOrder.js'
+import { routeMove } from './course-impact.js'
 import { wiringLayoutRefusal } from './layout-edit.js'
+import { isMapRowsEdit, mapWiringContent, noteMapWires } from './map-wiring.js'
 
 const MODES = [['order', T("顺序")], ['map', T("路线图")]]
 
@@ -24,8 +26,12 @@ const MODES = [['order', T("顺序")], ['map', T("路线图")]]
  * `course`: the authored chapters; `content`: as it plays. `ops`:
  * the pending changeset; `previewOps`: the operations the content was previewed with; `applying`: being written.
  */
-export default function ChapterBoard({ content, course, e, at, pending, ops = [], previewOps = [], applying = false, vocabulary = null, names = null, places = [], onSelect, onEdit, onOps, onPlay = null }) {
+export default function ChapterBoard({ content, course, e, at, pending, ops = [], previewOps = [], revision, applying = false, vocabulary = null, names = null, places = [], onSelect, onEdit, onOps, onPlay = null, onReorderLevels, onRemoveLevel, onRouteImpact }) {
   const [mode, setMode] = usePref('chapter-view', 'map')
+  const previewBeforeApply = useRef(null)
+  if (applying) previewBeforeApply.current = { content, firstOp: ops[0] }
+  // A successful apply clears the queue before the preview of the newly written files arrives.
+  const wiringPaused = applying || (content === previewBeforeApply.current?.content && ops[0] !== previewBeforeApply.current.firstOp)
   const chapter = course.chapters[e]
   const played = content.eras?.[e]
   const titleOf = (id) => {
@@ -62,8 +68,8 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
     if (refused) setRefusal(refused)
     else setMembers(next)
   }
-  const reorder = (id, to) => changeMembers(reordered(members, [id], to))
-  const { item } = useDragOrder({ ids: members, disabled: applying, onMove: reorder })
+  const reorder = (id, to) => onReorderLevels(reordered(members, [id], to))
+  const { item } = useDragOrder({ ids: members, disabled: pending, onMove: reorder })
   const importing = (value) => {
     try { changeMembers(importLevels(content, members, value, placedIds)) } catch (error) { setRefusal(error.message) }
   }
@@ -71,10 +77,14 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
   const savedRows = Array.isArray(chapter.rows) ? chapter.rows : null
   const touchesRows = (op) => op.chapter === name && (op.op === 'chapter.put' || ((op.op === 'chapter.set' || op.op === 'chapter.unset') && op.path?.[0] === 'rows'))
   const rows = pendingValue(savedRows, ops, previewOps, map.written, touchesRows)
-  // Layout moves only redraw the map. Other edits need a new game with the updated course.
-  const stamp = JSON.stringify([content.id, (previewOps ?? []).filter((op) => !map.written(op))])
+  const marks = vocabulary?.levelMarks
+  const projected = useMemo(() => wiringPaused ? null : mapWiringContent(content, ops, previewOps, marks?.optional), [content, ops, previewOps, wiringPaused, marks?.optional])
+  const wiringContent = projected ?? content
+  // Layout edits only change geometry. A new saved revision always refreshes runtime metadata.
+  const stamp = JSON.stringify([content.id, revision, previewOps.filter((op) => !isMapRowsEdit(op))])
+  const noteRows = (op, next) => map.note([op], next, rows)
   const writeRows = (op, next) => {
-    map.note([op], next, rows)
+    noteRows(op, next)
     onOps([op])
   }
   return (
@@ -99,10 +109,14 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
                 <b className="member-no">{k + 1}</b>
                 <span>{titleOf(id) || id}</span>
                 <code>{id}</code>
+                {at?.level === id && [[-1, ArrowUp, tr("上移")], [1, ArrowDown, tr("下移")]].map(([by, Icon, label]) => (
+                  <button key={by} type="button" className="kit-btn editor-tool" disabled={pending || k + by < 0 || k + by >= members.length}
+                    title={label} aria-label={label} onClick={() => onReorderLevels(shifted(members, id, by))}><Icon size={12} aria-hidden="true" /></button>
+                ))}
                 {onPlay && !id.startsWith('#') && <button type="button" className="kit-btn editor-tool" title={tr("从这一关试玩")} aria-label={tr("从这一关试玩")}
                   onClick={() => onPlay(id)}><Play size={12} aria-hidden="true" /></button>}
-                <button type="button" className="kit-btn editor-tool" disabled={applying} title={tr("移出这一章")}
-                  onClick={() => setMembers(members.filter((m) => m !== id))}><X size={12} /></button>
+                <button type="button" className="kit-btn editor-tool" disabled={pending} title={tr("从课程移出关卡")}
+                  onClick={() => onRemoveLevel(id)}><X size={12} /></button>
               </li>
             ))}
           </ol>
@@ -116,10 +130,10 @@ export default function ChapterBoard({ content, course, e, at, pending, ops = []
             </section>
           )}
         </div>}
-        {played && mode === 'map' && <ChapterMap key={chapter.id} content={content} chapter={chapter} played={played} e={e} at={at}
-          rows={rows} pending={pending} applying={applying} titleOf={titleOf} onSelect={onSelect} onWrite={writeRows}
-          onOps={onOps} onRefuse={setRefusal} levelMarks={vocabulary?.levelMarks} />}
-        {played && <MapPreview content={content} stamp={stamp} chapter={e} rows={rows} />}
+        {played && mode === 'map' && <ChapterMap key={chapter.id} content={content} wiringContent={wiringContent} wiringPending={!projected} chapter={chapter} played={played} e={e} at={at}
+          rows={rows} pending={pending} applying={applying} ops={ops} titleOf={titleOf} onSelect={onSelect} onWrite={writeRows} noteRows={noteRows} vocabulary={vocabulary} onRouteImpact={onRouteImpact}
+          onOps={onOps} onRefuse={setRefusal} levelMarks={marks} />}
+        {played && <MapPreview content={content} stamp={stamp} chapter={played.id} rows={rows} edges={wiringContent.relationEdges.requires} />}
       </div>
     </article>
   )
@@ -137,12 +151,14 @@ const refusal = (reason) => ({
 const mapWrites = new WeakMap()
 const orderWrites = new WeakMap()
 
-function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, titleOf, onSelect, onWrite, onOps, onRefuse, levelMarks = {} }) {
+function ChapterMap({ content, wiringContent, wiringPending, chapter, played, e, at, rows, pending, applying, ops, titleOf, onSelect, onWrite, noteRows, vocabulary, onRouteImpact, onOps, onRefuse, levelMarks = {} }) {
   const ids = useMemo(() => eraLevels(played), [played])
-  const links = useMemo(() => projectWires((played.links ?? []).map((link) => ({ ...link, source: link.fromGame ? 'external' : 'course' }))), [played])
+  const courseEdges = wiringContent.relationEdges?.requires ?? []
+  const links = useMemo(() => projectWires(courseEdges.filter(({ to }) => ids.includes(to)).map(({ game, ...edge }) => ({
+    ...edge, ...(game && { fromGame: game }), source: game ? 'external' : 'course',
+  }))), [courseEdges, ids])
   const local = useMemo(() => new Map(ids.map((id) => [id, links.filter(({ to, from }) => to === id && ids.includes(from)).map(({ from }) => from)])), [ids, links])
   const ruled = useMemo(() => mapRows(ids, local).rows, [ids, local])
-  const courseEdges = content.relationEdges?.requires ?? []
   const requires = useMemo(() => {
     const graph = new Map()
     for (const { from, to, game } of courseEdges) if (!game) graph.set(to, [...(graph.get(to) ?? []), from])
@@ -164,25 +180,43 @@ function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, 
     return bad ? tr("{value} 是 {value2} 的前置，须排在它上面的行。", {value: describe(bad.from), value2: describe(bad.to)}) : null
   }
   const layer = `@${content.id}`
-  const connect = (from, to) => {
-    const changes = addEdgeOps(content, layer, from, to)
-    if (!changes) return refusal('nowhere')
+  const relationContent = { ...wiringContent, registries: { ...content.registries, relation: wiringContent.relations } }
+  const writeWires = (changes) => {
+    noteMapWires(relationContent, ops, changes)
     onOps(changes)
+  }
+  const connect = (from, to) => {
+    const changes = addEdgeOps(relationContent, layer, from, to)
+    if (!changes) return refusal('nowhere')
+    writeWires(changes)
     return null
   }
   const remove = ({ from, to, fromGame }) => {
     if (fromGame) return tr("跨游戏依赖在包的关系编辑器中修改。")
-    const changes = removeEdgeOps(content, layer, from, to)
+    const changes = removeEdgeOps(relationContent, layer, from, to)
     if (!changes) return refusal('tagged')
-    onOps(changes)
+    writeWires(changes)
     return null
+  }
+  const moveRows = (next) => {
+    const before = rows ?? ruled
+    const op = chapterSet(chapter.id, ['rows'], next)
+    const plan = routeMove(wiringContent, vocabulary, before, next)
+    if (!plan.removed.length && !plan.blocked.length) {
+      onWrite(op, next)
+      return
+    }
+    onRouteImpact(plan, [...plan.ops, op], () => {
+      noteMapWires(relationContent, ops, plan.ops)
+      noteRows(op, next)
+    })
   }
   const selected = played.levels.find(({ id }) => id === at?.level)
   // A prerequisite from another chapter is picked from the chapters before this one; it then shows at the map's top.
-  const earlier = useMemo(() => !selected ? [] : earlierPrerequisites(content, e, selected.id).map(({ id, chapter: k }) => ({
+  const earlier = useMemo(() => !selected ? [] : earlierPrerequisites(wiringContent, e, selected.id).map(({ id, chapter: k }) => ({
     value: id, label: id, title: content.registries?.level?.[id]?.title,
     group: `${k + 1} · ${L(content.eras[k].title ?? content.eras[k].chapter?.title) ?? chapterName(content.eras[k].id)}`,
-  })), [content, e, selected])
+  })), [content, wiringContent, e, selected])
   const addEarlier = (from) => onRefuse(refuse(from, selected.id) ?? connect(from, selected.id))
   const mark = (name, on) => {
     const key = tagKey('level', name)
@@ -194,20 +228,20 @@ function ChapterMap({ content, chapter, played, e, at, rows, pending, applying, 
   return (
     <div className="map-layout">
       <div className="arrange-actions">
-        {rows !== null && <button type="button" className="kit-btn is-label" disabled={applying} onClick={() => onWrite(chapterUnset({ ...chapter, rows }, 'rows'), null)}>
+        {rows !== null && <button type="button" className="kit-btn is-label" disabled={applying} onClick={() => onWrite(chapterUnsetRows(chapter.id), null)}>
           <RotateCcw size={13} aria-hidden="true" />{tr("按规则排")}
         </button>}
         {selected && <>
-          <Picker options={earlier} disabled={pending || !earlier.length} add label={tr("加前面章节的前置")}
-            placeholder={earlier.length ? tr("加前面章节的前置") : tr("前面的章没有可加的前置")} onPick={(value) => !pending && addEarlier(value)} />
+          <Picker options={earlier} disabled={wiringPending || !earlier.length} add label={tr("加前面章节的前置")}
+            placeholder={earlier.length ? tr("加前面章节的前置") : tr("前面的章没有可加的前置")} onPick={(value) => !wiringPending && addEarlier(value)} />
           {levelMarks.optional && <label><input type="checkbox" checked={Boolean(selected.optional)} disabled={pending} onChange={(event) => mark(levelMarks.optional, event.target.checked)} />{tr("可选", {}, "chapter-board")}</label>}
           {levelMarks.skippable && <label><input type="checkbox" checked={Boolean(selected.skippable)} disabled={pending} onChange={(event) => mark(levelMarks.skippable, event.target.checked)} />{tr("可跳过")}</label>}
         </>}
       </div>
-      <MapEditor rows={rows ?? ruled} members={ids} layoutEdges={layoutEdges} links={links} external={external}
-        titleOf={titleOf} describe={describe} selected={selected?.id} pending={applying} wiringPending={pending}
+      <MapEditor rows={rows ?? ruled} members={ids} links={links} external={external}
+        titleOf={titleOf} describe={describe} selected={selected?.id} pending={applying || wiringPending} wiringPending={wiringPending}
         refuse={refuse} onConnect={connect} onDelete={remove}
-        onRows={(next) => onWrite(chapterSet(chapter.id, ['rows'], next), next)}
+        onMove={moveRows} onRows={(next) => onWrite(chapterSet(chapter.id, ['rows'], next), next)}
         onPick={(id) => onSelect({ era: e, level: id })} />
     </div>
   )

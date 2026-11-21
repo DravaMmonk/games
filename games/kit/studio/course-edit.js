@@ -81,11 +81,8 @@ export function chapterRetitle(content, layer, full, text, lang) {
 /** The operation that sets a field of chapter `full`. */
 export const chapterSet = (full, path, value) => ({ op: 'chapter.set', chapter: chapterName(full), path, value })
 
-/** The operation that takes a field out of chapter `chapter` (as the course lists it: { id, …fields }). */
-export function chapterUnset(chapter, key) {
-  const { id, [key]: _, ...data } = chapter
-  return { op: 'chapter.put', chapter: chapterName(id), data }
-}
+/** Remove the authored layout to use the course's automatic rows. */
+export const chapterUnsetRows = (full) => ({ op: 'chapter.unset', chapter: chapterName(full), path: ['rows'] })
 
 /** The game's chapter order written: their full names. */
 export const chaptersOrder = (chapters) => ({ op: 'game.set', path: ['chapters'], value: chapters.map((chapter) => chapter.id) })

@@ -154,7 +154,12 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       const { TOOLS, lacking } = await import('../engine/ops/tools.js')
       let fast
       let lane
-      const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, { ...tool, run: args => (fast ??= worker()).run(name, args) }]))
+      const checking = () => (lane ??= worker())
+      const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, {
+        ...tool,
+        // Apply and checked previews share the same trusted validation results.
+        run: args => (args.changesOnly && ['modify', 'undo'].includes(name) ? checking() : (fast ??= worker())).run(name, args),
+      }]))
       const refreshCode = async file => {
         const timestamp = Date.now()
         for (const path of new Set([file, realpathSync(file)])) {
@@ -170,7 +175,7 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       }
       const host = server.config.server.host
       const source = !host || ['localhost', '127.0.0.1', '::1'].includes(host) ? sourceTools(root, refreshCode) : {}
-      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking, { run: (name, args) => (lane ??= worker()).run(name, args) }))
+      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking, { run: (name, args) => checking().run(name, args) }))
       server.httpServer?.on('close', () => {
         fast?.close()
         lane?.close()

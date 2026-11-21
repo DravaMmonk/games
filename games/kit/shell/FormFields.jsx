@@ -14,26 +14,23 @@ export function Field({ label, children }) {
 }
 
 
-/** One of a few values, as buttons side by side. */
-export function ChoiceField({ label, value, options, onChange, disabled = false }) {
+function ChoiceButtons({ label, value, options, onChange, disabled = false, inline = false }) {
   return (
-    <Field label={label}>
-      <div className="ff-choice" role="radiogroup">
-        {options.map((o) => (
-          <button key={String(o.value)} type="button" role="radio" aria-checked={o.value === value} className={o.value === value ? 'is-on' : ''} disabled={disabled} onClick={() => onChange?.(o.value)}>{L(o.label)}</button>
-        ))}
-      </div>
-    </Field>
+    <div className={`ff-choice${inline ? ' is-inline' : ''}`} role="radiogroup" aria-label={L(label)}
+      onClick={inline ? (event) => event.stopPropagation() : undefined}>
+      {options.map((o) => (
+        <button key={String(o.value)} type="button" role="radio" aria-checked={o.value === value} className={o.value === value ? 'is-on' : ''} disabled={disabled} onClick={() => onChange?.(o.value)}>{L(o.label)}</button>
+      ))}
+    </div>
   )
 }
 
-// The same fields small, inside a table cell (RowTable on a desktop, editing in place): no label of their own.
+/** One of a few values, as buttons side by side. */
+export function ChoiceField({ label, ...props }) {
+  return <Field label={label}><ChoiceButtons label={label} {...props} /></Field>
+}
 
-
-/** One of a few values, in a cell: a button that steps to the next; with none chosen yet it says `unset`. */
-export function InlineChoice({ value, options, onChange, unset }) {
-  const at = options.findIndex((o) => o.value === value)
-  return (
-    <button type="button" className={`ff-inline-choice ${at < 0 ? 'is-unset' : ''}`} onClick={(e) => { e.stopPropagation(); onChange(options[(at + 1) % options.length].value) }}>{at < 0 ? L(unset) : L(options[at].label)}</button>
-  )
+/** The same choices without a visible field label inside a table cell. */
+export function InlineChoice(props) {
+  return <ChoiceButtons {...props} inline />
 }

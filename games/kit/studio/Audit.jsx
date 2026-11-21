@@ -11,13 +11,14 @@ import { SEVERITIES, filterItems, stepIn, tally } from './worklist.js'
 import { usePref } from './prefs.js'
 
 const SEVERITY = { fail: [T("不过")], open: [T("待办")], report: [T("报告", {}, "audit")], pass: [T("通过", {}, "audit")] }
+const previewFailed = (last) => last?.ok === false && !last.content
 const SHOWN = 400 // rows drawn at most; the rest summed up
 
 /** How the check stands, for the fold bar: { fail: true when something fails, label }. */
 export function auditSum(items, last) {
   const fails = items.filter((it) => it.severity === 'fail').length
-  const failedOp = last && last.failed !== null && last.failed !== undefined
-  return { fail: Boolean(fails || failedOp), label: failedOp ? tr('操作失败') : fails ? tr("发现 {fails} 处问题", {fails}) : tr("检查通过") }
+  const failed = previewFailed(last)
+  return { fail: Boolean(fails || failed), label: failed ? tr('操作失败') : fails ? tr("发现 {fails} 处问题", {fails}) : tr("检查通过") }
 }
 
 /** `open`: the fold bar is open on the audit; `onOpen()` opens it there (F8 steps into a folded one). */
@@ -50,13 +51,13 @@ export default function Audit({ items, fresh, last, at, busy, open, onOpen, onJu
   useEffect(() => { document.querySelector('.audit-row.is-at')?.scrollIntoView({ block: 'nearest' }) }, [cursor])
   const set = (patch) => setFilter((f) => ({ ...f, ...patch }))
   const toggle = (s) => set({ severities: filter.severities.includes(s) ? filter.severities.filter((x) => x !== s) : [...filter.severities, s] })
-  const failedOp = last && last.failed !== null && last.failed !== undefined
+  const failed = previewFailed(last)
   if (!open) return null
   return (
     <div className={`audit is-open ${busy || !fresh ? 'is-busy' : ''}`} aria-busy={!fresh}>
       <Filters filter={filter} set={set} toggle={toggle} severities={severities} rules={rules} at={at} query={query} setQuery={setQuery} />
       <div className="audit-body">
-        {failedOp && <ul className="audit-lines">{last.problems.map((p) => <li key={p} className="audit-row is-fail is-wide">{p}</li>)}</ul>}
+        {failed && <ul className="audit-lines">{last.problems.map((p) => <li key={p} className="audit-row is-fail is-wide">{p}</li>)}</ul>}
         <Lines shown={shown} cursor={cursor} go={go} />
       </div>
     </div>

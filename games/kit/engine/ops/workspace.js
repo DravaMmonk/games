@@ -98,10 +98,9 @@ function openKernelCopy(root) {
       })
     },
     diff: (changes = ws.changes()) => changes.map(change => unified(change.file, change.before, change.after)).join('\n'),
-    write() {
+    write(done = ws.changes()) {
       const current = onDisk()
       if (current.size !== original.size || [...original].some(([file, text]) => current.get(file) !== text)) throw new Error('kernel catalog changed on disk; open it again')
-      const done = ws.changes()
       writeFiles(root, done)
       original = onDisk()
       return done.map(change => change.file)
@@ -256,7 +255,7 @@ function openWorkspace(id, root, { vocabulary = null, layer = null } = {}, packa
     changes: () => changes(ws),
     /** The changes as a unified diff. */
     diff: (changes = ws.changes()) => changes.map((c) => unified(c.file, c.before, c.after)).join('\n'),
-    write: () => write(ws, localeFiles),
+    write: (changes = ws.changes()) => write(ws, localeFiles, changes),
     /** The course and package files, keyed by their project-relative paths. */
     onDisk: () => new Map([...new Set([...fileNames(levels(), objectPaths(), ws.packaged), ...localeFiles(), ...extraOverridePaths(), ...(!packaged ? objectFiles(dir, 'capabilities').map(([name]) => `game/capabilities/${name}.json`) : []), ...[...packageFiles.keys()].filter(file => file.startsWith('capabilities/')), ...ws.original.keys()])]
       .map((file) => [pathFor(file), onDisk(file)]).filter(([file]) => ws.owns(file))),
@@ -401,8 +400,7 @@ function changes(ws) {
   return out.filter(({ file }) => ws.owns(file))
 }
 
-function write(ws, localeFiles) {
-  const done = ws.changes()
+function write(ws, localeFiles, done) {
   if (ws.packaged && ws.archived && done.length) throw new Error('published packages are read-only; create a source directory to edit')
   if (ws.packaged && ws.archived) return []
   // Catalog edits depend on every reference in the course and package, including files this edit did not touch.

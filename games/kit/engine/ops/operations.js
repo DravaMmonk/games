@@ -370,6 +370,11 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
         const name = target(ws, args[kind], args.member), old = get(ws, args[kind], args.member)
         if (kind === 'tag' && (!parsePath(args.path).length || parsePath(args.path)[0] === 'kind')) fail('tag member type is immutable')
         objects(ws).set(name, setAt(old, args.path, args.value))
+        if (kind === 'chapter' && parsePath(args.path)[0] === 'rows') {
+          const inverse = old.rows === undefined ? { op: 'chapter.unset', chapter: name, path: ['rows'] }
+            : { op: 'chapter.set', chapter: name, path: ['rows'], value: old.rows }
+          return { says: `chapter ${name}: patched`, inverse: [inverse] }
+        }
         return { says: `${kind} ${name}: patched`, inverse: [{ op: `${kind}.put`, [kind]: args[kind], ...(kind === 'tag' && { member: args.member }), data: kind === 'tag' ? Object.fromEntries(Object.entries(old).filter(([key]) => key !== 'kind')) : old }] }
       },
     },
@@ -382,6 +387,14 @@ function objectOperations(kind, plural, objectKind, vocabulary) {
       },
     },
   })
+  if (kind === 'chapter') operations['chapter.unset'] = {
+    params: S.obj({ ...selector, path: S.list(S.oneOf(['rows']), { min: 1, max: 1 }) }),
+    apply(ws, { chapter, path }) {
+      const old = get(ws, chapter)
+      objects(ws).set(chapter, unsetAt(old, path))
+      return { says: `chapter ${chapter}: removed rows`, inverse: [{ op: 'chapter.set', chapter, path, value: old.rows }] }
+    },
+  }
   return operations
 }
 
@@ -394,6 +407,22 @@ const overrideFile = (ws, { layer, kind, name, member }) => {
   const [namespace, id] = name.split('/')
   return `${layer.startsWith('@') ? '' : 'package/'}overrides/${namespace}/${kind === 'i18n' ? 'i18n' : kind === 'tag' ? `tags/${member ?? fail('tag override needs a member type')}` : ws.kindFolders[kind] ?? fail(`unknown kind ${kind}`)}/${id}.json`
 }
+// The Studio writes fully qualified, identity-free edge patches. Their target, references and
+// final graph are validated at settlement; applying one does not need an assembled course.
+const edgePatchKeys = new Set(['from', 'to', 'game', 'required'])
+function relationEdgePatch({ layer, kind }, data) {
+  if (kind !== 'relation' || !layer.startsWith('@') || !data?.edges || Object.keys(data).length !== 1) return false
+  const patch = data.edges
+  const entries = Object.entries(patch)
+  return entries.length > 0 && entries.every(([key, edges]) => (key === 'add' || key === 'remove')
+    && Array.isArray(edges) && edges.every(edge => edge && typeof edge === 'object'
+      && Object.keys(edge).every(field => edgePatchKeys.has(field))
+      && typeof edge.from === 'string' && edge.from.includes('/')
+      && typeof edge.to === 'string' && edge.to.includes('/')
+      && (edge.game === undefined || typeof edge.game === 'string')
+      && (edge.required === undefined || typeof edge.required === 'boolean')))
+}
+
 Object.assign(OPERATIONS, {
   'override.put': {
     about: t("在本层覆盖对象或文案"),
@@ -412,7 +441,7 @@ Object.assign(OPERATIONS, {
           data = args.kind === 'tag' ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'kind')) : value
         }
       }
-      if (args.kind !== 'i18n') {
+      if (args.kind !== 'i18n' && !relationEdgePatch(args, data)) {
         const object = ws.content().registries[args.kind]?.[args.kind === 'tag' ? tagKey(args.member, args.name) : args.name]
         const { id: _id, ...base } = sourceValue(object ?? {})
         const qualified = expandNames(data, ws.layer, { schema: schemaForKind(args.kind, vocabulary, { ...base, ...data }), vocabulary })

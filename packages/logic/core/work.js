@@ -439,9 +439,12 @@ export function* prepareLogicWorks(content) {
     for (const symbol of unavailableSymbols(one, symbols, availableSymbols)) {
       wrong.push(`${one.id}: logic/symbol ${symbol.type} is unavailable to the reference work`)
     }
+    const marks = Object.keys(formulaSymbols)
+    // Declaration worksheets show disjunction as a formula even before its symbol is available to the player.
+    if (one.kind === 'logic/iso' && !marks.includes('∨')) marks.push('∨')
     const notation = {
       words: one.words ?? words,
-      symbols: Object.keys(formulaSymbols),
+      symbols: marks,
       formulaSymbols,
       propertyWords: one.propertyWords ?? one.kind === 'logic/proof',
     }

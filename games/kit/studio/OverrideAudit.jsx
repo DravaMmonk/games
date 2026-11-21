@@ -14,7 +14,7 @@ import { overrideKey } from './left-lists.js'
 import { sidebarSearch } from './sidebar-list.js'
 import SidebarListTools from './SidebarListTools.jsx'
 
-const KINDS = { level: [T("关卡", {}, "override-audit")], entry: [T("词条", {}, "override-audit")], tag: [T("标签", {}, "override-audit")], relation: [T("关系", {}, "override-audit")], layout: [T("布局")], i18n: [T("文案")] }
+const KINDS = { level: T("关卡", {}, "override-audit"), entry: T("词条", {}, "override-audit"), tag: T("标签", {}, "override-audit"), relation: T("关系", {}, "override-audit"), layout: T("布局"), i18n: T("文案") }
 const kindWord = (kind) => L(editorForType(kind)?.name ?? KINDS[kind] ?? kind)
 const FILTERS = [['all', T("全部")], ['own', T("本层")], ['below', T("依赖的包")]]
 

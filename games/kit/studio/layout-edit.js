@@ -79,10 +79,28 @@ export function rowConflicts(rows, edges) {
   return out
 }
 
-/** The first prerequisite pair the move from `before` to `after` puts out of order (one already so is no refusal), or null. */
-export function layoutRefusal(before, after, edges) {
-  const had = new Set(rowConflicts(before, edges).map(({ from, to }) => `${from} ${to}`))
-  return rowConflicts(after, edges).find(({ from, to }) => !had.has(`${from} ${to}`)) ?? null
+/** Find the shortest route between two levels, returning its links from the dependent level backwards. */
+export function prerequisitePath(edges, from, to) {
+  const incoming = new Map()
+  for (const edge of edges) {
+    if (!incoming.has(edge.to)) incoming.set(edge.to, [])
+    incoming.get(edge.to).push(edge)
+  }
+  const paths = new Map([[to, []]])
+  for (const [level, path] of paths) for (const edge of incoming.get(level) ?? []) {
+    if (edge.from === from) return [...path, edge]
+    if (!paths.has(edge.from)) paths.set(edge.from, [...path, edge])
+  }
+  return []
+}
+
+/** The row conflicts introduced by a move, with direct prerequisites before indirect ones. */
+export function newRowConflicts(before, after, edges) {
+  const key = ({ from, to }) => `${from} ${to}`
+  const had = new Set(rowConflicts(before, edges).map(key))
+  const direct = new Set(edges.map(key))
+  return rowConflicts(after, edges).filter(edge => !had.has(key(edge)))
+    .sort((a, b) => Number(direct.has(key(b))) - Number(direct.has(key(a))))
 }
 
 /** The first new row conflict introduced by a prerequisite, including indirect prerequisites. */

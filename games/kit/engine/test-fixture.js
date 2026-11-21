@@ -38,14 +38,16 @@ export function packageWordsFixture(put, id) {
   return { title: '@package.title', desc: '@package.desc' }
 }
 
-export function storyRoot() {
+export function storyRoot({ runtimeProbe = false } = {}) {
   const { root, put } = testProject()
   const id = 'story'
   put('packages/story/package.json', { kind: 'feature', type: 'module', version: '0.0.0', kernel: '^0.0.0', uses: {}, ...packageWordsFixture(put, id) })
   put('packages/story/capabilities/play.json', { extends: 'play', items: { answer: {} } })
   put('packages/story/core/index.js', `
+    ${runtimeProbe ? 'let calls = 0' : ''}
     const identity = value => value
     export function register(kernel) {
+      ${runtimeProbe ? "kernel.check('story/count', Object.assign(() => [{ text: 'check count ' + ++calls }], { phase: 'runtime' }))" : ''}
       kernel.play('story/answer', {
         initial: () => '', read: identity, write: identity, normalize: identity,
         run: identity, judge: answer => ({ pass: answer === 'yes' }),

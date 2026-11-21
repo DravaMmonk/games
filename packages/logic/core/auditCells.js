@@ -36,7 +36,7 @@ export function caseCells(level) {
     },
     {
       // What the case expects: whether the conclusion is derivable.
-      name: 'make', shape: 'choice', label: T("预期结果"), options: DERIVABLE, placeholder: T("待选择"),
+      name: 'make', shape: 'choice', label: T("预期结果"), options: DERIVABLE,
       fixed: fixed('make'), fixedLabel: T("预期结果（固定）"),
     },
   ]

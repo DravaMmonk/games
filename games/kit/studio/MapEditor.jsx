@@ -1,8 +1,7 @@
 // The arrange workspace's map editor (games/design/README.md 2.6, 6.7): a chapter's route map, the `rows` in its chapter file,
-// row by row, one to three places a row. A level is dragged to a place (or picked, then its place clicked: the way on
-// a phone), to a row of its own between rows, or off the map; places and rows are put in and taken out; the chapter's
-// levels no row places wait below. A move that would put a prerequisite in a row not above the level that needs it is
-// refused.
+// row by row, one to three places a row. A level is dragged to a place, to a row of its own between rows, or off the
+// map. A picked level can also be placed by clicking an empty slot or a row gap. Places and rows can be edited; the chapter's
+// levels no row places wait below. Moves that conflict with prerequisites require confirmation.
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { tr } from '../shell/i18n.js'
@@ -10,7 +9,7 @@ import { usePointerSession } from '../views/usePointerSession.js'
 import { linkKey } from './arrangement.js'
 import BoardWires from './BoardWires.jsx'
 import { useBoardWiring } from './useBoardWiring.js'
-import { ROW_SLOTS, addPlace, addRow, clearLevel, layoutRefusal, placeLevel, placeOf, removePlace } from './layout-edit.js'
+import { ROW_SLOTS, addPlace, addRow, clearLevel, placeLevel, placeOf, removePlace } from './layout-edit.js'
 
 /** What a drop target's key says: a place, a new row before a row, or off the map. */
 function dropOf(key) {
@@ -47,12 +46,11 @@ function useMapPorts(canvas, rows, members, external, showLoose) {
   return ports
 }
 
-export default function MapEditor({ rows, members, layoutEdges, links, external, titleOf, describe, selected, pending, wiringPending, onRows, onPick, refuse, onConnect, onDelete }) {
+export default function MapEditor({ rows, members, links, external, titleOf, describe, selected, pending, wiringPending, onRows, onMove, onPick, refuse, onConnect, onDelete }) {
   const placed = new Set(rows.flat())
   const loose = members.filter((id) => !placed.has(id))
   const hosted = new Set([...members, ...external.keys()])
   const [armed, setArmed] = useState(null)
-  const [notice, setNotice] = useState('')
   const [dragging, setDragging] = useState(null)
   const [over, setOver] = useState(null)
   const [wire, setWire] = useState(null)
@@ -65,21 +63,12 @@ export default function MapEditor({ rows, members, layoutEdges, links, external,
     if (pending || !to) return
     const next = to.off ? clearLevel(rows, id) : placeLevel(rows, id, to)
     if (next === rows || (to.off && !placeOf(rows, id))) { setArmed(null); return }
-    const bad = layoutRefusal(rows, next, layoutEdges)
-    if (bad) {
-      setNotice(tr("{value} 是 {value2} 的前置，须排在它上面的行。", {value: describe(bad.from), value2: describe(bad.to)}))
-      return
-    }
-    setNotice('')
     setArmed(null)
-    onRows(next)
+    onMove(next)
   }
-  const edit = (next) => { if (!pending && next !== rows) { setNotice(''); onRows(next) } }
+  const edit = (next) => { if (!pending && next !== rows) onRows(next) }
   const pick = (id) => {
     if (external.has(id)) return
-    const place = placeOf(rows, id)
-    if (armed && armed !== id && place) { move(armed, place); return }
-    setNotice('')
     setWire(null)
     setArmed(armed === id ? null : id)
     onPick(id)
@@ -98,12 +87,12 @@ export default function MapEditor({ rows, members, layoutEdges, links, external,
       return reason
     },
     onLevel: pick,
-    onStart: () => { setArmed(null); setNotice(''); setWire(null) },
-    onWire: (edge) => { setArmed(null); setNotice(''); setWire(linkKey(edge)) },
-    onCancel: () => { setArmed(null); setNotice(''); setWire(null) },
+    onStart: () => { setArmed(null); setWire(null) },
+    onWire: (edge) => { setArmed(null); setWire(linkKey(edge)) },
+    onCancel: () => { setArmed(null); setWire(null) },
   })
 
-  // Pointer drags move a card; touch users can also choose a card, then choose its slot.
+  // Pointer drags move a card; touch users can also choose a card, then choose an empty slot.
   const grab = (event, id) => {
     if (event.button !== 0) return
     wiring.skipClick.current = false
@@ -129,14 +118,14 @@ export default function MapEditor({ rows, members, layoutEdges, links, external,
   const target = (key, to) => ({
     'data-drop': key,
     'data-over': over === key ? '' : undefined,
-    onClick: armed && !pending && !wiring.held ? (e) => { if (e.target === e.currentTarget) move(armed, to) } : undefined,
+    onClick: to && armed && !pending && !wiring.held ? (e) => { if (e.target === e.currentTarget) move(armed, to) } : undefined,
   })
   const level = (id, to) => {
     const portal = external.get(id)
     const name = portal?.fromGame ? describe(id) : titleOf(id)
     const classes = `${members.includes(id) ? '' : 'is-auto'} ${armed === id || selected === id ? 'is-on' : ''} ${dragging === id ? 'is-moving' : ''}`
     return (
-      <div key={id} className="map-card" data-course-card={id} {...(to && target(`slot:${to.row}:${to.slot}`, to))}>
+      <div key={id} className="map-card" data-course-card={id} {...(to && target(`slot:${to.row}:${to.slot}`))}>
         <button type="button" className={`map-place ${classes}`} title={describe(id)} aria-pressed={armed === id}
           disabled={pending} onPointerDown={(event) => grab(event, id)}
           onClick={(event) => wiring.click(event, () => wiring.pickCard(id))}>
@@ -147,6 +136,7 @@ export default function MapEditor({ rows, members, layoutEdges, links, external,
       </div>
     )
   }
+  const picked = wiring.picked
   const reach = !wiring.held && (armed || dragging)
   const gap = (row) => reach && !pending
     ? <div className="map-gap is-armed" role="button" tabIndex={0} aria-label={tr("放进新的一行")} {...target(`gap:${row}`, { row, new: true })}
@@ -156,14 +146,18 @@ export default function MapEditor({ rows, members, layoutEdges, links, external,
     <div className={`map-layout layout-editor ${wiring.held ? 'is-picking' : ''}`}>
       <div className="arrange-actions">
         <span className="object-count">{members.filter((id) => placed.has(id)).length}/{members.length}</span>
-        {wiring.picked && <strong>{describe(wiring.picked.from)} → {describe(wiring.picked.to)}</strong>}
+        {picked && <>
+          <strong>{describe(picked.from)} → {describe(picked.to)}</strong>
+          {canDelete(picked) && <button type="button" className="kit-btn is-label map-disconnect" disabled={wiringPending}
+            onClick={() => wiring.deleteWire(picked)}><X size={13} aria-hidden="true" />{tr("断开连线")}</button>}
+        </>}
         {armed && <>
           <strong>{describe(armed)}</strong>
           {placeOf(rows, armed) && <button type="button" className="kit-btn is-label" disabled={pending} onClick={() => move(armed, { off: true })}>
             <X size={13} aria-hidden="true" />{tr("移出路线图")}
           </button>}
         </>}
-        {(notice || wiring.said) && <p className="is-error" role="status">{notice || wiring.said.text}</p>}
+        {wiring.said && <p className="is-error" role="status">{wiring.said.text}</p>}
       </div>
       <div className="map-rows" aria-label={tr("路线图")} onPointerMove={wiring.pointAt}
         onPointerDown={(event) => {

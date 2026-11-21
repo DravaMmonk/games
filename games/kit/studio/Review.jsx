@@ -9,7 +9,7 @@ import { L, tr } from '../shell/i18n.js'
 import { fieldDiff, parsed } from './diff.js'
 import { DiffFields, Lines } from './DiffView.jsx'
 
-export default function Review({ ops, redo, result, shown, reviewed, watch, why, setWhy, said, onRemove, onBack, onRedo, onDiscard, onApply, onUndo, onSelect, onOpen }) {
+export default function Review({ ops, redo, result, shown, reviewed, watch, why, setWhy, said, onRemove, onBack, onRedo, onDiscard, onApply, onUndo, onSelect, onOpen, showRemovedLevels = false }) {
   const failed = result.failed
   const ok = result.ok && ops.length > 0
   const [wrong, setWrong] = useState(null)
@@ -53,6 +53,7 @@ export default function Review({ ops, redo, result, shown, reviewed, watch, why,
               )
             })}
           </ol>
+          {showRemovedLevels && <RemovedLevels ids={result.removedLevels} />}
           <input className="field-input review-why" value={why} onChange={(e) => setWhy(e.target.value)} placeholder={tr('为什么改')} />
           {result.problems?.length > 0 && <ul className="audit-lines">{result.problems.map((p) => <li key={p} className="audit-line is-fail">{p}</li>)}</ul>}
           <div className="review-actions">
@@ -75,7 +76,7 @@ export default function Review({ ops, redo, result, shown, reviewed, watch, why,
         </p>
       )}
       {said && <p className={`review-said ${said.ok ? '' : 'is-fail'}`}>{said.text}</p>}
-      <Log log={reviewed?.log ?? []} undoable={reviewed?.undoable ?? shown.undoable} onUndo={onUndo} />
+      <Log log={reviewed?.log ?? []} undoable={reviewed?.undoable ?? shown.undoable} onUndo={onUndo} showRemovedLevels={showRemovedLevels} />
     </article>
   )
 }
@@ -100,7 +101,17 @@ function FileDiff({ change, onSelect }) {
   )
 }
 
-function Log({ log, undoable, onUndo }) {
+function RemovedLevels({ ids }) {
+  if (!ids?.length) return null
+  return (
+    <details className="review-removed">
+      <summary>{tr("已移出 {count} 个关卡", {count: ids.length})}</summary>
+      <ul>{ids.map(id => <li key={id}><code>{id}</code></li>)}</ul>
+    </details>
+  )
+}
+
+function Log({ log, undoable, onUndo, showRemovedLevels }) {
   if (!log.length) return null
   const undone = new Set(log.map((e) => e.undoes).filter((x) => x !== undefined))
   return (
@@ -112,6 +123,7 @@ function Log({ log, undoable, onUndo }) {
             <b>#{e.seq}</b>
             <span>{e.why ? L(e.why) : e.ops.map((o) => o.op).join(', ')}</span>
             <small>{e.at.slice(0, 16).replace('T', ' ')}</small>
+            {showRemovedLevels && <RemovedLevels ids={e.removedLevels} />}
             {e.seq === undoable && <button type="button" className="kit-btn is-label" onClick={() => onUndo(e.seq)}><Undo2 size={14} aria-hidden="true" />{tr('撤销')}</button>}
           </li>
         ))}

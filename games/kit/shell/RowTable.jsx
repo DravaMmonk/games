@@ -15,7 +15,7 @@ import { L, tr } from './i18n.js'
 //   rows            [row]                          onChange(rows)   the rows saved (absent: the table is read only)
 //   columns         [{ key, label, cell(row, k), edit?(row, set, k) the in-place editor on a desktop, align?: 'start'
 //                    (default centred), className? }]
-//   phone           edit through the form rather than in place
+//   phone           edit through the form, except columns with inlineOnPhone
 //   form(row, set, k) → the fields editing row k (set(next) replaces it)      blank() → a new row
 //   max?            how many rows at most          addLabel, formTitle(k)   { zh, en } pairs or a function
 //   rowClass?(k), onPick?(k) (a row picked, also when it is opened), empty? what the table says with no rows
@@ -68,7 +68,7 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
                   pick(k)
                 }}
               >
-                {columns.map((c) => <td key={c.key} className={cellClass(c)}><div className="rt-cell">{inPlace && c.edit ? c.edit(row, (next) => setRow(k, next), k) : c.cell(row, k)}</div></td>)}
+                {columns.map((c) => <td key={c.key} className={cellClass(c)}><div className="rt-cell">{c.edit && (inPlace || (editable && c.inlineOnPhone)) ? c.edit(row, (next) => setRow(k, next), k) : c.cell(row, k)}</div></td>)}
                 {deleteColumn && (
                   <td className="rt-actions">
                     <button type="button" className="rt-drop" aria-label={tr("删除这一行")} onClick={(e) => { e.stopPropagation(); remove(k) }}><X size={14} /></button>

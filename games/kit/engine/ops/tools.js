@@ -198,9 +198,9 @@ const tools = {
   },
   modify: {
     about: catalogText("逐项执行变更集并检查整个目标。全部通过才写入，dryRun 只预览。base 是调用者看到的最后日志序号，过期时拒绝。by 会写进日志，操作和参数见 vocabulary。"),
-    params: { game: 'string', changeset: 'object', dryRun: 'boolean?', base: 'number?', scope: 'string?', layer: 'string?' },
-    async run({ game, changeset, dryRun = false, base = null, scope, layer }) {
-      const r = await runChangeset(open(game, scope, layer), changeset, { write: !dryRun, base })
+    params: { game: 'string', changeset: 'object', dryRun: 'boolean?', base: 'number?', scope: 'string?', layer: 'string?', changesOnly: 'boolean?' },
+    async run({ game, changeset, dryRun = false, base = null, scope, layer, changesOnly = false }) {
+      const r = await runChangeset(open(game, scope, layer), changeset, { write: !dryRun, base, changesOnly })
       return { ok: r.ok, written: r.ok && !dryRun, says: r.says, problems: r.problems, files: r.files, diff: r.diff, undo: r.inverse }
     },
   },
@@ -283,15 +283,15 @@ const tools = {
   },
   preview: {
     about: catalogText("预览变更后的内容、检查输出、文件前后文本、失败的操作及日志。check 为 false 时只做词汇表检查。omit 可省略 changes、log、drift 或 content。"),
-    params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?' },
-    async run({ game, changeset = { ops: [] }, check = true, scope, layer, omit = [] }) {
+    params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?', changesOnly: 'boolean?' },
+    async run({ game, changeset = { ops: [] }, check = true, scope, layer, omit = [], changesOnly = false }) {
       const ws = open(game, scope, layer)
-      const r = await runChangeset(ws, changeset, { write: false, check, texts: !omit.includes('changes') })
+      const r = await runChangeset(ws, changeset, { write: false, check, changesOnly, texts: !omit.includes('changes') })
       const { content, order } = r
       // JSON editing can select catalog entries that no field currently uses.
       const copy = !omit.includes('content') && content?.resolvedDependencies?.copy
       const answer = {
-        ok: r.ok, says: r.says, problems: r.problems, failed: r.failed,
+        ok: r.ok, says: r.says, problems: r.problems, failed: r.failed, checkedChanges: r.checkedChanges ?? false, removedLevels: r.removedLevels ?? [],
         content: copy ? { ...content, registries: { ...content.registries, i18n: copy } } : content,
         order,
         lines: r.lines.map((l) => ({ ...l, levels: levelsOfLine(l, order) })),
@@ -424,9 +424,9 @@ const tools = {
   },
   undo: {
     about: catalogText("逆向执行最后一条仍可撤销的变更并登记日志。dryRun 只预览。seq 已过期时拒绝。"),
-    params: { game: 'string', dryRun: 'boolean?', seq: 'number?' },
-    async run({ game, dryRun = false, seq = null }) {
-      const r = await undo(open(game), { write: !dryRun, seq })
+    params: { game: 'string', dryRun: 'boolean?', seq: 'number?', changesOnly: 'boolean?' },
+    async run({ game, dryRun = false, seq = null, changesOnly = false }) {
+      const r = await undo(open(game), { write: !dryRun, seq, changesOnly })
       return { ok: r.ok, written: r.ok && !dryRun, says: r.says, problems: r.problems, files: r.files, diff: r.diff }
     },
   },

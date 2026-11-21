@@ -649,8 +649,6 @@ level-ref, wiki-ref { display: inline; }
 .rt-add:hover { color: var(--ink); }
 .rt-drop { display: inline-flex; padding: var(--sp-1); border: 0; background: transparent; color: var(--muted); cursor: pointer; }
 .rt-drop:hover { color: var(--fail); }
-.ff-inline-choice { min-width: 4em; padding: var(--sp-1) var(--sp-4); border: 1px solid var(--rule); border-radius: var(--r-sm); background: transparent; color: var(--ink); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
-.ff-inline-choice.is-unset { color: var(--muted); border-style: dashed; }
 .rt-add svg { width: 14px; height: 14px; }
 .level-phone .rt-add { align-self: stretch; justify-content: center; gap: var(--sp-4); min-height: 48px; border-width: 1.5px; border-radius: var(--r-md); color: var(--body); font-size: 15px; font-weight: 600; }
 .level-phone .rt-add svg { width: 18px; height: 18px; }
@@ -659,6 +657,9 @@ level-ref, wiki-ref { display: inline; }
 .ff-label { color: var(--muted); font-size: 12px; letter-spacing: .04em; }
 .ff-choice { display: flex; gap: var(--sp-4); }
 .ff-choice button { flex: 1; min-height: var(--sent-h); border: 1px solid var(--rule); border-radius: var(--r-md); background: transparent; color: var(--body); font: inherit; font-size: 15px; cursor: pointer; }
+.ff-choice.is-inline { flex-wrap: wrap; justify-content: center; gap: var(--sp-2); }
+.ff-choice.is-inline button { flex: 0 0 auto; min-height: var(--sp-8); padding-inline: var(--sp-3); font-size: inherit; white-space: nowrap; touch-action: manipulation; user-select: none; }
+.level-phone .ff-choice.is-inline button { min-height: var(--sent-h); }
 .ff-choice button.is-on { border-color: var(--ink); background: var(--ink); color: var(--paper); font-weight: 600; }
 .ff-choice button:disabled { cursor: default; }
 .ff-choice button:disabled:not(.is-on) { color: var(--muted); border-color: var(--line); }

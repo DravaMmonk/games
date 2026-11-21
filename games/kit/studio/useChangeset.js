@@ -1,13 +1,14 @@
 // A studio workspace's pending changeset (games/design/README.md 6.7), the same in both workspaces: every edit is an operation
 // added to it; the server runs it without writing (the preview tool) and answers with the content it leaves, every line
 // of the check and each file it changes. A preview comes in two steps, so editing stays quick on a big game: at once the
-// content the changeset leaves, checked against the vocabulary only; then, a moment after the last edit and one at a
-// time, the whole check (the domain's own: every reference run). Applying writes the changeset (modify); undo runs the
+// content the changeset leaves; then, when there are pending edits, the checks required by those edits.
+// Applying replays the changeset and reuses a matching check on the server. Undo runs the
 // change log's. `scope` is the workspace's side ('package' or 'game'): the server runs only its operations.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { tr } from '../shell/i18n.js'
 import { call } from './api.js'
 import { pushOp } from './form.js'
+import { latestRequest } from './latest-request.js'
 
 const QUICK = 120 // ms after an edit before its content is previewed
 const SETTLE = 700 // ms after the last edit before the whole check starts
@@ -16,6 +17,15 @@ const SETTLE = 700 // ms after the last edit before the whole check starts
 const QUICK_OMIT = ['changes', 'log', 'drift']
 const CHECK_OMIT = ['content', 'changes', 'log', 'drift']
 const REVIEW_OMIT = ['content', 'drift']
+
+const opGroups = new WeakMap()
+const grouped = (op) => opGroups.has(op)
+function groupStart(ops, index) {
+  const group = opGroups.get(ops[index])
+  if (!group) return index
+  while (index > 0 && opGroups.get(ops[index - 1]) === group) index--
+  return index
+}
 
 /** `target`: a game id, or { package } for a package opened on its own. */
 export function useChangeset(target, scope) {
@@ -46,52 +56,45 @@ export function useChangeset(target, scope) {
   useEffect(() => {
     if (!game) return
     // Asked exactly as the quick preview of an empty changeset is, so the two are one request when nothing is pending.
-    call('preview', { ...on, scope, changeset: { ops: [] }, check: false, omit: QUICK_OMIT }).then((r) => { setBase(r.content); setHead(r.head) }).catch(() => setBase(null))
+    call('preview', { ...on, scope, changeset: { ops: [] }, check: false, changesOnly: false, omit: QUICK_OMIT }).then((r) => { setBase(r.content); setHead(r.head) }).catch(() => setBase(null))
   }, [game, scope, rev])
 
-  const changeset = useMemo(() => ({ ...(why && { why }), ops }), [why, ops])
-  const key = `${game}|${scope}|${rev}|${JSON.stringify(changeset)}`
+  const draft = useMemo(() => ({ ops }), [ops])
+  const changeset = useMemo(() => ({ ...draft, ...(why && { why }) }), [draft, why])
+  const key = `${game}|${scope}|${rev}|${JSON.stringify(draft)}`
+  const quick = useMemo(latestRequest, [])
+  const check = useMemo(latestRequest, [])
+  const review = useMemo(latestRequest, [])
 
-  // The quick preview of every change of the pending changeset.
-  const seq = useRef(0)
+  // Every request carries a complete draft. Superseded drafts do not form a backlog in the worker.
   useEffect(() => {
     if (!game) return undefined
-    const no = ++seq.current
+    let live = true
     setBusy(true)
-    const timer = window.setTimeout(async () => {
-      const r = await call('preview', { ...on, scope, changeset, check: false, omit: QUICK_OMIT }).catch((error) => ({ ok: false, problems: [error.message], content: null, failed: null }))
-      if (no !== seq.current) return
-      setLast(r)
-      if (r.content) setShown({ ...r, ops: changeset.ops })
+    const timer = window.setTimeout(() => quick(async () => {
+      if (!live) return
+      const r = await call('preview', { ...on, scope, changeset: draft, check: false, changesOnly: Boolean(draft.ops.length), omit: QUICK_OMIT }).catch((error) => ({ ok: false, problems: [error.message], content: null, failed: null }))
+      if (!live) return
+      setLast({ ...r, ops: draft.ops })
+      if (r.content) setShown({ ...r, ops: draft.ops })
       setBusy(false)
-    }, ops.length ? QUICK : 0)
-    return () => window.clearTimeout(timer)
-  }, [game, scope, changeset, rev, ops.length])
+    }), draft.ops.length ? QUICK : 0)
+    return () => { live = false; window.clearTimeout(timer) }
+  }, [game, scope, draft, rev, quick])
 
-  // The whole check: one at a time, always of the latest changeset once edits settle.
-  const wanted = useRef(null)
-  const checking = useRef(false)
-  const runCheck = useCallback(async () => {
-    if (checking.current) return
-    checking.current = true
-    for (;;) {
-      const job = wanted.current
-      const r = await call('preview', { ...job.on, scope: job.scope, changeset: job.changeset, omit: CHECK_OMIT }).catch((error) => ({ ok: false, lines: [], problems: [error.message], failed: null }))
-      if (wanted.current === job) {
-        setChecked({ key: job.key, ok: r.ok, lines: r.lines ?? [], problems: r.problems ?? [], failed: r.failed, order: r.order ?? [] })
-        break
-      }
-    }
-    checking.current = false
-  }, [])
-  // The slow calls wait for the first content, so a game opens on its quick preview.
-  const loaded = Boolean(shown)
+  const quickResult = last?.ops === ops ? last : null
+  // A local check or a refusal from the quick preview already settles the draft.
+  const needsCheck = Boolean(ops.length && quickResult?.ok && !quickResult.checkedChanges)
   useEffect(() => {
-    if (!loaded) return undefined
-    wanted.current = { game, on, scope, changeset, key }
-    const timer = window.setTimeout(runCheck, changeset.ops.length ? SETTLE : 0)
-    return () => window.clearTimeout(timer)
-  }, [game, scope, changeset, key, runCheck, loaded])
+    if (!needsCheck) return undefined
+    let live = true
+    const timer = window.setTimeout(() => check(async () => {
+      if (!live) return
+      const r = await call('preview', { ...on, scope, changeset: draft, changesOnly: true, omit: CHECK_OMIT }).catch((error) => ({ ok: false, lines: [], problems: [error.message], failed: null }))
+      if (live) setChecked({ key, ok: r.ok, lines: r.lines ?? [], problems: r.problems ?? [], failed: r.failed, order: r.order ?? [] })
+    }), SETTLE)
+    return () => { live = false; window.clearTimeout(timer) }
+  }, [game, scope, draft, key, needsCheck, check])
 
   // The review's files and change log: asked for while a review is open (watchReview), once edits settle.
   const [watching, setWatching] = useState(0)
@@ -100,16 +103,17 @@ export function useChangeset(target, scope) {
     setWatching((n) => n + 1)
     return () => setWatching((n) => n - 1)
   }, [])
+  const reviewing = watching > 0 && shown?.ops === ops
   useEffect(() => {
-    if (!game || !watching || !loaded) return undefined
+    if (!game || !reviewing) return undefined
     let live = true
-    const timer = window.setTimeout(() => {
-      call('preview', { ...on, scope, changeset, check: false, omit: REVIEW_OMIT })
-        .then((r) => { if (live) setReviewed({ key, changes: r.changes ?? [], log: r.log ?? [], undoable: r.undoable }) })
-        .catch(() => {})
-    }, changeset.ops.length ? SETTLE : 0)
+    const timer = window.setTimeout(() => review(async () => {
+      if (!live) return
+      const r = await call('preview', { ...on, scope, changeset: draft, check: false, changesOnly: Boolean(draft.ops.length), omit: REVIEW_OMIT }).catch(() => null)
+      if (live && r) setReviewed({ key, changes: r.changes ?? [], log: r.log ?? [], undoable: r.undoable })
+    }), draft.ops.length ? SETTLE : 0)
     return () => { live = false; window.clearTimeout(timer) }
-  }, [game, scope, changeset, key, watching > 0, loaded]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [game, scope, draft, key, reviewing, review])
 
   const savingRef = useRef(false)
   const opsNow = useRef(ops)
@@ -117,9 +121,13 @@ export function useChangeset(target, scope) {
   const redoNow = useRef(redo)
   redoNow.current = redo
   // An edit (standing for the last when it edits the same thing), several operations at once, the last taken back and put again.
-  const edit = useCallback((op) => { if (!savingRef.current) { setOps((list) => pushOp(list, op)); setRedo([]) } }, [])
-  const addOps = useCallback((list, reason = null) => {
+  const edit = useCallback((op) => { if (!savingRef.current) { setOps((list) => grouped(list.at(-1)) ? [...list, op] : pushOp(list, op)); setRedo([]) } }, [])
+  const addOps = useCallback((list, reason = null, { atomic = false } = {}) => {
     if (savingRef.current) return
+    if (atomic) {
+      const group = {}
+      for (const op of list) opGroups.set(op, group)
+    }
     setOps((now) => [...now, ...list])
     setRedo([])
     if (reason) setWhy((w) => w || reason)
@@ -128,17 +136,25 @@ export function useChangeset(target, scope) {
     if (savingRef.current) return
     const now = opsNow.current
     if (k >= now.length) return
-    setRedo((r) => [...r, ...now.slice(k).reverse()])
-    setOps(now.slice(0, k))
+    const start = groupStart(now, k)
+    setRedo((r) => [...r, ...now.slice(start).reverse()])
+    setOps(now.slice(0, start))
   }, [])
   const again = useCallback(() => {
     if (savingRef.current) return
     const r = redoNow.current
     if (!r.length) return
-    setOps((now) => [...now, r.at(-1)])
-    setRedo(r.slice(0, -1))
+    const start = groupStart(r, r.length - 1)
+    setOps((now) => [...now, ...r.slice(start).reverse()])
+    setRedo(r.slice(0, start))
   }, [])
-  const remove = (k) => { setOps((list) => list.filter((_, i) => i !== k)); setRedo([]) }
+  const remove = (k) => {
+    setOps((list) => {
+      const group = opGroups.get(list[k])
+      return list.filter((op, i) => group ? opGroups.get(op) !== group : i !== k)
+    })
+    setRedo([])
+  }
   const discard = () => {
     if (!window.confirm(tr("确定放弃所有待定操作吗？"))) return
     setOps([])
@@ -150,7 +166,7 @@ export function useChangeset(target, scope) {
     savingRef.current = true
     setSaving(true)
     try {
-      const r = await call('modify', { ...on, scope, changeset: { ...changeset, by: 'studio' }, base: head })
+      const r = await call('modify', { ...on, scope, changeset: { ...changeset, by: 'studio' }, base: head, changesOnly: true })
       setSaid(r.ok ? { ok: true, text: r.says.join('; ') } : { ok: false, text: r.problems.join('\n') })
       if (r.ok) {
         setOps([])
@@ -168,22 +184,22 @@ export function useChangeset(target, scope) {
     }
   }
   const undo = async (no) => {
-    const r = await call('undo', { ...on, seq: no })
+    const r = await call('undo', { ...on, seq: no, changesOnly: true })
     setSaid(r.ok ? { ok: true, text: r.says.join('; ') } : { ok: false, text: r.problems.join('\n') })
     if (r.ok) setRev((n) => n + 1)
   }
 
-  const fresh = checked?.key === key
-  // The check's lines: the whole check's when it is of these changes, else the quick one's (the content against its
-  // vocabulary) over the last whole check's other lines.
+  const current = needsCheck ? (checked?.key === key ? checked : null) : quickResult
+  const fresh = Boolean(current)
   const lines = useMemo(() => {
-    if (!checked) return shown?.lines ?? []
-    if (fresh) return checked.lines
+    if (current) return current.lines ?? []
+    if (!checked || !ops.length) return shown?.lines ?? []
     return [...(shown?.lines ?? []), ...checked.lines.filter((l) => !l.text.startsWith('content: '))]
-  }, [checked, fresh, shown])
-  const result = { ok: fresh && checked.ok, problems: last && !last.content ? last.problems : fresh ? checked.problems : [], failed: last?.failed ?? null, says: last?.says ?? shown?.says, fresh }
+  }, [checked, current, ops.length, shown])
+  const result = { ok: current?.ok === true, problems: last && !last.content ? last.problems : current?.problems ?? [], failed: last?.failed ?? null, says: last?.says ?? shown?.says, removedLevels: quickResult?.removedLevels ?? [], fresh }
+
   return {
     ops, setOps, redo, why, setWhy, shown, last, checked, base, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, reviewed, watchReview,
-    content: shown?.content ?? null, edit, addOps, back, again, remove, discard, open, apply, undo,
+    content: shown?.content ?? null, edit, addOps, back, again, grouped, remove, discard, open, apply, undo,
   }
 }

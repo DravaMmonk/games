@@ -4,7 +4,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { memberKnown, memberTitle, newTag, ownTagData, tagCycle, tagValuesOp, textWith, withMember, withoutMember } from './tag-edit.js'
-import { addPlace, addRow, clearLevel, layoutRefusal, placeLevel, placeOf, removePlace, removeRow, rowConflicts, unplacedOf, wiringLayoutRefusal } from './layout-edit.js'
+import { addPlace, addRow, clearLevel, newRowConflicts, placeLevel, placeOf, removePlace, removeRow, rowConflicts, unplacedOf, wiringLayoutRefusal } from './layout-edit.js'
 
 const CONTENT = {
   registries: {
@@ -96,15 +96,15 @@ test('places and rows are added and taken out', () => {
   assert.deepEqual(removeRow(rows, 0), [['p/b']])
 })
 
-test('a move that puts a prerequisite in a row not above its level is refused, an old one is not', () => {
+test('row moves report new prerequisite conflicts and ignore existing ones', () => {
   const edges = CONTENT.relationEdges.requires
   const rows = [['p/a'], ['p/b'], []]
   assert.deepEqual(rowConflicts([['p/a', 'p/b']], edges), [{ from: 'p/a', to: 'p/b' }])
   assert.deepEqual(rowConflicts([['p/c'], ['p/a']], edges), [{ from: 'p/a', to: 'p/c' }])
-  assert.deepEqual(layoutRefusal(rows, placeLevel(rows, 'p/b', { row: 0, slot: 1 }), edges), { from: 'p/a', to: 'p/b' })
-  assert.equal(layoutRefusal(rows, placeLevel(rows, 'p/c', { row: 2, new: true }), edges), null)
+  assert.deepEqual(newRowConflicts(rows, placeLevel(rows, 'p/b', { row: 0, slot: 1 }), edges)[0], { from: 'p/a', to: 'p/b' })
+  assert.deepEqual(newRowConflicts(rows, placeLevel(rows, 'p/c', { row: 2, new: true }), edges), [])
   const wrong = [['p/b'], ['p/a']]
-  assert.equal(layoutRefusal(wrong, placeLevel(wrong, 'p/c', { row: 2, new: true }), edges), null)
+  assert.deepEqual(newRowConflicts(wrong, placeLevel(wrong, 'p/c', { row: 2, new: true }), edges), [])
 })
 
 

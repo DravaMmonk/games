@@ -1,3 +1,4 @@
+import { eraLevels } from '../../course.js'
 import { declaresIn, kindPolicy } from '../kind-policy.js'
 import { meaningsOf } from '../kind-meanings.js'
 import { tagKey } from '../tag-identity.js'
@@ -14,15 +15,14 @@ import { kindSchemas } from '../plugin-kinds.js'
 // one that fails stops the changeset with nothing written. The resulting content must load through the platform.
 // A successful write records the operations, changed files and inverse in the append-only log. A refused change
 // or a preview restores the original workspace.
-import { expandNames } from '../names.js'
+import { expandNames, fullName } from '../names.js'
 import { parsePath } from './edit.js'
 import { assertStableIds } from './identity.js'
 import { shapeAt, validate } from '../schema.js'
 import { OBJECT_SCHEMAS } from '../objects.js'
 import { tasksSchema } from '../tasks.js'
 
-import { checkContentOnly, checkGame } from '../checks.js'
-import { runtimeOf } from '../resolver.js'
+import { checkChangeset } from './changeset-check.js'
 import { operationsFor, opScope } from './operations.js'
 import { adoptionFiles, append, hashOf, headOf, readLog, withLock } from './log.js'
 
@@ -30,13 +30,13 @@ export { LOG, readLog } from './log.js'
 
 /**
  * Apply `changeset` to the open game `ws`. write: put it on disk when it passes (otherwise it is a dry run);
- * check: run platform checks (off: only validate the content schema and dependencies); domain: the
+ * check: run platform checks (off: only validate the content schema and dependencies); changesOnly: scope checks to the draft; domain: the
  * game's domain module (its own by default). Returns { ok, says, problems, failed (the index of the operation that
  * failed, or null), lines (every line of the check), order, diff, files, changes ([{ file, before, after }] texts), content
  * (the game as the changeset leaves it, null when an operation failed), inverse (the changeset undoing it) }.
  * texts false: a dry run that leaves out the files' texts (changes, diff, files empty), for a caller that shows none.
  */
-export async function runChangeset(ws, changeset, { write = false, check = true, undoes = null, base = null, domain: given = null, texts = true } = {}) {
+export async function runChangeset(ws, changeset, { write = false, check = true, changesOnly = false, undoes = null, base = null, domain: given = null, texts = true } = {}) {
   const start = ws.snapshot()
   const says = []
   const inverse = []
@@ -62,7 +62,12 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
     if (args.layer && args.layer !== ws.layer) return fail([`${where}: open layer ${args.layer} to edit its objects`], k)
     const policy = operationKind(name, args, baseVocabulary) ?? { declares: opScope({ op: name, ...args }) }
     if (ws.scope && !declaresIn(policy, ws.scope)) return fail([`${where}: this is the ${opScope({ op: name, ...args })} workspace's to change, not the ${ws.scope} workspace's`], k)
-    const wrong = validate(op.params, args, { vocabulary, levels: new Set(ws.levels.keys()) })
+    const levels = new Set(ws.levels.keys())
+    // Chapter files and older log inverses carry qualified levels from every selected package.
+    if (name === 'chapter.put') for (const layer of ws.packageLayers) for (const object of layer.objects) {
+      if (object.kind === 'level') levels.add(fullName(layer.id, object.name))
+    }
+    const wrong = validate(op.params, args, { vocabulary, levels })
     if (wrong.length) return fail(wrong.map((p) => `${where}: ${p.at === '(root)' ? '' : `${p.at.slice(1)}: `}${p.says}`), k)
     try {
       const previous = ws.snapshot()
@@ -97,8 +102,8 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
   // Load the runtime for the final package selection. A failed check restores the original workspace.
   try {
     const content = ws.content()
-    const domain = given ? { ...given, vocabulary: ws.schemas } : await runtimeOf(content, ws.root)
-    return await settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, texts: texts || write })
+    const report = await checkChangeset(ws, content, changeset.ops ?? [], { check, changesOnly, given })
+    return settle({ ws, content, changeset, report, start, says, inverse, write, undoes, base, texts: texts || write })
   } catch (error) {
     return fail([`the changeset could not be settled: ${error.message}`])
   }
@@ -164,34 +169,41 @@ function sourceArguments(ws, operation, params, supplied, vocabulary) {
   return args
 }
 
-// The whole game's check, and the write or the restore, after every operation of a changeset has run.
-async function settle({ ws, content, changeset, domain, start, says, inverse, write, check, undoes, base, texts }) {
-  // The hub's count goes with the change (workspace.js), so it is checked against the levels there are now.
-  const options = { domain, root: ws.root }
-  const { lines, order } = check ? await checkGame(content, options) : checkContentOnly(content, options)
+function removedCourseLevels(ws, start, content) {
+  if (ws.packaged || !Array.isArray(start.game?.chapters)) return []
+  const placed = new Set((content.eras ?? []).flatMap(eraLevels))
+  const previous = start.game.chapters.filter(id => typeof id === 'string')
+    .flatMap(id => start.contentObjects.chapter?.get(id.split('/').at(-1))?.levels ?? [])
+  return [...new Set(previous)].filter(id => !placed.has(id))
+}
+
+// Write or restore after settlement checks the resulting draft.
+function settle({ ws, content, changeset, report, start, says, inverse, write, undoes, base, texts }) {
+  const { lines, order, checkedChanges = false } = report
   const problems = lines.filter((l) => l.fail).map((l) => l.text)
   const changes = texts ? ws.changes() : []
   const diff = texts ? ws.diff(changes) : ''
   const files = changes.map((c) => c.file)
   const ok = problems.length === 0
   let refused = null
+  const removedLevels = removedCourseLevels(ws, start, content)
   if (ok && write) {
     // Written only onto the log the caller saw (`base`, the seq of its last entry, when given) and onto the files as
     // they were opened; the files' hashes go in the entry.
     refused = withLock(ws, () => {
       if (base !== null && headOf(ws) !== base) return `the game changed since you saw it (its log is at #${headOf(ws)}, not #${base}): load it again`
       try {
-        ws.write()
+        ws.write(changes)
       } catch (error) {
         return error.message
       }
-      append(ws, { ...(ws.layer && { layer: ws.layer }), why: changeset.why, ...(changeset.by && { by: changeset.by }), ops: changeset.ops, files: changes.map(({ file, after }) => ({ file, after: hashOf(after) })), inverse, ...(undoes !== null && { undoes }) })
+      append(ws, { ...(ws.layer && { layer: ws.layer }), why: changeset.why, ...(changeset.by && { by: changeset.by }), ops: changeset.ops, files: changes.map(({ file, after }) => ({ file, after: hashOf(after) })), ...(removedLevels.length > 0 && { removedLevels }), inverse, ...(undoes !== null && { undoes }) })
       return null
     })
   }
   if (!ok || !write || refused) ws.restore(start)
   if (refused) return { ok: false, says, problems: [refused], failed: null, lines, order, diff, files, changes, content, inverse: null }
-  return { ok, says, problems, failed: null, lines, order, diff, files, changes, content, inverse: { why: `undo: ${changeset.why ?? says.join('; ')}`, ops: inverse } }
+  return { ok, says, problems, failed: null, lines, order, checkedChanges, removedLevels, diff, files, changes, content, inverse: { why: `undo: ${changeset.why ?? says.join('; ')}`, ops: inverse } }
 }
 
 /** The last change of the log not undone yet (an undo is never itself undone this way: apply the change again). */

@@ -106,9 +106,10 @@ export function checkContent({ vocabulary: suppliedVocabulary, languages = null,
 /**
  * Validate selected sections after projecting them onto their chapters.
  */
-function courseProblems(played, requires) {
+export function courseProblems(played, requires, chapters = null) {
   const out = []
   for (const [e, era] of played.entries()) {
+    if (chapters && !chapters.has(era.id)) continue
     const own = new Set(eraLevels(era)), drawn = new Map()
     for (const [r, row] of (Array.isArray(era.rows) ? era.rows : []).entries()) {
       if (!Array.isArray(row)) continue

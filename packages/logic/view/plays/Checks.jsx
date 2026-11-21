@@ -15,10 +15,7 @@ function display(cell, row) {
     case 'tree-list': return value.length
       ? <span className="ck-lines">{value.map((item, k) => <span key={k}>{k + 1}. <Formula text={cell.build.text(item)} /></span>)}</span>
       : placeholder(cell)
-    case 'choice': {
-      const option = cell.options.find((o) => o.value === value)
-      return option ? L(option.label) : placeholder(cell)
-    }
+    case 'choice': return <InlineChoice label={cell.fixedLabel ?? cell.label} options={cell.options} value={value} disabled />
   }
 }
 
@@ -27,7 +24,10 @@ function edit(cell, row, set, at, phone) {
   const change = (value) => set(cell.write ? cell.write(row, value) : { ...row, [cell.name]: value })
   const props = { value, onChange: change }
   switch (cell.shape) {
-    case 'choice': return phone ? <ChoiceField label={cell.label} options={cell.options} {...props} /> : <InlineChoice options={cell.options} unset={cell.placeholder} {...props} />
+    case 'choice': {
+      const Choice = phone ? ChoiceField : InlineChoice
+      return <Choice label={cell.label} options={cell.options} {...props} />
+    }
     case 'tree':
     case 'tree-list': {
       const tree = { ...props, build: cell.build, title: cell.title(at), scope: `${cell.scope}:${at}` }
@@ -73,7 +73,7 @@ export function CheckScenario({ fields }) {
 /** Each row is a check. The shape of a value chooses its table display and editor. */
 export default function Checks({ cells, rows, onChange, result, rowClass, onPick, verdict, phone, ...table }) {
   const columns = cells.map((cell) => ({
-    key: cell.name, label: cell.label, align: cell.align,
+    key: cell.name, label: cell.label, align: cell.align, inlineOnPhone: cell.shape === 'choice',
     cell: (row) => display(cell, row),
     edit: (row, set, at) => cell.fixed?.(row) ? display(cell, row) : edit(cell, row, set, at, false),
   }))

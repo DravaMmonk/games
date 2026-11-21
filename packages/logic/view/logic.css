@@ -70,6 +70,7 @@
 /* The checks a player writes in the results area (Checks.jsx): the rows, then what the run said. */
 .ck { display: grid; gap: var(--sp-4); }
 .ck input { width: 7em; }
+.ck th .rt-cell { white-space: nowrap; }
 .ck-wrong { color: var(--fail); font-weight: 600; }
 .ck-right { color: var(--status); font-weight: 600; }
 .ck-placeholder { color: var(--faint); font-style: normal; font-size: var(--fs-small); }

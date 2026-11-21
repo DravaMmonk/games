@@ -18,7 +18,7 @@ export function problemsOf(level, rules, chips = premiseChips(level)) {
     if (rule.binds.length && (!level.thing || rule.binds.length !== 1 || rule.binds[0] !== binder)) return [{ row, why: 'binder' }]
     return rule.needs.flatMap((need, slot) => {
       if (!need || !complete(need) || straysOf(need).length) return [{ row, slot, why: 'empty' }]
-      if ([...freeVars(need)].some((v) => !rule.binds.includes(v))) return [{ row, slot, why: 'stray' }]
+      if ([...freeVars(need)].some((v) => !rule.binds.includes(v) && !level.params?.includes(v))) return [{ row, slot, why: 'stray' }]
       const missing = missingChips(need, chips)
       return missing.length ? [{ row, slot, why: 'chips', missing }] : []
     })

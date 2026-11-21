@@ -97,6 +97,33 @@ export function typeOf(level) {
   }).join(' | ')
 }
 
+/** A declaration with `params` is inductive: its sentence is about those things, and a premise may be the sentence itself. */
+export const paramsOf = (level) => level.params ?? []
+const inductive = (level) => Array.isArray(level.params)
+
+/** Everything the rules make from the given facts about the level's things, round after round until nothing is new. */
+function closure(level, rules, given) {
+  const read = (s) => sentenceOf(level, s)
+  const things = (level.things ?? []).map((name) => fn(name))
+  const target = read(level.target)
+  const known = [...given]
+  const ways = rules.map((rule) => ({ names: [...paramsOf(level), ...rule.binds], needs: rule.needs.map(read) }))
+  let grew = true
+  while (grew) {
+    grew = false
+    for (const { names, needs } of ways) {
+      const all = names.reduce((some, name) => some.flatMap((pairs) => things.map((thing) => [...pairs, [name, thing]])), [[]])
+      for (const pairs of all) {
+        const made = substMany(target, pairs)
+        if (knows(known, made) || !needs.every((need) => knows(known, substMany(need, pairs)))) continue
+        known.push(made)
+        grew = true
+      }
+    }
+  }
+  return known
+}
+
 /**
  * Whether a test's goal is derivable under these rules: { derived, made? }. An intro rule must make it (made: the way and
  * what it took) when the declared sentence is not given and the goal is of its shape, unless the premises reach it by
@@ -107,6 +134,8 @@ export function derives(level, rules, test) {
   const target = read(level.target)
   const goal = test.goal ? read(test.goal) : target
   const given = test.given.map(read)
+  // An inductive declaration is judged by what its rules build from the facts given.
+  if (inductive(level)) return { derived: knows(closure(level, rules, given), goal) }
   if (!test.uses) {
     if (knows(given, goal) || follows(level, rules, { given: test.given, goal: test.goal ?? level.target })) return { derived: true }
     const shape = (f) => [unfoldConnective(f).op, f.pred].join('|')
@@ -176,7 +205,7 @@ const premise = (show, hyps = [], fixes = []) => ({ fixes, hyps, show })
  * A way as a rule: its assumptions in turn are the premises, the declared sentence the conclusion, and a way that
  * takes things is a rule for any of them (`fixes`): ⋀x. ⟦x is human⟧ ⟹ ∃y. y is human.
  */
-const wayRule = (way, level, g) => ({ fixes: way.binds, premises: way.needs.map((n) => premise(g(sentenceOf(level, n)))), conclusion: g(sentenceOf(level, level.target)) })
+const wayRule = (way, level, g) => ({ fixes: [...paramsOf(level), ...way.binds], premises: way.needs.map((n) => premise(g(sentenceOf(level, n)))), conclusion: g(sentenceOf(level, level.target)) })
 
 // The declared sentence's own letters and predicates, each a metavariable in turn (?A, ?B … for a sentence, ?P, ?Q …
 // for one about things): the rules for any sentences, not just the level's. A new proposition (one whose sentence
@@ -219,10 +248,21 @@ function general(level) {
  */
 export function declaredRules(level, ways, g = general(level)) {
   const R = meta('?R')
+  const target = sentenceOf(level, level.target)
+  // An inductive declaration's rule is induction: ?R is about the declared sentence's things, and a case may also
+  // assume ?R of every premise that is the declared sentence again (the induction hypothesis).
+  const about = (f) => (f.args?.length ? { op: 'meta', name: '?R', args: f.args } : R)
+  const again = (f) => f.op === 'atom' && f.pred === target.pred
   return {
     make: ways.map((way) => wayRule(way, level, g)),
     take: level.take
       ? ruleOf('take', null, level.take.premises, level.take.conclusion)
-      : { premises: [premise(g(sentenceOf(level, level.target))), ...ways.map((way) => premise(R, way.needs.map((n) => g(sentenceOf(level, n))), way.binds))], conclusion: R },
+      : inductive(level) ? {
+        premises: [premise(g(target)), ...ways.map((way) => {
+          const needs = way.needs.map((n) => sentenceOf(level, n))
+          return premise(about(target), [...needs.map(g), ...needs.filter(again).map(about)], [...paramsOf(level), ...way.binds])
+        })],
+        conclusion: about(target),
+      } : { premises: [premise(g(sentenceOf(level, level.target))), ...ways.map((way) => premise(R, way.needs.map((n) => g(sentenceOf(level, n))), way.binds))], conclusion: R },
   }
 }

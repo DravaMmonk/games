@@ -3,5 +3,17 @@
   "List": "@course.wordSets.everyday.List",
   "Bool": "@course.wordSets.everyday.Bool",
   "s": "{0}+1",
-  "zero": "0"
+  "zero": "0",
+  "Parent": "@qed-math/wordset.everyday.Parent",
+  "Anc": "@qed-math/wordset.everyday.Anc",
+  "Flight": "@qed-math/wordset.everyday.Flight",
+  "Reach": "@qed-math/wordset.everyday.Reach",
+  "i": "@qed-math/wordset.everyday.i",
+  "j": "@qed-math/wordset.everyday.j",
+  "k": "@qed-math/wordset.everyday.k",
+  "l": "@qed-math/wordset.everyday.l",
+  "m": "@qed-math/wordset.everyday.m",
+  "n": "@qed-math/wordset.everyday.n",
+  "o": "@qed-math/wordset.everyday.o",
+  "p": "@qed-math/wordset.everyday.p"
 }

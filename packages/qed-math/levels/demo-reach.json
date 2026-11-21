@@ -1,0 +1,37 @@
+{
+  "title": "@level.demo-reach.title",
+  "intro": [{ "t": "@level.demo-reach.intro.0.t" }],
+  "after": "@level.demo-reach.after",
+  "tasks": [
+    {
+      "id": "demo-reach",
+      "kind": "logic/iso",
+      "declare": "@level.demo-reach.tasks.demo-reach.declare",
+      "words": ["everyday"],
+      "target": "Reach(x, y)",
+      "params": ["x", "y"],
+      "sentences": ["Flight(x, z)", "Reach(z, y)"],
+      "things": ["m", "n", "o", "p"],
+      "thing": true,
+      "binder": "z",
+      "brief": "@level.demo-reach.tasks.demo-reach.brief",
+      "hint": ["@level.demo-reach.tasks.demo-reach.hint.0"],
+      "tests": [
+        { "given": ["Flight(m, n)"], "goal": "Reach(m, n)", "make": true },
+        { "given": ["Flight(m, n)", "Flight(n, o)"], "goal": "Reach(m, o)", "make": true },
+        { "given": ["Flight(m, n)", "Flight(n, o)", "Flight(o, p)"], "goal": "Reach(m, p)", "make": true },
+        { "given": ["Flight(m, n)"], "goal": "Reach(n, m)", "make": false },
+        { "given": ["Flight(m, n)", "Flight(o, p)"], "goal": "Reach(m, p)", "make": false },
+        { "given": ["Flight(m, n)", "Flight(m, o)"], "goal": "Reach(n, o)", "make": false }
+      ],
+      "solution": [
+        { "binds": [], "needs": ["Flight(x, y)"] },
+        { "binds": ["z"], "needs": ["Flight(x, z)", "Reach(z, y)"] }
+      ],
+      "naive": [
+        { "binds": [], "needs": ["Flight(x, y)"] },
+        { "binds": ["z"], "needs": ["Flight(x, z)", "Flight(z, y)"] }
+      ]
+    }
+  ]
+}

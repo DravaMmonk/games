@@ -1,0 +1,80 @@
+{
+  "title": "@level.demo-anc.title",
+  "intro": [{ "t": "@level.demo-anc.intro.0.t" }, { "t": "@level.demo-anc.intro.1.t" }],
+  "after": "@level.demo-anc.after",
+  "declare": "@level.demo-anc.declare",
+  "words": ["everyday"],
+  "target": "Anc(x, y)",
+  "params": ["x", "y"],
+  "sentences": ["Parent(x, z)", "Anc(z, y)"],
+  "things": ["i", "j", "k", "l"],
+  "thing": true,
+  "binder": "z",
+  "tests": [
+    { "given": ["Parent(i, j)"], "goal": "Anc(i, j)", "make": true },
+    { "given": ["Parent(i, j)", "Parent(j, k)"], "goal": "Anc(i, k)", "make": true },
+    { "given": ["Parent(i, j)", "Parent(j, k)", "Parent(k, l)"], "goal": "Anc(i, l)", "make": true },
+    { "given": ["Parent(i, j)"], "goal": "Anc(j, i)", "make": false },
+    { "given": ["Parent(i, j)", "Parent(i, k)"], "goal": "Anc(j, k)", "make": false },
+    { "given": ["Parent(i, k)", "Parent(j, k)"], "goal": "Anc(i, j)", "make": false },
+    { "given": [], "goal": "Anc(i, i)", "make": false }
+  ],
+  "solution": [
+    { "binds": [], "needs": ["Parent(x, y)"] },
+    { "binds": ["z"], "needs": ["Parent(x, z)", "Anc(z, y)"] }
+  ],
+  "naive": [{ "binds": [], "needs": ["Parent(x, y)"] }],
+  "tasks": [
+    {
+      "id": "demo-anc-write",
+      "kind": "logic/iso",
+      "step": "@level.demo-anc.tasks.demo-anc-write.step",
+      "brief": "@level.demo-anc.tasks.demo-anc-write.brief",
+      "hint": ["@level.demo-anc.tasks.demo-anc-write.hint.0", "@level.demo-anc.tasks.demo-anc-write.hint.1"]
+    },
+    {
+      "id": "demo-anc-weak",
+      "kind": "logic/iso",
+      "play": "logic/audit",
+      "want": "logic/expose",
+      "step": "@level.demo-anc.tasks.demo-anc-weak.step",
+      "intro": [{ "t": "@level.demo-anc.tasks.demo-anc-weak.intro.0.t" }],
+      "brief": "@level.demo-anc.tasks.demo-anc-weak.brief",
+      "hint": ["@level.demo-anc.tasks.demo-anc-weak.hint.0"],
+      "boards": [
+        {
+          "rules": [
+            { "binds": [], "needs": ["Parent(x, y)"] },
+            { "binds": ["z"], "needs": ["Parent(x, z)", "Parent(z, y)"] }
+          ]
+        }
+      ],
+      "slots": [{ "make": true, "fixed": ["make"] }],
+      "answer": [
+        { "given": ["Parent(i, j)", "Parent(j, k)", "Parent(k, l)"], "goal": "Anc(i, l)", "make": true }
+      ],
+      "naive": [{ "given": ["Parent(i, j)", "Parent(j, k)"], "goal": "Anc(i, k)", "make": true }]
+    },
+    {
+      "id": "demo-anc-strong",
+      "kind": "logic/iso",
+      "play": "logic/audit",
+      "want": "logic/expose",
+      "step": "@level.demo-anc.tasks.demo-anc-strong.step",
+      "intro": [{ "t": "@level.demo-anc.tasks.demo-anc-strong.intro.0.t" }],
+      "brief": "@level.demo-anc.tasks.demo-anc-strong.brief",
+      "hint": ["@level.demo-anc.tasks.demo-anc-strong.hint.0"],
+      "boards": [
+        {
+          "rules": [
+            { "binds": [], "needs": ["Parent(x, y)"] },
+            { "binds": ["z"], "needs": ["Parent(z, x)", "Anc(z, y)"] }
+          ]
+        }
+      ],
+      "slots": [{ "make": false, "fixed": ["make"] }],
+      "answer": [{ "given": ["Parent(i, j)", "Parent(i, k)"], "goal": "Anc(j, k)", "make": false }],
+      "naive": [{ "given": ["Parent(i, j)"], "goal": "Anc(j, i)", "make": false }]
+    }
+  ]
+}

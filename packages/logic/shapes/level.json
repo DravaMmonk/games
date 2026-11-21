@@ -399,6 +399,13 @@
       "type": "str",
       "optional": true
     },
+    "params": {
+      "type": "list",
+      "of": {
+        "type": "str"
+      },
+      "optional": true
+    },
     "take": {
       "type": "obj",
       "fields": {
@@ -1476,6 +1483,13 @@
               },
               "binder": {
                 "type": "str",
+                "optional": true
+              },
+              "params": {
+                "type": "list",
+                "of": {
+                  "type": "str"
+                },
                 "optional": true
               },
               "take": {

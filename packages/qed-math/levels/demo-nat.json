@@ -1,0 +1,22 @@
+{
+  "title": "@level.demo-nat.title",
+  "intro": [{ "t": "@level.demo-nat.intro.0.t" }],
+  "after": "@level.demo-nat.after",
+  "tasks": [
+    {
+      "id": "demo-nat",
+      "kind": "logic/iso",
+      "declare": "@level.demo-nat.tasks.demo-nat.declare",
+      "words": ["everyday", "terms"],
+      "target": "Nat",
+      "params": [],
+      "sentences": ["Nat"],
+      "brief": "@level.demo-nat.tasks.demo-nat.brief",
+      "hint": ["@level.demo-nat.tasks.demo-nat.hint.0", "@level.demo-nat.tasks.demo-nat.hint.1"],
+      "ways": [[], ["Nat"]],
+      "tests": [{ "given": [], "make": true }],
+      "solution": [{ "binds": [], "needs": [] }, { "binds": [], "needs": ["Nat"] }],
+      "naive": [{ "binds": [], "needs": ["Nat"] }]
+    }
+  ]
+}

@@ -37,7 +37,7 @@ export function declarationValues(level, rules, change, scope) {
     editor: change && {
       slot: (k, j) => ({
         title: T("可推导情形 {k} 的前提", {k: k + 1}),
-        tree: rules[k].needs[j], chips, language: sentenceLanguage(level.notation, 'formula', rules[k].binds), scope: `${scope}:${k}.${j}`,
+        tree: rules[k].needs[j], chips, language: sentenceLanguage(level.notation, 'formula', [...(level.params ?? []), ...rules[k].binds]), scope: `${scope}:${k}.${j}`,
         onChange: (tree) => withRule(k, (r) => ({ ...r, needs: changeAt(r.needs, j, () => tree) })),
       }),
       close: (k, j) => {

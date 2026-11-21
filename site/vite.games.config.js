@@ -14,6 +14,7 @@ export default defineConfig({
       { find: /^react(\/.*)?$/, replacement: `${resolve(import.meta.dirname, 'node_modules/react')}$1` },
       { find: /^react-dom(\/.*)?$/, replacement: `${resolve(import.meta.dirname, 'node_modules/react-dom')}$1` },
       { find: 'lucide-react', replacement: resolve(import.meta.dirname, 'node_modules/lucide-react') },
+      { find: 'katex', replacement: resolve(import.meta.dirname, 'node_modules/katex') },
     ],
   },
   plugins: [react(), packageApp()],

@@ -9,8 +9,6 @@
   "course.eras.circuits.chapter.title": "真值电路",
   "course.eras.classical.chapter.question": "真值表上每一行都真的话，证明器都证得出吗？",
   "course.eras.classical.chapter.title": "经典逻辑",
-  "course.eras.inductive.chapter.question": "数和列表怎么算、从哪里来？对每一个数都成立的事，怎么证？",
-  "course.eras.inductive.chapter.title": "数与列表",
   "course.eras.kernel.chapter.question": "只靠套用和假设框，能证出什么？",
   "course.eras.kernel.chapter.title": "证明核",
   "course.eras.metavars.chapter.question": "元件能不能自己从目标里读出该填的句子？",

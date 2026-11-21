@@ -1,0 +1,7 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "required": true, "from": "qed-math/sort-ins", "to": "qed-math/sort-run" },
+    { "required": true, "from": "qed-math/sort-insLen", "to": "qed-math/sort-len" }
+  ]
+}

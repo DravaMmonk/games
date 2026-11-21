@@ -1,0 +1,10 @@
+{
+  "G": "G",
+  "Prov": "@course.wordSets.goedel.Prov",
+  "diag": "@course.wordSets.goedel.diag",
+  "d": "⌜D⌝",
+  "g": "⌜G⌝",
+  "gn": "@course.wordSets.goedel.gn",
+  "gp": "@course.wordSets.goedel.gp",
+  "cs": "@course.wordSets.goedel.cs"
+}

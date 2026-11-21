@@ -1,0 +1,65 @@
+{
+  "title": "@level.in-circle.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.in-circle.intro.0.t" }],
+  "after": "@level.in-circle.after",
+  "tasks": [
+    {
+      "id": "in-circle",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-circle.tasks.in-circle.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["nat"],
+      "defs": ["plus"],
+      "tests": [
+        { "goal": "∀x. ∀y. plus(x, s(y)) = s(plus(y, x))" },
+        { "goal": "∀x. ∀y. plus(s(x), y) = plus(y, s(x))" },
+        { "goal": "∀x. plus(x, s(zero)) = s(x)" }
+      ],
+      "brief": "@level.in-circle.tasks.in-circle.brief",
+      "hint": ["@level.in-circle.tasks.in-circle.hint.0", "@level.in-circle.tasks.in-circle.hint.1"],
+      "solution": [
+        "c0 = proof-kit/repeat(in, body: c1) {",
+        "  body {",
+        "    c1 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c0.body)",
+        "  }",
+        "}",
+        "c2 = proof-kit/repeat(c0, body: c2_body) {",
+        "  body {",
+        "    c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+        "    c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+        "    c2_body_r3 = logic/directRewrite-math[use=[\"qed-math/addZero\"]](c2.body)",
+        "    c2_body_r4 = logic/directRewrite-math[use=[\"qed-math/addSucc\"]](c2.body)",
+        "    c2_body = proof-kit/append[ways=\"4\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3, fourth: c2_body_r4)",
+        "  }",
+        "}",
+        "c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c2)",
+        "c5 = logic/directRewrite-math[use=[\"qed-math/addComm\"]](c2)",
+        "c6 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c5)",
+        "c3 = proof-kit/append(first: c4, second: c6)",
+        "out <- c3"
+      ],
+      "naive": [
+        "c0 = proof-kit/repeat(in, body: c1) {",
+        "  body {",
+        "    c1 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c0.body)",
+        "  }",
+        "}",
+        "c2 = proof-kit/repeat(c0, body: c2_body) {",
+        "  body {",
+        "    c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+        "    c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+        "    c2_body_r3 = logic/directRewrite-math[use=[\"qed-math/addZero\"]](c2.body)",
+        "    c2_body_r4 = logic/directRewrite-math[use=[\"qed-math/addSucc\"]](c2.body)",
+        "    c2_body_r5 = logic/directRewrite-math[use=[\"qed-math/addComm\"]](c2.body)",
+        "    c2_body = proof-kit/append[ways=\"5\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3, fourth: c2_body_r4, fifth: c2_body_r5)",
+        "  }",
+        "}",
+        "c3 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c2)",
+        "out <- c3"
+      ]
+    }
+  ]
+}

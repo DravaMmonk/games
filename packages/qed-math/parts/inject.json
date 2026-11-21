@@ -1,0 +1,36 @@
+{
+  "name": "@part.inject.name",
+  "desc": "@part.inject.desc",
+  "family": "logic/rule",
+  "inside": [
+    {
+      "id": "base",
+      "reference": {
+        "kind": "logic/proof",
+        "solution": [
+          "gx = proof-kit/allI[x=a](body: gy) {",
+          "  body {",
+          "    gy = proof-kit/allI[x=b](body: f) {",
+          "      body {",
+          "        f = proof-kit/impI[A=\"s(a) = s(b)\"](body: w2) {",
+          "          body {",
+          "            e1 = proof-kit/allE[t=a](p)",
+          "            e2 = proof-kit/allE[t=b](p)",
+          "            w1 = proof-kit/rewrite[at=[0]](f.body, e1)",
+          "            w2 = proof-kit/rewrite[at=[0]](w1, e2)",
+          "          }",
+          "        }",
+          "      }",
+          "    }",
+          "  }",
+          "}",
+          "goal <- gx"
+        ],
+        "rule": { "premises": ["s(?x) = s(?y)", "⟦?x = ?y⟧ ⟹ ?C"], "conclusion": "?C" },
+        "tests": [{ "goal": "∀x. ∀y. s(x) = s(y) → x = y", "premises": { "p": "∀x. pred(s(x)) = x" } }]
+      }
+    }
+  ],
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
+}

@@ -1,0 +1,5 @@
+{
+  "title": "@tray.induction-proof.title",
+  "desc": "@tray.induction-proof.desc",
+  "values": ["proof-kit/natInd", "#proof-kit/proof"]
+}

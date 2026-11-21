@@ -1,0 +1,6 @@
+{
+  "title": "@glossary.entries.dependent.title",
+  "body": ["@glossary.entries.dependent.body.0", "@glossary.entries.dependent.body.1"],
+  "at": "in-len",
+  "see": ["qed-math/implicit", "qed-math/transport"]
+}

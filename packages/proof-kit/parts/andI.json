@@ -1,0 +1,8 @@
+{
+  "name": "@part.andI.name",
+  "desc": "@part.andI.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "inputs": [{ "name": "a", "label": "A" }, { "name": "b", "label": "B" }],
+  "op": "logic/andI"
+}

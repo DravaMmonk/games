@@ -1,0 +1,48 @@
+{
+  "title": "@level.gd-code.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.gd-code.intro.0.t" }, { "t": "@level.gd-code.intro.1.t" }],
+  "after": "@level.gd-code.after",
+  "tasks": [
+    {
+      "id": "gd-code",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.gd-code.tasks.gd-code.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms", "codes"],
+      "stated": [
+        "code(rain) = cons(one, nil)",
+        "code(wet) = cons(two, nil)",
+        "code(neg(x)) = cons(three, code(x))",
+        "code(imp(x, y)) = cons(four, app(code(x), code(y)))",
+        "app(nil, ys) = ys",
+        "app(cons(x, xs), ys) = cons(x, app(xs, ys))"
+      ],
+      "tests": [
+        { "goal": "code(neg(rain)) = cons(three, cons(one, nil))" },
+        { "goal": "code(imp(rain, wet)) = cons(four, cons(one, cons(two, nil)))" },
+        {
+          "goal": "code(neg(imp(rain, neg(wet)))) = cons(three, cons(four, cons(one, cons(three, cons(two, nil)))))"
+        }
+      ],
+      "brief": "@level.gd-code.tasks.gd-code.brief",
+      "hint": ["@level.gd-code.tasks.gd-code.hint.0"],
+      "solution": [
+        "c0 = proof-kit/repeat(in, body: c0_body) {",
+        "  body {",
+        "    c0_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c0.body)",
+        "    c0_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c0.body)",
+        "    c0_body_r3 = logic/directRewrite-math[use=[\"def.2\"]](c0.body)",
+        "    c0_body_r4 = logic/directRewrite-math[use=[\"def.3\"]](c0.body)",
+        "    c0_body_r5 = logic/directRewrite-math[use=[\"def.4\"]](c0.body)",
+        "    c0_body_r6 = logic/directRewrite-math[use=[\"def.5\"]](c0.body)",
+        "    c0_body = proof-kit/append[ways=\"6\"](first: c0_body_r1, second: c0_body_r2, third: c0_body_r3, fourth: c0_body_r4, fifth: c0_body_r5, sixth: c0_body_r6)",
+        "  }",
+        "}",
+        "c1 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c0)",
+        "out <- c1"
+      ]
+    }
+  ]
+}

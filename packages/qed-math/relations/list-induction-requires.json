@@ -1,0 +1,9 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "from": "qed-math/in-appnil", "to": "qed-math/in-appassoc" },
+    { "required": true, "from": "qed-math/in-appassoc", "to": "qed-math/in-revapp" },
+    { "required": true, "from": "qed-math/in-revapp", "to": "qed-math/in-revrev" },
+    { "required": true, "from": "qed-math/in-revrev", "to": "qed-math/in-len" }
+  ]
+}

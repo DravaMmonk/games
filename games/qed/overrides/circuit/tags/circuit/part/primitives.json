@@ -23,7 +23,6 @@
       "qed/exE",
       "qed/rewrite",
       "qed/refl",
-      "qed/natInd",
       "qed/uDecompose",
       "qed/uDelete",
       "qed/uConflict",

@@ -13,7 +13,7 @@ import { T as catalogText } from 'kernel/words'
 // level data beyond what the screen draws.
 
 import { meaningsOf } from '../kind-meanings.js'
-import { firstTask, passed, saved } from '../../shell/progress.js'
+import { firstTask, normalizeResults, passed, saved } from '../../shell/progress.js'
 import { taskContext } from '../../shell/played-task.js'
 import { close, outcomeOf } from './session.js'
 import { plain, side } from './words.js'
@@ -28,7 +28,7 @@ import { plain, side } from './words.js'
 const EXPLAIN = catalogText("用本领域的术语写一两句：这一关你弄明白了什么？（./play --explain \"…\"）")
 
 export function createPlay({ game, hook, record, now = () => new Date() }) {
-  record.progress = game.progress?.normalize?.(record.progress) ?? record.progress
+  record.progress = normalizeResults(game.progress?.normalize?.(record.progress) ?? record.progress)
   const lang = record.lang
   const textProviders = meaningsOf(game.contentVocabulary).map(meaning => meaning.blindText?.(game)).filter(Boolean)
   const solved = () => new Set(record.progress.solved)

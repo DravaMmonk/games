@@ -1,0 +1,14 @@
+{
+  "title": "@tag.number-proofs.title",
+  "values": [
+    "in-assoc",
+    "in-cases",
+    "in-circle",
+    "in-comm",
+    "in-distinct",
+    "in-loop",
+    "in-noteq",
+    "in-succ",
+    "in-zero"
+  ]
+}

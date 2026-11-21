@@ -1,0 +1,8 @@
+{
+  "name": "@part.repeat.name",
+  "desc": "@part.repeat.desc",
+  "icon": "Repeat",
+  "family": "logic/loop",
+  "regions": [{ "name": "body", "label": "@part.repeat.regions.0.label", "opens": true, "closes": true }],
+  "op": "logic/repeat"
+}

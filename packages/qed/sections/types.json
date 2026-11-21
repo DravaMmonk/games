@@ -8,15 +8,6 @@
     "normal-form",
     "dep-function",
     "currying",
-    "inductive",
-    "constructor",
-    "injectivity",
-    "induction",
-    "motive",
-    "defeq",
-    "propeq",
-    "dependent",
-    "implicit",
-    "transport"
+    "motive"
   ]
 }

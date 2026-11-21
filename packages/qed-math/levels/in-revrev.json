@@ -1,0 +1,59 @@
+{
+  "title": "@level.in-revrev.title",
+  "tray": "prover",
+  "after": "@level.in-revrev.after",
+  "tasks": [
+    {
+      "id": "in-revrev",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-revrev.tasks.in-revrev.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["list"],
+      "defs": ["app", "len", "rev"],
+      "tests": [{ "goal": "∀xs. rev(rev(xs)) = xs" }],
+      "brief": "@level.in-revrev.tasks.in-revrev.brief",
+      "hint": ["@level.in-revrev.tasks.in-revrev.hint.0"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"list.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c3) {",
+        "  body {",
+        "    c2 = proof-kit/repeat(c1.body, body: c2_body) {",
+        "      body {",
+        "        c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+        "        c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+        "        c2_body_r3 = logic/directRewrite-math[use=[\"def.4\"]](c2.body)",
+        "        c2_body_r4 = logic/directRewrite-math[use=[\"def.5\"]](c2.body)",
+        "        c2_body_r5 = logic/directRewrite-math[use=[\"qed-math/revApp\"]](c2.body)",
+        "        c2_body_r6 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c2.body)",
+        "        c2_body = proof-kit/append[ways=\"6\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3, fourth: c2_body_r4, fifth: c2_body_r5, sixth: c2_body_r6)",
+        "      }",
+        "    }",
+        "    c3 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c2)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "naive": [
+        "c0 = logic/directBackward-math[use=[\"list.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c3) {",
+        "  body {",
+        "    c2 = proof-kit/repeat(c1.body, body: c2_body) {",
+        "      body {",
+        "        c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+        "        c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+        "        c2_body_r3 = logic/directRewrite-math[use=[\"def.4\"]](c2.body)",
+        "        c2_body_r4 = logic/directRewrite-math[use=[\"def.5\"]](c2.body)",
+        "        c2_body_r5 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c2.body)",
+        "        c2_body = proof-kit/append[ways=\"5\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3, fourth: c2_body_r4, fifth: c2_body_r5)",
+        "      }",
+        "    }",
+        "    c3 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c2)",
+        "  }",
+        "}",
+        "out <- c1"
+      ]
+    }
+  ]
+}

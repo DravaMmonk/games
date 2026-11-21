@@ -1,0 +1,29 @@
+{
+  "title": "@level.in-cases.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.in-cases.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "in-cases",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-cases.tasks.in-cases.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["nat"],
+      "tests": [{ "goal": "∀x. x = zero ∨ (∃y. x = s(y))" }],
+      "brief": "@level.in-cases.tasks.in-cases.brief",
+      "hint": ["@level.in-cases.tasks.in-cases.hint.0"],
+      "solution": [
+        "c0 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](in)",
+        "c1 = logic/directBackward-math[use=[\"nat.exhaust\"]](c0)",
+        "c2 = logic/directBackward-proof-kit_orI[use=[\"disjI1\"]](c1)",
+        "c3 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c2)",
+        "c4 = logic/directBackward-proof-kit_orI[use=[\"disjI2\"]](c3)",
+        "c5 = logic/directBackward-proof-kit_exI[use=[\"exI\"]](c4)",
+        "c6 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c5)",
+        "out <- c6"
+      ]
+    }
+  ]
+}

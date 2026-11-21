@@ -1,0 +1,14 @@
+{
+  "title": "@section.types.title",
+  "values": [
+    "inductive",
+    "constructor",
+    "injectivity",
+    "induction",
+    "defeq",
+    "propeq",
+    "dependent",
+    "implicit",
+    "transport"
+  ]
+}

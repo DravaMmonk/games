@@ -1,0 +1,42 @@
+{
+  "title": "@level.in-len.title",
+  "tray": "prover",
+  "tasks": [
+    {
+      "id": "in-len",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-len.tasks.in-len.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["list"],
+      "defs": ["app", "len", "plus"],
+      "tests": [{ "goal": "∀xs. ∀ys. len(app(xs, ys)) = plus(len(xs), len(ys))" }],
+      "brief": "@level.in-len.tasks.in-len.brief",
+      "hint": ["@level.in-len.tasks.in-len.hint.0"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"list.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c4) {",
+        "  body {",
+        "    c2 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c1.body)",
+        "    c3 = proof-kit/repeat(c2, body: c3_body) {",
+        "      body {",
+        "        c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+        "        c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+        "        c3_body_r3 = logic/directRewrite-math[use=[\"def.2\"]](c3.body)",
+        "        c3_body_r4 = logic/directRewrite-math[use=[\"def.3\"]](c3.body)",
+        "        c3_body_r5 = logic/directRewrite-math[use=[\"def.4\"]](c3.body)",
+        "        c3_body_r6 = logic/directRewrite-math[use=[\"def.5\"]](c3.body)",
+        "        c3_body_r7 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c3.body)",
+        "        c3_body_g1 = proof-kit/append[ways=\"6\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3, fourth: c3_body_r4, fifth: c3_body_r5, sixth: c3_body_r6)",
+        "        c3_body = proof-kit/append[ways=\"2\"](first: c3_body_g1, second: c3_body_r7)",
+        "      }",
+        "    }",
+        "    c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "  }",
+        "}",
+        "out <- c1"
+      ]
+    }
+  ]
+}

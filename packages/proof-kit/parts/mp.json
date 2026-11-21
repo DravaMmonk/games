@@ -1,0 +1,8 @@
+{
+  "name": "@part.mp.name",
+  "desc": "@part.mp.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "inputs": [{ "name": "imp", "label": "A → B" }, { "name": "a", "label": "A" }],
+  "op": "logic/mp"
+}

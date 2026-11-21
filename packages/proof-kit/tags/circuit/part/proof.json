@@ -1,0 +1,4 @@
+{
+  "title": "@tag.proof.title",
+  "values": ["allE", "allI", "andE", "andI", "exI", "impI", "mp", "orI", "refl", "rewrite"]
+}

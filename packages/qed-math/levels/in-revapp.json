@@ -1,0 +1,94 @@
+{
+  "title": "@level.in-revapp.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.in-revapp.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "in-revapp-1",
+      "kind": "logic/define",
+      "words": ["everyday", "terms"],
+      "step": "@level.in-revapp.tasks.in-revapp-1.step",
+      "fn": "rev",
+      "on": 0,
+      "defs": ["app"],
+      "rows": [
+        { "lhs": "rev(nil)", "choices": ["nil"] },
+        {
+          "lhs": "rev(cons(x, xs))",
+          "choices": [
+            "app(rev(xs), cons(x, nil))",
+            "cons(x, rev(xs))",
+            "app(cons(x, nil), rev(xs))",
+            "rev(app(xs, cons(x, nil)))"
+          ]
+        }
+      ],
+      "tests": [
+        { "term": "rev(cons(i, cons(j, cons(k, nil))))", "value": "cons(k, cons(j, cons(i, nil)))" },
+        { "term": "rev(cons(i, nil))", "value": "cons(i, nil)" }
+      ],
+      "solution": ["nil", "app(rev(xs), cons(x, nil))"],
+      "naive": ["nil", "cons(x, rev(xs))"],
+      "brief": "@level.in-revapp.tasks.in-revapp-1.brief",
+      "hint": ["@level.in-revapp.tasks.in-revapp-1.hint.0"]
+    },
+    {
+      "id": "in-revapp-2",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-revapp.tasks.in-revapp-2.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "step": "@level.in-revapp.tasks.in-revapp-2.step",
+      "types": ["list"],
+      "defs": ["app", "len", "rev"],
+      "tests": [{ "goal": "∀xs. ∀ys. rev(app(xs, ys)) = app(rev(ys), rev(xs))" }],
+      "brief": "@level.in-revapp.tasks.in-revapp-2.brief",
+      "hint": ["@level.in-revapp.tasks.in-revapp-2.hint.0", "@level.in-revapp.tasks.in-revapp-2.hint.1"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"list.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c4) {",
+        "  body {",
+        "    c2 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c1.body)",
+        "    c3 = proof-kit/repeat(c2, body: c3_body) {",
+        "      body {",
+        "        c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+        "        c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+        "        c3_body_r3 = logic/directRewrite-math[use=[\"def.4\"]](c3.body)",
+        "        c3_body_r4 = logic/directRewrite-math[use=[\"def.5\"]](c3.body)",
+        "        c3_body_r5 = logic/directRewrite-math[use=[\"qed-math/appNil\"]](c3.body)",
+        "        c3_body_r6 = logic/directRewrite-math[use=[\"qed-math/appAssoc\"]](c3.body)",
+        "        c3_body_r7 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c3.body)",
+        "        c3_body_g1 = proof-kit/append[ways=\"6\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3, fourth: c3_body_r4, fifth: c3_body_r5, sixth: c3_body_r6)",
+        "        c3_body = proof-kit/append[ways=\"2\"](first: c3_body_g1, second: c3_body_r7)",
+        "      }",
+        "    }",
+        "    c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "naive": [
+        "c0 = logic/directBackward-math[use=[\"list.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c4) {",
+        "  body {",
+        "    c2 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c1.body)",
+        "    c3 = proof-kit/repeat(c2, body: c3_body) {",
+        "      body {",
+        "        c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+        "        c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+        "        c3_body_r3 = logic/directRewrite-math[use=[\"def.4\"]](c3.body)",
+        "        c3_body_r4 = logic/directRewrite-math[use=[\"def.5\"]](c3.body)",
+        "        c3_body_r5 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c3.body)",
+        "        c3_body = proof-kit/append[ways=\"5\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3, fourth: c3_body_r4, fifth: c3_body_r5)",
+        "      }",
+        "    }",
+        "    c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "publishes": [{ "part": "qed-math/revApp", "variant": "base" }]
+    }
+  ]
+}

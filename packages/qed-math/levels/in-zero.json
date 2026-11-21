@@ -1,0 +1,114 @@
+{
+  "title": "@level.in-zero.title",
+  "intro": [{ "t": "@level.in-zero.intro.0.t" }],
+  "after": "@level.in-zero.after",
+  "tasks": [
+    {
+      "id": "in-zero-1",
+      "kind": "logic/machine",
+      "tray": "prover",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-zero.tasks.in-zero-1.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "step": "@level.in-zero.tasks.in-zero-1.step",
+      "types": ["nat"],
+      "defs": ["plus"],
+      "tests": [
+        { "goal": "plus(s(s(zero)), zero) = s(s(zero))" },
+        { "goal": "plus(s(s(s(zero))), zero) = s(s(s(zero)))" }
+      ],
+      "brief": "@level.in-zero.tasks.in-zero-1.brief",
+      "hint": ["@level.in-zero.tasks.in-zero-1.hint.0"],
+      "solution": [
+        "c0 = proof-kit/repeat(in, body: c0_body) {",
+        "  body {",
+        "    c0_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c0.body)",
+        "    c0_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c0.body)",
+        "    c0_body = proof-kit/append[ways=\"2\"](first: c0_body_r1, second: c0_body_r2)",
+        "  }",
+        "}",
+        "c1 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c0)",
+        "out <- c1"
+      ]
+    },
+    {
+      "id": "in-zero-2",
+      "kind": "logic/proof",
+      "tray": "qed-math/induction-proof",
+      "step": "@level.in-zero.tasks.in-zero-2.step",
+      "adds": ["proof-kit/natInd"],
+      "consts": ["zero"],
+      "words": ["everyday", "terms"],
+      "cases": [],
+      "tests": [
+        {
+          "premises": { "d0": "∀y. plus(zero, y) = y", "d1": "∀x. ∀y. plus(s(x), y) = s(plus(x, y))" },
+          "goal": "∀x. plus(x, zero) = x"
+        }
+      ],
+      "brief": "@level.in-zero.tasks.in-zero-2.brief",
+      "hint": ["@level.in-zero.tasks.in-zero-2.hint.0", "@level.in-zero.tasks.in-zero-2.hint.1"],
+      "intro": [{ "t": "@level.in-zero.tasks.in-zero-2.intro.0.t" }],
+      "solution": [
+        "n = proof-kit/natInd[P=\"forall x. plus(x, zero) = x\", x=a](zero: z, step: w) {",
+        "  zero {",
+        "    z = proof-kit/allE[t=zero](d0)",
+        "  }",
+        "  step {",
+        "    s1 = proof-kit/allE[t=a](d1)",
+        "    s2 = proof-kit/allE[t=zero](s1)",
+        "    w = proof-kit/rewrite[at=[0]](n.step, s2)",
+        "  }",
+        "}",
+        "goal <- n"
+      ],
+      "local": ["proof-kit/natInd"]
+    },
+    {
+      "id": "in-zero-3",
+      "kind": "logic/machine",
+      "tray": "prover",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-zero.tasks.in-zero-3.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "step": "@level.in-zero.tasks.in-zero-3.step",
+      "types": ["nat"],
+      "defs": ["plus"],
+      "tests": [{ "goal": "∀x. plus(x, zero) = x" }],
+      "intro": [{ "t": "@level.in-zero.tasks.in-zero-3.intro.0.t" }],
+      "brief": "@level.in-zero.tasks.in-zero-3.brief",
+      "hint": ["@level.in-zero.tasks.in-zero-3.hint.0", "@level.in-zero.tasks.in-zero-3.hint.1"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"nat.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c3) {",
+        "  body {",
+        "    c2 = proof-kit/repeat(c1.body, body: c2_body) {",
+        "      body {",
+        "        c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+        "        c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+        "        c2_body_r3 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c2.body)",
+        "        c2_body = proof-kit/append[ways=\"3\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3)",
+        "      }",
+        "    }",
+        "    c3 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c2)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "naive": [
+        "c0 = proof-kit/repeat(in, body: c0_body) {",
+        "  body {",
+        "    c0_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c0.body)",
+        "    c0_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c0.body)",
+        "    c0_body = proof-kit/append[ways=\"2\"](first: c0_body_r1, second: c0_body_r2)",
+        "  }",
+        "}",
+        "c1 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c0)",
+        "out <- c1"
+      ],
+      "publishes": [{ "part": "qed-math/addZero", "variant": "base" }]
+    }
+  ]
+}

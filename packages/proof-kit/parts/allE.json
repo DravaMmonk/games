@@ -1,0 +1,11 @@
+{
+  "name": "@part.allE.name",
+  "desc": "@part.allE.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "inputs": [{ "name": "all", "label": "∀x. P(x)" }],
+  "settings": {
+    "t": { "control": "select", "label": "@part.allE.settings.t.label", "from": "logic/instances()" }
+  },
+  "op": "logic/allE"
+}

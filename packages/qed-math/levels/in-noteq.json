@@ -1,0 +1,33 @@
+{
+  "title": "@level.in-noteq.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.in-noteq.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "in-noteq",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-noteq.tasks.in-noteq.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["nat"],
+      "tests": [{ "goal": "∀x. ¬(x = s(x))" }],
+      "brief": "@level.in-noteq.tasks.in-noteq.brief",
+      "hint": ["@level.in-noteq.tasks.in-noteq.hint.0", "@level.in-noteq.tasks.in-noteq.hint.1"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"nat.induct\"]](in)",
+        "c1 = logic/directBackward-proof-kit_impI[use=[\"impI\"]](c0)",
+        "c2_apply = logic/directBackward-math[use=[\"nat.distinct1\"]](c1)",
+        "c2 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c2_apply)",
+        "c3 = logic/directBackward-proof-kit_impI[use=[\"impI\"]](c2)",
+        "c4_apply = logic/directBackward-math[use=[\"qed-math/inject\"]](c3)",
+        "c4 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c4_apply)",
+        "c5_apply = logic/directBackward-proof-kit_mp[use=[\"mp\"]](c4)",
+        "c5 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c5_apply)",
+        "c6 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c5)",
+        "out <- c6"
+      ],
+      "publishes": [{ "part": "qed-math/succNeq", "variant": "base" }]
+    }
+  ]
+}

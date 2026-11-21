@@ -1,0 +1,27 @@
+{
+  "name": "@part.append.name",
+  "desc": "@part.append.desc",
+  "icon": "GitMerge",
+  "family": "logic/tactic",
+  "settings": {
+    "ways": {
+      "label": "@part.append.settings.ways.label",
+      "options": [
+        { "value": "2", "label": "@part.append.settings.ways.options.0.label" },
+        { "value": "3", "label": "@part.append.settings.ways.options.1.label" },
+        { "value": "4", "label": "@part.append.settings.ways.options.2.label" },
+        { "value": "5", "label": "@part.append.settings.ways.options.3.label" },
+        { "value": "6", "label": "@part.append.settings.ways.options.4.label" }
+      ]
+    }
+  },
+  "op": "logic/append",
+  "inputs": [
+    { "name": "first", "label": "\\mark{circle-1}" },
+    { "name": "second", "label": "\\mark{circle-2}" },
+    { "name": "third", "label": "\\mark{circle-3}" },
+    { "name": "fourth", "label": "\\mark{circle-4}" },
+    { "name": "fifth", "label": "\\mark{circle-5}" },
+    { "name": "sixth", "label": "\\mark{circle-6}" }
+  ]
+}

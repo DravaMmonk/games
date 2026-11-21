@@ -1,0 +1,50 @@
+{
+  "title": "@level.sp-cond.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.sp-cond.intro.0.t" }],
+  "after": "@level.sp-cond.after",
+  "tasks": [
+    {
+      "id": "sp-cond",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.sp-cond.tasks.sp-cond.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "defs": ["le", "max"],
+      "tests": [
+        { "goal": "max(s(zero), s(s(zero))) = s(s(zero))" },
+        { "goal": "max(s(s(zero)), s(zero)) = s(s(zero))" },
+        { "goal": "max(zero, s(zero)) = s(zero)" }
+      ],
+      "brief": "@level.sp-cond.tasks.sp-cond.brief",
+      "hint": ["@level.sp-cond.tasks.sp-cond.hint.0", "@level.sp-cond.tasks.sp-cond.hint.1"],
+      "solution": [
+        "c1 = logic/directRewrite-math[use=[\"def.3\"]](in)",
+        "c2 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c1)",
+        "c3 = proof-kit/repeat(c2, body: c3_body) {",
+        "  body {",
+        "    c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+        "    c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+        "    c3_body_r3 = logic/directRewrite-math[use=[\"def.2\"]](c3.body)",
+        "    c3_body = proof-kit/append[ways=\"3\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3)",
+        "  }",
+        "}",
+        "c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "c5 = logic/directRewrite-math[use=[\"def.4\"]](in)",
+        "c6 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c5)",
+        "c7 = proof-kit/repeat(c6, body: c7_body) {",
+        "  body {",
+        "    c7_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c7.body)",
+        "    c7_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c7.body)",
+        "    c7_body_r3 = logic/directRewrite-math[use=[\"def.2\"]](c7.body)",
+        "    c7_body = proof-kit/append[ways=\"3\"](first: c7_body_r1, second: c7_body_r2, third: c7_body_r3)",
+        "  }",
+        "}",
+        "c8 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c7)",
+        "c0 = proof-kit/append(first: c4, second: c8)",
+        "out <- c0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "title": "@level.in-comm.title",
+  "tray": "prover",
+  "tasks": [
+    {
+      "id": "in-comm",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-comm.tasks.in-comm.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["nat"],
+      "defs": ["plus"],
+      "tests": [{ "goal": "∀x. ∀y. plus(x, y) = plus(y, x)" }],
+      "brief": "@level.in-comm.tasks.in-comm.brief",
+      "hint": ["@level.in-comm.tasks.in-comm.hint.0", "@level.in-comm.tasks.in-comm.hint.1"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"nat.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c4) {",
+        "  body {",
+        "    c2 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c1.body)",
+        "    c3 = proof-kit/repeat(c2, body: c3_body) {",
+        "      body {",
+        "        c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+        "        c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+        "        c3_body_r3 = logic/directRewrite-math[use=[\"qed-math/addZero\"]](c3.body)",
+        "        c3_body_r4 = logic/directRewrite-math[use=[\"qed-math/addSucc\"]](c3.body)",
+        "        c3_body_r5 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c3.body)",
+        "        c3_body = proof-kit/append[ways=\"5\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3, fourth: c3_body_r4, fifth: c3_body_r5)",
+        "      }",
+        "    }",
+        "    c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "naive": [
+        "c0 = logic/directBackward-math[use=[\"nat.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c4) {",
+        "  body {",
+        "    c2 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c1.body)",
+        "    c3 = proof-kit/repeat(c2, body: c3_body) {",
+        "      body {",
+        "        c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+        "        c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+        "        c3_body_r3 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c3.body)",
+        "        c3_body = proof-kit/append[ways=\"3\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3)",
+        "      }",
+        "    }",
+        "    c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "publishes": [{ "part": "qed-math/addComm", "variant": "base" }]
+    }
+  ]
+}

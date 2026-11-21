@@ -1,0 +1,6 @@
+{
+  "title": "@glossary.entries.propeq.title",
+  "body": ["@glossary.entries.propeq.body.0"],
+  "see": ["qed-math/defeq", "qed-math/transport"],
+  "at": "in-zero"
+}

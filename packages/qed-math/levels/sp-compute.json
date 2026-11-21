@@ -1,0 +1,35 @@
+{
+  "title": "@level.sp-compute.title",
+  "tray": "prover",
+  "intro": [{ "t": "@level.sp-compute.intro.0.t" }],
+  "after": "@level.sp-compute.after",
+  "tasks": [
+    {
+      "id": "sp-compute",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.sp-compute.tasks.sp-compute.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "defs": ["plus"],
+      "tests": [
+        { "goal": "plus(s(zero), s(zero)) = s(s(zero))" },
+        { "goal": "plus(s(s(zero)), s(zero)) = s(s(s(zero)))" },
+        { "goal": "plus(zero, s(s(zero))) = s(s(zero))" }
+      ],
+      "brief": "@level.sp-compute.tasks.sp-compute.brief",
+      "hint": ["@level.sp-compute.tasks.sp-compute.hint.0"],
+      "solution": [
+        "c0 = proof-kit/repeat(in, body: c0_body) {",
+        "  body {",
+        "    c0_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c0.body)",
+        "    c0_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c0.body)",
+        "    c0_body = proof-kit/append[ways=\"2\"](first: c0_body_r1, second: c0_body_r2)",
+        "  }",
+        "}",
+        "c1 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c0)",
+        "out <- c1"
+      ]
+    }
+  ]
+}

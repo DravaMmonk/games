@@ -13,7 +13,6 @@
     "dfs",
     "simplifier",
     "rewrite",
-    "ordered",
     "automation",
     "skolem",
     "resolution",

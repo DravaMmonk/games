@@ -1,0 +1,34 @@
+{
+  "tray": "prover",
+  "title": "@level.in-loop.title",
+  "intro": [{ "t": "@level.in-loop.intro.0.t" }],
+  "after": "@level.in-loop.after",
+  "tasks": [
+    {
+      "id": "in-loop",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-loop.tasks.in-loop.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["nat"],
+      "tests": [{ "goal": "⊥", "hyps": ["∀x. f(x) = s(f(x))"] }],
+      "brief": "@level.in-loop.tasks.in-loop.brief",
+      "hint": ["@level.in-loop.tasks.in-loop.hint.0", "@level.in-loop.tasks.in-loop.hint.1"],
+      "solution": [
+        "c0 = logic/directBackward-proof-kit_mp[use=[\"cut\"]](in)",
+        "c1 = logic/directBackward-math[use=[\"qed-math/succNeq\"]](c0)",
+        "c2_cut = logic/directBackward-proof-kit_mp[use=[\"cut\"]](c1)",
+        "c2_apply = logic/directBackward-proof-kit_allE[use=[\"spec\"]](c2_cut)",
+        "c2 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c2_apply)",
+        "c3_cut = logic/directBackward-proof-kit_mp[use=[\"cut\"]](c2)",
+        "c3_apply = logic/directBackward-proof-kit_allE[use=[\"spec\"]](c3_cut)",
+        "c3 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c3_apply)",
+        "c4_apply = logic/directBackward-proof-kit_mp[use=[\"mp\"]](c3)",
+        "c4 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c4_apply)",
+        "c5 = logic/directBackward-logic_assumption[use=[\"assumption\"]](c4)",
+        "out <- c5"
+      ]
+    }
+  ]
+}

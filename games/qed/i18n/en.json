@@ -9,8 +9,6 @@
   "course.eras.circuits.chapter.title": "Truth circuits",
   "course.eras.classical.chapter.question": "Introduce axioms.",
   "course.eras.classical.chapter.title": "Classical logic",
-  "course.eras.inductive.chapter.question": "How are numbers and lists worked out, and where do they come from? How is something proved for every number?",
-  "course.eras.inductive.chapter.title": "Numbers and lists",
   "course.eras.kernel.chapter.question": "Prove conclusions.",
   "course.eras.kernel.chapter.title": "The kernel",
   "course.eras.metavars.chapter.question": "Introduce new rules for the prover.",

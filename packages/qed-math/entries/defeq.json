@@ -1,0 +1,6 @@
+{
+  "title": "@glossary.entries.defeq.title",
+  "body": ["@glossary.entries.defeq.body.0"],
+  "at": "nl-plus",
+  "see": ["qed-math/propeq"]
+}

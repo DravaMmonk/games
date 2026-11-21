@@ -19,6 +19,7 @@ import { sentenceOf } from './iso.js'
 import { say } from './notation.js'
 import { runAudit, restoreAuditCases } from './audit-cases.js'
 import { parse } from './formula.js'
+export { registerWordSets } from './wordsets.js'
 
 const boards = { 'logic/proof': startProof, 'logic/gates': startGates, 'logic/machine': startMachine }
 const identity = value => value

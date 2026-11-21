@@ -1,0 +1,37 @@
+{
+  "target": "proof-kit",
+  "dependencies": {
+    "kernel": {
+      "version": "0.0.0",
+      "hash": "ef4e535650ca60d79032d17e4010243ab0c207191dac1693209d5b14bae17536"
+    },
+    "notation": {
+      "version": "0.0.0",
+      "hash": "febbab0e2d828c840ae79150c9cef111c92aab58ecc5e5c0d0175f29e2a5e87e"
+    },
+    "numlib": {
+      "version": "0.0.0",
+      "hash": "89184c96b363bcc60809bd8f5ca62ae976133269092cbbba9ae1bb5534dab239"
+    },
+    "progress": {
+      "version": "0.0.0",
+      "hash": "e388c133458703f1d2bf22f5154f9a349f0d5e09cb6b53852ce0a90934420620"
+    },
+    "circuit": {
+      "version": "0.0.0",
+      "hash": "000bcd0c4dcea0aec09a0171a0c4e4fcbd6571d5ae6493ed0cf099be9afbc376"
+    },
+    "sentence": {
+      "version": "0.0.0",
+      "hash": "860815dd56fb21bee64fce6dcdd9aa3737ecdee21d9c01f67807c69c1ee84dfe"
+    },
+    "wiki": {
+      "version": "0.0.0",
+      "hash": "5642d5e4427a84dbb8d3b3f30caf61adc3070dba2f6071968febd0802e62d05a"
+    },
+    "logic": {
+      "version": "0.0.0",
+      "hash": "b5d62bd5262b845094661c077831f4db77dd2d991fab3a91a14956c9735ea19e"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "title": "@level.gd-true.title",
+  "tray": "induction-proof",
+  "intro": [{ "t": "@level.gd-true.intro.0.t" }],
+  "after": "@level.gd-true.after",
+  "tasks": [
+    {
+      "id": "gd-true",
+      "kind": "logic/proof",
+      "consts": ["g", "d"],
+      "words": ["goedel"],
+      "cases": [],
+      "tests": [
+        {
+          "premises": { "diag": "G ↔ ¬Prov(diag(d))", "calc": "diag(d) = g", "sound": "Prov(g) → G" },
+          "goal": "G ∧ ¬Prov(g)"
+        }
+      ],
+      "brief": "@level.gd-true.tasks.gd-true.brief",
+      "hint": ["@level.gd-true.tasks.gd-true.hint.0", "@level.gd-true.tasks.gd-true.hint.1"],
+      "solution": [
+        "f = proof-kit/impI[A=\"Prov(g)\"](body: m3) {",
+        "  body {",
+        "    m1 = proof-kit/mp(sound, f.body)",
+        "    m2 = proof-kit/mp(e.left, m1)",
+        "    m3 = proof-kit/mp(m2, f.body)",
+        "  }",
+        "}",
+        "w = proof-kit/rewrite[at=[0]](calc, diag)",
+        "e = proof-kit/andE(w)",
+        "m4 = proof-kit/mp(e.right, f)",
+        "j = proof-kit/andI(m4, f)",
+        "goal <- j"
+      ]
+    }
+  ]
+}

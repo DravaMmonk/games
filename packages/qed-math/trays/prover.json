@@ -1,0 +1,13 @@
+{
+  "title": "@tray.prover.title",
+  "desc": "@tray.prover.desc",
+  "directRuleCards": true,
+  "values": [
+    "logic/assumption",
+    "logic/hyp",
+    "proof-kit/append",
+    "proof-kit/repeat",
+    "proof-kit/each",
+    "#proof-kit/proof"
+  ]
+}

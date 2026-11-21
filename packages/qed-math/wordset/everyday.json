@@ -1,0 +1,7 @@
+{
+  "Nat": "@course.wordSets.everyday.Nat",
+  "List": "@course.wordSets.everyday.List",
+  "Bool": "@course.wordSets.everyday.Bool",
+  "s": "{0}+1",
+  "zero": "0"
+}

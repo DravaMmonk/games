@@ -1,0 +1,10 @@
+{
+  "name": "@part.refl.name",
+  "desc": "@part.refl.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "settings": {
+    "t": { "control": "select", "label": "@part.refl.settings.t.label", "from": "logic/things()" }
+  },
+  "op": "logic/refl"
+}

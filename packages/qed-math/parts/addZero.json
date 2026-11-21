@@ -1,0 +1,37 @@
+{
+  "name": "@part.addZero.name",
+  "desc": "@part.addZero.desc",
+  "family": "logic/rule",
+  "inside": [
+    {
+      "id": "base",
+      "reference": {
+        "kind": "logic/machine",
+        "solution": [
+          "c0 = logic/directBackward-math[use=[\"nat.induct\"]](in)",
+          "c1 = proof-kit/each(c0, body: c3) {",
+          "  body {",
+          "    c2 = proof-kit/repeat(c1.body, body: c2_body) {",
+          "      body {",
+          "        c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+          "        c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+          "        c2_body_r3 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c2.body)",
+          "        c2_body = proof-kit/append[ways=\"3\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3)",
+          "      }",
+          "    }",
+          "    c3 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c2)",
+          "  }",
+          "}",
+          "out <- c1"
+        ],
+        "want": "logic/proved",
+        "defs": ["plus"],
+        "types": ["nat"],
+        "inputs": [{ "name": "in", "label": "in" }],
+        "tests": [{ "goal": "∀x. plus(x, zero) = x" }]
+      }
+    }
+  ],
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
+}

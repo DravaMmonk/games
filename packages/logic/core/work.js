@@ -19,7 +19,7 @@ import { keyOf } from 'kernel'
 import { readWorks } from 'circuit'
 import { parse, replaceAtoms, show } from './formula.js'
 import { claimSentences, vocabulary } from './fol.js'
-import { MACHINE_BOARD, RULE_DEFINITION, axiomPartsOf, builtMachine, directCardsOf, inputsOfLevel, rulePartsOf, ruleParts, startMachine } from './machine.js'
+import { MACHINE_BOARD, MATH, RULE_DEFINITION, axiomPartsOf, builtMachine, directCardsOf, inputsOfLevel, rulePartsOf, ruleParts, startMachine } from './machine.js'
 import { operationsOf } from 'circuit'
 import { compileParts } from 'circuit'
 import { presetCardIds, presetOf, withPreset } from 'circuit'
@@ -576,6 +576,7 @@ export function* prepareLogicWorks(content) {
   const directOffered = (task, type, flags) => {
     const direct = directCardsOf(task).get(type)
     if (!direct) return false
+    if (direct.source === MATH && axiomPartsOf(task).includes(MATH)) return true
     return course.availableParts(at(task), flags).includes(course.partOf(direct.source))
   }
   // On the machine board a rule part is only the rules it gives: the proof-board part of the same type (the

@@ -1,0 +1,1 @@
+{ "kind": "requires", "edges": [{ "from": "qed-math/def-max", "to": "qed-math/sp-cond" }] }

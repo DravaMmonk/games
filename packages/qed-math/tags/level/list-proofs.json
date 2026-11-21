@@ -1,0 +1,4 @@
+{
+  "title": "@tag.list-proofs.title",
+  "values": ["in-appassoc", "in-appnil", "in-itsum", "in-len", "in-revapp", "in-revrev"]
+}

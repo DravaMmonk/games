@@ -1,0 +1,42 @@
+{
+  "title": "@level.in-appassoc.title",
+  "tray": "prover",
+  "tasks": [
+    {
+      "id": "in-appassoc",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.in-appassoc.tasks.in-appassoc.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "types": ["list"],
+      "defs": ["app", "len"],
+      "tests": [{ "goal": "∀xs. ∀ys. ∀zs. app(app(xs, ys), zs) = app(xs, app(ys, zs))" }],
+      "brief": "@level.in-appassoc.tasks.in-appassoc.brief",
+      "hint": ["@level.in-appassoc.tasks.in-appassoc.hint.0"],
+      "solution": [
+        "c0 = logic/directBackward-math[use=[\"list.induct\"]](in)",
+        "c1 = proof-kit/each(c0, body: c5) {",
+        "  body {",
+        "    c2 = proof-kit/repeat(c1.body, body: c2_body) {",
+        "      body {",
+        "        c2_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c2.body)",
+        "        c2_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c2.body)",
+        "        c2_body_r3 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c2.body)",
+        "        c2_body = proof-kit/append[ways=\"3\"](first: c2_body_r1, second: c2_body_r2, third: c2_body_r3)",
+        "      }",
+        "    }",
+        "    c3 = proof-kit/repeat(c2, body: c4) {",
+        "      body {",
+        "        c4 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c3.body)",
+        "      }",
+        "    }",
+        "    c5 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+        "  }",
+        "}",
+        "out <- c1"
+      ],
+      "publishes": [{ "part": "qed-math/appAssoc", "variant": "base" }]
+    }
+  ]
+}

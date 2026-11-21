@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.reflection.title",
   "body": ["@glossary.entries.reflection.body.0"],
-  "see": ["certificate", "defeq"],
+  "see": ["certificate"],
   "at": "au-replay"
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@part.rewrite.name",
+  "desc": "@part.rewrite.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "inputs": [{ "name": "eq", "label": "s = t" }, { "name": "p", "label": "φ(s)" }],
+  "settings": { "at": { "label": "@part.rewrite.settings.at.label", "from": "logic/occurrences(eq, p)" } },
+  "op": "logic/rewrite"
+}

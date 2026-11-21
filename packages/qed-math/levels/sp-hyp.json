@@ -1,0 +1,37 @@
+{
+  "title": "@level.sp-hyp.title",
+  "adds": ["logic/hyp"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.sp-hyp.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "sp-hyp",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "inputs": [{ "name": "in", "label": "@level.sp-hyp.tasks.sp-hyp.inputs.0.label" }],
+      "backtrack": true,
+      "words": ["everyday", "terms"],
+      "defs": ["plus", "app", "len"],
+      "tests": [
+        { "goal": "plus(a, zero) = a → plus(s(a), zero) = s(a)" },
+        { "goal": "len(app(l, nil)) = len(l) → len(app(cons(i, l), nil)) = s(len(l))" }
+      ],
+      "brief": "@level.sp-hyp.tasks.sp-hyp.brief",
+      "hint": ["@level.sp-hyp.tasks.sp-hyp.hint.0", "@level.sp-hyp.tasks.sp-hyp.hint.1"],
+      "solution": [
+        "c0 = logic/directBackward-proof-kit_impI[use=[\"impI\"]](in)",
+        "c1 = proof-kit/repeat(c0, body: c1_body) {",
+        "  body {",
+        "    c1_body_r1 = logic/directRewrite-math[use=[\"def.1\"]](c1.body)",
+        "    c1_body_r2 = logic/directRewrite-math[use=[\"def.3\"]](c1.body)",
+        "    c1_body_r3 = logic/directRewrite-math[use=[\"def.5\"]](c1.body)",
+        "    c1_body_r4 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c1.body)",
+        "    c1_body = proof-kit/append[ways=\"4\"](first: c1_body_r1, second: c1_body_r2, third: c1_body_r3, fourth: c1_body_r4)",
+        "  }",
+        "}",
+        "c2 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c1)",
+        "out <- c2"
+      ]
+    }
+  ]
+}

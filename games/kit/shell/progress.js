@@ -25,6 +25,14 @@ export function solvedCount(id) {
 
 const blank = () => ({ stamps: {}, solved: [], passed: [], skippedTasks: [], data: {}, slots: {}, best: {}, seenPower: false, introSeen: {}, all: false })
 
+/** A saved result holds the values supplied by its play, without assigning them a meaning. */
+export const resultOf = values => ({ values: typeof values === 'object' ? values : { value: values } })
+
+// Convert the previous unwrapped records when loading a save.
+const resultsOf = best => Object.fromEntries(Object.entries(best ?? {}).map(([id, result]) =>
+  [id, result && typeof result === 'object' && Object.hasOwn(result, 'values') ? result : resultOf(result)]))
+export const normalizeResults = progress => ({ ...progress, best: resultsOf(progress.best) })
+
 const without = (kept, gone) => Object.fromEntries(Object.entries(kept ?? {}).filter(([key]) => !gone.has(key)))
 
 /** `stored` less what it kept of the tasks whose puzzle is no longer the one `tasks` names ({ [key]: { level, stamp } }). */
@@ -65,7 +73,7 @@ export function createProgress({ id, tasks = {}, initial = () => ({}), restore =
     try {
       const stored = JSON.parse(raw)
       if (!stored?.stamps) return (snapshot = empty())
-      const progress = { ...current({ ...blank(), ...initial(), ...stored }, tasks, invalidate), stamps }
+      const progress = { ...current(normalizeResults({ ...blank(), ...initial(), ...stored }), tasks, invalidate), stamps }
       snapshot = restore(progress)
     } catch {
       snapshot = empty()
@@ -175,8 +183,9 @@ export function passed(game, progress, level, taskAt, score = null, passingWork)
 export function recordPass(game, p, level, taskAt, score, work) {
   const key = taskKey(level, taskAt)
   p = game.progress?.beforePass?.(p, level, taskAt, work) ?? p
-  const best = taskAt === level.tasks.length - 1 && score && game.better(score, p.best[level.id])
-    ? { ...p.best, [level.id]: score } : p.best
+  const result = score == null ? null : resultOf(score)
+  const best = taskAt === level.tasks.length - 1 && result && game.better(result, p.best[level.id])
+    ? { ...p.best, [level.id]: result } : p.best
   const now = { ...p, best, passed: [...new Set([...p.passed, key])], skippedTasks: (p.skippedTasks ?? []).filter(skipped => skipped !== key) }
   const required = level.tasks.map((task, k) => task.optional ? null : k).filter((k) => k !== null)
   const allRequiredPassed = (required.length ? required : level.tasks.map((_, k) => k)).every((k) => taskPassed(game, now, level.id, k))

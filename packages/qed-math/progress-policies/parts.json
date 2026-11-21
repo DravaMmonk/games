@@ -1,0 +1,12 @@
+{
+  "kind": "circuit/part",
+  "stages": true,
+  "grants": true,
+  "unlocks": true,
+  "checks": [
+    "stages",
+    "availability",
+    "course",
+    "references"
+  ]
+}

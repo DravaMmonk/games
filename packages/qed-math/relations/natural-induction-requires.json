@@ -1,0 +1,7 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "from": "qed-math/in-succ", "to": "qed-math/in-comm" },
+    { "from": "qed-math/in-comm", "to": "qed-math/in-assoc" }
+  ]
+}

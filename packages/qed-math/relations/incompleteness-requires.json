@@ -1,0 +1,10 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "required": true, "from": "qed-math/gd-code", "to": "qed-math/gd-check" },
+    { "required": true, "from": "qed-math/gd-check", "to": "qed-math/gd-diag" },
+    { "required": true, "from": "qed-math/gd-diag", "to": "qed-math/gd-true" },
+    { "required": true, "from": "qed-math/gd-true", "to": "qed-math/gd-con" },
+    { "required": true, "from": "qed-math/gd-con", "to": "qed-math/gd-second" }
+  ]
+}

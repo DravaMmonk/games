@@ -1,0 +1,34 @@
+{
+  "title": "@level.gd-con.title",
+  "tray": "induction-proof",
+  "intro": [{ "t": "@level.gd-con.intro.0.t" }, { "t": "@level.gd-con.intro.1.t" }],
+  "after": "@level.gd-con.after",
+  "tasks": [
+    {
+      "id": "gd-con",
+      "kind": "logic/proof",
+      "consts": ["g", "gn", "gp"],
+      "words": ["goedel"],
+      "cases": [],
+      "tests": [
+        {
+          "premises": { "d": "Prov(g) → Prov(gn)", "r": "Prov(g) → Prov(gp)", "con": "¬(Prov(gn) ∧ Prov(gp))" },
+          "goal": "¬Prov(g)"
+        }
+      ],
+      "brief": "@level.gd-con.tasks.gd-con.brief",
+      "hint": ["@level.gd-con.tasks.gd-con.hint.0"],
+      "solution": [
+        "f = proof-kit/impI[A=\"Prov(g)\"](body: m3) {",
+        "  body {",
+        "    m1 = proof-kit/mp(d, f.body)",
+        "    m2 = proof-kit/mp(r, f.body)",
+        "    j = proof-kit/andI(m1, m2)",
+        "    m3 = proof-kit/mp(con, j)",
+        "  }",
+        "}",
+        "goal <- f"
+      ]
+    }
+  ]
+}

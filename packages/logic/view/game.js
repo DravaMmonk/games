@@ -174,8 +174,8 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
       },
     },
     // Fewer steps (proof steps, or gates) is better; fewer cases, where the player writes them (audit-cases.js).
-    better: (score, best) => Boolean(score) && (!best || score.steps < best.steps),
-    bestLabel: (best) => (best.unit === 'cases' ? tr("{steps} 条", {steps: best.steps}) : tr("{steps} 步", {steps: best.steps})),
+    better: (score, best) => !best || score.values.steps < best.values.steps,
+    bestLabel: ({ values }) => (values.unit === 'cases' ? tr("{steps} 条", {steps: values.steps}) : tr("{steps} 步", {steps: values.steps})),
   })
   game.symbolUnlocks = (level, before, after) => {
     if (before.solved.includes(level.id) || !after.solved.includes(level.id)) return []

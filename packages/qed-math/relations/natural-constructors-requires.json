@@ -1,0 +1,7 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "from": "qed-math/in-distinct", "to": "qed-math/in-inject" },
+    { "from": "qed-math/in-inject", "to": "qed-math/in-cases" }
+  ]
+}

@@ -28,8 +28,7 @@
     "@qed/tactics",
     "@qed/classical",
     "@qed/simplifier",
-    "@qed/automation",
-    "@qed/inductive"
+    "@qed/automation"
   ],
   "partRulesAt": "qed/read-rules",
   "encyclopedia": [

@@ -1,0 +1,9 @@
+{
+  "name": "@part.exI.name",
+  "desc": "@part.exI.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "inputs": [{ "name": "a", "label": "P(t)" }],
+  "settings": { "target": { "label": "@part.exI.settings.target.label", "optional": true } },
+  "op": "logic/exI"
+}

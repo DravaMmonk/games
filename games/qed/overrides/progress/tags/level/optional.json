@@ -66,26 +66,7 @@
       "qed/u-cantor",
       "qed/u-ls",
       "qed/u-halt",
-      "qed/au-horn",
-      "qed/gen-nat",
-      "qed/in-induct",
-      "qed/sort-ins",
-      "qed/sort-run",
-      "qed/sort-if",
-      "qed/sort-insLen",
-      "qed/sort-len",
-      "qed/in-appassoc",
-      "qed/in-revapp",
-      "qed/in-revrev",
-      "qed/in-len",
-      "qed/in-itsum",
-      "qed/gd-code",
-      "qed/gd-check",
-      "qed/gd-diag",
-      "qed/gd-true",
-      "qed/gd-con",
-      "qed/gd-second",
-      "qed/in-circle"
+      "qed/au-horn"
     ]
   }
 }

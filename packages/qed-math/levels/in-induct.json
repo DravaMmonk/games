@@ -1,0 +1,68 @@
+{
+  "title": "@level.in-induct.title",
+  "tray": "induction-proof",
+  "consts": ["zero"],
+  "words": ["everyday", "terms"],
+  "intro": [{ "t": "@level.in-induct.intro.0.t" }, { "t": "@level.in-induct.intro.1.t" }],
+  "after": "@level.in-induct.after",
+  "tasks": [
+    {
+      "id": "in-induct-1",
+      "kind": "logic/proof",
+      "step": "@level.in-induct.tasks.in-induct-1.step",
+      "cases": [],
+      "tests": [
+        {
+          "premises": {
+            "ind": "∀P. P(zero) → (∀n. P(n) → P(s(n))) → (∀n. P(n))",
+            "z": "plus(zero, zero) = zero",
+            "st": "∀n. plus(n, zero) = n → plus(s(n), zero) = s(n)"
+          },
+          "goal": "∀n. plus(n, zero) = n"
+        }
+      ],
+      "brief": "@level.in-induct.tasks.in-induct-1.brief",
+      "hint": ["@level.in-induct.tasks.in-induct-1.hint.0", "@level.in-induct.tasks.in-induct-1.hint.1"],
+      "solution": [
+        "i = proof-kit/allE[t=\"plus(x, zero) = x\"](ind)",
+        "m1 = proof-kit/mp(i, z)",
+        "m2 = proof-kit/mp(m1, st)",
+        "goal <- m2"
+      ]
+    },
+    {
+      "id": "in-induct-2",
+      "kind": "logic/proof",
+      "step": "@level.in-induct.tasks.in-induct-2.step",
+      "cases": [],
+      "tests": [
+        {
+          "premises": { "ind": "∀P. P(zero) → (∀n. P(n) → P(s(n))) → (∀n. P(n))" },
+          "goal": "∀n. n = zero ∨ (∃m. n = s(m))"
+        }
+      ],
+      "sentences": ["∃m. zero = s(m)", "s(n) = zero ∨ (∃m. s(n) = s(m))"],
+      "brief": "@level.in-induct.tasks.in-induct-2.brief",
+      "hint": ["@level.in-induct.tasks.in-induct-2.hint.0", "@level.in-induct.tasks.in-induct-2.hint.1"],
+      "solution": [
+        "r = proof-kit/refl[t=zero]()",
+        "a = proof-kit/allI[x=a](body: h) {",
+        "  body {",
+        "    h = proof-kit/impI[A=\"a = zero | (exists m. a = s(m))\"](body: o2) {",
+        "      body {",
+        "        r2 = proof-kit/refl[t=\"s(a)\"]()",
+        "        x = proof-kit/exI[target=\"exists m. s(a) = s(m)\"](r2)",
+        "        o2 = proof-kit/orI[other=\"s(a) = zero\", side=left](x)",
+        "      }",
+        "    }",
+        "  }",
+        "}",
+        "i = proof-kit/allE[t=\"x = zero | (exists m. x = s(m))\"](ind)",
+        "o = proof-kit/orI[other=\"exists m. zero = s(m)\"](r)",
+        "m1 = proof-kit/mp(i, o)",
+        "m2 = proof-kit/mp(m1, a)",
+        "goal <- m2"
+      ]
+    }
+  ]
+}

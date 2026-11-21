@@ -1,0 +1,40 @@
+{
+  "name": "@part.addComm.name",
+  "desc": "@part.addComm.desc",
+  "family": "logic/rule",
+  "inside": [
+    {
+      "id": "base",
+      "reference": {
+        "kind": "logic/machine",
+        "solution": [
+          "c0 = logic/directBackward-math[use=[\"nat.induct\"]](in)",
+          "c1 = proof-kit/each(c0, body: c4) {",
+          "  body {",
+          "    c2 = logic/directBackward-proof-kit_allI[use=[\"allI\"]](c1.body)",
+          "    c3 = proof-kit/repeat(c2, body: c3_body) {",
+          "      body {",
+          "        c3_body_r1 = logic/directRewrite-math[use=[\"def.0\"]](c3.body)",
+          "        c3_body_r2 = logic/directRewrite-math[use=[\"def.1\"]](c3.body)",
+          "        c3_body_r3 = logic/directRewrite-math[use=[\"qed-math/addZero\"]](c3.body)",
+          "        c3_body_r4 = logic/directRewrite-math[use=[\"qed-math/addSucc\"]](c3.body)",
+          "        c3_body_r5 = logic/directRewrite-logic_hyp[use=[\"hyp\"]](c3.body)",
+          "        c3_body = proof-kit/append[ways=\"5\"](first: c3_body_r1, second: c3_body_r2, third: c3_body_r3, fourth: c3_body_r4, fifth: c3_body_r5)",
+          "      }",
+          "    }",
+          "    c4 = logic/directBackward-proof-kit_refl[use=[\"refl\"]](c3)",
+          "  }",
+          "}",
+          "out <- c1"
+        ],
+        "want": "logic/proved",
+        "defs": ["plus"],
+        "types": ["nat"],
+        "inputs": [{ "name": "in", "label": "in" }],
+        "tests": [{ "goal": "∀x. ∀y. plus(x, y) = plus(y, x)" }]
+      }
+    }
+  ],
+  "inputs": [{ "name": "before", "type": "logic/machine-value", "optional": true }],
+  "outputType": "logic/machine-value"
+}

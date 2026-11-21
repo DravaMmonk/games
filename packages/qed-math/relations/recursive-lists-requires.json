@@ -1,0 +1,7 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "from": "qed-math/decl-list", "to": "qed-math/def-list" },
+    { "from": "qed-math/def-list", "to": "qed-math/sp-lists" }
+  ]
+}

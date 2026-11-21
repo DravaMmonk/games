@@ -21,7 +21,7 @@ test('a task whose puzzle changed loses its save, its level is unsolved, and eve
   assert.deepEqual(createProgress({ id: 'g', tasks }).load().solved, ['one', 'two'])
   // b's puzzle changes; a task that is gone from the content (and a new one) changes nothing else.
   const now = createProgress({ id: 'g', tasks: { a: tasks.a, b: { level: 'one', stamp: 'other' }, d: { level: 'two', stamp: 'dddd' } } }).load()
-  assert.deepEqual([now.solved, now.passed, now.data, now.built, now.best], [['two'], ['a'], { a: 1 }, {}, { two: 6 }])
+  assert.deepEqual([now.solved, now.passed, now.data, now.built, now.best], [['two'], ['a'], { a: 1 }, {}, { two: { values: { value: 6 } } }])
   assert.deepEqual(now.stamps, { a: 'aaaa', b: 'other', d: 'dddd' })
 })
 
@@ -99,9 +99,21 @@ test('passing the last task early completes an all-unlocked level without passin
   assert.equal(taskPassed(game, last, level.id, 0), false)
   assert.equal(firstTask(game, last, level.id), 2)
   assert.deepEqual(last.flags, ['circuit/part'])
-  assert.deepEqual(last.best[level.id], { count: 4 })
+  assert.deepEqual(last.best[level.id], { values: { count: 4 } })
   const normal = passed(game, fresh(), level, 2)
   assert.deepEqual(normal.solved, [])
+})
+
+test('saved results retain play-defined values and compare after an older save is loaded', () => {
+  const store = createProgress({ id: 'results' })
+  storage.set(store.key, JSON.stringify({ stamps: {}, solved: [level.id], best: { [level.id]: { count: 4, unit: 'items' } } }))
+  const compare = { ...game, better: (result, best) => !best || result.values.count < best.values.count }
+  const loaded = store.load()
+  assert.deepEqual(loaded.best[level.id], { values: { count: 4, unit: 'items' } })
+  const worse = passed(compare, loaded, level, 2, { count: 5, unit: 'items' })
+  assert.deepEqual(worse.best, loaded.best)
+  const better = passed(compare, worse, level, 2, { count: 3, unit: 'items' })
+  assert.deepEqual(better.best[level.id], { values: { count: 3, unit: 'items' } })
 })
 
 test('next required task prefers later tasks and revisits earlier ones only when needed', () => {

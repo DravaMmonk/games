@@ -1,0 +1,8 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "from": "qed-math/def-plus", "to": "qed-math/nl-plus" },
+    { "from": "qed-math/nl-plus", "to": "qed-math/sp-compute" },
+    { "from": "qed-math/sp-compute", "to": "qed-math/sp-under" }
+  ]
+}

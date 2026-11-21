@@ -3,7 +3,7 @@ import { punctuation } from 'kernel'
 import { L } from "kernel"
 import { T, tr } from 'kernel/words'
 import { parse } from './formula.js'
-import { inputsOf, inputsOfLevel, parseGoal, ruleWritten } from './machine.js'
+import { inputsOf, inputsOfLevel, parseGoal, ruleMark, ruleWritten, subscript } from './machine.js'
 import { say, sayTerm } from './notation.js'
 import { printTerm } from './pterm.js'
 import { typeText } from './datatype.js'
@@ -37,14 +37,11 @@ const proofEntries = ({ task, test, run }) => {
 export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
 // Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
-// numbered once for the whole board (R₁ R₂ …: the run's `rules`, ./machine.js boardRules; a lone rule plain R). A rule
+// numbered once for the whole board (R₁ R₂ …: the run's `ruleOrder`, ./machine.js boardRules; a lone rule plain R). A rule
 // part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no
 // hypotheses keeps its turnstile in front.
-const SUB = '₀₁₂₃₄₅₆₇₈₉'
-const sub = (n) => String(n).replace(/\d/g, (d) => SUB[d])
-const goalMark = (k, count) => (count > 1 ? `⊢${sub(k + 1)}` : '⊢')
-const ruleMark = (key, order) => (order.length > 1 ? `R${sub(order.indexOf(key) + 1)}` : 'R')
-const orderOf = (v, run) => (run?.rules && v.keys.every((k) => run.rules.includes(k)) ? run.rules : [...new Set(v.entries.map((e) => e.key))])
+const goalMark = (k, count) => (count > 1 ? `⊢${subscript(k + 1)}` : '⊢')
+const orderOf = (v, run) => (run?.ruleOrder && v.keys.every((k) => run.ruleOrder.includes(k)) ? run.ruleOrder : [...new Set(v.entries.map((e) => e.key))])
 const markedLine = (mark, text, before = '') => ({ s: [before, mark, text].filter(Boolean).join(' '), formula: true, before, mark, text })
 const goalLine = (g, text, mark) => markedLine(mark, text(g.goal),
   withBinders(g.fixes, g.hyps.map(text).join(punctuation("；"))).trimEnd())
@@ -54,22 +51,22 @@ export const goalLines = (v, task) => {
   return v.goals.map((g, k) => goalLine(g, text, goalMark(k, v.goals.length)))
 }
 /** The rules on the board, a line each, marked R₁ R₂ … (the run report lists them first). */
-export const ruleLines = ({ ruleEntries: entries = [], rules: order = [] }, task) => {
+export const ruleLines = ({ ruleEntries: entries = [], rules = [], ruleOrder = rules }, task) => {
   const text = machineTextOf(task)
   const term = machineTermOf(task)
-  return order.map((key) => ({ mark: ruleMark(key, order), text: ruleWritten(entries.find((e) => e.key === key), text, term) }))
+  return ruleOrder.filter((key) => rules.includes(key)).map((key) => ({ mark: ruleMark(key, ruleOrder), text: ruleWritten(entries.find((e) => e.key === key), text, term) }))
 }
 /** What a tactic did (machine.js `did`), in marks: ⊢ ⟵ R₁ (a rule backwards), ⊢ ≡ R₁ (a rewrite), ⊢ ✓ (a hypothesis
  *  closes it), ⊢ ⤓ (moved to the end). */
-export function didText(did, run) {
+export function didText(did, run, { marksOnly = false } = {}) {
   const goal = goalMark(0, did.goals)
-  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.rules ?? did.rules)).join(' ')
+  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleOrder ?? run?.rules ?? did.rules)).join(' ')
   if (did.op === 'rule') return `${goal} ⟵ ${rules}`
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
-  if (did.op === 'rwHyps') return T("{goal} 的已知 ≡ {rules}", { goal, rules })
+  if (did.op === 'rwHyps') return marksOnly ? `Γ ${goal} ≡ ${rules}` : T("{goal} 的已知 ≡ {rules}", { goal, rules })
   if (did.op === 'assumption') return `${goal} ✓ ${rules}`
-  if (did.op === 'alternatives') return null
-  return `${goal} ⤓`
+  if (did.op === 'searchCheck') return '⊢ ?'
+  return null
 }
 /**
  * What a step of the run report did, in a sentence (its ⓘ): a tactic's work (machine.js `did`), a repeat frame's
@@ -79,23 +76,24 @@ export function stepExplained(entry, run) {
   const v = entry.value
   if (v?.kind === 'state' && v.error && !v.didBy) return v.error
   if (entry.inner && entry.label === '↻') return T('这一轮改变了证明状态，再做一轮。')
-  if (entry.inner && entry.label === '↪') return T('停下来：这一轮没有改变、做不成，或者已经证完。交出的是最后的状态。')
+  if (entry.decision === 'refuted') return T('找到空子句，停止重复。')
+  if (entry.inner && entry.label === '↪') return T('这一轮没有改变状态，停止重复。')
   const did = v?.didBy === entry.id ? v.did : null
   if (!did) return null
-  if (did.op === 'alternatives') {
-    if (!did.backtrack) return T('继续走第 {route} 条路。', { route: did.remaining[0] })
-    return T('从路线 {routes} 保留 {count} 个候选结果。', { routes: did.remaining.join(punctuation('、')), count: did.results })
-  }
+  if (did.op === 'searchCheck') return did.pruned
+    ? T('这一步的目标没有比路径上已有的目标更容易证明。')
+    : T('检查了路径上已有的目标，这个候选可以继续搜索。')
   const goal = goalMark(0, did.goals)
-  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.rules ?? did.rules)).join(' ')
+  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleOrder ?? run?.rules ?? did.rules)).join(' ')
   if (did.op === 'rule') return T('倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。', { rules, goal })
   if (did.op === 'rw') return T('用 {rules} 改写目标 {goal}。', { rules, goal })
   if (did.op === 'rwHyps') return T('用 {rules} 改写目标 {goal} 的已知。', { rules, goal })
   if (did.op === 'assumption') return T('目标 {goal} 和它的一条已知对上，证完了。', { goal })
-  return T('把目标 {goal} 移到最后，先做后面的。', { goal })
+  return null
 }
 // A generator value in one line: a value that takes things first reads as a rule does, ⋀x. in front.
 const genValueText = (v, text) => (v.kind === 'sentence' ? text(v.f) : v.kind === 'rule' ? ruleText(v.rule, text) : v.kind === 'any' ? withBinders(v.vars, genValueText(v.body, text)) : v.items.map((x) => genValueText(x, text)).join(punctuation("；")))
+const proofComplete = () => ({ s: tr('证明完毕'), formula: true, upright: true })
 
 /**
  * A value in words, a line each: a sentence, a rule, a list; the rules a rule part gives (R₁ …, numbered for the board
@@ -124,7 +122,7 @@ export function machineLines(v, { task, run }) {
     const others = v.more?.length ?? 0
     return [
       ...prose([v.error && `${tr("这一步失败")}：${L(v.error)}`]),
-      ...result(!v.goals.length && tr('证明完毕')),
+      ...(v.goals.length ? [] : [proofComplete()]),
       ...prose([others > 0 && tr("第 1 种结果，共 {others} 种", {others: others + 1})]),
       ...goalLines(v, task),
     ]
@@ -143,7 +141,6 @@ const WANT = {
   'logic/unify': T('解完的等式（能合一时），或者「失败」（不能时）'),
   'logic/answers': T('找出所有答案'),
   'logic/fails': T('证不出时停止，并报告证不出'),
-  'logic/proved': T('证明完毕'),
 }
 /** What a test wants of the result, in words: the results a step makes, the elimination rule, or the level's want. */
 // What a test wants, as lines (`kind: 'want'`, machineLines): words, and the goals or the rule wanted as formulas, so a
@@ -165,7 +162,9 @@ function wantOf(task, test) {
     return { kind: 'want', lines: ways.flatMap((w, k) => (k ? [prose(tr('或者')), w] : [w])) }
   }
   if (test.elim) return { kind: 'want', lines: [prose(tr('消去规则 ').trim()), formula(ruleText(elimOf(test), text))] }
-  return L(WANT[test.want ?? task.want])
+  const want = test.want ?? task.want
+  if (want === 'logic/proved') return { kind: 'want', lines: [proofComplete()] }
+  return L(WANT[want])
 }
 
 /** What the results show of a test: the types and definitions it reads, its inputs, and at the output what it wants (the result once run). */

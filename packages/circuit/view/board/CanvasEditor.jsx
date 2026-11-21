@@ -72,7 +72,7 @@ import { alignTerminals, spaceNodes } from "../../core/board/spacing.js"
 const ownIn = (layer, selector) => [...(layer?.querySelectorAll(selector) ?? [])].filter((el) => el.closest('.board-layer') === layer)
 // A region's least size, and the room kept round the cards in it.
 const REGION = { w: 240, h: 120, pad: 24 }
-const clampZoom = (z) => Math.min(1.5, Math.max(0.35, Math.round(z * 100) / 100))
+const clampZoom = (z) => Math.min(1.5, Math.max(0.1, Math.round(z * 100) / 100))
 const curve = (a, b) => kitCurve(a, b, 'x', 48)
 const atPosition = (node, positions) => {
   const at = positions?.get(node.id)
@@ -278,17 +278,23 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     setGeo(next)
   })
 
+  const cardBounds = () => new Map(top.map((n) => {
+    const [w, h] = sizeOf(n)
+    return [n.id, [n.x, n.y, n.x + w, n.y + h]]
+  }))
+
   // Fit the entire circuit into the available board area.
-  const fit = () => {
+  const fit = (maxZoom = 1.1) => {
     const box = surface.current?.getBoundingClientRect()
-    if (!box || !box.width || !top.length) return
+    if (!box?.width || !box.height || !top.length) return
+    const bounds = [...cardBounds().values()]
     // A board with no input cards keeps their column (from the board's left edge, 0) in view: its outputs stay right.
     const open = blocks && !top.some((n) => parts.role(n) === 'source')
-    const xs = [...top.flatMap((n) => [n.x, n.x + sizeOf(n)[0]]), ...(open ? [0] : [])]
-    const ys = top.flatMap((n) => [n.y, n.y + sizeOf(n)[1]])
+    const xs = [...bounds.flatMap(([left, , right]) => [left, right]), ...(open ? [0] : [])]
+    const ys = bounds.flatMap(([, top, , bottom]) => [top, bottom])
     const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
     const pad = 36
-    const fitted = Math.min(1.1, (box.width - pad * 2) / (x1 - x0), (box.height - pad * 2) / (y1 - y0))
+    const fitted = Math.min(maxZoom, (box.width - pad * 2) / (x1 - x0), (box.height - pad * 2) / (y1 - y0))
     const zoom = clampZoom(Math.max(minFit, fitted))
     const spare = box.width - (x1 - x0) * zoom
     setView({ x: Math.max(pad, spare / 2) - x0 * zoom, y: pad - y0 * zoom, zoom })
@@ -372,25 +378,29 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     fitOnResize()
   }, [size])
 
-  // A card that appears outside the visible board (a new part, an input just lit) brings the whole circuit back into
-  // view, so nothing the player adds is ever off-screen.
+  // Follow cards that are added or pushed out by reflow, and cards clipped when the workbench shrinks.
+  // Compare both layouts through the same camera so panning and zooming never trigger a fit by themselves.
   const known = useRef(null)
-  useEffect(() => {
-    if (moving.current) return
-    const ids = new Set(top.map((n) => n.id))
+  useLayoutEffect(() => {
+    if (moving.current || drag || geoRef.current !== geo) return
+    const board = surface.current
+    if (!board?.clientWidth || !board.clientHeight) return
+    const { clientWidth: width, clientHeight: height } = board
+    const cards = cardBounds()
     const before = known.current
-    known.current = ids
-    if (!before || !fitted.current) return
-    const added = top.filter((n) => !before.has(n.id))
-    const box = surface.current?.getBoundingClientRect()
-    if (!added.length || !box) return
-    const outside = added.some((n) => {
-      const x = n.x * view.zoom + view.x
-      const y = n.y * view.zoom + view.y
-      const width = widthOf(n)
-      return x < 0 || y < 0 || x + width * view.zoom > box.width || y + 60 * view.zoom > box.height
-    })
-    if (outside) fit()
+    known.current = { cards, width, height }
+    if (!before || !fitted.current || blocks?.keepView) return
+    const visibleIn = ([left, top, right, bottom], w, h) => (
+      left * view.zoom + view.x >= -1 && top * view.zoom + view.y >= -1 &&
+      right * view.zoom + view.x <= w + 1 && bottom * view.zoom + view.y <= h + 1
+    )
+    for (const [id, bounds] of cards) {
+      const previous = before.cards.get(id)
+      if (!visibleIn(bounds, width, height) && (!previous || visibleIn(previous, before.width, before.height))) {
+        fit(view.zoom)
+        break
+      }
+    }
   })
 
   const selectedWire = selected?.wire
@@ -740,13 +750,16 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const { x, y, w, h } = units.get(block.id)
     const hidden = block.view === 'hidden'
     const reveal=(id)=>{blocks.open(block.id);setFocus(id);choose(byId.get(id))}
-    return <section key={block.id} data-block={block.id} data-node={hidden ? `hidden:${block.id}` : undefined} className={`circuit-block ${hidden?'is-hidden':''} ${dropBlock===block.id?'is-drop':''}`} style={{ left: x, top: y, width: w, ...(hidden ? { minHeight: h } : { height: h }) }}>
+    const lit = hidden && block.id === blocks.activeBlock ? blocks.stepClass : ''
+    return <section key={block.id} data-block={block.id} data-node={hidden ? `hidden:${block.id}` : undefined} className={`circuit-block ${hidden?'is-hidden':''} ${dropBlock===block.id?'is-drop':''} ${lit}`} style={{ left: x, top: y, width: w, ...(hidden ? { minHeight: h } : { height: h }) }}>
       <BlockHeader block={block} editable={!readOnly} onEdit={(patch)=>blocks.edit(block.id,patch)} onDragStart={readOnly?undefined:e=>dragBlock(e,block)} />
       {hidden&&<><span className="block-stubs is-input" onPointerDown={e=>e.stopPropagation()}>{block.ins.map(w=><button type="button" key={`${w.to}.${w.port}`} className="port port-in is-wired" data-p={inPort(w.to,w.port)} data-port-shape={appearanceOf(inPort(w.to, w.port)).shape} title={L(parts.label(byId.get(w.to)))} aria-label={L(parts.label(byId.get(w.to)))} onClick={()=>reveal(w.to)}><i /></button>)}</span><span className="block-stubs is-output" onPointerDown={e=>e.stopPropagation()}>{[...new Set(block.outs.map(w=>w.from))].map(src=><button type="button" key={src} className="port port-out is-wired" data-p={outPort(src)} data-port-shape={appearanceOf(outPort(src)).shape} title={L(parts.label(byId.get(srcNode(src))))} aria-label={L(parts.label(byId.get(srcNode(src))))} onClick={()=>reveal(srcNode(src))}><i /></button>)}</span></>}
     </section>
   }
 
-  useEffect(()=>{if(blocks?.active)setFocus(blocks.active)},[blocks?.active])
+  useEffect(() => {
+    if (blocks?.active && blocks.followStep !== false) setFocus(blocks.active)
+  }, [blocks?.active, blocks?.followStep])
   const labels = new Set((connectionLabels ? labelledConnections(graph, groups, parts, (w) => [at(outPort(w.from)), at(inPort(w.to, w.port))]) : []).map(wireKey))
   const jump = (wire, toward) => {
     setLinkedSource(wire.from)
@@ -790,7 +803,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   }
 
   return (
-    <div className={`board kit-board ${picking ? 'is-picking' : ''} ${readOnly ? 'is-readonly' : ''}`} ref={surface} onPointerDownCapture={partitioning ? beginPartition : undefined}
+    <div className={`kit-board ${picking ? 'is-picking' : ''} ${readOnly ? 'is-readonly' : ''}`} ref={surface} onPointerDownCapture={partitioning ? beginPartition : undefined}
       onPointerDown={beginPan} onPointerMove={movePointer} onPointerUp={endPan} onPointerCancel={endPan} onLostPointerCapture={endPan}>
       <div className="board-grid" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${20 * view.zoom}px ${20 * view.zoom}px` }} />
       {!placed && emptyNote && <p className="board-empty">{L(emptyNote)}</p>}
@@ -861,7 +874,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         <button onClick={() => zoomAt(0.85, ...centre())} aria-label={tr('缩小')}><Minus size={14} /></button>
         <output>{Math.round(view.zoom * 100)}%</output>
         <button onClick={() => zoomAt(1 / 0.85, ...centre())} aria-label={tr('放大')}><Plus size={14} /></button>
-        <button onClick={fit} aria-label={tr('适配画布')}><Maximize size={13} /></button>
+        <button onClick={() => fit()} aria-label={tr('适配画布')}><Maximize size={13} /></button>
       </div>
     </div>
   )

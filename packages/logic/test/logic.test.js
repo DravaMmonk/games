@@ -12,7 +12,7 @@ import { checkDeclaration, linesOf, premiseChips, problemsOf, readRuleRows } fro
 import { runOutputTests } from '../../../games/kit/engine/test-run.js'
 import { parse, same, show, subst, substMany, tvar } from '../core/formula.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
-import { MACHINE_BOARD, MACHINE_TESTS, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
+import { MACHINE_BOARD, MACHINE_TESTS, RULE_CHOICES, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
 import { OPS } from '../core/ops.js'
 import { PROOF_BOARD, RULES, lemmaGives, runProof } from '../core/proof.js'
@@ -471,10 +471,53 @@ test('ordinary wires retain each alternative for a later proof step', () => {
   assert.equal(runMachine(level, board).pass, false)
   const traced = runMachine({ ...level, backtrack: true }, board, { traced: true })
   assert.equal(traced.pass, true)
-  const merge = traced.runs[0].trace.find(({ id }) => id === 'join')
-  assert.deepEqual(merge.value.did.remaining, [1, 2])
-  assert.equal(merge.value.goals.length, 1)
-  assert.equal(merge.value.more[0].goals.length, 1)
+  const { trace } = traced.runs[0]
+  assert.deepEqual(trace.map(step => step.id), ['left', 'right', 'finish', 'finish'])
+  const merge = traced.runs[0].values.get('join')
+  assert.equal(merge.more[0].goals.length, 1)
+  const [left, right] = trace.filter(({ id }) => id === 'left' || id === 'right').map(({ proof }) => proof)
+  assert.equal(left.resultPath, undefined)
+  assert.equal(right.resultPath, true)
+  const [failed, solved] = trace.filter(({ id }) => id === 'finish')
+  assert.ok(failed.value.error)
+  assert.equal(solved.proof.resultPath, true)
+  assert.equal(solved.proof.closed.length, 1)
+  assert.equal(solved.proof.parent, right.id)
+  assert.equal(runMachine(level, board, { traced: true }).runs[0].proofRoot.resultPath, undefined)
+})
+
+test('a search report follows the successful path through separate rounds', () => {
+  const level = onMachine({ kind: 'logic/machine', want: 'logic/proved', backtrack: true, tests: [{ goal: 'Rain ∨ Wind', hyps: ['Wind'] }] })
+  const board = wireRules(machine({
+    search: ['search', { depth: 3 }], step: ['rule', { rule: 'assumption,disjI1,disjI2' }, 'search'],
+  }, ['in>search.in', 'search#body>step.in', 'step>search.body', 'search>out']), level)
+  const report = runMachine(level, board, { traced: true })
+  assert.equal(report.pass, true)
+  const { trace } = report.runs[0]
+  assert.ok(trace.every(({ round }) => !round))
+  const comparisons = trace.filter(step => step.id === 'search')
+  assert.equal(comparisons.length, 2)
+  assert.ok(comparisons.every(step => step.value.did.op === 'searchCheck'))
+  assert.equal(comparisons.filter(step => step.proof.resultPath).length, 1)
+  assert.ok(trace.some(({ value, proof }) => value.did?.op === 'assumption' && proof.resultPath))
+  assert.ok(trace.some(({ value, proof }) => value.error && proof && !proof.resultPath))
+  const seen = new Set([0])
+  for (const { proof } of trace) {
+    if (!proof) continue
+    assert.ok(seen.has(proof.parent))
+    assert.ok(!seen.has(proof.id))
+    seen.add(proof.id)
+  }
+})
+
+test('a repeat counts its comparison and leaves frame plumbing and goal ordering off the report', () => {
+  const level = onMachine({ kind: 'logic/machine', want: 'logic/becomes', tests: [{ goal: 'Rain', becomes: [['Rain']] }] })
+  const board = machine({ loop: ['repeat'], order: ['defer', {}, 'loop'] }, ['in>loop.in', 'loop#body>order.in', 'order>loop.body', 'loop>out'])
+  const report = runMachine(level, board, { traced: true })
+  assert.equal(report.pass, true)
+  const { trace, values } = report.runs[0]
+  assert.deepEqual(trace.map(({ id, label }) => [id, label]), [['loop', '↪']])
+  assert.ok(values.has('order'))
 })
 
 test('the hypothesis rule closes only a goal with a matching given and retains every match', () => {
@@ -485,6 +528,7 @@ test('the hypothesis rule closes only a goal with a matching given and retains e
   const report = runMachine(onMachine(task), board, { traced: true })
   assert.equal(report.pass, true)
   assert.equal(report.runs[0].trace.find(({ id }) => id === 'use').value.did.op, 'assumption')
+  assert.deepEqual(report.runs[0].trace.filter(step => step.id === 'use').map(step => step.proof.resultPath), [true, true])
   assert.equal(runMachine(onMachine({ ...task, want: 'logic/proved', tests: [{ goal: 'Rain' }] }), board).pass, false)
 })
 
@@ -509,7 +553,8 @@ test('a machine uses the same evaluation for its playback and the final board', 
   assert.equal(report.pass, true)
   assert.deepEqual(evaluated, ['end', 'spare'])
   assert.equal(report.runs[0].values.get('spare').kind, 'state')
-  assert.deepEqual(report.runs[0].trace.map(({ id }) => id), ['in', 'end'])
+  assert.deepEqual(report.runs[0].trace.map(({ id }) => id), ['end'])
+  assert.ok(report.runs[0].values.has('in'))
 })
 
 test('a proof machine must meet its card budget after its cases pass', () => {
@@ -564,9 +609,13 @@ test('a direct rewrite uses only the first rule in an older multi-rule selection
   const compiled = compileParts({ [type]: cards.get(type).definition }, OPS).PARTS
   level.parts = (name) => compiled[name] ?? machineParts(name)
   const board = machine({ change: [type, { use: ['dneg.elim', 'dneg.intro'] }] }, ['in>change', 'change>out'])
+  const { ruleOrder } = boardRules(level, board)
+  const markOptions = () => RULE_CHOICES.run([], {}, { task: level, node: { type }, ruleOrder }).map(({ value, mark }) => [value, mark])
+  assert.deepEqual(markOptions(), [['dneg.elim', 'R₁'], ['dneg.intro', 'R₂']])
   assert.deepEqual(boardRules(level, board).rules, ['dneg.elim'])
   assert.equal(runMachine(level, board).pass, false)
   board.nodes.find(({ id }) => id === 'change').params.use = ['dneg.intro']
+  assert.deepEqual(boardRules(level, board).ruleOrder, ruleOrder)
   assert.deepEqual(boardRules(level, board).rules, ['dneg.intro'])
   assert.equal(runMachine(level, board).pass, true)
 })
@@ -597,6 +646,25 @@ test('direct cards follow each source part and its declared proof operation', ()
     parts: (name) => compiled[name] ?? machineParts(name),
   }
   assert.equal(runMachine(level, board).pass, true)
+})
+
+test('a direct rule card skips a completed proof but still fails on an unmatched goal', () => {
+  const level = { kind: 'logic/machine', want: 'logic/proved', directRuleCards: true, tests: [{ goal: 'Rain → Rain' }] }
+  const box = 'logic/directBackward-impI'
+  const given = 'logic/directBackward-logic_assumption'
+  const cards = directCardsOf(level)
+  const { PARTS } = compileParts({ [box]: cards.get(box).definition, [given]: cards.get(given).definition }, OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const board = machine({ open: [box], finish: [given], extra: [box] }, ['in>open', 'open>finish', 'finish>extra', 'extra>out'])
+  const solved = runMachine(level, board, { traced: true })
+  assert.equal(solved.pass, true)
+  const { trace } = solved.runs[0]
+  assert.deepEqual(trace.map(step => step.id), ['open', 'finish'])
+  assert.equal(trace.at(-1).proof.resultPath, true)
+  const forwarded = solved.runs[0].values.get('extra')
+  assert.deepEqual(forwarded.goals, [])
+  assert.equal(forwarded.error, undefined)
+  assert.equal(runMachine({ ...level, tests: [{ goal: 'Rain → Wind' }] }, board).pass, false)
 })
 
 test('rule and equation displays keep complete term wording', async () => {

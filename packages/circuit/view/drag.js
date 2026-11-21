@@ -16,8 +16,17 @@ import { trackPointer } from 'kernel/view'
 const HOLD = 170, SLOP = 6, EDGE = 56, DWELL = 18; // DWELL: frames in an edge strip before it scrolls
 const buzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch { /* no haptics */ } };
 
-let swallowUntil = 0;
-document.addEventListener('click', e => { if (performance.now() < swallowUntil) { e.stopPropagation(); e.preventDefault(); } }, true);
+// A drop can render before the browser dispatches its click. Suppress that gesture's click until the next press.
+let draggedPointer = null;
+document.addEventListener('pointerdown', e => {
+  if (e.isPrimary || e.pointerId === draggedPointer) draggedPointer = null;
+}, true);
+document.addEventListener('click', e => {
+  if (draggedPointer === null || e.detail === 0 || (e.pointerId >= 0 && e.pointerId !== draggedPointer)) return;
+  draggedPointer = null;
+  e.stopImmediatePropagation();
+  e.preventDefault();
+}, true);
 
 /** The nearest ancestor that scrolls vertically (a page or a pane), for auto-scroll while dragging. */
 function scrollParent(el) {
@@ -63,6 +72,7 @@ export function enableDrag(root, handlers) {
 
   function start() {
     g.on = true;
+    draggedPointer = g.pointerId;
     root.classList.add('dragging', `drag-${g.kind}`);
     if (g.kind === 'part') {
       g.style = { transform: g.el.style.transform, transition: g.el.style.transition };
@@ -124,10 +134,7 @@ export function enableDrag(root, handlers) {
     if (done.ghost) done.ghost.remove();
     if (done.over) done.over.classList.remove('over');
     if (done.on) {
-      if (drop) {
-        swallowUntil = performance.now() + 40;
-        done.h.drop(done);
-      }
+      if (drop) done.h.drop(done);
       else if (done.h.end) done.h.end();
     }
   }
@@ -149,7 +156,7 @@ export function enableDrag(root, handlers) {
     const t = target(e.target, h.portAt?.(e.target, e.clientX, e.clientY));
     if (!t || !root.contains(t.el)) return;
     const touch = e.pointerType !== 'mouse', scroller = h.scroller || scrollParent(t.el);
-    g = { ...t, h, scroller, sc: scaleOf(t.el), scrollMax: Math.max(0, scroller.scrollHeight - scroller.clientHeight), dx: 0, dy: 0, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, st0: scroller.scrollTop, armed: !touch, on: false, over: null };
+    g = { ...t, h, scroller, pointerId: e.pointerId, sc: scaleOf(t.el), scrollMax: Math.max(0, scroller.scrollHeight - scroller.clientHeight), dx: 0, dy: 0, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, st0: scroller.scrollTop, armed: !touch, on: false, over: null };
     if (!touch && t.kind !== 'tray') e.preventDefault();
     if (touch) g.timer = setTimeout(() => { if (g && !g.on) { g.armed = true; root.classList.add('armed'); g.el.classList.add('armed'); buzz(6); } }, HOLD);
     g.cancel = trackPointer(e.pointerId, { move: onMove, finish, escape: true });

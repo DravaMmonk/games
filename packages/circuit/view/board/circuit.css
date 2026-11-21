@@ -483,6 +483,8 @@
 .pb-tile.is-step, .pb-term.is-step { box-shadow: inset 0 3px 0 var(--fam, var(--rule)), 0 0 0 2.5px var(--accent); }
 .pb-frame.is-step { box-shadow: 0 0 0 2.5px var(--accent); }
 .pb-tile.is-step.is-step-fail, .pb-term.is-step.is-step-fail, .pb-frame.is-step.is-step-fail { box-shadow: 0 0 0 2.5px var(--fail); }
+:is(.circuit-block, .pb-block-head).is-step { box-shadow: inset 0 0 0 2.5px var(--accent); }
+:is(.circuit-block, .pb-block-head).is-step-fail { box-shadow: inset 0 0 0 2.5px var(--fail); }
 
 
 /* A board that only shows (the inside of a built part): its cards do not take the pointer, the board still pans. */

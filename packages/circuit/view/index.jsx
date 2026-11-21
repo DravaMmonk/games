@@ -9,7 +9,7 @@ import './board/wires.css'
 import { displays } from './mechanism/displays.js'
 import './studio/studio.css'
 import { T, tr } from 'kernel/words'
-import defineCircuit from './game.js'
+import defineCircuit, { playPresentation } from './game.js'
 import './board/circuit.css'
 
 import PartStudioPreview from './studio/PartStudioPreview.jsx'
@@ -42,7 +42,7 @@ export function register(kernel) {
     fields: { expr: ExprField, icon: IconField, board: BoardField }, inspectorDraft: previewPartFace, onPage: onPartPage })
   kernel.editor('circuit/tray', { type: 'circuit/tray', component: TrayEditor, group: { listType: 'circuit/part', name: T('托盘', {}, 'studio-editor'), createLabel: T('新的托盘'), initial: () => ({ values: [] }) } })
   kernel.display('circuit/part-link', { reference: 'part', icon: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>', action: name => tr("在元件箱里看 {name}", {name}) })
-  kernel.play('circuit/board', { component: BoardPlay, preview: BoardPlay, define: defineCircuit })
+  kernel.play('circuit/board', { component: BoardPlay, preview: BoardPlay, define: defineCircuit, icon: playPresentation.icon })
 }
 
 /** Shared play composition and board editor components. */

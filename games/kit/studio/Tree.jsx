@@ -1,12 +1,13 @@
 // The package workspace's sidebar projects level tags and the levels outside them, tags and their levels in the
 // kernel's order (prerequisites, then names: a tag is a set). A level dragged into another group changes the tags'
 // members; when the workspace passes onGroupMove/onReorder, groups and levels can also be reordered by drag or Alt+↑/↓.
-import { Fragment, useMemo, useState } from 'react'
+import { createElement, Fragment, useMemo, useState } from 'react'
 import { L, tr } from '../shell/i18n.js'
 import { groupTree, levelTags, stays } from './groups.js'
 import SidebarListTools from './SidebarListTools.jsx'
 import StageRows from './StageRows.jsx'
 import { Flag } from 'lucide-react'
+import { levelPlayIcon } from './editors.js'
 import SidebarSection, { useSidebarFolds } from './SidebarSection.jsx'
 import { sidebarSearch, sidebarSortOptions, sortSidebarIds } from './sidebar-list.js'
 import { usePref } from './prefs.js'
@@ -105,7 +106,7 @@ export default function Tree({ game, namespace, content, order: playOrder = [], 
       onDragEnd={() => setMoving(null)}
       {...(taskDrag && taskTarget(id, { level: id }))}
     >
-      <i className="family-chip"><Flag size={12} aria-hidden="true" /></i>
+      <i className="family-chip">{createElement(levelPlayIcon(byId.get(id)) ?? Flag, { size: 12, 'aria-hidden': true })}</i>
       <span>{L(byId.get(id)?.title) || shownName(namespace, id)}</span>
       {placements.get(id)?.optional && <small className="tree-optional">{tr('可选')}</small>}
       {placements.get(id)?.skippable && <small className="tree-optional">{tr("可跳过")}</small>}

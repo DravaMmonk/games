@@ -14,8 +14,6 @@
     "qed/sp-simp",
     "qed/sp-nnf",
     "qed/sp-cnf",
-    "qed/sp-order",
-    "qed/try-direct-backward",
-    "qed/try-direct-rewrite"
+    "qed/sp-order"
   ]
 }

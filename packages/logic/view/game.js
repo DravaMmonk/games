@@ -9,7 +9,7 @@ import { displays as ui } from './ui/displays.js'
 // A logic game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the logic domain's screens (a proof on the circuit editor, a truth table,
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
-import { CircuitBoard, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
+import { CircuitBoard, ClipboardCheck, Cog, Cpu, FileSignature, Grid2x2Check, Languages, ScrollText, Search, SquareFunction, Workflow } from 'lucide-react'
 import { defineGame } from 'circuit/view'
 import { fresh, isCore } from 'circuit'
 import { logicPartCatalog } from '../core/part-catalog.js'
@@ -31,6 +31,20 @@ import { truth } from '../core/truthValues.js'
 import Rows from './plays/Rows.jsx'
 import BoardChecks from './plays/BoardChecks.jsx'
 import ScenarioCheck from './plays/ScenarioCheck.jsx'
+
+export const playPresentation = {
+  'logic/proof': { icon: Workflow, label: catalogText("证明") },
+  'logic/machine': { icon: Cog, label: catalogText("证明器") },
+  'logic/truth': { icon: Grid2x2Check, label: catalogText("真值表") },
+  'logic/gates': { icon: Cpu, label: catalogText("真值电路") },
+  'logic/iso': { icon: FileSignature, label: catalogText("规则板") },
+  'logic/define': { icon: SquareFunction, label: catalogText("定义", {}, "game") },
+  'logic/translate': { icon: Languages, label: catalogText("翻译") },
+  'logic/query': { icon: Search, label: catalogText("查询") },
+  'logic/model': { icon: FileSignature, label: catalogText("造世界") },
+  'logic/audit': { icon: ClipboardCheck, label: catalogText("声明审计") },
+  'logic/script': { icon: ScrollText, label: catalogText("写脚本") },
+}
 
 const bindings = {
   circuit: circuitScreen,
@@ -132,18 +146,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     kinds: playKinds(plays, {
       declaration, definition, audit, truth, translation, query, script, worldCheck,
       proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
-    }, {
-      'logic/proof': { icon: Workflow, label: catalogText("证明") },
-      'logic/machine': { icon: Cog, label: catalogText("证明器") },
-      'logic/truth': { icon: Grid2x2Check, label: catalogText("真值表") },
-      'logic/gates': { icon: Cpu, label: catalogText("真值电路") },
-      'logic/iso': { icon: FileSignature, label: catalogText("规则板") },
-      'logic/define': { icon: SquareFunction, label: catalogText("定义", {}, "game") },
-      'logic/translate': { icon: Languages, label: catalogText("翻译") },
-      'logic/query': { icon: Search, label: catalogText("查询") },
-      'logic/model': { icon: FileSignature, label: catalogText("造世界") },
-      'logic/script': { icon: ScrollText, label: catalogText("写脚本") },
-    }, bindings),
+    }, playPresentation, bindings),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its
     // rules, from here on).
     unlocked: (level) => [

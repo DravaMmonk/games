@@ -1,6 +1,7 @@
 // Replaying a run step by step, the same in every game. A traced evaluation (circuit.js, `ctx.trace`) lists every
 // node computed, in the order it ran: { id, key, value } or { id, key, error }, a frame going round adding its own
-// entries. A board replays it by showing, after each step, only what had been computed by then.
+// entries. A board replays it by showing, after each step, only what had been computed by then. A step that displays
+// a single candidate can carry the card's complete output in playbackValue when that output is ready.
 import { sourceOf } from './wire-source.js'
 import { MISSING } from './circuit.js'
 import { T } from 'kernel/words'
@@ -11,7 +12,7 @@ export function viewAt(trace, upTo) {
   const errors = new Map()
   for (const e of trace.slice(0, upTo + 1)) {
     if (e.error) errors.set(e.id, e.error)
-    else values.set(sourceOf(e.id, e.key), e.value)
+    else values.set(sourceOf(e.id, e.key), e.playbackValue ?? e.value)
   }
   return { values, errors }
 }
@@ -59,7 +60,7 @@ export function insideAt(trace, path, { upTo = trace.length - 1, step = null } =
     const e = trace[k]
     if (!samePath(e.path, path)) continue
     if (e.error) errors.set(e.id, e.error)
-    else values.set(sourceOf(e.id, e.key), e.value)
+    else values.set(sourceOf(e.id, e.key), e.playbackValue ?? e.value)
   }
   const lit = step && within(step.path, path) ? step.path?.[path.length] ?? step.id : null
   return { values, errors, lit }

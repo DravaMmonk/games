@@ -1,6 +1,7 @@
 import { taskScreen } from 'circuit/view'
 import { tableContext } from '../core/course.js'
-import tableGame from './game.js'
+import { playsFor } from '../core/plays.js'
+import tableGame, { tablePlayIcon } from './game.js'
 import { createSceneRenderer } from './svg.js'
 
 export function register(kernel) {
@@ -11,7 +12,9 @@ export function register(kernel) {
 export function registerTableViews(kernel, names, { Hero }) {
  const define = (content, works) => tableGame(content, works, { Hero })
  const TablePlay = taskScreen(tableContext, define, 'play')
- for (const name of names) kernel.play(name, { component: TablePlay, preview: TablePlay, define })
+ for (const [name, play] of Object.entries(playsFor(names))) {
+  kernel.play(name, { component: TablePlay, preview: TablePlay, define, icon: tablePlayIcon(play) })
+ }
 }
 
 /** Display implementations available to a course registering table resources. */

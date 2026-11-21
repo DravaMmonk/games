@@ -9,14 +9,14 @@ import { withPreset } from 'circuit'
 import { directCardsOf, runMachine } from '../../core/machine.js'
 import { presetFor } from '../../core/work.js'
 import { didText, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
-import MachineReport from './MachineReport.jsx'
+import MachineReport, { machineRuleList } from './MachineReport.jsx'
 import { typesetMachine } from './Formula.jsx'
 
 export const machineScreen = {
   course: (game) => game.logic.machineBoards,
   traySource: (task, type) => directCardsOf(task).get(type)?.source,
   play: { ...machineReadout, runLevel: (task, board, _parts, options) => runMachine(task, board, { traced: true, ...options }) },
-  context: (task) => ({ task, text: machineTextOf(task), term: machineTermOf(task) }),
+  context: (task, _test, run) => ({ task, text: machineTextOf(task), term: machineTermOf(task), ruleOrder: run?.ruleOrder }),
   // A preset (a level's locked cards) stays on the board whatever is saved.
   ready: (board, task) => withPreset(board, presetFor(task)),
   readouts: (task, _circuit, { score }) => [{ value: score.steps, label: T("元件") }, task.budget !== undefined && { value: task.budget, label: T('最多') }],
@@ -24,9 +24,9 @@ export const machineScreen = {
   log: true,
   // A step says what it did beside the card's name, in marks: which rule changed which goal (⊢ ⟵ R₁).
   stepNote: (e, run) => (e.value?.didBy === e.id ? didText(e.value.did, run) : null),
-  // The report: the rules first, then the goals box by box, each step the link between two.
   report: MachineReport,
+  reportAside: machineRuleList,
   // Formulas on the cards are typeset in TeX, one face for all of logic's signs.
   typeset: typesetMachine,
-  canvas: { height: 150, emptyNote: T('从上方元件栏选择元件放到板上，从「输入」连到「预期」。') },
+  canvas: { height: 150, emptyNote: false, followStep: false },
 }

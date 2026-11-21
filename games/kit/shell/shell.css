@@ -466,6 +466,8 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
   .wb-strip-body { flex: 1; min-height: 0; padding: var(--sp-4) var(--sp-6) var(--sp-5); display: flex; gap: var(--sp-5); }
   .wb-strip-body > .wb-results { flex: 1; }
   .wb-actions { flex: none; width: 236px; margin-left: auto; display: flex; flex-direction: column; justify-content: flex-end; }
+  .wb-actions:has(> .wb-above-dock) { gap: var(--sp-4); }
+  .wb-above-dock { flex: 1 1 auto; min-height: var(--sp-8); padding: var(--sp-2) var(--sp-3); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
   .wb-actions > .run-foot { padding: 0; border: 0; background: none; }
   .wb-actions .run-dock { flex-wrap: wrap; gap: var(--sp-4); }
   .wb-actions .run-meta:empty { display: none; }
@@ -565,7 +567,19 @@ level-ref, wiki-ref { display: inline; }
 .rr-goal { color: var(--heading, var(--ink)); font-weight: 600; }
 /* A formula (FormulaText) is typeset in TeX, LaTeX's face for every sign; its plain text stands in while that loads.
    What the player is still building (a strip of blocks) is set in the same face, untypeset. */
-.formula .katex { font-size: 1.1em; }
+.formula .katex { font-size: 1.12em; line-height: 1.35; }
+.formula-row { box-sizing: border-box; min-width: 0; max-width: 100%; padding: var(--sp-1) var(--sp-3); }
+.formula-mark { color: var(--accent-ink); margin-inline-end: var(--sp-1); }
+.formula-pick, .formula-option { border: 1px solid var(--line); border-radius: var(--r-sm); color: var(--ink); background: var(--canvas); text-align: start; font: 500 var(--formula-size, var(--fs-ui))/1.4 var(--sans); }
+.formula-pick { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+.formula-pick > svg { flex: none; color: var(--muted); }
+.formula-pick > span, .formula-option { overflow-x: auto; scrollbar-width: thin; }
+.formula-options { display: grid; gap: var(--sp-2); min-width: 0; --formula-size: var(--machine-readout-size, var(--fs-ui)); }
+.kit-pop.formula-pop { width: max-content; max-width: min(480px, calc(100vw - 24px)); }
+.formula-option { max-width: min(480px, 80vw); }
+button.formula-pick, .formula-option { cursor: pointer; }
+.formula-pick[aria-expanded='true'], .formula-option[aria-pressed='true'] { border-color: var(--accent); background: var(--paper); }
+@media (pointer: coarse) { button.formula-pick, .formula-option { min-height: 32px; } }
 :root { --formula-face: KaTeX_Main, 'Times New Roman', var(--sans); }
 .rr-body { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4) 0; }
 .rr-item { display: inline-flex; align-items: center; }

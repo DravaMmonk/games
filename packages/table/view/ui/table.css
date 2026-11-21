@@ -101,8 +101,8 @@ button:disabled{cursor:not-allowed}
 
 /* ---------- level ---------- */
 .bcard{background:var(--board);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-4);scroll-margin-top:var(--sp-4)}
-.board{overflow-x:auto;margin:0 calc(var(--sp-5) * -1);padding:0 var(--sp-5)}
-.board:empty{display:none}
+.sg-board{overflow-x:auto;margin:0 calc(var(--sp-5) * -1);padding:0 var(--sp-5)}
+.sg-board:empty{display:none}
 .bnote{margin:0;font-size:13px;color:var(--ink-2);text-wrap:pretty}
 .bnote:empty{display:none}
 .panel{display:flex;flex-direction:column;gap:var(--sp-5)}
@@ -342,7 +342,7 @@ img{max-width:100%}
 
   /* the stage: plain; only the circuit board of a circuit level (the kit's editor) is dotted */
   .sg-level:not(.sg-shared-circuit) .stage-pane .bcard{border:0;border-radius:0;padding:var(--sp-7) var(--sp-7) var(--sp-7);gap:var(--sp-5);align-content:start;background:none}
-  .sg-level:not(.sg-shared-circuit) .board{margin:0;padding:0;overflow:visible}
+  .sg-level:not(.sg-shared-circuit) .sg-board{margin:0;padding:0;overflow:visible}
   .sg-level:not(.sg-shared-circuit) .board-svg{max-height:calc(100dvh - 220px)}
   /* the canvas is the circuit board: parts, terminals and wires sit straight on the dotted stage */
   .cview{--vc:42px;max-width:none;padding:var(--sp-5) var(--sp-4)}
@@ -407,8 +407,6 @@ img{max-width:100%}
 
 /* ---------- circuit levels on the shared circuit editor (../../../circuit, CircuitScreen.jsx) ---------- */
 [data-family='sg'] { --fam: var(--accent); }
-/* The editor's root is also a `.board`: keep this game's test-board rules (a sideways scroll, a bleed) off it. Clipped, not
-   hidden, so focusing a part in a floating window can never scroll the board under it. */
 /* The whole middle column is the board: no frame around it. */
 .sg-body { margin: var(--sp-3) var(--sp-4) 0; display: grid; gap: var(--sp-2); }
 .sg-body .param { margin: 0; }
@@ -458,7 +456,7 @@ img{max-width:100%}
 @media (min-width: 761px) {
   .wb-results > .wb-pane-body { display: flex; flex-direction: column; }
   .wb-results .bcard { margin: auto 0; padding: 0; gap: var(--sp-4); justify-items: center; align-content: center; border: 0; border-radius: 0; background: none; box-shadow: none; }
-  .wb-results .board { margin: 0; padding: 0; overflow: visible; background: none; box-shadow: none; }
+  .wb-results .sg-board { margin: 0; padding: 0; overflow: visible; background: none; box-shadow: none; }
   .wb-results .board-svg { display: block; margin: 0 auto !important; }
   .wb-results .wb-pane-head .bnote { margin: 0; }
   .sg-level .stage-pane.is-board { overflow: hidden; }

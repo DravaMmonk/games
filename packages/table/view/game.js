@@ -18,6 +18,8 @@ import { T } from '../core/lang.js'
 import { tableWorks } from '../core/work.js'
 
 import ManualBoardPlay from './ManualBoardPlay.jsx'
+export const tablePlayIcon = (play) => play.editor === 'circuit' ? Cable : Grid3x3
+
 const manualBoardScreen = (play, resource) => (screen) => createElement(ManualBoardPlay, { screen, play, resource })
 
 const { partDemo, lookIcon } = ui['catalog']
@@ -68,7 +70,7 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
   })
 
   const plays = playsFor([...new Set([...played.values()].flat().map(task => task.play))])
-  const icons = Object.fromEntries(Object.entries(plays).map(([name, play]) => [name, { icon: play.editor === 'circuit' ? Cable : Grid3x3 }]))
+  const icons = Object.fromEntries(Object.entries(plays).map(([name, play]) => [name, { icon: tablePlayIcon(play) }]))
   const game = defineGame({
     id: content.id,
     course,

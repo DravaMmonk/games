@@ -6,10 +6,6 @@
     "q-ancestor",
     "q-bigger",
     "c-arrow",
-    "au-adder",
-    "au-machine",
-    "s-each",
-    "decl-bool",
-    "in-itsum"
+    "decl-bool"
   ]
 }

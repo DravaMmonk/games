@@ -4,7 +4,7 @@ import { logicContext } from '../core/context.js'
 import { taskScreen } from 'circuit/view'
 import { typesetFormulas } from 'kernel/view'
 import { texOf } from '../core/tex.js'
-import define from './game.js'
+import define, { playPresentation } from './game.js'
 import { plays } from '../core/plays.js'
 
 const LogicPlay = taskScreen(logicContext, define)
@@ -17,5 +17,5 @@ export function register(kernel) {
   kernel.implement('display', 'logic/machine-screen', displays['logic/machine-screen'])
   kernel.implement('display', 'logic/passed', displays['logic/passed'])
   kernel.unlocks('logic/symbols', (game, ...args) => (game.moduleGames?.logic ?? game).symbolUnlocks?.(...args) ?? [])
-  for (const name of Object.keys(plays)) kernel.play(name, { component: LogicPlay, preview: LogicPlay, define })
+  for (const name of Object.keys(plays)) kernel.play(name, { component: LogicPlay, preview: LogicPlay, define, icon: playPresentation[name].icon })
 }

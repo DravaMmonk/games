@@ -1,0 +1,32 @@
+{
+  "title": "@level.try-backtracking.title",
+  "intro": [{ "t": "@level.try-backtracking.intro.0.t" }, { "t": "@level.try-backtracking.intro.1.t" }],
+  "after": "@level.try-backtracking.after",
+  "requires": ["r-assumption"],
+  "tray": "prover",
+  "tasks": [
+    {
+      "id": "try-backtracking",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "backtrack": true,
+      "brief": "@level.try-backtracking.tasks.try-backtracking.brief",
+      "hint": ["@level.try-backtracking.tasks.try-backtracking.hint.0"],
+      "tests": [
+        { "goal": "Rain → Wet", "hyps": ["Rain → Wet"] },
+        { "goal": "Rain → Rain" },
+        { "goal": "(Rain → Wet) → (Wind → (Rain → Wet))" }
+      ],
+      "solution": [
+        "search = search(in, body: candidates) {",
+        "  body {",
+        "    open = logic/directBackward-qed_impI(search.body)",
+        "    cite = logic/directBackward-logic_assumption(search.body)",
+        "    candidates = append(first: open, second: cite)",
+        "  }",
+        "}",
+        "out <- search"
+      ]
+    }
+  ]
+}

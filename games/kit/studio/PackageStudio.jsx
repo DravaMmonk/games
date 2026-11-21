@@ -27,7 +27,7 @@ import { blank, copyLevelData, creationChoices, placesOf, referenceFor } from '.
 import { findTask, tasksSchema } from '../engine/tasks.js'
 import { addFor, markOf, markPath } from './marks.js'
 import { contentVocabulary, objectStages } from './editors.js'
-import { editorForType, editorRoute, registeredEditors, registeredPlayCapabilities, navigableProjections } from './editors.js'
+import { editorForType, editorRoute, levelPlayIcon, registeredEditors, registeredPlayCapabilities, navigableProjections } from './editors.js'
 import { freeName } from './names.js'
 import { itemOf, problemPlace } from './worklist.js'
 import { paletteIndex } from './palette.js'
@@ -861,7 +861,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               : levelsBy !== 'tag' ? <GroupedList kind="level" content={content} namespace={namespace} game={game} items={playOrder} label={(id) => L(content.registries?.level?.[id]?.title)}
                 heading={heading} onHeading={(next) => openHeading(next)} {...grouping('level', levelsBy, setLevelsBy)} stage={listStage('level')} onStage={openStage('level')}
                 addOptions={levelAdds} addLabel={tr("关卡")} onAdd={addLevel}
-                row={(id) => <ListRow key={id} icon={Flag} on={at?.level === id} onClick={() => openTreeItem({ level: id })} title={L(content.registries?.level?.[id]?.title)} id={shownName(namespace, id)} />} />
+                row={(id) => <ListRow key={id} icon={levelPlayIcon(content.registries?.level?.[id]) ?? Flag} on={at?.level === id} onClick={() => openTreeItem({ level: id })} title={L(content.registries?.level?.[id]?.title)} id={shownName(namespace, id)} />} />
               : <Tree game={game} grouping={grouping('level', levelsBy, setLevelsBy)} namespace={namespace} content={content} order={playOrder} at={at} selectedTask={field?.path?.[0] === 'tasks' ? field.path[1] ?? null : null} picked={picked} setPicked={setPicked} onSelect={openTreeItem} moving={moving} setMoving={setMoving} onMove={move} labels={rawNames?.levels} onTask={(task) => onTaskGo({ task })} onTaskMove={moveTask} stage={listStage('level')} onStage={openStage('level')}
                   addOptions={levelAdds} onAdd={addLevel} /> }
           </aside>

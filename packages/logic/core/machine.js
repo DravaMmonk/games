@@ -2,6 +2,7 @@ import { mark } from 'notation'
 import { ruleImplementations } from './rule-implementations.js'
 import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
+import { countMachineSteps, finishProof, machineEvents, proofStep, stopProof, traceFlow, traceProof } from './proof-tree.js'
 // The machine board (《证明完毕》 chapter 8 on): a circuit whose wires carry equations, proof states, formulas or
 // clause sets instead of proved judgments. Its sources (`in` cards, one per input the level names) give the test's
 // inputs, its sink `out` is checked against what the level wants. A part is a rule of unification, a tactic, a frame
@@ -163,29 +164,47 @@ const DID = {
     return { op: rules.length === 1 && rules[0] === ASSUMPTION_RULE.key ? 'assumption' : 'rule', rules }
   },
   rw: (by, node) => ({ op: atOf(node) === 'hyps' ? 'rwHyps' : 'rw', rules: keysOf(by) }),
-  defer: () => ({ op: 'defer' }),
 }
 const unsaid = (s) => (s.did === undefined && s.didBy === undefined ? s : { ...s, did: undefined, didBy: undefined })
 // A tactic card: on each result it is handed (only the first, until the level backtracks), every result it makes; a
 // failure is the state with what went wrong (a frame reads it). An input that failed passes through.
-const tactic = (t, say) => ({
+const tactic = (t, say, { work = true } = {}) => ({
   inputs: ['in'],
   eval: ({ in: v }, node, ctx) => {
     const s = stateIn(v)
-    if (s.error) return unsaid(s)
+    if (s.error) { traceFlow(ctx, node); return unsaid(s) }
     const out = []
-    let why = null
+    let applied = 0
+    let failed = null
+    let attempted = false
+    const record = work ? proofStep : (_ctx, _node, _from, value) => value
     for (const one of ctx.backtrack ? resultsOf(s) : [firstOf(s)]) {
+      if (!one.goals.length) {
+        out.push(unsaid(one))
+        continue
+      }
+      if (applied >= 24) continue
       const r = t(one, ctx, node)
-      if (r.fail) why ??= r.fail
-      else out.push(...r.results)
-      if (out.length >= 24) break
+      const note = (by) => say && { ...say(by ? [by] : [], node), goals: one.goals.length }
+      for (const { by, state, error } of r.attempts ?? (r.fail ? [{ error: r.fail }] : r.results.map(state => ({ state })))) {
+        if (error) {
+          const bad = { ...unsaid(one), error }
+          const value = by ? record(ctx, node, one, bad, note(by)) : bad
+          attempted ||= Boolean(by)
+          failed ??= value
+        } else {
+          out.push({ ...record(ctx, node, one, unsaid(state), note(by)), by })
+          attempted = true
+          applied++
+          if (!ctx.backtrack) break
+        }
+      }
     }
-    const kept = (ctx.backtrack ? out : out.slice(0, 1))
-    const by = kept.map((x) => x.by).filter(Boolean)
-    const did = say && { ...say(by, node), goals: firstOf(s).goals.length }
-    const made = asValue(kept.map(({ by: _by, ...x }) => unsaid(x)), { ...unsaid(firstOf(s)), error: why })
-    const said = did && kept.length ? { ...made, did, didBy: node.id } : made
+    const by = out.map((x) => x.by).filter(Boolean)
+    if (!work || !attempted) traceFlow(ctx, node)
+    const did = applied && say && { ...say(by, node), goals: s.goals.length }
+    const made = asValue(out.map(({ by: _by, ...x }) => x), failed)
+    const said = did && out.length ? { ...made, did, didBy: node.id } : made
     return s.endless ? { ...said, endless: true } : said
   },
 })
@@ -200,17 +219,17 @@ const NOT_RULE = ['接进来的有一条不是推理规则（是改写用的等�
 const NOT_REWRITE = ['接进来的有一条不能用来改写（只有等价、等式和定义能改写）', 'One of the rules wired in cannot rewrite (only equivalences, equations and definitions can)']
 // A card that uses rules: each wired in, in order; the first that applies (with backtracking, each one's results).
 function firstThatApplies(rules, ctx, apply) {
-  const out = []
-  let why = null
+  const attempts = []
   for (const r of rules) {
     const got = apply(r)
-    if (got.fail) why ??= got.fail
+    const by = { rule: r.key }
+    if (got.fail) attempts.push({ error: got.fail, by })
     else {
-      out.push(...got.results.map((x) => ({ ...x, by: { rule: r.key } })))
+      attempts.push(...got.results.map(state => ({ state, by })))
       if (!ctx.backtrack) break
     }
   }
-  return out.length ? { results: out } : { fail: why ?? T('没有一条规则用得上') }
+  return attempts.length ? { attempts } : { fail: T('没有一条规则用得上') }
 }
 // A tactic card reading its rules from the port `rules` as well as the state from `in`.
 const usesRules = (t, say) => {
@@ -240,7 +259,12 @@ const eqsIn = (v) => {
   return v
 }
 // A unification rule card: the rule once, where it first applies; a set already failed passes through.
-const unifyCard = (r) => ({ inputs: ['in'], eval: ({ in: v }) => { const e = eqsIn(v); if (e.fail) return e; const next = UNIFY_RULES[r](e.eqs, {}); return next ? eqsValue(next.eqs, next.fail ?? null) : e } })
+const unifyCard = (r) => ({ inputs: ['in'], eval: ({ in: v }, node, ctx) => {
+  const e = eqsIn(v)
+  if (e.fail || !e.eqs.length) { traceFlow(ctx, node); return e }
+  const next = UNIFY_RULES[r](e.eqs, {})
+  return next ? eqsValue(next.eqs, next.fail ?? null) : e
+} })
 
 /**
  * The repeat frame: what its region makes from the value it opens with is fed back in, again and again, until it
@@ -251,28 +275,29 @@ const unifyCard = (r) => ({ inputs: ['in'], eval: ({ in: v }) => { const e = eqs
 const repeat = {
   inputs: ['in', 'body'],
   eval: ({ in: v, body }, node, ctx, key) => {
+    traceFlow(ctx, node, key ?? null)
     if (key) return v
-    const round = ctx.region('body')
     const first = (x) => (x.kind === 'state' ? firstOf(x) : x)
-    const over = (x) => (x.kind === 'clauses' && refuted(x.set)) || (x.kind === 'eqs' && x.fail) || (x.kind === 'state' && (x.error || !x.goals.length))
-    // A traced run (../../engine/circuit.js) sees the frame's cards each round, and the frame itself only where it
-    // decides: once more (↻) or out (↪), with what it goes on with. Its opening and its result are not steps
-    // of their own (runTest leaves them out: `framesDeciding`).
-    ctx.framesDeciding?.add(node.id)
-    const decide = (out, value) => {
-      ctx.trace?.push({ id: node.id, key: null, inner: true, label: out ? OUT : AGAIN, value })
+    const over = (x) => (x.kind === 'clauses' && refuted(x.set)) || (x.kind === 'eqs' && (x.fail || !x.eqs.length)) || (x.kind === 'state' && (x.error || !x.goals.length))
+    // Comparing states is a decision. Forwarding a completed or failed proof needs no comparison.
+    const decide = (out, value, decision) => {
+      const step = { inner: true, label: out ? OUT : AGAIN, transient: true, decision }
+      if (ctx.proof) return proofStep(ctx, node, value, value, null, step)
+      inner(ctx, node, value, step)
       return value
     }
     let cur = first(v)
-    if (over(cur)) return decide(true, cur)
+    const done = value => value.kind === 'clauses' ? decide(true, value, 'refuted') : value
+    if (over(cur)) return done(cur)
+    const round = ctx.region('body')
     for (let k = 0; k < 60; k++) {
       // The board's own pass was the first round; the rest run here.
       const next = k === 0 ? first(body) : first(round(cur))
       // A round that fails, or changes nothing, ends it on what it had; one that finishes the work, on that.
-      if ((next.kind === 'state' && next.error) || sameJson(unsaid(next), unsaid(cur))) return decide(true, cur)
-      if (over(next)) return decide(true, next)
-      decide(false, next)
-      cur = next
+      if (next.kind === 'state' && next.error) return cur
+      if (over(next)) return done(next)
+      if (sameJson(unsaid(next), unsaid(cur))) return decide(true, cur)
+      cur = decide(false, next)
     }
     throw fail('转了 60 圈还没停下来', 'Still changing after 60 rounds')
   },
@@ -290,19 +315,19 @@ const LIMIT = 250
 const search = {
   inputs: ['in'],
   eval: ({ in: v }, node, ctx, key) => {
+    traceFlow(ctx, node, key ?? null)
     if (key) return v
     const s = stateIn(v)
-    if (s.error) return s
+    if (s.error || (!s.goals.length && !s.more?.length)) return s
     const round = ctx.region('body')
     const depth = Number(node.params?.depth) || Infinity
-    let k = 0
-    // A traced run sees each step of the search: what the frame hands its region, then the region's cards.
     const expand = (x) => {
-      ctx.trace?.push({ id: node.id, key: 'body', value: x, round: ++k })
       const out = round(x)
       return out.error ? [] : resultsOf(out)
     }
-    const { found, stopped } = depthFirst(resultsOf(s), expand, { depth, limit: LIMIT, most: 60 })
+    const onStop = ctx.proof ? (value, reason) => stopProof(ctx, value, reason) : undefined
+    const onCompare = (value, pruned) => proofStep(ctx, node, value, value, { op: 'searchCheck', pruned }, { key: 'body', transient: true })
+    const { found, stopped } = depthFirst(resultsOf(s), expand, { depth, limit: LIMIT, most: 60, onStop, onCompare })
     // A search that has not stopped gives what it found so far (the first is enough to prove a goal), and says it goes
     // on: asking for every answer then never ends.
     const none = stopped ? T("搜了 {LIMIT} 步还没停下来：有一条路走不到头", {LIMIT})
@@ -316,6 +341,7 @@ const search = {
 const each = {
   inputs: ['in'],
   eval: ({ in: v }, node, ctx, key) => {
+    traceFlow(ctx, node, key ?? null)
     if (key) return v
     const s = stateIn(v)
     if (s.error) return s
@@ -327,7 +353,7 @@ const each = {
     for (const g of s.goals) {
       const next = []
       for (const p of partial) {
-        const out = round({ ...p, goals: [put(g, p.inst)] }, true)
+        const out = round({ ...p, goals: [put(g, p.inst)] })
         if (out.error) { why ??= out.error; continue }
         for (const r of ctx.backtrack ? resultsOf(out) : [firstOf(out)]) next.push({ ...r, more: undefined, goals: [...p.goals.map((x) => put(x, r.inst)), ...r.goals] })
       }
@@ -340,21 +366,19 @@ const each = {
 
 /**
  * For each (the generator's frame, chapter 12): the region run on every item of the list it is handed, in order, each
- * result an item of the list it gives. Its region shows the first item's run.
+ * result an item of the list it gives.
  */
 const eachOf = {
   inputs: ['in'],
   eval: ({ in: v }, node, ctx, key) => {
+    traceFlow(ctx, node, key ?? null)
     if (v?.kind !== 'list') throw fail('这里要一串：框对其中的每一样各做一遍', 'This needs a list: the frame works on each of its items')
     if (key) {
       if (!v.items.length) throw fail('这一串是空的：框里一次也不做', 'The list is empty: nothing inside runs')
       return v.items[0]
     }
     const round = ctx.region('body')
-    return listValue(v.items.map((item, k) => {
-      ctx.trace?.push({ id: node.id, key: 'body', value: item, round: k + 1 })
-      return round(item)
-    }))
+    return listValue(v.items.map(item => round(item)))
   },
 }
 
@@ -365,10 +389,10 @@ const eachOf = {
 const keepBound = {
   inputs: ['in'],
   eval: ({ in: v }, node, ctx, key) => {
+    traceFlow(ctx, node, key ?? null)
     if (!v) throw fail('这里要接进一样东西', 'Something has to be wired in here')
     const inner = v.kind === 'any' ? v.body : v
     if (key) return inner
-    ctx.trace?.push({ id: node.id, key: 'body', value: inner, round: 1 })
     const out = ctx.region('body')(inner)
     return v.kind === 'any' ? anyValue(v.vars, out) : out
   },
@@ -380,23 +404,29 @@ const WAYS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
 const append = {
   circuitPart: (settingsOf) => ({ inputs: (node) => WAYS.slice(0, Number(settingsOf(node).ways)) }),
   run(values, { ways }, ctx) {
+    traceFlow(ctx, ctx.node)
     const routes = values.slice(0, Number(ways)).flatMap((value, index) => value == null ? [] : [{ state: stateIn(value), route: index + 1 }])
     const open = routes.filter(({ state }) => !state.error)
     if (!open.length) return unsaid(routes[0].state)
     const results = ctx.backtrack ? open.flatMap(({ state }) => resultsOf(state)) : [firstOf(open[0].state)]
-    return {
-      ...asValue(results.map(unsaid)),
-      did: { op: 'alternatives', remaining: open.map(({ route }) => route), results: results.length, backtrack: ctx.backtrack },
-      didBy: ctx.node.id,
-    }
+    return asValue(results.map(unsaid))
   },
 }
 
 // The machine board's parts, each as what it runs on: its inputs (a frame's own; repeat's region gives it its first
 // round) and how it computes.
+const forwardPart = part => ({
+  ...part,
+  eval(inputs, node, ctx, key) {
+    traceFlow(ctx, node, key ?? null)
+    return part.eval(inputs, node, ctx, key)
+  },
+})
 const BODIES = {
   // The elimination-rule generator (chapter 12, elimgen.js): rules taken apart and put together, and for each.
   ...GEN_PARTS,
+  anyR: forwardPart(GEN_PARTS.anyR),
+  consFront: forwardPart(GEN_PARTS.consFront),
   eachOf,
   keepBound,
   // Unification (chapter 8): its rules, and patterns.
@@ -411,7 +441,7 @@ const BODIES = {
   // Tactics (chapters 8 and 9).
   rule: ruleCard(rule, DID.rule),
   directBackward: directCard(rule, DID.rule),
-  defer: tactic(defer, DID.defer),
+  defer: tactic(defer, null, { work: false }),
   search,
   each,
   // Rewriting (chapter 10): one rule once, on the goal or the hypotheses.
@@ -422,7 +452,7 @@ const BODIES = {
   skolem: tactic(skolemStep),
   toClauses: { inputs: ['in'], eval: ({ in: v }) => toClauses(v) },
   resolve: { inputs: ['in'], eval: ({ in: v }, node) => { const c = clausesIn(v); return { ...c, set: resolveRound(c.set, { unit: node.params?.unit === 'unit' }) } } },
-  oracle: { inputs: ['in'], eval: ({ in: v }, node, ctx) => saturated(clausesIn(v), node, ctx, oracleRound) },
+  oracle: forwardPart({ inputs: ['in'], eval: ({ in: v }, node, ctx) => saturated(clausesIn(v), node, ctx, oracleRound) }),
   replay: { inputs: ['in'], eval: ({ in: v }) => replayed(clausesIn(v)) },
   // A rule part: the rules wired in before it, then its own (machine.js ruleParts).
   rules: RULE_PART,
@@ -562,7 +592,7 @@ export const RULE_DEFINITION = {
   family: 'logic/rule',
   outputType: 'logic/machine-value',
   inputs: [{ name: 'before', type: 'logic/machine-value', label: T('前面'), optional: true }],
-  settings: [{ key: 'use', control: 'list', label: T("给出的规则"), from: 'logic/ruleChoices()' }],
+  settings: [{ key: 'use', control: 'list', formula: true, label: T("给出的规则"), from: 'logic/ruleChoices()' }],
   bare: true,
   op: 'logic/rules',
 }
@@ -668,7 +698,9 @@ export const RULE_CHOICES = {
   run: (_v, _n, ctx) => {
     const type = ctx.node?.type
     const entries = directCardsOf(ctx.task).get(type)?.entries ?? rulePartsOf(ctx.task).get(type) ?? []
-    return choicesOfPart(entries).map((key) => ({ value: key, label: ruleWritten(entries.find((e) => e.key === key), ctx.text, ctx.term) }))
+    const choices = choicesOfPart(entries)
+    const order = ctx.ruleOrder ?? choices
+    return choices.map((key) => ({ value: key, mark: ruleMark(key, order), label: ruleWritten(entries.find((e) => e.key === key), ctx.text, ctx.term) }))
   },
 }
 
@@ -800,42 +832,56 @@ const ctxOf = (level, circuit, extra = {}) => ({ graph: circuit, partForRule: le
  *  `keys` wired in when it uses rules. */
 export const runTactic = (level, type, state, keys = null) => level.parts(type).eval({ in: state, ...(keys ? { rules: rulesValue(keys.map((key) => ({ key }))) } : {}) }, { id: type, params: {} }, ctxOf(level, { nodes: [], wires: [] }, { engine: { parts: level.parts } }))
 
-/**
- * The rules on a board, numbered once for it (R₁ R₂ …: each rule one number, wherever it is wired): those added on its
- * rule parts, card by card in the board's order, each part's in the order added, after those a test gives on its 「规则」
- * input. `ruleEntries`: how to write each.
- */
+export const subscript = (n) => String(n).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])
+export const ruleMark = (key, order) => {
+  const index = order.indexOf(key)
+  return order.length > 1 && index >= 0 ? `R${subscript(index + 1)}` : 'R'
+}
+
+/** The rules in use and the stable numbering of all choices offered by the board's rule cards. */
 export function boardRules(level, circuit, test) {
   const parts = rulePartsOf(level)
   const given = test ? inputsOf(test, level).rules?.entries ?? [] : []
+  const order = given.map((e) => e.key)
   const ruleEntries = [...given, ...circuit.nodes.flatMap((n) => {
     const direct = directCardsOf(level).get(n.type)
     const entries = direct?.entries ?? parts.get(n.type)
+    if (entries) order.push(...choicesOfPart(entries))
     const selected = entries ? ownRules(entries, n.params?.use) : []
     return (direct ? selected.slice(0, 1) : selected).map((k) => entries.find((e) => e.key === k))
   })]
-  return { rules: [...new Set(ruleEntries.map((e) => e.key))], ruleEntries }
+  return { rules: [...new Set(ruleEntries.map((e) => e.key))], ruleEntries, ruleOrder: [...new Set(order)] }
 }
 
 /** How a machine level runs and is judged, for the shared engine (../../engine/test-run.js). */
 export const MACHINE_TESTS = {
   runTest: (level, circuit, test, { traced = false, workshopParts } = {}) => {
     const trace = []
-    const framesDeciding = new Set()
+    const bind = inputsOf(test, level)
+    const want = test.want ?? level.want
+    const proof = traced && bind.in?.kind === 'state' ? traceProof(bind.in) : null
+    const showTree = ['logic/proved', 'logic/becomes', 'logic/answers', 'logic/fails'].includes(want)
+    if (proof) bind.in = proof.input
     const run = runBoard(circuit, {
       parts: workshopParts ?? level.parts,
-      bind: inputsOf(test, level),
-      ctx: ctxOf(level, circuit, { trace: traced ? trace : null, framesDeciding }),
+      bind,
+      ctx: ctxOf(level, circuit, { trace: traced ? trace : null, traceForwarding: traced, proof }),
       traceTargets: ['out'],
     })
-    // Rule parts are not steps: what they give is on their cards from the start. The rules on the board, numbered
-    // once for the whole run (R₁ R₂ …, in the order of their cards on the board): `rules`, their keys, and
-    // `ruleEntries`, what the cards give.
-    const { rules, ruleEntries } = boardRules(level, circuit, test)
-    // A repeat frame is a step only where it decides (its `inner` entries); the board's own entries for it (what it
-    // opens with, what it gives) say nothing more.
-    const said = (e) => e.inner || e.error !== undefined || e.path?.length || !framesDeciding.has(e.id)
-    return { ...run, trace: trace.filter((e) => e.value?.kind !== 'rules' && said(e)), rules, ruleEntries }
+    // Rule parts are not steps. All choices have a number before playback; only selected or executed rules appear in the report.
+    const { rules, ruleEntries, ruleOrder } = boardRules(level, circuit, test)
+    for (const entry of trace.flatMap(step => step.proofRules ?? [])) {
+      if (rules.includes(entry.key)) continue
+      rules.push(entry.key)
+      ruleEntries.push(entry)
+      if (!ruleOrder.includes(entry.key)) ruleOrder.push(entry.key)
+    }
+    const events = machineEvents(trace)
+    const report = proof
+      ? finishProof(proof, events, run.outputs.out, want, showTree ? judge(want, test, run.outputs.out, level) : '')
+      : { trace: countMachineSteps(events) }
+    if (!showTree) delete report.proofRoot
+    return { ...run, ...report, rules, ruleEntries, ruleOrder }
   },
   check: (level, test, outputs) => {
     const problem = judge(test.want ?? level.want, test, outputs.out, level)

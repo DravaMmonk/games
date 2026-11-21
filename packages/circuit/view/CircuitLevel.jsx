@@ -20,7 +20,7 @@ import SlotBoard from "./board/SlotBoard.jsx"
 import Tray from "./board/Tray.jsx"
 import TerminalInfo from "./board/TerminalInfo.jsx"
 import { canRemoveCard, editNodeSettings, isPart, placement, spotIn } from "../core/board/model.js"
-import { isOpenRegion, regionsOf } from "../core/board/regions.js"
+import { frameId, frameTree, isOpenRegion, regionsOf } from "../core/board/regions.js"
 import { lockedCards } from "../core/board/presets.js"
 import { useSlotEditing } from "./board/useSlotEditing.js"
 import { useCircuitEdits } from "./board/useCircuitEdits.js"
@@ -198,9 +198,10 @@ const nothing = { values: new Map(), errors: new Map() }
  *                   wireState (wire, ctx), regionNote / resultNote (node, region, ctx); on a phone thumb, tileExtra,
  *                   sinkBody, sinkClass, nodeClass, phoneRegionLabel (node, index)
  *   tileSettings    show configuration summaries on phone tiles (the details always show the settings)
- *   canvas          more for the desktop editor: height, emptyNote, corner, minFit
+ *   canvas          more for the editor: height, emptyNote, corner, minFit, followStep (default true)
  *   brief           the task board's content (Layout.jsx Brief), or the workshop shelf
  *   results, resultsTitle, resultsAside   what a run gives (the strip on a desktop, below the board on a phone)
+ *   aboveDock        content above the desktop run controls
  *   above           on a phone, over the board
  *   below           on a phone, under the board (what a run shows as it goes, the level's own panels)
  *   follow          on a phone, { began, key }: while a run shows under the board, the page keeps to its bottom
@@ -215,7 +216,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *   tabs            false: the tests are picked in the results, not in tabs
  *   scope           names the board for undo (a level's stage; default the level)
  */
-export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsTitle, resultsAside, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef }) {
+export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsTitle, resultsAside, aboveDock, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef }) {
   const { game, level, phone } = screen
   const stored = board.circuit
   const ownRoot = useRef(null)
@@ -259,7 +260,20 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
   const step = packed?.trace?.()?.step
   const blockItems = blocksOf(circuit, parts)
   const active = step?.path?.[0] ?? step?.id
-  const blockView = { items: blockItems.map((b) => b.view === 'hidden' && b.nodes.includes(active) ? { ...b, view: b.lastView ?? 'ports' } : b), active,
+  const followStep = canvas.followStep !== false
+  let lit = active
+  if (!followStep && active) {
+    const tree = frameTree(circuit.nodes)
+    lit = tree.ancestors(tree.node(active)?.in)?.map(frameId).find((id) => tree.node(id)?.fold) ?? active
+  }
+  const stepClass = !followStep && step ? (step.error || step.value?.error ? 'is-step is-step-fail' : 'is-step') : ''
+  const playbackClass = (base) => (node, context) => [base?.(node, context), node.id === lit && stepClass].filter(Boolean).join(' ')
+  const desktopClass = playbackClass(card.cardClass)
+  const blockView = { items: followStep ? blockItems.map((b) => b.view === 'hidden' && b.nodes.includes(active) ? { ...b, view: b.lastView ?? 'ports' } : b) : blockItems,
+    active, followStep, stepClass,
+    activeBlock: !followStep && active ? blockOfPart({ nodes: circuit.nodes, blocks: blockItems }, active) : null,
+    // The report can still change the workbench height when playback finishes.
+    keepView: !followStep && Boolean(run.run),
     initial: stored.blocks === undefined,
     unplaced: stored.nodes.filter(n=>!n.in&&isPart(parts,n)&&!Number.isInteger(n.slot)).map(n=>n.id),
     ...blockActions(circuit, parts, change),
@@ -303,6 +317,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     const size = traySize(cards, trayParts ?? parts, partDefaults)
     const phoneCard = {
       ...card,
+      nodeClass: playbackClass(card.nodeClass),
       tileExtra: (node, ...args) => {
         const def = defined?.of(node.type)
         return tileSettings || def && settingsOf(def).some((setting) => setting.single)
@@ -345,7 +360,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
               body={(node) => <>{card.body?.(node, ctx)}{detail !== node.id && settingNote(node)}</>}
               head={card.head && ((node) => card.head(node, ctx))}
               caption={card.caption && ((node) => card.caption(node, ctx))}
-              cardClass={card.cardClass && ((node) => card.cardClass(node, ctx))}
+              cardClass={(node) => desktopClass(node, ctx)}
               wireState={(wire) => card.wireState(wire, ctx)}
               {...portNotes(card, ctx)}
               onTarget={setTarget}
@@ -363,6 +378,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
       results={results}
       resultsTitle={resultsTitle}
       resultsAside={resultsAside}
+      aboveDock={aboveDock}
       dock={dock}
     />
     {detailNode && (isPacked(detailNode, top)

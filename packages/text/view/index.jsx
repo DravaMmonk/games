@@ -1,5 +1,6 @@
 import { L } from "kernel/view"
 import { tr } from 'kernel/words'
+import { TextCursorInput } from 'lucide-react'
 import './answer.css'
 
 /** The answer the player gives: a text box, or one of the task's choices. Enter checks it. */
@@ -20,5 +21,5 @@ export function Answer({ task, work, onChange, onSubmit }) {
 }
 
 export function register(kernel) {
-  kernel.play('text/answer', { component: Answer, preview: Answer, modes: ['preview', 'edit'] })
+  kernel.play('text/answer', { component: Answer, preview: Answer, modes: ['preview', 'edit'], icon: TextCursorInput })
 }

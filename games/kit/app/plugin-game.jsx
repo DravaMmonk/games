@@ -37,7 +37,7 @@ export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
       return <Level phone={phone} brief={<Brief game={game} level={level} hint={task.hint} />} taskNav={<TaskNavigation level={level} />}
         stage={stage} results={results} dock={<RunDock go={checkAction(check, pass)} />} />
     }
-    return [name, { Screen, label: catalogText("作答") }]
+    return [name, { Screen, icon: view?.icon, label: catalogText("作答") }]
   }))
   const define = (content, works = runtime.spec(content)) => {
     kernel.pair(content.levels.flatMap(level => level.tasks), view)

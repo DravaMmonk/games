@@ -217,9 +217,9 @@ export function saturate(set, { round = resolveRound, limit = 30, onRound = null
   for (let k = 0; k < limit; k++) {
     if (refuted(cur)) return { set: cur }
     const next = round(cur)
+    onRound?.(next, k + 1)
     if (next.length === cur.length) return { set: cur }
     cur = next
-    onRound?.(cur, k + 1)
     if (cur.length >= CAP) return { set: cur, endless: true }
   }
   return { set: cur, endless: !refuted(cur) }

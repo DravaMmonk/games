@@ -3,7 +3,7 @@ import { taskScreen } from 'circuit/view'
 /** Intensity styling and range calculations for course-specific displays. */
 export { grey, rangeOf } from './ui/display.js'
 
-import define from './game.js'
+import define, { playPresentation } from './game.js'
 import { displays as imageDisplays } from './ui/displays.js'
 import { displays as specialDisplays } from './ui/benches/displays.js'
 import { displays as sharedDisplays } from './bench/displays.jsx'
@@ -11,9 +11,9 @@ const benchDisplays = { ...sharedDisplays, ...specialDisplays }
 
 const ImagePlay = taskScreen(imageContext, define)
 export function register(kernel) {
-  kernel.play('image/graph', { component: ImagePlay, preview: ImagePlay, define })
-  kernel.play('image/board', { component: ImagePlay, preview: ImagePlay, define })
-  kernel.play('image/probe', { component: ImagePlay, preview: ImagePlay, define })
+  kernel.play('image/graph', { component: ImagePlay, preview: ImagePlay, define, icon: playPresentation['image/graph'].icon })
+  kernel.play('image/board', { component: ImagePlay, preview: ImagePlay, define, icon: playPresentation['image/board'].icon })
+  kernel.play('image/probe', { component: ImagePlay, preview: ImagePlay, define, icon: playPresentation['image/probe'].icon })
   kernel.display('image/hero', imageDisplays['image/hero'])
   kernel.display('image/introduction', imageDisplays['image/introduction'])
   kernel.display('image/circuit', imageDisplays['image/circuit'])

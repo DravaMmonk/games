@@ -1,6 +1,6 @@
 /* Defined parts (games/design/README.md 6.8): their faces and setting controls, the same in every game. A card is compact;
    a sheet (`.is-roomy`) and a phone take touch-sized targets. The domain's colour for a part's family is --fam. */
-.pf-face { display: grid; gap: var(--sp-3); min-width: 0; }
+.pf-face { --formula-size: var(--machine-readout-size, var(--fs-ui)); display: grid; gap: var(--sp-3); min-width: 0; }
 .pf-face.is-card { padding: var(--sp-2) var(--sp-4) 0; }
 .pf-face.is-tile { gap: var(--sp-1); justify-items: center; }
 .pf-settings { display: grid; gap: var(--sp-2); min-width: 0; }
@@ -105,21 +105,14 @@
 .pp [data-picked], .pp .is-picked { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pf-list { display: flex; flex-wrap: wrap; gap: var(--sp-1); align-items: center; }
 /* The add menu fills what is left of the row; its choices open at full length. */
-.pf-list select { flex: 1 1 0; min-width: 3em; max-width: 100%; }
+.pf-list :is(select, .formula-pick) { flex: 1 1 0; min-width: 3em; max-width: 100%; }
 /* On a card the list is only its add menu, unlabelled: what was added shows once, as the card's value; the detail page takes them out. */
 .pf-face.is-card .pf-list-item, .pf-face.is-card .pf-setting.is-list .pf-label { display: none; }
 .pf-face.is-card .pf-setting.is-list { grid-template-columns: minmax(0, 1fr); }
 .pf-list-item { display: inline-flex; align-items: center; gap: var(--sp-1); }
 .pf-list-item button { border: 0; background: none; padding: 0; color: var(--muted); cursor: pointer; }
-.pf-rule-fixed, .pf-rule-pick { min-width: 0; max-width: 100%; overflow-x: auto; }
-.pf-rule-pick, .pf-rule-option { box-sizing: border-box; min-height: var(--sent-h); padding: var(--sp-1) var(--sent-px); border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: var(--sent-fs)/1.35 var(--sans); text-align: left; cursor: pointer; }
-.pf-rule-pick { width: 100%; }
-.pf-rule-fixed { display: block; cursor: default; }
-.pf-rule-pick.is-empty { border-style: dashed; color: var(--muted); background: transparent; }
-.pf-rule-pick[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
-.pf-rule-options { display: grid; gap: var(--sp-2); padding: var(--sp-2); }
-.pf-rule-option { max-width: min(480px, 80vw); overflow-x: auto; }
-.pf-rule-option[aria-pressed='true'] { border-color: var(--accent); }
+.pf-control > .formula-pick, .pf-control > .pf-list { width: 100%; }
+.pf-face :is(.pf-summary, .pf-words, .pf-list-item) .formula { font-size: var(--formula-size); }
 /* A part with one scene, its detail, on the studio's part page: the drawing (a built part's board), and beside it its
    own fields. */
 .pp-built { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: var(--sp-5); padding: var(--sp-6); align-items: start; min-height: 100%; }

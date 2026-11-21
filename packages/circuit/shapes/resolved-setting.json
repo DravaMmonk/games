@@ -36,6 +36,10 @@
           "about": "@shape.resolved-setting.cases.select.fields.fixed.about",
           "optional": true
         },
+        "formula": {
+          "type": "bool",
+          "optional": true
+        },
         "options": {
           "type": "list",
           "of": {
@@ -106,6 +110,10 @@
         "fixed": {
           "type": "bool",
           "about": "@shape.resolved-setting.cases.list.fields.fixed.about",
+          "optional": true
+        },
+        "formula": {
+          "type": "bool",
           "optional": true
         },
         "options": {

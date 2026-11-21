@@ -1,5 +1,6 @@
 // The Studio shell consumes a registration owned by its current browser assembly.
 import { pluginMeanings } from '../engine/plugins.js'
+import { playId } from '../engine/plays.js'
 
 let plugins = null
 export function installStudioPlugins(kernel) { plugins = kernel }
@@ -7,6 +8,7 @@ export const registeredEditors = () => [...(plugins?.tables.editor.values() ?? [
 export const editorRoute = (selection = null) => registeredEditors().find(editor => editor.route && (!selection || selection[editor.route.selector] !== undefined))?.route
 export const editorForType = type => [...(plugins?.tables.editor.values() ?? [])].find(editor => editor.type === type)
 export const registeredMeanings = order => pluginMeanings(plugins, order)
+export const levelPlayIcon = level => plugins?.tables.playView.get(playId(level?.tasks?.[0] ?? {}))?.icon
 export const registeredPlayCapabilities = (order) => Object.fromEntries(
   [...(plugins?.tables.play ?? [])].filter(([name]) => order.includes(name.split('/')[0]))
     .map(([name, play]) => [name, play.about ? { about: play.about } : {}]),

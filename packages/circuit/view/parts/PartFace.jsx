@@ -1,4 +1,5 @@
-import { FormulaText, Markup } from 'kernel/view'
+import { Fragment } from 'react'
+import { FormulaLabel, Markup } from 'kernel/view'
 import "./parts.css"
 import { L } from 'kernel/view'
 
@@ -7,7 +8,7 @@ import { numberText } from 'kernel/view'
 
 import { isFixed } from "../../core/board/presets.js"
 import { evalSettings, failedCheck, partDesc, shows } from "../../core/parts/define.js"
-import SettingField, { valueWords } from "./SettingField.jsx"
+import SettingField, { formulaOptions, valueWords } from "./SettingField.jsx"
 
 // One face of a defined part (games/design/README.md 6.8): the desktop card's body, the phone tile, or the detail both
 // share, as parts/<name>.json's `views` lays it out in blocks (the default where it says nothing). The kernel draws every
@@ -51,7 +52,19 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
   const readOnly = Boolean(ctx?.readOnly) || !set
   const shown = visibleSettings(def, params, defined, node, ctx)
   const list = given ?? blocksOf(def, face)
-  const words = (s) => valueWords(s, params[s.key] ?? s.default ?? s.options?.[0]?.value)
+  const valueOf = (s) => params[s.key] ?? s.default ?? (s.control === 'list' ? undefined : s.options?.[0]?.value)
+  const words = (s) => valueWords(s, valueOf(s))
+  const settingLabel = (s) => {
+    if (!s.formula) return words(s)
+    const options = formulaOptions(s)
+    const value = valueOf(s)
+    const selected = Array.isArray(value) ? value : []
+    const values = s.control === 'list' ? (selected.length ? selected : s.single && options.length === 1 ? [options[0].value] : []) : [value]
+    return (s.single ? values.slice(0, 1) : values).flatMap((picked) => {
+      const option = options.find((o) => String(o.value) === String(picked))
+      return option ? [<FormulaLabel key={option.value} text={option.label ?? option.value} mark={option.mark} />] : []
+    })
+  }
   const setting = (s, k) => (
     <div key={s.key} className="pf-slot" {...mark(['settings', k])}>
       <SettingField setting={s} value={params[s.key] ?? s.default} allowed={defined.allowed?.(def.type, s.key) ?? null} readOnly={readOnly || isFixed(node, s.key)} roomy={roomy} phone={phone} widgets={defined.widgets} controls={defined.controls} onChange={(v) => set({ [s.key]: v }, s.key)} />
@@ -72,17 +85,12 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
       case 'setting': {
         const hit = shown.find(([s]) => s.key === b.key)
         if (!hit) return null
-        return b.as === 'label' ? <span key={key} className="pf-words" {...at}>{words(hit[0])}</span> : <div key={key} {...at}>{setting(...hit)}</div>
+        return b.as === 'label' ? <span key={key} className={hit[0].formula ? 'pf-words formula-row' : 'pf-words'} {...at}>{settingLabel(hit[0])}</span> : <div key={key} {...at}>{setting(...hit)}</div>
       }
       case 'summary': {
-        const single = shown.find(([s]) => s.control === 'list' && s.single)
-        if (!b.text && single) {
-          const rule = words(single[0])
-          const rest = shown.filter(([s]) => s !== single[0]).map(([s]) => words(s)).filter(Boolean).join(' · ')
-          return rule || rest ? <span key={key} className="pf-summary" {...at}>{rule && <FormulaText text={rule} />}{rule && rest && ' · '}{rest}</span> : null
-        }
-        const text = b.text ? L(b.text).replace(/\{([^}]*)\}/g, (_, k) => (def.setting[k] ? words(def.setting[k]) : '')) : shown.map(([s]) => words(s)).join(' · ')
-        return text ? <span key={key} className="pf-summary" {...at}>{text}</span> : null
+        const values = b.text ? [L(b.text).replace(/\{([^}]*)\}/g, (_, k) => (def.setting[k] ? words(def.setting[k]) : ''))]
+          : shown.flatMap(([s]) => settingLabel(s)).filter(Boolean)
+        return values.length ? <span key={key} className={`pf-summary${!b.text && shown.some(([s]) => s.formula) ? ' formula-row' : ''}`} {...at}>{values.map((value, i) => <Fragment key={i}>{i > 0 && ' · '}{value}</Fragment>)}</span> : null
       }
       case 'readout': {
         const v = evalSettings(b.expr, def, params, defined.ops)

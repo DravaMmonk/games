@@ -26,7 +26,8 @@ const SheetIcon = PANES.sheet[0]
 
 function PartPreview({ game, type, stage = null, edit, onTask, label }) {
   const declared = game.partDefs?.parts?.[type]
-  const raw = declared && stage ? game.partAtStage?.(type, declared, stage) ?? declared : declared
+  const raw = useMemo(() => declared && stage ? (game.partAtStage?.(type, declared, stage) ?? declared) : declared,
+    [declared, game, stage, type])
   const entry = stage ? game.course?.stages?.get(stage) ?? null : null
   const defined = useMemo(() => (entry && game.defined ? withDefinitions(game.defined, (t, base) => (t === type ? stagedDefinition(entry, base) : null)) : game.defined), [game, type, entry])
   const state = useState(undefined)

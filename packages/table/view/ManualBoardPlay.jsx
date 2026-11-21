@@ -41,7 +41,7 @@ function PlayCard({ title, badge, rule, body, choices, list, tokens, action, fee
 
 function CapacityBoard({ totals, capacityLabel, choices, remaining, onToggle }) {
   return (
-    <div className="board sg-board">
+    <div className="sg-board">
       <div className="pack">
         <div className="bag">
           <div className="bag-meta">{totals.map(({ label, hit }, i) => <span key={i} className={hit ? 'hit' : undefined}><Markup text={label} /></span>)}</div>

@@ -188,17 +188,23 @@ export function noProgress(next, before) {
  * order; a path stops at `depth` steps (when given), and is not followed into a state no nearer the end than one
  * already on it. { found, stopped }: stopped when it went on for `limit` steps.
  */
-export function depthFirst(starts, expand, { depth = Infinity, limit = 600, most = 12 } = {}) {
+export function depthFirst(starts, expand, { depth = Infinity, limit = 600, most = 12, onStop, onCompare } = {}) {
   const found = []
   let steps = 0
   let stopped = false
   const go = (s, d, path) => {
-    if (found.length >= most || stopped) return
+    if (found.length >= most || stopped) return onStop?.(s, 'limit')
     if (!s.goals.length) { found.push(s); return }
-    if (d >= depth) return
-    if (++steps > limit) { stopped = true; return }
+    if (d >= depth) return onStop?.(s, 'depth')
+    if (++steps > limit) { stopped = true; return onStop?.(s, 'limit') }
     const on = [s, ...path]
-    for (const next of expand(s)) if (!on.some((b) => noProgress(next, b))) go(next, d + 1, on)
+    for (const next of expand(s)) {
+      if (!next.goals.length) { go(next, d + 1, on); continue }
+      const pruned = on.some(b => noProgress(next, b))
+      const checked = onCompare ? onCompare(next, pruned) : next
+      if (pruned) onStop?.(checked, 'noProgress')
+      else go(checked, d + 1, on)
+    }
   }
   for (const s of starts) go(s, 0, [])
   return { found, stopped }

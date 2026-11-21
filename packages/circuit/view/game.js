@@ -19,5 +19,7 @@ import { circuitWorks } from "../core/mechanism/work.js"
 
 const ui = displays
 
+export const playPresentation = { id: 'circuit', icon: Binary, label: catalogText("电路") }
+
 /** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary, partDefs }. */
-export default (content, works = circuitWorks(content)) => definedGame(content, works, { kind: { id: 'circuit', icon: Binary, label: catalogText("电路") }, screen: ui['circuit/screen'] })
+export default (content, works = circuitWorks(content)) => definedGame(content, works, { kind: playPresentation, screen: ui['circuit/screen'] })

@@ -12,8 +12,17 @@ export function typesetFormulas(convert) {
 }
 
 /** One formula (a string or a { zh, en } pair, in the reading language). */
-export function FormulaText({ text, className = '' }) {
+export function FormulaText({ text, className = '', tex }) {
   const line = text === null || text === undefined ? '' : String(L(text))
-  if (!toTex || !line) return line
-  return <span className={`formula ${className}`.trim()}><Typeset tex={toTex(line)} plain={line} /></span>
+  if ((!toTex && tex === undefined) || !line) return line
+  return <span className={`formula ${className}`.trim()}><Typeset tex={tex ?? toTex(line)} plain={line} /></span>
+}
+
+/** A formula with the same leading reference mark on a result, a card and an option. */
+export function FormulaLabel({ text, mark, before, className = '' }) {
+  return <span className={`formula-label ${className}`.trim()}>
+    {before && <><FormulaText text={before} />{' '}</>}
+    {mark && <><FormulaText text={mark} className="formula-mark" />{' '}</>}
+    <FormulaText text={text} />
+  </span>
 }

@@ -20,6 +20,12 @@ import { imagePreview } from './engine/preview.js'
 import { descriptionOf } from '../core/words.js'
 import { imagePartCatalog, shownUnlocks } from '../core/part-catalog.js'
 
+export const playPresentation = {
+  'image/graph': { icon: Workflow, label: catalogText("搭电路") },
+  'image/board': { icon: FlaskConical, label: catalogText("机关台") },
+  'image/probe': { icon: FlaskConical, label: catalogText("机关台") },
+}
+
 const { familyOf, iconOf } = ui['image/catalog']
 /**
  * content (../../engine/content.js): { id, title, kicker, lede, power, eras, concept, replaces,
@@ -50,11 +56,7 @@ export default function imageGame(content, image = imageWorks(content), { kernel
     levels,
     intro: (level) => image.intros[level.id],
     IntroFigure: (props) => ui['image/introduction']({ ...props, types }),
-    kinds: playKinds(plays, { imageCircuit: ui['image/circuit'](image, cards), parameters, probe: ui['image/probe'] }, {
-      'image/graph': { icon: Workflow, label: catalogText("搭电路") },
-      'image/board': { icon: FlaskConical, label: catalogText("机关台") },
-      'image/probe': { icon: FlaskConical, label: catalogText("机关台") },
-    }, { circuit: circuitScreen, workshop: (play, prepare) => function Exercise(screen) { const resource = useMemo(() => prepare(screen.level.source, screen), [screen.level.source]); return createElement(WorkshopPlay, { screen, resource, play }) } }),
+    kinds: playKinds(plays, { imageCircuit: ui['image/circuit'](image, cards), parameters, probe: ui['image/probe'] }, playPresentation, { circuit: circuitScreen, workshop: (play, prepare) => function Exercise(screen) { const resource = useMemo(() => prepare(screen.level.source, screen), [screen.level.source]); return createElement(WorkshopPlay, { screen, resource, play }) } }),
     unlocked: (level) => [...shownUnlocks(level).map(flag => decorate(catalog.unlockOf(flag))), ...course.awards({ id: level.id }).map(id => {
       const stage = course.stages.get(id)
       return { part: stage.part, label: stage.definition.name, icon: iconOf(stage.part, types) }

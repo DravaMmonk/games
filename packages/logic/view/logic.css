@@ -96,35 +96,43 @@
 /* The machine board: sentences, rules and goals on cards, notes and the step log in a small, compact face (a case may
    hold several goals and rules). */
 /* A state's goals and a part's rules are numbered lines, read from the left. */
-.lg-machine-level .vw-value, .mr-line, .mr-rules .tx-line { font: 500 11px/1.4 var(--sans); letter-spacing: -0.01em; word-spacing: -0.06em; text-align: left; }
+.game:has(.lg-machine-level), .lg-machine-level, .mr { --machine-readout-size: 11px; }
+:is(.lg-machine-level, .game:has(.lg-machine-level) .cl-sheet) .vw-value, .mr-line, .mr-rules .formula-label { font: 500 var(--machine-readout-size)/1.4 var(--sans); letter-spacing: -0.01em; word-spacing: -0.06em; text-align: left; }
 .lg-machine-level .vw-value { color: inherit; }
-.lg-machine-level { --world-extra: 0.20; }
+.lg-machine-level { --world-extra: 0.16; }
 .lg-machine-level :is(.pf-face.is-tile, .pb-term) > :is(.pf-value, .pb-thumb) { justify-self: stretch; }
 
-/* The prover's run report (ui/MachineReport.jsx): the rules, then a chart of goal boxes joined by the steps between
-   them, each link a line down with an arrowhead, the step's number on it, the card's name, and what it did in marks. */
+/* The prover's run report (ui/MachineReport.jsx) links goal boxes with numbered steps. The desktop reference pane
+   holds the numbered rules beside the report. */
 .cs-report > .mr { flex: 1; min-height: 0; }
-.mr { position: relative; overflow: auto; overscroll-behavior: contain; display: grid; align-content: start; gap: var(--sp-3); scrollbar-width: thin; }
-.mr-rules { list-style: none; margin: 0; padding: 0 0 var(--sp-3); display: grid; gap: 2px; border-bottom: 1px dashed var(--rule); }
-.mr-rules li { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); align-items: baseline; color: var(--ink); }
-/* A rule number sits slightly above the visual center of the surrounding math delimiters. */
-.mr-rules .tx-mark { position: relative; inset-block-start: .07em; }
+.mr { display: flex; flex-direction: column; gap: var(--sp-2); }
+.mr-head { display: flex; align-items: flex-start; flex: none; gap: var(--sp-4); padding-block-end: var(--sp-2); border-bottom: 1px solid var(--hairline); }
+.mr-head > .view-pick { margin-inline-start: auto; gap: 0; padding: 0 var(--sp-1); }
+.mr-head > .view-pick button { height: 1lh; padding-inline: var(--sp-2); font: var(--machine-readout-size)/1.4 var(--sans); }
+.mr-head > .view-pick svg { width: 1em; height: 1em; }
+.mr.is-desktop { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr); }
+.mr.is-desktop .mr-head { grid-area: 1 / 2; align-self: start; padding: 0; border: 0; }
+.mr.is-desktop .mr-body { grid-area: 1 / 1; }
+.mr-body { position: relative; flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: var(--sp-2); scrollbar-width: thin; }
+.mr-body.is-tree { display: flex; flex-direction: column; overflow: hidden; }
+.mr-rules { list-style: none; min-width: 0; max-block-size: 3lh; overflow: auto; scrollbar-width: thin; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-5); }
+.wb-above-dock .mr-rules { display: grid; gap: 0; max-block-size: none; overflow: visible; font-size: var(--machine-readout-size); line-height: 1.4; }
+.mr-rules li { color: var(--ink); }
 .mr-flow { list-style: none; margin: 0; padding: 0; display: grid; }
-.mr-box { display: grid; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule); color: var(--ink); min-width: 0; }
+.mr-box { display: grid; border-radius: var(--r-sm); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); color: var(--ink); }
 .mr-box.is-on { box-shadow: inset 0 0 0 1.5px var(--accent); }
 .mr-box.is-done { color: var(--status); }
 .mr-line { overflow-wrap: anywhere; white-space: pre-wrap; }
 .mr-more { font: 500 10.5px var(--sans); color: var(--faint); }
 /* A step's line: its number on the link, then the card (icon, number, name) and what it did, all on one centre line
    of a fixed height; why it failed, if it says, on the line under. Room under the line for the arrowhead. */
-.mr-step { --mr-row: 22px; position: relative; margin-left: 14px; padding: var(--sp-3) 0 calc(var(--sp-3) + 6px) 18px; border-left: 2px solid var(--rule); display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--sp-4); row-gap: 2px; }
+.mr-step { --mr-row: 22px; position: relative; margin-left: 14px; padding: var(--sp-1) 0 var(--sp-3) 18px; border-left: 1px solid var(--rule); display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--sp-3); row-gap: var(--sp-1); }
 .mr-step > * { min-height: var(--mr-row); display: inline-flex; align-items: center; line-height: 1; }
-.mr-step::after { content: ''; position: absolute; left: -6px; bottom: 0; border: 5px solid transparent; border-top: 6px solid var(--rule); border-bottom: 0; }
-.mr-num { position: absolute; left: -10px; top: calc(var(--sp-3) + var(--mr-row) / 2); transform: translateY(-50%); min-height: 0; width: 18px; height: 18px; display: grid; place-items: center; border-radius: var(--r-full); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--rule); font: 600 10px var(--mono); color: var(--muted); }
+.mr-step::after { content: ''; position: absolute; left: -4px; bottom: 0; border: 3.5px solid transparent; border-top: 4px solid var(--rule); border-bottom: 0; }
+.mr-num { position: absolute; left: -9px; top: calc(var(--sp-1) + var(--mr-row) / 2); transform: translateY(-50%); min-height: 0; width: 17px; height: 17px; display: grid; place-items: center; border-radius: var(--r-full); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--rule); font: 600 10px var(--mono); color: var(--muted); }
 .mr-name { gap: var(--sp-2); font: 600 11.5px/1 var(--sans); color: var(--muted); }
 .mr-name .step-card { margin-right: 0; }
 .mr-note { white-space: nowrap; font-size: 12.5px; }
-.mr-note.is-prose { white-space: normal; line-height: var(--lh-ui); }
 /* KaTeX's box holds room under its baseline, so centred it sits high: down to the name's baseline. */
 .mr-note .katex { position: relative; top: 0.12em; }
 .mr-why { flex-basis: 100%; min-height: 0; display: block; font: 500 11.5px/1.45 var(--sans); color: var(--fail); }
@@ -142,13 +150,34 @@
 /* A refused step still goes on (its state is given back), so its line keeps its arrow. */
 .mr-step.is-refused::after { content: ''; border-top-color: var(--fail); }
 
+.mr-tree-scroll { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.mr-tree-chart { position: relative; min-width: 100%; row-gap: var(--sp-6); column-gap: var(--sp-4); }
+.mr-tree-edges { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; fill: none; stroke: color-mix(in srgb, var(--rule) 72%, transparent); }
+.mr-tree-edges .is-result { stroke: var(--status); }
+.mr-tree { --mr-node-h: 24px; height: 100%; }
+.mr-tree, .mr-tree ul { list-style: none; margin: 0; padding: 0; }
+.mr-branch-node { position: absolute; transform: translateX(-50%); display: grid; grid-auto-flow: column; align-items: center; justify-content: center; gap: var(--sp-2); white-space: nowrap; width: max-content; height: var(--mr-node-h); min-width: var(--mr-node-h); padding: 0 var(--sp-3); border: 1px solid var(--rule); border-radius: var(--r-sm); background: var(--paper); color: var(--ink); cursor: pointer; }
+.mr-branch-num { color: var(--muted); font: 600 10px var(--mono); }
+.mr-branch-node:hover, .mr-branch-node[aria-expanded='true'] { background: var(--canvas); }
+.mr-branch-node:focus-visible { outline-offset: -2px; }
+.mr-branch-node .tx-line { text-align: center; }
+.mr-branch.is-result > .mr-branch-node { border-color: var(--status); color: color-mix(in srgb, var(--status) 72%, var(--ink)); }
+.mr-branch.is-error > .mr-branch-node { border-color: var(--fail); color: var(--fail); }
+.mr-branch > .mr-branch-node.is-on { box-shadow: inset 0 0 0 1px var(--accent); }
+.mr-branch-detail { display: grid; gap: var(--sp-2); }
+@media (max-width: 760px) {
+  .lg-machine-level .cs-report { height: 196px; }
+}
+@media (pointer: coarse) {
+  .mr-tree { --mr-node-h: var(--sp-8); }
+  .mr-head > .view-pick button { min-width: 24px; min-height: 24px; justify-content: center; }
+}
+
 /* Formulas typeset in TeX: one face for every sign; a value's lines left-aligned, prose in the page's face. */
 .tx-lines { display: grid; gap: 1px; justify-items: start; text-align: left; min-width: 0; }
 .tx-line { display: block; max-width: 100%; text-align: left; }
 .tx-marked > .tx-line { display: inline; }
-.tx-marked > .tx-mark { margin-inline-end: var(--sp-2); }
-.tx-marked > .tx-line + .tx-mark { margin-inline-start: var(--sp-2); }
-.tx-mark, .mr-note { color: var(--accent-ink); }
-.tx-line .katex { font-size: 1.12em; line-height: 1.35; white-space: normal; }
+.mr-note { color: var(--accent-ink); }
+.tx-line .katex { white-space: normal; }
 .tx-prose { font: 500 11px/1.4 var(--sans); }
-.mr-note .katex, .mr-rules .tx-mark .katex { font-size: 1.05em; }
+.mr-note .katex { font-size: 1.05em; }

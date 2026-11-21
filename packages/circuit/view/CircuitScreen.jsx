@@ -103,7 +103,7 @@ import "./training.css"
 //   portLabels?           { type: { port: label } }               defined?  the game's parts.json parts (CircuitLevel)
 //   inspect?(node, ctx)   what a defined part's detail shows of its values (by default, as its card)
 //   settingControls?(task, test) renderers for settings provided by this play
-//   context?(task, test)  what a resource sees on the screen when it works out a setting's options (`from`)
+//   context?(task, test, run)  what a resource sees when it works out a setting's options (`from`)
 //   sheet?(node, ctx, set), details   a card's detail (CircuitLevel sheet; set as settings' is), offered from desktop
 //                         card headers too (details); on a board run tick by tick, by default its settings and each of
 //                         its values tick by tick so far, each switched between its views there (tickDetail)
@@ -119,6 +119,7 @@ import "./training.css"
 //                         card named after the built parts it is in, what it gave or why it failed, the current one marked
 //   stepNote?(entry, run) what a step did, beside its card's name in the log (words or null)
 //   typeset?(value, { task, test, run }) → an element: how a card draws a value (logic sets formulas in TeX)
+//   reportAside?({ run, task })  optional report content above the desktop run controls
 //   report?               with results: 'report', the report's own view in place of the step log: a component given
 //                         { steps (traceSteps', so far), at, started, run, task, test, show }
 //   className             the domain's class on the level
@@ -161,7 +162,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -352,9 +353,9 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
     ...defined,
     allowed,
     controls: settingControls?.(level, onView),
-    options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(level, onView), node } }, defined.ops),
+    options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(level, onView, runOf), node } }, defined.ops),
     value: (node, ctx, output, face) => (face === 'detail' && inspect ? inspect(node, ctx) : output != null ? <Value value={valueOf(node, output, ctx.view)} error={ctx.view.errors.get(node.id)} idle={ctx.view.idle} show={cardShow} of={valueKey(ctx, sourceOf(node.id, output))} views={valueViews?.(ctx.board.level ?? level, node, valueOf(node, output, ctx.view))} /> : ctx.board.parts.outputs(node) ? null : value(node, ctx)),
-  }, [defined, inspect, allowed, level, onView, drawn, valueViews, settingControls])
+  }, [defined, inspect, allowed, level, onView, drawn, runOf, valueViews, settingControls])
 
   const itemOf = (type) => {
     if (known?.(type)) return { type, label: resolve.definition(type).name, desc: resolve.definition(type).description, icon: CircuitBoard, family: 'built', packed: true }
@@ -434,7 +435,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const results = reportOnly
     // Only the run's report: a box of one size under the board, there before any run.
     ? <div className="cs-report">{outcome}{Report
-      ? <Report steps={logged ? named.slice(0, shown.list.length) : []} at={logged ? shown.at : -1} started={hasPlayback} run={runOf} task={level} test={test} show={show} />
+      ? <Report steps={logged ? named.slice(0, shown.list.length) : []} at={logged ? shown.at : -1} started={hasPlayback} ended={ended} run={runOf} task={level} test={test} show={show} phone={onPhone} />
       : stepLog || (!hasPlayback && <p className="cs-report-empty">{L(WORDS.reportEmpty)}</p>)}</div>
     : <>{outcome}{stepLog}</>
   // A table of cases: a row a test, what the board gives on each as the run reaches it (before a run, on the row picked).
@@ -494,7 +495,8 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
               const sensed = ctx.path.length ? undefined : surface?.portValue?.(node, key)
               if (sensed !== undefined) return L(sensed)
               const v = valueOf(node, key, ctx.view)
-              return v === undefined ? null : L(show(v))
+              if (v === undefined) return null
+              return typeset && v !== null && typeof v !== 'string' ? cardShow(v) : L(show(v))
             },
             thumb: (node, ctx) => {
               const drawing = ctx.path.length ? null : surface?.cardDrawing?.(node, ctx.readOnly)
@@ -516,6 +518,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
           below={onPhone && practice.panel}
           describe={(n) => (known?.(n.type) ? resolve.definition(n.type).description : BUILT[n.type] ? builtDefinitions[n.type].desc ?? cards[n.type]?.desc : kind.isFixed(n.type) || !cards[n.type] ? null : game.textAt(cards[n.type], level.id, n.type)?.desc)}
           results={showResults ? strip : undefined}
+          aboveDock={showResults && !onPhone && reportAside?.({ run: runOf, task: level })}
           pad={surface?.pad ? <Dock pad={surface.pad} /> : undefined}
           tabs={!table || !showResults}
           words={{ go: L(says.go ?? (judged ? WORDS.check : WORDS.run)), done: L(says.done ?? WORDS.passed) }}

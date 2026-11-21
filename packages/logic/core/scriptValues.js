@@ -50,7 +50,7 @@ export function script(level, { game, progress }) {
           label: row.k, name: names[i], depth, opens, closes,
           slots: [
             ...(['fix', 'obtain'].includes(row.k) ? [{ key: 'thing', label: T('取的名字'), value: row.thing, options: things, locked }] : []),
-            ...(row.k !== 'fix' ? [{ key: 'stmt', label: T('这一句'), value: row.stmt ? statement(row.stmt) : '', options: sentences, blank: T('选择句子'), locked }] : []),
+            ...(row.k !== 'fix' ? [{ key: 'stmt', formula: true, label: T('这一句'), value: row.stmt ? statement(row.stmt) : '', options: sentences, blank: T('选择句子'), locked }] : []),
             ...((method || row.k === 'obtain') && row.by !== 'proof'
               ? [{ key: 'using', kind: 'toggle', label: 'using', value: row.using ?? [], options: options(facts.map((name) => [name, name])), locked }]
               : []),

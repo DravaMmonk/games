@@ -39,3 +39,4 @@
 {"seq":39,"at":"2026-11-18T23:49:19.712Z","why":"Import dialog shows its errors.","adopt":true,"files":[]}
 {"seq":40,"at":"2026-11-19T00:26:32.578Z","why":"Cards show only propositions; report steps get an ⓘ explanation and baseline-aligned marks; desktop cards numbered like the phone.","adopt":true,"files":[]}
 {"seq":41,"at":"2026-11-19T04:33:34.250Z","why":"Drop the loading text: play screens are imported directly","adopt":true,"files":[{"file":"packages/circuit/i18n/en.json","after":"a007073960193be8"}]}
+{"seq":42,"at":"2026-11-21T05:55:49.284Z","why":"Declare formula labels for circuit settings","adopt":true,"files":[{"file":"packages/circuit/shapes/compiled-parts.json","after":"e5aaf0373b1fafe1"},{"file":"packages/circuit/shapes/inline-settings.json","after":"fdb9a9aa69c832bf"},{"file":"packages/circuit/shapes/resolved-setting.json","after":"469a8c7405fabd5d"}]}

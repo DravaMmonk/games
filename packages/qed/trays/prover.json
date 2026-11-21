@@ -16,6 +16,7 @@
     "#proof-classical",
     "#proof-equivalences",
     "#induction",
+    "append",
     "repeat",
     "search"
   ],

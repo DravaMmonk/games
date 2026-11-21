@@ -128,6 +128,10 @@
                       "about": "@shape.compiled-parts.fields.parts.of.of.0.fields.settings.of.fields.fixed.about",
                       "optional": true
                     },
+                    "formula": {
+                      "type": "bool",
+                      "optional": true
+                    },
                     "options": {
                       "type": "list",
                       "of": {
@@ -1885,6 +1889,10 @@
                     "fixed": {
                       "type": "bool",
                       "about": "@shape.compiled-parts.fields.parts.of.of.1.fields.settings.of.fields.fixed.about",
+                      "optional": true
+                    },
+                    "formula": {
+                      "type": "bool",
                       "optional": true
                     },
                     "options": {

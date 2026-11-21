@@ -1,7 +1,7 @@
 import { BoardPlay, circuitSettings } from 'circuit/view'
 import { busPlay } from '../core/index.js'
 import { CARDS } from './catalog.js'
-import define from './game.js'
+import define, { playPresentation } from './game.js'
 export { displays } from './displays.js'
 export { default } from './game.js'
 
@@ -12,5 +12,5 @@ export function BusBoard(props) {
 }
 
 export function register(kernel) {
-  kernel.play('tick/board', { component: BusBoard, preview: BusBoard, define })
+  kernel.play('tick/board', { component: BusBoard, preview: BusBoard, define, icon: playPresentation.icon })
 }

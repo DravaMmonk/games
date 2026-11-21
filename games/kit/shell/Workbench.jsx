@@ -12,18 +12,19 @@ import { usePointerSession } from '../views/usePointerSession.js'
  *              table, a sentence, rows to fill in); over a board, the tools as one row of icons
  *   strip      a header with the tests and how they stand (tests, status), when the level has them; then the results
  *              (what a run or check gives: outputs, the test board, the verdict; no "Test N" heading, the tabs name the test; `resultsTitle`, `resultsAside` head
- *              it) and, in a narrow column at the bottom right, the run bar (dock)
+ *              it) and, in a narrow column on the right, an optional panel (`aboveDock`) above the run bar (`dock`)
  *
  * `results` left out: the level has no results pane (the run bar alone, at the right); null: the pane is there, empty
  * until there is something to show. The strip fits its contents up to the automatic limit. Dragging its top edge
  * sets a height remembered for every game, and double-clicking restores automatic sizing.
  */
-export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, dock }) {
+export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, aboveDock, dock }) {
   const own = useRef(null)
   const rootRef = given ?? own
   const pane = results !== undefined
   const hasHeader = Boolean(tests || status)
   const hasDock = Boolean(dock)
+  const hasDockPanel = Boolean(aboveDock)
   const hasStrip = pane || hasHeader || hasDock
   const stripRef = useRef(null)
   useLayoutEffect(() => {
@@ -32,18 +33,20 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
     const body = strip.querySelector('.wb-strip-body')
     const head = strip.querySelector('.wb-strip-head')
     const dock = strip.querySelector('.run-foot')
+    const panel = strip.querySelector('.wb-above-dock')
     const updateMinimum = () => {
       const pad = getComputedStyle(body)
       const controls = (head?.getBoundingClientRect().height ?? 0) + (dock?.getBoundingClientRect().height ?? 0)
       const trim = parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom) + parseFloat(getComputedStyle(strip).borderTopWidth)
-      strip.style.setProperty('--world-min', `${controls + trim}px`)
+      const panelRoom = panel ? parseFloat(getComputedStyle(panel).minHeight) + parseFloat(getComputedStyle(panel.parentElement).rowGap) : 0
+      strip.style.setProperty('--world-min', `${controls + trim + panelRoom}px`)
     }
     updateMinimum()
     const observer = new ResizeObserver(updateMinimum)
     if (head) observer.observe(head)
     if (dock) observer.observe(dock)
     return () => observer.disconnect()
-  }, [hasStrip, hasHeader, hasDock])
+  }, [hasStrip, hasHeader, hasDock, hasDockPanel])
   return (
     <div ref={rootRef} className={`level ${className}`}>
       <aside className="brief">{taskNav}{brief}</aside>
@@ -67,7 +70,10 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
                 <div className="wb-pane-body">{results}</div>
               </section>
             )}
-            {dock && <div className="wb-actions"><footer className="run-foot">{dock}</footer></div>}
+            {dock && <div className="wb-actions">
+              {aboveDock && <div className="wb-pane wb-above-dock" tabIndex={0}>{aboveDock}</div>}
+              <footer className="run-foot">{dock}</footer>
+            </div>}
           </div>
         </section>
       )}

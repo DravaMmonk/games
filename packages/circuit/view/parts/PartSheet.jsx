@@ -1,4 +1,4 @@
-import { Markup } from 'kernel/view'
+import { FormulaText, Markup } from 'kernel/view'
 import { Boxes, Cpu, LogIn, LogOut, Plus, ShieldCheck, SlidersHorizontal, SquareFunction, Workflow } from 'lucide-react'
 import { L } from "kernel/view"
 import { T, tr } from 'kernel/words'
@@ -26,7 +26,7 @@ export const marker = (edit) => ({
 
 /** In edit mode, a click on a marked element picks its field (a + adds instead). */
 export const picker = (edit) => (e) => {
-  if (!edit || e.target.closest('.pp-add')) return
+  if (!edit || e.target.closest('.pp-add, button.formula-pick')) return
   const hit = e.target.closest('[data-pf]')
   if (!hit) return
   e.preventDefault()
@@ -121,8 +121,9 @@ export function Settings({ def, card = null, edit }) {
 
 /** A built part's named implementations. */
 export function Implementations({ def, edit }) {
+  const formula = settingsOf(def).some((setting) => setting.key === 'form' && setting.formula)
   return <Chips def={def} edit={edit} keys={['inside']} name={(ref) => (
-    <><code>{ref.id}</code>{ref.form && ref.form !== ref.id && <span>{ref.form}</span>}{ref.label && <small>{L(ref.label)}</small>}</>
+    <><code>{ref.id}</code>{ref.form && ref.form !== ref.id && <span>{ref.form}</span>}{ref.label && <small>{formula ? <FormulaText text={ref.label} /> : L(ref.label)}</small>}</>
   )} />
 }
 

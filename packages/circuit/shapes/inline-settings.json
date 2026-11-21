@@ -42,6 +42,10 @@
         "about": "@shape.inline-settings.of.fields.fixed.about",
         "optional": true
       },
+      "formula": {
+        "type": "bool",
+        "optional": true
+      },
       "options": {
         "type": "list",
         "of": {

@@ -88,9 +88,9 @@ export function evaluation(circuit, { parts, ctx = {}, prepare = null } = {}) {
   const tape = ctx.tape
   const ids = tape ? new Map() : null
   // A node's first error is the one it shows.
-  const fault = (id, message, key = null) => {
+  const fault = (id, message, key = null, forwarding = false) => {
     if (!errors.has(id)) errors.set(id, message)
-    note({ id, key, error: message })
+    note({ id, key, error: message, ...(forwarding && { forwarding: true }) })
   }
   const note = (step) => { if (ctx.trace && !step.id.startsWith('__')) ctx.trace.push(step) }
 
@@ -155,20 +155,21 @@ export function evaluation(circuit, { parts, ctx = {}, prepare = null } = {}) {
       fault(id, MISSING)
       return
     }
+    const forwarding = ctx.traceForwarding && (part.source || typeof part.board === 'function')
     try {
       const ready = prepare ? prepare(ins, node, part) : ins
       if (tape) Object.assign(tape, { ins: inIds, last: null, node: `${ctx.scope ?? ''}${id}` })
       const value = part.eval(ready, node, ctx, key ?? undefined)
       if (ids) ids.set(doneKey, part.source ? ctx.bindIds?.[node.params?.name] ?? null : tape.last)
       values.set(doneKey, value)
-      note({ id, key, value })
+      note({ id, key, value, ...(forwarding && { forwarding: true }) })
     } catch (error) {
       if (error instanceof Halt) {
         // What was computed before the halt, for whoever shows the stopped step.
         error.values ??= values
         throw error
       }
-      fault(id, error instanceof OperationError ? error.label : BROKEN, key)
+      fault(id, error instanceof OperationError ? error.label : BROKEN, key, forwarding)
     }
   }
 

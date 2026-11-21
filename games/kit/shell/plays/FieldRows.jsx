@@ -7,6 +7,7 @@ import { checkAction } from '../useCheckOnce.js'
 import PlayLayout from './PlayLayout.jsx'
 import { inspectWork, useCheckedWork } from './useWork.js'
 import WorkGoal from './WorkGoal.jsx'
+import FormulaPicker from '../FormulaPicker.jsx'
 
 function Slot({ slot, write }) {
   const { value, locked, options, groups, label, prefix, blank } = slot
@@ -24,6 +25,8 @@ function Slot({ slot, write }) {
       })}
     </span>
   )
+  if (slot.formula) return <FormulaPicker className="fr-slot" label={L(label)} options={options.map(({ value, text }) => ({ value, label: text }))}
+    value={value} onChange={write} readOnly={locked} placeholder={L(blank) ?? '…'} />
   const choice = (item) => <option key={item.value} value={item.value}>{L(item.text)}</option>
   const select = (
     <select className={prefix ? undefined : 'fr-slot'} disabled={locked} value={value ?? ''} onChange={(e) => write(e.target.value)} aria-label={L(label)}>

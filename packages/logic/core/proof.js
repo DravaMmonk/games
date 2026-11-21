@@ -510,7 +510,7 @@ export function lemmaParts(lemmas = {}) {
       inputs,
       outputType: 'logic/judgment',
       settings: [
-        ...(l.forms ? [{ key: 'form', control: 'select', label: T("形状"), options: l.forms.map((f) => ({ value: f.key, label: { zh: f.label, en: f.label } })) }] : []),
+        ...(l.forms ? [{ key: 'form', control: 'select', formula: true, label: T("形状"), options: l.forms.map((f) => ({ value: f.key, label: { zh: f.label, en: f.label } })) }] : []),
         ...open.map((m) => ({ key: m, control: 'tree', label: l.params?.[m] ?? { zh: m, en: m } })),
       ],
       op: l.card ?? 'logic/lemma',

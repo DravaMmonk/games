@@ -18,6 +18,7 @@ const MATH_PUNCT = new Set(['(', ')', '[', ']', ',', ':', ';', '=', '+', '-', '<
 const WORD = /[\p{L}\p{N}'’?-]/u
 const isWord = (c) => Boolean(c) && !SIGNS[c] && WORD.test(c) && !SUBS.includes(c)
 const letter = (w) => /^\??[A-Za-z][0-9]*$/.test(w) || /^\?[A-Za-z][A-Za-z0-9]*$/.test(w) || /^[0-9]+$/.test(w)
+export const texText = (text) => `\\text{${[...text].map((c) => ESCAPE[c] ?? c).join('')}}`
 
 /** One line of the machine's text as TeX (math mode, without the $). */
 export function texOf(line) {
@@ -35,7 +36,7 @@ export function texOf(line) {
   const flush = () => {
     if (!words.length) return
     const phrase = words.join(' ')
-    put(words.length === 1 && letter(phrase) ? phrase : `\\text{${[...phrase].map((c) => ESCAPE[c] ?? c).join('')}}`, true)
+    put(words.length === 1 && letter(phrase) ? phrase : texText(phrase), true)
     words = []
   }
   const chars = [...String(line)]

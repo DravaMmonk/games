@@ -1,5 +1,5 @@
 import { EyeOff } from 'lucide-react'
-import { createContext, useContext, useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { L, tr } from './i18n.js'
 import { usePointerSession } from '../views/usePointerSession.js'
 
@@ -15,14 +15,16 @@ import { usePointerSession } from '../views/usePointerSession.js'
  *              it) and, in a narrow column on the right, an optional panel (`aboveDock`) above the run bar (`dock`)
  *
  * `results` left out: the level has no results pane (the run bar alone, at the right); null: the pane is there, empty
- * until there is something to show. The strip fits its contents up to the automatic limit. Dragging its top edge
- * sets a height remembered for every game, and double-clicking restores automatic sizing.
+ * until there is something to show. The strip fits its contents up to the automatic limit. A `resultsFitRef` points
+ * to a result that keeps its natural height while the pane scrolls. Dragging the top edge sets a height for the
+ * current visit, and double-clicking restores automatic sizing.
  */
-export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsTitle, resultsAside, aboveDock, dock }) {
+export default function Workbench({ rootRef: given, className = '', brief, taskNav, tools, stage, scroll = false, tests, status, results, resultsFitRef, resultsTitle, resultsAside, aboveDock, dock }) {
   const own = useRef(null)
   const rootRef = given ?? own
   const pane = results !== undefined
   const hasHeader = Boolean(tests || status)
+  const hasPaneHeader = Boolean(resultsTitle || resultsAside)
   const hasDock = Boolean(dock)
   const hasDockPanel = Boolean(aboveDock)
   const hasStrip = pane || hasHeader || hasDock
@@ -34,19 +36,31 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
     const head = strip.querySelector('.wb-strip-head')
     const dock = strip.querySelector('.run-foot')
     const panel = strip.querySelector('.wb-above-dock')
-    const updateMinimum = () => {
-      const pad = getComputedStyle(body)
-      const controls = (head?.getBoundingClientRect().height ?? 0) + (dock?.getBoundingClientRect().height ?? 0)
-      const trim = parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom) + parseFloat(getComputedStyle(strip).borderTopWidth)
-      const panelRoom = panel ? parseFloat(getComputedStyle(panel).minHeight) + parseFloat(getComputedStyle(panel.parentElement).rowGap) : 0
-      strip.style.setProperty('--world-min', `${controls + trim + panelRoom}px`)
+    const content = resultsFitRef?.current
+    const paneHead = content && strip.querySelector('.wb-pane-head')
+    const height = (element) => element?.getBoundingClientRect().height ?? 0
+    const padding = (element) => {
+      const style = getComputedStyle(element)
+      return parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
     }
-    updateMinimum()
-    const observer = new ResizeObserver(updateMinimum)
-    if (head) observer.observe(head)
-    if (dock) observer.observe(dock)
-    return () => observer.disconnect()
-  }, [hasStrip, hasHeader, hasDock, hasDockPanel])
+    const updateSize = () => {
+      const trim = padding(body) + parseFloat(getComputedStyle(strip).borderTopWidth)
+      const panelRoom = panel ? parseFloat(getComputedStyle(panel).minHeight) + parseFloat(getComputedStyle(panel.parentElement).rowGap) : 0
+      const outer = height(head) + trim
+      strip.style.setProperty('--world-min', `${outer + height(dock) + panelRoom}px`)
+      if (content) {
+        const resultHeight = height(content) + padding(content.parentElement) + height(paneHead)
+        strip.style.setProperty('--world-fit', `${Math.ceil(outer + resultHeight)}px`)
+      }
+    }
+    updateSize()
+    const observer = new ResizeObserver(updateSize)
+    for (const element of [head, dock, content, paneHead]) if (element) observer.observe(element)
+    return () => {
+      observer.disconnect()
+      strip.style.removeProperty('--world-fit')
+    }
+  }, [hasStrip, hasHeader, hasPaneHeader, hasDock, hasDockPanel, resultsFitRef])
   return (
     <div ref={rootRef} className={`level ${className}`}>
       <aside className="brief">{taskNav}{brief}</aside>
@@ -66,7 +80,7 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
           <div className="wb-strip-body">
             {pane && (
               <section className="wb-pane wb-results">
-                {(resultsTitle || resultsAside) && <header className="wb-pane-head"><span>{resultsTitle}</span>{resultsAside}</header>}
+                {hasPaneHeader && <header className="wb-pane-head"><span>{resultsTitle}</span>{resultsAside}</header>}
                 <div className="wb-pane-body">{results}</div>
               </section>
             )}
@@ -103,34 +117,21 @@ export function TestStatus({ states, hidden }) {
   )
 }
 
-export const ResultLayoutContext = createContext(null)
-
-// A manual height applies to its own play and workspace. Double-clicking restores automatic sizing.
 const setShare = (strip, share) => strip.style.setProperty('--world-h', `${share}cqh`)
 
 function WorldHandle() {
   const { track } = usePointerSession()
   const handle = useRef(null)
-  const scope = useContext(ResultLayoutContext)
-  const storageKey = scope && `kit.results-share:${scope}`
   useLayoutEffect(() => {
     const strip = handle.current.parentElement
-    let share = 0
-    try { if (storageKey) share = Number(localStorage.getItem(storageKey)) } catch { /* storage may be off */ }
-    if (Number.isFinite(share) && share > 0) setShare(strip, share)
     return () => strip.style.removeProperty('--world-h')
-  }, [storageKey])
+  }, [])
   const size = (height) => {
     const strip = handle.current.parentElement
     const workspace = strip.parentElement.getBoundingClientRect().height
-    if (!workspace) return 0
+    if (!workspace) return
     setShare(strip, Math.max(0, height / workspace * 100))
-    const actual = strip.getBoundingClientRect().height / workspace * 100
-    setShare(strip, actual)
-    return actual
-  }
-  const keep = (share) => {
-    try { if (storageKey && share) localStorage.setItem(storageKey, String(share)) } catch { /* storage may be off */ }
+    setShare(strip, strip.getBoundingClientRect().height / workspace * 100)
   }
   const down = (event) => {
     if (event.button > 0 || !event.isPrimary) return
@@ -138,25 +139,20 @@ function WorldHandle() {
     const strip = handle.current.parentElement
     const bottom = strip.getBoundingClientRect().bottom
     const original = strip.style.getPropertyValue('--world-h')
-    let last = null
     track(event, {
-      move(next) { last = size(bottom - next.clientY) },
+      move(next) { size(bottom - next.clientY) },
       finish(commit) {
-        if (commit) keep(last)
-        else strip.style.setProperty('--world-h', original)
+        if (!commit) strip.style.setProperty('--world-h', original)
       },
       escape: true,
     })
   }
-  const fit = () => {
-    handle.current.parentElement.style.removeProperty('--world-h')
-    try { if (storageKey) localStorage.removeItem(storageKey) } catch { /* storage may be off */ }
-  }
+  const fit = () => handle.current.parentElement.style.removeProperty('--world-h')
   const key = (event) => {
     const step = event.key === 'ArrowUp' ? 40 : event.key === 'ArrowDown' ? -40 : 0
     if (!step) return
     event.preventDefault()
-    keep(size(handle.current.parentElement.getBoundingClientRect().height + step))
+    size(handle.current.parentElement.getBoundingClientRect().height + step)
   }
   return <div ref={handle} className="wb-resize" role="separator" aria-orientation="horizontal" aria-label={tr('拖动调整结果区高度，双击恢复自动高度')} title={tr('拖动调整高度 · 双击恢复自动高度')} tabIndex={0} onPointerDown={down} onDoubleClick={fit} onKeyDown={key} />
 }

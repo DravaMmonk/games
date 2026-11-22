@@ -35,8 +35,9 @@ export function composeGame(content, modules) {
   return game
 }
 
-/** Install optional game services after the gameplay adapters have been composed. */
+/** Attach shared game metadata and services after composing the gameplay adapters. */
 export function configureGame(game, content, kernel) {
+  game.topic = content.topic
   game.pluginKernel = kernel
   game.contentVocabulary = contentSchemas.get(content)
   if (content.libraryLevels) game.libraryLevelTitles = new Map(content.libraryLevels.map(({ id, title }) => [id, title]))

@@ -76,7 +76,6 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
     course,
     glossary: content.glossary,
     title: content.title,
-    kicker: content.kicker,
     lede: content.lede,
     Hero,
     chapters: CHAPTERS.map((chapter, id) => ({ id, kicker: chapter.kicker, title: chapter.name, question: chapter.desc, track: TRACKS.get(chapter.era), rows: ROWS.get(chapter.era) })),

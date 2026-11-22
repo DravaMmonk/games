@@ -42,7 +42,6 @@ export function circuitGame(content, circuit, { kind, screen, cards, Hero, Intro
   const game = defineGame({
     id: content.id,
     title: content.title,
-    kicker: content.kicker,
     lede: content.lede,
     glossary: content.glossary,
     course,

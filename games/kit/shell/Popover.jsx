@@ -5,7 +5,7 @@ import { PHONE, useMedia } from './useMedia.js'
 import { useOverlay } from './useOverlay.js'
 
 // Something to fill in that belongs to one button (a sentence on 《证明完毕》's rule table, a test case's goal…): on a
-// desktop a box pointing at the button; on a phone the usual bottom sheet, unless the caller anchors it above.
+// desktop a box pointing at the button; on a phone the usual bottom sheet, unless a placement is specified.
 // It closes on Escape, on a press anywhere outside it (the button aside), or by its owner.
 //
 //   anchor  the element it points at (the button pressed)      title  the sheet's      onClose()
@@ -15,7 +15,7 @@ const EDGE = 12
 
 export default function Popover({ anchor, title, onClose, children, className = '', placement, initialFocus }) {
   const phone = useMedia(PHONE)
-  if (phone && placement !== 'above') return <Sheet title={title} onClose={onClose}>{children}</Sheet>
+  if (phone && !placement) return <Sheet title={title} onClose={onClose}>{children}</Sheet>
   return <Box className={className} anchor={anchor} label={title} onClose={onClose} placement={placement} initialFocus={initialFocus}>{children}</Box>
 }
 

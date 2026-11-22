@@ -16,7 +16,7 @@ export const meaning = {
     const stripGrants = schema => !schema || typeof schema !== 'object' ? schema : Array.isArray(schema) ? schema.map(stripGrants) : Object.fromEntries(Object.entries(schema).map(([key, value]) => [key, key === 'fields' ? Object.fromEntries(Object.entries(value).filter(([name]) => !['adds', 'tray'].includes(name)).map(([name, field]) => [name, stripGrants(field)])) : stripGrants(value)]))
     const own = { ...registry.schemas.logic, level: stripGrants(registry.schemas.logic.level) }
     const level = base.level ? S.obj({ ...base.level.fields, ...Object.fromEntries(Object.entries(own.level.fields).filter(([key]) => key !== 'tasks').map(([key, field]) => [key, base.level.fields[key] ? S.opt(S.either(base.level.fields[key], field)) : S.opt(field)])), tasks: S.list(S.either(own.level.fields.tasks.of, base.level.fields.tasks.of), { min: 1 }) }) : own.level
-    const game = S.obj({ ...base.game.fields, ...Object.fromEntries(Object.entries(own.game.fields).filter(([key]) => !['title', 'kicker', 'lede', 'chapters'].includes(key)).map(([key, field]) => [key, S.opt(field)])) })
+    const game = S.obj({ ...base.game.fields, ...Object.fromEntries(Object.entries(own.game.fields).filter(([key]) => !['title', 'lede', 'chapters'].includes(key)).map(([key, field]) => [key, S.opt(field)])) })
     return { ...base, [vocabularyProjection]: true, level, game }
   },
 }

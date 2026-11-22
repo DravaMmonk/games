@@ -94,15 +94,19 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
         {rules.length > 0 && (
           <section className="parts-rules">
             <h3>{tr("给出的规则")}</h3>
-            <table><tbody>{rules.map((r) => <tr key={r.text}><td><FormulaText text={r.text} /></td></tr>)}</tbody></table>
+            <div className="kit-table-scroll">
+              <table><tbody>{rules.map((r) => <tr key={r.text}><td><FormulaText text={r.text} /></td></tr>)}</tbody></table>
+            </div>
           </section>
         )}
         {settings.length > 0 && (
           <section className="parts-rules">
             <h3>{tr("已解锁的设置")}</h3>
-            <table><tbody>{settings.map(({ key, label, values }) => (
-              <tr key={key}><td>{L(label)}</td><td>{values.map(({ value, label }) => <span className="parts-setting" key={value}>{L(label)}</span>)}</td></tr>
-            ))}</tbody></table>
+            <div className="kit-table-scroll">
+              <table><tbody>{settings.map(({ key, label, values }) => (
+                <tr key={key}><td>{L(label)}</td><td>{values.map(({ value, label }) => <span className="parts-setting" key={value}>{L(label)}</span>)}</td></tr>
+              ))}</tbody></table>
+            </div>
           </section>
         )}
         {demo}

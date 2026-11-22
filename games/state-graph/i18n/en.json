@@ -14,7 +14,6 @@
   "course.eras.stack.chapter.desc": "When one number can’t remember enough, remember one more thing.",
   "course.eras.stack.chapter.title": "When the state falls short",
   "game.description": "状态之图 State Graph：零基础动态规划解谜游戏。Dynamic programming puzzles for complete beginners.",
-  "game.kicker": "Dynamic programming puzzles, from scratch",
   "game.lede": "No programming or algorithms background needed. Starting from counting routes by hand, you learn to break a big problem into a table and fill it in cell by cell; in the end you wire up the circuit boards that count routes, compare words and pack a backpack, and see why they are so fast.",
   "game.title": "State Graph",
   "game.topic": "Dynamic Programming",

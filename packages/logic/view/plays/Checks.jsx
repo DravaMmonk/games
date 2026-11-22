@@ -65,7 +65,9 @@ export function CheckScenario({ fields }) {
         <div key={key} className="ck-field" role={name ? 'group' : undefined} aria-label={L(name)}>
           {before && <span className={grid ? 'ck-grid-label' : undefined}>{L(before)}</span>}
           {grid
-            ? <table className="ck-grid"><tbody>{grid.map((row, k) => <tr key={k}>{row.map((cell) => <td key={cell.key}>{pick(cell)}</td>)}</tr>)}</tbody></table>
+            ? <div className="kit-table-scroll">
+              <table className="ck-grid"><tbody>{grid.map((row, k) => <tr key={k}>{row.map((cell) => <td key={cell.key}>{pick(cell)}</td>)}</tr>)}</tbody></table>
+            </div>
             : <span className="ck-scenario-cells">{cells.map(pick)}</span>}
           {after && <span>{L(after)}</span>}
         </div>
@@ -78,6 +80,7 @@ export function CheckScenario({ fields }) {
 export default function Checks({ cells, rows, onChange, result, rowClass, onPick, verdict, phone, ...table }) {
   const columns = cells.map((cell) => ({
     key: cell.name, label: cell.label, align: cell.align,
+    className: cell.name === 'goal' ? 'ck-goal' : undefined,
     cell: (row) => display(cell, row, phone),
     edit: (row, set, at) => cell.fixed?.(row) ? display(cell, row) : edit(cell, row, set, at, false),
   }))

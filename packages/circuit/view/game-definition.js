@@ -4,7 +4,7 @@ import { composeCircuitModules } from './compose.js'
 import { defineGame as defineShellGame } from 'kernel/view'
 import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress.js'
 /**
- * Describe a game for GameShell. Required: id, title, kicker, lede ({ zh, en } pairs), chapters
+ * Describe a game for GameShell. Required: id, title, lede ({ zh, en } pairs), chapters
  * ([{ id, title, track, label?, question?, number?, kicker? }], track: the chapter's level tree from kit/course.js
  * layout), levels ([{ id, chapter, title, kind, tasks: [{ key, kind?, step?, brief?, hint?, intro?, after?, carries?,
  * opens? … }], requires?, unlocks?, keeps?, after?, note? … }], in play order, every level one task or more;

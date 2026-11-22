@@ -96,7 +96,7 @@ function pointerPose(pointers) {
  * @param caption(node) a fixed card's line under its title (what it carries)
  * @param outNote(node, key) beside each of a card's several outputs (parts.outputs), after its name: what it carries.
  *   Those outputs run down the card's right edge; the body starts on the row below the lowest port on either side.
- * @param cardClass(node), wireState(wire) → 'live' | 'dead' | null, height (for fitting), emptyNote
+ * @param cardClass(node), wireState(wire) → 'live' | 'dead' | null, height (for fitting)
  * With `refit` the circuit is fitted again whenever the board changes
  * size (a bench in the parts box, whose panel can open narrow and then grow). `regionNote(node, region)` is what a
  * region's left edge says beside its dot (the assumption it makes), `resultNote(node, region)` what its right edge
@@ -107,7 +107,7 @@ function pointerPose(pointers) {
  * choose: a circuit too big for the board at it starts at its top left, and the rest is a pan away. An editable board
  * receives both its change callback and its history. A display without them only pans, zooms and fits.
  */
-export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, emptyNote, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect, placing = null }) {
+export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect, placing = null }) {
   const boardNumber = useBoardNumber()
   const plain = usePlainProse()
   const [connectionLabels] = useSetting('connectionLabels')
@@ -179,7 +179,6 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const size = useElementSize(surface)
   const available = size?.width || Infinity
   const widthOf = (node) => node.hiddenBlock ? node.w : cardWidth(parts, node, available)
-  const placed = graph.nodes.filter((n) => isPart(parts, n)).length
   // Frames are drawn first, under the plain cards: a frame's backdrop sits below the wires (so those inside it show),
   // so a card drawn before a frame would have the frame's contents over it and its backdrop under it.
   const layered = (nodes) => [...nodes.filter((n) => regionsOf(parts, n).length), ...nodes.filter((n) => !regionsOf(parts, n).length)]
@@ -378,8 +377,8 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     fitOnResize()
   }, [size])
 
-  // Follow cards that are added or pushed out by reflow, and cards clipped when the workbench shrinks.
-  // Compare both layouts through the same camera so panning and zooming never trigger a fit by themselves.
+  // Follow added cards and horizontal reflow. Compare both layouts at the current height so opening the
+  // results pane, panning and zooming keep the current camera.
   const known = useRef(null)
   useLayoutEffect(() => {
     if (moving.current || drag || geoRef.current !== geo) return
@@ -388,15 +387,15 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const { clientWidth: width, clientHeight: height } = board
     const cards = cardBounds()
     const before = known.current
-    known.current = { cards, width, height }
+    known.current = { cards, width }
     if (!before || !fitted.current || blocks?.keepView) return
-    const visibleIn = ([left, top, right, bottom], w, h) => (
+    const visibleIn = ([left, top, right, bottom], w) => (
       left * view.zoom + view.x >= -1 && top * view.zoom + view.y >= -1 &&
-      right * view.zoom + view.x <= w + 1 && bottom * view.zoom + view.y <= h + 1
+      right * view.zoom + view.x <= w + 1 && bottom * view.zoom + view.y <= height + 1
     )
     for (const [id, bounds] of cards) {
       const previous = before.cards.get(id)
-      if (!visibleIn(bounds, width, height) && (!previous || visibleIn(previous, before.width, before.height))) {
+      if (!visibleIn(bounds, width) && (!previous || visibleIn(previous, before.width))) {
         fit(view.zoom)
         break
       }
@@ -729,7 +728,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
                 <section key={r.name} className={`frame-region ${target === key ? 'is-target' : ''} ${dropInto === key ? 'is-drop' : ''}`}>
                   <header className="frame-region-head">
                     {r.opens && outDot(sourceOf(node.id, r.name), 'frame-open')}
-                    <span className="frame-region-name"><BoardLabel label={L(r.label)} /></span>
+                    {regions.length > 1 && <span className="frame-region-name"><BoardLabel label={L(r.label)} /></span>}
                     {regionNote?.(node, r.name)}
                     <span className="frame-region-result"><BoardLabel label={L(parts.portLabel?.(node, r.name))} />{resultNote?.(node, r.name)}{inDot(r.name, 'frame-close')}</span>
                   </header>
@@ -806,7 +805,6 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     <div className={`kit-board ${picking ? 'is-picking' : ''} ${readOnly ? 'is-readonly' : ''}`} ref={surface} onPointerDownCapture={partitioning ? beginPartition : undefined}
       onPointerDown={beginPan} onPointerMove={movePointer} onPointerUp={endPan} onPointerCancel={endPan} onLostPointerCapture={endPan}>
       <div className="board-grid" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${20 * view.zoom}px ${20 * view.zoom}px` }} />
-      {!placed && emptyNote && <p className="board-empty">{L(emptyNote)}</p>}
       <div className="board-layer" ref={layer} style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})`, transformOrigin: '0 0' }}>
         {groups.map(stageFrame)}
         <svg className="board-wires" width="4000" height="3000">

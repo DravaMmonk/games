@@ -51,34 +51,36 @@ export function ChoiceMatrix({ ctx }) {
   return (
     <figure className="bk-panel contrast-matrix">
       <figcaption className="bk-label">{matrixTitle.map(L).join('')}</figcaption>
-      <table>
-        <thead>
-          <tr>
-            <th />
-            {rows.map((_, k) => <th key={k} scope="col">{tagOf(m, k)}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, a) => (
-            <tr key={a}>
-              <th scope="row">
-                <GridPicture value={m.quiz[a].img} scale={20 / m.quiz[a].img.w} />
-                {tagOf(m, a)}
-              </th>
-              {row.map((p, k) => (
-                <td
-                  key={k}
-                  className={k === a ? 'is-self' : k === (a ^ 1) ? 'is-partner' : ''}
-                  style={k === a ? undefined : { background: `color-mix(in srgb, var(--accent) ${Math.round(p * 100)}%, var(--paper))` }}
-                  aria-label={k === a ? undefined : tr("{value} 选 {value2}：{value3}", {value: tagOf(m, a), value2: tagOf(m, k), value3: pct(p)})}
-                >
-                  {k === a ? '' : p >= 0.095 ? Math.round(p * 100) : ''}
-                </td>
-              ))}
+      <div className="kit-table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th />
+              {rows.map((_, k) => <th key={k} scope="col">{tagOf(m, k)}</th>)}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, a) => (
+              <tr key={a}>
+                <th scope="row">
+                  <GridPicture value={m.quiz[a].img} scale={20 / m.quiz[a].img.w} />
+                  {tagOf(m, a)}
+                </th>
+                {row.map((p, k) => (
+                  <td
+                    key={k}
+                    className={k === a ? 'is-self' : k === (a ^ 1) ? 'is-partner' : ''}
+                    style={k === a ? undefined : { background: `color-mix(in srgb, var(--accent) ${Math.round(p * 100)}%, var(--paper))` }}
+                    aria-label={k === a ? undefined : tr("{value} 选 {value2}：{value3}", {value: tagOf(m, a), value2: tagOf(m, k), value3: pct(p)})}
+                  >
+                    {k === a ? '' : p >= 0.095 ? Math.round(p * 100) : ''}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <p className="bk-caption">{tr('数字为选中各视图的概率（%）；粗框标出真正的搭档。')}</p>
     </figure>
   )

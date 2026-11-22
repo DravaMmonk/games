@@ -14,7 +14,6 @@
   },
   "title": "@game.title",
   "author": "DravaMmonk",
-  "kicker": "@game.kicker",
   "lede": "@game.lede",
   "chapters": [
     "@state-graph/paper",

@@ -22,5 +22,5 @@ export const gatesScreen = {
     pass: T('每一行都正确：这块电路算出了这句话的完整真值表。'),
     fail: T('这一行的结果错误，运行停在这里。板上每个元件显示它在这一行算出的值。'),
   },
-  canvas: { height: 110, emptyNote: T('从上方元件栏选择门放到板上，再把元件右侧的圆点连到另一元件左侧的圆点。') },
+  canvas: { height: 110 },
 }

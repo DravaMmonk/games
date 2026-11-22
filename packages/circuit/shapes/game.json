@@ -4,9 +4,6 @@
     "title": {
       "type": "text"
     },
-    "kicker": {
-      "type": "text"
-    },
     "lede": {
       "type": "text",
       "about": "@shape.game.fields.lede.about"

@@ -160,7 +160,7 @@ try {
   server = null
   console.log('Package-only Studio opened without a game')
 
-  put('games/minimal/game.json', { kernel: '^0.0.0', packages: { text: '^0.0.0' }, title: 'Minimal', kicker: 'Text', lede: 'One answer.', chapters: ['@minimal/main'] })
+  put('games/minimal/game.json', { kernel: '^0.0.0', packages: { text: '^0.0.0' }, title: 'Minimal', topic: 'Text', lede: 'One answer.', chapters: ['@minimal/main'] })
   put('games/minimal/chapters/main.json', { chapter: { title: 'Main' }, levels: ['text/hello'] })
   await command([resolve(kit, 'engine/deps.js'), 'lock', '--game', 'minimal'])
   await command([resolve(kit, 'engine/check.js'), '--game', 'minimal'])

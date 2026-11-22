@@ -15,13 +15,12 @@ import { firstTask as openTask, nextRequiredTask } from './progress.js'
 import { playedTask, taskContext } from './played-task.js'
 import { addSlot, dropSlot, openSlot, renameSlot, slotsOf } from './slots.js'
 import { SlotsContext } from './slots-context.js'
-import { ResultLayoutContext } from './Workbench.jsx'
 import { isTextField, playFrame } from './viewport.js'
 import { SheetHost } from './Sheet.jsx'
 import { EditContext, same } from './edit.js'
 import { SettingsContext } from './useSetting.js'
 import { useLevelRuns } from './useLevelRuns.js'
-import TopBar from './TopBar.jsx'
+import TopBar, { GameBrand } from './TopBar.jsx'
 import { settings } from './settings.js'
 
 // Each game links back to its parent hub, on the standalone site and the local dev server.
@@ -341,7 +340,7 @@ function GameShellInstance({ game, store, author = null }) {
           ) : (
             <a className="kit-btn is-label bar-button" href={SITE.games} aria-label={tr('返回游戏列表')}><ArrowLeft size={16} /><span>{tr("游戏")}</span></a>
           )}
-          <span className="kit-brand game-brand"><i className="kit-chip" aria-hidden="true" /><span>{L(game.title)}</span></span>
+          <GameBrand game={game} showInfo={!level && !area} edit={authoring} />
           {level && (
             <span className="game-level-title">
               <b>{game.levelLabel(level)}</b>
@@ -388,11 +387,9 @@ function GameShellInstance({ game, store, author = null }) {
               />
             )}
             <EditContext.Provider value={edit}>
-              <ResultLayoutContext.Provider value={play && `${store.key}:${play}`}>
-                {kind
-                  ? <SlotsContext.Provider value={slotsCtl}>{createElement(kind.Screen, { ...task.screen, key: `${level.id}#${runAt}#${game.stamp ?? ''}`, level: played, solve, fail, ...run, theme, phone, ...extension.taskProps })}</SlotsContext.Provider>
-                  : <div className="board-loading">{tr('这类关卡尚在制作中。')}</div>}
-              </ResultLayoutContext.Provider>
+              {kind
+                ? <SlotsContext.Provider value={slotsCtl}>{createElement(kind.Screen, { ...task.screen, key: `${level.id}#${runAt}#${game.stamp ?? ''}`, level: played, solve, fail, ...run, theme, phone, ...extension.taskProps })}</SlotsContext.Provider>
+                : <div className="board-loading">{tr('这类关卡尚在制作中。')}</div>}
             </EditContext.Provider>
           </div>
         )}

@@ -36,7 +36,6 @@
   "course.eras.9.chapter.question": "An answer for every pixel",
   "course.eras.9.chapter.title": "What Every Pixel Is",
   "game.description": "视觉完备 Vision Complete：用图像处理元件接线解谜。A computer vision puzzle game built around wiring image-processing circuits.",
-  "game.kicker": "Computer Vision",
   "game.lede": "Start by shifting an image one pixel. Wire together components to blur images, find edges and corners, and measure depth from two views.",
   "game.title": "Vision Complete",
   "game.topic": "Computer Vision",

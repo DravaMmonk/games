@@ -14,7 +14,6 @@
   "course.eras.stack.chapter.desc": "一个数记不住的时候，就多记一件事。",
   "course.eras.stack.chapter.title": "状态不够用",
   "game.description": "状态之图 State Graph：零基础动态规划解谜游戏。Dynamic programming puzzles for complete beginners.",
-  "game.kicker": "从零开始的动态规划解谜",
   "game.lede": "不需要任何编程或算法基础。从手数路线开始，学会把一个大问题拆成一张表，一格一格地填出来；最后能亲手拼出数路线、比文字、装背包的电路板，并且明白它们为什么这么快。",
   "game.title": "状态之图",
   "game.topic": "动态规划",

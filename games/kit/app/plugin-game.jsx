@@ -42,7 +42,7 @@ export function pluginGame(id, kernel, vocabulary, { view = true } = {}) {
   const define = (content, works = runtime.spec(content)) => {
     kernel.pair(content.levels.flatMap(level => level.tasks), view)
     return defineGame({
-    id: content.id, title: content.title, author: content.author, kicker: content.kicker, lede: content.lede,
+    id: content.id, title: content.title, author: content.author, lede: content.lede,
     glossary: content.glossary, course: works.course, chapters: works.chapters, levels: works.levels,
     kinds, pluginKernel: kernel, pluginContent: content,
     })

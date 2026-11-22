@@ -21,5 +21,5 @@ const ui = displays
 
 export const playPresentation = { id: 'circuit', icon: Binary, label: catalogText("电路") }
 
-/** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary, partDefs }. */
+/** content (../../engine/content.js): { id, title, topic, lede, concept, eras, levels, glossary, partDefs }. */
 export default (content, works = circuitWorks(content)) => definedGame(content, works, { kind: playPresentation, screen: ui['circuit/screen'] })

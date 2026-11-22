@@ -30,7 +30,7 @@ import { InsideBoard, PackedDetail, insideOf } from "./board/Inside.jsx"
 import { WORDS } from './words.js'
 
 import { L } from "kernel/view"
-import { tr, T } from 'kernel/words'
+import { tr } from 'kernel/words'
 
 import { PhonePage, Text } from 'kernel/view'
 
@@ -176,7 +176,6 @@ export function useLevelRun(screen, board, { tests, steps = null, judge = null, 
   }
 }
 
-const EMPTY = T('从上方元件栏选择元件放到板上，再从元件右侧的圆点连线到另一元件左侧的圆点。')
 const nothing = { values: new Map(), errors: new Map() }
 
 /**
@@ -199,9 +198,10 @@ const nothing = { values: new Map(), errors: new Map() }
  *                   wireState (wire, ctx), regionNote / resultNote (node, region, ctx); on a phone thumb, tileExtra,
  *                   sinkBody, sinkClass, nodeClass, phoneRegionLabel (node, index)
  *   tileSettings    show configuration summaries on phone tiles (the details always show the settings)
- *   canvas          more for the editor: height, emptyNote, corner, minFit, followStep (default true)
+ *   canvas          more for the editor: height, corner, minFit, followStep (default true)
  *   brief           the task board's content (Layout.jsx Brief), or the workshop shelf
  *   results, resultsTitle, resultsAside   what a run gives (the strip on a desktop, below the board on a phone)
+ *   resultsFitRef    natural-height result content to measure for automatic desktop sizing
  *   aboveDock        content above the desktop run controls
  *   above           on a phone, over the board
  *   below           on a phone, under the board (what a run shows as it goes, the level's own panels)
@@ -217,7 +217,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *   tabs            false: the tests are picked in the results, not in tabs
  *   scope           names the board for undo (a level's stage; default the level)
  */
-export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsTitle, resultsAside, aboveDock, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef }) {
+export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsFitRef, resultsTitle, resultsAside, aboveDock, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef }) {
   const { game, level, phone } = screen
   const stored = board.circuit
   const ownRoot = useRef(null)
@@ -369,7 +369,6 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
               inspect={(node) => (details || isDefined(node) || !isPart(parts, node) || isPacked(node, top)) ? () => setDetail(node.id) : null}
               onClear={onClear}
               types={types}
-              emptyNote={all.length > 0 && (canvas.emptyNote ?? EMPTY)}
             />
           </div>
         </div>
@@ -377,6 +376,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
       tests={testTabs}
       status={run.tests.length > 0 && <TestStatus states={run.states.filter((_, k) => !run.tests[k].sample)} hidden={run.hidden} />}
       results={results}
+      resultsFitRef={resultsFitRef}
       resultsTitle={resultsTitle}
       resultsAside={resultsAside}
       aboveDock={aboveDock}

@@ -47,5 +47,5 @@ export const proofScreen = {
   told: (task, test) => (task.script ? scriptLines(task.script, (t) => textOf(task, test)(parse(t, { consts: [...(task.consts ?? []), ...(task.things ?? [])] }))).map(([depth, text]) => ({ text: `${'  '.repeat(depth)}${text}` })) : []),
   readouts: (_task, _circuit, { score }) => [{ value: score.steps, label: T('步数') }],
   says: { done: T('证明完毕') },
-  canvas: { height: 150, emptyNote: T('从上方元件栏选择规则放到板上，再把元件右侧的圆点连到另一元件左侧的圆点。') },
+  canvas: { height: 150 },
 }

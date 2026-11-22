@@ -28,5 +28,5 @@ export const machineScreen = {
   reportAside: machineRuleList,
   // Formulas on the cards are typeset in TeX, one face for all of logic's signs.
   typeset: typesetMachine,
-  canvas: { height: 150, emptyNote: false, followStep: false },
+  canvas: { height: 150, followStep: false },
 }

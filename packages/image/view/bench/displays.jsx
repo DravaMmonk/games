@@ -258,19 +258,21 @@ function Curve({ params, ctx }) {
 function Table({ params, ctx }) {
   const { head, rows } = ctx.q[params.of]
   return (
-    <table className="bench-table">
-      <thead><tr>{head.map((h, i) => <th key={i}><Rich text={h} /></th>)}</tr></thead>
-      <tbody>
-        {rows.map((row, r) => (
-          <tr key={r} className={row.dim ? 'is-dim' : ''}>
-            {row.cells.map((cell, i) => {
-              const { text, tone } = toned(cell)
-              return <td key={i} className={tone ? `is-${tone}` : ''}><Rich text={text} /></td>
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="kit-table-scroll">
+      <table className="bench-table">
+        <thead><tr>{head.map((h, i) => <th key={i}><Rich text={h} /></th>)}</tr></thead>
+        <tbody>
+          {rows.map((row, r) => (
+            <tr key={r} className={row.dim ? 'is-dim' : ''}>
+              {row.cells.map((cell, i) => {
+                const { text, tone } = toned(cell)
+                return <td key={i} className={tone ? `is-${tone}` : ''}><Rich text={text} /></td>
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

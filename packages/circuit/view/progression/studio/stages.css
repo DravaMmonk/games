@@ -22,14 +22,12 @@
 .stage-change code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--fs-mini)/1 var(--mono); }
 .stage-none { color: var(--faint); font: var(--fs-mini)/1 var(--mono); }
 .stage-table { max-height: 32vh; overflow: auto; }
-.stage-settings { width: 100%; border-collapse: collapse; font-size: 12px; }
+.stage-settings { border-collapse: collapse; font-size: 12px; }
 .stage-settings th, .stage-settings td { padding: 3px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .stage-settings thead th { position: sticky; top: 0; color: var(--muted); background: var(--paper); font: 600 11px/1.4 var(--sans); }
 .stage-settings tbody th code { font: var(--fs-mini)/1.4 var(--mono); }
 .stage-settings tr.is-changed { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 @media (max-width: 760px) {
-  .stage-table { overflow-x: auto; }
-  .stage-settings { min-width: 520px; }
   .stage-steps, .stage-changes { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
   .stage-step, .stage-change { flex: none; }
 }

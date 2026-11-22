@@ -68,7 +68,7 @@ const proofRules = {
 }
 
 /**
- * content (../../engine/content.js; vocabulary.js GAME): { id, title, kicker, lede, …the course (course.js), levels,
+ * content (../../engine/content.js; vocabulary.js GAME): { id, title, topic, lede, …the course (course.js), levels,
  * glossary }.
  */
 export default function logicGame(content, logic = logicWorks(content), { kernel } = {}) {
@@ -137,7 +137,6 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     course: logic.course,
     glossary: content.glossary,
     title: content.title,
-    kicker: content.kicker,
     lede: content.lede,
     Hero: kernel?.tables.display.get(content.hero),
     chapters: CHAPTERS.map((chapter, id) => ({ id, title: chapter.title, question: chapter.question, track: chapter.track, rows: chapter.rows })),

@@ -47,8 +47,8 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
   const text = (x) => L(typeof x === 'function' ? x(open) : x)
   return (
     <div className="rt">
-      <div className="rt-scroll">
-        <table className="rt-table" data-wide={columns.length >= 4 || undefined} style={{ '--rt-columns': columns.length }}>
+      <div className="kit-table-scroll">
+        <table className="rt-table">
           <thead>
             <tr>
               {columns.map((c) => <th key={c.key} scope="col" className={cellClass(c)}><div className="rt-cell">{L(c.label)}</div></th>)}

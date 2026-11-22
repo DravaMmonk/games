@@ -72,7 +72,7 @@ export function gameOnPackage({ root = contentRoot(), id, from, title }) {
   if (order.includes(id)) fail(`hub-order.json lists ${id} already`)
   if (!from || !isDataGame(from, root)) fail(`no game ${from} to take the course settings from`)
   const { packageRanges: packages, game, layers } = resolveLayers({ game: from, root })
-  const { kernel, chapters, title: _title, author: _author, lede: _lede, kicker: _kicker, topic: _topic, description: _description,
+  const { kernel, chapters, title: _title, author: _author, lede: _lede, topic: _topic, description: _description,
     art: _art, icon: _icon, hidden: _hidden, dev: _dev, hero: _hero, optional: _optional, skippable: _skippable, ...settings } = game
   const fields = layerVocabulary(layers.slice(0, -1)).game.fields
   for (const key of Object.keys(settings)) if (fields[key]?.scaffold === false) delete settings[key]
@@ -85,12 +85,11 @@ export function gameOnPackage({ root = contentRoot(), id, from, title }) {
   for (const [lang, theirs] of Object.entries(layers.at(-1).catalogs)) {
     const own = Object.fromEntries([...keys].filter((key) => Object.hasOwn(theirs, key)).map((key) => [key, theirs[key]]))
     for (const field of ['title', 'lede', 'topic']) own[`game.${field}`] = words[lang] ?? words.en
-    own['game.kicker'] = lang === 'zh' ? '开发中' : 'In development'
     own['game.description'] = `${words.zh} ${words.en}`
     writeFileSync(resolve(dir, 'i18n', `${lang}.json`), writeJson(Object.fromEntries(Object.entries(own).sort(([a], [b]) => (a < b ? -1 : 1))), null))
   }
   writeFileSync(resolve(dir, 'game.json'), writeJson({
-    kernel, packages, chapters: [`@${id}/main`], title: '@game.title', kicker: '@game.kicker', lede: '@game.lede',
+    kernel, packages, chapters: [`@${id}/main`], title: '@game.title', lede: '@game.lede',
     topic: '@game.topic', description: '@game.description', icon: 'M16 32h32M32 16v32', hidden: true, dev: true, ...settings,
   }, null))
   mkdirSync(resolve(dir, 'chapters'), { recursive: true })

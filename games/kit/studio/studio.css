@@ -588,7 +588,8 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .palette-item.is-at { background: var(--hover); }
 .palette-item.is-finding span { font: 11px/1.4 var(--mono); }
 .keys { grid-template-rows: minmax(0, 1fr) auto; padding: 10px 14px; gap: 8px; justify-items: end; }
-.keys table { justify-self: stretch; border-collapse: collapse; overflow: auto; }
+.keys .kit-table-scroll { justify-self: stretch; overflow: auto; }
+.keys table { border-collapse: collapse; }
 .keys th { padding: 3px 12px 3px 0; text-align: left; white-space: nowrap; color: var(--accent-ink); }
 .keys td { padding: 3px 0; color: var(--ink); }
 

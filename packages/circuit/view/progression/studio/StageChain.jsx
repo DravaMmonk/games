@@ -73,7 +73,7 @@ export default function StageChain({ part, raw, operations, namespace, stage, pe
         </div>
       )}
       {table && at.settings.length > 0 && (
-        <div className="stage-table">
+        <div className="stage-table kit-table-scroll">
           <table className="stage-settings">
             <thead><tr><th>{tr("设置")}</th><th>{tr("运算声明")}</th><th>{tr("收窄")}</th><th>{tr("生效")}</th></tr></thead>
             <tbody>

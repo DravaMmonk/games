@@ -27,5 +27,5 @@ export function playKinds(plays, resources, presentation = {}, bindings = {}) {
 }
 
 export function playGame(content, { chapters, levels }, plays, resources) {
-  return defineGame({ id: content.id, title: content.title, kicker: content.kicker, lede: content.lede, glossary: content.glossary, chapters, levels, kinds: playKinds(plays, resources) })
+  return defineGame({ id: content.id, title: content.title, topic: content.topic, lede: content.lede, glossary: content.glossary, chapters, levels, kinds: playKinds(plays, resources) })
 }

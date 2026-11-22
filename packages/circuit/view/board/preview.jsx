@@ -89,7 +89,7 @@ function CanvasCard({ node, parts, body }) {
             <section key={r.name} className="frame-region">
               <header className="frame-region-head">
                 {r.opens && dot('out', 'frame-open', null, r.name)}
-                <span className="frame-region-name">{L(r.label)}</span>
+                {regions.length > 1 && <span className="frame-region-name">{L(r.label)}</span>}
                 <span className="frame-region-result">{L(parts.portLabel?.(node, r.name)) ?? ''}{dot('in', 'frame-close', r.name)}</span>
               </header>
               <div className="frame-field" />

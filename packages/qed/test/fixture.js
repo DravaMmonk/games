@@ -41,7 +41,7 @@ const ID = 'proofs'
 const GAME = {
   vocabulary: 1,
   title: T('Proofs · Test'),
-  kicker: T('Test'),
+  topic: T('Test'),
   lede: T('Proofs built from Apply and the assumption box.'),
   words: 'everyday',
   contentObjects: { 'qed/wordset': {

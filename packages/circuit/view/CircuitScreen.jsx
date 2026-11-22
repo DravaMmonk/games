@@ -4,7 +4,7 @@ import { sourceOf, srcNode } from "../core/wire-source.js"
 import { openCircuit } from "../core/board-view.js"
 import { TaskStatements, VIEWS, valueText } from 'kernel/view'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Dock } from 'kernel/view'
 import { InteractiveDrawing } from 'kernel/view'
 
@@ -442,8 +442,9 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   // A table of cases: a row a test, what the board gives on each as the run reaches it (before a run, on the row picked).
   const ins = kind.portsIn(level)
   const out = kind.portsOut(level)[0]?.name
+  const casesRef = useRef(null)
   const cases = showResults && table && (
-    <div className="cs-cases">
+    <div ref={casesRef} className="cs-cases">
       <CaseTable
         play={table(level)} inputs={ins.map((p) => ({ key: p.name, label: p.label }))} at={run.at} select={run.select}
         rows={tests.map((t, k) => ({
@@ -519,6 +520,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
           below={onPhone && practice.panel}
           describe={(n) => (known?.(n.type) ? resolve.definition(n.type).description : BUILT[n.type] ? builtDefinitions[n.type].desc ?? cards[n.type]?.desc : kind.isFixed(n.type) || !cards[n.type] ? null : game.textAt(cards[n.type], level.id, n.type)?.desc)}
           results={showResults ? strip : undefined}
+          resultsFitRef={cases ? casesRef : undefined}
           aboveDock={showResults && !onPhone && reportAside?.({ run: runOf, task: level })}
           pad={surface?.pad ? <Dock pad={surface.pad} /> : undefined}
           tabs={!table || !showResults}

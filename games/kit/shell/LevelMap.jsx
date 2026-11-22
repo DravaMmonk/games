@@ -1,6 +1,5 @@
 import { Markup } from './Markup.jsx'
 import { usePlainProse } from './useSetting.js'
-import { Text } from './Layout.jsx'
 import { GAMES } from 'virtual:game-catalog'
 import { mapRows } from '../course.js'
 import { fileMark } from './edit.js'
@@ -8,7 +7,8 @@ import { createElement, useEffect, useLayoutEffect, useMemo, useRef, useState } 
 import { useOverlay } from './useOverlay.js'
 import { ArrowRight, Check, Lock, LockOpen, Package, RotateCcw, X } from 'lucide-react'
 import { L, tr } from './i18n.js'
-import { PHONE, useMedia } from './useMedia.js'
+import { useMedia } from './useMedia.js'
+import ChapterRail, { chapterIndexText } from './ChapterRail.jsx'
 
 // The player's map draws chapter-local prerequisite wires. Cross-chapter gates appear in the prerequisite prompt.
 // Tree geometry in px: node size, the gap between columns, and the gap under a level: `gap` when a chip sits on its
@@ -175,9 +175,9 @@ export function MapChapter({ game, chapter, k, solved, all, best, next, compact,
   const byId = new Map(inChapter.map((level) => [level.id, level]))
   const finished = inChapter.filter((level) => solved.has(level.id)).length
   return (
-    <section className={`map-chapter ${finished === inChapter.length ? 'is-complete' : ''}`}>
+    <section tabIndex={-1} aria-label={L(chapter.title)} className={`map-chapter ${finished === inChapter.length ? 'is-complete' : ''}`}>
       <header {...fileMark(edit, 'game', ['eras', k])}>
-        <span className="chapter-index">{chapter.kicker ? L(chapter.kicker) : tr("第 {id} 章", {id: chapter.number ?? chapter.id})}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
+        <span className="chapter-index">{chapterIndexText(chapter)}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
         <h2>{L(chapter.title)}</h2>
         {chapter.question && <p>{L(chapter.question)}</p>}
         <span className="chapter-meter"><i style={{ width: `${(finished / inChapter.length) * 100}%` }} /></span>
@@ -249,9 +249,13 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
   const done = levels.filter((level) => solved.has(level.id)).length
   const next = levels.find((level) => !level.optional && !solved.has(level.id) && game.isOpen(level, solved, progress.all)) ?? levels.find((level) => !solved.has(level.id) && game.isOpen(level, solved, progress.all))
   const [progressOpen, setProgressOpen] = useState(false)
-  const phone = useMedia(PHONE)
+  const stacked = useMedia('(max-width: 760px), (hover: none) and (pointer: coarse) and (max-height: 500px)')
+  const compact = useMedia('(max-width: 1240px)')
   const needed = useNeeded(game, solved, progress.all)
   const root = useRef(null)
+  const chapterList = useRef(null)
+  const chapterIds = new Set(levels.map((level) => level.chapter))
+  const chapters = game.chapters.filter((chapter) => chapterIds.has(chapter.id))
   // Back from a level, the map opens on that level's node, and keeps it there while the page above settles (the hero's
   // illustration loads late) until the player scrolls. It jumps there, whatever a game's page CSS says about smooth scrolling.
   useLayoutEffect(() => {
@@ -273,13 +277,17 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
   }, [focus])
 
   return (
-    <main className="level-map" ref={root}>
+    <main className={`level-map${stacked ? ' is-stacked' : ''}`} ref={root}>
       <header className="map-hero">
-        <div className="map-hero-text">
-          <p className="map-kicker" {...fileMark(edit, 'game', ['kicker'])}>{L(game.kicker)}</p>
-          <h1 {...fileMark(edit, 'game', ['title'])}>{L(game.title)}</h1>
-          {game.author && <p className="map-author" {...fileMark(edit, 'game', ['author'])}>{tr("作者")} <span>{game.author}</span></p>}
-          <Text className="map-lede" text={game.lede} mark={fileMark(edit, 'game', ['lede'])} />
+        <div className="map-hero-heading">
+          {game.Hero && <div className="map-hero-art" aria-hidden="true">{createElement(game.Hero, { theme })}</div>}
+          <div className="map-hero-title">
+            {game.topic && <p className="map-topic" {...fileMark(edit, 'game', ['topic'])}>{L(game.topic)}</p>}
+            <h1 {...fileMark(edit, 'game', ['title'])}>{L(game.title)}</h1>
+            {game.author && <p className="map-author" {...fileMark(edit, 'game', ['author'])}>{tr("作者")} <span>{game.author}</span></p>}
+          </div>
+        </div>
+        <div className="map-hero-actions">
           <div className="map-progress">
             <span className="map-progress-bar" aria-hidden="true"><i style={{ width: `${(done / levels.length) * 100}%` }} /></span>
             <span>{tr("已通过 {done} / {length} 关", {done, length: levels.length})}</span>
@@ -298,12 +306,12 @@ export default function LevelMap({ game, progress, solved, onAll, onOpen, focus,
             </button>
           </div>
         </div>
-        {game.Hero && <div className="map-hero-art" aria-hidden="true">{createElement(game.Hero, { theme })}</div>}
       </header>
 
-      <div className="map-chapters">
+      {!stacked && <ChapterRail chapters={chapters} list={chapterList} viewport={root} />}
+      <div className="map-chapters" ref={chapterList}>
         {game.chapters.map((chapter, k) => (
-          <MapChapter key={chapter.id} game={game} chapter={chapter} k={k} solved={solved} all={progress.all} best={(level) => game.completionLabel?.(progress, level.tasks)} next={next} compact={phone} onOpen={onOpen} needed={needed} edit={edit} />
+          <MapChapter key={chapter.id} game={game} chapter={chapter} k={k} solved={solved} all={progress.all} best={(level) => game.completionLabel?.(progress, level.tasks)} next={next} compact={compact} onOpen={onOpen} needed={needed} edit={edit} />
         ))}
       </div>
       <NeededNote game={game} needed={needed} onOpen={onOpen} />

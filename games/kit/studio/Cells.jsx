@@ -138,7 +138,7 @@ function Sheet({ rows, colSchema, onRows, header = null, rowHeads = null, shaded
     onRows(next)
   }
   return (
-    <div className={`sheet ${one ? 'is-one' : ''}`}>
+    <div className={`sheet kit-table-scroll ${one ? 'is-one' : ''}`}>
       <table className={`cells ${shaded ? 'is-shaded' : ''} ${brush !== null ? 'is-brush' : ''}`} aria-label={label}>
         {!one && (
           <thead>

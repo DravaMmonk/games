@@ -22,5 +22,5 @@ import { tickBusWorks } from '../core/work.js'
 
 export const playPresentation = { id: 'tick', icon: Activity, label: catalogText("逐拍") }
 
-/** content (../../engine/content.js): { id, title, kicker, lede, concept, eras, levels, glossary }. */
+/** content (../../engine/content.js): { id, title, topic, lede, concept, eras, levels, glossary }. */
 export default (content, works = tickBusWorks(content)) => definedGame(content, works, { ops: {}, kind: playPresentation, screen: ui['tick/screen'], cards: ui['tick/catalog'] })

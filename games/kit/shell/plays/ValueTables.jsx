@@ -29,35 +29,37 @@ export default function ValueTables({ screen, resource, play }) {
   const table = (fi, { fill = false } = {}) => {
     const { headers, title, rows } = tables[fi]
     return (
-      <table className="vt-table">
-        <thead><tr>{headers.map((header, k) => <th key={k}><FormulaText text={header} /></th>)}<th className="is-value"><FormulaText text={title} /></th></tr></thead>
-        <tbody>
-          {rows.map(({ given, value }, k) => {
-            const tried = state.tried[`${fi}:${k}`]
-            const guess = state.fill[k]
-            const bad = fill && checked?.wrong.has(k)
-            const status = fill && rowStatus(k)
-            const answer = guess === undefined ? tr('未作答') : tf(guess)
-            return (
-              <tr key={k} className={bad ? 'is-wrong' : ''}>
-                {given.map((item, j) => <td key={j} className={item ? 'is-t' : 'is-f'}>{tf(item)}</td>)}
-                <td className="is-value">
-                  {fill ? (
-                    <div className="vt-answer">
-                      <button type="button" className={`vt-cell ${guess === undefined ? '' : guess ? 'is-t' : 'is-f'}`} onClick={() => update({ fill: { ...state.fill, [k]: guess === undefined ? true : guess ? false : undefined } })} aria-label={tr('第 {k} 行：{value}', { k: k + 1, value: bad ? `${answer} · ${status}` : answer })}>{guess === undefined ? '?' : answer}</button>
-                      {status && <span className="vt-answer-status" aria-hidden="true">{status}</span>}
-                    </div>
-                  ) : tried ? (
-                    <span className={`vt-cell is-shown ${value ? 'is-t' : 'is-f'}`}>{tf(value)}</span>
-                  ) : (
-                    <button type="button" className="vt-cell" onClick={() => tryRow(fi, k)}>{tr('尝试')}</button>
-                  )}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <div className="kit-table-scroll">
+        <table className="vt-table">
+          <thead><tr>{headers.map((header, k) => <th key={k}><FormulaText text={header} /></th>)}<th className="is-value"><FormulaText text={title} /></th></tr></thead>
+          <tbody>
+            {rows.map(({ given, value }, k) => {
+              const tried = state.tried[`${fi}:${k}`]
+              const guess = state.fill[k]
+              const bad = fill && checked?.wrong.has(k)
+              const status = fill && rowStatus(k)
+              const answer = guess === undefined ? tr('未作答') : tf(guess)
+              return (
+                <tr key={k} className={bad ? 'is-wrong' : ''}>
+                  {given.map((item, j) => <td key={j} className={item ? 'is-t' : 'is-f'}>{tf(item)}</td>)}
+                  <td className="is-value">
+                    {fill ? (
+                      <div className="vt-answer">
+                        <button type="button" className={`vt-cell ${guess === undefined ? '' : guess ? 'is-t' : 'is-f'}`} onClick={() => update({ fill: { ...state.fill, [k]: guess === undefined ? true : guess ? false : undefined } })} aria-label={tr('第 {k} 行：{value}', { k: k + 1, value: bad ? `${answer} · ${status}` : answer })}>{guess === undefined ? '?' : answer}</button>
+                        {status && <span className="vt-answer-status" aria-hidden="true">{status}</span>}
+                      </div>
+                    ) : tried ? (
+                      <span className={`vt-cell is-shown ${value ? 'is-t' : 'is-f'}`}>{tf(value)}</span>
+                    ) : (
+                      <button type="button" className="vt-cell" onClick={() => tryRow(fi, k)}>{tr('尝试')}</button>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     )
   }
 

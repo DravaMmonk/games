@@ -28,7 +28,7 @@ export const playPresentation = {
 
 const { familyOf, iconOf } = ui['image/catalog']
 /**
- * content (../../engine/content.js): { id, title, kicker, lede, power, eras, concept, replaces,
+ * content (../../engine/content.js): { id, title, topic, lede, power, eras, concept, replaces,
  * levels, glossary }.
  */
 export default function imageGame(content, image = imageWorks(content), { kernel } = {}) {
@@ -48,7 +48,6 @@ export default function imageGame(content, image = imageWorks(content), { kernel
     course,
     glossary: content.glossary,
     title: content.title,
-    kicker: content.kicker,
     lede: content.lede,
     Hero: ui['image/hero'],
     power: content.registries['image/power'][content.power],

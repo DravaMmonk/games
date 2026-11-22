@@ -26,3 +26,6 @@
 
 .player-settings-popover { width: min(var(--settings-width), calc(100vw - 2 * var(--sp-5))); }
 
+.game-info-pop { width: min(26rem, calc(100vw - 2 * var(--sp-5))); }
+.game-info-pop p { margin: 0; color: var(--body); font: var(--fs-ui)/1.65 var(--sans); overflow-wrap: anywhere; }
+

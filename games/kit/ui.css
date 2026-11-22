@@ -8,6 +8,10 @@
      </header>
    Page head: .kit-hero > .kit-kicker + h1.kit-title + .kit-lede.  Cards: .kit-cards > a.kit-card > .kit-card-body. */
 
+/* Center tables that fit, and let wider tables scroll from their leading edge. */
+.kit-table-scroll { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.kit-table-scroll > table { width: max-content; margin-inline: auto; }
+
 /* ---- top bar ---- */
 .kit-bar {
   position: sticky; top: 0; z-index: 30;

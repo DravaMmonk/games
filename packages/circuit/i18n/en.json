@@ -27,7 +27,6 @@
     "两头都是输出口（或都是输入口）：一头接输出，一头接输入。": "Both ends are outputs (or both inputs): connect an output to an input.",
     "个收进二级菜单": "parts",
     "仅显示端口": "Ports only",
-    "从上方元件栏选择元件放到板上，再从元件右侧的圆点连线到另一元件左侧的圆点。": "Add a part from the row above, then drag from a dot on its right side to a dot on another part’s left side.",
     "从文本导入": "Import from text",
     "以文本查看 / 复制": "View / copy as text",
     "保存": "Save",

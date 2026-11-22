@@ -78,6 +78,7 @@
 .ck-lines > span { display: flex; align-items: baseline; gap: var(--sp-2); }
 .ck-number { flex: none; }
 .ck-lines .tx-line { min-width: 0; }
+.ck-goal .tx-line { text-align: center; }
 
 /* A scenario as a player-written check. */
 .ck-scenarios { display: grid; gap: var(--sp-4); }
@@ -97,7 +98,7 @@
 /* The machine board: sentences, rules and goals on cards, notes and the step log in a small, compact face (a case may
    hold several goals and rules). */
 /* A state's goals and a part's rules are numbered lines, read from the left. */
-.game:has(.lg-machine-level), .lg-machine-level, .mr { --machine-readout-size: 11px; }
+.game:has(.lg-machine-level), .lg-machine-level, .mr { --machine-readout-size: var(--fs-label); }
 :is(.lg-machine-level, .game:has(.lg-machine-level) .cl-sheet) .vw-value, .mr-line, .mr-rules .formula-label { font: 500 var(--machine-readout-size)/1.4 var(--sans); letter-spacing: -0.01em; word-spacing: -0.06em; text-align: left; }
 .lg-machine-level .vw-value { color: inherit; }
 .lg-machine-level { --world-extra: 0.16; }

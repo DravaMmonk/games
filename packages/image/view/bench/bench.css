@@ -173,9 +173,10 @@
 .bench-chip.is-alias { color: var(--fail); background: color-mix(in srgb, var(--fail) 10%, var(--paper)); }
 
 /* Tables, small curves, progress dots. */
-.bench-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
-.bench-table th { padding: 0 var(--sp-3) var(--sp-3) 0; color: var(--muted); font-weight: 400; text-align: left; }
-.bench-table td { padding: var(--sp-3) var(--sp-3) var(--sp-3) 0; border-top: 1px solid var(--hairline); color: var(--ink); }
+.bench-table { border-collapse: collapse; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.bench-table :is(th, td) { padding: var(--sp-3) var(--sp-4); text-align: start; }
+.bench-table th { color: var(--muted); font-weight: 400; }
+.bench-table td { border-top: 1px solid var(--hairline); color: var(--ink); }
 .bench-table td.is-pass { color: var(--status); }
 .bench-table td.is-fail { color: var(--fail); }
 .bench-table tr.is-dim td { color: var(--faint); }

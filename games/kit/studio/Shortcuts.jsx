@@ -26,11 +26,13 @@ export default function Shortcuts({ onClose }) {
   return (
     <div ref={overlay} className="palette-scrim" onPointerDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div className="palette keys" role="dialog" aria-modal="true" aria-label={tr('快捷键')}>
-        <table>
-          <tbody>
-            {KEYS.map(([keys, label]) => <tr key={keys}><th><kbd>{keys}</kbd></th><td>{L(label)}</td></tr>)}
-          </tbody>
-        </table>
+        <div className="kit-table-scroll">
+          <table>
+            <tbody>
+              {KEYS.map(([keys, label]) => <tr key={keys}><th><kbd>{keys}</kbd></th><td>{L(label)}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
         <button type="button" className="kit-btn is-label" onClick={onClose} autoFocus>Esc</button>
       </div>
     </div>

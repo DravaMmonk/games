@@ -430,7 +430,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
-              audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
+              audit={<Audit chapters={content.eras} items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
               panel={drawerTab === 'changes' ? <Review showRemovedLevels ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                 onRemove={(k) => {
                   const confirmed = pending.grouped(ops[k]) ? window.confirm(tr("确定放弃这组编排操作吗？")) : confirmDelete(ops[k].op)

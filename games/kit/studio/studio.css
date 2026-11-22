@@ -559,8 +559,9 @@ select.cell { width: auto; min-width: 46px; }
 .audit-lines { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; }
 .audit-row button { all: unset; box-sizing: border-box; width: 100%; display: flex; gap: 6px; padding: 2px 6px; border-radius: 4px; cursor: pointer; font: 11px/1.45 var(--mono); color: var(--muted); }
 .audit-row button:hover { background: var(--hover); }
-.audit-row code { flex: none; width: 7em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent-ink); font-weight: 600; }
+.audit-row code { flex: 0 0 clamp(7em, 36%, 14em); min-width: 0; overflow-wrap: anywhere; color: var(--accent-ink); font-weight: 600; }
 .audit-row span { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.audit-row .audit-level-number { white-space: nowrap; }
 .audit-row.is-fail button { color: var(--ink); box-shadow: inset 2px 0 0 var(--fail); }
 .audit-row.is-warn strong { color: var(--accent-ink); }
 .audit-row.is-open button { box-shadow: inset 2px 0 0 var(--accent); }

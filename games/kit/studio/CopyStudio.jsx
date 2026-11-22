@@ -254,7 +254,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
-              audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
+              audit={<Audit chapters={content.eras} items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
               panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                 onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}
                 onDiscard={discard} onOpen={pending.open} onApply={apply} onUndo={undo} onSelect={() => {}} />

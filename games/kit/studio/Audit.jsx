@@ -10,6 +10,7 @@ import { L, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { SEVERITIES, filterItems, stepIn, tally } from './worklist.js'
 import { usePref } from './prefs.js'
+import { levelLabels } from '../course.js'
 
 const SEVERITY = { fail: [T("不过")], warn: [T("警告")], open: [T("待办")], report: [T("报告", {}, "audit")], advice: [T("规范提示")], pass: [T("通过", {}, "audit")] }
 const previewFailed = (last) => last?.ok === false && !last.content
@@ -29,10 +30,11 @@ export function auditSum(items, last) {
 }
 
 /** `open`: the fold bar is open on the audit; `onOpen()` opens it there (F8 steps into a folded one). */
-export default function Audit({ items, fresh, last, at, busy, open, onOpen, onJump, advice }) {
+export default function Audit({ chapters, items, fresh, last, at, busy, open, onOpen, onJump, advice }) {
   const [filter, setFilter] = usePref('audit-filter', { severities: ['fail', 'open', 'report'], warnings: true, rule: '', mine: false })
   const [query, setQuery] = useState('')
   const [cursor, setCursor] = useState(-1)
+  const levelNumbers = useMemo(() => levelLabels(chapters ?? []), [chapters])
   const { rules, severities } = useMemo(() => tally(items), [items])
   const selected = useMemo(() => {
     const enabled = filter.severities.length ? filter.severities : SEVERITIES.filter(severity => !['warn', 'advice'].includes(severity))
@@ -71,7 +73,7 @@ export default function Audit({ items, fresh, last, at, busy, open, onOpen, onJu
       <Filters filter={filter} selected={selected} set={set} toggle={toggle} severities={severities} rules={rules} at={at} query={query} setQuery={setQuery} advice={advice} />
       <div className="audit-body">
         {failed && <ul className="audit-lines">{last.problems.map((p) => <li key={p} className="audit-row is-fail is-wide">{p}</li>)}</ul>}
-        <Lines shown={shown} cursor={cursor} go={go} onSettle={advice.settle} />
+        <Lines levelNumbers={levelNumbers} shown={shown} cursor={cursor} go={go} onSettle={advice.settle} />
       </div>
     </div>
   )
@@ -102,22 +104,26 @@ function Filters({ filter, selected, set, toggle, severities, rules, at, query, 
 }
 
 /** The check's lines as rows, each going to what it is about. */
-function Lines({ shown, cursor, go, onSettle }) {
+function Lines({ levelNumbers, shown, cursor, go, onSettle }) {
   return (
     <ol className="audit-lines" aria-label={tr('检查')}>
-      {shown.slice(0, SHOWN).map((it, k) => (
-        <li key={`${k} ${it.text}`} className={`audit-row is-${it.severity} ${it.settled ? 'is-settled' : ''} ${k === cursor ? 'is-at' : ''}`}>
-          <button type="button" onClick={() => go(k)} title={it.text}>
-            <code>{it.levels[0] ?? it.rule}</code>
-            <span>{it.severity === 'warn' && <strong>{tr('警告')} · </strong>}{it.text}</span>
-          </button>
-          {it.severity === 'advice' && (
-            <button type="button" className="audit-settle" onClick={() => onSettle(it)} title={it.settled ? tr('重新打开') : tr('了结')}>
-              {it.settled ? <RotateCcw size={12} aria-hidden="true" /> : <Check size={12} aria-hidden="true" />}
+      {shown.slice(0, SHOWN).map((it, k) => {
+        const level = it.levels[0]
+        const number = levelNumbers.get(level)
+        return (
+          <li key={`${k} ${it.text}`} className={`audit-row is-${it.severity} ${it.settled ? 'is-settled' : ''} ${k === cursor ? 'is-at' : ''}`}>
+            <button type="button" onClick={() => go(k)} title={it.text}>
+              <code>{level ?? it.rule}{number && <> <span className="audit-level-number">({number})</span></>}</code>
+              <span>{it.severity === 'warn' && <strong>{tr('警告')} · </strong>}{it.text}</span>
             </button>
-          )}
-        </li>
-      ))}
+            {it.severity === 'advice' && (
+              <button type="button" className="audit-settle" onClick={() => onSettle(it)} title={it.settled ? tr('重新打开') : tr('了结')}>
+                {it.settled ? <RotateCcw size={12} aria-hidden="true" /> : <Check size={12} aria-hidden="true" />}
+              </button>
+            )}
+          </li>
+        )
+      })}
       {shown.length > SHOWN && <li className="audit-more">{tr("还有 {value} 行", {value: shown.length - SHOWN})}</li>}
       {!shown.length && <li className="audit-more">—</li>}
     </ol>

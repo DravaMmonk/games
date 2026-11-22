@@ -50,6 +50,7 @@ import GameFrame from './GameFrame.jsx'
 import { packageLevel } from '../engine/package-play.js'
 import StudioBar from './StudioBar.jsx'
 import Loading from './Loading.jsx'
+import { mobilePanelProps, useMobilePanels } from './MobilePanels.jsx'
 import { useChangeset } from './useChangeset.js'
 import { OverrideDetail, OverrideList, visibleOverrides } from './OverrideAudit.jsx'
 import ObjectLinks from './ObjectLinks.jsx'
@@ -135,6 +136,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const [rawNames, setRawNames] = useState(null)
   const [at, setAt] = useState(() => (QUERY.get('level') ? { level: QUERY.get('level') } : QUERY.get('group') ? { group: QUERY.get('group') } : registeredEditors().some(editor => editor.route && QUERY.has(editor.route.type)) ? Object.fromEntries(registeredEditors().filter(editor => editor.route && QUERY.has(editor.route.type)).map(editor => [editor.route.selector, QUERY.get(editor.route.type)])) : projectionSelection(QUERY) ?? (SAVED_VIEW?.gameRoot ? { game: true } : null)))
   const [picked, setPicked] = useState(() => new Set(at?.level ? [at.level] : []))
+  const [mobilePanel, showMobilePanel] = useMobilePanels()
   const [drawerTab, setDrawerTab] = usePref('drawer-tab', 'audit') // the fold bar's tab (Drawer.jsx)
   const [play, setPlay] = useState(() => {
     const level = SAVED_VIEW?.playLevel ?? at?.level
@@ -150,6 +152,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const [go, setGo] = useState(null) // a task for the page to go to: { task }
   const [moving, setMoving] = useState(null) // the levels being moved in the tree
   const [layout, setLayout] = usePref('layout', { tree: 240, audit: 220, side: 380, treeOpen: true, auditOpen: true, sideOpen: true })
+  const openSide = () => setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
   const [resize, setResize] = useState(null)
   const [savedSide, setSide] = usePref('side', 'tree')
   // The list the address names wins over the one last shown.
@@ -171,6 +174,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const openDrawer = (next) => {
     setDrawerTab(next)
     setLayout((l) => (l.auditOpen ? l : { ...l, auditOpen: true }))
+    showMobilePanel('main', true)
   }
   const [savedInspectorTabs, setInspectorTabs] = usePref('inspector-tabs', {})
   const inspectorTabs = savedInspectorTabs[game] ?? []
@@ -265,11 +269,13 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     setOpened((o) => ({ ...o, [OBJECT_LISTS[list]]: key }))
     setObjectField(null)
     showList(list)
+    showMobilePanel('main', true)
   }
   const fileKey = heading ? `${heading.kind} ${heading.full}` : openKey
   const pickObjectField = (path) => {
-    setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
+    openSide()
     setObjectField({ of: fileKey, path })
+    showMobilePanel('side', true)
   }
   const objectPath = objectField?.of === fileKey ? objectField.path : []
   const select = (next, keep = false) => {
@@ -280,8 +286,11 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     setAt(next)
     setMoving(null)
     const root = objectPathOf(next)
-    if (root) pickField(root)
-    else if (other) setField(null)
+    if (root) {
+      openSide()
+      setField({ path: root })
+    } else if (other) setField(null)
+    if (next) showMobilePanel('main', true)
     if (!keep) setPicked(new Set(next?.level ? [next.level] : []))
     if (next?.level && next.level !== play?.level) {
       setPlay({ level: next.level, seed: null, take: null })
@@ -299,6 +308,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     select(null)
     setHeading(next)
     setObjectField(null)
+    showMobilePanel('main', true)
   }
   /** An object named somewhere (a tag, a relation, a tray, a section) opened in the build list it belongs in. */
   const openNamed = (kind, full) => {
@@ -350,7 +360,10 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   })
   const openTreeItem = (next, keep) => {
     select(next, keep)
-    if (next?.group === undefined) pickField(selectionPath(next))
+    if (next && next.group === undefined) {
+      openSide()
+      setField({ path: selectionPath(next) })
+    }
   }
   /** The stage of an object of `kind` the left lists mark ({ of, id }): the one the page previews, else the field open. */
   const stageOf = (kind, of, path) => (path?.[0] === 'stages' && Number.isInteger(path[1]) ? { of, id: objectStages(content, kind, of)[path[1]]?.id } : null)
@@ -371,8 +384,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
       pickField(step.path)
     } else {
       openHeading({ kind, full: of })
-      setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
+      openSide()
       setObjectField({ of: `${kind} ${of}`, path: step.path })
+      showMobilePanel('side', true)
     }
   }
   const removeLevel = (level) => {
@@ -413,6 +427,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
       const full = file.slice(type.folder.length + 1, -5)
       openNamed(kind, full.includes('/') ? full : `${namespace}/${full}`)
       setObjectField({ of: `${kind} ${full}`, path: keys })
+      showMobilePanel('side', true)
       return
     }
     else if (file === editorRoute()?.file) select({ [editorRoute()?.selector]: keys[1] })
@@ -422,9 +437,10 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   /** A field into the side panel (opened if folded); a field of another task has the page play that task. */
   const pickField = (path, focus = false, pendingValue = null, trail = null) => {
-    setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
+    openSide()
     setField({ path, ...(focus && { focus }), ...(pendingValue && { pendingValue }), ...(trail && { trail }) })
     if (path[0] === 'tasks' && Number.isInteger(path[1])) setGo({ task: path[1] })
+    showMobilePanel('side', !focus)
   }
   const inspectorSelection = at ?? { game: true }
   const openInspectorTab = (tab) => {
@@ -485,10 +501,12 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const playFrom = (level, reference) => {
     playLevel(level, reference ? referenceOf(level) : null)
     leaveObjects()
+    showMobilePanel('main', true)
   }
   // A board of the level edited in the game's own circuit editor, on the page: its 「用作 …」 writes it back.
   const onBoard = async (level, path) => {
     leaveObjects()
+    showMobilePanel('main', true)
     await playLevel(level, path, true)
   }
   const onTake = ({ level, path, text }) => {
@@ -556,9 +574,10 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     const value = levelValue(m.level)
     if (!value) return undefined
     if (m.level !== at?.level) select({ level: m.level })
-    setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
+    openSide()
     if (m.type === 'pick') {
       const path = markPath(value, vocab.vocabulary, m)
+      showMobilePanel('side', !path)
       return setField(path ? { path, focus: true } : { missing: m.at })
     }
     if (m.type === 'add') {
@@ -566,10 +585,14 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
       const schema = path && shapeAt(vocab.vocabulary.level, value, path, { vocabulary: vocab.vocabulary })
       if (schema?.type === 'list' && creationChoices(schema.of, { vocabulary: vocab.vocabulary }).length > 1) return pickField(path)
       const added = addFor(m.level, value, vocab.vocabulary, m)
-      if (!added) return setField({ missing: m.at })
+      if (!added) {
+        showMobilePanel('side', true)
+        return setField({ missing: m.at })
+      }
       edit(added.op)
       setField({ path: added.at, focus: true })
       if (added.at.length === 2 && added.at[0] === 'tasks') setGo({ task: added.at[1] })
+      showMobilePanel('side')
     }
     return undefined
   }
@@ -682,6 +705,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const openSearch = () => {
     showList('search')
     setLayout((l) => ({ ...l, treeOpen: true }))
+    showMobilePanel('tree')
     window.setTimeout(() => document.querySelector('.search input')?.focus())
   }
 
@@ -817,8 +841,9 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   return (
     <div className={`studio ${moving ? 'is-moving' : ''} ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }} onPalette={() => openOverlay('palette')}>
-        <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => showList('packages')} title={L(packageInfo.desc)}>
+      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }}
+        onPalette={() => openOverlay('palette')} mobilePanels={ready && { panel: mobilePanel, onChange: showMobilePanel }}>
+        <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => { showList('packages'); showMobilePanel('tree', true) }} title={L(packageInfo.desc)}>
           <Package size={13} aria-hidden="true" /><PackageName info={packageInfo} />
         </button>
         <button type="button" className="kit-btn is-label" disabled={saving} onClick={() => openSource(pkg)}>
@@ -826,8 +851,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
         </button>
       </StudioBar>
       {!ready ? <Loading /> : (
-        <div className={`studio-body is-${objectList ? 'objects' : middle} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
-          <aside className="studio-tree">
+        <div className={`studio-body is-${objectList ? 'objects' : middle} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style} data-mobile-panel={mobilePanel}>
+          <aside className="studio-tree" {...mobilePanelProps('tree')}>
             <div className="side-tabs" role="tablist" aria-label={tr("列表")}>
               {lists.map((list) => {
                 const info = types.find(({ type }) => type === typeOfList(list))
@@ -841,7 +866,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               })}
               <LeftTypes types={types} shown={lists.filter((list) => list !== 'packages' && !TOOL_LISTS.includes(list)).map(typeOfList)} chosen={chosenTypes !== null} onChoose={setChosenTypes} />
             </div>
-            {side === 'packages' ? <PackageList packages={packages} current={pkg} picked={pickedPackage} disabled={saving} onPick={setPickedPackage} onOpen={openPackage} onCreate={makePackage} />
+            {side === 'packages' ? <PackageList packages={packages} current={pkg} picked={pickedPackage} disabled={saving} onPick={(id) => { setPickedPackage(id); showMobilePanel('main', true) }} onOpen={openPackage} onCreate={makePackage} />
               : side === 'kernel' ? <CapabilityList capabilities={capabilities} definitions={capabilityKinds} namespace={namespace} current={openCapability} onOpen={(kind, name) => openIn('kernel', capabilityKey(kind, name))} />
               : side === 'overrides' ? <OverrideList events={events} layer={namespace} current={openKey} onOpen={(key) => openIn('overrides', key)} />
               : Sidebar ? <Sidebar content={content} namespace={namespace} game={game} at={at} field={field}
@@ -863,7 +888,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
                   addOptions={levelAdds} onAdd={addLevel} /> }
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
-          <main className="studio-main">
+          <main className="studio-main" {...mobilePanelProps('main')}>
             {objectList && (
               <div className="studio-scroll">
                 {side === 'kernel' && <CapabilityView current={openCapability} onSource={packages.some(({ id }) => id === sourceOwner) ? () => openSource(sourceOwner, sourceSymbol) : null} />}
@@ -902,7 +927,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
             />
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
-          <aside className="studio-side">
+          <aside className="studio-side" {...mobilePanelProps('side')}>
             {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packages.find((p) => p.id === pickedPackage)?.file} note={tr("只读：没有改它的操作，手改文件")} />
               : sideCtx && (objectList || heading
               ? <Inspector content={content} vocab={vocab} at={objectFile} field={objectFile.object || objectFile.capability || objectFile.override ? { path: objectPath } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps} onPick={pickObjectField} onLevel={() => {}} onRemoveLevel={() => {}} onRemoveSelection={() => {}}

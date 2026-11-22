@@ -22,6 +22,7 @@ import { sidebarSearch } from './sidebar-list.js'
 import { useChangeset } from './useChangeset.js'
 import StudioBar from './StudioBar.jsx'
 import Loading from './Loading.jsx'
+import { mobilePanelProps, useMobilePanels } from './MobilePanels.jsx'
 import PanelResizer from './PanelResizer.jsx'
 import CopyTable from './CopyTable.jsx'
 import Search from './Search.jsx'
@@ -70,6 +71,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   const [file, setFile] = useState(() => QUERY.get('file'))
   const [query, setQuery] = useState('')
   const [picked, setPicked] = useState(null) // the field in the side panel: { at, path }
+  const [mobilePanel, showMobilePanel] = useMobilePanels()
   // The game played in the middle, as in Arrange (GameStudio.jsx): `playing` shows it instead of the copy table; `playAt`
   // is where it opened ({ level }, or the map); once opened the frame stays loaded while hidden.
   const [playing, setPlaying] = useState(false)
@@ -79,6 +81,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
     setPlayAt(level ? { level } : { map: Date.now() })
     setPlaying(true)
     setPlayOpened(true)
+    showMobilePanel('main', true)
   }
   const pickedLevel = picked?.at?.level ?? null
   const [drawerTab, setDrawerTab] = usePref('copy-drawer-tab', 'audit')
@@ -116,6 +119,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   const pick = (next) => {
     setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
     setPicked(next)
+    showMobilePanel('side', true)
   }
   const showScope = (next) => { setFile(null); setScope(next) }
   // A finding of the check: the field it names in game.json, else nothing more than the table.
@@ -158,20 +162,21 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   const ready = content && vocab
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
-        <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => setList(opened.game ? 'games' : 'packages')}
+      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}
+        mobilePanels={ready && { panel: mobilePanel, onChange: showMobilePanel }}>
+        <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => { setList(opened.game ? 'games' : 'packages'); showMobilePanel('tree', true) }}
           title={opened.game ? tr("选择游戏") : L(pkg.desc)}>
           {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
           {opened.game ? <span>{L(games.find((g) => g.id === opened.game)?.title) ?? opened.game}</span> : <PackageName info={pkg} />}
         </button>
         <button type="button" className={`studio-open-name studio-play-toggle ${playing ? 'is-on' : ''}`} aria-pressed={playing}
-          onClick={() => (playing ? setPlaying(false) : playOpened ? setPlaying(true) : playGame(pickedLevel))} title={`${playing ? tr("回到文案") : tr("试玩")} (${MOD}+Enter)`}>
+          onClick={() => { if (playOpened) { setPlaying(!playing); showMobilePanel('main', true) } else playGame(pickedLevel) }} title={`${playing ? tr("回到文案") : tr("试玩")} (${MOD}+Enter)`}>
           <Play size={13} aria-hidden="true" /><span>{tr("试玩")}</span>
         </button>
       </StudioBar>
       {!ready ? <Loading /> : (
-        <div className={`studio-body is-copy ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
-          <aside className="studio-tree">
+        <div className={`studio-body is-copy ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style} data-mobile-panel={mobilePanel}>
+          <aside className="studio-tree" {...mobilePanelProps('tree')}>
             <div className="side-tabs" role="tablist" aria-label={tr("列表")}>
               {lists.map((id) => {
                 const [Icon, label] = LISTS[id]
@@ -182,8 +187,8 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
                 )
               })}
             </div>
-            {shownList === 'games' ? <GameList games={games} current={opened.game ?? null} picked={pickedOpen.games} disabled={saving} onPick={(id) => setPickedOpen((p) => ({ ...p, games: id }))} onOpen={(id) => openOther('game', id)} />
-              : shownList === 'packages' ? <PackageList packages={packages} current={opened.package ?? null} picked={pickedOpen.packages} disabled={saving} onPick={(id) => setPickedOpen((p) => ({ ...p, packages: id }))} onOpen={(id) => openOther('package', id)} />
+            {shownList === 'games' ? <GameList games={games} current={opened.game ?? null} picked={pickedOpen.games} disabled={saving} onPick={(id) => { setPickedOpen((p) => ({ ...p, games: id })); showMobilePanel('main', true) }} onOpen={(id) => openOther('game', id)} />
+              : shownList === 'packages' ? <PackageList packages={packages} current={opened.package ?? null} picked={pickedOpen.packages} disabled={saving} onPick={(id) => { setPickedOpen((p) => ({ ...p, packages: id })); showMobilePanel('main', true) }} onOpen={(id) => openOther('package', id)} />
               : shownList === 'search'
               ? <Search content={content} vocabulary={vocab.vocabulary} onAdd={addOps} onJump={(level, path, kind) => {
                 const keys = path ? parsePath(path) : []
@@ -201,13 +206,13 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
                   <SidebarListTools query={query} onQuery={setQuery} />
                   {shownList === 'objects'
                     ? scopes.filter(([, label]) => matches(label)).map(([id, label]) => (
-                      <button key={String(id)} type="button" className={`parts-row is-object ${file === null && scope === id ? 'is-on' : ''}`} aria-current={file === null && scope === id ? 'true' : undefined} onClick={() => showScope(id)}>
+                      <button key={String(id)} type="button" className={`parts-row is-object ${file === null && scope === id ? 'is-on' : ''}`} aria-current={file === null && scope === id ? 'true' : undefined} onClick={() => { showScope(id); showMobilePanel('main', true) }}>
                         <i className="family-chip"><ListTree size={12} aria-hidden="true" /></i>
                         <span>{label}</span><i />
                       </button>
                     ))
                     : files.filter(([name]) => matches(name)).map(([name, count]) => (
-                      <button key={name} type="button" className={`parts-row is-object ${file === name ? 'is-on' : ''}`} aria-current={file === name ? 'true' : undefined} onClick={() => setFile(name)}>
+                      <button key={name} type="button" className={`parts-row is-object ${file === name ? 'is-on' : ''}`} aria-current={file === name ? 'true' : undefined} onClick={() => { setFile(name); showMobilePanel('main', true) }}>
                         <i className="family-chip"><FileText size={12} aria-hidden="true" /></i>
                         <span>{name}</span><i />
                         <small className="object-count">{count}</small>
@@ -217,7 +222,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
               )}
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
-          <main className="studio-main">
+          <main className="studio-main" {...mobilePanelProps('main')}>
             {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
               onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
               tools={<>
@@ -235,7 +240,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
             </div>
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
-          <aside className="studio-side">
+          <aside className="studio-side" {...mobilePanelProps('side')}>
             {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={games.find((g) => g.id === pickedOpen.games)?.file} note={tr("在编排里编辑")} />
               : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packages.find((p) => p.id === pickedOpen.packages)?.file} note={tr("只读：手改文件")} />
               : sideCtx && <Inspector content={content} vocab={vocab} at={sideField?.at ?? { game: true }} field={sideField ? { path: sideField.path } : null} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}

@@ -2,7 +2,7 @@
    where it is edited; or its fields as rows, its copy, a comparison, the changes), the field picked in the side panel
    on the right, the audit in a drawer under the middle; each scrolls on its own, the tree, the side panel and the
    drawer resize and fold (the drawer to its one-line bar, which long check lines need the width for). On a narrow
-   screen, the arrangement workspace switches between panels and the other workspaces stack them. Tokens from ../tokens.css, the bar
+   screen, the toolbar switches between workspace panels. Tokens from ../tokens.css, the bar
    and buttons from ../ui.css; the studio's own denser scale below. Density comes from removing chrome: a field's
    label sits beside it, short fields share a row, folded things fold to one line. */
 
@@ -21,6 +21,8 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 
 /* ---- the bar ---- */
 .studio-bar { gap: 10px; }
+.studio-bar-tools, .studio-bar-start { display: contents; }
+.studio-mobile-panels { display: none; }
 .studio-game { height: 28px; max-width: 14em; padding: 0 6px; border: 0; border-radius: var(--r-sm); color: var(--ink); background: var(--hover); font: 600 var(--fs)/1 var(--sans); }
 .studio-tabs { min-width: 0; display: flex; gap: 1px; padding: 2px; overflow-x: auto; border-radius: 8px; background: var(--hover); scrollbar-width: none; }
 .studio-tab { height: 24px; padding: 0 10px; display: inline-flex; align-items: center; gap: 5px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; font: 600 12px/1 var(--sans); cursor: pointer; }
@@ -88,15 +90,12 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .studio-resize:hover, .studio-resize:focus-visible { outline: none; background: var(--accent); }
 .studio-resize.is-shut { cursor: e-resize; background: var(--line); }
 .studio-resize.is-shut::after { content: ''; position: absolute; inset: 40% 1px; border-radius: 2px; background: var(--rule); }
-.arrange-panels { display: none; }
 
 @media (max-width: 760px) {
   .studio { height: auto; min-height: 100vh; }
   .studio-body { display: block; }
   .studio-body > * { overflow: visible; }
   .studio-resize { display: none; }
-  .studio-tree { max-height: 40vh; overflow: auto; }
-  .studio-body.no-side > .studio-side { display: none; }
   .studio-body:not(.no-audit) > .studio-audit { height: auto; }
   .studio-play iframe { height: 80vh; }
   .studio-play:not(.is-hidden) { position: relative; inset: auto; }
@@ -109,18 +108,51 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
   .studio-refresh { width: 44px; height: 44px; }
   .arrange-bar { flex-wrap: nowrap; }
   .arrange-bar > .studio-game { flex: 1 1 0; min-width: 0; max-width: none; }
-  .game-studio .studio-panel-toggle { display: none; }
-  .game-studio .arrange-panels { position: sticky; top: 0; z-index: 4; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--gutter); background: var(--rail); border-block: 1px solid var(--hairline); }
-  .arrange-panels > button { flex: 1; min-height: 44px; border: 1px solid transparent; border-radius: var(--r-sm); background: none; color: var(--body); font: 600 var(--fs-ui)/1.2 var(--sans); cursor: pointer; }
-  .arrange-panels > button[aria-pressed='true'] { border-color: var(--hairline); background: var(--paper); color: var(--ink); }
-  .game-studio .studio-body > .studio-tree { max-height: none; overflow: visible; visibility: visible; }
-  .game-studio .studio-body > .studio-side { visibility: visible; }
-  .game-studio .studio-body[data-mobile-panel='side'] > .studio-side { display: block; }
-  .game-studio .studio-body:not([data-mobile-panel='tree']) > .studio-tree,
-  .game-studio .studio-body:not([data-mobile-panel='main']) > :is(.studio-main, .studio-audit),
-  .game-studio .studio-body:not([data-mobile-panel='side']) > .studio-side { display: none; }
-  .game-studio .studio-tree > .side-tabs { top: calc(46px + 2 * var(--sp-2)); }
-  .game-studio .studio-body > :is(.studio-tree, .studio-main, .studio-side):focus { outline: none; }
+  .studio-panel-toggle, .studio-bar.has-mobile-panels > .kit-spacer { display: none; }
+  .studio-bar.has-mobile-panels { column-gap: var(--sp-2); }
+  .has-mobile-panels .studio-open-name { flex: 1 1 0; justify-content: flex-start; padding-inline: var(--sp-2); }
+  .has-mobile-panels .studio-play-toggle { flex: none; }
+  .has-mobile-panels .studio-bar-tools {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template: "history panels actions" auto / minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+  }
+  .has-mobile-panels .studio-bar-start { grid-area: history; display: flex; align-items: center; gap: var(--sp-1); }
+  .has-mobile-panels .studio-bar-actions { grid-area: actions; justify-self: end; margin: 0; }
+  .has-mobile-panels :is(.studio-bar-actions, .kit-bar-menus) { gap: 0; }
+  .has-mobile-panels .studio-bar-actions .kit-icon-btn { width: 32px; height: 34px; }
+  .studio-mobile-panels {
+    grid-area: panels;
+    justify-self: center;
+    display: flex;
+    gap: 1px;
+    padding: 2px;
+    border-radius: var(--r-md);
+    background: var(--hover);
+  }
+  .studio-mobile-panels > .kit-btn {
+    height: 28px;
+    padding-inline: var(--sp-1);
+    border-radius: var(--r-sm);
+    color: var(--muted);
+    font: 600 var(--fs)/1 var(--sans);
+    white-space: nowrap;
+  }
+  .studio-mobile-panels > [aria-pressed='true'] { background: var(--paper); color: var(--ink); }
+  .studio-body[data-mobile-panel] > :is(.studio-tree, .studio-side) { visibility: visible; }
+  .studio-body:not([data-mobile-panel='tree']) > .studio-tree,
+  .studio-body:not([data-mobile-panel='main']) > :is(.studio-main, .studio-audit),
+  .studio-body:not([data-mobile-panel='side']) > .studio-side { display: none; }
+  .studio-tree > .side-tabs { position: static; }
+  .studio-body > :is(.studio-tree, .studio-main, .studio-side):focus { outline: none; }
+}
+
+@media (max-width: 374px) {
+  .has-mobile-panels .studio-bar-tools {
+    grid-template: "history actions" auto "panels panels" auto / 1fr 1fr;
+    row-gap: var(--sp-1);
+  }
 }
 
 /* ---- the left panel: the tree, or search ---- */

@@ -25,6 +25,7 @@ import { missingDependencies, packageAddOps, packageRemoveOps } from './game-pac
 import { useChangeset } from './useChangeset.js'
 import StudioBar from './StudioBar.jsx'
 import Loading from './Loading.jsx'
+import { mobilePanelProps, useMobilePanels } from './MobilePanels.jsx'
 import PanelResizer from './PanelResizer.jsx'
 import ChapterBoard from './ChapterBoard.jsx'
 import CourseImpact from './CourseImpact.jsx'
@@ -48,7 +49,6 @@ const QUERY = new URLSearchParams(window.location.search)
 const SCOPE = 'game'
 const OPENED = readOpen(QUERY, GAME_LISTS)
 const LISTS = { games: [Gamepad2, T("游戏")], packages: [Package, T("用到的包")], chapters: [ListTree, T("章节")], overrides: [Layers, T("覆盖")] }
-const PANELS = [['tree', T('列表')], ['main', T('编辑区')], ['side', T('字段')]]
 const SETTLE = 700
 
 const remember = (game, at, opened) => {
@@ -72,15 +72,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const [rawNames, setRawNames] = useState(null)
   const [at, setAt] = useState(() => (QUERY.get('era') !== null ? { era: Number(QUERY.get('era')) } : { era: 0 }))
   const [drawerTab, setDrawerTab] = usePref('game-drawer-tab', 'audit') // the fold bar's tab (Drawer.jsx)
-  const [mobilePanel, setMobilePanel] = useState('main')
-  const showMobilePanel = (panel, focus = false) => {
-    if (!window.matchMedia('(max-width: 760px)').matches) return
-    setMobilePanel(panel)
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, 0)
-      if (focus) document.getElementById(`arrange-${panel}`)?.focus({ preventScroll: true })
-    })
-  }
+  const [mobilePanel, showMobilePanel] = useMobilePanels()
   const [savedSide, setSide] = usePref('game-side', 'chapters')
   useLayoutEffect(() => { if (OPENED.list) setSide(OPENED.list) }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const side = GAME_LISTS.includes(savedSide) ? savedSide : 'chapters'
@@ -161,6 +153,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const pickField = (path) => {
     setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
     setField({ path })
+    showMobilePanel('side', true)
   }
   // A chapter is its own object (course-edit.js); the game's `chapters` list orders them.
   const newChapter = () => {
@@ -340,8 +333,9 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const ready = content && vocab
   const busyEditing = saving || shown?.ops !== ops
   return (
-    <div className={`studio game-studio ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+    <div className={`studio ${resize ? 'is-resizing' : ''}`}>
+      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}
+        mobilePanels={ready && { panel: mobilePanel, onChange: showMobilePanel }}>
         <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => { setSide('games'); showMobilePanel('tree', true) }} title={tr("选择游戏")}>
           <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
         </button>
@@ -357,12 +351,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
         onClose={() => { setConfirmation(null); setImpactProblem(null) }} />}
       {!ready ? <Loading label={tr('正在加载课程……')} /> : (
         <div className={`studio-body is-${overridesShown || packagesShown ? 'objects' : 'arrange'} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style} data-mobile-panel={mobilePanel}>
-          <nav className="arrange-panels" aria-label={tr('编排面板')}>
-            {PANELS.map(([id, label]) => (
-              <button key={id} type="button" aria-pressed={mobilePanel === id} aria-controls={`arrange-${id}`} onClick={() => showMobilePanel(id)}>{L(label)}</button>
-            ))}
-          </nav>
-          <aside id="arrange-tree" className="studio-tree" tabIndex={-1} aria-label={tr('列表')}>
+          <aside className="studio-tree" {...mobilePanelProps('tree')}>
             <div className="side-tabs" role="tablist" aria-label={tr("列表")}>
               {GAME_LISTS.map((list) => {
                 const [Icon, label] = LISTS[list]
@@ -373,7 +362,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 )
               })}
             </div>
-            {gamesShown ? <GameList games={games} current={game} picked={pickedGame} disabled={saving} onPick={setPickedGame} onOpen={openGame} onCreate={makeGame} />
+            {gamesShown ? <GameList games={games} current={game} picked={pickedGame} disabled={saving} onPick={(id) => { setPickedGame(id); showMobilePanel('main', true) }} onOpen={openGame} onCreate={makeGame} />
               : packagesShown ? <UsedPackages packages={packages} used={used} current={packageShown} onOpen={(id) => { setPackageAt(id); showMobilePanel('main', true) }} />
               : overridesShown ? <OverrideList events={events} layer={layer} current={openEvent && overrideKey(openEvent)} onOpen={(id) => { setOpenOverride(id); showMobilePanel('main', true) }} /> : (
             <nav className="tree chapters" aria-label={tr("章节")}>
@@ -397,7 +386,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             </nav>)}
           </aside>
           <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
-          <main id="arrange-main" className="studio-main" tabIndex={-1} aria-label={tr('编辑区')}>
+          <main className="studio-main" {...mobilePanelProps('main')}>
             {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
               onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
               tools={<>
@@ -413,7 +402,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 ? <article className="editor"><header className="editor-head"><h1><TitleEdit value={L(content.title) ?? ''} label={tr("游戏名")} disabled={busyEditing}
                   onSet={(text) => edit(opFor({ game: true }, ['title'], { set: text, ...(typeof content.title !== 'string' && { lang: getLang() }) }, 'text'))} /></h1></header></article>
                 : <>
-                  <header className="editor-head chapter-head" onClick={() => pickField([])}>
+                  <header className="editor-head chapter-head" onClick={(event) => { if (!event.target.closest('button')) pickField([]) }}>
                     <code className="editor-id is-static">{chapterName(eras[e].id)}</code>
                     <CopyId id={eras[e].id} />
                     <h1><TitleEdit value={chapterTitle(eras[e])} label={tr("章名")} disabled={busyEditing} onSet={(text) => retitle(e, text)} /></h1>
@@ -423,7 +412,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
             </div>
           </main>
           <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
-          <aside id="arrange-side" className="studio-side" tabIndex={-1} aria-label={tr('字段')}>
+          <aside className="studio-side" {...mobilePanelProps('side')}>
             {/* The right column is the file: the open game's game.json edited here, another game's read as JSON. */}
             {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={games.find((g) => g.id === pickedGame)?.file} note={tr("打开这款游戏后在这里编辑")} />
               : gamesShown ? sideCtx && <Inspector content={course} vocab={vocab} at={{ game: true }} field={at?.game && field ? field : { path: [] }} ctx={sideCtx} places={places} onEdit={edit} onOps={addOps}

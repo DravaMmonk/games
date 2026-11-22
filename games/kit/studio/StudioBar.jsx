@@ -11,6 +11,7 @@ import { L, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { MOD } from './Shortcuts.jsx'
 import { refreshContent } from './api.js'
+import MobilePanels from './MobilePanels.jsx'
 
 const typing = (el) => el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
 
@@ -21,7 +22,7 @@ export const SPACES = [['build', T("构建")], ['arrange', T("编排")], ['copy'
  * is nothing to take back or put again; panels: { tree, side (open or not), onToggle(which) }, the left and right
  * columns folded and unfolded from the bar's two ends (Alt+[, Alt+\\).
  */
-export default function StudioBar({ space, ops, busy = false, catalog, onPalette, onUndo = null, onRedo = null, panels = null, children }) {
+export default function StudioBar({ space, ops, busy = false, catalog, onPalette, onUndo = null, onRedo = null, panels = null, mobilePanels = null, children }) {
   const actions = useRef(null)
   const loading = busy || catalog.loading
   const reload = tr('重新加载 Studio')
@@ -50,7 +51,7 @@ export default function StudioBar({ space, ops, busy = false, catalog, onPalette
     space.onChange(next)
   }
   return (
-    <header className="kit-bar studio-bar">
+    <header className={`kit-bar studio-bar${mobilePanels ? ' has-mobile-panels' : ''}`}>
       <span className="kit-brand"><i className="kit-chip" aria-hidden="true" /></span>
       {panels && <button type="button" className="kit-btn editor-tool studio-panel-toggle" onClick={() => panels.onToggle('tree')} aria-pressed={panels.tree}
         title={`${panels.tree ? tr("收起左栏") : tr("打开左栏")} (Alt+[)`} aria-label={panels.tree ? tr("收起左栏") : tr("打开左栏")}>
@@ -63,23 +64,28 @@ export default function StudioBar({ space, ops, busy = false, catalog, onPalette
       </nav>
       {children}
       <span className="kit-spacer" />
-      <span className="studio-history">
-        <button type="button" className="kit-btn editor-tool" disabled={!onUndo} onClick={() => onUndo?.()} aria-label={tr("撤销")} title={`${tr("撤销上一个待定操作")} (${MOD}+Z)`}><Undo2 size={14} aria-hidden="true" /></button>
-        <button type="button" className="kit-btn editor-tool" disabled={!onRedo} onClick={() => onRedo?.()} aria-label={tr("重做")} title={`${tr("重做")} (${MOD}+Shift+Z)`}><Redo2 size={14} aria-hidden="true" /></button>
-      </span>
-      {onPalette && <button type="button" className="studio-palette" onClick={onPalette} title={tr('命令面板')}><Command size={13} aria-hidden="true" /><kbd>{MOD}K</kbd></button>}
-      {panels && <button type="button" className="kit-btn editor-tool studio-panel-toggle" onClick={() => panels.onToggle('side')} aria-pressed={panels.side}
-        title={`${panels.side ? tr("收起右栏") : tr("打开右栏")} (Alt+\\)`} aria-label={panels.side ? tr("收起右栏") : tr("打开右栏")}>
-        {panels.side ? <PanelRightClose size={15} aria-hidden="true" /> : <PanelRightOpen size={15} aria-hidden="true" />}
-      </button>}
-      <div className="studio-bar-actions">
-        <button type="button" className={`kit-btn kit-icon-btn studio-refresh${error ? ' is-error' : ''}`}
-          aria-label={reload} title={loading ? tr('读取中……') : error || reload}
-          aria-busy={loading} aria-disabled={loading} onClick={() => { if (!loading) refreshContent() }}>
-          {loading ? <LoaderCircle size={16} className="studio-spin" aria-hidden="true" /> : <RefreshCw size={16} aria-hidden="true" />}
-        </button>
-        <span className="studio-load-status" role="status">{loading ? tr('读取中……') : error}</span>
-        <div className="kit-actions" ref={actions} />
+      <div className="studio-bar-tools">
+        <div className="studio-bar-start">
+          <span className="studio-history">
+            <button type="button" className="kit-btn editor-tool" disabled={!onUndo} onClick={() => onUndo?.()} aria-label={tr("撤销")} title={`${tr("撤销上一个待定操作")} (${MOD}+Z)`}><Undo2 size={14} aria-hidden="true" /></button>
+            <button type="button" className="kit-btn editor-tool" disabled={!onRedo} onClick={() => onRedo?.()} aria-label={tr("重做")} title={`${tr("重做")} (${MOD}+Shift+Z)`}><Redo2 size={14} aria-hidden="true" /></button>
+          </span>
+          {onPalette && <button type="button" className="studio-palette" onClick={onPalette} title={tr('命令面板')}><Command size={13} aria-hidden="true" /><kbd>{MOD}K</kbd></button>}
+        </div>
+        {mobilePanels && <MobilePanels {...mobilePanels} />}
+        {panels && <button type="button" className="kit-btn editor-tool studio-panel-toggle" onClick={() => panels.onToggle('side')} aria-pressed={panels.side}
+          title={`${panels.side ? tr("收起右栏") : tr("打开右栏")} (Alt+\\)`} aria-label={panels.side ? tr("收起右栏") : tr("打开右栏")}>
+          {panels.side ? <PanelRightClose size={15} aria-hidden="true" /> : <PanelRightOpen size={15} aria-hidden="true" />}
+        </button>}
+        <div className="studio-bar-actions">
+          <button type="button" className={`kit-btn kit-icon-btn studio-refresh${error ? ' is-error' : ''}`}
+            aria-label={reload} title={loading ? tr('读取中……') : error || reload}
+            aria-busy={loading} aria-disabled={loading} onClick={() => { if (!loading) refreshContent() }}>
+            {loading ? <LoaderCircle size={16} className="studio-spin" aria-hidden="true" /> : <RefreshCw size={16} aria-hidden="true" />}
+          </button>
+          <span className="studio-load-status" role="status">{loading ? tr('读取中……') : error}</span>
+          <div className="kit-actions" ref={actions} />
+        </div>
       </div>
     </header>
   )

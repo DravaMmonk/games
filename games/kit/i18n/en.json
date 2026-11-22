@@ -598,7 +598,7 @@
     "还有 {count} 项未作答。": "{count} unanswered.",
     "有 {count} 项答错，请修改标出的答案。": "{count} incorrect. Review the marked answers.",
     "编辑区": "Editor",
-    "编排面板": "Arrangement panels",
+    "工作区面板": "Workspace panels",
     "选择游戏": "Choose a game",
     "第 {k} 项：拖动或 Alt+↑↓ 换位置": "Item {k}: drag, or Alt+↑↓, to move it",
     "第 {last} 项，共 {length} 项": "Item {last} of {length}",

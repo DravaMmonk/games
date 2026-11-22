@@ -31,7 +31,7 @@ export function settledStore(file = STORE) {
 
 /** An advisory as a worklist line that names its level and field (../studio/worklist.js). */
 export const adviceLine = ({ id, rule, level, path, says }, settled) => ({
-  advice: true, id, rule, level, levels: [level], text: `${level} ${path}: ${says}`, settled: id in settled,
+  advice: true, id, rule, level, levels: [level], text: `${level}${path && ` ${path}`}: ${rule} ${says}`, settled: id in settled,
   problem: { rule, object: { kind: 'level', name: level }, path },
 })
 
@@ -42,9 +42,9 @@ export const advisoryTools = {
     async run({ game, package: id, settle, reopen }, store = settledStore()) {
       const root = contentRoot()
       const content = id ? readPackage(id, root) : readContent(game, root)
-      const { vocabulary } = await runtimeOf(content)
+      const found = await advisories(content, await runtimeOf(content))
       const settled = settle || reopen ? store.update(settle, reopen) : store.read()
-      return { lines: advisories(content, vocabulary).map(found => adviceLine(found, settled)) }
+      return { lines: found.map(advisory => adviceLine(advisory, settled)) }
     },
   },
 }

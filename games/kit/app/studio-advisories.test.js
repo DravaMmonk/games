@@ -13,9 +13,10 @@ test('a decision on an advisory is kept until it is reopened', () => {
   assert.deepEqual(Object.keys(store.update([], ['a'])), ['b'])
   const found = { id: 'b', rule: 'copy-length', level: 'demo/one', path: 'title', says: 'title zh 8/6' }
   assert.deepEqual(adviceLine(found, store.read()), {
-    advice: true, id: 'b', rule: 'copy-length', level: 'demo/one', levels: ['demo/one'], text: 'demo/one title: title zh 8/6', settled: true,
+    advice: true, id: 'b', rule: 'copy-length', level: 'demo/one', levels: ['demo/one'], text: 'demo/one title: copy-length title zh 8/6', settled: true,
     problem: { rule: 'copy-length', object: { kind: 'level', name: 'demo/one' }, path: 'title' },
   })
+  assert.equal(adviceLine({ id: 'c', rule: 'unused', level: 'demo/one', path: '', says: 'demo/part' }, {}).text, 'demo/one: unused demo/part')
 })
 
 test('the operation tools offer no advisory', () => {

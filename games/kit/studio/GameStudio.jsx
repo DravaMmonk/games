@@ -316,7 +316,12 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   }
   const jumpTo = (item) => {
     const found = /^content: game\.json((?:\.[^\s:[]+|\[\d+\])*): /.exec(item.text)
-    if (!found) return
+    if (!found) {
+      // A finding about a level (an advisory) goes to it on its chapter's board.
+      const era = content.eras.findIndex(chapter => chapter.levels.some(({ id }) => id === item.levels[0]))
+      if (era >= 0) select({ era, level: item.levels[0] })
+      return
+    }
     const path = parsePath(found[1].replace(/^\./, ''))
     if (path[0] === 'chapters' && Number.isInteger(path[1])) select({ era: path[1] })
     else select({ game: true })

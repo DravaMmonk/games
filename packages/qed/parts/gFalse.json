@@ -1,0 +1,17 @@
+{
+  "name": "@part.gFalse.name",
+  "desc": "@part.gFalse.desc",
+  "family": "logic/gate",
+  "inside": [
+    {
+      "id": "base",
+      "reference": {
+        "kind": "logic/gates",
+        "target": "¬((Rain → Wet) ∨ (Wet → Rain))",
+        "solution": ["t = gTrue(Rain, Wet)", "n = gNot(t)", "out <- n"]
+      }
+    }
+  ],
+  "inputs": [{ "name": "a", "type": "kernel/boolean" }, { "name": "b", "type": "kernel/boolean" }],
+  "outputType": "kernel/boolean"
+}

@@ -363,3 +363,30 @@ test('proof-board lemma cards expose packed boards and selected forms to worksho
   assert.equal(openPackedPart(view, node).circuit, own)
   assert.equal(workshop.open(node, { level: use }).opened.circuit, own)
 })
+
+test('successive tasks publish different gates and use the earlier gate', () => {
+  const content = structuredClone(CONTENT)
+  const second = content.levels[0].tasks[1]
+  second.target = '¬(Rain ∨ Wet)'
+  second.solution = ['o = gOr(Rain, Wet)', 'n = gNot(o)', 'out <- n']
+  second.publishes = [{ part: 'gNeither', variant: 'base' }]
+  content.partDefs.parts.gNeither = {
+    name: L('Neither'), desc: L('Neither input holds'), family: 'logic/gate',
+    inputs: [{ name: 'a', type: 'kernel/boolean' }, { name: 'b', type: 'kernel/boolean' }],
+    outputType: 'kernel/boolean',
+    inside: [{ id: 'base', reference: { kind: 'logic/gates', target: second.target, solution: second.solution } }],
+  }
+  const logic = logicWorks(withProgressFixture(content))
+  const [first, last] = logic.LEVELS[0].tasks
+  assert.equal(first.builds, 'gOr')
+  assert.equal(last.builds, 'gNeither')
+  assert.ok(!logic.offerIn(first, new Set()).types.includes('gOr'))
+  assert.ok(logic.offerIn(last, new Set()).types.includes('gOr'))
+  assert.ok(!logic.offerIn(last, new Set()).types.includes('gNeither'))
+  assert.equal(checkGates(first, first.solution).pass, true)
+  assert.equal(checkGates(last, last.solution).pass, true)
+  assert.deepEqual(new Set(logic.course.builds({ id: 'or' })), new Set(['gOr', 'gNeither']))
+  assert.deepEqual(logic.course.builds({ id: 'or', task: 0 }), ['gOr'])
+  assert.ok(logic.LEVELS[0].unlocks.includes('lemma:gOr'))
+  assert.ok(logic.LEVELS[0].unlocks.includes('lemma:gNeither'))
+})

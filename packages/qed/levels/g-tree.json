@@ -10,12 +10,31 @@
   "tasks": [
     {
       "id": "g-tree",
+      "step": "@level.g-tree.tasks.g-tree.step",
       "kind": "logic/gates",
-      "target": "¬(Rain ∧ Wind)",
+      "target": "¬Rain ∧ Wind",
       "brief": "@level.g-tree.tasks.g-tree.brief",
       "hint": [
         "@level.g-tree.tasks.g-tree.hint.0"
       ],
+      "solution": [
+        "n = gNot(Rain)",
+        "a = gAnd(n, Wind)",
+        "out <- a"
+      ],
+      "naive": [
+        "a = gAnd(Rain, Wind)",
+        "n = gNot(a)",
+        "out <- n"
+      ]
+    },
+    {
+      "id": "g-tree-together",
+      "step": "@level.g-tree.tasks.g-tree-together.step",
+      "kind": "logic/gates",
+      "target": "¬(Rain ∧ Wind)",
+      "brief": "@level.g-tree.tasks.g-tree-together.brief",
+      "hint": ["@level.g-tree.tasks.g-tree-together.hint.0"],
       "solution": [
         "a = gAnd(Rain, Wind)",
         "n = gNot(a)",

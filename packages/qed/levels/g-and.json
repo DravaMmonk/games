@@ -7,20 +7,20 @@
   "intro": [
     {
       "t": "@level.g-and.intro.0.t"
-    }
+    },
+    { "t": "@level.g-and.intro.1.t" }
   ],
   "tasks": [
     {
       "id": "g-and",
       "kind": "logic/gates",
-      "target": "Rain ∧ ¬Wind",
+      "target": "Rain ∧ Wind",
       "brief": "@level.g-and.tasks.g-and.brief",
       "hint": [
         "@level.g-and.tasks.g-and.hint.0"
       ],
       "solution": [
-        "n = gNot(Wind)",
-        "a = gAnd(Rain, n)",
+        "a = gAnd(Rain, Wind)",
         "out <- a"
       ]
     }

@@ -3,7 +3,7 @@
   "edges": [
     {
       "from": "g-not",
-      "to": "g-and"
+      "to": "g-tree"
     },
     {
       "from": "g-and",

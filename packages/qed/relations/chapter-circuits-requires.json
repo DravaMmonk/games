@@ -2,65 +2,66 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/onerow",
-      "to": "qed/g-not"
+      "from": "onerow",
+      "to": "g-not"
     },
     {
-      "from": "qed/g-not",
-      "to": "qed/g-and"
+      "from": "onerow",
+      "to": "g-and"
     },
     {
-      "from": "qed/g-and",
-      "to": "qed/g-tree"
+      "from": "g-not",
+      "to": "g-tree"
     },
     {
-      "from": "qed/g-tree",
-      "to": "qed/g-or"
+      "from": "g-and",
+      "to": "g-tree"
     },
     {
-      "from": "qed/g-or",
-      "to": "qed/g-imp"
+      "from": "g-tree",
+      "to": "g-or"
     },
     {
-      "from": "qed/g-imp",
-      "to": "qed/g-always"
+      "from": "g-or",
+      "to": "g-imp"
     },
     {
-      "from": "qed/g-always",
-      "to": "qed/g-iff"
+      "from": "g-imp",
+      "to": "g-always"
     },
     {
-      "from": "qed/g-iff",
-      "to": "qed/e-words"
+      "from": "g-always",
+      "to": "g-iff"
     },
     {
-      "required": true,
-      "from": "qed/e-words",
-      "to": "qed/e-says"
-    },
-    {
-      "required": true,
-      "from": "qed/e-says",
-      "to": "qed/e-one"
+      "from": "g-iff",
+      "to": "e-words"
     },
     {
       "required": true,
-      "from": "qed/e-one",
-      "to": "qed/e-two"
+      "from": "e-words",
+      "to": "e-says"
     },
     {
       "required": true,
-      "from": "qed/e-two",
-      "to": "qed/e-three"
+      "from": "e-says",
+      "to": "e-one"
     },
     {
       "required": true,
-      "from": "qed/e-three",
-      "to": "qed/e-count"
+      "from": "e-one",
+      "to": "e-two"
     },
     {
-      "from": "qed/g-or",
-      "to": "qed/g-xor"
-    }
+      "required": true,
+      "from": "e-two",
+      "to": "e-three"
+    },
+    {
+      "required": true,
+      "from": "e-three",
+      "to": "e-count"
+    },
+    { "from": "g-or", "to": "g-xor" }
   ]
 }

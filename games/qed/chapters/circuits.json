@@ -19,5 +19,20 @@
     "qed/e-two",
     "qed/e-three",
     "qed/e-count"
+  ],
+  "rows": [
+    ["qed/g-not", "qed/g-and"],
+    ["qed/g-tree"],
+    ["qed/g-or"],
+    ["qed/g-xor"],
+    ["qed/g-imp"],
+    ["qed/g-always"],
+    ["qed/g-iff"],
+    ["qed/e-words"],
+    ["qed/e-says"],
+    ["qed/e-one"],
+    ["qed/e-two"],
+    ["qed/e-three"],
+    ["qed/e-count"]
   ]
 }

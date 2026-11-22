@@ -56,7 +56,7 @@ const asSchema = (text, metas) => metas.reduce((t, m) => t.replace(new RegExp(`\
  * a port for each letter of its truth circuit, in order, named a, b, c…), a machine part (`built`) or an equation
  * proved (`rule`: its statement its task's goal; the task may say how it enters the rule book, `rule`). The level of a part's first reference (of
  * every one, for a chain of upgrades) builds it; a task an equation refers to proves it. Returns { lemmas, facts,
- * gates, machines, parts, revisions, builds: level → type, proves: task → type, lemmaRefs: [{ type, form, task }] }.
+ * gates, machines, parts, revisions, builds: level → types, proves: task → type, lemmaRefs: [{ type, form, task }] }.
  */
 function readBuilt(content) {
   const raw = new Map(content.levels.flatMap((L) => L.tasks.map((task) => [task.id, { level: L, task }])))
@@ -69,8 +69,9 @@ function readBuilt(content) {
     out.publishers[type] = refs.map((ref) => ref.task?.id).filter(Boolean)
     for (const ref of refs) if (ref.task) out.references.set(ref.task.id, ref.reference)
     const build = (level) => {
-      if (out.builds.has(level.id) && out.builds.get(level.id) !== type) throw new Error(`level ${level.id} builds both ${out.builds.get(level.id)} and ${type}`)
-      out.builds.set(level.id, type)
+      const types = out.builds.get(level.id) ?? []
+      if (!types.includes(type)) types.push(type)
+      out.builds.set(level.id, types)
     }
     // An equation is proved, not built; a shape after the first is one more form of the part, opened where it is proved.
     if (part.family !== 'logic/rule') for (const [k, ref] of refs.entries()) if (ref.level && (!ref.form || k === 0)) build(ref.level)
@@ -241,10 +242,12 @@ const wordsOf = (list = [], sets = {}) => Object.assign({}, ...list.map((w) => (
  */
 function readTasks(level, wordSets, positions) {
   const { builds, fact, intro: _intro, after: _after, ...base } = level
-  const publisher = level.tasks.findLastIndex(task => task.publishes?.some(({ part }) => part === builds))
+  const publishers = (builds ?? []).map(type => [type, level.tasks.findLastIndex(task => task.publishes?.some(({ part }) => part === type))])
   return taskLevels(base, positions).map((t, k, all) => {
     const last = k === all.length - 1
-    const one = { ...(k === publisher ? { builds } : {}), ...(last && fact ? { fact } : {}), ...t, ...(level.tasks[k].step ? { step: level.tasks[k].step } : {}) }
+    const types = publishers.filter(([, index]) => index === k).map(([type]) => type)
+    if (types.length > 1) throw new Error(`task ${t.taskId} builds more than one part`)
+    const one = { ...(types.length ? { builds: types[0] } : {}), ...(last && fact ? { fact } : {}), ...t, ...(level.tasks[k].step ? { step: level.tasks[k].step } : {}) }
     return { ...one, ...(one.words ? { words: wordsOf(one.words, wordSets) } : {}) }
   })
 }
@@ -370,7 +373,7 @@ export function* prepareLogicWorks(content) {
     if (!level) throw new Error(`an era names a level that does not exist: ${id}`)
     const chapter = eraOf.get(id)
     const requires = plan.requires.get(id) ?? []
-    const unlocks = level.builds ? [`lemma:${level.builds}`] : []
+    const unlocks = (level.builds ?? []).map(type => `lemma:${type}`)
     const all = tasksOf.get(id).map((task) => ({
       ...task,
       adds: [...new Set([...(task.adds ?? []),
@@ -422,7 +425,7 @@ export function* prepareLogicWorks(content) {
     local: axioms,
     additions: ({ id }) => byId.get(id).adds,
     parts: Object.fromEntries(Object.keys(built.parts).filter(isBuilt).map(p => [p, { unlock: `lemma:${p}` }])),
-    builds: (l) => (byId.get(l.id).builds ? [byId.get(l.id).builds] : []),
+    builds: (l) => byId.get(l.id).tasks.filter(task => l.task === undefined || task.task <= l.task).map(task => task.builds).filter(Boolean),
     grants: (l) => {
       const task = byId.get(l.id).tasks.find(task => task.task === l.task)
       return task?.kind === 'logic/machine'

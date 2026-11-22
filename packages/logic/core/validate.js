@@ -45,7 +45,6 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
   // What judges a task's works goes through memo (../../engine/check-cache.js), by its level and its place there: run,
   // or read back while nothing it reads has changed.
   // Every task of a level is checked as a level of its own (course.js readTasks), named by its step where it has one.
-  const builder = new Map(given.map((l) => [l.id, l.builds]))
   const levels = given.flatMap((l) => l.tasks.map((t) => (t.step ? { ...t, title: { zh: `${t.title.zh} · ${t.step.zh}`, en: `${t.title.en} · ${t.step.en}` } } : t)))
   // A preset names cards of the level's reference answer (course.js).
   for (const level of levels.filter((l) => l.preset)) {
@@ -167,8 +166,6 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       const out = []
       // Every part of the answer is one its tray holds, a rule part one its books have.
       const available = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), ...directCardsOf(level).keys(), 'in', 'out'])
-      const own = builder.get(level.id)
-      if (level.task > 0 && own) available.add(own)
       checkSolutionParts(out, level, available)
       const all = withHidden(level)
       const { reference: good, naive } = compare((work) => runMachine(all, work), level)
@@ -273,8 +270,6 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
         }
         // A later task of a level may use what the level builds.
         const allowed = new Set([...reached, 'premise', 'goal'])
-        const own = builder.get(level.id)
-        if (level.task > 0 && own) allowed.add(own)
         checkSolutionParts(out, level, allowed)
       }
       // Every sentence, term or variable the reference proof picks on a card is one the card offers (choices.js).

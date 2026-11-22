@@ -115,6 +115,7 @@ import "./training.css"
 //   table?(task) → play   the tests are the rows of a table (CaseTable.jsx, its target column the play's),
 //                         picked there rather than in tabs; a run goes down it a row at a time, with no steps inside
 //   told?(task, test) → [{ label?, text }]   lines the task says, under it (a sentence, a script to follow)
+//   usePreferredTest?(tests) → index of the case shown first, without moving it in the run
 //   readouts?(task, board, report) → [{ value, label }]   the numbers under the task (Readouts.jsx)
 //   log                   a board run once keeps a step log under its results (StepLog.jsx): every step run so far, the
 //                         card named after the built parts it is in, what it gave or why it failed, the current one marked
@@ -149,6 +150,7 @@ function Value({ value, error, show, of, views, idle = false }) {
 }
 
 const noWorld = () => null
+const noPreferredTest = () => undefined
 
 function useBoardParts({ screen, course, base, cards, portLabels, defined, ready }) {
   const { flags, level: { source: level } } = screen
@@ -163,7 +165,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, usePreferredTest = noPreferredTest, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -196,9 +198,11 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
     })),
     signature: circuitWorkStamp({ level, circuit: drawn, parts }, packed.open, course.runtimeReferences),
   }), [level, revealed, board.version, base, progress.built, library])
+  const first = usePreferredTest(tests)
   const stepsOf = (r) => (timed ? timeline.steps(r).map((tick) => tick.failed ? { ...tick, failed: failureText(tick.failed) } : tick) : r.trace)
   const run = useLevelRun(screen, board, {
     signature,
+    at: first,
     tests: [...tests.map((t, k) => ({ label: L(t.label ?? testLabel?.(level, t, k) ?? words.label(k)), hidden: t.hidden })), ...(judged && level.sample ? [{ label: L(WORDS.sample), sample: true }] : [])],
     ...(judged
       ? { judge: () => ({ pass: checked.pass, results: report.runs.map((r) => ({ pass: !failureOf(r), reason: L(finalFailure(r)) ?? '' })) }) }

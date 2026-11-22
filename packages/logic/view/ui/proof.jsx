@@ -5,6 +5,7 @@
 // sentences: its sentences are built in the language of the level's own (choices.js), its choices worked out by the
 // domain's resources on the test on view.
 import { T } from 'kernel/words'
+import { useSetting } from 'kernel/view'
 import { TreeButton } from 'sentence/view'
 import { parse, replaceAtoms } from '../../core/formula.js'
 import { choicesOf } from '../../core/choices.js'
@@ -14,6 +15,23 @@ import { scriptLines } from '../../core/script.js'
 import { runProof } from '../../core/proof.js'
 import { proofReadout, proofTextOf as textOf } from '../../core/circuit-readouts.js'
 import { typesetOne } from './Formula.jsx'
+
+export const proofCaseSetting = {
+  key: 'generalFormFirst',
+  group: 'display',
+  label: T('一般形式优先'),
+  tip: T('打开证明板时，把一般形式放在首位并默认选中。'),
+  kind: 'toggle',
+  default: false,
+  when: (game) => game.levels.some((level) => level.tasks.some(({ kind, source }) => kind === 'logic/proof' && source.tests.some((test) => test.symbolic))),
+}
+
+function usePreferredTest(tests) {
+  const [generalFirst] = useSetting(proofCaseSetting.key)
+  if (!generalFirst) return undefined
+  const index = tests.findIndex((test) => test.symbolic)
+  return index < 0 ? undefined : index
+}
 
 /** The language a card's sentence is built in: the parts of the level's sentences, each letter read as the test's. */
 function language(task, test) {
@@ -29,6 +47,7 @@ function language(task, test) {
 
 export const proofScreen = {
   course: (game) => game.logic.proofBoards,
+  usePreferredTest,
   play: { ...proofReadout, runLevel: (task, board, _parts, options) => runProof(task, board, options) },
   settingControls(task, test) {
     const build = language(task, test)

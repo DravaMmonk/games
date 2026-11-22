@@ -15,6 +15,16 @@
 .player-setting { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-group); padding: var(--sp-5) 0; font: var(--fs-small) var(--sans); }
 .player-setting > span:first-child { min-width: 0; }
 .player-setting button { color: var(--ink); cursor: pointer; }
+.player-setting:has(.setting-tip) { position: relative; }
+.setting-label { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.player-setting .setting-tip-trigger { flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--r-sm); color: var(--muted); background: transparent; }
+.setting-tip-trigger:hover, .setting-tip-trigger[aria-expanded='true'] { background: var(--hover); }
+.setting-tip { position: absolute; z-index: 1; inset-inline-start: 0; bottom: calc(100% - var(--sp-2)); width: min(18rem, 100%); box-sizing: border-box; padding: var(--sp-3) var(--sp-4); border: 1px solid var(--rule); border-radius: var(--r-sm); color: var(--ink); background: var(--paper); font: var(--fs-small)/1.4 var(--sans); visibility: hidden; }
+.setting-tip-trigger:is(:focus-visible, [aria-expanded='true']) + .setting-tip,
+.setting-tip:hover { visibility: visible; }
+@media (hover: hover) {
+  .setting-label:hover .setting-tip { visibility: visible; }
+}
 .player-setting [role='switch'] { flex: none; width: 36px; height: 22px; padding: var(--sp-1); border: 1px solid var(--line); border-radius: var(--r-full); background: var(--hover); }
 .player-setting [role='switch'] i { display: block; width: 16px; height: 16px; border-radius: var(--r-full); background: var(--muted); transition: transform 120ms ease; }
 .player-setting [role='switch'][aria-checked='true'] { background: var(--accent); }

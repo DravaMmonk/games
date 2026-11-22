@@ -6,6 +6,7 @@ import { L } from 'kernel/view'
 import { symbolFor } from '../core/symbols.js'
 import { circuitScreen } from 'circuit/view'
 import { displays as ui } from './ui/displays.jsx'
+import { proofCaseSetting } from './ui/proof.jsx'
 // A logic game on the shared shell (../../shell), from its content (games/design/README.md 6.3): the course (course.js)
 // becomes the shell's game description, with the logic domain's screens (a proof on the circuit editor, a truth table,
 // a machine board …), its parts box of proved lemmas and built parts, and its map art.
@@ -144,6 +145,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     chapters: CHAPTERS.map((chapter, id) => ({ id, title: chapter.title, question: chapter.question, track: chapter.track, rows: chapter.rows })),
     levels,
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),
+    settings: [proofCaseSetting],
     intro: (level) => level.source.intro,
     kinds: playKinds(plays, {
       declaration, definition, audit, ruleStatement, truth, translation, query, script, worldCheck,

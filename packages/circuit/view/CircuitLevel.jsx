@@ -100,13 +100,13 @@ export function useLevelBoard(screen, { open, fresh, clearable }) {
  *             a part…); onFail?(run) when a stepped run stops short; guard?() → true when a run may not start yet
  *   at        the test a level opens on
  */
-export function useLevelRun(screen, board, { tests, steps = null, judge = null, hidden = null, result, signature, onSolve, onFail, guard, at: first = 0 }) {
+export function useLevelRun(screen, board, { tests, steps = null, judge = null, hidden = null, result, signature, onSolve, onFail, guard, at: first }) {
   const [at, setAt] = useState(null)
   const history = useRunHistory(screen, board.circuit, signature)
   const revision = useMemo(() => ({ version: board.version, signature }), [board.version, signature])
   const failureAt = (verdict) => {
     const found = verdict?.results.findIndex((result, k) => k < tests.length && !tests[k].sample && !result.pass) ?? -1
-    return found < 0 ? first : found
+    return found < 0 ? first ?? 0 : found
   }
   const solve = (s) => (onSolve ? onSolve(s) : screen.solve(s))
   const hiddenFails = hidden?.failed ?? 0
@@ -144,12 +144,13 @@ export function useLevelRun(screen, board, { tests, steps = null, judge = null, 
   })
   const passed = steps ? playback.passed : Boolean(verdict?.pass && !verdict.hiddenFailed)
   const live = Boolean(playback.run && !playback.run.over)
-  const shownAt = Math.min(at ?? failureAt(verdict), tests.length - 1)
+  const shownAt = Math.min(at ?? first ?? failureAt(verdict), tests.length - 1)
   const failedHidden = steps
     ? (playback.run?.final && !steps.final ? hiddenFails : 0)
     : verdict?.hiddenFailed ?? 0
   return {
     tests,
+    first,
     revision,
     stepped: Boolean(steps),
     at: shownAt,
@@ -310,7 +311,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
   const onClear = circuit.nodes.some((n) => canRemoveCard(parts, n, protectedIds)) || board.clearable?.(circuit) ? board.clear : null
 
   const dock = pad !== undefined ? pad : <RunDock meta={meta} {...run.dock(words ?? { go: L(WORDS.run), done: L(WORDS.passed) })} />
-  const testTabs = tabs && <TestTabs tests={run.tests} states={run.states} index={run.at} onSelect={run.select} phone={phone} />
+  const testTabs = tabs && <TestTabs tests={run.tests} states={run.states} index={run.at} first={run.first} onSelect={run.select} phone={phone} />
 
   if (phone) {
     const cards = (trayNames === undefined && game.course ? fixedTray(game.course, source) : types ?? [])

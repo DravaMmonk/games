@@ -67,7 +67,7 @@ export function defineGame(def) {
     const name = game.parts?.all.find(part => part.key === id)?.name
     return (name && typeof name === 'object' ? name[lang] ?? name.zh ?? name.en : name) || null
   }
-  game.settings = circuitSettings
+  game.settings = [...circuitSettings, ...(def.settings ?? [])]
   game.mapBadges = (level, { solved, all }) => {
     const first = { ...level, unlocks: (level.unlocks ?? []).filter(flag => !game.unlocksBefore(level).includes(flag)) }
     const accepts = ({ part }) => game.isCircuitPart(part)

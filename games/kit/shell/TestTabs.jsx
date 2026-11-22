@@ -11,9 +11,9 @@ import { AddMark } from './EditMarks.jsx'
  * studio edits, each tab is a test of the content to pick (edit.js), and a + adds one.
  *
  * With no states, the tabs only select an example. Inline tabs sit inside the play area; authored tabs can pick tests
- * from the current task in Studio.
+ * from the current task in Studio. `first` puts a case first visually, keeping its original test index.
  */
-export default function TestTabs({ tests, states, index, onSelect, phone = false, inline = false, authored = true, label = L }) {
+export default function TestTabs({ tests, states, index, first, onSelect, phone = false, inline = false, authored = true, label = L }) {
   const edit = useEdit()
   const mark = useMark()
   const shown = tests.filter((t) => !t.hidden && !t.sample).length
@@ -31,6 +31,7 @@ export default function TestTabs({ tests, states, index, onSelect, phone = false
       </button>
     )
   })
+  if (first > 0 && first < tabs.length) tabs.unshift(...tabs.splice(first, 1))
   const add = authored && edit && <AddMark at="tests" label={catalogText("测试", {}, "test-tabs")} />
   if (phone) return <nav className={inline ? 'pb-tests tests-inline' : 'pb-tests'} aria-label={tr('测试')}>{tabs}{add}</nav>
   return <ol className={inline ? 'test-list tests-inline' : 'test-list'}>{tabs.map((tab) => <li key={tab.key}>{tab}</li>)}{add && <li>{add}</li>}</ol>

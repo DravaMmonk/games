@@ -274,6 +274,8 @@
     "分支树": "Branch tree",
     "案例 {k}": "Case {k}",
     "一般形式": "General form",
+    "一般形式优先": "General form first",
+    "打开证明板时，把一般形式放在首位并默认选中。": "Show and select the general form first when opening a proof board.",
     "要 {length} 种结果，得到 {length2} 种": "{length} result{value} wanted, {length2} made",
     "要找出所有答案，可搜索停不下来：有一条路走不到头": "Every answer is wanted, but the search never stops: one path never ends",
     "规则": "Rules",

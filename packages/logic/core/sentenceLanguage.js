@@ -3,7 +3,7 @@ import { T } from 'kernel/words'
 import { treeKey as keyOf } from 'sentence'
 import { show } from './formula.js'
 import { say } from './notation.js'
-import { bindsAt, chipsFrom, complete, holesOf, joinsOnto, kindAt, kidsOf, nodeAt, setAt, straysOf } from './formulaTree.js'
+import { acceptsKind, bindsAt, chipsFrom, complete, holesOf, joinsOnto, kindAt, kidsOf, nodeAt, setAt, straysOf } from './formulaTree.js'
 
 export const OUTSIDE = T("这个名字只在它绑定的区域里可用。")
 
@@ -62,7 +62,7 @@ export function sentenceLanguage(notation, root = 'formula', free) {
       if (root === 'formula' && chip.group === 'var' && !(free?.includes(chip.text) ?? chip.free) && !bindsAt(tree, path, chip.text)) return OUTSIDE
       return null
     },
-    accepts: (hole, chip) => chip.kind === 'term' || hole.kind === 'formula',
+    accepts: (hole, chip) => acceptsKind(chip, hole.kind),
     problem: (tree) => root === 'term' || !straysOf(tree).length ? null : STRAY,
     groups: GROUPS,
     chipText: (chip) => chip.group === 'pred' ? placesOf(notation, chip.pred, chip.places)

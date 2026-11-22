@@ -10,7 +10,7 @@ import { checkDefine } from '../core/define.js'
 import { failureText } from '../../../games/kit/engine/failure-text.js'
 import { checkDeclaration, linesOf, premiseChips, problemsOf, readRuleRows } from '../core/ruleLines.js'
 import { runOutputTests } from '../../../games/kit/engine/test-run.js'
-import { parse, same, show, subst, substMany, tvar } from '../core/formula.js'
+import { bin, parse, same, show, subst, substMany, tvar } from '../core/formula.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
 import { MACHINE_BOARD, MACHINE_TESTS, RULE_CHOICES, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
@@ -294,11 +294,11 @@ test('a connective put after a whole sentence takes it as its first side', async
   const chips = new Map(chipsOf(level).map((c) => [c.key, c]))
   const fill = (tree, key) => setAt(tree, holesOf(tree).find((h) => h.kind === chips.get(key).kind).path, chips.get(key).make())
   let tree = ['∀x', 'P:Human', 'v:x'].reduce(fill, null)
-  const join = (t, op) => { const at = joinsOnto(t, op); return setAt(t, at, setAt(chips.get(op).make(), [0], nodeAt(t, at))) }
-  assert.deepEqual(joinsOnto(tree, '→'), [0])
+  const join = (t, op) => { const at = joinsOnto(t, chips.get(op)); return setAt(t, at, setAt(chips.get(op).make(), [0], nodeAt(t, at))) }
+  assert.deepEqual(joinsOnto(tree, chips.get('→')), [0])
   tree = ['P:Mortal', 'v:x'].reduce(fill, join(tree, '→'))
   assert.ok(same(tree, parse('∀x. Human(x) → Mortal(x)')))
-  assert.equal(joinsOnto(['∀x', 'P:Human'].reduce(fill, null), '→'), null)
+  assert.equal(joinsOnto(['∀x', 'P:Human'].reduce(fill, null), chips.get('→')), null)
   // A ∧ B then → takes A ∧ B; A → B then → takes only B.
   const ab = ['∧', 'P:Human', 'v:x', 'P:Mortal', 'v:x'].reduce(fill, null)
   assert.ok(same(['P:Human', 'v:x'].reduce(fill, join(ab, '→')), parse('Human(x) ∧ Mortal(x) → Human(x)')))
@@ -312,11 +312,29 @@ test('a thing put where a sentence goes waits for a predicate to take it', async
   const chips = new Map(chipsOf(level).map((c) => [c.key, c]))
   let tree = chips.get('c:ann').make()
   assert.deepEqual(straysOf(tree), [[]])
-  const at = joinsOnto(tree, 'P:Parent')
+  const at = joinsOnto(tree, chips.get('P:Parent'))
   tree = setAt(tree, at, setAt(chips.get('P:Parent').make(), [0], nodeAt(tree, at)))
   tree = setAt(tree, holesOf(tree)[0].path, chips.get('c:bo').make())
   assert.deepEqual(straysOf(tree), [])
   assert.ok(same(tree, parse('Parent(ann, bo)', { consts: ['ann', 'bo'] })))
+})
+
+test('chips with holes can take the word just placed while other holes are open', async () => {
+  const { chipsFrom, joinsOnto, setAt } = await import('../core/formulaTree.js')
+  const formulas = [bin('⟹', parse('A ∨ ¬B'), parse('R')), parse('Parent(s(ann), bo)', { consts: ['ann', 'bo'] })]
+  const chips = new Map(chipsFrom(formulas).map((chip) => [chip.key, chip]))
+  const place = (key) => chips.get(key).make()
+  const a = place('P:A')
+  const partial = setAt(place('∨'), [0], a)
+  assert.deepEqual(joinsOnto(a, chips.get('⟹'), []), [])
+  assert.deepEqual(joinsOnto(partial, chips.get('¬'), [0]), [0])
+  assert.deepEqual(joinsOnto(partial, chips.get('∨'), [0]), [0])
+  assert.equal(joinsOnto(partial, chips.get('P:B'), [0]), null)
+  const ann = place('c:ann')
+  assert.deepEqual(joinsOnto(setAt(place('∨'), [0], ann), chips.get('P:Parent'), [0]), [0])
+  const parent = setAt(place('P:Parent'), [0], ann)
+  assert.deepEqual(joinsOnto(parent, chips.get('f:s'), [0]), [0])
+  assert.equal(joinsOnto(parent, chips.get('P:Parent'), [0]), null)
 })
 
 // ¬∀x. P(x) ⟹ ∃x. ¬P(x), classically (q-dm's last task): suppose there is no x with ¬P(x); then every x has P(x).

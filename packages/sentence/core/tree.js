@@ -3,7 +3,7 @@
 // gives the rest. A path is the child indices from the root: [] is the root, [1, 0] the first child of its second.
 //
 //   holeTree({ kids(node) → [{ kind, value }], withKid(node, k, value) → node, root: kind of the root })
-//     → { nodeAt, setAt, holesOf, kindAt, complete, trailing, outward }
+//     → { nodeAt, setAt, holesOf, kindAt, complete, trailing, outward, joinChips }
 
 export function holeTree({ kids, withKid, root = 'any' }) {
   const nodeAt = (tree, path) => path.reduce((node, k) => (node != null ? kids(node)[k]?.value ?? null : null), tree)
@@ -41,7 +41,33 @@ export function holeTree({ kids, withKid, root = 'any' }) {
     while (at.length && up(nodeAt(tree, at.slice(0, -1)), at[at.length - 1])) at = at.slice(0, -1)
     return at
   }
-  return { nodeAt, setAt, holesOf, kindAt, complete, trailing, outward }
+
+  /** Configure chip joining with the grammar's types and precedence. An unranked parent bounds the join. */
+  const joinChips = ({ kindOf, fitsSlot, precedenceOf, rightAssociative }) => (tree, chip, recent) => {
+    let path = recent ?? (chip.leads ? trailing(tree, root) : null)
+    if (!path) return null
+    const made = chip.make(tree)
+    const first = kids(made)[0]
+    if (!first) return null
+
+    const rank = chip.leads ? precedenceOf(made) : undefined
+    if (rank !== undefined) {
+      // An operator can continue an expression whose last edit filled a child of a different kind.
+      while (path.length && kindAt(tree, path) !== first.kind) path = path.slice(0, -1)
+      if (kindAt(tree, path) !== first.kind || !complete(nodeAt(tree, path))) return null
+    }
+
+    const filled = nodeAt(tree, path)
+    if (filled == null || kindOf(filled) !== first.kind || !fitsSlot(chip, kindAt(tree, path))) return null
+    if (rank === undefined) return path
+
+    return outward(tree, path, (parent, index) => {
+      const parentRank = precedenceOf(parent)
+      return index === kids(parent).length - 1 && complete(parent) &&
+        (parentRank > rank || (parentRank === rank && !rightAssociative(made)))
+    })
+  }
+  return { nodeAt, setAt, holesOf, kindAt, complete, trailing, outward, joinChips }
 }
 
 export const treeKey = (path) => ['r', ...path].join('.')

@@ -261,7 +261,7 @@ function general(level) {
  * ?R), or the level's own (`take`: equality). `g` writes the sentences: by default as any sentences (?A …); the identity
  * keeps the level's own.
  */
-export function declaredRules(level, ways, g = general(level)) {
+export function declaredRules(level, ways, g = inductive(level) ? (f) => f : general(level)) {
   const R = meta('?R')
   const target = sentenceOf(level, level.target)
   // An inductive declaration's rule is induction: ?R is about the declared sentence's things, and a case may also

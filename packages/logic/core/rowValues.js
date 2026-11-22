@@ -1,6 +1,6 @@
 import { completionResult } from 'kernel'
 import { T } from 'kernel/words'
-import { showTerm } from './formula.js'
+import { freeVars, showTerm } from './formula.js'
 import { parseS, parseSide, statedRule } from './schematic.js'
 import { say, sayTerm } from './notation.js'
 import { complete, straysOf, termChips } from './formulaTree.js'
@@ -22,24 +22,29 @@ export function declarationValues(level, rules, change, scope) {
   const chips = premiseChips(level)
   const singleRule = level.play === 'logic/rule' || level.ruleAudit
   const editableDeclaration = change && !singleRule
+  const numbered = rules.length > 1
   const problems = editableDeclaration ? problemsOf(level, rules, chips) : []
-  const withRule = (k, fn) => change(changeAt(rules, k, fn))
+  // An inductive declaration takes the things its premises mention without a switch: every name besides the declared
+  // sentence's own is taken afresh by the row that uses it.
+  const auto = Array.isArray(level.params)
+  const taken = (rule) => auto ? { ...rule, binds: [...new Set(rule.needs.filter(whole).flatMap((need) => [...freeVars(need)]))].filter((v) => !level.params.includes(v)) } : rule
+  const withRule = (k, fn) => change(changeAt(rules, k, (rule) => taken(fn(rule))))
   return {
     className: 'lg-rule-table',
-    head: level.target ? { name: singleRule ? T("结论") : T("待验证结论"), goal: words(sentenceOf(level, level.target)), end: singleRule ? null : T('为真。') } : null,
+    head: level.target ? { name: singleRule ? T("结论") : T("待验证结论"), goal: words(sentenceOf(level, level.target)), end: T('为真。') } : null,
     rows: rules.map((rule, k) => ({
-      name: T("可推导情形"), mark: k + 1,
-      toggle: level.thing && { on: rule.binds.length > 0, label: T("任取 {binder}", {binder}), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },
+      name: T("可推导情形"), mark: numbered ? k + 1 : undefined,
+      toggle: !auto && level.thing && { on: rule.binds.length > 0, label: T("任取 {binder}", {binder}), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },
       slots: rule.needs.map((need, j) => ({ text: whole(need) ? words(need) : null, fixed: j < (level.fixedPremises ?? 0), bad: problems.some((p) => p.row === k && p.slot === j) })),
       end: rule.needs.length > 1 ? T('均为真。') : T('为真。'),
       empty: T('无需前提'),
-      add: { label: T("给可推导情形 {k} 添加前提", {k: k + 1}), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
-      drop: editableDeclaration && { label: T("删除可推导情形 {k}", {k: k + 1}), run: () => change(without(rules, k)) },
+      add: { label: numbered ? T("给可推导情形 {k} 添加前提", {k: k + 1}) : T("添加前提"), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
+      drop: editableDeclaration && { label: numbered ? T("删除可推导情形 {k}", {k: k + 1}) : T("删除可推导情形"), run: () => change(without(rules, k)) },
     })),
     editor: change && {
       slot: (k, j) => ({
-        title: T("可推导情形 {k} 的前提", {k: k + 1}),
-        tree: rules[k].needs[j], chips, language: sentenceLanguage(level.notation, 'formula', [...(level.params ?? []), ...rules[k].binds]), scope: `${scope}:${k}.${j}`,
+        title: numbered ? T("可推导情形 {k} 的前提", {k: k + 1}) : T("前提"),
+        tree: rules[k].needs[j], chips, language: auto ? sentenceLanguage(level.notation, 'formula') : sentenceLanguage(level.notation, 'formula', rules[k].binds), scope: `${scope}:${k}.${j}`,
         onChange: (tree) => withRule(k, (r) => ({ ...r, needs: changeAt(r.needs, j, () => tree) })),
       }),
       close: (k, j) => {

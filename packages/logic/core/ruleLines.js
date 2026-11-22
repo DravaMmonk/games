@@ -15,7 +15,7 @@ export function problemsOf(level, rules, chips = premiseChips(level)) {
   // No derivable situation is a declaration too: nothing introduces the sentence (⊥).
   const binder = level.binder ?? 'x'
   return rules.flatMap((rule, row) => {
-    if (rule.binds.length && (!level.thing || rule.binds.length !== 1 || rule.binds[0] !== binder)) return [{ row, why: 'binder' }]
+    if (!level.params && rule.binds.length && (!level.thing || rule.binds.length !== 1 || rule.binds[0] !== binder)) return [{ row, why: 'binder' }]
     return rule.needs.flatMap((need, slot) => {
       if (!need || !complete(need) || straysOf(need).length) return [{ row, slot, why: 'empty' }]
       if ([...freeVars(need)].some((v) => !rule.binds.includes(v) && !level.params?.includes(v))) return [{ row, slot, why: 'stray' }]

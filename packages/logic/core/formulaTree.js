@@ -6,7 +6,7 @@
 //
 //   chip   { key, kind: 'formula' | 'term', group, text, make() }
 //   path   the child indices from the root to a node: [] is the root, [1, 0] the first child of its second child
-import { BOT, all, atom, bin, ex, fn, freeVars, not, signature, tvar } from './formula.js'
+import { BIN, BOT, all, atom, bin, ex, fn, freeVars, not, signature, tvar } from './formula.js'
 import { holeTree } from 'sentence'
 
 // The supported connective marks. The level's notation decides which of these are present.
@@ -38,6 +38,14 @@ function withKid(node, k, value) {
 const tree = holeTree({ kids: kidsOf, withKid, root: 'formula' })
 export const { nodeAt, setAt, holesOf, kindAt, complete } = tree
 
+export const acceptsKind = (chip, kind) => chip.kind === 'term' || kind === 'formula'
+export const joinsOnto = tree.joinChips({
+  kindOf: node => node.t ? 'term' : 'formula',
+  fitsSlot: acceptsKind,
+  precedenceOf: node => node.op === '¬' ? Infinity : BIN[node.op],
+  rightAssociative: node => node.op === '→',
+})
+
 /** Whether a variable is introduced on the path to the edited slot. */
 export function bindsAt(node, path, name) {
   for (const slot of path) {
@@ -45,20 +53,6 @@ export function bindsAt(node, path, name) {
     node = kidsOf(node)[slot].value
   }
   return false
-}
-
-const PREC = { '→': 1, '∨': 2, '∧': 3 }
-/**
- * What a connective `op` put after a whole sentence takes as its first side: the last whole sentence, widened as the
- * written formula would read (¬ and a tighter connective are taken in; → groups to the right, ∧ and ∨ to the left; a
- * quantifier reaches to the end, so it is never climbed out of). Null when the line ends with a box.
- */
-export function joinsOnto(root, key) {
-  const last = tree.trailing(root, 'formula')
-  if (!last) return null
-  // A predicate takes a thing left where a sentence goes, as its first place: 安, then ①是②的父母, is 安是②的父母.
-  if (key.startsWith('P:')) return nodeAt(root, last).t ? last : null
-  return tree.outward(root, last, (parent) => parent.op === '¬' || (PREC[parent.op] !== undefined && (PREC[parent.op] > PREC[key] || (parent.op === key && key !== '→'))))
 }
 
 /** Where a thing (a name or a variable) stands in a sentence's place: put there, it is not yet a sentence. */

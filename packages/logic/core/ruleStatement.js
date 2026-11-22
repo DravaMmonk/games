@@ -53,7 +53,7 @@ export function ruleStatement(level) {
       return {
         ...board,
         rows: [
-          { name, head: true, slots: [{ text: words(work.conclusion), fixed: fixedConclusion }] },
+          { name, head: true, end: T('为真。'), slots: [{ text: words(work.conclusion), fixed: fixedConclusion }] },
           ...board.rows,
         ],
         editor: {

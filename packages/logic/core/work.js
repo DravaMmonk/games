@@ -574,7 +574,8 @@ export function* prepareLogicWorks(content) {
   const directOffered = (task, type, flags) => {
     const direct = directCardsOf(task).get(type)
     if (!direct) return false
-    if (direct.source === MATH && axiomPartsOf(task).includes(MATH)) return true
+    // A level's own axioms, and the rule book of numbers it states, come with the level.
+    if (axiomPartsOf(task).includes(direct.source)) return true
     return course.availableParts(at(task), flags).includes(course.partOf(direct.source))
   }
   // On the machine board a rule part is only the rules it gives: the proof-board part of the same type (the

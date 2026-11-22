@@ -10,6 +10,8 @@
   "package.desc": "Provides logical symbols, proof circuits, and proof checking.",
   "package.title": "Logic and proofs",
   "ui": {
+    "前提": "Premise",
+    "删除可推导情形": "Delete the row",
     "前提和元件要求的输入不符。": "The premises do not match the inputs the rule requires.",
     "请填写结论。": "Enter the conclusion.",
     "结论和元件的输出不符。": "The conclusion does not match the part’s output.",
@@ -69,8 +71,6 @@
     "为真。": "holds.",
     "什么都不成立。": "Nothing holds.",
     "仍在增加": "still growing",
-    "从上方元件栏选择规则放到板上，再把元件右侧的圆点连到另一元件左侧的圆点。": "Place a rule from the bar above, then connect a dot on the right of one part to a dot on the left of another.",
-    "从上方元件栏选择门放到板上，再把元件右侧的圆点连到另一元件左侧的圆点。": "Place a gate from the bar above, then connect a dot on the right of one part to a dot on the left of another.",
     "任取 {binder}": "For any {binder}",
     "任取一样东西": "any thing",
     "任取框": "For-any box",

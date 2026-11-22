@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { L, useHistory } from 'kernel/view'
 import { tr } from 'kernel/words'
 import { Chips, Strip } from './Strip.jsx'
@@ -6,11 +6,25 @@ import { StripTools } from './StripTools.jsx'
 import { useStrip } from './useStrip.js'
 import { treeKey, treePath } from '../../core/tree.js'
 
+// A descendant follows its ancestor. Other paths are ordered by the first differing child.
+function follows(path, previous) {
+  const other = previous.findIndex((step, i) => path[i] !== step)
+  return other < 0 || path[other] > previous[other]
+}
+
 /** Edit a work on a strip. The language describes its tree, parts, accepted holes and text. */
 const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, language, scope }, ref) {
   const { nodeAt, setAt, holesOf, joinsOnto, complete } = language
   const byKey = useMemo(() => new Map(chips.map((chip) => [chip.key, chip])), [chips])
-  const history = useHistory(tree, onChange, scope, 0)
+  const [recent, setRecent] = useState(null)
+  const lastEdit = recent?.tree === tree && recent.scope === scope ? recent : null
+  const holes = holesOf(tree).filter(({ path }) => !lastEdit || follows(path, lastEdit.path))
+  const replace = (next) => {
+    setRecent(null)
+    strip.clearSelection()
+    onChange(next)
+  }
+  const history = useHistory(tree, replace, scope, 0)
   const accepts = (hole, chip) => (language.accepts?.(hole, chip) ?? true) && !language.refuse?.(tree, hole.path, chip)
   const strip = useStrip({
     put: (slot, key) => {
@@ -20,21 +34,28 @@ const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, langu
       if (refused) return refused
       const made = chip.make(tree)
       const last = nodeAt(tree, path)
-      onChange(setAt(tree, path, last != null ? setAt(made, [0], last) : made))
+      const next = setAt(tree, path, last != null ? setAt(made, holesOf(made)[0].path, last) : made)
+      setRecent({ tree: next, scope, path })
+      onChange(next)
       return null
     },
-    take: (slot) => onChange(setAt(tree, treePath(slot), null)),
+    take: (slot) => replace(setAt(tree, treePath(slot), null)),
     target: (key) => {
       const chip = byKey.get(key)
-      const hole = holesOf(tree).find((hole) => accepts(hole, chip))
-      const path = hole?.path ?? (chip.leads ? joinsOnto(tree, key) : null)
-      return path ? treeKey(path) : null
+      const join = !lastEdit || complete(nodeAt(tree, lastEdit.path))
+        ? joinsOnto(tree, chip, lastEdit?.path) : null
+      if (join && !language.refuse?.(tree, join, chip)) return treeKey(join)
+      const hole = holes.find(hole => accepts(hole, chip))
+      return hole ? treeKey(hole.path) : null
     },
     filled: (slot) => nodeAt(tree, treePath(slot)) !== null,
     fixed: () => false,
   })
-  useImperativeHandle(ref, () => ({ clearSelection: strip.clearSelection }), [strip])
-  const first = holesOf(tree)[0]
+  useImperativeHandle(ref, () => ({ clearSelection: () => {
+    strip.clearSelection()
+    setRecent(null)
+  } }), [strip])
+  const first = holes[0]
   const next = strip.selected ?? (first ? treeKey(first.path) : complete(tree) ? 'end' : null)
   const groups = language.groups.map(([key, label]) => ({
     key, label,
@@ -46,7 +67,7 @@ const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, langu
   const note = strip.note ?? (problem ? { text: problem, bad: true } : null)
   return (
     <>
-      <StripTools history={history} onClear={() => onChange(null)} empty={tree == null} />
+      <StripTools history={history} onClear={() => replace(null)} empty={tree == null} />
       <Strip line={language.line(tree)} label={language.label} next={next} selected={strip.selected} flash={strip.flash} onSlot={strip.onSlot} />
       {note ? <p className={`ks-note ${note.bad ? 'is-bad' : ''}`} role="status">{L(note.text)}</p> : <p className="ks-note">{tr('点击文字可以删除。')}</p>}
       <Chips groups={groups} onChip={strip.onChip} />

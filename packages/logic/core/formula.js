@@ -15,7 +15,7 @@
 //
 // parse() reads the notation the game shows (and ASCII: -> & | ~ forall exists false, <->); show() writes it back.
 
-const BIN = { '→': 1, '↔': 0, '∨': 2, '∧': 3 }
+export const BIN = { '→': 1, '↔': 0, '∨': 2, '∧': 3 }
 const ASCII = [['<->', '↔'], ['->', '→'], ['&', '∧'], ['|', '∨'], ['~', '¬'], ['!', '¬'], ['forall', '∀'], ['exists', '∃'], ['false', '⊥'], ['_|_', '⊥']]
 
 // A formula in plain ASCII and back, for a board written as text (../../circuit/text.js): the symbols by the ASCII

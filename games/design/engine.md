@@ -37,6 +37,8 @@
 
 具体参数、显示和判定由玩法包声明。用 `vocabulary` 查询字段，用 `inspect` 查实际任务。
 
+`sentence` 提供树形拼搭和通用续接规则。使用它的玩法声明节点种类、空位兼容性、优先级与结合方向。未声明优先级的父节点构成续接边界，例如 `logic` 里的量词。
+
 ### 6.5 查包
 
 包的类型、依赖和元数据由 `package.json` 声明，能力与对象定义分别来自 `capabilities/` 和 `kinds/`。MCP `packages` 与 `vocabulary` 从当前安装数据读取。新增或拆分包遵守 [入口与依赖约定](engine-package-boundaries.md)。

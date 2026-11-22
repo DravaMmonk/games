@@ -40,17 +40,19 @@ test('a grammar can configure chip joining and scope boundaries without a logic 
   const join = grammar.joinChips({
     kindOf: value => value.kind,
     fitsSlot: (chip, kind) => chip.kind === kind,
+    leadingSlot: value => ['then', 'and'].includes(value.label) ? 0 : null,
     precedenceOf: value => ({ then: 0, and: 1 })[value.label],
     rightAssociative: value => value.label === 'then',
   })
-  const chip = label => ({ kind: 'clause', leads: true, make: () => node(label, slot(null), slot(null)) })
+  const place = (tree, label) => join(tree, { kind: 'clause' }, node(label, slot(null), slot(null)))
   const grouping = node('and', slot(clause), slot(clause))
   const draft = node('and', slot(node('quote', slot(grouping))), slot(null))
 
-  assert.deepEqual(join(draft, chip('then'), [0, 0, 1, 0]), [0, 0])
-  assert.deepEqual(join(draft, chip('and'), [0, 0, 1, 0]), [0, 0])
-  assert.deepEqual(join(node('then', slot(clause), slot(clause)), chip('then')), [1])
-  assert.equal(join(node('statement', slot(null, 'word')), chip('then')), null)
+  assert.deepEqual(place(draft, 'then'), [0, 0])
+  assert.deepEqual(place(draft, 'and'), [0, 0])
+  assert.deepEqual(place(node('then', slot(clause), slot(clause)), 'then'), [1])
+  assert.equal(place(draft, 'quote'), null)
+  assert.equal(place(node('statement', slot(null, 'word')), 'then'), null)
 })
 
 test('sentence play accepts a consumer resource and the package has no cross-package imports', () => {

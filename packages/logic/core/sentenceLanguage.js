@@ -1,9 +1,9 @@
 import { L } from "kernel"
 import { T } from 'kernel/words'
 import { treeKey as keyOf } from 'sentence'
-import { show } from './formula.js'
+import { BIN, show } from './formula.js'
 import { say } from './notation.js'
-import { acceptsKind, bindsAt, chipsFrom, complete, holesOf, joinsOnto, kindAt, kidsOf, nodeAt, setAt, straysOf } from './formulaTree.js'
+import { acceptsKind, bindsAt, chipsFrom, complete, editingTree, kindAt, kidsOf, nodeAt, setAt, straysOf } from './formulaTree.js'
 
 export const OUTSIDE = T("这个名字只在它绑定的区域里可用。")
 
@@ -11,8 +11,11 @@ const PLACES = ['①', '②', '③']
 export const STRAY = T('还不是完整的句子')
 const GROUPS = [['pred', T('谓词')], ['name', T("名字")], ['var', T('变量')], ['quant', T('量词')], ['conn', T('连接词')]]
 
+const wordsOf = (notation, word, places) => L(notation.words?.[word] ?? '')
+  || (word === '=' ? '{0} = {1}' : places ? `${word}(${Array.from({ length: places }, (_, k) => `{${k}}`).join(', ')})` : word)
+
 /** A predicate's words with its places numbered: ①是②的父母 (on its chip). */
-const placesOf = (notation, pred, places = 0) => (notation.words?.[pred] ? L(notation.words[pred]) : pred === '=' ? '{0} = {1}' : places ? `${pred}(${Array.from({ length: places }, (_, k) => `{${k}}`).join(', ')})` : pred).replace(/\{(\d)\}/g, (_, k) => PLACES[Number(k)])
+const placesOf = (notation, word, places) => wordsOf(notation, word, places).replace(/\{(\d)\}/g, (_, k) => PLACES[Number(k)])
 
 // Words with numbered places ({0}), each place the segment `at(k)`.
 const template = (words, at) => words.split(/(\{\d\})/).filter(Boolean).map((w) => (/^\{\d\}$/.test(w) ? at(Number(w[1])) : w))
@@ -30,13 +33,10 @@ function segmentOf(node, path, kind, notation, bracket = false) {
     return segmentOf(value, [...path, k], takes, notation, inner && Boolean(value) && !value.t && value.op !== 'atom' && value.op !== '¬')
   }
   // A thing where a sentence goes is marked: it is not a sentence yet. A function (s, plus) has a box for each thing.
-  if (node.t === 'fn' && node.args.length) return { ...part('name', template(L(notation.words?.[node.f] ?? "") || `${node.f}(${node.args.map((_, k) => `{${k}}`).join(', ')})`, (k) => kid(k))), bad: kind === 'formula' }
+  if (node.t === 'fn' && node.args.length) return { ...part('name', template(wordsOf(notation, node.f, node.args.length), kid)), bad: kind === 'formula' }
   if (node.t) return { ...part(node.t === 'var' ? 'var' : 'name', [node.t === 'var' ? node.name : L(notation.words?.[node.f] ?? node.f)]), bad: kind === 'formula' }
   switch (node.op) {
-    case 'atom': {
-      const words = notation.words?.[node.pred] ? L(notation.words[node.pred]) : node.pred === '=' ? '{0} = {1}' : node.args.length ? `${node.pred}(${node.args.map((_, k) => `{${k}}`).join(', ')})` : node.pred
-      return part('pred', template(words, (k) => kid(k)))
-    }
+    case 'atom': return part('pred', template(wordsOf(notation, node.pred, node.args.length), kid))
     case '⟹': return part('conn', ['⟦', kid(0), '⟧ ⟹ ', kid(1)])
     case '⊥': return part('conn', ['⊥'])
     case '¬': return part('conn', ['¬', kid(0, true)])
@@ -52,6 +52,19 @@ export function fixedLine(f, notation, key) {
 }
 
 export function sentenceLanguage(notation, root = 'formula', free) {
+  const argumentWords = (node) => node.args?.length ? wordsOf(notation, node.pred ?? node.f, node.args.length) : ''
+  const orderOf = (node, kids) => {
+    const words = argumentWords(node)
+    if (!words) return [...kids.keys()]
+    const shown = [...words.matchAll(/\{(\d)\}/g)].map(([, k]) => Number(k))
+    return [...new Set([...shown, ...kids.keys()])].filter(k => k < kids.length)
+  }
+  const leadingSlot = (node) => {
+    if (BIN[node.op] !== undefined) return 0
+    const first = /^\s*\{(\d)\}/.exec(argumentWords(node))
+    return first ? Number(first[1]) : null
+  }
+  const { holesOf, joinsOnto } = editingTree(root, orderOf, leadingSlot)
   return {
     nodeAt, setAt, holesOf, complete, joinsOnto,
     label: root === 'term' ? T("式子") : T('公式'),

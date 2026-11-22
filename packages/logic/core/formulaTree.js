@@ -39,12 +39,20 @@ const tree = holeTree({ kids: kidsOf, withKid, root: 'formula' })
 export const { nodeAt, setAt, holesOf, kindAt, complete } = tree
 
 export const acceptsKind = (chip, kind) => chip.kind === 'term' || kind === 'formula'
-export const joinsOnto = tree.joinChips({
-  kindOf: node => node.t ? 'term' : 'formula',
-  fitsSlot: acceptsKind,
-  precedenceOf: node => node.op === '¬' ? Infinity : BIN[node.op],
-  rightAssociative: node => node.op === '→',
-})
+
+export function editingTree(root, orderOf, leadingSlot) {
+  const grammar = holeTree({ kids: kidsOf, withKid, root, orderOf })
+  return {
+    holesOf: grammar.holesOf,
+    joinsOnto: grammar.joinChips({
+      kindOf: node => node.t ? 'term' : 'formula',
+      fitsSlot: acceptsKind,
+      leadingSlot,
+      precedenceOf: node => node.op === '¬' ? Infinity : BIN[node.op],
+      rightAssociative: node => node.op === '→',
+    }),
+  }
+}
 
 /** Whether a variable is introduced on the path to the edited slot. */
 export function bindsAt(node, path, name) {
@@ -79,15 +87,13 @@ export function chipsOf(level) {
   const fns = level.vocab.fns ?? []
   const connectives = ordered(level.connectives ?? CONNECTIVES)
   return [
-    // A predicate (`leads`) can take a thing the line ends with as its first place.
-    ...preds.map(([p, n]) => ({ key: `P:${p}`, kind: 'formula', group: 'pred', pred: p, places: n, leads: n > 0, make: () => atom(p, Array(n).fill(null)) })),
+    ...preds.map(([p, n]) => ({ key: `P:${p}`, kind: 'formula', group: 'pred', pred: p, places: n, make: () => atom(p, Array(n).fill(null)) })),
     ...consts.map((c) => ({ key: `c:${c}`, kind: 'term', group: 'name', name: c, make: () => fn(c) })),
     // A function (s, plus) is a thing with a box for each of its things.
     ...fns.map(([f, n]) => ({ key: `f:${f}`, kind: 'term', group: 'name', name: f, places: n, make: () => fn(f, Array(n).fill(null)) })),
     ...vars.map((v) => ({ key: `v:${v}`, kind: 'term', group: 'var', text: v, make: () => tvar(v) })),
     ...quantifiers.flatMap((q) => vars.filter((v) => level.kind !== 'logic/query' || v !== 'x').map((v) => ({ key: `${q}${v}`, kind: 'formula', group: 'quant', symbol: symbols?.[q], text: `${q}${v}.`, make: () => (q === '∀' ? all : ex)(v, null) }))),
-    // A connective between two sentences (`leads`) can take the sentence the line ends with as its first.
-    ...connectives.map((c) => ({ key: c, kind: 'formula', group: 'conn', symbol: symbols?.[c], text: symbols?.[c]?.name ?? c, leads: !['¬', '⊥'].includes(c), make: () => (c === '¬' ? not(null) : c === '⊥' ? BOT : bin(c, null, null)) })),
+    ...connectives.map((c) => ({ key: c, kind: 'formula', group: 'conn', symbol: symbols?.[c], text: symbols?.[c]?.name ?? c, make: () => (c === '¬' ? not(null) : c === '⊥' ? BOT : bin(c, null, null)) })),
   ]
 }
 

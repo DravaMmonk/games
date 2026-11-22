@@ -18,7 +18,8 @@ const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, langu
   const byKey = useMemo(() => new Map(chips.map((chip) => [chip.key, chip])), [chips])
   const [recent, setRecent] = useState(null)
   const lastEdit = recent?.tree === tree && recent.scope === scope ? recent : null
-  const holes = holesOf(tree).filter(({ path }) => !lastEdit || follows(path, lastEdit.path))
+  const holes = holesOf(tree)
+  const following = holes.filter(({ path }) => !lastEdit || follows(path, lastEdit.path))
   const replace = (next) => {
     setRecent(null)
     strip.clearSelection()
@@ -42,10 +43,10 @@ const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, langu
     take: (slot) => replace(setAt(tree, treePath(slot), null)),
     target: (key) => {
       const chip = byKey.get(key)
-      const join = !lastEdit || complete(nodeAt(tree, lastEdit.path))
-        ? joinsOnto(tree, chip, lastEdit?.path) : null
+      const made = chip.make(tree)
+      const join = joinsOnto(tree, chip, made)
       if (join && !language.refuse?.(tree, join, chip)) return treeKey(join)
-      const hole = holes.find(hole => accepts(hole, chip))
+      const hole = (complete(made) ? following : holes).find(hole => accepts(hole, chip))
       return hole ? treeKey(hole.path) : null
     },
     filled: (slot) => nodeAt(tree, treePath(slot)) !== null,
@@ -55,7 +56,7 @@ const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, langu
     strip.clearSelection()
     setRecent(null)
   } }), [strip])
-  const first = holes[0]
+  const first = following[0]
   const next = strip.selected ?? (first ? treeKey(first.path) : complete(tree) ? 'end' : null)
   const groups = language.groups.map(([key, label]) => ({
     key, label,

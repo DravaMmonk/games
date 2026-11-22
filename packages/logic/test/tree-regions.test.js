@@ -15,17 +15,17 @@ test('a formula variable is accepted within its own region or in the surrounding
 
 test('infix chips continue a completed predicate inside its quantifier before an outer hole', () => {
   const language = sentenceLanguage({})
-  const connective = key => ({ key, group: 'conn', kind: 'formula', leads: true, make: () => bin(key, null, null) })
+  const join = (tree, op) => language.joinsOnto(tree, { kind: 'formula' }, bin(op, null, null))
   const bird = atom('Bird', [tvar('x')])
   const flies = atom('Flies', [tvar('x')])
   const partial = bin('∧', all('x', bird), null)
-  const last = [0, 0, 0]
   for (const key of ['∧', '∨', '→', '↔']) {
-    assert.deepEqual(language.joinsOnto(partial, connective(key), last), [0, 0])
+    assert.deepEqual(join(partial, key), [0, 0])
   }
 
   const compound = bin('∧', all('x', bin('∧', bird, flies)), null)
-  assert.deepEqual(language.joinsOnto(compound, connective('→'), [0, 0, 1, 0]), [0, 0])
+  assert.deepEqual(join(compound, '→'), [0, 0])
   const unfinished = all('x', atom('Pair', [tvar('x'), null]))
-  assert.equal(language.joinsOnto(unfinished, connective('→'), [0, 0]), null)
+  assert.equal(join(unfinished, '→'), null)
+  assert.deepEqual(join(bin('∧', null, bin('∨', bird, flies)), '∧'), [1, 1])
 })

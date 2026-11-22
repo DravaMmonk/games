@@ -9,14 +9,14 @@ import { L, tr } from '../shell/i18n.js'
 export const DRAWER_TABS = [['audit', T("审计")], ['compare', T("文件对比")], ['changes', T("修改日志")], ['debug', T("调试")]]
 
 /**
- * `sum`: { fail, label } (Audit.jsx auditSum); `audit`: the audit, always mounted (its keys work folded); `panel`: what
+ * `sum`: { status, label } (Audit.jsx auditSum); `audit`: the audit, always mounted (its keys work folded); `panel`: what
  * another tab shows; `tabs`: the ids of the tabs this workspace has.
  */
 export default function Drawer({ open, tab, onTab, onToggle, sum, fresh, ops, audit, panel, tabs = DRAWER_TABS.map(([id]) => id) }) {
   const pick = (id) => (open && tab === id ? onToggle() : onTab(id))
   return (
     <div className={`drawer ${open ? 'is-open' : ''}`}>
-      <div className={`drawer-bar ${sum.fail ? 'is-fail' : 'is-ok'}`}>
+      <div className={`drawer-bar is-${sum.status}`}>
         <button type="button" className="audit-sum" onClick={onToggle} aria-expanded={open} title="Alt+]">
           <ChevronUp size={14} aria-hidden="true" />
           <b>{sum.label}</b>

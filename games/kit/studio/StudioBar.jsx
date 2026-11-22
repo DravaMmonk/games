@@ -1,15 +1,16 @@
 import { T } from '../shell/i18n.js'
 // The bar the studio's workspaces share (Studio.jsx; games/design/README.md 6.7): the workspace switch, what the workspace
-// opens (a package, a game: its children), undo and redo of the pending changeset, the command palette, the busy
-// light, language and theme. No tabs: what is shown follows what is picked, and the helpers fold under the middle
+// opens (a package, a game: its children), undo and redo of the pending changeset, the command palette,
+// content reload, language and theme. What is shown follows what is picked, and the helpers fold under the middle
 // (Drawer.jsx). Undo takes the last pending operation back, redo puts it again: ⌘/Ctrl-Z, ⇧⌘/Ctrl-Z or Ctrl-Y,
 // outside a text field (where the keys undo the typing), in every workspace.
 import { useEffect, useRef } from 'react'
-import { Command, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Redo2, Undo2 } from 'lucide-react'
+import { Command, LoaderCircle, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Redo2, RefreshCw, Undo2 } from 'lucide-react'
 import { mountBarMenus } from '../menu.js'
 import { L, tr } from '../shell/i18n.js'
 import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { MOD } from './Shortcuts.jsx'
+import { refreshContent } from './api.js'
 
 const typing = (el) => el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
 
@@ -20,8 +21,11 @@ export const SPACES = [['build', T("构建")], ['arrange', T("编排")], ['copy'
  * is nothing to take back or put again; panels: { tree, side (open or not), onToggle(which) }, the left and right
  * columns folded and unfolded from the bar's two ends (Alt+[, Alt+\\).
  */
-export default function StudioBar({ space, ops, busy, fresh, onPalette, onUndo = null, onRedo = null, panels = null, children }) {
+export default function StudioBar({ space, ops, busy = false, catalog, onPalette, onUndo = null, onRedo = null, panels = null, children }) {
   const actions = useRef(null)
+  const loading = busy || catalog.loading
+  const reload = tr('重新加载 Studio')
+  const error = catalog.error && `${tr('无法读取工作区')} · ${catalog.error.message}`
   useEffect(() => {
     const menus = mountBarMenus(actions.current)
     return () => menus.destroy()
@@ -64,12 +68,19 @@ export default function StudioBar({ space, ops, busy, fresh, onPalette, onUndo =
         <button type="button" className="kit-btn editor-tool" disabled={!onRedo} onClick={() => onRedo?.()} aria-label={tr("重做")} title={`${tr("重做")} (${MOD}+Shift+Z)`}><Redo2 size={14} aria-hidden="true" /></button>
       </span>
       {onPalette && <button type="button" className="studio-palette" onClick={onPalette} title={tr('命令面板')}><Command size={13} aria-hidden="true" /><kbd>{MOD}K</kbd></button>}
-      <i className={`studio-busy ${busy || !fresh ? 'is-on' : ''}`} aria-hidden="true" />
       {panels && <button type="button" className="kit-btn editor-tool studio-panel-toggle" onClick={() => panels.onToggle('side')} aria-pressed={panels.side}
         title={`${panels.side ? tr("收起右栏") : tr("打开右栏")} (Alt+\\)`} aria-label={panels.side ? tr("收起右栏") : tr("打开右栏")}>
         {panels.side ? <PanelRightClose size={15} aria-hidden="true" /> : <PanelRightOpen size={15} aria-hidden="true" />}
       </button>}
-      <div className="kit-actions" ref={actions} />
+      <div className="studio-bar-actions">
+        <button type="button" className={`kit-btn kit-icon-btn studio-refresh${error ? ' is-error' : ''}`}
+          aria-label={reload} title={loading ? tr('读取中……') : error || reload}
+          aria-busy={loading} aria-disabled={loading} onClick={() => { if (!loading) refreshContent() }}>
+          {loading ? <LoaderCircle size={16} className="studio-spin" aria-hidden="true" /> : <RefreshCw size={16} aria-hidden="true" />}
+        </button>
+        <span className="studio-load-status" role="status">{loading ? tr('读取中……') : error}</span>
+        <div className="kit-actions" ref={actions} />
+      </div>
     </header>
   )
 }

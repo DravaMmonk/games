@@ -24,6 +24,7 @@ import { blankChapter, chapterName, chapterRetitle, chaptersOrder, chapterSet, m
 import { missingDependencies, packageAddOps, packageRemoveOps } from './game-packages.js'
 import { useChangeset } from './useChangeset.js'
 import StudioBar from './StudioBar.jsx'
+import Loading from './Loading.jsx'
 import PanelResizer from './PanelResizer.jsx'
 import ChapterBoard from './ChapterBoard.jsx'
 import CourseImpact from './CourseImpact.jsx'
@@ -65,10 +66,9 @@ const remember = (game, at, opened) => {
  * `game`: the game arranged; `games`: every game, { id, title, package }; `onMade(id)`: a game was just made;
  * `packages`: every package, { id, uses }; `onBuild(id)` opens a package in the build workspace.
  */
-export default function GameStudio({ game, games, onGame, onMade, packages = [], onBuild, space }) {
-  const pending = useChangeset(game, SCOPE)
-  const { ops, redo, why, setWhy, shown, last, checked, busy, rev, saving, said, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
-  const [domainVocab, setVocab] = useState(null)
+export default function GameStudio({ game, games, onGame, onMade, packages = [], onBuild, space, catalog }) {
+  const pending = useChangeset(game, SCOPE, { courseAudit: true })
+  const { ops, redo, why, setWhy, shown, last, checked, domainVocab, busy, rev, saving, said, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
   const [rawNames, setRawNames] = useState(null)
   const [at, setAt] = useState(() => (QUERY.get('era') !== null ? { era: Number(QUERY.get('era')) } : { era: 0 }))
   const [drawerTab, setDrawerTab] = usePref('game-drawer-tab', 'audit') // the fold bar's tab (Drawer.jsx)
@@ -112,10 +112,8 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const [layout, setLayout] = usePref('game-layout', { tree: 220, audit: 200, side: 360, treeOpen: true, auditOpen: true, sideOpen: true })
   const [resize, setResize] = useState(null)
   useEffect(() => {
-    setVocab(null)
     setRawNames(null)
     setField(null)
-    call('vocabulary', { game }).then(setVocab)
   }, [game])
   const content = shown?.content ?? null
   const loaded = Boolean(content)
@@ -343,7 +341,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const busyEditing = saving || shown?.ops !== ops
   return (
     <div className={`studio game-studio ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
         <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => { setSide('games'); showMobilePanel('tree', true) }} title={tr("选择游戏")}>
           <Gamepad2 size={13} aria-hidden="true" /><span>{L(games.find((g) => g.id === game)?.title) ?? game}</span>
         </button>
@@ -357,7 +355,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
         onConfirm={impact.confirmation ? () => setConfirmation({ ...impact, ...impact.confirmation }) : checkImpact} />}
       {confirmation && <CourseImpact plan={confirmation} busy={impactBusy} problem={impactProblem} closeLabel={tr("返回")} onConfirm={checkImpact}
         onClose={() => { setConfirmation(null); setImpactProblem(null) }} />}
-      {!ready ? <div className="studio-loading">{tr('正在加载课程……')}</div> : (
+      {!ready ? <Loading label={tr('正在加载课程……')} /> : (
         <div className={`studio-body is-${overridesShown || packagesShown ? 'objects' : 'arrange'} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style} data-mobile-panel={mobilePanel}>
           <nav className="arrange-panels" aria-label={tr('编排面板')}>
             {PANELS.map(([id, label]) => (

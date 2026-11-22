@@ -36,15 +36,15 @@ function localCheck(ws, content, ops) {
 }
 
 /** Check a draft and reuse its report only while both the resolved content and project inputs match. */
-export async function checkChangeset(ws, content, ops, { check, changesOnly, given }) {
-  if (changesOnly) {
+export async function checkChangeset(ws, content, ops, { check, changesOnly, courseAudit, given }) {
+  if (changesOnly && !courseAudit) {
     const local = localCheck(ws, content, ops)
     if (local) return { ...local, checkedChanges: true }
   }
 
   const run = async () => {
     const domain = given ? { ...given, vocabulary: ws.schemas } : await runtimeOf(content, ws.root)
-    const options = { domain, root: ws.root }
+    const options = { domain, root: ws.root, courseAudit }
     return check ? checkGame(content, options) : checkContentOnly(content, options)
   }
   if (!changesOnly || !check || given) return run()
@@ -52,7 +52,7 @@ export async function checkChangeset(ws, content, ops, { check, changesOnly, giv
   // Limit retained reports to one per target in this input generation. Apply still replays and guards the write.
   const key = createHash('sha256').update(JSON.stringify(content)).digest('hex')
   return withReadCache(ws.root, async () => {
-    const target = JSON.stringify(['changeset-check', ws.id, ws.layer, ws.scope])
+    const target = JSON.stringify(['changeset-check', ws.id, ws.layer, ws.scope, courseAudit])
     const entry = memoResolution(target, () => ({}), { shared: true })
     if (entry.key === key) return entry.result
     const report = await run()

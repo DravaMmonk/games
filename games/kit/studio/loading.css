@@ -1,0 +1,8 @@
+.studio-loading { padding: 40px var(--gutter); color: var(--muted); }
+.studio-loading[role='status'] { display: flex; align-items: center; gap: var(--sp-3); }
+.studio-loading > svg { flex: none; }
+.studio-spin { animation: studio-spin 900ms linear infinite; }
+@keyframes studio-spin { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) {
+  .studio-spin { animation: none; }
+}

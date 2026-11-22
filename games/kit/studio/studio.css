@@ -16,7 +16,6 @@ html, body { margin: 0; background: var(--canvas); color: var(--body); font: var
   --key-w: 8.5em;       /* a field's label beside it */
   height: 100vh; display: flex; flex-direction: column; font-size: var(--fs);
 }
-.studio-loading { padding: 40px var(--gutter); color: var(--muted); }
 .studio-load-error { overflow-wrap: anywhere; }
 kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 
@@ -30,7 +29,10 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .studio-count.is-fail { background: var(--fail); }
 .studio-palette { height: 26px; padding: 0 8px; display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 6px; color: var(--muted); background: var(--hover); cursor: pointer; }
 .studio-palette:hover { color: var(--ink); }
-.studio-busy { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0; transition: opacity 160ms ease; }
+.studio-bar-actions { flex: none; margin-inline-start: auto; display: flex; align-items: center; gap: var(--sp-1); }
+.studio-refresh[aria-busy='true'] { color: var(--accent-ink, var(--accent)); cursor: progress; }
+.studio-refresh.is-error { color: var(--fail); }
+.studio-load-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .studio-history { display: inline-flex; gap: 2px; }
 .studio-panel-toggle { flex: none; width: 28px; height: 28px; display: grid; place-items: center; padding: 0; }
 .studio-panel-toggle[aria-pressed='false'] { color: var(--muted); }
@@ -66,7 +68,6 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
 .package-meta-more summary { cursor: pointer; color: var(--muted); }
 .package-meta-more[open] { display: flex; flex-wrap: wrap; gap: 6px; }
 .package-meta-more[open] summary { flex-basis: 100%; }
-.studio-busy.is-on { opacity: 1; animation: studio-pulse 900ms ease-in-out infinite; }
 @keyframes studio-pulse { 50% { opacity: .25; } }
 
 /* ---- the columns: the tree, and the form over the audit drawer ---- */
@@ -105,6 +106,7 @@ kbd { font: 600 var(--fs-mini)/1 var(--mono); }
   .studio-palette kbd { display: none; }
   .studio-bar { height: auto; min-height: var(--bar-h); flex-wrap: wrap; row-gap: 6px; padding-top: 6px; padding-bottom: 6px; }
   .studio-bar > .studio-tabs { order: 10; flex: 1 1 100%; }
+  .studio-refresh { width: 44px; height: 44px; }
   .arrange-bar { flex-wrap: nowrap; }
   .arrange-bar > .studio-game { flex: 1 1 0; min-width: 0; max-width: none; }
   .game-studio .studio-panel-toggle { display: none; }
@@ -510,6 +512,7 @@ select.cell { width: auto; min-width: 46px; }
 .audit-filter .seg button { display: inline-flex; align-items: center; gap: 3px; padding: 0 5px; }
 .audit-filter .seg button i { width: 6px; height: 6px; border-radius: 50%; background: var(--rule); }
 .audit-filter .seg button.is-fail i { background: var(--fail); }
+.audit-filter .seg button.is-warn i { background: var(--accent); }
 .audit-filter .seg button.is-open i { background: var(--accent); }
 .audit-filter .seg button.is-report i { background: var(--select); }
 .audit-filter .seg button.is-pass i { background: var(--status); }
@@ -524,6 +527,7 @@ select.cell { width: auto; min-width: 46px; }
 .audit-row code { flex: none; width: 7em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent-ink); font-weight: 600; }
 .audit-row span { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .audit-row.is-fail button { color: var(--ink); box-shadow: inset 2px 0 0 var(--fail); }
+.audit-row.is-warn strong { color: var(--accent-ink); }
 .audit-row.is-open button { box-shadow: inset 2px 0 0 var(--accent); }
 .audit-row.is-report button { box-shadow: inset 2px 0 0 var(--select); }
 .audit-row.is-at button { background: color-mix(in srgb, var(--select) 14%, transparent); }
@@ -943,6 +947,7 @@ ins { color: var(--ink); background: color-mix(in srgb, var(--status) 30%, trans
 .drawer-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 4px 8px; }
 .drawer-bar.is-ok { background: color-mix(in srgb, var(--status) 16%, transparent); }
 .drawer-bar.is-fail { background: color-mix(in srgb, var(--fail) 14%, transparent); }
+.drawer-bar.is-warn { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .drawer.is-open .audit-sum > svg { transform: rotate(180deg); }
 .drawer-tabs { min-width: 0; display: flex; gap: 1px; padding: 2px; overflow-x: auto; border-radius: 8px; background: var(--hover); scrollbar-width: none; }
 .drawer-tabs .studio-tab { flex: none; }

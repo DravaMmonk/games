@@ -16,6 +16,16 @@
       ],
       "port": 5190,
       "url": "http://localhost:5190"
+    },
+    {
+      "name": "studio-lan",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd site && exec node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --mode studio --host 0.0.0.0 --port 5191 --strictPort --force"
+      ],
+      "port": 5191,
+      "url": "http://localhost:5191"
     }
   ]
 }

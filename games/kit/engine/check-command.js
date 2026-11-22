@@ -67,7 +67,7 @@ await withReadCache(root, async () => {
     }
     problems += lines.filter((l) => l.fail).length
     console.log(`\n${head}`)
-    for (const line of lines) console.log(`  ${line.fail ? 'FAIL ' : ''}${line.text}`)
+    for (const line of lines) console.log(`  ${line.fail ? 'FAIL ' : line.warn ? 'WARN ' : ''}${line.text}`)
   }
 })
 

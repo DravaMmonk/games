@@ -1,7 +1,7 @@
 // Exercise the installed platform against an isolated content workspace.
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import { promisify } from 'node:util'
@@ -39,11 +39,25 @@ try {
   const errors = []
   const expectedRecoveryError = 'Studio source recovery test'
   const recordError = message => { if (message !== expectedRecoveryError) errors.push(message) }
+  let recoveringSource = false
+  const recoveryReads = []
+  const catalogRead = url => /\/studio\/api\/(games|packages)$/.test(url)
   const page = await browser.newPage()
-  await page.addInitScript(() => { if (location.protocol === 'http:') localStorage.setItem('games.lang', 'en') })
+  await page.addInitScript(() => {
+    if (location.protocol === 'http:' && !localStorage.getItem('games.lang')) localStorage.setItem('games.lang', 'en')
+  })
   page.on('pageerror', error => recordError(error.message))
-  page.on('console', message => { if (message.type() === 'error') recordError(message.text()) })
-  page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`) })
+  page.on('console', message => {
+    if (recoveringSource && catalogRead(message.location().url) && message.text().includes('422')) return
+    if (message.type() === 'error') recordError(message.text())
+  })
+  page.on('response', response => {
+    if (recoveringSource && response.status() === 422 && catalogRead(response.url())) {
+      recoveryReads.push(response.json())
+    } else if (response.status() >= 400) {
+      errors.push(`${response.status()} ${response.url()}`)
+    }
+  })
   const openServer = async () => {
     server = await createServer({ root: app, mode: 'studio', configFile: resolve(app, 'vite.config.js'),
       cacheDir: resolve(root, '.vite'), server: { host: '127.0.0.1', port: 0, strictPort: false, open: false }, logLevel: 'error',
@@ -52,7 +66,18 @@ try {
     return `http://127.0.0.1:${server.httpServer.address().port}`
   }
   let base = await openServer()
-  await page.goto(`${base}/studio.html`)
+  const startup = Promise.withResolvers()
+  const waitForPlugins = async route => { await startup.promise; await route.continue() }
+  await page.route('**/*studio-domains*', waitForPlugins)
+  try {
+    const catalogsStarted = page.waitForRequest('**/studio/api/packages')
+    await page.goto(`${base}/studio.html`, { waitUntil: 'commit' })
+    await catalogsStarted
+    await page.locator('.studio-loading[role="status"] .studio-spin').waitFor()
+  } finally {
+    startup.resolve()
+    await page.unrouteAll({ behavior: 'wait' })
+  }
   await page.getByText(/^(没有内容|No content)$/).waitFor().catch(async error => { console.error(await page.locator('body').innerText(), errors); throw error })
   assert.deepEqual(errors, [])
   await page.goto('about:blank')
@@ -74,6 +99,9 @@ try {
         run: (answer, { task }) => ({ pass: answer === task.answerRule.answer }),
         judge: report => ({ pass: report.pass, score: Number(report.pass) }),
       })
+      kernel.check('text/course', Object.assign(({ spec }) =>
+        spec.levels.length === 1 ? [{ fail: true, level: spec.levels[0].id, text: 'Course needs a second level' }] : [],
+      { phase: 'course' }))
     }
   `)
   sourceFile('view/index.jsx', `
@@ -127,6 +155,7 @@ try {
   await editor.fill(original + `\nthrow new Error(${JSON.stringify(expectedRecoveryError)})\n`)
   await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
   await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
+  recoveringSource = true
   await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
   assert.match(readFileSync(resolve(root, 'packages/text/core/index.js'), 'utf8'), /Studio source recovery test/)
   await page.getByRole('alert').filter({ hasText: expectedRecoveryError }).waitFor().catch(async error => {
@@ -138,6 +167,8 @@ try {
   await editor.fill(original)
   await page.getByRole('button', { name: /^(保存源码|Save source)$/ }).click()
   await page.getByText(/^(已保存到工作区|Saved to workspace)$/).waitFor()
+  recoveringSource = false
+  for (const { error } of await Promise.all(recoveryReads)) assert.equal(error, expectedRecoveryError)
 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
@@ -165,6 +196,109 @@ try {
   await command([resolve(kit, 'engine/deps.js'), 'lock', '--game', 'minimal'])
   await command([resolve(kit, 'engine/check.js'), '--game', 'minimal'])
   base = await openServer()
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto(`${base}/studio.html?space=arrange&game=minimal`)
+  const chapterTitle = page.locator('#arrange-main h1 input')
+  const courseFinding = page.locator('.audit-row.is-fail').filter({ hasText: 'Course needs a second level' })
+  const audit = page.getByRole('tab', { name: /^(审计|Audit)$/ })
+  await chapterTitle.waitFor()
+  if (await audit.getAttribute('aria-selected') === 'false') await audit.click()
+  await courseFinding.waitFor()
+  const draftedAudit = page.waitForResponse(response => {
+    if (!response.url().endsWith('/studio/api/preview')) return false
+    const { courseAudit, changeset } = response.request().postDataJSON()
+    return courseAudit && changeset.ops.length > 0
+  })
+  await chapterTitle.fill('Studio draft')
+  await chapterTitle.press('Enter')
+  const draftReport = await (await draftedAudit).json()
+  assert.equal(draftReport.ok, true)
+  assert.deepEqual(draftReport.auditLines.flatMap(line => line.levels), ['text/hello'])
+  const addedLevel = 'packages/text/levels/added.json'
+  const finalLevel = 'packages/text/levels/final.json'
+  const route = 'packages/text/relations/route.json'
+  const originalLevel = JSON.parse(readFileSync(resolve(root, 'packages/text/levels/hello.json'), 'utf8'))
+  const fixtureLevel = (id, title) => ({ ...originalLevel, title, tasks: [{ ...originalLevel.tasks[0], id }] })
+  // Simulate an external atomic save and a game config edit without a Studio API write.
+  put(`${addedLevel}.tmp`, fixtureLevel('added', 'Added on disk'))
+  renameSync(resolve(root, `${addedLevel}.tmp`), resolve(root, addedLevel))
+  put(finalLevel, fixtureLevel('final', 'Route end'))
+  put(route, { kind: 'requires', edges: [
+    { from: 'text/hello', to: 'text/added' },
+    { from: 'text/added', to: 'text/final' },
+    { from: 'text/hello', to: 'text/final' },
+  ] })
+  put('games/minimal/chapters/main.json', { chapter: { title: 'Main' }, levels: ['text/hello', 'text/added', 'text/final'] })
+  const added = page.locator('#arrange-main').getByText('Added on disk', { exact: true }).first()
+  const redundant = page.locator('.audit-row.is-warn').filter({ hasText: 'the direct prerequisite text/hello is redundant because text/added already requires it' })
+  await added.waitFor()
+  assert.equal(await chapterTitle.inputValue(), 'Studio draft')
+  await redundant.getByText('Warning', { exact: false }).first().waitFor().catch(async error => {
+    console.error(await page.locator('.studio-audit').innerText(), errors)
+    throw error
+  })
+  await page.locator('.drawer-bar.is-warn .audit-sum').waitFor()
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.evaluate(() => localStorage.setItem('games.lang', 'zh'))
+  await page.reload()
+  await added.waitFor()
+  await redundant.getByText('警告', { exact: false }).first().waitFor()
+  await chapterTitle.fill('Studio draft')
+  await chapterTitle.press('Enter')
+  put('games/minimal/chapters/main.json', { chapter: { title: 'Main' }, levels: ['text/hello'] })
+  rmSync(resolve(root, route))
+  rmSync(resolve(root, finalLevel))
+  rmSync(resolve(root, addedLevel))
+  await added.waitFor({ state: 'detached' })
+  assert.equal(await chapterTitle.inputValue(), 'Studio draft')
+  await courseFinding.waitFor()
+  const reload = page.getByRole('button', { name: /^(重新加载 Studio|Reload Studio)$/ })
+  await page.waitForFunction(() => document.querySelector('.studio-refresh')?.getAttribute('aria-busy') === 'false')
+  const preview = Promise.withResolvers()
+  const waitForPreview = async route => { await preview.promise; await route.continue() }
+  await page.route('**/studio/api/preview', waitForPreview)
+  try {
+    const refreshed = page.waitForRequest('**/studio/api/preview')
+    await reload.click()
+    await refreshed
+    await reload.locator('.studio-spin').waitFor()
+    assert.equal(await reload.getAttribute('aria-busy'), 'true')
+  } finally {
+    preview.resolve()
+    await page.unrouteAll({ behavior: 'wait' })
+  }
+  await page.waitForFunction(() => document.querySelector('.studio-refresh')?.getAttribute('aria-busy') === 'false')
+  await page.locator('.studio-audit .audit[aria-busy="false"]').waitFor()
+  await courseFinding.waitFor()
+  assert.equal(await chapterTitle.inputValue(), 'Studio draft')
+  assert.deepEqual(errors, [])
+  console.log('Studio refreshed catalogs and automatically audited saved content and drafts on desktop and phone')
+
+  const waitingAudit = Promise.withResolvers()
+  const resumeAudit = Promise.withResolvers()
+  await page.route('**/studio/api/preview', async route => {
+    const { courseAudit, changeset } = route.request().postDataJSON()
+    if (courseAudit && changeset.ops.length) {
+      waitingAudit.resolve()
+      await resumeAudit.promise
+    }
+    await route.continue()
+  })
+  try {
+    await chapterTitle.fill('Save during audit')
+    await chapterTitle.press('Enter')
+    await waitingAudit.promise
+    await page.getByRole('tab', { name: /^(修改日志|Change log)/ }).click()
+    const applied = page.waitForResponse(response => response.url().endsWith('/studio/api/modify'))
+    await page.getByRole('button', { name: /^(应用|Apply)$/ }).click()
+    assert.equal((await (await applied).json()).ok, true)
+    assert.match(readFileSync(resolve(root, 'games/minimal/chapters/main.json'), 'utf8'), /Save during audit/)
+  } finally {
+    resumeAudit.resolve()
+    await page.unrouteAll({ behavior: 'wait' })
+  }
+
+  await page.evaluate(() => localStorage.setItem('games.lang', 'en'))
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport)
     await page.goto(`${base}/game/minimal/index.html?level=text/hello&lang=en`)

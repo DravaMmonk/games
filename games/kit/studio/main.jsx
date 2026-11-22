@@ -6,9 +6,14 @@ import '../tokens.css'
 import '../ui.css'
 
 import { tr } from '../shell/i18n.js'
+import Loading from './Loading.jsx'
 
 const query = new URLSearchParams(window.location.search)
 const root = createRoot(document.getElementById('root'))
+const editing = !query.has('play') && !query.has('source')
+const initialCatalogs = editing ? import('./api.js').then(({ loadCatalogs }) => loadCatalogs()) : null
+// The workspace reads the result after plugin registration, including a failed preload.
+initialCatalogs?.catch(() => {})
 
 async function workspace() {
   if (query.has('source') && !query.has('play')) return (await import('./PackageSource.jsx')).default
@@ -21,7 +26,8 @@ async function workspace() {
 }
 
 try {
-  root.render(<StrictMode>{createElement(await workspace())}</StrictMode>)
+  if (editing) root.render(<Loading />)
+  root.render(<StrictMode>{createElement(await workspace(), { initialCatalogs })}</StrictMode>)
 } catch (error) {
   const source = new URLSearchParams({ source: '', package: query.get('package') ?? '' })
   root.render(<main className="studio-loading">

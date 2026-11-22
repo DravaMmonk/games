@@ -225,7 +225,7 @@ const tools = {
     async run({ game, mutants = false }) {
       const content = readTarget(game)
       const { lines } = await checkGame(content, { domain: await runtimeOf(content), authoring: true, mutants, cache: kept(game), root: ROOT })
-      return { ok: !lines.some((l) => l.fail), failures: lines.filter((l) => l.fail).map((l) => l.text), lines: lines.map((l) => `${l.fail ? 'FAIL ' : ''}${l.text}`) }
+      return { ok: !lines.some((l) => l.fail), failures: lines.filter((l) => l.fail).map((l) => l.text), lines: lines.map((l) => `${l.fail ? 'FAIL ' : l.warn ? 'WARN ' : ''}${l.text}`) }
     },
   },
   modify: {
@@ -315,10 +315,10 @@ const tools = {
   },
   preview: {
     about: catalogText("预览变更后的内容、检查输出、文件前后文本、失败的操作及日志。check 为 false 时只做词汇表检查。omit 可省略 changes、log、drift 或 content。"),
-    params: { game: 'string', changeset: 'object?', check: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?', changesOnly: 'boolean?' },
-    async run({ game, changeset = { ops: [] }, check = true, scope, layer, omit = [], changesOnly = false }) {
+    params: { game: 'string', changeset: 'object?', check: 'boolean?', courseAudit: 'boolean?', scope: 'string?', layer: 'string?', omit: 'array?', changesOnly: 'boolean?' },
+    async run({ game, changeset = { ops: [] }, check = true, courseAudit = false, scope, layer, omit = [], changesOnly = false }) {
       const ws = open(game, scope, layer)
-      const r = await runChangeset(ws, changeset, { write: false, check, changesOnly, texts: !omit.includes('changes') })
+      const r = await runChangeset(ws, changeset, { write: false, check, changesOnly, courseAudit, texts: !omit.includes('changes') })
       const { content, order } = r
       // JSON editing can select catalog entries that no field currently uses.
       const copy = !omit.includes('content') && content?.resolvedDependencies?.copy
@@ -327,6 +327,7 @@ const tools = {
         content: copy ? { ...content, registries: { ...content.registries, i18n: copy } } : content,
         order,
         lines: r.lines.map((l) => ({ ...l, levels: levelsOfLine(l, order) })),
+        ...(courseAudit && { auditLines: (r.auditLines ?? []).map((l) => ({ ...l, levels: levelsOfLine(l, order) })) }),
         changes: r.changes, ...logOf(game, scope, layer, ws, omit),
       }
       // A caller that has no use for some of the answer (the studio's quick preview: the file texts and the log) leaves it out.

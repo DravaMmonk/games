@@ -18,13 +18,13 @@ import { packageIds } from '../engine/resolver.js'
 // Calls are answered one at a time, in order, as the MCP server answers them: a changeset sees the files the one
 // before it wrote. The slow ones — a whole check (preview with check, which runs every reference of a big game for
 // seconds), a run of a level's tests — go to a second worker lane with its own copy of the tools, so a quick
-// preview never waits behind them; a call that writes waits for both lanes. GAMES_ROOT points the tools at a copy of
-// the games folder.
+// preview never waits behind them; a call that writes waits for both lanes. Course audits use a separate read-only
+// lane. GAMES_ROOT points the tools at a copy of the games folder.
 import { realpathSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { resolve, sep } from 'node:path'
 import { Worker } from 'node:worker_threads'
 import { eraLevels } from '../course.js'
-import { contentRoot, contentTargets, readContent } from '../engine/resolver.js'
+import { contentRoot, contentTargets, gameDirectory, packageDirectory, readContent } from '../engine/resolver.js'
 
 const PREFIX = '/studio/api/'
 const MODULE = 'virtual:studio-domains'
@@ -83,10 +83,11 @@ export function worker() {
   }
 }
 
-/** The bridge over `tools` (name → { about, params, run(args) }), as connect middleware; `aside`: the second lane. */
-export function bridge(tools, lacking, aside = null) {
+/** The bridge over `tools` as connect middleware. Reads in the audit lane do not delay validation or writes. */
+export function bridge(tools, lacking, aside = null, audit = null) {
   let queue = Promise.resolve()
   let side = Promise.resolve()
+  let background = Promise.resolve()
   return (req, res, next) => {
     const url = new URL(req.url, 'http://localhost')
     if (!url.pathname.startsWith(PREFIX)) return next()
@@ -119,6 +120,10 @@ export function bridge(tools, lacking, aside = null) {
         } catch (error) {
           reply(422, { error: error.message })
         }
+      }
+      if (audit && name === 'preview' && args.courseAudit && args.check !== false) {
+        background = Promise.all([background, queue]).then(() => answer(() => audit.run(name, args)))
+        return
       }
       if (aside && slow(name, args)) {
         side = Promise.all([side, queue]).then(() => answer(() => aside.run(name, args)))
@@ -154,6 +159,7 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       const { TOOLS, lacking } = await import('../engine/ops/tools.js')
       let fast
       let lane
+      let auditing
       const checking = () => (lane ??= worker())
       const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, {
         ...tool,
@@ -165,8 +171,8 @@ export const defineContent = content => loadGame(content, PACKAGES)`
         for (const path of new Set([file, realpathSync(file)])) {
           for (const module of server.moduleGraph.getModulesByFile(path) ?? []) server.moduleGraph.invalidateModule(module, new Set(), timestamp, true)
         }
-        const old = [fast, lane].filter(Boolean)
-        fast = lane = undefined
+        const old = [fast, lane, auditing].filter(Boolean)
+        fast = lane = auditing = undefined
         for (const id of [MODULE, 'virtual:package-displays']) {
           const module = server.moduleGraph.getModuleById(`\0${id}`)
           if (module) server.moduleGraph.invalidateModule(module, new Set(), timestamp, true)
@@ -175,10 +181,27 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       }
       const host = server.config.server.host
       const source = !host || ['localhost', '127.0.0.1', '::1'].includes(host) ? sourceTools(root, refreshCode) : {}
-      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking, { run: (name, args) => checking().run(name, args) }))
+      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking,
+        { run: (name, args) => checking().run(name, args) },
+        { run: (name, args) => (auditing ??= worker()).run(name, args) }))
+
+      // Content is read by the author tools, so these files need an explicit browser notification.
+      const directories = [gameDirectory('', root), packageDirectory('', root)]
+      let contentTimer
+      const onContentFile = (event, file) => {
+        if (!['add', 'change', 'unlink'].includes(event) || !/\.(?:json|jsonl)$/.test(file)) return
+        if (!directories.some(dir => file.startsWith(dir + sep) && !file.slice(dir.length + 1).split(sep)
+          .some(segment => segment.startsWith('.') || segment === 'node_modules'))) return
+        clearTimeout(contentTimer)
+        contentTimer = setTimeout(() => server.ws.send('studio:content-changed'), 180)
+      }
+      server.watcher.add(directories).on('all', onContentFile)
       server.httpServer?.on('close', () => {
+        clearTimeout(contentTimer)
+        server.watcher.off('all', onContentFile)
         fast?.close()
         lane?.close()
+        auditing?.close()
       })
     },
   }

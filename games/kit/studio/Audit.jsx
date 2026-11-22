@@ -10,24 +10,32 @@ import { useWorkspaceKeys } from '../shell/useOverlay.js'
 import { SEVERITIES, filterItems, stepIn, tally } from './worklist.js'
 import { usePref } from './prefs.js'
 
-const SEVERITY = { fail: [T("不过")], open: [T("待办")], report: [T("报告", {}, "audit")], pass: [T("通过", {}, "audit")] }
+const SEVERITY = { fail: [T("不过")], warn: [T("警告")], open: [T("待办")], report: [T("报告", {}, "audit")], pass: [T("通过", {}, "audit")] }
 const previewFailed = (last) => last?.ok === false && !last.content
 const SHOWN = 400 // rows drawn at most; the rest summed up
 
-/** How the check stands, for the fold bar: { fail: true when something fails, label }. */
+/** How the check stands, for the fold bar. */
 export function auditSum(items, last) {
-  const fails = items.filter((it) => it.severity === 'fail').length
-  const failed = previewFailed(last)
-  return { fail: Boolean(fails || failed), label: failed ? tr('操作失败') : fails ? tr("发现 {fails} 处问题", {fails}) : tr("检查通过") }
+  if (previewFailed(last)) return { status: 'fail', label: tr('操作失败') }
+  const { severities } = tally(items)
+  const fails = severities.get('fail')
+  if (fails) return { status: 'fail', label: tr("发现 {fails} 处问题", { fails }) }
+  const warnings = severities.get('warn')
+  if (warnings) return { status: 'warn', label: tr("发现 {warnings} 条警告", { warnings }) }
+  return { status: 'ok', label: tr("检查通过") }
 }
 
 /** `open`: the fold bar is open on the audit; `onOpen()` opens it there (F8 steps into a folded one). */
 export default function Audit({ items, fresh, last, at, busy, open, onOpen, onJump }) {
-  const [filter, setFilter] = usePref('audit-filter', { severities: ['fail', 'open', 'report'], rule: '', mine: false })
+  const [filter, setFilter] = usePref('audit-filter', { severities: ['fail', 'open', 'report'], warnings: true, rule: '', mine: false })
   const [query, setQuery] = useState('')
   const [cursor, setCursor] = useState(-1)
   const { rules, severities } = useMemo(() => tally(items), [items])
-  const shown = useMemo(() => filterItems(items, { severities: filter.severities, rules: filter.rule ? [filter.rule] : [], level: filter.mine ? at?.level ?? null : null, query }), [items, filter, at, query])
+  const selected = useMemo(() => {
+    const enabled = filter.severities.length ? filter.severities : SEVERITIES.filter(severity => severity !== 'warn')
+    return filter.warnings ? [...enabled, 'warn'] : enabled
+  }, [filter])
+  const shown = useMemo(() => filterItems(items, { severities: selected, rules: filter.rule ? [filter.rule] : [], level: filter.mine ? at?.level ?? null : null, query }), [items, filter, selected, at, query])
   useEffect(() => setCursor(-1), [filter, query])
   const go = (k) => {
     setCursor(k)
@@ -50,12 +58,14 @@ export default function Audit({ items, fresh, last, at, busy, open, onOpen, onJu
   })
   useEffect(() => { document.querySelector('.audit-row.is-at')?.scrollIntoView({ block: 'nearest' }) }, [cursor])
   const set = (patch) => setFilter((f) => ({ ...f, ...patch }))
-  const toggle = (s) => set({ severities: filter.severities.includes(s) ? filter.severities.filter((x) => x !== s) : [...filter.severities, s] })
+  const toggle = (s) => set(s === 'warn' ? { warnings: !filter.warnings } : {
+    severities: filter.severities.includes(s) ? filter.severities.filter((x) => x !== s) : [...filter.severities, s],
+  })
   const failed = previewFailed(last)
   if (!open) return null
   return (
     <div className={`audit is-open ${busy || !fresh ? 'is-busy' : ''}`} aria-busy={!fresh}>
-      <Filters filter={filter} set={set} toggle={toggle} severities={severities} rules={rules} at={at} query={query} setQuery={setQuery} />
+      <Filters filter={filter} selected={selected} set={set} toggle={toggle} severities={severities} rules={rules} at={at} query={query} setQuery={setQuery} />
       <div className="audit-body">
         {failed && <ul className="audit-lines">{last.problems.map((p) => <li key={p} className="audit-row is-fail is-wide">{p}</li>)}</ul>}
         <Lines shown={shown} cursor={cursor} go={go} />
@@ -65,12 +75,12 @@ export default function Audit({ items, fresh, last, at, busy, open, onOpen, onJu
 }
 
 /** The worklist's filters: severity (with counts), the level selected, a rule, words. */
-function Filters({ filter, set, toggle, severities, rules, at, query, setQuery }) {
+function Filters({ filter, selected, set, toggle, severities, rules, at, query, setQuery }) {
   return (
     <div className="audit-filter">
       <div className="seg is-small" role="group" aria-label={tr('严重程度')}>
         {SEVERITIES.map((s) => (
-          <button key={s} type="button" className={`is-${s} ${filter.severities.includes(s) ? 'is-on' : ''}`} aria-pressed={filter.severities.includes(s)} onClick={() => toggle(s)} title={L(SEVERITY[s])}>
+          <button key={s} type="button" className={`is-${s} ${selected.includes(s) ? 'is-on' : ''}`} aria-pressed={selected.includes(s)} onClick={() => toggle(s)} title={L(SEVERITY[s])}>
             <i />{severities.get(s) ?? 0}
           </button>
         ))}
@@ -93,7 +103,7 @@ function Lines({ shown, cursor, go }) {
         <li key={`${k} ${it.text}`} className={`audit-row is-${it.severity} ${k === cursor ? 'is-at' : ''}`}>
           <button type="button" onClick={() => go(k)} title={it.text}>
             <code>{it.levels[0] ?? it.rule}</code>
-            <span>{it.text}</span>
+            <span>{it.severity === 'warn' && <strong>{tr('警告')} · </strong>}{it.text}</span>
           </button>
         </li>
       ))}

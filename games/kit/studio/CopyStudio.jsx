@@ -21,6 +21,7 @@ import { groupTree } from './groups.js'
 import { sidebarSearch } from './sidebar-list.js'
 import { useChangeset } from './useChangeset.js'
 import StudioBar from './StudioBar.jsx'
+import Loading from './Loading.jsx'
 import PanelResizer from './PanelResizer.jsx'
 import CopyTable from './CopyTable.jsx'
 import Search from './Search.jsx'
@@ -54,13 +55,12 @@ const remember = (opened, scope, file) => {
  * `opened`: { package } | { game }, what the workspace opens; `packages`, `games`: what it can open; `onOpen(next)` opens
  * another; `space` the workspace switch.
  */
-export default function CopyStudio({ opened, packages, games, onOpen, space }) {
+export default function CopyStudio({ opened, packages, games, onOpen, space, catalog }) {
   const pkg = packages.find(info => info.id === opened.package)
   const side = opened.game ? 'game' : 'package'
   const target = useMemo(() => (opened.game ? opened.game : { package: opened.package }), [opened.game, opened.package])
   const pending = useChangeset(target, side)
-  const { ops, redo, why, setWhy, shown, last, checked, busy, rev, saving, said, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
-  const [domainVocab, setVocab] = useState(null)
+  const { ops, redo, why, setWhy, shown, last, checked, domainVocab, busy, rev, saving, said, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
   const [rawNames, setRawNames] = useState(null)
   const [list, setList] = usePref('copy-side', 'objects')
   const [scope, setScope] = useState(() => {
@@ -86,10 +86,8 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const [resize, setResize] = useState(null)
   useEffect(() => remember(opened, scope, file), [opened, scope, file])
   useEffect(() => {
-    setVocab(null)
     setRawNames(null)
     setPicked(null)
-    call('vocabulary', opened.game ? { game: opened.game } : { package: opened.package }).then(setVocab)
   }, [opened.game, opened.package])
   const content = shown?.content ?? null
   const loaded = Boolean(content)
@@ -160,7 +158,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
   const ready = content && vocab
   return (
     <div className={`studio ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
+      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}>
         <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => setList(opened.game ? 'games' : 'packages')}
           title={opened.game ? tr("选择游戏") : L(pkg.desc)}>
           {opened.game ? <Gamepad2 size={13} aria-hidden="true" /> : <Package size={13} aria-hidden="true" />}
@@ -171,7 +169,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space }) {
           <Play size={13} aria-hidden="true" /><span>{tr("试玩")}</span>
         </button>
       </StudioBar>
-      {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
+      {!ready ? <Loading /> : (
         <div className={`studio-body is-copy ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
           <aside className="studio-tree">
             <div className="side-tabs" role="tablist" aria-label={tr("列表")}>

@@ -1,7 +1,7 @@
 // Categorise and filter check results for the Studio audit panel.
 import { editorRules } from './editors.js'
 
-export const SEVERITIES = ['fail', 'open', 'report', 'pass']
+export const SEVERITIES = ['fail', 'warn', 'open', 'report', 'pass']
 
 /** A line's rule: the check that wrote it. */
 export function ruleOf(text, rules = editorRules()) {
@@ -25,8 +25,8 @@ export function ruleOf(text, rules = editorRules()) {
 /** A line of the check as a worklist item: { text, severity, rule, levels, problem? } — `problem` the check's own
  * structured problem when it gives one (the existence check: { rule: 'exists', object, path, kind, target, reason }). */
 export function itemOf(line) {
-  const severity = line.fail ? 'fail' : line.text.startsWith('OPEN ') ? 'open' : line.text.startsWith('REPORT ') ? 'report' : 'pass'
-  return { text: line.text, severity, rule: line.problem?.rule ?? ruleOf(line.text), levels: line.levels ?? [], ...(line.problem && { problem: line.problem }) }
+  const severity = line.fail ? 'fail' : line.warn ? 'warn' : line.text.startsWith('OPEN ') ? 'open' : line.text.startsWith('REPORT ') ? 'report' : 'pass'
+  return { text: line.text, severity, rule: line.rule ?? line.problem?.rule ?? ruleOf(line.text), levels: line.levels ?? [], ...(line.problem && { problem: line.problem }) }
 }
 
 /**

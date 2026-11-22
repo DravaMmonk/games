@@ -1,12 +1,12 @@
 // A studio workspace's pending changeset (games/design/README.md 6.7), the same in both workspaces: every edit is an operation
 // added to it; the server runs it without writing (the preview tool) and answers with the content it leaves, every line
 // of the check and each file it changes. A preview comes in two steps, so editing stays quick on a big game: at once the
-// content the changeset leaves; then, when there are pending edits, the checks required by those edits.
+// content the changeset leaves; then the checks for the pending edits or the arranged course.
 // Applying replays the changeset and reuses a matching check on the server. Undo runs the
 // change log's. `scope` is the workspace's side ('package' or 'game'): the server runs only its operations.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { tr } from '../shell/i18n.js'
-import { call } from './api.js'
+import { call, getContentRevision, subscribeContent } from './api.js'
 import { pushOp } from './form.js'
 import { latestRequest } from './latest-request.js'
 
@@ -18,6 +18,8 @@ const QUICK_OMIT = ['changes', 'log', 'drift']
 const CHECK_OMIT = ['content', 'changes', 'log', 'drift']
 const REVIEW_OMIT = ['content', 'drift']
 
+export const useContentRevision = () => useSyncExternalStore(subscribeContent, getContentRevision)
+
 const opGroups = new WeakMap()
 const grouped = (op) => opGroups.has(op)
 function groupStart(ops, index) {
@@ -28,7 +30,7 @@ function groupStart(ops, index) {
 }
 
 /** `target`: a game id, or { package } for a package opened on its own. */
-export function useChangeset(target, scope) {
+export function useChangeset(target, scope, { courseAudit = false } = {}) {
   const game = typeof target === 'string' ? target : JSON.stringify(target)
   const on = typeof target === 'string' ? { game: target } : target
   const [ops, setOps] = useState([])
@@ -37,11 +39,14 @@ export function useChangeset(target, scope) {
   const [shown, setShown] = useState(null) // the last quick preview that left a content
   const [last, setLast] = useState(null) // the last quick preview (an operation may have failed)
   const [checked, setChecked] = useState(null) // the last whole check: { key, ok, lines, problems }
+  const [audited, setAudited] = useState(null) // the last course audit: { key, lines }
   const [base, setBase] = useState(null) // the content as written, before the pending changes
+  const [domainVocab, setVocab] = useState(null)
   // The seq of the change log's last entry when the game was loaded: a change is written only onto it.
   const [head, setHead] = useState(null)
   const [busy, setBusy] = useState(false)
-  const [rev, setRev] = useState(0) // bumped when the files change (apply, undo)
+  const [savedRevision, setSavedRevision] = useState(0)
+  const rev = savedRevision + useContentRevision()
   const [saving, setSaving] = useState(false)
   const [said, setSaid] = useState(null) // what the last apply or undo said
 
@@ -50,13 +55,25 @@ export function useChangeset(target, scope) {
     setShown(null)
     setLast(null)
     setChecked(null)
+    setAudited(null)
+    setVocab(null)
     setOps([])
     setRedo([])
   }, [game, scope])
   useEffect(() => {
-    if (!game) return
+    if (!game) return undefined
+    let live = true
+    call('vocabulary', on).then(vocab => { if (live) setVocab(vocab) }).catch(() => {})
+    return () => { live = false }
+  }, [game, rev])
+  useEffect(() => {
+    if (!game) return undefined
+    let live = true
     // Asked exactly as the quick preview of an empty changeset is, so the two are one request when nothing is pending.
-    call('preview', { ...on, scope, changeset: { ops: [] }, check: false, changesOnly: false, omit: QUICK_OMIT }).then((r) => { setBase(r.content); setHead(r.head) }).catch(() => setBase(null))
+    call('preview', { ...on, scope, changeset: { ops: [] }, check: false, changesOnly: false, omit: QUICK_OMIT })
+      .then((r) => { if (live) { setBase(r.content); setHead(r.head) } })
+      .catch(() => { if (live) setBase(null) })
+    return () => { live = false }
   }, [game, scope, rev])
 
   const draft = useMemo(() => ({ ops }), [ops])
@@ -64,6 +81,7 @@ export function useChangeset(target, scope) {
   const key = `${game}|${scope}|${rev}|${JSON.stringify(draft)}`
   const quick = useMemo(latestRequest, [])
   const check = useMemo(latestRequest, [])
+  const audit = useMemo(latestRequest, [])
   const review = useMemo(latestRequest, [])
 
   // Every request carries a complete draft. Superseded drafts do not form a backlog in the worker.
@@ -75,26 +93,36 @@ export function useChangeset(target, scope) {
       if (!live) return
       const r = await call('preview', { ...on, scope, changeset: draft, check: false, changesOnly: Boolean(draft.ops.length), omit: QUICK_OMIT }).catch((error) => ({ ok: false, problems: [error.message], content: null, failed: null }))
       if (!live) return
-      setLast({ ...r, ops: draft.ops })
-      if (r.content) setShown({ ...r, ops: draft.ops })
+      setLast({ ...r, ops: draft.ops, rev })
+      if (r.content) setShown({ ...r, ops: draft.ops, rev })
       setBusy(false)
     }), draft.ops.length ? QUICK : 0)
     return () => { live = false; window.clearTimeout(timer) }
   }, [game, scope, draft, rev, quick])
 
-  const quickResult = last?.ops === ops ? last : null
-  // A local check or a refusal from the quick preview already settles the draft.
+  const quickResult = last?.ops === ops && last.rev === rev ? last : null
   const needsCheck = Boolean(ops.length && quickResult?.ok && !quickResult.checkedChanges)
+  const needsAudit = Boolean(courseAudit && quickResult?.ok)
   useEffect(() => {
-    if (!needsCheck) return undefined
+    if (!needsCheck && !needsAudit) return undefined
     let live = true
-    const timer = window.setTimeout(() => check(async () => {
-      if (!live) return
-      const r = await call('preview', { ...on, scope, changeset: draft, changesOnly: true, omit: CHECK_OMIT }).catch((error) => ({ ok: false, lines: [], problems: [error.message], failed: null }))
-      if (live) setChecked({ key, ok: r.ok, lines: r.lines ?? [], problems: r.problems ?? [], failed: r.failed, order: r.order ?? [] })
-    }), SETTLE)
+    const args = { ...on, scope, changeset: draft, changesOnly: true, omit: CHECK_OMIT }
+    const timer = window.setTimeout(() => {
+      if (needsCheck) check(async () => {
+        if (!live) return
+        const r = await call('preview', args)
+          .catch((error) => ({ ok: false, lines: [{ fail: true, text: error.message }], problems: [error.message], failed: null }))
+        if (live) setChecked({ key, ok: r.ok, lines: r.lines ?? [], problems: r.problems ?? [], failed: r.failed, order: r.order ?? [] })
+      })
+      if (needsAudit) audit(async () => {
+        if (!live) return
+        const r = await call('preview', { ...args, courseAudit: true })
+          .catch((error) => ({ ok: false, lines: [{ fail: true, text: error.message }] }))
+        if (live) setAudited({ key, lines: (r.ok ? r.auditLines : r.lines) ?? [] })
+      })
+    }, draft.ops.length ? SETTLE : 0)
     return () => { live = false; window.clearTimeout(timer) }
-  }, [game, scope, draft, key, needsCheck, check])
+  }, [game, scope, draft, key, needsCheck, needsAudit, check, audit])
 
   // The review's files and change log: asked for while a review is open (watchReview), once edits settle.
   const [watching, setWatching] = useState(0)
@@ -103,7 +131,7 @@ export function useChangeset(target, scope) {
     setWatching((n) => n + 1)
     return () => setWatching((n) => n - 1)
   }, [])
-  const reviewing = watching > 0 && shown?.ops === ops
+  const reviewing = watching > 0 && shown?.ops === ops && shown.rev === rev
   useEffect(() => {
     if (!game || !reviewing) return undefined
     let live = true
@@ -172,7 +200,7 @@ export function useChangeset(target, scope) {
         setOps([])
         setRedo([])
         setWhy('')
-        setRev((n) => n + 1)
+        setSavedRevision((n) => n + 1)
       }
       return r.ok
     } catch (error) {
@@ -186,20 +214,21 @@ export function useChangeset(target, scope) {
   const undo = async (no) => {
     const r = await call('undo', { ...on, seq: no, changesOnly: true })
     setSaid(r.ok ? { ok: true, text: r.says.join('; ') } : { ok: false, text: r.problems.join('\n') })
-    if (r.ok) setRev((n) => n + 1)
+    if (r.ok) setSavedRevision((n) => n + 1)
   }
 
   const current = needsCheck ? (checked?.key === key ? checked : null) : quickResult
-  const fresh = Boolean(current)
+  const fresh = Boolean(current) && (!needsAudit || audited?.key === key)
   const lines = useMemo(() => {
-    if (current) return current.lines ?? []
-    if (!checked || !ops.length) return shown?.lines ?? []
-    return [...(shown?.lines ?? []), ...checked.lines.filter((l) => !l.text.startsWith('content: '))]
-  }, [checked, current, ops.length, shown])
-  const result = { ok: current?.ok === true, problems: last && !last.content ? last.problems : current?.problems ?? [], failed: last?.failed ?? null, says: last?.says ?? shown?.says, removedLevels: quickResult?.removedLevels ?? [], fresh }
+    const runtime = current ? current.lines ?? []
+      : [...(shown?.lines ?? []), ...(ops.length ? checked?.lines.filter(l => !l.text.startsWith('content: ')) ?? [] : [])]
+    const findings = current?.ok === false ? [] : audited?.lines ?? []
+    return [...runtime, ...findings.filter(finding => !runtime.some(line => line.text === finding.text))]
+  }, [audited, checked, current, ops.length, shown])
+  const result = { ok: current?.ok === true, problems: last && !last.content ? last.problems : current?.problems ?? [], failed: last?.failed ?? null, says: last?.says ?? shown?.says, removedLevels: quickResult?.removedLevels ?? [], fresh: Boolean(current) }
 
   return {
-    ops, setOps, redo, why, setWhy, shown, last, checked, base, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, reviewed, watchReview,
+    ops, setOps, redo, why, setWhy, shown, last, checked, base, domainVocab, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, reviewed, watchReview,
     content: shown?.content ?? null, edit, addOps, back, again, grouped, remove, discard, open, apply, undo,
   }
 }

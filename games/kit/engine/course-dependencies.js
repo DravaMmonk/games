@@ -71,6 +71,31 @@ export function courseLayout(content) {
   return { ...plan, dependencyLinks: links, problems, external, ...planExtensions }
 }
 
+/** Find local route links that another incoming route already guarantees. */
+export function coursePrerequisiteWarnings(content) {
+  const { dependencyLinks = [], place, requires, required } = courseLayout(content)
+  const inherited = new Map()
+  const before = (id) => {
+    if (!inherited.has(id)) inherited.set(id, ancestors(id, required))
+    return inherited.get(id)
+  }
+  const warnings = []
+  const reported = new Set()
+  for (const { from, to, fromGame, source } of dependencyLinks) {
+    if (source !== 'course' || fromGame || !place.has(from) || !place.has(to)) continue
+    const via = requires.get(to).find(other => other !== from && before(other).has(from))
+    if (!via) continue
+    const key = JSON.stringify([from, to])
+    if (reported.has(key)) continue
+    reported.add(key)
+    warnings.push({
+      warn: true, rule: 'redundant-prerequisite', level: to,
+      text: `${to}: the direct prerequisite ${from} is redundant because ${via} already requires it`,
+    })
+  }
+  return warnings
+}
+
 /** Validate a resolved collection containing the pending course in place of its saved version. */
 export function projectDependencyProblems(contents, packages = new Map()) {
   const plans = new Map(contents.map((content) => [content.id, courseLayout(content)]))

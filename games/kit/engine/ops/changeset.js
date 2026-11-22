@@ -36,7 +36,7 @@ export { LOG, readLog } from './log.js'
  * (the game as the changeset leaves it, null when an operation failed), inverse (the changeset undoing it) }.
  * texts false: a dry run that leaves out the files' texts (changes, diff, files empty), for a caller that shows none.
  */
-export async function runChangeset(ws, changeset, { write = false, check = true, changesOnly = false, undoes = null, base = null, domain: given = null, texts = true } = {}) {
+export async function runChangeset(ws, changeset, { write = false, check = true, changesOnly = false, courseAudit = false, undoes = null, base = null, domain: given = null, texts = true } = {}) {
   const start = ws.snapshot()
   const says = []
   const inverse = []
@@ -102,7 +102,7 @@ export async function runChangeset(ws, changeset, { write = false, check = true,
   // Load the runtime for the final package selection. A failed check restores the original workspace.
   try {
     const content = ws.content()
-    const report = await checkChangeset(ws, content, changeset.ops ?? [], { check, changesOnly, given })
+    const report = await checkChangeset(ws, content, changeset.ops ?? [], { check, changesOnly, courseAudit, given })
     return settle({ ws, content, changeset, report, start, says, inverse, write, undoes, base, texts: texts || write })
   } catch (error) {
     return fail([`the changeset could not be settled: ${error.message}`])
@@ -179,7 +179,7 @@ function removedCourseLevels(ws, start, content) {
 
 // Write or restore after settlement checks the resulting draft.
 function settle({ ws, content, changeset, report, start, says, inverse, write, undoes, base, texts }) {
-  const { lines, order, checkedChanges = false } = report
+  const { lines, auditLines, order, checkedChanges = false } = report
   const problems = lines.filter((l) => l.fail).map((l) => l.text)
   const changes = texts ? ws.changes() : []
   const diff = texts ? ws.diff(changes) : ''
@@ -203,7 +203,7 @@ function settle({ ws, content, changeset, report, start, says, inverse, write, u
   }
   if (!ok || !write || refused) ws.restore(start)
   if (refused) return { ok: false, says, problems: [refused], failed: null, lines, order, diff, files, changes, content, inverse: null }
-  return { ok, says, problems, failed: null, lines, order, checkedChanges, removedLevels, diff, files, changes, content, inverse: { why: `undo: ${changeset.why ?? says.join('; ')}`, ops: inverse } }
+  return { ok, says, problems, failed: null, lines, auditLines, order, checkedChanges, removedLevels, diff, files, changes, content, inverse: { why: `undo: ${changeset.why ?? says.join('; ')}`, ops: inverse } }
 }
 
 /** The last change of the log not undone yet (an undo is never itself undone this way: apply the change again). */

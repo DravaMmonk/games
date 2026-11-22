@@ -49,6 +49,7 @@ import { groupCategory, singular } from './SidebarListTools.jsx'
 import GameFrame from './GameFrame.jsx'
 import { packageLevel } from '../engine/package-play.js'
 import StudioBar from './StudioBar.jsx'
+import Loading from './Loading.jsx'
 import { useChangeset } from './useChangeset.js'
 import { OverrideDetail, OverrideList, visibleOverrides } from './OverrideAudit.jsx'
 import ObjectLinks from './ObjectLinks.jsx'
@@ -118,10 +119,9 @@ const paletteKey = (event) => (event.ctrlKey || event.metaKey) && event.key.toLo
  * { id, uses }; `onPackage` opens another; `space` the workspace switch. The levels play in the course the kernel
  * makes for the package.
  */
-export default function PackageStudio({ pkg, packages, games = [], onPackage, onMadePackage, space }) {
+export default function PackageStudio({ pkg, packages, games = [], onPackage, onMadePackage, space, catalog }) {
   const game = pkg // the key the workspace's preferences and history are kept under
   const target = useMemo(() => ({ package: pkg }), [pkg])
-  const [domainVocab, setVocab] = useState(null) // the domain's vocabulary; `vocab` below adds the game's parts
   const pending = useChangeset(target, SCOPE)
   const namespace = pkg
   const [opened, setOpened] = useState(OPENED.open) // what each object list has open: { capability, override }
@@ -131,7 +131,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const [partsBy, setPartsBy] = usePref('part-by', 'tag')
   const [sidebarGroups, setSidebarGroups] = usePref('sidebar-groups', {})
   const [objectField, setObjectField] = useState(null) // the field of the object open shown on the right: { of, path }
-  const { ops, redo, why, setWhy, shown, last, checked, base, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
+  const { ops, redo, why, setWhy, shown, last, checked, base, domainVocab, busy, rev, saving, said, savingRef, changeset, key, fresh, lines, result, edit, addOps, back, again, discard, apply, undo } = pending
   const [rawNames, setRawNames] = useState(null)
   const [at, setAt] = useState(() => (QUERY.get('level') ? { level: QUERY.get('level') } : QUERY.get('group') ? { group: QUERY.get('group') } : registeredEditors().some(editor => editor.route && QUERY.has(editor.route.type)) ? Object.fromEntries(registeredEditors().filter(editor => editor.route && QUERY.has(editor.route.type)).map(editor => [editor.route.selector, QUERY.get(editor.route.type)])) : projectionSelection(QUERY) ?? (SAVED_VIEW?.gameRoot ? { game: true } : null)))
   const [picked, setPicked] = useState(() => new Set(at?.level ? [at.level] : []))
@@ -194,11 +194,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }, [])
   const playId = play?.level
 
-  // A game opened: its vocabulary.
   useEffect(() => {
-    setVocab(null)
     setRawNames(null)
-    call('vocabulary', target).then(setVocab)
   }, [game])
   const playRequest = useRef(null)
   useLayoutEffect(() => {
@@ -820,7 +817,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   }
   return (
     <div className={`studio ${moving ? 'is-moving' : ''} ${resize ? 'is-resizing' : ''}`}>
-      <StudioBar space={space} ops={ops} busy={busy} fresh={fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }} onPalette={() => openOverlay('palette')}>
+      <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }} onPalette={() => openOverlay('palette')}>
         <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => showList('packages')} title={L(packageInfo.desc)}>
           <Package size={13} aria-hidden="true" /><PackageName info={packageInfo} />
         </button>
@@ -828,7 +825,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
           <FileCode2 size={14} aria-hidden="true" />{tr("源码")}
         </button>
       </StudioBar>
-      {!ready ? <div className="studio-loading">{tr('读取中……')}</div> : (
+      {!ready ? <Loading /> : (
         <div className={`studio-body is-${objectList ? 'objects' : middle} ${layout.treeOpen ? '' : 'no-tree'} ${layout.auditOpen ? '' : 'no-audit'} ${layout.sideOpen ? '' : 'no-side'}`} style={style}>
           <aside className="studio-tree">
             <div className="side-tabs" role="tablist" aria-label={tr("列表")}>

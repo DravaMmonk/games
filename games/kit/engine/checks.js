@@ -16,6 +16,7 @@ import { find } from './schema.js'
 import { noMemo } from './check-cache.js'
 import { dependencyProblemsInProject } from './project-dependencies.js'
 import { packageLevel, packageLevelOrder } from './package-play.js'
+import { coursePrerequisiteWarnings } from './course-dependencies.js'
 
 const registeredReferenceNames = (content, selections = {}) => Object.fromEntries(Object.entries(contentSchemas.get(content)?.references ?? {}).flatMap(([kind, { target }]) => {
   if (!target) return []
@@ -68,10 +69,11 @@ async function checkPackageLevels(content, domain, { authoring, mutants }, order
  * Everything checked on `content`, with diagnostic lines and the level order their paths use.
  * `domain`: its domain module (resolver.js runtimeOf). Content that does not fit the vocabulary is not built into a course: what
  * is wrong with it is all there is to say. `authoring`: also review course rules and example verdicts.
+ * `courseAudit`: report course rules separately from runtime validation.
  * `mutants`: mutation reports for supported tasks in an authoring review. `cache`: the game's
  * kept checks (check-cache.js), which the domain's checks of an unchanged level are read from; never with `mutants`.
  */
-export async function checkGame(content, { domain, authoring = false, mutants = false, cache = null, root }) {
+export async function checkGame(content, { domain, authoring = false, courseAudit = false, mutants = false, cache = null, root }) {
   const invalid = checkContentLines(content, { domain, root })
   if (invalid.length) return { lines: invalid, order: authoredOrder(content) }
   const meanings = meaningsOf(contentSchemas.get(content))
@@ -105,7 +107,12 @@ export async function checkGame(content, { domain, authoring = false, mutants = 
   const extraTexts = Object.assign({}, ...meanings.map(meaning => meaning.texts?.(context)))
   for (const [name, value] of Object.entries({ levels: spec.levels, ...spec.texts, ...extraTexts })) for (const problem of refProblems(value, name, names)) fail(`text ${problem}`)
 
-  if (!authoring) return { lines, order }
+  if (!authoring) {
+    if (!courseAudit || lines.some(line => line.fail)) return { lines, order }
+    const auditLines = await domain.checkPhase?.({ phase: 'course', spec, content }) ?? []
+    return { lines, order, auditLines: [...coursePrerequisiteWarnings(content), ...auditLines] }
+  }
+  lines.push(...coursePrerequisiteWarnings(content))
 
   // An entry is linked only where it is open already: in a level it opens at or after, in an entry opening no earlier.
   // The links are read off every text of the content, by its schema, whatever its fields are called.

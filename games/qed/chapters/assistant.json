@@ -1,26 +1,24 @@
 {
   "machine": "prover",
   "chapter": {
-    "title": "@course.eras.assistant.chapter.title",
-    "question": "@course.eras.assistant.chapter.question"
+    "title": "@chapter.assistant.chapter.title",
+    "question": "@chapter.assistant.chapter.question"
   },
   "levels": [
-    "qed/r-rule",
-    "qed/r-assumption",
-    "qed/r-meta",
-    "qed/r-lemma",
-    "qed/s-repeat",
-    "qed/s-orelse",
-    "qed/s-mix",
-    "qed/s-results",
-    "qed/s-search"
+    "qed/machine-rewrite",
+    "qed/machine-open",
+    "qed/machine-cite",
+    "qed/machine-rewrite-first",
+    "qed/machine-open-first",
+    "qed/machine-rewrite-twice",
+    "qed/machine-rewrite-join"
   ],
   "rows": [
-    ["qed/r-rule"],
-    ["qed/r-assumption"],
-    ["qed/r-meta", "qed/s-repeat"],
-    ["qed/r-lemma", "qed/s-orelse"],
-    ["qed/s-results", "qed/s-mix"],
-    ["qed/s-search"]
+    ["qed/machine-rewrite"],
+    ["qed/machine-open"],
+    ["qed/machine-cite"],
+    ["qed/machine-rewrite-first"],
+    ["qed/machine-open-first"],
+    ["qed/machine-rewrite-twice", "qed/machine-rewrite-join"]
   ]
 }

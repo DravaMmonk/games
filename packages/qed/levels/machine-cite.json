@@ -1,0 +1,21 @@
+{
+  "title": "@level.machine-cite.title",
+  "adds": ["logic/assumption"],
+  "tray": "machine-cite",
+  "intro": [{ "t": "@level.machine-cite.intro.0.t" }],
+  "after": "@level.machine-cite.after",
+  "tasks": [
+    {
+      "id": "machine-cite",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-cite.tasks.machine-cite.brief",
+      "hint": ["@level.machine-cite.tasks.machine-cite.hint.0"],
+      "tests": [
+        { "goal": "Rain", "hyps": ["Wind", "Rain"] },
+        { "goal": "Wet ∧ Slip", "hyps": ["Wet ∧ Slip", "Wind"] }
+      ],
+      "solution": ["step1 = logic/directBackward-logic_assumption(in)", "out <- step1"]
+    }
+  ]
+}

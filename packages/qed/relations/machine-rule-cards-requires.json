@@ -1,0 +1,11 @@
+{
+  "kind": "requires",
+  "edges": [
+    { "from": "machine-rewrite", "to": "machine-open" },
+    { "from": "machine-open", "to": "machine-cite" },
+    { "from": "machine-cite", "to": "machine-rewrite-first" },
+    { "from": "machine-rewrite-first", "to": "machine-open-first" },
+    { "from": "machine-open-first", "to": "machine-rewrite-twice" },
+    { "from": "machine-open-first", "to": "machine-rewrite-join" }
+  ]
+}

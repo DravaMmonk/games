@@ -1,5 +1,6 @@
 {
   "title": "@level.r-elim.title",
+  "adds": ["rule"],
   "tray": "machine",
   "intro": [
     {

@@ -1,0 +1,26 @@
+{
+  "title": "@level.machine-open-first.title",
+  "tray": "machine-compose",
+  "intro": [{ "t": "@level.machine-open-first.intro.0.t" }],
+  "after": "@level.machine-open-first.after",
+  "tasks": [
+    {
+      "id": "machine-open-first",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-open-first.tasks.machine-open-first.brief",
+      "hint": ["@level.machine-open-first.tasks.machine-open-first.hint.0"],
+      "tests": [
+        { "goal": "(Rain ↔ Wet) → (Wind ∧ Wet → Wind ∧ Rain)" },
+        { "goal": "(Slip ↔ Wet) → (Wet ∨ Wind → Slip ∨ Wind)" }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_impI(in)",
+        "step2 = logic/directBackward-qed_impI(step1)",
+        "step3 = logic/directRewrite-logic_hyp(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ]
+    }
+  ]
+}

@@ -6,7 +6,8 @@
       { "from": "qed/try-rule-box", "to": "qed/decl-or" },
       { "from": "qed/decl-or", "to": "qed/or" },
       { "from": "qed/try-rule-box", "to": "qed/decl-bot" },
-      { "from": "qed/decl-bot", "to": "qed/bot" }
+      { "from": "qed/decl-bot", "to": "qed/bot" },
+      { "from": "qed/mergeUse", "to": "qed/try-rules" }
     ],
     "remove": [
       { "from": "qed/s-search", "to": "qed/bot" },

@@ -1,0 +1,20 @@
+{
+  "title": "@level.machine-open.title",
+  "tray": "machine-open",
+  "intro": [{ "t": "@level.machine-open.intro.0.t" }],
+  "after": "@level.machine-open.after",
+  "tasks": [
+    {
+      "id": "machine-open",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
+      "brief": "@level.machine-open.tasks.machine-open.brief",
+      "hint": ["@level.machine-open.tasks.machine-open.hint.0"],
+      "tests": [
+        { "goal": "Rain → Rain", "becomes": [["Rain ⊢ Rain"]] },
+        { "goal": "Wet → Slip", "hyps": ["Wind"], "becomes": [["Wind; Wet ⊢ Slip"]] }
+      ],
+      "solution": ["step1 = logic/directBackward-qed_impI(in)", "out <- step1"]
+    }
+  ]
+}

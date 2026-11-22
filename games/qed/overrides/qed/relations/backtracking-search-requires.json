@@ -3,7 +3,6 @@
     "add": [
       { "from": "qed/p-only", "to": "qed/q-children" },
       { "from": "qed/p-only", "to": "qed/p-split" },
-      { "from": "qed/r-lemma", "to": "qed/s-results" },
       { "from": "qed/mergeBoth", "to": "qed/k" },
       { "from": "qed/mergeBoth", "to": "qed/s" },
       { "from": "qed/q-trans", "to": "qed/r-elim" }

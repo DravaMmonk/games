@@ -1,7 +1,8 @@
 {
   "adds": [
     "introRules",
-    "elimRules"
+    "elimRules",
+    "search"
   ],
   "tray": "machine",
   "title": "@level.s-auto.title",

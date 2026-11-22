@@ -1,0 +1,12 @@
+{
+  "title": "@tag.machine-rule-cards.title",
+  "values": [
+    "machine-rewrite",
+    "machine-open",
+    "machine-cite",
+    "machine-rewrite-first",
+    "machine-open-first",
+    "machine-rewrite-twice",
+    "machine-rewrite-join"
+  ]
+}

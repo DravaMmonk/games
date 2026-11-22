@@ -57,7 +57,9 @@
       "qed/u-cantor",
       "qed/u-ls",
       "qed/u-halt",
-      "qed/au-horn"
+      "qed/au-horn",
+      "qed/machine-rewrite-twice",
+      "qed/machine-rewrite-join"
     ]
   }
 }

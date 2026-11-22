@@ -1,0 +1,26 @@
+{
+  "title": "@level.machine-rewrite-twice.title",
+  "withholds": ["impI"],
+  "tray": "machine-compose",
+  "intro": [{ "t": "@level.machine-rewrite-twice.intro.0.t" }],
+  "after": "@level.machine-rewrite-twice.after",
+  "tasks": [
+    {
+      "id": "machine-rewrite-twice",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-rewrite-twice.tasks.machine-rewrite-twice.brief",
+      "hint": ["@level.machine-rewrite-twice.tasks.machine-rewrite-twice.hint.0"],
+      "tests": [
+        { "goal": "Rain → (Wind ∧ Rain)", "hyps": ["Rain ↔ Wet", "Wet → (Wind ∧ Wet)"] },
+        { "goal": "Slip ∨ (Wind ∧ Slip)", "hyps": ["Slip ↔ Wet", "Wet ∨ (Wind ∧ Wet)"] }
+      ],
+      "solution": [
+        "step1 = logic/directRewrite-logic_hyp(in)",
+        "step2 = logic/directRewrite-logic_hyp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ]
+    }
+  ]
+}

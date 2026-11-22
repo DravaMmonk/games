@@ -1,0 +1,25 @@
+{
+  "title": "@level.machine-rewrite-first.title",
+  "tray": "machine-compose",
+  "intro": [{ "t": "@level.machine-rewrite-first.intro.0.t" }],
+  "after": "@level.machine-rewrite-first.after",
+  "tasks": [
+    {
+      "id": "machine-rewrite-first",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-rewrite-first.tasks.machine-rewrite-first.brief",
+      "hint": ["@level.machine-rewrite-first.tasks.machine-rewrite-first.hint.0"],
+      "tests": [
+        { "goal": "Rain → Wet", "hyps": ["Rain ↔ Wet"] },
+        { "goal": "Wind → Slip", "hyps": ["Wind ↔ Slip"] }
+      ],
+      "solution": [
+        "step1 = logic/directRewrite-logic_hyp(in)",
+        "step2 = logic/directBackward-qed_impI(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ]
+    }
+  ]
+}

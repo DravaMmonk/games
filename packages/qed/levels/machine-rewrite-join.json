@@ -1,0 +1,26 @@
+{
+  "title": "@level.machine-rewrite-join.title",
+  "tray": "machine-join",
+  "intro": [{ "t": "@level.machine-rewrite-join.intro.0.t" }],
+  "after": "@level.machine-rewrite-join.after",
+  "tasks": [
+    {
+      "id": "machine-rewrite-join",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-rewrite-join.tasks.machine-rewrite-join.brief",
+      "hint": ["@level.machine-rewrite-join.tasks.machine-rewrite-join.hint.0"],
+      "tests": [
+        { "goal": "Rain ∧ Wind", "hyps": ["Rain ↔ Wet", "Wind", "Wet"] },
+        { "goal": "Slip ∧ Rain", "hyps": ["Slip ↔ Wet", "Wet", "Rain"] }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_andI(in)",
+        "step2 = logic/directRewrite-logic_hyp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ]
+    }
+  ]
+}

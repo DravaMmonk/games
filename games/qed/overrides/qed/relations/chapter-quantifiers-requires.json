@@ -6,6 +6,6 @@
       { "from": "qed/fo-nested", "to": "qed/q-children" },
       { "from": "qed/iffUse", "to": "qed/fo-atoms" }
     ],
-    "add": [{ "from": "qed/s-search", "to": "qed/fo-atoms" }]
+    "add": [{ "from": "qed/machine-open-first", "to": "qed/fo-atoms" }]
   }
 }

@@ -1,6 +1,6 @@
 {
-  "course.eras.assistant.chapter.question": "逆用规则，匹配结论与已知。",
-  "course.eras.assistant.chapter.title": "证明器",
+  "chapter.assistant.chapter.question": "在机器板上改写目标、逆用规则，把证明一步步接完。",
+  "chapter.assistant.chapter.title": "改写与逆用",
   "course.eras.automation.chapter.question": "为证明器引入新公理。",
   "course.eras.automation.chapter.title": "证明器 III",
   "course.eras.boxes.chapter.question": "用联结词规则，把结论证明出来。",

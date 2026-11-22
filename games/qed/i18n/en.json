@@ -1,6 +1,6 @@
 {
-  "chapter.assistant.chapter.question": "Rewrite goals and apply rules backwards to build a proof on the machine board.",
-  "chapter.assistant.chapter.title": "Rewrite and apply backwards",
+  "chapter.assistant.chapter.question": "Apply rules backwards, matching conclusions with known facts.",
+  "chapter.assistant.chapter.title": "The prover",
   "course.eras.automation.chapter.question": "Introduce new axioms for the prover.",
   "course.eras.automation.chapter.title": "The prover III",
   "course.eras.boxes.chapter.question": "Prove conclusions using rules for connectives.",

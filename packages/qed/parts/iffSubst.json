@@ -1,5 +1,5 @@
 {
-  "name": "@part.iffSubst.name",
+  "name": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)",
   "desc": "@part.iffSubst.desc",
   "icon": "GitFork",
   "family": "logic/rule",

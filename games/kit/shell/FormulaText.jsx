@@ -14,8 +14,10 @@ export function typesetFormulas(convert) {
 /** One formula (a string or a { zh, en } pair, in the reading language). */
 export function FormulaText({ text, className = '', tex }) {
   const line = text === null || text === undefined ? '' : String(L(text))
-  if ((!toTex && tex === undefined) || !line) return line
-  return <span className={`formula ${className}`.trim()}><Typeset tex={tex ?? toTex(line)} plain={line} /></span>
+  const explicit = /^\\\(([\s\S]+)\\\)$/.exec(line)?.[1]
+  const formula = tex ?? explicit ?? toTex?.(line)
+  if (!line || formula === undefined) return line
+  return <span className={`formula ${className}`.trim()}><Typeset tex={formula} plain={line} /></span>
 }
 
 /** A formula with the same leading reference mark on a result, a card and an option. */

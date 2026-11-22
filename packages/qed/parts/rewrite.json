@@ -19,5 +19,23 @@
       "from": "logic/occurrences(eq, p)"
     }
   },
+  "views": {
+    "card": [
+      { "show": "text", "text": "\\(C[s]\\xRightarrow{s=t}C[t]\\)" },
+      { "show": "settings" },
+      { "show": "value" }
+    ],
+    "tile": [
+      { "show": "value" },
+      { "show": "text", "text": "\\(C[s]\\xRightarrow{s=t}C[t]\\)" },
+      { "show": "summary" }
+    ],
+    "detail": [
+      { "show": "text", "text": "\\(C[s]\\xRightarrow{s=t}C[t]\\)" },
+      { "show": "desc" },
+      { "show": "settings" },
+      { "show": "value" }
+    ]
+  },
   "op": "logic/rewrite"
 }

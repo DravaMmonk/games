@@ -103,7 +103,7 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
         return <button key={key} type="button" className="pf-action" disabled={!ready} onPointerDown={(e) => e.stopPropagation()} onClick={() => set(next, null)} {...at}>{L(b.label)}</button>
       }
       case 'text':
-        return <p key={key} className="pf-text" {...at}>{L(b.text)}</p>
+        return <p key={key} className="pf-text" {...at}><Markup text={b.text} /></p>
       case 'desc':
         return <p key={key} className="pf-desc" {...at}><Markup text={partDesc(def, (k) => defined.allowed?.(def.type, k) ?? null)} /></p>
       case 'ports':

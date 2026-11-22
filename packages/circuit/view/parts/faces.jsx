@@ -1,4 +1,5 @@
 import { applyRules, partDesc } from "../../core/parts/define.js"
+import { settingsOf } from "../../core/parts.js"
 import { isFixed, keepFixedSettings } from "../../core/board/presets.js"
 import PartFace, { blocksOf } from "./PartFace.jsx"
 import { iconOf } from "./icons.js"
@@ -21,19 +22,25 @@ export const nextParams = (def, node, patch, changed, ops) => {
  * The faces of defined parts over a domain's own (shell/CircuitLevel.jsx card): body (the card view), thumb and
  * tileExtra (the phone tile: its value blocks over the name, the rest under it), sheet (the detail view).
  */
-export function definedFaces(faces, { defined, change, phone }) {
+export function definedFaces(faces, { defined, change, phone, tileSettings = true }) {
   const draw = (face, other, blocks) => (node, ctx) => {
     const def = defined.of(node.type, face)
     if (!def) return other?.(node, ctx) ?? null
+    const view = blocks?.(def)
+    if (view?.length === 0) return null
     const set = ctx?.readOnly ? null : (patch, changed) => change(node, nextParams(def, node, patch, changed, defined.ops))
-    return <PartFace def={def} face={face} node={node} ctx={ctx} set={set} defined={defined} phone={phone} roomy={face === 'detail'} blocks={blocks?.(def)} />
+    return <PartFace def={def} face={face} node={node} ctx={ctx} set={set} defined={defined} phone={phone} roomy={face === 'detail'} blocks={view} />
   }
   const tile = (pick) => (def) => blocksOf(def, 'tile').filter(([b]) => pick(b.show === 'value'))
+  const tileExtra = (def) => {
+    const showSettings = tileSettings || settingsOf(def).some(setting => setting.single)
+    return blocksOf(def, 'tile').filter(([block]) => block.show !== 'value' && (showSettings || block.show === 'text'))
+  }
   return {
     ...faces,
     body: draw('card', faces.body),
     thumb: draw('tile', faces.thumb, tile((v) => v)),
-    tileExtra: draw('tile', faces.tileExtra, tile((v) => !v)),
+    tileExtra: draw('tile', faces.tileExtra, tileExtra),
     detail: draw('detail', faces.detail),
   }
 }

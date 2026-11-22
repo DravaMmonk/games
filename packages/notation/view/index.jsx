@@ -1,4 +1,4 @@
-import { getLang, Markup } from 'kernel/view'
+import { getLang } from 'kernel/view'
 import { notationPlain, notationRuns } from '../core/index.js'
 import './notation.css'
 
@@ -83,7 +83,6 @@ export function NotationText({ text }) {
 /** Center signs with adjacent text in compact card names and labels. */
 export function NotationLabel({ label }) {
   if (typeof label !== 'string') return label
-  if (label.includes('\\(')) return <Markup text={label} sentences={false} />
   const runs = notationRuns(label)
   if (runs.length === 1 && runs[0] === label) return label
   const lang = getLang()

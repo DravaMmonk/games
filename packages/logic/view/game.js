@@ -18,6 +18,7 @@ import { query, translation } from '../core/formulaWork.js'
 import { script } from '../core/scriptValues.js'
 import { KERNEL_RULES, lemmaRules, statedRule } from '../core/schematic.js'
 import { RULES } from '../core/proof.js'
+import { EQUALITY_SUBSTITUTION, EQUIVALENCE_SUBSTITUTION } from '../core/rewrite.js'
 import { logicWorks } from '../core/work.js'
 import { playKinds, resourceScreen } from 'kernel/view'
 import { iconOf as partIcon } from 'circuit/view'
@@ -63,8 +64,8 @@ const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic/
 
 // These proof-board operations are not entries in the machine board's rule book.
 const proofRules = {
-  'logic/rewrite': '⟦s = t; P(s)⟧ ⟹ P(t)',
-  'logic/iffSubst': '⟦A ↔ B; P(A)⟧ ⟹ P(B)',
+  'logic/rewrite': EQUALITY_SUBSTITUTION,
+  'logic/iffSubst': EQUIVALENCE_SUBSTITUTION,
   'logic/natInd': '⟦P(0); ⋀a. ⟦P(a)⟧ ⟹ P(S(a))⟧ ⟹ ∀x. P(x)',
 }
 

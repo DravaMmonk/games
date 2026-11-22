@@ -1,5 +1,5 @@
 {
-  "name": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)",
+  "name": "@part.iffSubst.name",
   "desc": "@part.iffSubst.desc",
   "icon": "GitFork",
   "family": "logic/rule",
@@ -8,5 +8,23 @@
     { "name": "p", "label": "@part.iffSubst.inputs.1.label" }
   ],
   "settings": { "at": { "label": "@part.iffSubst.settings.at.label", "from": "logic/iffOccurrences(iff, p)" } },
+  "views": {
+    "card": [
+      { "show": "text", "text": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)" },
+      { "show": "settings" },
+      { "show": "value" }
+    ],
+    "tile": [
+      { "show": "value" },
+      { "show": "text", "text": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)" },
+      { "show": "summary" }
+    ],
+    "detail": [
+      { "show": "text", "text": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)" },
+      { "show": "desc" },
+      { "show": "settings" },
+      { "show": "value" }
+    ]
+  },
   "op": "logic/iffSubst"
 }

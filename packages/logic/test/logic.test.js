@@ -642,6 +642,11 @@ test('the direct equivalence card ignores term equations and rewrites one goal o
   }
   const card = directCardsOf(level).get(type)
   assert.deepEqual(card.entries.map(({ key }) => key), ['hyp.iff'])
+  assert.match(card.definition.name.en, /Equivalent substitution$/)
+  const choices = RULE_CHOICES.run([], {}, { task: level, node: { type } })
+  assert.equal(choices[0].label, String.raw`\(C[A]\xRightarrow{A\leftrightarrow B}C[B]\)`)
+  const generic = RULE_CHOICES.run([], {}, { task: level, node: { type: 'logic/directRewrite-logic_hyp' } })
+  assert.match(generic[0].label, /C\[s\].*C\[t\].*C\[A\].*C\[B\]/)
   const compiled = compileParts({ [type]: card.definition }, OPS).PARTS
   level.parts = (name) => compiled[name] ?? machineParts(name)
   const board = machine({ change: [type] }, ['in>change', 'change>out'])

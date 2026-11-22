@@ -15,6 +15,10 @@ import { T } from 'kernel/words'
 
 const isTerm = (x) => 't' in x
 const NO_GOALS = T('已经没有目标了')
+const equivalenceSubstitution = String.raw`C[A]\xRightarrow{A\leftrightarrow B}C[B]`
+const equalitySubstitution = String.raw`C[s]\xRightarrow{s=t}C[t]`
+export const EQUIVALENCE_SUBSTITUTION = String.raw`\(${equivalenceSubstitution}\)`
+export const EQUALITY_SUBSTITUTION = String.raw`\(${equalitySubstitution}\)`
 
 /* ---------- matching ---------- */
 
@@ -269,7 +273,8 @@ export function rewriteBookOf(level) {
 }
 /** A rewrite rule written out: left ⟼ right, after its conditions. */
 export const rewriteText = (r, formula = show, term = showTerm) => {
-  if (r.group === 'hyp') return ''
+  if (r.group === 'hyp') return r.equivalenceOnly ? EQUIVALENCE_SUBSTITUTION
+    : String.raw`\(${equalitySubstitution},\quad ${equivalenceSubstitution}\)`
   const conditions = r.conditions.length ? `${r.conditions.map(formula).join('; ')} ⟹ ` : ''
   return `${conditions}${sideText(r.lhs, formula, term)} ⟼ ${sideText(r.rhs, formula, term)}`
 }

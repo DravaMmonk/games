@@ -84,7 +84,7 @@ export function SolvedDialog({ game, level, unlocked, onStay, onExit }) {
                 <li key={key} className="unlocked-item" data-kind={kind} data-family={family}>
                   {chip && <span className="map-node-id">{chip}</span>}
                   {icon && <i className="family-chip">{createElement(icon, { size: 14, strokeWidth: 1.7 })}</i>}
-                  <Markup text={label} />{caption && <small className="unlocked-caption">{L(caption)}</small>}
+                  {L(label)}{caption && <small className="unlocked-caption">{L(caption)}</small>}
                 </li>
               ))}
             </ul>

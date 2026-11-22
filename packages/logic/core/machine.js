@@ -49,7 +49,6 @@ import { ASSUMPTION_RULE, instantiate, lemmaRules, parseS, ruleOf, ruleText, sid
 import { lemmaRewrites, localRewrites, rewrite, rewriteBookOf, rewriteText, simplify } from './rewrite.js'
 import { datatypesRules } from './datatype.js'
 import { clausesOfState, oracleRound, parseClause, refuted, replay, resolveRound, saturate } from './resolution.js'
-import { L } from "kernel"
 import { T } from 'kernel/words'
 import { circuitBoard } from 'circuit'
 import { say } from './notation.js'
@@ -516,8 +515,8 @@ function rulePartName(level, type, entries = rulePartsOf(level).get(type)) {
   if (r.part || level.lemmas?.[type]) return level.lemmas?.[type]?.name ?? level.partDefs?.[type]?.name ?? { zh: type, en: type }
   return r.group === 'def' ? inWords(level, (text) => defText(r.text, text)) : r.name
 }
-/** A rule of a rule part's, written out: an inference rule, or a rewrite rule (an equation given goes by its name). */
-export const ruleWritten = (e, text, term) => stated(e.book === 'rule' ? ruleText(e.rule, text) : rewriteText(e.rule, text, term) || L(e.rule.name))
+/** A rule of a rule part's, written out as an inference or a rewrite. */
+export const ruleWritten = (e, text, term) => stated(e.book === 'rule' ? ruleText(e.rule, text) : rewriteText(e.rule, text, term))
 const AFTER = T('接入其他规则元件时，本元件的规则排在它们之后。')
 const joined = (a, b) => T("{zh}{zh2}", {zh: { zh: String(a.zh), en: String(a.en) }, zh2: { zh: String(b.zh), en: String(b.en) }})
 /** A rule part as every one is (machine.js RULE_PART): the rules wired in before it, then those added on it. */

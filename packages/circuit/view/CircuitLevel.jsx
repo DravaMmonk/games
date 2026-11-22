@@ -241,7 +241,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     ? <p className="pf-check" role="status">{L(settingError.reason)}</p>
     : null
   const own = { wireState: (wire, ctx) => (ctx.view?.values.get(wire.from) !== undefined ? 'live' : 'dead'), ...faces }
-  const card = defined ? definedFaces(own, { defined, change: setNode, phone }) : own
+  const card = defined ? definedFaces(own, { defined, change: setNode, phone, tileSettings }) : own
   const isDefined = (node) => Boolean(defined?.of(node.type))
   const detailOf = (node, c) => {
     const content = isDefined(node) ? card.detail(node, c) : (sheet ?? card.body)?.(node, c)
@@ -319,11 +319,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     const phoneCard = {
       ...card,
       nodeClass: playbackClass(card.nodeClass),
-      tileExtra: (node, ...args) => {
-        const def = defined?.of(node.type)
-        return tileSettings || def && settingsOf(def).some((setting) => setting.single)
-          ? card.tileExtra?.(node, ...args) : undefined
-      },
+      tileExtra: (node, ...args) => (tileSettings || isDefined(node) ? card.tileExtra?.(node, ...args) : undefined),
     }
     const needsSetting = (node) => {
       const def = defined?.of(node.type)

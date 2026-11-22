@@ -14,8 +14,8 @@
     "qed/machine-rewrite-join"
   ],
   "rows": [
-    ["qed/machine-rewrite", null, "qed/machine-open"],
-    [null, null, "qed/machine-cite"],
+    ["qed/machine-rewrite", "qed/machine-open"],
+    [null, "qed/machine-cite"],
     ["qed/machine-rewrite-first"],
     ["qed/machine-open-first"],
     ["qed/machine-rewrite-twice", "qed/machine-rewrite-join"]

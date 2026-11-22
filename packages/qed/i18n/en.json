@@ -855,7 +855,7 @@
   "level.g-iff.tasks.g-iff.hint.0": "Compare the two input columns. Find the rows where their values match.",
   "level.g-iff.title": "Equivalence",
   "level.g-imp.after": "With the condition and result swapped, the new claim is false only when it’s wet and it didn’t rain. Input order matters for an Implies gate.",
-  "level.g-imp.intro.0.t": "“If it rains, it’s wet” is false only when it rains and the ground stays dry. The conditional is true whenever it doesn’t rain or it’s wet.",
+  "level.g-imp.intro.0.t": "Remember the forecast in <level-ref to=\"table\"></level-ref>? “If it rains, it’s wet” is false only when it rains and the ground stays dry. The conditional is true whenever it doesn’t rain or it’s wet.",
   "level.g-imp.tasks.g-imp-2.brief": "Wire a circuit to find the truth value of “if it’s wet, it must have rained” on every row.",
   "level.g-imp.tasks.g-imp-2.hint.0": "Wire the condition that follows “if” into the first input of the Implies gate.",
   "level.g-imp.tasks.g-imp-2.step": "Use Implies",

@@ -855,7 +855,7 @@
   "level.g-iff.tasks.g-iff.hint.0": "对照两列输入，找出它们同真或同假的行。",
   "level.g-iff.title": "等价",
   "level.g-imp.after": "对调条件与结果，只有在「地面湿、没下雨」这一行，新句子为假。蕴含元件的两个输入有顺序。",
-  "level.g-imp.intro.0.t": "「如果下雨，地面就会湿」只在下了雨、地面却不湿时为假。没下雨，或者地面是湿的，这条条件句就为真。",
+  "level.g-imp.intro.0.t": "还记得<level-ref to=\"table\"></level-ref>里的天气预报吗？「如果下雨，地面就会湿」只在下了雨、地面却不湿时为假。没下雨，或者地面是湿的，这条条件句就为真。",
   "level.g-imp.tasks.g-imp-2.brief": "接一块电路，算出「如果地面是湿的，那刚才就下过雨」在每一行的真值。",
   "level.g-imp.tasks.g-imp-2.hint.0": "先看「如果」后面是哪件事，把它接到蕴含元件的第一个输入。",
   "level.g-imp.tasks.g-imp-2.step": "用蕴含元件",

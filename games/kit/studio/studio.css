@@ -547,10 +547,13 @@ select.cell { width: auto; min-width: 46px; }
 .audit-filter .seg button.is-warn i { background: var(--accent); }
 .audit-filter .seg button.is-open i { background: var(--accent); }
 .audit-filter .seg button.is-report i { background: var(--select); }
+.audit-filter .seg button.is-advice i { background: var(--muted); }
 .audit-filter .seg button.is-pass i { background: var(--status); }
 .audit-filter .seg button:not(.is-on) { opacity: .55; }
 .audit-mine { height: 24px; max-width: 8em; padding: 0 6px; border: 0; border-radius: 5px; color: var(--muted); background: var(--hover); font: 600 var(--fs-mini)/1 var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .audit-mine.is-on { color: var(--select-ink); background: var(--select); }
+.audit-advice { display: inline-grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 5px; color: var(--muted); background: var(--hover); cursor: pointer; }
+.audit-advice.is-on { color: var(--select-ink); background: var(--select); }
 .audit-rule { min-width: 6em; height: 24px; }
 .audit-query { flex: 0 1 16em; min-width: 6em; height: 24px; padding: 0 7px; border: 0; border-radius: 5px; color: var(--ink); background: var(--hover); font: var(--fs)/1 var(--sans); }
 .audit-lines { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; }
@@ -562,6 +565,10 @@ select.cell { width: auto; min-width: 46px; }
 .audit-row.is-warn strong { color: var(--accent-ink); }
 .audit-row.is-open button { box-shadow: inset 2px 0 0 var(--accent); }
 .audit-row.is-report button { box-shadow: inset 2px 0 0 var(--select); }
+.audit-row.is-advice { display: flex; align-items: flex-start; }
+.audit-row.is-advice button:first-child { flex: 1; min-width: 0; width: auto; box-shadow: inset 2px 0 0 var(--muted); }
+.audit-row.is-settled button:first-child { opacity: .5; box-shadow: none; }
+.audit-row .audit-settle { flex: none; width: auto; padding: 4px 6px; }
 .audit-row.is-at button { background: color-mix(in srgb, var(--select) 14%, transparent); }
 .audit-row.is-wide { white-space: pre-wrap; overflow-wrap: anywhere; }
 li.audit-row.is-wide { padding: 3px 6px; border-radius: 4px; color: var(--ink); background: color-mix(in srgb, var(--fail) 14%, transparent); font: 11px/1.45 var(--mono); }

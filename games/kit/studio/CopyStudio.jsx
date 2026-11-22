@@ -20,6 +20,7 @@ import { allCopyRows, copyFieldOf, copyFiles, copyScopes } from './copy.js'
 import { groupTree } from './groups.js'
 import { sidebarSearch } from './sidebar-list.js'
 import { useChangeset } from './useChangeset.js'
+import { useAdvisories } from './useAdvisories.js'
 import StudioBar from './StudioBar.jsx'
 import Loading from './Loading.jsx'
 import { mobilePanelProps, useMobilePanels } from './MobilePanels.jsx'
@@ -108,7 +109,8 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   const names = useMemo(() => referenceCatalog(rawNames), [rawNames])
   const order = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
-  const items = useMemo(() => lines.map(itemOf), [lines])
+  const advice = useAdvisories(target)
+  const items = useMemo(() => [...lines, ...advice.lines].map(itemOf), [lines, advice.lines])
   const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
   const files = useMemo(() => (content && vocab ? copyFiles(allCopyRows(content, vocab.vocabulary, order, side)) : []), [content, vocab, order, side])
 
@@ -252,7 +254,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
-              audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
+              audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
               panel={drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                 onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}
                 onDiscard={discard} onOpen={pending.open} onApply={apply} onUndo={undo} onSelect={() => {}} />

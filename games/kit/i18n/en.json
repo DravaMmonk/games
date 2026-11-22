@@ -783,6 +783,11 @@
     "通关解锁项": "Unlocks on passing",
     "语言 ⟦project-lists⟧": "Languages",
     "试玩：构建里载入参考解从这一关玩，编排里从选中的关、文案里从选中文字所在的关（或地图）玩": "Play: in Build this level with its reference loaded, in Arrange from the level picked, in Copy from the level of the text picked (or the map)",
-    "对象": "Objects"
+    "对象": "Objects",
+    "规范提示": "advisories",
+    "检查通过，{advice} 条规范提示": "Checks passed, {advice} advisories",
+    "后台规范检查": "Background advisories",
+    "重新打开": "Reopen",
+    "了结": "Settle"
   }
 }

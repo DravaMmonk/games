@@ -31,3 +31,25 @@ test('Studio previews and writes can finish while the course audit worker is bus
   }
   assert.equal(await auditing, 'course audit')
 })
+
+test('a background tool is answered while a write is under way and holds nothing up', { timeout: 3000 }, async () => {
+  const writing = Promise.withResolvers()
+  const advising = Promise.withResolvers()
+  const middleware = bridge({
+    modify: { run: () => writing.promise },
+    preview: { run: () => 'quick preview' },
+    advisories: { background: true, run: () => advising.promise },
+  }, () => [])
+  const post = (name, args) => new Promise(resolve => {
+    const request = Object.assign(Readable.from([JSON.stringify(args)]), { url: `/studio/api/${name}`, method: 'POST' })
+    middleware(request, { setHeader() {}, end: body => resolve(JSON.parse(body)) }, assert.fail)
+  })
+  const advised = post('advisories', {})
+  const written = post('modify', {})
+  const previewed = post('preview', { check: false })
+  writing.resolve('applied')
+  assert.equal(await written, 'applied')
+  assert.equal(await previewed, 'quick preview')
+  advising.resolve('advice')
+  assert.equal(await advised, 'advice')
+})

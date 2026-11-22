@@ -1,7 +1,8 @@
 // Categorise and filter check results for the Studio audit panel.
 import { editorRules } from './editors.js'
 
-export const SEVERITIES = ['fail', 'warn', 'open', 'report', 'pass']
+// `advice`: an advisory for a human to decide (useAdvisories.js), never a check's finding.
+export const SEVERITIES = ['fail', 'warn', 'open', 'report', 'advice', 'pass']
 
 /** A line's rule: the check that wrote it. */
 export function ruleOf(text, rules = editorRules()) {
@@ -23,10 +24,11 @@ export function ruleOf(text, rules = editorRules()) {
 }
 
 /** A line of the check as a worklist item: { text, severity, rule, levels, problem? } — `problem` the check's own
- * structured problem when it gives one (the existence check: { rule: 'exists', object, path, kind, target, reason }). */
+ * structured problem when it gives one (the existence check: { rule: 'exists', object, path, kind, target, reason }).
+ * An advisory keeps its `id` and whether a human has `settled` it. */
 export function itemOf(line) {
-  const severity = line.fail ? 'fail' : line.warn ? 'warn' : line.text.startsWith('OPEN ') ? 'open' : line.text.startsWith('REPORT ') ? 'report' : 'pass'
-  return { text: line.text, severity, rule: line.rule ?? line.problem?.rule ?? ruleOf(line.text), levels: line.levels ?? [], ...(line.problem && { problem: line.problem }) }
+  const severity = line.advice ? 'advice' : line.fail ? 'fail' : line.warn ? 'warn' : line.text.startsWith('OPEN ') ? 'open' : line.text.startsWith('REPORT ') ? 'report' : 'pass'
+  return { text: line.text, severity, rule: line.rule ?? line.problem?.rule ?? ruleOf(line.text), levels: line.levels ?? [], ...(line.problem && { problem: line.problem }), ...(line.advice && { id: line.id, settled: line.settled }) }
 }
 
 /**
@@ -51,15 +53,16 @@ export function filterItems(items, { severities = [], rules = [], level = null, 
   return items
     .filter((it) => (!severities.length || severities.includes(it.severity)) && (!rules.length || rules.includes(it.rule)) && (!level || it.levels.includes(level)) && (!q || it.text.toLowerCase().includes(q)))
     .map((it, k) => [it, k])
-    .sort(([a, i], [b, j]) => SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity) || i - j)
+    .sort(([a, i], [b, j]) => SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity) || Boolean(a.settled) - Boolean(b.settled) || i - j)
     .map(([it]) => it)
 }
 
-/** How many items there are of each rule and each severity: { rules: Map(rule → n), severities: Map }. */
+/** How many items there are of each rule and each severity, settled advisories aside: { rules: Map(rule → n), severities: Map }. */
 export function tally(items) {
   const rules = new Map()
   const severities = new Map()
   for (const it of items) {
+    if (it.settled) continue
     rules.set(it.rule, (rules.get(it.rule) ?? 0) + 1)
     severities.set(it.severity, (severities.get(it.severity) ?? 0) + 1)
   }

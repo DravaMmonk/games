@@ -23,6 +23,7 @@ import { confirmDelete } from './delete.js'
 import { blankChapter, chapterName, chapterRetitle, chaptersOrder, chapterSet, moveChapter, newChapterName } from './course-edit.js'
 import { missingDependencies, packageAddOps, packageRemoveOps } from './game-packages.js'
 import { useChangeset } from './useChangeset.js'
+import { useAdvisories } from './useAdvisories.js'
 import StudioBar from './StudioBar.jsx'
 import Loading from './Loading.jsx'
 import { mobilePanelProps, useMobilePanels } from './MobilePanels.jsx'
@@ -123,7 +124,8 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const course = useMemo(() => content && { ...content, chapters: content.sourceChapters ?? [] }, [content])
   const names = useMemo(() => referenceCatalog(rawNames), [rawNames])
   const levelOptions = useMemo(() => content?.levels.map((l) => ({ value: l.id, label: l.id, title: l.title })) ?? null, [content])
-  const items = useMemo(() => lines.map(itemOf), [lines])
+  const advice = useAdvisories(game)
+  const items = useMemo(() => [...lines, ...advice.lines].map(itemOf), [lines, advice.lines])
   const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
 
   const layer = `@${game}`
@@ -428,7 +430,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}
-              audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
+              audit={<Audit items={items} fresh={fresh} last={last} at={null} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
               panel={drawerTab === 'changes' ? <Review showRemovedLevels ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                 onRemove={(k) => {
                   const confirmed = pending.grouped(ops[k]) ? window.confirm(tr("确定放弃这组编排操作吗？")) : confirmDelete(ops[k].op)

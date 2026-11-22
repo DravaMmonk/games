@@ -52,6 +52,7 @@ import StudioBar from './StudioBar.jsx'
 import Loading from './Loading.jsx'
 import { mobilePanelProps, useMobilePanels } from './MobilePanels.jsx'
 import { useChangeset } from './useChangeset.js'
+import { useAdvisories } from './useAdvisories.js'
 import { OverrideDetail, OverrideList, visibleOverrides } from './OverrideAudit.jsx'
 import ObjectLinks from './ObjectLinks.jsx'
 import { CapabilityList, CapabilityView, currentCapability } from './CapabilityBrowser.jsx'
@@ -229,7 +230,8 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const types = useMemo(() => objectTypes(content), [content])
   // A list no longer shown (another package's types, or the author's choice) falls back to the first one listed.
   useEffect(() => { if (leftKeys.length && side !== 'packages' && !leftKeys.includes(side)) setSide(leftKeys[0]) }, [leftKeys, side]) // eslint-disable-line react-hooks/exhaustive-deps
-  const items = useMemo(() => lines.map(itemOf), [lines])
+  const advice = useAdvisories(target)
+  const items = useMemo(() => [...lines, ...advice.lines].map(itemOf), [lines, advice.lines])
   const places = useMemo(() => placesOf(lines, checked?.order ?? shown?.order ?? [], vocab?.vocabulary), [lines, checked, shown, vocab])
   const names = useMemo(() => referenceCatalog(rawNames, id => select({ level: id })), [rawNames]) // eslint-disable-line react-hooks/exhaustive-deps
   const playOrder = useMemo(() => (rawNames ? rawNames.levels.map((l) => l.id) : content?.levels.map((l) => l.id) ?? []), [rawNames, content])
@@ -940,7 +942,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
           {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open {...resizer} />}
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => togglePanel('audit')} sum={auditSum(items, last)} fresh={fresh} ops={ops}
-              audit={<Audit items={items} fresh={fresh} last={last} at={at} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} />}
+              audit={<Audit items={items} fresh={fresh} last={last} at={at} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}
               panel={drawerTab === 'compare' ? <Compare target={target} content={content} base={base} at={at} levelOptions={levelOptions} onJump={(lvl, path) => jump(lvl, path)} file={compareFile} onFilePath={pickObjectField} />
                 : drawerTab === 'changes' ? <Review ops={ops} redo={redo} result={result} shown={shown} reviewed={pending.reviewed} watch={pending.watchReview} why={why} setWhy={setWhy} said={said}
                   onRemove={(k) => { if (confirmDelete(ops[k].op)) pending.remove(k) }} onBack={back} onRedo={again}

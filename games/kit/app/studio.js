@@ -2,6 +2,7 @@ import { T as catalogText } from 'kernel/words'
 import { packageEntries } from '../engine/plugin-node.js'
 import { packageApp } from './package-vite.js'
 import { localSourceRequest, sourceTools } from './studio-source.js'
+import { advisoryTools } from './studio-advisories.js'
 import { packageIds } from '../engine/resolver.js'
 // The studio's server side (games/design/README.md 6.7), a Vite plugin for the dev server (npm run studio): the tools the
 // MCP server offers (../engine/ops/tools.js) as HTTP endpoints, and the module that gives the studio's page every
@@ -19,7 +20,8 @@ import { packageIds } from '../engine/resolver.js'
 // before it wrote. The slow ones — a whole check (preview with check, which runs every reference of a big game for
 // seconds), a run of a level's tests — go to a second worker lane with its own copy of the tools, so a quick
 // preview never waits behind them; a call that writes waits for both lanes. Course audits use a separate read-only
-// lane. GAMES_ROOT points the tools at a copy of the games folder.
+// lane. A `background` tool (the advisories, studio-advisories.js) is answered outside every queue: nothing waits for
+// it and it waits for nothing. GAMES_ROOT points the tools at a copy of the games folder.
 import { realpathSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { Worker } from 'node:worker_threads'
@@ -121,6 +123,7 @@ export function bridge(tools, lacking, aside = null, audit = null) {
           reply(422, { error: error.message })
         }
       }
+      if (tool.background) return void answer(() => tool.run(args))
       if (audit && name === 'preview' && args.courseAudit && args.check !== false) {
         background = Promise.all([background, queue]).then(() => answer(() => audit.run(name, args)))
         return
@@ -160,6 +163,10 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       let fast
       let lane
       let auditing
+      let advising
+      const advice = Object.fromEntries(Object.entries(advisoryTools).map(([name, tool]) => [name, {
+        ...tool, background: true, run: args => (advising ??= worker()).run(name, args),
+      }]))
       const checking = () => (lane ??= worker())
       const tools = Object.fromEntries(Object.entries(TOOLS).map(([name, tool]) => [name, {
         ...tool,
@@ -171,8 +178,8 @@ export const defineContent = content => loadGame(content, PACKAGES)`
         for (const path of new Set([file, realpathSync(file)])) {
           for (const module of server.moduleGraph.getModulesByFile(path) ?? []) server.moduleGraph.invalidateModule(module, new Set(), timestamp, true)
         }
-        const old = [fast, lane, auditing].filter(Boolean)
-        fast = lane = auditing = undefined
+        const old = [fast, lane, auditing, advising].filter(Boolean)
+        fast = lane = auditing = advising = undefined
         for (const id of [MODULE, 'virtual:package-displays']) {
           const module = server.moduleGraph.getModuleById(`\0${id}`)
           if (module) server.moduleGraph.invalidateModule(module, new Set(), timestamp, true)
@@ -181,7 +188,7 @@ export const defineContent = content => loadGame(content, PACKAGES)`
       }
       const host = server.config.server.host
       const source = !host || ['localhost', '127.0.0.1', '::1'].includes(host) ? sourceTools(root, refreshCode) : {}
-      server.middlewares.use(bridge({ ...tools, course_catalog: courseCatalog, ...source }, lacking,
+      server.middlewares.use(bridge({ ...tools, ...advice, course_catalog: courseCatalog, ...source }, lacking,
         { run: (name, args) => checking().run(name, args) },
         { run: (name, args) => (auditing ??= worker()).run(name, args) }))
 
@@ -202,6 +209,7 @@ export const defineContent = content => loadGame(content, PACKAGES)`
         fast?.close()
         lane?.close()
         auditing?.close()
+        advising?.close()
       })
     },
   }

@@ -688,10 +688,29 @@ part-ref { display: inline; }
 /* A part's rules in the components box: one per row, written out. */
 .parts-rules { margin: var(--sp-5) 0 0; }
 .parts-rules h3 { margin: 0 0 var(--sp-3); color: var(--muted); font: 600 12px var(--mono); letter-spacing: .06em; }
+.parts-rule-list { display: grid; justify-items: start; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; text-align: start; }
+.parts-rule-list > li,
+.parts-article > :is(h2, p) > :is(.typeset-math, .markup-sentence),
+.ph-sheet:has(.cl-sheet) > .ph-sheet-head > h2 > :is(.typeset-math, .markup-sentence),
+.cl-sheet :is(.cl-desc, .pf-desc) > :is(.typeset-math, .markup-sentence) {
+  display: inline-block;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: var(--sp-1) var(--sp-2);
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  color: var(--ink);
+  vertical-align: middle;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.parts-rule-list > li { padding-inline: var(--sent-px); font-size: var(--sent-fs); }
+.parts-article > h2 > .typeset-math { font-size: 0.8em; }
 .parts-rules table { border-collapse: collapse; }
 .parts-rules td { padding: var(--sp-3) var(--sp-4); border-top: 1px solid var(--hairline); }
 .parts-rules tr:last-child td { border-bottom: 1px solid var(--hairline); }
-.parts-rules code { font: 13px/1.5 var(--mono); overflow-wrap: anywhere; }
 .parts-setting { display: inline-block; margin: var(--sp-1) var(--sp-2) var(--sp-1) 0; padding: var(--sp-1) var(--sp-3); border: 1px solid var(--hairline); border-radius: var(--r-full); }
 
 

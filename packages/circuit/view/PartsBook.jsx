@@ -17,7 +17,7 @@ import { editorFor } from "./parts/previews.js"
 // simulation or built board on desktop and phone. A filter narrows the box to `keys` (a Set), such as the parts one robot can use; `icon` is SVG markup
 // for a 32 × 32 box, and `lock` the label of the level that opens it (null once open). The level that earns a part is the
 // one whose `unlocks` lists its key, or for a primitive the first level that brings it in (`at`). `rules` lists what a
-// part gives as rules ([{ text, form? }], a game whose parts are rules), in a table of their own; a row with a `form`
+// part gives as rules ([{ text, form? }], a game whose parts are rules), in a list of their own; a row with a `form`
 // shows once the part's text has that form (revisions' `forms`).
 
 /** Which parts are earned and which are new, for the components box and its button. */
@@ -94,9 +94,9 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
         {rules.length > 0 && (
           <section className="parts-rules">
             <h3>{tr("给出的规则")}</h3>
-            <div className="kit-table-scroll">
-              <table><tbody>{rules.map((r) => <tr key={r.text}><td><FormulaText text={r.text} /></td></tr>)}</tbody></table>
-            </div>
+            <ul className="parts-rule-list">
+              {rules.map((r) => <li key={r.text}><FormulaText text={r.text} /></li>)}
+            </ul>
           </section>
         )}
         {settings.length > 0 && (

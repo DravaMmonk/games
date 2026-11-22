@@ -36,7 +36,7 @@ import { PhonePage, Text } from 'kernel/view'
 
 import { RunDock } from 'kernel/view'
 
-import { Sheet } from 'kernel/view'
+import { Markup, Sheet } from 'kernel/view'
 
 import { TestTabs } from 'kernel/view'
 
@@ -251,7 +251,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
 
   const describeOf = (node, c) => {
     const text = !isDefined(node) && describe?.(node, c)
-    return text ? <p className="cl-desc">{String(L(text))}</p> : null
+    return text ? <p className="cl-desc"><Markup text={text} /></p> : null
   }
   // Packed parts: what each one runs, and what every card inside it gives at the step shown.
   const top = { circuit, parts, level: level.source, top: true }

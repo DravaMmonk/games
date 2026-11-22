@@ -1,5 +1,6 @@
 {
   "title": "@level.is-silent.title",
+  "intro": [{ "t": "@level.is-silent.intro.0.t" }],
   "tray": "machine",
   "tasks": [
     {

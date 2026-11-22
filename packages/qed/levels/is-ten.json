@@ -1,5 +1,6 @@
 {
   "title": "@level.is-ten.title",
+  "intro": [{ "t": "@level.is-ten.intro.0.t" }],
   "tray": "machine",
   "after": "@level.is-ten.after",
   "tasks": [

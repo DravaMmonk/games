@@ -4,7 +4,8 @@
   "intro": [
     {
       "t": "@level.is-three.intro.0.t"
-    }
+    },
+    { "t": "@level.is-three.intro.1.t" }
   ],
   "tasks": [
     {

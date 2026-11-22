@@ -4,6 +4,10 @@
       { "from": "qed/decl-bot", "to": "qed/r-rule" },
       { "from": "qed/r-meta", "to": "qed/s-orelse" },
       { "from": "qed/r-meta", "to": "qed/s-results" }
+    ],
+    "add": [
+      { "from": "qed/mergeUse", "to": "qed/try-rules" },
+      { "from": "qed/iffUse", "to": "qed/r-rule" }
     ]
   }
 }

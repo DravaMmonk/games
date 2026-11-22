@@ -1,0 +1,6 @@
+{
+  "edges": {
+    "remove": [{ "from": "qed/g-or", "to": "qed/g-imp" }],
+    "add": [{ "from": "qed/g-xor", "to": "qed/g-imp" }]
+  }
+}

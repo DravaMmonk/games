@@ -1,1 +1,0 @@
-{ "edges": { "remove": [{ "from": "qed/decl-three", "to": "qed/decl-order", "required": true }] } }

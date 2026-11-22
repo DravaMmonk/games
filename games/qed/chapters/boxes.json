@@ -5,8 +5,13 @@
     "question": "@course.eras.boxes.chapter.question"
   },
   "levels": [
+    "qed/try-rules",
+    "qed/try-rule-box",
+    "qed/decl-and",
     "qed/and",
+    "qed/decl-or",
     "qed/or",
+    "qed/decl-bot",
     "qed/bot",
     "qed/curry",
     "qed/cases",
@@ -20,6 +25,9 @@
     "qed/dsyll"
   ],
   "rows": [
+    ["qed/try-rules"],
+    ["qed/try-rule-box"],
+    ["qed/decl-and", "qed/decl-or", "qed/decl-bot"],
     ["qed/and", "qed/or", "qed/bot"],
     ["qed/curry", "qed/cases", "qed/notI"],
     [null, "qed/orSwap", "qed/mt"],

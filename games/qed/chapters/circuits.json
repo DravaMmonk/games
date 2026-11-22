@@ -9,6 +9,7 @@
     "qed/g-and",
     "qed/g-tree",
     "qed/g-or",
+    "qed/g-xor",
     "qed/g-imp",
     "qed/g-always",
     "qed/g-iff",
@@ -17,7 +18,6 @@
     "qed/e-one",
     "qed/e-two",
     "qed/e-three",
-    "qed/e-count",
-    "qed/g-xor"
+    "qed/e-count"
   ]
 }

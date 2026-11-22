@@ -26,7 +26,7 @@
   "part.exI.desc": "接入 P(t)，以 t 为例得到 \\mark{exists}x. P(x)。只有一个相符的存在命题时自动输出；有多个时，在元件上选择要得出的命题。",
   "part.exI.name": "概括",
   "part.exI.settings.target.label": "要得出",
-  "part.impI.desc": "带一个框，A 在元件上设定。框内可以使用假设 A；框内证出 B 并接到「结论」，元件输出 A \\mark{implies} B。",
+  "part.impI.desc": "假设框用来证明「若 A，则 B」。在「假设」栏设定 A，然后在框内以 A 为临时前提证明 B。将证出的 B 接到「结论」端口，框外便得到 A \\mark{implies} B。",
   "part.impI.name": "假设框",
   "part.impI.regions.0.label": "框内",
   "part.impI.settings.A.label": "假设",

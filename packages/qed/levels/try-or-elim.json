@@ -1,0 +1,19 @@
+{
+  "title": "@level.try-or-elim.title",
+  "intro": [{ "t": "@level.try-or-elim.intro.0.t" }, { "t": "@level.try-or-elim.intro.1.t" }],
+  "after": "@level.try-or-elim.after",
+  "tasks": [
+    {
+      "id": "try-or-elim",
+      "kind": "logic/iso",
+      "play": "logic/rule",
+      "words": [],
+      "brief": "@level.try-or-elim.tasks.try-or-elim.brief",
+      "hint": ["@level.try-or-elim.tasks.try-or-elim.hint.0"],
+      "fixedPremises": 1,
+      "fixedConclusion": true,
+      "sentences": ["A ∨ B", "⟦A⟧ ⟹ R", "⟦B⟧ ⟹ R"],
+      "rule": { "premises": ["A ∨ B", "⟦A⟧ ⟹ R", "⟦B⟧ ⟹ R"], "conclusion": "R" }
+    }
+  ]
+}

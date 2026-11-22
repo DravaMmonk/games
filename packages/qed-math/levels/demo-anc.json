@@ -8,8 +8,6 @@
   "params": ["x", "y"],
   "sentences": ["Parent(x, z)", "Anc(z, y)"],
   "things": ["i", "j", "k", "l"],
-  "thing": true,
-  "binder": "z",
   "tests": [
     { "given": ["Parent(i, j)"], "goal": "Anc(i, j)", "make": true },
     { "given": ["Parent(i, j)", "Parent(j, k)"], "goal": "Anc(i, k)", "make": true },

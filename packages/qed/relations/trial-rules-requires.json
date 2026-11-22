@@ -1,7 +1,6 @@
 {
   "kind": "requires",
   "edges": [
-    { "from": "try-rules", "to": "try-rule-box" },
-    { "from": "try-rule-box", "to": "try-rule-elim" }
+    { "from": "try-rules", "to": "try-rule-box" }
   ]
 }

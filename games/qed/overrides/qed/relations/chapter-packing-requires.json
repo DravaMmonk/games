@@ -1,8 +1,8 @@
 {
   "edges": {
     "remove": [
-      { "from": "qed/decl-iff", "to": "qed/decl-three", "required": true },
-      { "from": "qed/decl-three", "to": "qed/decl-order", "required": true }
+      { "from": "qed/decl-strength", "to": "qed/decl-or" },
+      { "from": "qed/decl-or", "to": "qed/decl-bot" }
     ]
   }
 }

@@ -1,12 +1,9 @@
 {
   "edges": {
     "add": [
-      { "from": "qed/try-rule-elim", "to": "qed/r-rule" },
       { "from": "qed/p-only", "to": "qed/q-children" },
       { "from": "qed/p-only", "to": "qed/p-split" },
       { "from": "qed/r-lemma", "to": "qed/s-results" },
-      { "from": "qed/decl-three", "to": "qed/decl-order" },
-      { "from": "qed/decl-bot", "to": "qed/decl-three" },
       { "from": "qed/mergeBoth", "to": "qed/k" },
       { "from": "qed/mergeBoth", "to": "qed/s" },
       { "from": "qed/q-trans", "to": "qed/r-elim" }

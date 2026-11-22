@@ -12,8 +12,6 @@
       "params": ["x", "y"],
       "sentences": ["Flight(x, z)", "Reach(z, y)"],
       "things": ["m", "n", "o", "p"],
-      "thing": true,
-      "binder": "z",
       "brief": "@level.demo-reach.tasks.demo-reach.brief",
       "hint": ["@level.demo-reach.tasks.demo-reach.hint.0"],
       "tests": [

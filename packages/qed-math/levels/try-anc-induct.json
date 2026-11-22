@@ -1,0 +1,50 @@
+{
+  "title": "@level.try-anc-induct.title",
+  "intro": [{ "t": "@level.try-anc-induct.intro.0.t" }],
+  "after": "@level.try-anc-induct.after",
+  "tasks": [
+    {
+      "id": "try-anc-induct",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "words": ["everyday"],
+      "rules": {
+        "ancInduct": {
+          "name": "@level.try-anc-induct.tasks.try-anc-induct.rules.ancInduct.name",
+          "premises": [
+            "⋀x y. ⟦Parent(x, y)⟧ ⟹ ?R(x, y)",
+            "⋀x y z. ⟦Parent(x, z); Anc(z, y); ?R(z, y)⟧ ⟹ ?R(x, y)"
+          ],
+          "conclusion": "∀x. ∀y. Anc(x, y) → ?R(x, y)"
+        },
+        "parentOlder": {
+          "name": "@level.try-anc-induct.tasks.try-anc-induct.rules.parentOlder.name",
+          "premises": ["Parent(?x, ?y)"],
+          "conclusion": "Older(?x, ?y)"
+        },
+        "olderTrans": {
+          "name": "@level.try-anc-induct.tasks.try-anc-induct.rules.olderTrans.name",
+          "premises": ["Older(?x, ?y)", "Older(?y, ?z)"],
+          "conclusion": "Older(?x, ?z)"
+        }
+      },
+      "brief": "@level.try-anc-induct.tasks.try-anc-induct.brief",
+      "hint": [
+        "@level.try-anc-induct.tasks.try-anc-induct.hint.0",
+        "@level.try-anc-induct.tasks.try-anc-induct.hint.1"
+      ],
+      "tests": [{ "goal": "∀x. ∀y. Anc(x, y) → Older(x, y)" }],
+      "solution": [
+        "c0 = logic/directBackward-ancInduct(in)",
+        "c1 = logic/directBackward-parentOlder(c0)",
+        "c2 = logic/directBackward-logic_assumption(c1)",
+        "c3 = logic/directBackward-olderTrans(c2)",
+        "c4 = logic/directBackward-parentOlder(c3)",
+        "c5 = logic/directBackward-logic_assumption(c4)",
+        "c6 = logic/directBackward-logic_assumption(c5)",
+        "out <- c6"
+      ]
+    }
+  ],
+  "tray": "prover"
+}

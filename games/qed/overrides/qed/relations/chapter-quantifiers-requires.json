@@ -3,7 +3,9 @@
     "remove": [
       { "from": "qed/m-counter", "to": "qed/p-split" },
       { "from": "qed/fo-some", "to": "qed/p-split" },
-      { "from": "qed/fo-nested", "to": "qed/q-children" }
-    ]
+      { "from": "qed/fo-nested", "to": "qed/q-children" },
+      { "from": "qed/iffUse", "to": "qed/fo-atoms" }
+    ],
+    "add": [{ "from": "qed/s-search", "to": "qed/fo-atoms" }]
   }
 }

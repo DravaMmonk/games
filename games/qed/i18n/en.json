@@ -13,8 +13,6 @@
   "course.eras.kernel.chapter.title": "The kernel",
   "course.eras.metavars.chapter.question": "Introduce new rules for the prover.",
   "course.eras.metavars.chapter.title": "The prover II",
-  "course.eras.packing.chapter.question": "Introduce rules for connectives using declarations.",
-  "course.eras.packing.chapter.title": "Declarations",
   "course.eras.paper.chapter.question": "Work out whether a sentence is true or false.",
   "course.eras.paper.chapter.title": "Pen and paper",
   "course.eras.qrules.chapter.question": "Prove conclusions using rules for quantifiers.",

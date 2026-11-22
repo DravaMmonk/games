@@ -1,6 +1,18 @@
 {
   "edges": {
-    "add": [{ "from": "qed/decl-bot", "to": "qed/and" }, { "from": "qed/decl-bot", "to": "qed/or" }],
-    "remove": [{ "from": "qed/s-search", "to": "qed/bot" }]
+    "add": [
+      { "from": "qed/try-rule-box", "to": "qed/decl-and" },
+      { "from": "qed/decl-and", "to": "qed/and" },
+      { "from": "qed/try-rule-box", "to": "qed/decl-or" },
+      { "from": "qed/decl-or", "to": "qed/or" },
+      { "from": "qed/try-rule-box", "to": "qed/decl-bot" },
+      { "from": "qed/decl-bot", "to": "qed/bot" }
+    ],
+    "remove": [
+      { "from": "qed/s-search", "to": "qed/bot" },
+      { "from": "qed/s-search", "to": "qed/and" },
+      { "from": "qed/s-search", "to": "qed/or" },
+      { "from": "qed/mergeBoth", "to": "qed/orImp", "required": true }
+    ]
   }
 }

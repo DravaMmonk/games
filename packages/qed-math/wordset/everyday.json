@@ -15,5 +15,6 @@
   "m": "@qed-math/wordset.everyday.m",
   "n": "@qed-math/wordset.everyday.n",
   "o": "@qed-math/wordset.everyday.o",
-  "p": "@qed-math/wordset.everyday.p"
+  "p": "@qed-math/wordset.everyday.p",
+  "Older": "@qed-math/wordset.everyday.Older"
 }

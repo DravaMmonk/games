@@ -64,6 +64,7 @@ const givesRules = (level) => !level.source.tasks.some((t) => t.kind === 'logic/
 // These proof-board operations are not entries in the machine board's rule book.
 const proofRules = {
   'logic/rewrite': '⟦s = t; P(s)⟧ ⟹ P(t)',
+  'logic/iffSubst': '⟦A ↔ B; P(A)⟧ ⟹ P(B)',
   'logic/natInd': '⟦P(0); ⋀a. ⟦P(a)⟧ ⟹ P(S(a))⟧ ⟹ ∀x. P(x)',
 }
 

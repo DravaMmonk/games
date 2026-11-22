@@ -10,6 +10,8 @@
   "package.desc": "Provides logical symbols, proof circuits, and proof checking.",
   "package.title": "Logic and proofs",
   "ui": {
+    "一条等价式": "an equivalence",
+    "已知里的等价式都无法改写当前目标": "None of the given equivalences can rewrite the current goal",
     "前提": "Premise",
     "删除可推导情形": "Delete the row",
     "前提和元件要求的输入不符。": "The premises do not match the inputs the rule requires.",
@@ -398,6 +400,8 @@
   "capability.operation.items.natInd.about": "Induction",
   "capability.operation.items.refl.about": "Reflexivity: t = t",
   "capability.operation.items.rewrite.about": "Rewrite: from s = t and φ(s), φ(t)",
+  "capability.operation.items.iffSubst.about": "Substitute an equivalent formula: from A ↔ B and P(A), infer P(B)",
+  "capability.operation.items.iffOccurrences.about": "Subformulas that can be replaced using an equivalence",
   "capability.operation.items.lemma.about": "A lemma: runs the proof that proved it",
   "capability.operation.items.repeat.about": "Repeat frame",
   "capability.operation.items.rule.about": "Rule",

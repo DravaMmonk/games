@@ -1,0 +1,12 @@
+{
+  "name": "@part.iffSubst.name",
+  "desc": "@part.iffSubst.desc",
+  "icon": "GitFork",
+  "family": "logic/rule",
+  "inputs": [
+    { "name": "iff", "label": "@part.iffSubst.inputs.0.label" },
+    { "name": "p", "label": "@part.iffSubst.inputs.1.label" }
+  ],
+  "settings": { "at": { "label": "@part.iffSubst.settings.at.label", "from": "logic/iffOccurrences(iff, p)" } },
+  "op": "logic/iffSubst"
+}

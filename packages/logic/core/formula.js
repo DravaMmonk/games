@@ -393,3 +393,18 @@ export function occurrences(f, t) {
   replaceTerm(f, t, t, () => { n++; return false })
   return n
 }
+
+/** Replace selected subformulas in outermost, left-to-right order, avoiding capture on either side. */
+export function replaceFormula(f, from, to, pick) {
+  const things = freeVars(to, freeVars(from))
+  const { preds } = signature([from, to])
+  let occurrence = 0
+  const walk = (g) => {
+    if (same(g, from)) return pick(occurrence++) ? to : g
+    if (g.body) return (g.prop ? preds : things).has(g.v) ? g : { ...g, body: walk(g.body) }
+    if (g.b) return { ...g, a: walk(g.a), b: walk(g.b) }
+    if (g.a) return { ...g, a: walk(g.a) }
+    return g
+  }
+  return walk(f)
+}

@@ -1,7 +1,7 @@
 {
   "kind": "requires",
   "edges": [
-    { "from": "machine-rewrite", "to": "machine-open" },
+    { "from": "machine-rewrite", "to": "machine-rewrite-first" },
     { "from": "machine-open", "to": "machine-cite" },
     { "from": "machine-cite", "to": "machine-rewrite-first" },
     { "from": "machine-rewrite-first", "to": "machine-open-first" },

@@ -15,7 +15,7 @@ import { countermodel, countermodelSearch, holds } from '../core/models.js'
 import { MACHINE_BOARD, MACHINE_TESTS, RULE_CHOICES, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
 import { OPS } from '../core/ops.js'
-import { PROOF_BOARD, RULES, lemmaGives, runProof } from '../core/proof.js'
+import { OPTIONS, PROOF_BOARD, RULES, lemmaGives, proved, runProof } from '../core/proof.js'
 import { partsOf } from '../core/ops.js'
 import { printTerm } from '../core/pterm.js'
 import { validate } from '../core/validate.js'
@@ -611,6 +611,41 @@ test('a rewrite changes the first place its left side fits, under quantifiers to
   const simp = simplify(startState(parseS('plus(s(s(zero)), s(zero)) = s(s(s(zero)))')), [book['def.0'], book['def.1']])
   assert.deepEqual(goals(simp), ['s(s(s(zero))) = s(s(s(zero)))'])
   assert.ok(simplify(startState(parseS('¬(Rain ∨ Wind)')), [book['dm.notOr'], book['dm.andNot']]).fail)
+})
+
+test('equivalent substitution replaces one selected occurrence and avoids capture', () => {
+  const iff = proved(parse('A ↔ B'), new Map([['iff', parse('A ↔ B')]]))
+  const p = proved(parse('A ∧ ¬A'), new Map([['p', parse('A ∧ ¬A')]]))
+  const substitute = (iff, p, at) => RULES.iffSubst.run([iff, p], {}, { node: { params: { at } } })
+  assert.deepEqual(OPTIONS.iffOccurrences.run([iff, p]).map(({ value }) => value), ['0', '1'])
+  const result = substitute(iff, p, '1')
+  assert.equal(show(result.formula), 'A ∧ ¬B')
+  assert.deepEqual([...result.hyps.keys()], ['iff', 'p'])
+  assert.throws(() => substitute(iff, p, '2'))
+  const open = proved(parse('A ↔ P(x)'))
+  const quantified = proved(parse('∀x. A'))
+  assert.deepEqual(OPTIONS.iffOccurrences.run([open, quantified]), [])
+  assert.throws(() => substitute(open, quantified, '0'))
+})
+
+test('the direct equivalence card ignores term equations and rewrites one goal occurrence', () => {
+  const source = 'qed/iffSubst'
+  const type = 'logic/directRewrite-qed_iffSubst'
+  const level = {
+    kind: 'logic/machine', directRuleCards: true, want: 'logic/becomes',
+    ruleParts: { 'logic/iffSubst': source },
+    partDefs: { [source]: { name: { en: 'Equivalent substitution', zh: '等价代换' } } },
+    tests: [
+      { goal: 'P(x)', hyps: ['x = y'], becomes: [] },
+      { goal: 'P(x) ∧ P(x)', hyps: ['x = y', 'P(x) ↔ Q(x)'], becomes: [['x = y; P(x) ↔ Q(x) ⊢ Q(x) ∧ P(x)']] },
+    ],
+  }
+  const card = directCardsOf(level).get(type)
+  assert.deepEqual(card.entries.map(({ key }) => key), ['hyp.iff'])
+  const compiled = compileParts({ [type]: card.definition }, OPS).PARTS
+  level.parts = (name) => compiled[name] ?? machineParts(name)
+  const board = machine({ change: [type] }, ['in>change', 'change>out'])
+  assert.equal(runMachine(level, board).pass, true)
 })
 
 test('a direct rewrite uses only the first rule in an older multi-rule selection', () => {

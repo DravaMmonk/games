@@ -90,7 +90,11 @@ export const factsOf = (level) => Object.entries(level.facts ?? {}).filter(([typ
 export const MATH = 'math'
 // A rule part's type for a key: what part the rule belongs to.
 const partOfRule = (r) => (r.datatype || r.fact ? MATH : r.part ?? r.lemma ?? r.key)
-const partOfRewrite = (r) => (r.group === 'law' ? r.key.split('.')[0] : r.group === 'def' || r.group === 'fact' ? MATH : r.key === 'hyp' ? 'logic/hyp' : r.key)
+function partOfRewrite(rule) {
+  if (rule.group === 'hyp') return rule.source ?? 'logic/hyp'
+  if (rule.group === 'law') return rule.key.split('.')[0]
+  return rule.group === 'def' || rule.group === 'fact' ? MATH : rule.key
+}
 // The rule book of numbers lists the declarations' rules, then the definitions, then the equations proved.
 const mathRank = (e) => (e.rule.datatype ? 0 : e.rule.group === 'def' ? 1 : 2)
 /**
@@ -608,7 +612,7 @@ export function directCardsOf(level) {
           if (!entries.length) continue
           const type = `logic/${op}-${source.replace('/', '_')}`
           const settings = [{ ...RULE_DEFINITION.settings[0], label: T('选择规则'), single: true }]
-          if (book === 'rewrite') settings.push(REWRITE_AT)
+          if (book === 'rewrite' && !entries.every(({ rule }) => rule.equivalenceOnly)) settings.push(REWRITE_AT)
           const sign = mark(marker)
           cards.set(type, { entries, source, definition: {
             name: { zh: `${sign} ${name.zh ?? name.en ?? name}`, en: `${sign} ${name.en ?? name.zh ?? name}` },

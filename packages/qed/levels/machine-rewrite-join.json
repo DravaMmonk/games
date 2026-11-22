@@ -16,7 +16,7 @@
       ],
       "solution": [
         "step1 = logic/directBackward-qed_andI(in)",
-        "step2 = logic/directRewrite-logic_hyp(step1)",
+        "step2 = logic/directRewrite-qed_iffSubst(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "step4 = logic/directBackward-logic_assumption(step3)",
         "out <- step4"

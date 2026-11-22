@@ -1,6 +1,5 @@
 {
   "title": "@level.machine-rewrite.title",
-  "adds": ["logic/hyp"],
   "tray": "machine-rewrite",
   "intro": [{ "t": "@level.machine-rewrite.intro.0.t" }, { "t": "@level.machine-rewrite.intro.1.t" }],
   "after": "@level.machine-rewrite.after",
@@ -15,7 +14,7 @@
         { "goal": "Rain ∧ Wind", "hyps": ["Rain ↔ Wet"], "becomes": [["Rain ↔ Wet ⊢ Wet ∧ Wind"]] },
         { "goal": "Wind → Wet", "hyps": ["Wet ↔ Slip"], "becomes": [["Wet ↔ Slip ⊢ Wind → Slip"]] }
       ],
-      "solution": ["step1 = logic/directRewrite-logic_hyp(in)", "out <- step1"]
+      "solution": ["step1 = logic/directRewrite-qed_iffSubst(in)", "out <- step1"]
     }
   ]
 }

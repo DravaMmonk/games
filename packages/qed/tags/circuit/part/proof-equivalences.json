@@ -1,6 +1,7 @@
 {
   "title": "@tag.proof-equivalences.title",
   "values": [
+    "iffSubst",
     "dneg-sp-rw-desc",
     "arrow-sp-rw-desc",
     "dist-sp-rw-desc",

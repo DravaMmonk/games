@@ -16,8 +16,8 @@
         { "goal": "Slip ∨ (Wind ∧ Slip)", "hyps": ["Slip ↔ Wet", "Wet ∨ (Wind ∧ Wet)"] }
       ],
       "solution": [
-        "step1 = logic/directRewrite-logic_hyp(in)",
-        "step2 = logic/directRewrite-logic_hyp(step1)",
+        "step1 = logic/directRewrite-qed_iffSubst(in)",
+        "step2 = logic/directRewrite-qed_iffSubst(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "out <- step3"
       ]

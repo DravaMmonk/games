@@ -9,7 +9,7 @@
 // ¬¬A: either way round is a rule), the equations proved (the course's `facts`, chapter 12), the level's definitions (`defs`: equations, maybe with conditions, their
 // variables standing for anything), and the goal's own hypotheses (the card's rule 'hyp': the first hypothesis that is
 // an equation or an equivalence and fits somewhere, its ∀ variables standing for anything).
-import { atom, bin, fn, show, showTerm, subst, tvar } from './formula.js'
+import { atom, bin, fn, replaceFormula, show, showTerm, subst, tvar } from './formula.js'
 import { instantiate, isMetaName, lemmaRules, metasIn, parseS, sameSide, sideText } from './schematic.js'
 import { T } from 'kernel/words'
 
@@ -183,6 +183,19 @@ export function rewrite(s, rule, at = 'goal') {
     }
     return { fail: T("「{zh}」的左边在第一个目标的已知里哪一处都对不上", {zh: { zh: String(rule.name.zh), en: String(rule.name.en) }}) }
   }
+  if (rule.equivalenceOnly) {
+    for (const h of g.hyps) {
+      if (h.op !== '↔' || metasIn(h).size) continue
+      let replaced = false
+      const goal = replaceFormula(g.goal, h.a, h.b, (index) => {
+        if (index !== 0) return false
+        replaced = true
+        return true
+      })
+      if (replaced) return after({ ...g, goal }, rule, { σ: {} })
+    }
+    return { fail: T('已知里的等价式都无法改写当前目标') }
+  }
   const rules = rule.group === 'hyp' ? g.hyps.map(hypRule).filter(Boolean).map((r) => ({ ...rule, ...r, conditions: [] })) : [rule]
   for (const r of rules) {
     const done = rewriteOnce(g.goal, r)
@@ -235,7 +248,11 @@ export function localRewrites(level) {
   const facts = Object.entries(level.facts ?? {}).filter(([type]) => !level.proven || level.proven.includes(type)).map(([type, f]) => [type, f, factRewrite(parseS(f.statement))]).filter(([, , r]) => r)
     .map(([type, f, r]) => ({ key: type, name: f.name, ...r, group: 'fact' }))
   const hyp = { key: 'hyp', name: T('已知里的等式'), lhs: null, rhs: null, conditions: [], group: 'hyp' }
-  return [...facts, ...defs, hyp]
+  const source = level.ruleParts?.['logic/iffSubst']
+  const equivalences = source && (!level.holds || level.holds.includes(source))
+    ? [{ ...hyp, key: 'hyp.iff', name: level.partDefs[source].name, source, equivalenceOnly: true }]
+    : []
+  return [...facts, ...defs, hyp, ...equivalences]
 }
 /**
  * A level's rewrite rules by key: each shape of a lemma whose converse shape the level holds too (keyed as the rule

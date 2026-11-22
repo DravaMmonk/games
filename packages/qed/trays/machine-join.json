@@ -1,1 +1,1 @@
-{ "directRuleCards": true, "values": ["logic/hyp", "andI", "logic/assumption"], "workshop": false }
+{ "directRuleCards": true, "values": ["iffSubst", "andI", "logic/assumption"], "workshop": false }

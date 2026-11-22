@@ -21,7 +21,7 @@ import { runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { circuitBoard } from 'circuit'
 import { frameTree, regionAddress } from 'circuit'
-import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
+import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceFormula, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
 import { say, sayTerm } from './notation.js'
 import { choicesOf } from './choices.js'
 import { cancelOne, disjunction, literalsIn } from './resolution.js'
@@ -48,6 +48,7 @@ const SHAPE = {
   all: T('一句「对所有 x…」'),
   ex: T('一句「存在 x…」'),
   eq: T('一个等式'),
+  iff: T('一条等价式'),
   fits: T('一句这块元件接得上的话'),
   clause: T('一条子句（几个字母或它们的否定用「或」连起来）'),
 }
@@ -269,6 +270,22 @@ const BODIES = {
       return proved(replaceTerm(p.formula, s, t, (k) => at.includes(k)), union(e, p), psubst(e.term, p.term))
     },
   },
+  iffSubst: {
+    inputs: ['iff', 'p'],
+    eval: ({ iff, p }, node, ctx) => {
+      const { formula } = iff
+      if (formula.op !== '↔') throw need(ctx, SHAPE.iff, formula)
+      const at = node.params?.at
+      let replaced = false
+      const result = replaceFormula(p.formula, formula.a, formula.b, (index) => {
+        if (String(index) !== at) return false
+        replaced = true
+        return true
+      })
+      if (!replaced) throw fail('请选一处与等价式左边相合的子式', 'Choose an occurrence matching the left side of the equivalence')
+      return proved(result, union(iff, p), psubst(iff.term, p.term))
+    },
+  },
 }
 
 export const RULES = ruleImplementations(BODIES)
@@ -488,6 +505,19 @@ export const OPTIONS = {
       const f = e?.formula
       if (!f || !p || f.op !== 'atom' || f.pred !== '=') return []
       return Array.from({ length: occurrences(p.formula, f.args[0]) }, (_, k) => ({ value: String(k), label: String(k + 1) }))
+    },
+  },
+  iffOccurrences: {
+    args: [{ name: 'iff' }, { name: 'p' }],
+    run: ([iff, p]) => {
+      const f = iff?.formula
+      if (!p || f?.op !== '↔') return []
+      const options = []
+      replaceFormula(p.formula, f.a, f.b, (index) => {
+        options.push({ value: String(index), label: String(index + 1) })
+        return false
+      })
+      return options
     },
   },
 }

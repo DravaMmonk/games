@@ -1,5 +1,6 @@
 {
   "title": "@level.iffUse.title",
+  "after": "@level.iffUse.after",
   "tray": "proof",
   "intro": [
     {
@@ -114,6 +115,35 @@
         "e = andE(p)",
         "goal <- f"
       ]
+    },
+    {
+      "id": "iffUse-subst",
+      "kind": "logic/proof",
+      "adds": ["iffSubst"],
+      "step": "@level.iffUse.tasks.iffUse-subst.step",
+      "intro": [{ "t": "@level.iffUse.tasks.iffUse-subst.intro.0.t" }],
+      "brief": "@level.iffUse.tasks.iffUse-subst.brief",
+      "hint": ["@level.iffUse.tasks.iffUse-subst.hint.0"],
+      "tests": [
+        {
+          "premises": {
+            "p": "A ↔ B",
+            "q": "¬A"
+          },
+          "goal": "¬B"
+        }
+      ],
+      "cases": [
+        {
+          "A": "Sat",
+          "B": "Rest"
+        },
+        {
+          "A": "Coffee",
+          "B": "Awake"
+        }
+      ],
+      "solution": ["r = iffSubst[at=\"0\"](p, q)", "goal <- r"]
     }
   ],
   "opens": [

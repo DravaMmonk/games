@@ -56,6 +56,8 @@
   "capability.operation.items.natInd.about": "数学归纳法",
   "capability.operation.items.refl.about": "自反律：t = t",
   "capability.operation.items.rewrite.about": "等量代换：由 s = t 和 φ(s) 得到 φ(t)",
+  "capability.operation.items.iffSubst.about": "等价代换：由 A ↔ B 和 P(A) 得到 P(B)",
+  "capability.operation.items.iffOccurrences.about": "句子里可以用等价式代换的位置",
   "capability.operation.items.lemma.about": "引理：照证出它的那段证明来推",
   "capability.operation.items.repeat.about": "重复框",
   "capability.operation.items.rule.about": "逆用规则",

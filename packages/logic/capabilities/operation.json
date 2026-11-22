@@ -341,6 +341,31 @@
         }
       }
     },
+    "iffSubst": {
+      "about": "@capability.operation.items.iffSubst.about",
+      "args": [
+        {
+          "name": "iff",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "p",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/judgment",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "at": {
+            "type": "str",
+            "control": "select",
+            "optional": true,
+            "default": ""
+          }
+        }
+      }
+    },
     "lemma": {
       "about": "@capability.operation.items.lemma.about",
       "args": [],
@@ -702,6 +727,24 @@
       "args": [
         {
           "name": "eq",
+          "type": "logic/judgment"
+        },
+        {
+          "name": "p",
+          "type": "logic/judgment"
+        }
+      ],
+      "returns": "logic/options",
+      "params": {
+        "type": "obj",
+        "fields": {}
+      }
+    },
+    "iffOccurrences": {
+      "about": "@capability.operation.items.iffOccurrences.about",
+      "args": [
+        {
+          "name": "iff",
           "type": "logic/judgment"
         },
         {

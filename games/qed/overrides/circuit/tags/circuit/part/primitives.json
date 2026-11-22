@@ -16,6 +16,7 @@
       "qed/exI",
       "qed/exE",
       "qed/rewrite",
+      "qed/iffSubst",
       "qed/refl",
       "qed/repeat",
       "qed/rule",

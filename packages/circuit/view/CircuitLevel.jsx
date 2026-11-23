@@ -27,6 +27,7 @@ import { useSlotEditing } from "./board/useSlotEditing.js"
 import { useCircuitEdits } from "./board/useCircuitEdits.js"
 import Glyph from "./board/Glyph.jsx"
 import { InsideBoard, PackedDetail, insideOf } from "./board/Inside.jsx"
+import PartDetailSheet from './board/PartDetailSheet.jsx'
 import { WORDS } from './words.js'
 
 import { L } from "kernel/view"
@@ -381,7 +382,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
     />
     {detailNode && (isPacked(detailNode, top)
       ? <PackedDetail inside={inside} node={detailNode} at={top} path={[detailNode.id]} onClose={() => setDetail(null)}>{describeOf(detailNode, ctx)}{detailOf(detailNode, ctx)}</PackedDetail>
-      : <Sheet title={(!isPart(parts, detailNode) && terminalTitle?.(detailNode)) || String(L(parts.label(detailNode)))} onClose={() => setDetail(null)}><div className="cl-sheet">{describeOf(detailNode, ctx)}{detailOf(detailNode, ctx)}{!isPart(parts, detailNode) && terminalBody(detailNode, circuit, () => setDetail(null))}</div></Sheet>)}
+      : <PartDetailSheet parts={parts} node={detailNode} title={(!isPart(parts, detailNode) && terminalTitle?.(detailNode)) || String(L(parts.label(detailNode)))} onClose={() => setDetail(null)}><div className="cl-sheet">{describeOf(detailNode, ctx)}{detailOf(detailNode, ctx)}{!isPart(parts, detailNode) && terminalBody(detailNode, circuit, () => setDetail(null))}</div></PartDetailSheet>)}
   </>
 }
 
@@ -496,14 +497,14 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
       {below}
       <Notice editing={editing} prompt={partitionHint} />
       {node && (desc || body || terminal || packedHere || removable || resize) && (
-        <Sheet title={(role !== 'part' && terminalTitle?.(node)) || editing.nameOf(node)} onClose={close} footer={(packedHere || role === 'part' || removable) && <PartActions resize={resize} onEdit={edit ? () => { close(); edit() } : null} onMove={role === 'part' && canMove(node.id) ? () => { editing.startMove(node.id); close() } : null} onRemove={removable ? () => { editing.remove(node.id); close() } : null} />}>
+        <PartDetailSheet parts={parts} node={node} title={(role !== 'part' && terminalTitle?.(node)) || editing.nameOf(node)} onClose={close} footer={(packedHere || role === 'part' || removable) && <PartActions resize={resize} onEdit={edit ? () => { close(); edit() } : null} onMove={role === 'part' && canMove(node.id) ? () => { editing.startMove(node.id); close() } : null} onRemove={removable ? () => { editing.remove(node.id); close() } : null} />}>
           <div className="cl-sheet">
             {desc}
             {body}
             {terminal}
             {packedHere && <InsideBoard inside={inside} path={[node.id]} folded />}
           </div>
-        </Sheet>
+        </PartDetailSheet>
       )}
       {sheet?.slot !== undefined && (addSheet ? addSheet({ at: sheet.slot, region: sheet.region, place, close }) : (
         <Sheet title={tr('放在这一格')} onClose={close}>

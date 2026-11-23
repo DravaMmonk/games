@@ -71,6 +71,12 @@ test('standalone part references use authored names outside the earned parts cat
     assert.equal(shell.reference('part', 'part:sample/apply').title, 'Apply')
     assert.equal(shell.reference('part', 'part:sample/apply').open, all)
     assert.equal(shell.reference('part', 'part:sample/missing'), undefined)
+    const fromDetail = shell.reference('part-detail', 'sample/apply', { name: 'Board label' })
+    assert.equal(fromDetail.open, true)
+    assert.equal(fromDetail.start.entry.name, 'Apply')
+    const generated = shell.reference('part-detail', 'sample/generated', { name: 'Generated card' })
+    assert.equal(generated.start.entry.part, 'sample/generated')
+    assert.equal(generated.start.entry.name, 'Generated card')
     return null
   }
   for (const all of [true, false]) renderToString(createElement(Probe, { all }))

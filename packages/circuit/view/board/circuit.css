@@ -691,7 +691,7 @@ part-ref { display: inline; }
 .parts-rule-list { display: grid; justify-items: start; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; text-align: start; }
 .parts-rule-list > li,
 .parts-article > :is(h2, p) > :is(.typeset-math, .markup-sentence),
-.ph-sheet:has(.cl-sheet) > .ph-sheet-head > h2 > :is(.typeset-math, .markup-sentence),
+.ph-sheet:has(.cl-sheet) > .ph-sheet-head h2 > :is(.typeset-math, .markup-sentence),
 .cl-sheet :is(.cl-desc, .pf-desc) > :is(.typeset-math, .markup-sentence) {
   display: inline-block;
   box-sizing: border-box;
@@ -708,6 +708,7 @@ part-ref { display: inline; }
 }
 .parts-rule-list > li { padding-inline: var(--sent-px); font-size: var(--sent-fs); }
 .parts-article > h2 > .typeset-math { font-size: 0.8em; }
+.cl-part-book:hover { color: var(--ink); background: var(--hover); }
 .parts-rules table { border-collapse: collapse; }
 .parts-rules td { padding: var(--sp-3) var(--sp-4); border-top: 1px solid var(--hairline); }
 .parts-rules tr:last-child td { border-bottom: 1px solid var(--hairline); }

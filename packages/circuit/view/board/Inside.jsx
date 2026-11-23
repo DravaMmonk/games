@@ -4,7 +4,7 @@ import { ChevronRight, Pencil } from 'lucide-react'
 import { L } from "kernel/view"
 import { tr } from 'kernel/words'
 
-import { Sheet } from 'kernel/view'
+import PartDetailSheet from './PartDetailSheet.jsx'
 
 import { lookupBoard } from "../../core/board/packed-boards.js"
 import { portNotes } from "../../core/board/card-ports.js"
@@ -70,12 +70,12 @@ export function PackedDetail({ inside, node, at, path, onClose, children }) {
   const ctx = ctxOf(at, path.slice(0, -1))
   const edit = inside.edit(node, at)
   return (
-    <Sheet title={L(at.parts.label(node))} onClose={onClose} actions={edit && <EditAction onEdit={() => { onClose(); edit() }} />}>
+    <PartDetailSheet parts={at.parts} node={node} title={L(at.parts.label(node))} onClose={onClose} actions={edit && <EditAction onEdit={() => { onClose(); edit() }} />}>
       <div className="cl-sheet">
         {children ?? <>{inside.describe(node, ctx)}{inside.sheet(node, ctx)}</>}
         <InsideBoard inside={inside} path={path} />
       </div>
-    </Sheet>
+    </PartDetailSheet>
   )
 }
 
@@ -135,13 +135,13 @@ function InsideSchematic({ inside, path, nested = false }) {
         }}
       />
       {node && createPortal(
-        <Sheet title={L(parts.label(node))} onClose={() => setDetail(null)} actions={edit && <EditAction onEdit={() => { setDetail(null); edit() }} />}>
+        <PartDetailSheet parts={parts} node={node} title={L(parts.label(node))} onClose={() => setDetail(null)} actions={edit && <EditAction onEdit={() => { setDetail(null); edit() }} />}>
           <div className="cl-sheet cl-readonly">
             {inside.describe(node, ctx)}
             {inside.sheet(node, ctx)}
             {packedPart ? <InsideBoard inside={inside} path={[...path, node.id]} folded={nested} /> : <TerminalInfo node={node} parts={parts} />}
           </div>
-        </Sheet>,
+        </PartDetailSheet>,
         // Beside the sheet it opens from, so it is drawn in the game's own styles.
         box.current?.closest('.ph-scrim')?.parentElement ?? document.body,
       )}

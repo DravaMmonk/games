@@ -84,7 +84,7 @@ export default function PartsBook({ game, box, phone, start, onClose }) {
     // A rule a shape gives shows once the part has that shape.
     const rulesOpen = !part.rulesAt || box.progress.all || box.progress.solved.includes(part.rulesAt)
     const rules = rulesOpen ? (part.rules ?? []).filter((r) => !r.form || part.forms?.includes(r.form)) : []
-    const settings = game.parts.settings?.(part, box.progress, narrow?.key) ?? []
+    const settings = game.parts?.settings?.(part, box.progress, narrow?.key) ?? []
     return (
       <article className="wiki-article parts-article" key={key} data-family={part.family}>
         {back}

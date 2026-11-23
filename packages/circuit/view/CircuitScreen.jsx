@@ -83,7 +83,7 @@ import "./training.css"
 //                         `defined`, when it registers parts of its own per task: engine/board-view.js)
 //   cards                 { type: { name, desc, icon, family } } its cards as the tray and boards show them (a fixed
 //                         card it leaves out is drawn as a source in the family 'given', or a sink in 'end')
-//   traySource?(task, type) original part of a task-local card, for tray grouping
+//   traySource?(task, type) original part of a task-local card, for tray grouping and the components box
 //   run(task, board, partOf, { traced, traceCount }) → { runs, fail, pass, score?, constraint? }   each run holds fail?, error?, ticks? | trace?, …
 //   (trace only the first `traceCount` tests; a test with a `label` is called by it)
 //   once?(task)           on a tick board, whether this task's tests each run the board once (a run then holds a trace,
@@ -152,14 +152,14 @@ function Value({ value, error, show, of, views, idle = false }) {
 const noWorld = () => null
 const noPreferredTest = () => undefined
 
-function useBoardParts({ screen, course, base, cards, portLabels, defined, ready }) {
+function useBoardParts({ screen, course, base, cards, portLabels, defined, ready, traySource }) {
   const { flags, level: { source: level } } = screen
   const { shown: palette, folded, types } = useMemo(() => base.offerIn(level, flags), [base, level, flags])
   const has = useMemo(() => base.holdsIn(level, flags), [base, level, flags])
-  const parts = partsFor(level, base, { cards, portLabels, defined })
+  const parts = partsFor(level, base, { cards, portLabels, defined, traySource })
   return {
     has, circuit: base, parts,
-    packed: packedView(course, { cards, portLabels, defined }), palette, folded, types,
+    packed: packedView(course, { cards, portLabels, defined, traySource }), palette, folded, types,
     held: new Set(types),
     hold: graph => ready ? ready(graph, level, parts) : graph,
   }
@@ -175,7 +175,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const timed = Boolean(timeline) && !once?.(level)
   base.syncOwn(progress.built)
   const useParts = game.useCircuitParts ?? useBoardParts
-  const partState = useParts({ screen, course, base, cards, portLabels, defined: gameDefined, defaults, settings, ready })
+  const partState = useParts({ screen, course, base, cards, portLabels, defined: gameDefined, defaults, settings, ready, traySource })
   const { has, known, circuit, resolve, parts, packed, palette, folded, types, held, hasPersonal,
     hold, publish, library, notice, render } = partState
   const defined = useMemo(() => rawDefined && withDefinitions(rawDefined, (type, base) => has.definition?.(type, base)), [rawDefined, has])

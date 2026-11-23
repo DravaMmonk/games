@@ -70,9 +70,9 @@ function useShellExtensions(hooks, context) {
     mapActions: render(extension => extension.mapActions),
     levelActions: render(extension => extension.levelActions),
     panel: props => render(extension => extension.panel?.(props)),
-    reference: (kind, id) => {
+    reference: (kind, id, context) => {
       for (const extension of extensions) {
-        const target = extension.reference?.(kind, id)
+        const target = extension.reference?.(kind, id, context)
         if (target) return target
       }
       return null
@@ -232,16 +232,16 @@ function GameShellInstance({ game, store, author = null }) {
     const title = game.libraryLevelTitles?.get(id)
     return title ? { title } : null
   }
-  const refOpen = (kind, id, task) => {
+  const refOpen = (kind, id, context) => {
     if (kind === 'level') {
-      if (game.byId[id]) return setGoTo({ id, task })
-      if (game.libraryLevelTitles?.has(id)) return author?.openLevel?.(id, task)
+      if (game.byId[id]) return setGoTo({ id, task: context })
+      if (game.libraryLevelTitles?.has(id)) return author?.openLevel?.(id, context)
       return
     }
-    const value = reference(kind, id)
+    const value = reference(kind, id, context)
     if (!value) return
     if (!value.open) return setLocked({ title: value.title, at: value.at })
-    setSheetAt({ id })
+    setSheetAt({ id, ...value.start })
     setSheet(value.panel)
   }
   useEffect(() => setRefs({ name: (kind, id) => {

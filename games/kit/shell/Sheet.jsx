@@ -81,7 +81,7 @@ function Overlay({ onClose, className, phone, inPlay, layer, children }) {
 
 // A centered dialog on desktop and a draggable bottom sheet on phones.
 // What it holds knows it is in a sheet (Entries.jsx: longer lists).
-export default function Sheet({ title, onClose, children, footer, actions, className = '', initialFocus }) {
+export default function Sheet({ title, titleAction, onClose, children, footer, actions, className = '', initialFocus }) {
   const plain = usePlainProse()
   const [drag, setDrag] = useState(0)
   const { track } = usePointerSession()
@@ -104,6 +104,7 @@ export default function Sheet({ title, onClose, children, footer, actions, class
     })
   }
 
+  const heading = <h2>{typeof title === 'string' ? <Markup text={title} /> : title}</h2>
   return (
     <SheetOverlay onClose={onClose}>
       <div ref={sheet} className={`ph-sheet ${className}`} role="dialog" aria-modal="true" aria-label={plain(title)} style={{ transform: drag ? `translateY(${drag}px)` : undefined }} onClick={(event) => event.stopPropagation()}>
@@ -111,7 +112,7 @@ export default function Sheet({ title, onClose, children, footer, actions, class
           <i />
         </div>
         <header className="ph-sheet-head">
-          <h2>{typeof title === 'string' ? <Markup text={title} /> : title}</h2>
+          {titleAction ? <div className="ph-sheet-title">{heading}{titleAction}</div> : heading}
           {actions && <div className="ph-sheet-actions">{actions}</div>}
           <button className="ph-icon" onClick={onClose} aria-label={tr('关闭')}><X size={18} /></button>
         </header>

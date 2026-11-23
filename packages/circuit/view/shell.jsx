@@ -19,17 +19,22 @@ export function useCircuitShell(context) {
     mapActions: <>
       {game.parts && <button className="kit-btn is-label wiki-button" onClick={() => setSheet('circuit/parts')}><Package size={15} /><span>{tr('元件箱')}</span><b>{box.unread.length > 0 ? tr("新增 {length} 个", {length: box.unread.length}) : `${game.parts.earned(progress).length}/${game.parts.all.length}`}</b></button>}
     </>,
-    reference(kind, id) {
-      if (kind !== 'part') return null
+    reference(kind, id, detail) {
+      if (kind !== 'part' && kind !== 'part-detail') return null
       const listed = listedPart(id)
-      const value = listed ?? authoredPart(id)
-      return value && { title: L(value.name), open: listed ? box.earned.has(listed.key) : progress.all, at: levelOf(game, value), panel: 'circuit/parts' }
+      const fromDetail = kind === 'part-detail' && detail
+      const value = listed ?? authoredPart(id) ?? (fromDetail ? { ...detail, key: id, part: id } : undefined)
+      return value && {
+        title: L(value.name), open: Boolean(fromDetail) || (listed ? box.earned.has(listed.key) : progress.all),
+        at: levelOf(game, value), panel: 'circuit/parts', start: fromDetail ? { entry: value } : undefined,
+      }
     },
     panel({ sheet, start, close }) {
       if (sheet !== 'circuit/parts') return null
       const listed = listedPart(start?.id)
-      const extra = !listed && authoredPart(start?.id)
-      const parts = extra ? { ...box, all: [...box.all, extra], earned: new Set([...box.earned, extra.key]) } : box
+      const extra = !listed && (start?.entry ?? authoredPart(start?.id))
+      const shown = start?.entry ?? extra
+      const parts = shown ? { ...box, all: extra ? [...box.all, extra] : box.all, earned: new Set([...box.earned, shown.key]) } : box
       return <PartsBook game={game} box={parts} phone={phone} start={listed ? { ...start, id: listed.key } : start} onClose={close} />
     },
     progressText: {

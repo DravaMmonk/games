@@ -11,7 +11,7 @@ import { useWorkshop } from "./useWorkshop.js"
 import { useToast } from 'kernel/view'
 
 /** Project the independent player library onto the current task and its board rules. */
-export function useCircuitWorkshop({ screen, course, base, cards, portLabels, defined, defaults, settings, ready }) {
+export function useCircuitWorkshop({ screen, course, base, cards, portLabels, defined, defaults, settings, ready, traySource }) {
   const { game, level: entry, flags, workshop: profile } = screen
   const level = entry.source
   const definition = base.defined ?? defined
@@ -31,8 +31,8 @@ export function useCircuitWorkshop({ screen, course, base, cards, portLabels, de
   }))
   const workshop = workshopView(base, library, available, runtime)
   const { known, view: circuit, resolve } = workshop
-  const parts = partsFor(level, circuit, { cards, portLabels, defined })
-  const packed = packedView(course, { cards, portLabels, defined }, (node, at) => {
+  const parts = partsFor(level, circuit, { cards, portLabels, defined, traySource })
+  const packed = packedView(course, { cards, portLabels, defined, traySource }, (node, at) => {
     const opened = openWorkshopPart(node, at, workshop)
     return opened && { ...opened, parts: workshopWiring(at.parts) }
   })

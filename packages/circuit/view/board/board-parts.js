@@ -51,7 +51,7 @@ export function withPartLabels(base, of) {
 const labelOf = (list, name) => list?.find((x) => x.name === name)?.label ?? name
 
 /** The editor's description of a task's cards (model.js): the board's wiring, drawn. */
-export function partsFor(level, circuit, { cards, portLabels, defined }) {
+export function partsFor(level, circuit, { cards, portLabels, defined, traySource }) {
   const { board, BUILT, builtBy, parts: builtDefinitions } = circuit
   const wiring = board.wiring(level, circuit)
   // A fixed card the domain does not draw its own way: a source on the left, a sink on the right.
@@ -59,6 +59,7 @@ export function partsFor(level, circuit, { cards, portLabels, defined }) {
   const extraPart = (node) => circuit.extraPart?.(node.type)
   const parts = {
     ...wiring,
+    sourcePart: (node) => traySource?.(level, node.type),
     label: (node) => (board.isFixed(node.type) ? board.labelOf(level, node.id) : BUILT[node.type] ? builtDefinitions[node.type].name : extraPart(node)?.name ?? cards[node.type]?.name ?? node.type),
     portLabel: (node, port) => (BUILT[node.type] ? labelOf(board.portsIn(builtBy(node.type, node.params)), port) : portLabels[node.type]?.[port] ?? wiring.portLabel?.(node, port) ?? ''),
     family: (node) => (BUILT[node.type] || extraPart(node) ? 'built' : given(node) ? (wiring.role(node) === 'sink' ? 'end' : 'given') : cards[node.type]?.family),

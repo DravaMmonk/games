@@ -13,8 +13,9 @@ import { vocabulary } from '../../core/fol.js'
 import { sentencePicker } from '../../core/sentenceLanguage.js'
 import { scriptLines } from '../../core/script.js'
 import { runProof } from '../../core/proof.js'
-import { proofReadout, proofTextOf as textOf } from '../../core/circuit-readouts.js'
+import { proofMarkedTextOf, proofReadout, proofTextOf as textOf } from '../../core/circuit-readouts.js'
 import { typesetOne } from './Formula.jsx'
+import OccurrenceChoice from './OccurrenceChoice.jsx'
 
 export const proofCaseSetting = {
   key: 'generalFormFirst',
@@ -52,6 +53,8 @@ export const proofScreen = {
   settingControls(task, test) {
     const build = language(task, test)
     return {
+      select: (props) => props.setting.options[0]?.original
+        ? <OccurrenceChoice {...props} text={proofMarkedTextOf(task, test)} /> : null,
       tree: ({ setting, value, onChange, readOnly, id }) => (
         <TreeButton value={value ?? ''} onChange={onChange} build={build} title={setting.label ?? setting.key}
           placeholder={setting.optional ? '—' : T('拼一句')} scope={id} disabled={readOnly} clearable={Boolean(setting.optional)} />

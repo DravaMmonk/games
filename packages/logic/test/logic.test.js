@@ -11,6 +11,7 @@ import { failureText } from '../../../games/kit/engine/failure-text.js'
 import { checkDeclaration, linesOf, premiseChips, problemsOf, readRuleRows } from '../core/ruleLines.js'
 import { runOutputTests } from '../../../games/kit/engine/test-run.js'
 import { bin, parse, same, show, subst, substMany, tvar } from '../core/formula.js'
+import { render } from '../core/notation.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
 import { MACHINE_BOARD, MACHINE_TESTS, RULE_CHOICES, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
@@ -626,7 +627,11 @@ test('equivalent substitution replaces one selected occurrence and avoids captur
   const iff = proved(parse('A ↔ B'), new Map([['iff', parse('A ↔ B')]]))
   const p = proved(parse('A ∧ ¬A'), new Map([['p', parse('A ∧ ¬A')]]))
   const substitute = (iff, p, at) => RULES.iffSubst.run([iff, p], {}, { node: { params: { at } } })
-  assert.deepEqual(OPTIONS.iffOccurrences.run([iff, p]).map(({ value }) => value), ['0', '1'])
+  const choices = OPTIONS.iffOccurrences.run([iff, p])
+  assert.deepEqual(choices.map(({ value }) => value), ['0', '1'])
+  const marks = new Map(choices.map(({ node, value }) => [node, value]))
+  const annotate = (node, text) => marks.has(node) ? `[${marks.get(node)}:${text}]` : text
+  assert.equal(render(choices[0].original, { symbols: ['∧', '¬'] }, 'en', -1, annotate), '[0:A] ∧ ¬[1:A]')
   const result = substitute(iff, p, '1')
   assert.equal(show(result.formula), 'A ∧ ¬B')
   assert.deepEqual([...result.hyps.keys()], ['iff', 'p'])

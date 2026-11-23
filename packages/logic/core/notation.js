@@ -40,11 +40,17 @@ const WORDS = {
 }
 
 /** A formula in a level's notation, in one language ('zh' | 'en'). */
-export function render(f, notation, lang, outer = -1) {
+export function render(f, notation, lang, outer = -1, mark) {
+  const text = renderNode(f, notation, lang, outer, mark)
+  return mark ? mark(f, text) : text
+}
+
+function renderNode(f, notation, lang, outer, mark) {
   const known = (op) => notation.symbols.includes(op)
   const wrap = (s, level) => (level < outer ? `(${s})` : s)
+  const draw = (node, precedence = -1) => render(node, notation, lang, precedence, mark)
   // In words a part that is itself compound goes in brackets, so the sentence reads one way only.
-  const part = (g) => (g.op === 'atom' || g.op === '⊥' ? render(g, notation, lang) : `(${render(g, notation, lang)})`)
+  const part = (g) => (g.op === 'atom' || g.op === '⊥' ? draw(g) : `(${draw(g)})`)
   switch (f.op) {
     case 'atom': {
       const word = sideOf(notation.words?.[f.pred], lang)
@@ -56,27 +62,27 @@ export function render(f, notation, lang, outer = -1) {
       return f.args.length ? `${f.pred}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : show(f)
     }
     case 'meta': return f.args?.length ? `${f.name}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : f.name
-    case '⟹': return `⟦${render(f.a, notation, lang)}⟧ ⟹ ${render(f.b, notation, lang)}`
+    case '⟹': return `⟦${draw(f.a)}⟧ ⟹ ${draw(f.b)}`
     case '⊥': return known('⊥') ? '⊥' : sideOf(catalogText('矛盾', {}, 'notation'), lang)
-    case '¬': return known('¬') ? `¬${render(f.a, notation, lang, 9)}` : sideOf(catalogText('并非{formula}', { formula: part(f.a) }), lang)
+    case '¬': return known('¬') ? `¬${draw(f.a, 9)}` : sideOf(catalogText('并非{formula}', { formula: part(f.a) }), lang)
     case '∀': case '∃': {
       const arity = f.prop ? arityIn(f.body, f.v) : -1
       if (notation.propertyWords && notation.words && (arity === 0 || arity === 1)) {
         const meaning = arity === 0 ? catalogText("该命题") : catalogText("{0}具有该性质")
-        const body = render(f.body, { ...notation, words: { ...notation.words, [f.v]: meaning } }, lang, -1)
+        const body = render(f.body, { ...notation, words: { ...notation.words, [f.v]: meaning } }, lang, -1, mark)
         const prefix = arity === 0
           ? (f.op === '∀' ? catalogText("对于任意命题，") : catalogText("存在一个命题，使得"))
           : (f.op === '∀' ? catalogText("对于任意性质，") : catalogText("存在一种性质，使得"))
         return wrap(`${prefix[lang]}${body}`, -1)
       }
-      return known(f.op) ? wrap(`${f.op}${f.v}. ${render(f.body, notation, lang, -1)}`, -1) : wrap(sideOf(QUANT[f.op](f.v, render(f.body, notation, lang, -1)), lang), -1)
+      return known(f.op) ? wrap(`${f.op}${f.v}. ${draw(f.body)}`, -1) : wrap(sideOf(QUANT[f.op](f.v, draw(f.body)), lang), -1)
     }
     default: {
       const p = BIN[f.op]
       // An → or ↔ inside another connective always keeps its brackets: A → (B → A), never A → B → A; with
       // `brackets` (a task's brief) every connective inside another does: A ∨ (B ∧ C).
       const inner = (g) => g.op === '→' || g.op === '↔' || (notation.brackets && BIN[g.op] !== undefined)
-      const side = (g, level) => (inner(g) ? `(${render(g, notation, lang)})` : render(g, notation, lang, level))
+      const side = (g, level) => (inner(g) ? `(${draw(g)})` : draw(g, level))
       if (known(f.op)) return wrap(`${side(f.a, f.op === '→' ? p + 1 : p)} ${f.op} ${side(f.b, f.op === '→' ? p : p + 1)}`, p)
       return sideOf(WORDS[f.op](part(f.a), part(f.b)), lang)
     }

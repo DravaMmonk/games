@@ -21,7 +21,7 @@ import { runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { circuitBoard } from 'circuit'
 import { frameTree, regionAddress } from 'circuit'
-import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceFormula, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
+import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mapFormulaOccurrences, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceFormula, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
 import { say, sayTerm } from './notation.js'
 import { choicesOf } from './choices.js'
 import { cancelOne, disjunction, literalsIn } from './resolution.js'
@@ -276,13 +276,16 @@ const BODIES = {
       const { formula } = iff
       if (formula.op !== '↔') throw need(ctx, SHAPE.iff, formula)
       const at = node.params?.at
+      let found = false
       let replaced = false
       const result = replaceFormula(p.formula, formula.a, formula.b, (index) => {
+        found = true
         if (String(index) !== at) return false
         replaced = true
         return true
       })
-      if (!replaced) throw fail('请选一处与等价式左边相合的子式', 'Choose an occurrence matching the left side of the equivalence')
+      if (!found) throw fail('原句中没有可代换的子式', 'There is no replaceable subformula in the original sentence')
+      if (!replaced) throw fail('请点选原句中的一个子式框', 'Select a boxed subformula in the original sentence')
       return proved(result, union(iff, p), psubst(iff.term, p.term))
     },
   },
@@ -513,11 +516,12 @@ export const OPTIONS = {
       const f = iff?.formula
       if (!p || f?.op !== '↔') return []
       const options = []
-      replaceFormula(p.formula, f.a, f.b, (index) => {
-        options.push({ value: String(index), label: String(index + 1) })
-        return false
+      const original = mapFormulaOccurrences(p.formula, f.a, f.b, (match, index) => {
+        const node = { ...match }
+        options.push({ value: String(index), label: '', node })
+        return node
       })
-      return options
+      return options.map((option) => ({ ...option, original, replacement: f.b }))
     },
   },
 }

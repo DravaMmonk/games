@@ -394,13 +394,13 @@ export function occurrences(f, t) {
   return n
 }
 
-/** Replace selected subformulas in outermost, left-to-right order, avoiding capture on either side. */
-export function replaceFormula(f, from, to, pick) {
+/** Map the replaceable subformulas in outermost, left-to-right order, avoiding capture on either side. */
+export function mapFormulaOccurrences(f, from, to, map) {
   const things = freeVars(to, freeVars(from))
   const { preds } = signature([from, to])
   let occurrence = 0
   const walk = (g) => {
-    if (same(g, from)) return pick(occurrence++) ? to : g
+    if (same(g, from)) return map(g, occurrence++)
     if (g.body) return (g.prop ? preds : things).has(g.v) ? g : { ...g, body: walk(g.body) }
     if (g.b) return { ...g, a: walk(g.a), b: walk(g.b) }
     if (g.a) return { ...g, a: walk(g.a) }
@@ -408,3 +408,6 @@ export function replaceFormula(f, from, to, pick) {
   }
   return walk(f)
 }
+
+/** Replace selected subformulas, using the same occurrence numbering as the picker. */
+export const replaceFormula = (f, from, to, pick) => mapFormulaOccurrences(f, from, to, (g, index) => pick(index) ? to : g)

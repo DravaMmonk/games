@@ -7,24 +7,6 @@
     { "name": "iff", "label": "@part.iffSubst.inputs.0.label" },
     { "name": "p", "label": "@part.iffSubst.inputs.1.label" }
   ],
-  "settings": { "at": { "label": "@part.iffSubst.settings.at.label", "from": "logic/iffOccurrences(iff, p)" } },
-  "views": {
-    "card": [
-      { "show": "text", "text": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)" },
-      { "show": "settings" },
-      { "show": "value" }
-    ],
-    "tile": [
-      { "show": "value" },
-      { "show": "text", "text": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)" },
-      { "show": "summary" }
-    ],
-    "detail": [
-      { "show": "text", "text": "\\(C[A]\\xRightarrow{A\\leftrightarrow B}C[B]\\)" },
-      { "show": "desc" },
-      { "show": "settings" },
-      { "show": "value" }
-    ]
-  },
+  "settings": { "at": { "from": "logic/iffOccurrences(iff, p)" } },
   "op": "logic/iffSubst"
 }

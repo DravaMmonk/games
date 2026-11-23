@@ -10,6 +10,8 @@
   "package.desc": "Provides logical symbols, proof circuits, and proof checking.",
   "package.title": "Logic and proofs",
   "ui": {
+    "原句中的可代换子式": "Replaceable subformulas in the original sentence",
+    "第 {index} 处：{formula}": "Occurrence {index}: {formula}",
     "一条等价式": "an equivalence",
     "已知里的等价式都无法改写当前目标": "None of the given equivalences can rewrite the current goal",
     "前提": "Premise",

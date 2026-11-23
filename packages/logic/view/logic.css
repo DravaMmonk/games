@@ -38,7 +38,13 @@
 .fo-vocab button:hover { background: var(--hover); }
 
 
-/* A rewrite card's choice: the sentence with each s in a box; a ticked box becomes t. */
+.lg-occurrences { display: flex; align-items: center; gap: var(--sp-1); min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: thin; }
+.lg-occurrences > * { flex: none; }
+.lg-occurrence { min-height: var(--sent-h); padding: var(--sp-1) var(--sp-2); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--canvas); color: var(--ink); font: inherit; cursor: pointer; }
+.lg-occurrence:not(:disabled):hover { border-color: var(--rule); }
+.lg-occurrence[aria-pressed='true'] { border-color: var(--accent); background: var(--paper); }
+.lg-occurrence:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.pf-face:has(> .pf-settings .lg-occurrences) > .pf-value { display: none; }
 
 /* A rule part's rules, in the order it gives them, each written out with × to take it off; a menu under them adds
    one. A long list scrolls. */

@@ -1,10 +1,10 @@
 import { punctuation } from 'kernel'
 // Case inputs and values as the circuit screen and text play show them.
-import { L } from "kernel"
+import { L, getLang } from "kernel"
 import { T, tr } from 'kernel/words'
 import { parse } from './formula.js'
 import { inputsOf, inputsOfLevel, parseGoal, ruleMark, ruleWritten, slotMark, subscript } from './machine.js'
-import { say, sayTerm } from './notation.js'
+import { render, say, sayTerm } from './notation.js'
 import { printTerm } from './pterm.js'
 import { typeText } from './datatype.js'
 import { certificate, clauseFormula, refuted } from './resolution.js'
@@ -13,6 +13,7 @@ import { withBinders } from './schematic.js'
 // The words a test reads in: its last test (the bare letters) in the letters' own words.
 const wordsOf = (task, test) => (test?.symbolic ? { ...task.notation, words: task.symbolicWords ?? null, propertyWords: false } : task.notation)
 export const proofTextOf = (task, test) => (f) => L(say(f, wordsOf(task, test)))
+export const proofMarkedTextOf = (task, test) => (f, mark) => render(f, wordsOf(task, test), getLang(), -1, mark)
 
 /** A value in words: a formula with its proof term when the task shows proof terms. */
 function showProof(v, { task, test }) {

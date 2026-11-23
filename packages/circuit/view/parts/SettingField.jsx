@@ -56,8 +56,8 @@ function ListControl({ options, value, onChange, readOnly, label, single, formul
 
 function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone, widgets, controls, id }) {
   const label = s.label ? L(s.label) : s.about ? L(s.about) : s.key
-  const render = controls?.[s.control]
-  if (render) return render({ setting: s, value, onChange, readOnly, id })
+  const custom = controls?.[s.control]?.({ setting: s, value, onChange, readOnly, id })
+  if (custom != null) return custom
   switch (s.control) {
     case 'select':
       if (s.formula) return <FormulaPicker id={id} label={label} value={String(value ?? '')} options={formulaOptions(s).filter((o) => !allowed || allowed.includes(o.value))} onChange={onChange} readOnly={readOnly} />

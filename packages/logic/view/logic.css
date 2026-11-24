@@ -38,13 +38,11 @@
 .fo-vocab button:hover { background: var(--hover); }
 
 
-.lg-application-result, .lg-application-lines { display: grid; gap: var(--sp-1); min-width: 0; }
-.lg-application-result { font: 500 var(--formula-size)/1.4 var(--sans); color: var(--muted); width: 100%; }
-.lg-application-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-2); }
-.lg-application-hint { display: inline-flex; color: var(--accent-ink); }
+.lg-application-result { position: relative; display: grid; gap: var(--sp-1); min-width: 0; width: 100%; border-radius: var(--r-sm); font: 500 var(--formula-size)/1.4 var(--sans); color: var(--ink); }
 .lg-application-more { min-width: 0; }
 .lg-application-more > summary { cursor: pointer; }
 .lg-application-more > :not(summary) { margin-block-start: var(--sp-2); }
+.lg-application-missing { display: inline-flex; color: var(--accent-ink); }
 .lg-occurrences { display: flex; align-items: center; gap: var(--sp-1); min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: thin; }
 .lg-occurrences > * { flex: none; }
 .lg-sequent, .lg-sequent-sentence { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); min-width: 0; max-width: 100%; }
@@ -56,18 +54,31 @@
 .lg-occurrence:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .lg-occurrence[aria-disabled='true'] { cursor: default; }
 .lg-occurrence-frame { display: block; }
-.lg-application-result .lg-occurrence { display: grid; align-items: center; min-height: 0; padding: 0; border: 0; background: transparent; }
-.lg-application-result .lg-occurrence-frame { position: relative; display: grid; align-items: center; box-sizing: border-box; min-block-size: var(--formula-box-height); padding: var(--sp-1) var(--formula-inline-padding, var(--sp-3)); border: 1px solid transparent; border-radius: var(--r-sm); }
-.lg-sequent-turnstile { color: var(--accent-ink); }
-.lg-application-closed { display: inline-flex; color: var(--status); }
-.lg-application-result .lg-occurrence:not(:disabled) .lg-occurrence-frame { background: color-mix(in srgb, var(--accent) 8%, var(--paper)); }
-.lg-application-result .lg-occurrence:not(:disabled) .lg-occurrence-frame::before { content: ""; position: absolute; inset: 0; border: 1px dashed var(--accent-ink); border-radius: inherit; pointer-events: none; }
-.lg-application-result .lg-occurrence:not(:disabled):is(:hover, [aria-pressed='true']) .lg-occurrence-frame { background: color-mix(in srgb, var(--accent) 16%, var(--paper)); }
-.lg-application-result .lg-occurrence[aria-pressed='true'] .lg-occurrence-frame::before { border-style: solid; }
+/* The position picker on a card (ui/OccurrenceChoice.jsx MachineApplicationChoice). At rest it reads as the state the
+   rule leaves: the place acted on stands in a solid accent frame, picked by hand or the only match, and the other
+   places are plain text. Those turn into dashed boxes to pick once the card is selected, the picker stands in a
+   detail sheet, or several places wait with none picked. */
+.lg-application-result .lg-occurrence { position: relative; display: inline; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; font: inherit; line-height: inherit; vertical-align: baseline; pointer-events: none; }
+/* A frame is drawn around the words without moving them: the tint and the outline hang outside the text's own box,
+   so a boxed place keeps the baseline and line height of the sentence it stands in. */
+.lg-application-result .lg-occurrence-frame { position: relative; z-index: 0; display: inline; }
+.lg-application-result .lg-occurrence-frame::before { content: ""; position: absolute; z-index: -1; inset: calc(-1 * var(--sp-1)); border: 1px solid transparent; border-radius: var(--r-xs); pointer-events: none; }
+.lg-application-result .lg-occurrence[aria-pressed='true'] .lg-occurrence-frame::before { border: 1.5px solid var(--accent); background: color-mix(in srgb, var(--accent) 24%, transparent); }
+:is(.node.is-selected, .cl-sheet) .lg-application-result .lg-occurrence:not(:disabled, [aria-disabled='true']),
+.lg-application-result.is-pending .lg-occurrence:not(:disabled, [aria-disabled='true']) { pointer-events: auto; }
+:is(.node.is-selected, .cl-sheet) .lg-application-result .lg-occurrence:not(:disabled, [aria-disabled='true'], [aria-pressed='true']) .lg-occurrence-frame::before,
+.lg-application-result.is-pending .lg-occurrence:not(:disabled, [aria-disabled='true']) .lg-occurrence-frame::before { border: 1px dashed var(--accent-ink); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+:is(.node.is-selected, .cl-sheet) .lg-application-result .lg-occurrence:not(:disabled, [aria-disabled='true'], [aria-pressed='true']):hover .lg-occurrence-frame::before,
+.lg-application-result.is-pending .lg-occurrence:not(:disabled, [aria-disabled='true']):hover .lg-occurrence-frame::before { background: color-mix(in srgb, var(--accent) 20%, transparent); }
 .lg-application-result .lg-occurrence:focus-visible { outline: 0; }
-.lg-application-result .lg-occurrence:focus-visible .lg-occurrence-frame { outline: 2px solid var(--accent-ink); outline-offset: -2px; }
-@media (max-width: 760px) {
-  .lg-application-result .lg-occurrence { min-height: var(--sent-h); }
+.lg-application-result .lg-occurrence:focus-visible .lg-occurrence-frame::before { outline: 2px solid var(--accent-ink); outline-offset: 1px; }
+/* Words between boxes keep clear of the frames, and a sheet's lines stand far enough apart for a finger: the touch
+   target reaches past the frame without adding to the line. */
+.lg-application-result .ps-sentence .lg-occurrence { margin-inline: var(--sp-2); }
+.cl-sheet .lg-application-result { line-height: 2.2; }
+@media (pointer: coarse) {
+  .cl-sheet .lg-application-result { line-height: 3; }
+  .cl-sheet .lg-application-result .lg-occurrence:not(:disabled, [aria-disabled='true'])::after { content: ""; position: absolute; inset: -14px calc(-1 * var(--sp-2)); min-inline-size: 44px; }
 }
 .pf-face:has(> .pf-settings :is(.lg-occurrences, .lg-application-result)) > .pf-value { display: none; }
 
@@ -190,12 +201,47 @@
 .mr-told { margin: 0; max-width: 260px; font: 500 12.5px/1.5 var(--sans); color: var(--ink); }
 .mr-step.is-on { border-left-color: var(--accent); }
 .mr-step.is-on::after { border-top-color: var(--accent); }
-.mr-step.is-on .mr-num { background: var(--accent); color: var(--paper); box-shadow: none; }
+.mr-step.is-on > .mr-item:not(.mr-skip) > .mr-num { background: var(--accent); color: var(--paper); box-shadow: none; }
 .mr-step.is-fail { border-left-color: var(--fail); }
 .mr-step.is-fail::after { content: none; }
-.mr-step.is-fail .mr-num { color: var(--fail); box-shadow: inset 0 0 0 1px var(--fail); }
+.mr-step.is-fail > .mr-item:not(.mr-skip) > .mr-num { color: var(--fail); box-shadow: inset 0 0 0 1px var(--fail); }
 /* A refused step still goes on (its state is given back), so its line keeps its arrow. */
 .mr-step.is-refused::after { content: ''; border-top-color: var(--fail); }
+
+/* A line's steps: the one that gave the box under it, then the steps that left that state alone, as hollow dashed
+   numbers with faded names. The first step on a line carries its number on the link; the others carry theirs inline,
+   and the line wraps inside itself. Skips with nothing before them stand alone on a dashed stretch. The skip a run
+   with goals left open rests on is drawn in the accent. */
+.mr-item { gap: var(--sp-3); }
+.mr-item > :not(.mr-num) { display: inline-flex; align-items: center; min-height: var(--mr-row); }
+.mr-item:not(:first-child) > .mr-num { position: static; transform: none; }
+.mr-step.is-skips { border-left-style: dashed; }
+.mr-step.is-skips::after { content: none; }
+.mr-skip > .mr-num { background: var(--canvas); box-shadow: none; border: 1px dashed var(--rule); box-sizing: border-box; color: var(--faint); }
+.mr-skip .mr-name { font-weight: 500; color: var(--faint); }
+.mr-skip .mr-name .step-card { opacity: .6; }
+.mr-unplaced { color: var(--muted); }
+.mr-skip:is(.is-on, .is-stuck) > .mr-num { border-color: var(--accent); color: var(--accent-ink); }
+.mr-skip.is-stuck .mr-name { color: var(--ink); }
+.mr-skip.is-stuck .mr-name .step-card { opacity: 1; }
+.mr-branch.is-skipped > .mr-branch-node { border-style: dashed; color: var(--faint); }
+
+/* On the board, a card whose rule did not apply in the run shown fades and its family bar breaks into dashes; one
+   whose chosen position is not in this case keeps the accent on its bar. */
+.lg-machine-level :is(.node, .pb-tile).is-skipped { --skip-bar: var(--fam, var(--muted)); }
+.lg-machine-level :is(.node, .pb-tile).is-skipped.is-unplaced { --skip-bar: var(--accent); }
+.lg-machine-level .node.is-skipped::before { background: repeating-linear-gradient(90deg, var(--skip-bar) 0 var(--sp-3), transparent var(--sp-3) calc(var(--sp-3) + var(--sp-2))); }
+.lg-machine-level .node.is-skipped > :is(.node-head, .node-ports) > :not(.port) { opacity: .5; }
+.lg-machine-level .pb-tile.is-skipped { background-image: repeating-linear-gradient(90deg, var(--skip-bar) 0 var(--sp-3), transparent var(--sp-3) calc(var(--sp-3) + var(--sp-2))); background-size: 100% 3px; background-repeat: no-repeat; }
+.lg-machine-level .pb-tile.is-skipped:not(.is-step, .is-moving) { box-shadow: var(--card); }
+.lg-machine-level .pb-tile.is-skipped.is-step { box-shadow: 0 0 0 2.5px var(--accent); }
+.lg-machine-level .pb-tile.is-skipped > :is(.pb-name, .pb-thumb, .pb-param) { opacity: .5; }
+
+/* A card that waits for its rule or position: the run stops on it, in the accent, with no arrow on. */
+.mr-step.is-waiting { border-left-color: var(--accent); }
+.mr-step.is-waiting::after { content: none; }
+.mr-step.is-waiting > .mr-item:not(.mr-skip) > .mr-num { background: var(--canvas); color: var(--accent-ink); box-shadow: inset 0 0 0 1px var(--accent); }
+.mr-step.is-waiting .mr-why { color: var(--accent-ink); }
 
 .mr-tree-scroll { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 .mr-tree-chart { position: relative; min-width: 100%; row-gap: var(--sp-6); column-gap: var(--sp-4); }
@@ -226,3 +272,64 @@
 .tx-marked > .tx-line { display: inline; }
 .tx-line .katex { white-space: normal; }
 .tx-prose { font: 500 11px/1.4 var(--sans); }
+
+/* A proof state (ui/ProofState.jsx): a group for the goals that share their knowns, written once at the left of the
+   goals' column; the goal acted on next keeps the accent on its mark while the others wait in grey. What a step
+   changed is tinted, and a letter still unknown is in the accent over a dashed line. */
+.ps { display: grid; gap: 1px; min-width: 0; text-align: start; }
+.ps-group { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 var(--sp-3); min-width: 0; }
+.ps-given, .ps-goal { min-width: 0; }
+.ps-goals { display: grid; gap: 1px; min-width: 0; }
+.ps .tx-line { display: inline; }
+/* A full-width ； brings its own room; a Latin ; needs some after it. */
+:lang(en) .ps-hyp + .ps-hyp { margin-inline-start: var(--sp-2); }
+.ps-mark { margin-inline-end: var(--sp-2); color: var(--accent-ink); }
+.ps-goal.is-later .ps-mark { color: var(--faint); }
+.ps-closed { display: inline-flex; margin-inline-start: var(--sp-1); color: var(--status); vertical-align: middle; }
+.lg-changed { padding: 1px var(--sp-1); border-radius: var(--r-xs); color: inherit; background: color-mix(in srgb, var(--accent) 20%, transparent); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.lg-unknown { border-bottom: 1px dashed var(--accent); color: var(--accent-ink); }
+
+/* The rule a rule-bound card carries (ui/BoundRule.jsx): the card's lead line. With several rules the line is a
+   button that opens in place to the others; a detail sheet lists them all. */
+.lg-rule { min-width: 0; color: var(--ink); }
+.lg-rule + .pf-face { margin-block-start: var(--sp-1); }
+.lg-rule-lines { display: grid; gap: 1px; min-width: 0; }
+.lg-rule.is-choice { display: grid; gap: var(--sp-1); }
+.lg-rule-options { display: grid; gap: var(--sp-1); min-width: 0; }
+.lg-rule-pick, .lg-rule-option { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); width: 100%; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--canvas); color: var(--ink); text-align: start; cursor: pointer; }
+.lg-rule-pick > svg { flex: none; color: var(--muted); transition: transform 160ms ease; }
+.lg-rule-pick[aria-expanded='true'] > svg { transform: rotate(180deg); }
+.lg-rule-pick:hover, .lg-rule-option:hover { border-color: var(--rule); }
+.lg-rule-pick[aria-expanded='true'], .lg-rule-option[aria-checked='true'] { border-color: var(--accent); background: var(--paper); }
+.lg-rule-pick:focus-visible, .lg-rule-option:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.cl-sheet .lg-rule { margin-block-end: var(--sp-4); }
+@media (pointer: coarse) {
+  .lg-rule-pick, .lg-rule-option { min-height: 44px; }
+}
+/* On a phone tile the rule leads and the state follows. */
+.lg-machine-level .pb-tile:has(.lg-rule) > .pb-thumb { order: 3; }
+.lg-machine-level .pb-tile .pb-param:has(.lg-rule) { display: block; color: var(--ink); font-family: var(--sans); }
+
+/* The prover's panel of folded parts (ui/RulePanel.jsx): a group a connective, a row a proof-board part, its cards
+   side by side as buttons that read as their rules. */
+.lg-panel { display: grid; gap: var(--sp-5); min-width: 0; }
+.tray-panel-pop .lg-panel { width: min(560px, 80vw); }
+.lg-panel-group { display: grid; gap: var(--sp-2); min-width: 0; }
+.lg-panel-head { margin: 0; font: 600 var(--fs-label)/1.4 var(--sans); letter-spacing: var(--track-label); color: var(--muted); }
+.lg-panel-row { display: grid; grid-template-columns: minmax(6.5em, max-content) minmax(0, 1fr); align-items: center; gap: var(--sp-4); min-width: 0; }
+.lg-panel-parts { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5em, 1fr)); gap: var(--sp-2); min-width: 0; }
+.lg-panel-name { display: inline-flex; align-items: center; gap: var(--sp-3); min-width: 0; font: 500 var(--fs-ui)/1.3 var(--sans); color: var(--ink); }
+.lg-panel-cards { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--sp-2); min-width: 0; }
+.lg-panel-card { display: flex; align-items: center; gap: var(--sp-3); min-width: 0; min-height: 36px; padding: var(--sp-1) var(--sp-4); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline), inset 0 -2px 0 var(--fam, var(--rule)); text-align: start; font: inherit; cursor: pointer; }
+.lg-panel-card > .lg-rule-lines { overflow-x: auto; scrollbar-width: none; padding-inline: 0; }
+.lg-panel-card:hover { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule), inset 0 -2px 0 var(--fam, var(--rule)); }
+.lg-panel-card:active { transform: scale(.99); }
+.lg-panel-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (pointer: coarse) {
+  .lg-panel-card { min-height: 44px; }
+}
+@media (max-width: 760px) {
+  .lg-panel-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
+  .lg-panel-group { gap: var(--sp-5); }
+}
+.lg-pending { font: 500 var(--fs-ui)/1.4 var(--sans); color: var(--accent-ink); }

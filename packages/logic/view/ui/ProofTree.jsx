@@ -11,7 +11,7 @@ function Branch({ node, run, selected, open }) {
   const symbol = (did && didText(did, run, { marksOnly: true })) || s?.entry.label || (s?.entry.round ? '↻' : goalMark())
   const label = number ? `${number} · ${L(s.label)} · ${symbol}` : symbol
   return (
-    <li className={`mr-branch ${resultPath ? 'is-result' : ''} ${error && !resultPath ? 'is-error' : ''}`}>
+    <li className={`mr-branch ${resultPath ? 'is-result' : ''} ${error && !resultPath ? 'is-error' : ''} ${s?.entry.status === 'skipped' ? 'is-skipped' : ''}`}>
       <button type="button" className={`mr-branch-node ${current ? 'is-on' : ''}`} aria-label={label} aria-expanded={selected === id}
         aria-current={current ? 'step' : undefined}
         data-branch={id} data-parent={parent}

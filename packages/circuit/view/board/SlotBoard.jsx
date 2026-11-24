@@ -3,7 +3,7 @@ import BoardLabel from './BoardLabel.jsx'
 import { usePlainProse } from 'kernel/view'
 import { sourceOf, srcNode } from "../../core/wire-source.js"
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
-import { Group, EyeOff, Plus, Redo2, Spline, Undo2, Waypoints } from 'lucide-react'
+import { Group, EyeOff, Pencil, Plus, Redo2, Spline, Undo2, Waypoints } from 'lucide-react'
 import { blockRows, rowMembers } from "../../core/board/blocks.js"
 import { foldedPartsOf } from "../../core/board/folding.js"
 import BlockHeader from "./BlockHeader.jsx"
@@ -141,6 +141,7 @@ const readMode = () => {
  *                                         change, and the parts this level offers
  * @param regionLabel(node, index)         a short label before the received value in a multi-region frame
  * @param needsSetting(node)               whether a frame still needs a required setting
+ * @param editable(node)                   whether the card holds something the player can set: a pen marks its corner
  * @param regionNote(node, region)         in a frame's region (frames.js), what the value it opens is (or, for a
  *                                         region that opens none, what the frame holds there: the thing a
  *                                         for-any box takes, say);
@@ -155,7 +156,7 @@ const readMode = () => {
 /** The most outputs a source holds before it takes a row of its own (two rows of four dots, on a phone's half row). */
 const WIDE = 8
 
-export default function SlotBoard({ blocks = null, onPartitionHint, canMove = () => true, graph, parts: givenParts, boardRef, nameOf, thumb, tileExtra, sinkBody, sinkClass, picking, moving, canLand, onPort, onNode, onSlot, fixed = false, nodeClass, outNote, history, onClear, onChange, types, regionNote, resultNote, regionLabel, needsSetting }) {
+export default function SlotBoard({ blocks = null, onPartitionHint, canMove = () => true, graph, parts: givenParts, boardRef, nameOf, thumb, tileExtra, sinkBody, sinkClass, picking, moving, canLand, onPort, onNode, onSlot, fixed = false, nodeClass, outNote, history, onClear, onChange, types, regionNote, resultNote, regionLabel, needsSetting, editable }) {
   const plain = usePlainProse()
   const portMask = useId()
   const ownRef = useRef(null)
@@ -374,6 +375,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
         <div className={`pb-tile ${isFolded?'is-body-folded':''} ${parts.packed?.(node)?'is-packed':''} ${nodeClass?.(node)??''} ${moving===id?'is-moving':''}`} data-picture={!isFolded && view.tileHeight ? '' : undefined} data-family={parts.family(node)} style={{ ...parts.cardStyle?.(node), minHeight: tileHeight }} {...cardInteraction(node)}>
           <span className={`pb-ins ${ports.inputs.length>1?'is-many':''}`}>{inputDots(node, ports)}</span>
           <span className="pb-name">{icon(node)}<BoardLabel label={nameOf(node)} /></span>
+          {editable?.(node)&&<Pencil className="pb-edit" size={12} aria-hidden="true" />}
           {!isFolded&&<span className="pb-thumb">{thumb?.(node, 84)}</span>}{extra&&<span className="pb-param">{extra}</span>}{outDots(node, ports.outputs, isFolded)}
         </div>{tags(new Set([id]))}
       </div>)
@@ -398,6 +400,7 @@ export default function SlotBoard({ blocks = null, onPartitionHint, canMove = ()
     const title = (
       <div className="pb-frame-head">
         <span className="pb-name">{icon(node)}<BoardLabel label={nameOf(node)} /></span>
+        {editable?.(node)&&<Pencil className="pb-edit" size={12} aria-hidden="true" />}
       </div>
     )
     let row = 1

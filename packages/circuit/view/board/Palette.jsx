@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Glyph from "./Glyph.jsx"
 import BoardLabel from './BoardLabel.jsx'
 import { ChevronRight, Plus } from 'lucide-react'
-import { L } from "kernel/view"
+import { L, Popover } from "kernel/view"
 import { tr } from 'kernel/words'
 
 import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
@@ -12,10 +12,12 @@ import TrayMenu, { trayItemCount } from "./TrayMenu.jsx"
 // then wire it from its dots. `compact` shows each part as one line (its icon, name and short tag) with what it does
 // in a tooltip, for a floating window over the board. `folded` parts (still usable, but not what this level's puzzle is
 // about: ../course.js offer) wait behind a 「更多」 button at the end. A packed part (`packed`: one that runs a circuit the
-// player built) has a solid family chip, as on the board.
-export default function Palette({ items, folded = [], onAdd, compact = false, start }) {
+// player built) has a solid family chip, as on the board. A screen with a panel of its own for the folded parts
+// (`panel(place)`, CircuitLevel trayPanel) has 「更多」 open it in a window instead of unfolding them in the list.
+export default function Palette({ items, folded = [], onAdd, compact = false, start, panel = null }) {
   const plain = usePlainProse()
   const [more, setMore] = useState(false)
+  const [anchor, setAnchor] = useState(null)
   // A tooltip opens to the right of its part, or to the left when the right would run past the board (or the window).
   const aim = (event) => {
     const item = event.currentTarget
@@ -44,13 +46,19 @@ export default function Palette({ items, folded = [], onAdd, compact = false, st
     <div className={`palette ${compact ? 'is-compact' : ''}`}>
       {start}
       {items.map((item) => entry(item))}
-      {more && folded.map((item) => entry(item, true))}
-      {folded.length > 0 && (
+      {!panel && more && folded.map((item) => entry(item, true))}
+      {folded.length > 0 && (panel ? (
+        <button type="button" className={`palette-more ${anchor ? 'is-open' : ''}`} onClick={(event) => setAnchor(anchor ? null : event.currentTarget)} aria-haspopup="dialog" aria-expanded={Boolean(anchor)} title={tr('这一关不必用到、但可以使用的元件')}>
+          <span>{tr("更多 {count}", {count})}</span>
+          <ChevronRight size={14} />
+        </button>
+      ) : (
         <button type="button" className={`palette-more ${more ? 'is-open' : ''}`} onClick={() => setMore(!more)} aria-expanded={more} title={tr('这一关不必用到、但可以使用的元件')}>
           <span>{more ? tr("收起") : tr("更多 {count}", {count})}</span>
           <ChevronRight size={14} />
         </button>
-      )}
+      ))}
+      {anchor && <Popover anchor={anchor} title={tr("更多 {count}", {count})} placement="below" className="tray-panel-pop" onClose={() => setAnchor(null)}>{panel(onAdd)}</Popover>}
     </div>
   )
 }

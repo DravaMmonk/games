@@ -234,6 +234,9 @@
 .pb-error { color: var(--fail); background: color-mix(in srgb, var(--fail) 12%, var(--paper)); font-family: var(--mono); }
 .pb-empty { outline: 1.5px dashed var(--rule); outline-offset: -3px; color: var(--muted); font-size: 11.5px; }
 .pb-name { max-width: 100%; display: block; font-size: 13px; line-height: 1.3; text-align: center; overflow-wrap: anywhere; }
+/* A pen in the corner of a card that holds something to set: over the corner, taking no room from the name. */
+.pb-edit { position: absolute; top: var(--sp-3); right: var(--sp-3); color: var(--faint); pointer-events: none; }
+.pb-frame-head { position: relative; }
 .pb-name svg { display: inline; margin-right: var(--sp-1); vertical-align: -1px; color: var(--fam, var(--muted)); }
 .pb-param { max-width: 100%; display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); color: var(--muted); font-family: var(--mono); font-size: 11.5px; overflow-wrap: anywhere; }
 .pb-param i { font-style: normal; }

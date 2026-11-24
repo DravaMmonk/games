@@ -45,8 +45,8 @@ import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, all, fn, subst, tvar } from './formula.js'
 import { KERNEL, answerOf, asValue, defer, depthFirst, resultsOf, rule, startState } from './tactics.js'
-import { ASSUMPTION_RULE, instantiate, lemmaRules, parseS, ruleOf, ruleText, sideText, stated } from './schematic.js'
-import { lemmaRewrites, localRewrites, rewrite, rewriteBookOf, rewriteText, simplify } from './rewrite.js'
+import { ASSUMPTION_RULE, inferenceText, instantiate, lemmaRules, parseS, ruleOf, ruleText, sideText, stated } from './schematic.js'
+import { lemmaRewrites, localRewrites, rewrite, rewriteBookOf, rewriteOptions, rewritesHyps, rewriteTarget, rewriteText, simplify } from './rewrite.js'
 import { datatypesRules } from './datatype.js'
 import { clausesOfState, oracleRound, parseClause, refuted, replay, resolveRound, saturate } from './resolution.js'
 import { T } from 'kernel/words'
@@ -130,10 +130,11 @@ export function rulePartOf(level, key) {
 }
 /** The keys a rule part offers to choose from (a law is one choice, rule and rewrite rule alike). */
 export const choicesOfPart = (entries) => [...new Set(entries.map((e) => e.key))]
-/** The keys a rule part gives of its own: its one rule when it has one; else those added on it (`use`), in that order. */
+const defaultRuleUse = (entries) => entries.some(({ key }) => key === 'hyp.iff') ? ['hyp.iff'] : undefined
+/** The chosen rules in order, or the part's default when none has been selected. */
 export const ownRules = (entries, use) => {
   const keys = choicesOfPart(entries)
-  return keys.length === 1 ? keys : (use ?? []).filter((k) => keys.includes(k))
+  return keys.length === 1 ? keys : (use?.length ? use : defaultRuleUse(entries) ?? []).filter((k) => keys.includes(k))
 }
 /** A rule part: the list wired into it (`before`), then its own rules. */
 const RULE_PART = {
@@ -153,15 +154,14 @@ const stateIn = (v) => {
 }
 const firstOf = (s) => ({ ...s, more: undefined })
 // What a tactic did, for the step log (`did`, said of the card `didBy`): what it did (`op`), the rules it used (their
-// keys; the log numbers them as the board does, R₁ R₂ …) and how many goals it was handed (one goal is plain ⊢, more are
-// ⊢₁ ⊢₂ …; a tactic works on the first). ./circuit-readouts.js didText writes it.
+// keys; the log numbers them as the board does, R₁ R₂ …) and how many goals it was handed. ./circuit-readouts.js didText writes it.
 const keysOf = (by) => [...new Set(by.map((b) => b.rule))]
 const DID = {
   rule: (by) => {
     const rules = keysOf(by)
-    return { op: rules.length === 1 && rules[0] === ASSUMPTION_RULE.key ? 'assumption' : 'rule', rules }
+    return { op: rules.length === 1 && rules[0] === ASSUMPTION_RULE.key ? 'assumption' : 'rule', rules, ...(by[0]?.at > 0 && { goalIndex: by[0].at }) }
   },
-  rw: (by, node) => ({ op: atOf(node) === 'hyps' ? 'rwHyps' : 'rw', rules: keysOf(by) }),
+  rw: (by) => ({ op: rewritesHyps(by[0]?.at) ? 'rwHyps' : 'rw', rules: keysOf(by) }),
 }
 const unsaid = (s) => (s.did === undefined && s.didBy === undefined ? s : { ...s, did: undefined, didBy: undefined })
 // A tactic card: on each result it is handed (only the first, until the level backtracks), every result it makes; a
@@ -216,11 +216,11 @@ function wired(v, book, misfit) {
 const NOT_RULE = ['接进来的有一条不是推理规则（是改写用的等式）', 'One of the rules wired in is not an inference rule (it is an equation for rewriting)']
 const NOT_REWRITE = ['接进来的有一条不能用来改写（只有等价、等式和定义能改写）', 'One of the rules wired in cannot rewrite (only equivalences, equations and definitions can)']
 // A card that uses rules: each wired in, in order; the first that applies (with backtracking, each one's results).
-function firstThatApplies(rules, ctx, apply) {
+function firstThatApplies(rules, ctx, apply, at) {
   const attempts = []
   for (const r of rules) {
     const got = apply(r)
-    const by = { rule: r.key }
+    const by = { rule: r.key, ...(at !== undefined && { at }) }
     if (got.fail) attempts.push({ error: got.fail, by })
     else {
       attempts.push(...got.results.map(state => ({ state, by })))
@@ -234,17 +234,37 @@ const usesRules = (t, say) => {
   const card = tactic((s, ctx, node) => t(s, ctx, node, ctx.wiredRules), say)
   return { inputs: ['in', 'rules'], eval: ({ in: v, rules }, node, ctx) => card.eval({ in: v }, node, { ...ctx, wiredRules: rules }) }
 }
-const ruleCard = (t, say) => usesRules((s, ctx, _node, rules) => firstThatApplies(wired(rules, ctx.rules ?? KERNEL, NOT_RULE), ctx, (r) => t(s, r)), say)
-// Where a rewrite card rewrites: the goal, or the hypotheses.
-const atOf = (node) => (node.params?.at === 'hyps' ? 'hyps' : 'goal')
-const rewriteAt = (s, r, node) => rewrite(s, r, atOf(node))
+const backwardAt = (s, ctx, rules, index) => firstThatApplies(rules, ctx, r => rule(s, r, index), index)
+const succeeds = result => result.attempts?.some(attempt => attempt.state)
+function applyRule(s, ctx, node, rules) {
+  const at = node.params?.at
+  if (at != null) {
+    const index = Number(/^goal-(\d+)$/.exec(at)?.[1])
+    return s.goals[index] ? backwardAt(s, ctx, rules, index) : { fail: T('找不到选定的应用位置') }
+  }
+  const first = backwardAt(s, ctx, rules, 0)
+  if (succeeds(first)) return first
+  for (let i = 1; i < s.goals.length; i++) {
+    const attempt = backwardAt(s, ctx, rules, i)
+    if (succeeds(attempt)) return attempt
+  }
+  return first
+}
+const rewriteAt = (s, ctx, node, rules) => {
+  const at = node.params?.at || rewriteTarget(undefined, rewriteOptions(s, rules))
+  return firstThatApplies(rules, ctx, r => rewrite(s, r, at), at)
+}
+
+function directRules(cards, node) {
+  const entries = cards?.get(node.type)?.entries ?? []
+  return ownRules(entries, node.params?.use).slice(0, 1).map(key => entries.find(entry => entry.key === key).rule)
+}
 
 /** Run the rules bound to this card on the incoming proof state. */
 const directCard = (apply, note) => tactic((s, ctx, node) => {
-  const entries = ctx.directCards.get(node.type)?.entries ?? []
-  const rules = ownRules(entries, node.params?.use).slice(0, 1).map(key => entries.find(entry => entry.key === key).rule)
+  const rules = directRules(ctx.directCards, node)
   if (!rules.length) return { fail: T('请先在元件上选一条规则。') }
-  return firstThatApplies(rules, ctx, r => apply(s, r, node))
+  return apply(s, ctx, node, rules)
 }, note)
 // A step inside a part, for a traced run (../../engine/circuit.js): a round of it, or the card it applies (`sub`).
 const inner = (ctx, node, value, extra) => ctx?.trace?.push({ id: node.id, key: null, inner: true, value, ...extra })
@@ -377,13 +397,13 @@ const forwardPart = part => ({
 const BODIES = {
   repeat,
   // Tactics (chapters 8 and 9).
-  rule: ruleCard(rule, DID.rule),
-  directBackward: directCard(rule, DID.rule),
+  rule: usesRules((s, ctx, node, rules) => applyRule(s, ctx, node, wired(rules, ctx.rules ?? KERNEL, NOT_RULE)), DID.rule),
+  directBackward: directCard(applyRule, DID.rule),
   defer: tactic(defer, null, { work: false }),
   search,
   each,
   // Rewriting (chapter 10): one rule once, on the goal or the hypotheses.
-  rw: usesRules((s, ctx, node, rules) => firstThatApplies(wired(rules, ctx.rewrites, NOT_REWRITE), ctx, (r) => rewriteAt(s, r, node)), DID.rw),
+  rw: usesRules((s, ctx, node, rules) => rewriteAt(s, ctx, node, wired(rules, ctx.rewrites, NOT_REWRITE)), DID.rw),
   directRewrite: directCard(rewriteAt, DID.rw),
   // Clauses (chapter 11, resolution.js): ∃ out of the hypotheses, a state split into clauses, a round of resolution,
   // someone else's prover, and the certificate replayed in the kernel.
@@ -476,7 +496,7 @@ export function inputsOf(test, level) {
 }
 const clauseSetOf = (texts) => [...new Map(texts.map((c) => parseClause(c, parseS)).map((c) => [c.key, c])).values()]
 /** The names and labels of a level's inputs. */
-export const inputsOfLevel = (level) => level.inputs ?? [{ name: 'in', label: catalogText("输入") }]
+export const inputsOfLevel = (level) => level.inputs ?? [{ name: 'in', label: catalogText("目标") }]
 
 const RULE_PORT_APPEARANCE = { shape: 'compact', wire: 'dashed' }
 
@@ -504,7 +524,8 @@ const inWords = (level, write) => ({ zh: write(f => say(f, level.notation).zh), 
 // A definition as the level writes it, in the level's words: 'c ⟹ l = r'.
 function defText(d, text) {
   const [cond, eq] = d.includes('⟹') ? d.split('⟹') : [null, d]
-  return `${cond ? `${cond.split(';').map((c) => text(parseS(c.trim()))).join('; ')} ⟹ ` : ''}${text(parseS(eq.trim()))}`
+  const conclusion = text(parseS(eq.trim()))
+  return cond ? inferenceText(cond.split(';').map((c) => text(parseS(c.trim()))), conclusion) : conclusion
 }
 const MATH_NAME = T('数理规则书')
 /** A rule part's name: the rule book of numbers, the proof-board part or lemma it is, or its rule's own name. */
@@ -542,7 +563,9 @@ export function ruleParts(level) {
       : type === ASSUMPTION_RULE.part ? joined(T('接给逆用规则。当前目标和一条已知对上时，这个目标就证完了。'), AFTER)
       : several ? RULE_DEFINITION.desc : joined(T('给出这个元件的规则。'), AFTER)
     // A part with one rule gives it, with nothing to add (ownRules): no setting to show.
-    return [type, { ...RULE_DEFINITION, name: rulePartName(level, type), desc, ...(!several && { settings: [] }) }]
+    const use = defaultRuleUse(rulePartsOf(level).get(type))
+    const settings = several ? [{ ...RULE_DEFINITION.settings[0], ...(use && { default: use, single: true }) }] : []
+    return [type, { ...RULE_DEFINITION, name: rulePartName(level, type), desc, settings }]
   }))
 }
 
@@ -550,10 +573,9 @@ const directCards = new WeakMap()
 const REWRITE_AT = {
   key: 'at',
   control: 'select',
-  label: T('改写位置'),
-  default: 'goal',
-  options: [{ value: 'goal', label: T('目标') }, { value: 'hyps', label: T('已知') }],
+  from: 'logic/rewriteOccurrences(in)',
 }
+const BACKWARD_AT = { key: 'at', control: 'select', from: 'logic/backwardPositions(in)' }
 
 // The proof operation owns its kernel rules; the part declaring that operation supplies them to its direct cards.
 const KERNEL_BY_OPERATION = new Map()
@@ -610,14 +632,16 @@ export function directCardsOf(level) {
           const entries = rules.filter(entry => entry.book === book)
           if (!entries.length) continue
           const type = `logic/${op}-${source.replace('/', '_')}`
-          const settings = [{ ...RULE_DEFINITION.settings[0], label: T('选择规则'), single: true }]
-          if (book === 'rewrite' && !entries.every(({ rule }) => rule.equivalenceOnly)) settings.push(REWRITE_AT)
+          const use = defaultRuleUse(entries)
+          const settings = [{ ...RULE_DEFINITION.settings[0], label: T('选择规则'), single: true, ...(use && { default: use }) }, book === 'rewrite' ? REWRITE_AT : BACKWARD_AT]
           const sign = mark(marker)
           cards.set(type, { entries, source, definition: {
             name: { zh: `${sign} ${name.zh ?? name.en ?? name}`, en: `${sign} ${name.en ?? name.zh ?? name}` },
             desc, icon: level.partDefs?.[source]?.icon ?? 'Sigma', family: 'logic/tactic',
             inputs: [{ name: 'in', type: 'logic/machine-value' }],
             outputType: 'logic/machine-value', settings, op: `logic/${op}`,
+            ...(use && { rules: [{ on: 'use', set: { at: "''" } }] }),
+            views: { tile: [{ show: 'value' }, { show: 'setting', key: 'use', as: 'label' }] },
           } })
         }
       }
@@ -626,6 +650,31 @@ export function directCardsOf(level) {
   }
   return directCards.get(level)
 }
+/** The match picker reads the same incoming state and rule priority as the rewrite card. */
+export const REWRITE_CHOICES = {
+  run: ([state, rules], _named, { task, node }) => {
+    if (state?.kind !== 'state' || !state.goals.length || state.error) return []
+    const direct = directCardsOf(task)
+    const available = direct.has(node.type) ? directRules(direct, node) : rules ? wired(rules, rewriteBookOf(task), NOT_REWRITE) : []
+    const choices = available.length ? rewriteOptions(firstOf(state), available) : []
+    return [{ sequents: state.goals.slice(0, 1) }, ...choices]
+  },
+}
+
+/** Preview the first result at each goal using the same rule order as the card's run. */
+export const BACKWARD_POSITIONS = {
+  run: ([state, rules], _named, { task, node }) => {
+    if (state?.kind !== 'state' || !state.goals.length || state.error) return []
+    const direct = directCardsOf(task)
+    const available = direct.has(node.type) ? directRules(direct, node) : rules ? wired(rules, ruleBookOf(task), NOT_RULE) : []
+    const choices = state.goals.flatMap((_, index) => {
+      const result = backwardAt(state, {}, available, index).attempts?.find(attempt => attempt.state)?.state.goals
+      return result ? [{ value: `goal-${index}`, index, result }] : []
+    })
+    return [{ sequents: state.goals }, ...choices]
+  },
+}
+
 /** The rules a rule part offers to add, each written out in the test's words (ctx: the task, its text, the card). */
 export const RULE_CHOICES = {
   about: T("规则元件能给出的规则"),
@@ -634,9 +683,11 @@ export const RULE_CHOICES = {
     const type = ctx.node?.type
     const entries = directCardsOf(ctx.task).get(type)?.entries ?? rulePartsOf(ctx.task).get(type) ?? []
     const choices = choicesOfPart(entries)
-    const slots = ctx.ruleSlots ?? []
-    const nodeId = ctx.node?.id
-    return choices.map((key) => ({ value: key, mark: ruleMark(key, slots, nodeId), label: ruleWritten(entries.find((e) => e.key === key), ctx.text, ctx.term) }))
+    return choices.map((key, index) => {
+      const entry = entries.find((e) => e.key === key)
+      const mark = ctx.ruleSlots ? ruleMark(key, ctx.ruleSlots, entry) : slotMark(index)
+      return { value: key, mark, label: ruleWritten(entry, ctx.text, ctx.term) }
+    })
   },
 }
 
@@ -759,43 +810,47 @@ const ctxOf = (level, circuit, extra = {}) => ({ graph: circuit, partForRule: le
 export const runTactic = (level, type, state, keys = null) => level.parts(type).eval({ in: state, ...(keys ? { rules: rulesValue(keys.map((key) => ({ key }))) } : {}) }, { id: type, params: {} }, ctxOf(level, { nodes: [], wires: [] }, { engine: { parts: level.parts } }))
 
 export const subscript = (n) => String(n).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])
-export const slotMark = (index, count) => count > 1 && index >= 0 ? `R${subscript(index + 1)}` : 'R'
-export function ruleMark(key, slots, nodeId) {
-  const own = nodeId === undefined ? -1 : slots.findIndex((slot) => slot.nodeId === nodeId)
-  const shared = own >= 0 ? own : slots.findIndex((slot) => slot.nodeId === undefined && slot.entry?.key === key)
-  const index = shared >= 0 ? shared : slots.findIndex((slot) => slot.entry?.key === key)
-  return slotMark(index, slots.length)
+export const slotMark = (index) => `R${subscript(index + 1)}`
+const ruleForm = ({ book, rule }) => book === 'rule' ? ruleText(rule) : rewriteText(rule)
+export function ruleMark(key, slots, entry) {
+  const index = slots.findIndex((slot) => slot.entry.key === key || slot.keys?.includes(key) ||
+    (entry && slot.entry.book === entry.book && ruleForm(slot.entry) === ruleForm(entry)))
+  return index < 0 ? '' : slotMark(index)
 }
 
-/** A direct card reserves one rule number. Shared rules are numbered once per selected key. */
-export function boardRules(level, circuit, test) {
+/** Number each rule once, at its first occurrence in the board's reading order. */
+export function boardRules(level, circuit, test, order = [], applied = []) {
   const parts = rulePartsOf(level)
   const directCards = directCardsOf(level)
-  const slots = []
-  const shared = new Set()
-  const addShared = (entry) => {
-    if (shared.has(entry.key)) return
-    shared.add(entry.key)
-    slots.push({ entry })
-  }
-  if (test) (inputsOf(test, level).rules?.entries ?? []).forEach(addShared)
-  for (const node of circuit.nodes) {
+  const nodes = new Map(circuit.nodes.map((node) => [node.id, node]))
+  const ordered = new Set([...order, ...nodes.keys()])
+  const entriesOnBoard = [...(test ? inputsOf(test, level).rules?.entries ?? [] : [])]
+  for (const id of ordered) {
+    const node = nodes.get(id)
+    if (!node) continue
     const direct = directCards.get(node.type)
     const entries = direct?.entries ?? parts.get(node.type)
     if (!entries) continue
     const selected = ownRules(entries, node.params?.use)
-    if (direct) {
-      slots.push({ nodeId: node.id, entry: entries.find((e) => e.key === selected[0]) })
-    } else {
-      selected.forEach((key) => addShared(entries.find((e) => e.key === key)))
-    }
+    for (const key of direct ? selected.slice(0, 1) : selected) entriesOnBoard.push(entries.find((e) => e.key === key))
   }
-  return slots
+  return ruleSlotsOf([...entriesOnBoard, ...applied])
+}
+
+function ruleSlotsOf(entries) {
+  const slots = new Map()
+  for (const entry of entries) {
+    const form = `${entry.book}:${ruleForm(entry)}`
+    const slot = slots.get(form)
+    if (!slot) slots.set(form, { entry, keys: [] })
+    else if (slot.entry.key !== entry.key && !slot.keys.includes(entry.key)) slot.keys.push(entry.key)
+  }
+  return [...slots.values()]
 }
 
 /** How a machine level runs and is judged, for the shared engine (../../engine/test-run.js). */
 export const MACHINE_TESTS = {
-  runTest: (level, circuit, test, { traced = false, workshopParts } = {}) => {
+  runTest: (level, circuit, test, { traced = false, workshopParts, cardOrder } = {}) => {
     const trace = []
     const bind = inputsOf(test, level)
     const want = test.want ?? level.want
@@ -808,10 +863,7 @@ export const MACHINE_TESTS = {
       ctx: ctxOf(level, circuit, { trace: traced ? trace : null, traceForwarding: traced, proof }),
       traceTargets: ['out'],
     })
-    const ruleSlots = boardRules(level, circuit, test)
-    for (const entry of trace.flatMap(step => step.proofRules ?? [])) {
-      if (!ruleSlots.some(slot => slot.entry?.key === entry.key)) ruleSlots.push({ entry })
-    }
+    const ruleSlots = boardRules(level, circuit, test, cardOrder, trace.flatMap(step => step.proofRules ?? []))
     const events = machineEvents(trace)
     const report = proof
       ? finishProof(proof, events, run.outputs.out, want, showTree ? judge(want, test, run.outputs.out, level) : '')

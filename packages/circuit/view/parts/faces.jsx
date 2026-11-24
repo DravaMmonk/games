@@ -1,7 +1,8 @@
 import { applyRules, partDesc } from "../../core/parts/define.js"
 import { settingsOf } from "../../core/parts.js"
 import { isFixed, keepFixedSettings } from "../../core/board/presets.js"
-import PartFace, { blocksOf } from "./PartFace.jsx"
+import PartFace, { blocksOf, visibleSettings } from "./PartFace.jsx"
+import { listSelectionPending } from './SettingField.jsx'
 import { iconOf } from "./icons.js"
 
 // What the shared editors and the circuit level need of defined parts (games/design/README.md 6.8): the cards' description
@@ -26,14 +27,21 @@ export function definedFaces(faces, { defined, change, phone, tileSettings = tru
   const draw = (face, other, blocks) => (node, ctx) => {
     const def = defined.of(node.type, face)
     if (!def) return other?.(node, ctx) ?? null
-    const view = blocks?.(def)
+    const view = blocks?.(def, node, ctx)
     if (view?.length === 0) return null
     const set = ctx?.readOnly ? null : (patch, changed) => change(node, nextParams(def, node, patch, changed, defined.ops))
     return <PartFace def={def} face={face} node={node} ctx={ctx} set={set} defined={defined} phone={phone} roomy={face === 'detail'} blocks={view} />
   }
   const tile = (pick) => (def) => blocksOf(def, 'tile').filter(([b]) => pick(b.show === 'value'))
-  const tileExtra = (def) => {
+  const tileExtra = (def, node, ctx) => {
+    const params = node.params ?? {}
     const showSettings = tileSettings || settingsOf(def).some(setting => setting.single)
+      || visibleSettings(def, params, defined, node, ctx).some(([setting]) => {
+        if (!setting.formula || setting.control !== 'list') return false
+        const allowed = defined.allowed?.(def.type, setting.key)
+        const options = setting.options.filter(option => !allowed || allowed.includes(option.value))
+        return listSelectionPending(options, params[setting.key] ?? setting.default)
+      })
     return blocksOf(def, 'tile').filter(([block]) => block.show !== 'value' && (showSettings || block.show === 'text'))
   }
   return {

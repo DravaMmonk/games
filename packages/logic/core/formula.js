@@ -370,11 +370,11 @@ export function termsOf(f, out = []) {
  * occurrences in order,
  * left to right as written, and one inside another occurrence is not counted (it goes with it).
  */
-export function replaceTerm(f, t, by, pick) {
+export function mapTermOccurrences(f, t, map) {
   let k = 0
   const key = showTerm(t)
   const term = (u) => {
-    if (showTerm(u) === key) { const i = k++; return pick(i) ? (typeof by === 'function' ? by(i) : by) : u }
+    if (showTerm(u) === key) return map(u, k++)
     return u.t === 'fn' ? { ...u, args: u.args.map(term) } : u
   }
   const walk = (g) => {
@@ -387,6 +387,8 @@ export function replaceTerm(f, t, by, pick) {
   return walk(f)
 }
 
+export const replaceTerm = (f, t, by, pick) => mapTermOccurrences(f, t, (u, k) => pick(k) ? (typeof by === 'function' ? by(k) : by) : u)
+
 /** How many times the term t occurs in f, counted as replaceTerm counts them. */
 export function occurrences(f, t) {
   let n = 0
@@ -394,14 +396,20 @@ export function occurrences(f, t) {
   return n
 }
 
-/** Map the replaceable subformulas in outermost, left-to-right order, avoiding capture on either side. */
-export function mapFormulaOccurrences(f, from, to, map) {
+/** Whether entering a binder would capture a name from either side of a substitution. */
+export function occurrenceScope(from, to) {
   const things = freeVars(to, freeVars(from))
   const { preds } = signature([from, to])
+  return (g) => g.body && (g.prop ? preds : things).has(g.v)
+}
+
+/** Map the replaceable subformulas in outermost, left-to-right order, avoiding capture on either side. */
+export function mapFormulaOccurrences(f, from, to, map) {
+  const blocks = occurrenceScope(from, to)
   let occurrence = 0
   const walk = (g) => {
     if (same(g, from)) return map(g, occurrence++)
-    if (g.body) return (g.prop ? preds : things).has(g.v) ? g : { ...g, body: walk(g.body) }
+    if (g.body) return blocks(g) ? g : { ...g, body: walk(g.body) }
     if (g.b) return { ...g, a: walk(g.a), b: walk(g.b) }
     if (g.a) return { ...g, a: walk(g.a) }
     return g

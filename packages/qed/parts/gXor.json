@@ -1,0 +1,17 @@
+{
+  "name": "@part.gXor.name",
+  "desc": "@part.gXor.desc",
+  "family": "logic/gate",
+  "inside": [
+    {
+      "id": "base",
+      "reference": {
+        "kind": "logic/gates",
+        "target": "(Rain ∨ Wind) ∧ ¬(Rain ∧ Wind)",
+        "solution": ["o = gOr(Rain, Wind)", "a = gAnd(Rain, Wind)", "n = gNot(a)", "b = gAnd(o, n)", "out <- b"]
+      }
+    }
+  ],
+  "inputs": [{ "name": "a", "type": "kernel/boolean" }, { "name": "b", "type": "kernel/boolean" }],
+  "outputType": "kernel/boolean"
+}

@@ -1,9 +1,9 @@
 // The prover's run report (a machine level's `report`, ../../../circuit/view/CircuitScreen.jsx): the rules on the
-// board are numbered once (R₁ R₂ …, a lone rule plain R). The initial goal starts the report.
+// board are numbered once (R₁ R₂ …). The initial goal starts the report.
 // Each step links down to its result box: the step's number, the card's name and what the
 // card did in marks (⊢ ⟵ R₁, ⊢ ✓ …, ../../core/circuit-readouts.js didText). A box holds only goals (⊢₁ ⊢₂ …). A step
 // that fails says why, and no box follows it. The current step is marked and kept in view, inside the report only.
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Info, ListOrdered, Network } from 'lucide-react'
 import { L, Popover, ViewPicker } from 'kernel/view'
 import { T, tr } from 'kernel/words'
@@ -51,6 +51,7 @@ export function machineRuleList({ run, task }) {
 
 export default function MachineReport({ steps, at, ended, run, task, test, show, phone }) {
   const box = useRef(null)
+  const flow = useRef(null)
   const [told, setTold] = useState(null) // { k, anchor }: the step whose ⓘ is open
   const [mode, setMode] = useState(REPORT_VIEWS[0].view)
   const canShowTree = Boolean(run?.proofRoot)
@@ -58,6 +59,36 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
   const shown = steps.map((s, k) => ({ s, k, number: k + 1, current: k === at }))
   const start = startOf(test, task)
   const rules = phone && machineRuleList({ run, task })
+  useLayoutEffect(() => {
+    if (phone) return
+    const list = flow.current
+    if (!list) return
+    const resizeBoxes = () => {
+      const available = list.getBoundingClientRect().width
+      const boxes = [...list.children].filter(child => child.classList.contains('mr-box'))
+      // Measure every box at its unwrapped width before choosing which ones need to wrap.
+      list.classList.add('is-measuring')
+      const wraps = boxes.map(goal => goal.getBoundingClientRect().width > available)
+      list.classList.remove('is-measuring')
+      boxes.forEach((goal, i) => goal.toggleAttribute('data-wrap', wraps[i]))
+    }
+    let width
+    const resize = new ResizeObserver(([entry]) => {
+      if (width === entry.contentRect.width) return
+      width = entry.contentRect.width
+      resizeBoxes()
+    })
+    const content = new MutationObserver(resizeBoxes)
+    resize.observe(list)
+    content.observe(list, { childList: true, characterData: true, subtree: true })
+    document.fonts.addEventListener('loadingdone', resizeBoxes)
+    resizeBoxes()
+    return () => {
+      resize.disconnect()
+      content.disconnect()
+      document.fonts.removeEventListener('loadingdone', resizeBoxes)
+    }
+  }, [phone, tree])
   useEffect(() => {
     const el = tree ? box.current?.querySelector('.mr-tree-scroll') : box.current
     if (!el) return
@@ -70,7 +101,7 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
     else if (end > el.scrollTop + el.clientHeight) el.scrollTop = Math.max(top, end - el.clientHeight)
   }, [steps.length, at, tree])
   return (
-    <div className={phone ? 'mr' : 'mr is-desktop'}>
+    <div className={`mr ${phone ? 'is-phone' : 'is-desktop'}`}>
       {(rules || canShowTree) && (
         <div className="mr-head">
           {rules}
@@ -79,7 +110,7 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
         </div>
       )}
       <div className={`mr-body${tree ? ' is-tree' : ''}`} ref={box}>
-        {tree ? <ProofTree key={JSON.stringify(test)} root={run.proofRoot} steps={shown} ended={ended} run={run} task={task} /> : <ol className="mr-flow" aria-label={tr('运行步骤')}>
+        {tree ? <ProofTree key={JSON.stringify(test)} root={run.proofRoot} steps={shown} ended={ended} run={run} task={task} /> : <ol className="mr-flow" ref={flow} aria-label={tr('运行步骤')}>
           {start !== undefined && <Box value={start} task={task} show={show} />}
           {shown.flatMap(({ s, k, number, current }) => {
             // A card that cannot do its step says ✗ (why, on a long press or hover) and gives back the state it was handed:

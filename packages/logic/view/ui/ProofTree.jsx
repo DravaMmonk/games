@@ -1,15 +1,14 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { L, Popover } from 'kernel/view'
 import { tr } from 'kernel/words'
-import { didText, goalLines, stepExplained } from '../../core/circuit-readouts.js'
+import { didText, goalLines, goalMark, stepExplained } from '../../core/circuit-readouts.js'
 import { Formula, MarkedFormula } from './Formula.jsx'
 import { layoutProofTree } from './proof-tree-layout.js'
 
 function Branch({ node, run, selected, open }) {
   const { id, parent, s, number, current, children, resultPath, error } = node
   const did = s && s.value?.didBy === s.entry.id ? s.value.did : null
-  const nodeId = s?.entry.path?.length ? undefined : s?.entry.id
-  const symbol = (did && didText(did, run, { marksOnly: true, nodeId })) || s?.entry.label || (s?.entry.round ? '↻' : '⊢')
+  const symbol = (did && didText(did, run, { marksOnly: true })) || s?.entry.label || (s?.entry.round ? '↻' : goalMark())
   const label = number ? `${number} · ${L(s.label)} · ${symbol}` : symbol
   return (
     <li className={`mr-branch ${resultPath ? 'is-result' : ''} ${error && !resultPath ? 'is-error' : ''}`}>

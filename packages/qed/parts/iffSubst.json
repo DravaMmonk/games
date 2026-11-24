@@ -1,6 +1,7 @@
 {
   "name": "@part.iffSubst.name",
   "desc": "@part.iffSubst.desc",
+  "rules": [{ "on": "direction", "set": { "at": "''" } }],
   "icon": "GitFork",
   "family": "logic/rule",
   "inputs": [

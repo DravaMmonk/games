@@ -21,7 +21,7 @@ import { runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { circuitBoard } from 'circuit'
 import { frameTree, regionAddress } from 'circuit'
-import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mapFormulaOccurrences, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceFormula, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
+import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mapFormulaOccurrences, mapTermOccurrences, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceFormula, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
 import { say, sayTerm } from './notation.js'
 import { choicesOf } from './choices.js'
 import { cancelOne, disjunction, literalsIn } from './resolution.js'
@@ -265,7 +265,8 @@ const BODIES = {
       const [s, t] = f.args
       const n = occurrences(p.formula, s)
       if (!n) { const [a, b] = [sayTerm(s, ctx.notation), sayIn(ctx, p.formula)]; throw fail(`「${b.zh}」里没有 ${a.zh}`, `“${b.en}” does not mention ${a.en}`) }
-      const at = (node.params?.at ?? []).map(Number).filter((k) => k < n)
+      const picked = node.params?.at ?? []
+      const at = n === 1 && !picked.length ? [0] : picked.map(Number).filter((k) => k < n)
       if (!at.length) throw fail('在元件上选出要换掉的那几处', 'Choose on the part which places to replace')
       return proved(replaceTerm(p.formula, s, t, (k) => at.includes(k)), union(e, p), psubst(e.term, p.term))
     },
@@ -275,23 +276,26 @@ const BODIES = {
     eval: ({ iff, p }, node, ctx) => {
       const { formula } = iff
       if (formula.op !== '↔') throw need(ctx, SHAPE.iff, formula)
-      const at = node.params?.at
-      let found = false
+      const at = node.params?.at || undefined
+      const [from, to] = iffSides(formula, node)
+      let matches = 0
       let replaced = false
-      const result = replaceFormula(p.formula, formula.a, formula.b, (index) => {
-        found = true
-        if (String(index) !== at) return false
+      const result = replaceFormula(p.formula, from, to, (index) => {
+        matches++
+        if (String(index) !== (at ?? '0')) return false
         replaced = true
         return true
       })
-      if (!found) throw fail('原句中没有可代换的子式', 'There is no replaceable subformula in the original sentence')
-      if (!replaced) throw fail('请点选原句中的一个子式框', 'Select a boxed subformula in the original sentence')
+      if (!matches) throw fail('原句中没有可代换的子式', 'There is no replaceable subformula in the original sentence')
+      if (!replaced || (at == null && matches > 1)) throw fail('请点选原句中的一个子式框', 'Select a boxed subformula in the original sentence')
       return proved(result, union(iff, p), psubst(iff.term, p.term))
     },
   },
 }
 
 export const RULES = ruleImplementations(BODIES)
+
+const iffSides = (formula, node) => node?.params?.direction === 'reverse' ? [formula.b, formula.a] : [formula.a, formula.b]
 
 /* ---------- lemmas: rules the player proved ---------- */
 
@@ -507,21 +511,29 @@ export const OPTIONS = {
     run: ([e, p]) => {
       const f = e?.formula
       if (!f || !p || f.op !== 'atom' || f.pred !== '=') return []
-      return Array.from({ length: occurrences(p.formula, f.args[0]) }, (_, k) => ({ value: String(k), label: String(k + 1) }))
-    },
-  },
-  iffOccurrences: {
-    args: [{ name: 'iff' }, { name: 'p' }],
-    run: ([iff, p]) => {
-      const f = iff?.formula
-      if (!p || f?.op !== '↔') return []
+      const [from, to] = f.args
       const options = []
-      const original = mapFormulaOccurrences(p.formula, f.a, f.b, (match, index) => {
+      const original = mapTermOccurrences(p.formula, from, (match, index) => {
         const node = { ...match }
         options.push({ value: String(index), label: '', node })
         return node
       })
-      return options.map((option) => ({ ...option, original, replacement: f.b }))
+      return options.map((option) => ({ ...option, original, replacement: to }))
+    },
+  },
+  iffOccurrences: {
+    args: [{ name: 'iff' }, { name: 'p' }],
+    run: ([iff, p], _named, ctx) => {
+      const f = iff?.formula
+      if (!p || f?.op !== '↔') return []
+      const options = []
+      const [from, to] = iffSides(f, ctx?.node)
+      const original = mapFormulaOccurrences(p.formula, from, to, (match, index) => {
+        const node = { ...match }
+        options.push({ value: String(index), label: '', node })
+        return node
+      })
+      return options.map((option) => ({ ...option, original, replacement: to }))
     },
   },
 }

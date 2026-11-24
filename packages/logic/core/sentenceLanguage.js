@@ -11,8 +11,17 @@ const PLACES = ['①', '②', '③']
 export const STRAY = T('还不是完整的句子')
 const GROUPS = [['pred', T('谓词')], ['name', T("名字")], ['var', T('变量')], ['quant', T('量词')], ['conn', T('连接词')]]
 
-const wordsOf = (notation, word, places) => L(notation.words?.[word] ?? '')
-  || (word === '=' ? '{0} = {1}' : places ? `${word}(${Array.from({ length: places }, (_, k) => `{${k}}`).join(', ')})` : word)
+function wordsOf(notation, word, places) {
+  const text = L(notation.words?.[word] ?? '')
+  if (!places) return text || word
+  const args = Array.from({ length: places }, (_, k) => `{${k}}`)
+  const slots = [...text.matchAll(/\{\d\}/g)].map(([slot]) => slot)
+  if (args.every((arg) => slots.includes(arg)) && slots.every((slot) => args.includes(slot))) return text
+  if (word === '=') return '{0} = {1}'
+  // A proof case can give a predicate a name without supplying a template.
+  const name = slots.length ? word : text || word
+  return `${name}(${args.join(', ')})`
+}
 
 /** A predicate's words with its places numbered: ①是②的父母 (on its chip). */
 const placesOf = (notation, word, places) => wordsOf(notation, word, places).replace(/\{(\d)\}/g, (_, k) => PLACES[Number(k)])

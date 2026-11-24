@@ -57,6 +57,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), localPaths(mode === 'studio'), gameApp(), studioApp()],
   server: {
     ...(mode === 'studio' && { host: '127.0.0.1', port: 5274, strictPort: true }),
+    // Let Node's watcher restart the process for native dependencies before Vite sends a browser reload.
+    watch: { awaitWriteFinish: { stabilityThreshold: 500 } },
     fs: {
       allow: ['..', contentRoot()],
     },

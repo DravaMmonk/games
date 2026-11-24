@@ -27,7 +27,8 @@
         "a2 = gAnd(n2, Wind)",
         "o = gOr(a1, a2)",
         "out <- o"
-      ]
+      ],
+      "publishes": [{ "part": "gXor", "variant": "base" }]
     }
   ]
 }

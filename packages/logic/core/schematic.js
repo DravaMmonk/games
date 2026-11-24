@@ -295,24 +295,23 @@ export const premiseOf = (text) => {
 /** A rule from its premises and conclusion as written: ruleOf('conjI', name, ['?A', '?B'], '?A ∧ ?B'). */
 export const ruleOf = (key, name, premises, conclusion) => ({ key, name, premises: premises.map(premiseOf), conclusion: parseS(conclusion) })
 
+/** Format a rule from its stated premises and conclusion. */
+export const inferenceText = (premises, conclusion) => `⟦${premises.join('; ')}⟧ ⟹ ${conclusion}`
+
 // A premise written out: a sentence; under premises of its own, those in ⟦⟧ then ⟹ (each a sentence, or a premise in
 // turn): ⟦?A; ?B⟧ ⟹ ?C; one that takes things in brackets of its own, (⋀x. ⟦?P(x)⟧ ⟹ ?Q(x)).
 function premiseText(p, say) {
-  const inner = p.hyps.length ? `${premisesText(p.hyps.map((h) => (h.show ? h : { fixes: [], hyps: [], show: h })), say)} ⟹ ${say(p.show)}` : say(p.show)
+  const goal = say(p.show)
+  const inner = p.hyps.length ? inferenceText(p.hyps.map((h) => h.show ? premiseText(h, say) : say(h)), goal) : goal
   return p.fixes.length ? `(${withBinders(p.fixes, inner)})` : inner
 }
-/** A rule's premises as written before its ⟹: every group of premises in ⟦⟧, ⟦?A; ⟦?B⟧ ⟹ ?C⟧. */
-export const premisesText = (premises, say = show) => `⟦${premises.map((p) => premiseText(p, say)).join('; ')}⟧`
-
 // The identity rule checks a hypothesis in scope instead of reducing the goal to a premise.
 export const ASSUMPTION_RULE = { key: 'assumption', part: 'logic/assumption', name: T('照抄'), fromHypothesis: true }
 
 /** A rule written in Isabelle-style notation, with its binders and premises. */
 export function ruleText(rule, say = show) {
   if (rule.fromHypothesis) return 'Γ, A ⊢ A'
-  const goal = say(rule.conclusion)
-  const text = rule.premises.length ? `${premisesText(rule.premises, say)} ⟹ ${goal}` : goal
-  return withBinders(rule.fixes, text)
+  return withBinders(rule.fixes, inferenceText(rule.premises.map((p) => premiseText(p, say)), say(rule.conclusion)))
 }
 
 /**

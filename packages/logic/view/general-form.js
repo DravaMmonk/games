@@ -7,7 +7,7 @@ export const generalFormSetting = {
   key: 'generalFormFirst',
   group: 'display',
   label: T('一般形式优先'),
-  tip: T('有一般形式页签时，将其排在首位并默认选中。机器板直接用符号显示现有案例。'),
+  tip: T('有一般形式页签时，将其排在首位并默认选中。证明器的案例直接用符号显示。'),
   kind: 'toggle',
   default: false,
   when: (game) => game.levels.some((level) => level.tasks.some(({ kind, source }) =>

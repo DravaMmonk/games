@@ -10,20 +10,9 @@
     }
   ],
   "settings": {
-    "at": {
-      "label": "@part.rw.settings.at.label",
-      "options": [
-        {
-          "value": "goal",
-          "label": "@part.rw.settings.at.options.0.label"
-        },
-        {
-          "value": "hyps",
-          "label": "@part.rw.settings.at.options.1.label"
-        }
-      ]
-    }
+    "at": { "from": "logic/rewriteOccurrences(in, rules)" }
   },
+  "views": { "tile": [{ "show": "value" }] },
   "op": "logic/rw",
   "stages": [
     {

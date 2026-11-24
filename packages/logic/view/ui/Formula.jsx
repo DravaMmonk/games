@@ -47,4 +47,4 @@ export const typesetMachine = (v, ctx) => {
 }
 
 /** A value that is one formula (a proof board's sentence, with its proof term), as a card shows it. */
-export const typesetOne = (show) => (v, ctx) => <span className="tx-lines tx-proof-result formula-row"><Formula text={show(v, ctx)} /></span>
+export const typesetOne = (show) => (v, ctx) => <span className="tx-lines formula-row"><Formula text={show(v, ctx)} /></span>

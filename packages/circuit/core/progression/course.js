@@ -43,8 +43,9 @@ export function progressCourse(course, parts, authoredTrays = {}) {
       register(definitions)
       for (const [id, entry] of partStages(definitions)) if (!stages.has(id)) stages.set(id, entry)
     },
-    availableParts(at, flags) {
+    availableParts(at, flags, includeUnlisted = false) {
       const held = usable(course, at, flags)
+      if (includeUnlisted) return held
       const names = course.tray(at)
       if (course.available || names === null || names.some(name => authoredTrays[name]?.includeUnlisted)) return held
       const members = new Set(trayParts(course, at))

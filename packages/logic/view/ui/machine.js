@@ -5,12 +5,15 @@
 // the results show the test's inputs, what it wants and what reaches the result. Values (equations, proof states,
 // clause sets, rules) read as lines of text.
 import { T } from 'kernel/words'
-import { useMemo } from 'react'
+import { getLang } from 'kernel'
+import { createElement, useMemo } from 'react'
 import { withPreset } from 'circuit'
 import { directCardsOf, runMachine } from '../../core/machine.js'
 import { presetFor } from '../../core/work.js'
 import { didText, machineGeneralNotation, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
 import { useGeneralForm } from '../general-form.js'
+import { render } from '../../core/notation.js'
+import { MachineApplicationChoice } from './OccurrenceChoice.jsx'
 import MachineReport, { machineRuleList } from './MachineReport.jsx'
 import { typesetMachine } from './Formula.jsx'
 
@@ -23,13 +26,22 @@ export const machineScreen = {
   traySource: (task, type) => directCardsOf(task).get(type)?.source,
   play: { ...machineReadout, runLevel: (task, board, _parts, options) => runMachine(task, board, { traced: true, ...options }) },
   context: (task, _test, run) => ({ task, text: machineTextOf(task), term: machineTermOf(task), ruleSlots: run?.ruleSlots }),
+  settingControls: (task) => ({
+    select: (props) => /^logic\/(rewriteOccurrences|backwardPositions)\(/.test(props.setting.from ?? '')
+      ? createElement(MachineApplicationChoice, {
+        ...props,
+        rewrite: props.setting.from.startsWith('logic/rewriteOccurrences('),
+        text: (f, mark) => render(f, task.notation, getLang(), -1, mark),
+      })
+      : null,
+  }),
   // A preset (a level's locked cards) stays on the board whatever is saved.
   ready: (board, task) => withPreset(board, presetFor(task)),
   readouts: (task, _circuit, { score }) => [{ value: score.steps, label: T("元件") }, task.budget !== undefined && { value: task.budget, label: T('最多') }],
   says: { go: T('运行全部测试'), done: T("全部通过") },
   log: true,
   // A step says what it did beside the card's name, in marks: which rule changed which goal (⊢ ⟵ R₁).
-  stepNote: (e, run) => (e.value?.didBy === e.id ? didText(e.value.did, run, { nodeId: e.path?.length ? undefined : e.id }) : null),
+  stepNote: (e, run) => (e.value?.didBy === e.id ? didText(e.value.did, run) : null),
   report: MachineReport,
   reportAside: machineRuleList,
   // Formulas on the cards are typeset in TeX, one face for all of logic's signs.

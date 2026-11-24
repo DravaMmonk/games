@@ -61,37 +61,37 @@ export function machineGeneralNotation(task, test) {
   }))
   return { ...task.notation, symbols: [...Object.keys(BIN), '¬', '∀', '∃', '⊥'], words, propertyWords: false }
 }
-// Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
-// numbered by the board's rule slots (R₁ R₂ …: ./machine.js boardRules; a lone slot plain R). A rule
+// Marks: goals and rule slots are always numbered (⊢₁ ⊢₂ … and R₁ R₂ …). A rule
 // part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no
 // hypotheses keeps its turnstile in front.
-const goalMark = (k, count) => (count > 1 ? `⊢${subscript(k + 1)}` : '⊢')
+export const goalMark = (index = 0) => `⊢${subscript(index + 1)}`
 const markedLine = (mark, text, before = '') => ({ s: [before, mark, text].filter(Boolean).join(' '), formula: true, before, mark, text })
 const goalLine = (g, text, mark) => markedLine(mark, text(g.goal),
   withBinders(g.fixes, g.hyps.map(text).join(punctuation("；"))).trimEnd())
 /** A state's goals, a line each, marked ⊢₁ ⊢₂ … (the run report's boxes hold only these). */
 export const goalLines = (v, task) => {
   const text = machineTextOf(task)
-  return v.goals.map((g, k) => goalLine(g, text, goalMark(k, v.goals.length)))
+  return v.goals.map((g, k) => goalLine(g, text, goalMark(k)))
 }
 /** The rules on the board, a line each, marked R₁ R₂ … (the run report lists them first). */
 export const ruleLines = ({ ruleSlots = [] }, task) => {
   const text = machineTextOf(task)
   const term = machineTermOf(task)
-  return ruleSlots.flatMap(({ entry }, index) => entry ? [{ mark: slotMark(index, ruleSlots.length), text: ruleWritten(entry, text, term) }] : [])
+  return ruleSlots.flatMap(({ entry }, index) => entry ? [{ mark: slotMark(index), text: ruleWritten(entry, text, term) }] : [])
 }
-/** What a tactic did (machine.js `did`), in marks: ⊢ ⟵ R₁ (a rule backwards), ⊢ ≡ R₁ (a rewrite), ⊢ ✓ (a hypothesis
- *  closes it), ⊢ ⤓ (moved to the end). */
-export function didText(did, run, { marksOnly = false, nodeId } = {}) {
-  const goal = goalMark(0, did.goals)
-  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleSlots ?? [], nodeId)).join(' ')
+/** What a tactic did (machine.js `did`), in marks: ⊢₁ ⟵ R₁ (a rule backwards), ⊢₁ ≡ R₁ (a rewrite), ⊢₁ ✓ (a hypothesis
+ *  closes it), ⊢₁ ⤓ (moved to the end). */
+export function didText(did, run, { marksOnly = false } = {}) {
+  const goal = goalMark(did.goalIndex)
+  const rules = citedRules(did, run)
   if (did.op === 'rule') return `${goal} ⟵ ${rules}`
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
   if (did.op === 'rwHyps') return marksOnly ? `Γ ${goal} ≡ ${rules}` : T("{goal} 的已知 ≡ {rules}", { goal, rules })
   if (did.op === 'assumption') return `${goal} ✓ ${rules}`
-  if (did.op === 'searchCheck') return '⊢ ?'
+  if (did.op === 'searchCheck') return `${goal} ?`
   return null
 }
+const citedRules = (did, run) => [...new Set((did.rules ?? []).map((key) => ruleMark(key, run?.ruleSlots ?? [])).filter(Boolean))].join(' ')
 /**
  * What a step of the run report did, in a sentence (its ⓘ): a tactic's work (machine.js `did`), a repeat frame's
  * decision (↻ once more, ↪ out), or why a card could not do its step. Null for a step with nothing to say.
@@ -107,8 +107,8 @@ export function stepExplained(entry, run) {
   if (did.op === 'searchCheck') return did.pruned
     ? T('这一步的目标没有比路径上已有的目标更容易证明。')
     : T('检查了路径上已有的目标，这个候选可以继续搜索。')
-  const goal = goalMark(0, did.goals)
-  const rules = (did.rules ?? []).map((key) => ruleMark(key, run?.ruleSlots ?? [], entry.path?.length ? undefined : entry.id)).join(' ')
+  const goal = goalMark(did.goalIndex)
+  const rules = citedRules(did, run)
   if (did.op === 'rule') return T('倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。', { rules, goal })
   if (did.op === 'rw') return T('用 {rules} 改写目标 {goal}。', { rules, goal })
   if (did.op === 'rwHyps') return T('用 {rules} 改写目标 {goal} 的已知。', { rules, goal })
@@ -170,9 +170,9 @@ function wantOf(task, test) {
     if (!test.becomes.length) return tr("这一步失败", {}, "circuit-readouts")
     const ways = test.becomes.map((way) => {
       if (!way.length) return prose(tr('证完'))
-      const goals = way.map((source) => {
+      const goals = way.map((source, index) => {
         const goal = parseGoal(source)
-        return goalLine(goal, text, goal.hyps.length ? '⊢' : '')
+        return goalLine(goal, text, goalMark(index))
       })
       return { ...formula(goals.map((goal) => goal.s).join(' | ')), goals }
     })

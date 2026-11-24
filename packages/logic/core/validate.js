@@ -279,7 +279,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
       for (const n of level.solution.nodes) {
         for (const [key, value] of Object.entries(n.params ?? {})) {
           const kind = SETTING_KINDS[level.partResources?.[n.type] ?? n.type]?.[key] ?? 'formula'
-          if (typeof value !== 'string' || ['name', 'side', 'form'].includes(key) || !(level.parts[n.type]?.params ?? []).includes(key)) continue
+          if (kind === 'occurrence' || typeof value !== 'string' || ['name', 'side', 'form'].includes(key) || !(level.parts[n.type]?.params ?? []).includes(key)) continue
           // A sentence is built from the parts of the level's sentences; a thing is picked from those offered.
           if (kind === 'formula' || kind === 'exists') {
             const missing = missingChips(parse(value, { consts: level.consts ?? [] }), sentenceChips)

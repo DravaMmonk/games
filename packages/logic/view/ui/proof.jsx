@@ -33,9 +33,19 @@ export const proofScreen = {
   play: { ...proofReadout, runLevel: (task, board, _parts, options) => runProof(task, board, options) },
   settingControls(task, test) {
     const build = language(task, test)
+    const occurrences = (props) => {
+      const { setting, value } = props
+      const [first] = setting.options
+      if (!first?.original) return null
+      const list = setting.control === 'list'
+      const unset = list ? !value?.length : value == null || value === ''
+      const fixed = setting.options.length === 1 && (unset || (list ? value.includes(first.value) : value === first.value))
+      const selected = fixed && unset ? (list ? [first.value] : first.value) : value
+      return <OccurrenceChoice {...props} value={selected} fixed={fixed} text={proofMarkedTextOf(task, test)} />
+    }
     return {
-      select: (props) => props.setting.options[0]?.original
-        ? <OccurrenceChoice {...props} text={proofMarkedTextOf(task, test)} /> : null,
+      select: occurrences,
+      list: occurrences,
       tree: ({ setting, value, onChange, readOnly, id }) => (
         <TreeButton value={value ?? ''} onChange={onChange} build={build} title={setting.label ?? setting.key}
           placeholder={setting.optional ? '—' : T('拼一句')} scope={id} disabled={readOnly} clearable={Boolean(setting.optional)} />

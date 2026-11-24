@@ -9,5 +9,9 @@
       "label": "R"
     }
   ],
+  "settings": {
+    "at": { "from": "logic/backwardPositions(in, rules)" }
+  },
+  "views": { "tile": [{ "show": "value" }] },
   "op": "logic/rule"
 }

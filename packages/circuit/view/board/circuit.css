@@ -17,8 +17,10 @@
 .node { position: absolute; min-width: min-content; padding-bottom: var(--sp-4); border-radius: var(--r-md); background: var(--paper); box-shadow: var(--card); cursor: default; animation: card-in 240ms cubic-bezier(.2, .8, .2, 1); transition: box-shadow 180ms ease; }
 .node::before { content: ''; position: absolute; top: 0; left: 12px; right: 12px; height: 2px; border-radius: 0 0 var(--r-full) var(--r-full); background: var(--fam, var(--muted)); opacity: .85; }
 .node.is-selected { box-shadow: var(--card-lift); }
-/* A card being dragged rides over every other one. */
-.board-layer .node.lift { z-index: 2; }
+/* Lift the card's controls while keeping a frame's backdrop below the wires. */
+.board-layer .node.lift:not(.is-frame),
+.board-layer .node.is-frame.lift > :is(.node-head, .node-ports) { z-index: 2; }
+.board-layer .node.is-frame.lift > .node-head { position: relative; }
 .node-head { box-sizing: border-box; min-height: 34px; padding: var(--sp-2) var(--sp-4); display: flex; align-items: flex-start; gap: var(--sp-2); border-bottom: 1px solid var(--hairline); font-size: 12.5px; cursor: grab; touch-action: none; user-select: none; }
 .node-heading { flex: 1; display: flex; align-items: flex-start; gap: var(--sp-2); min-width: 0; }
 .node-actions { flex: none; display: flex; justify-content: flex-end; align-items: center; gap: var(--sp-1); }
@@ -39,7 +41,7 @@
 .node:not(.is-frame) { width: max-content; max-width: 300px; }
 .node-body:empty { min-width: 0; }
 .node-body > :is(.cs-card, .pf-face.is-card) { padding: 0; }
-.node .formula { font: var(--machine-readout-size, var(--sent-fs))/1.35 var(--sans); letter-spacing: normal; word-spacing: normal; }
+.node .formula { font: var(--formula-size, var(--sent-fs))/1.35 var(--sans); letter-spacing: normal; word-spacing: normal; }
 .node-port-label { position: relative; height: 20px; display: flex; align-items: center; color: var(--muted); font-family: var(--mono); font-size: 10px; white-space: nowrap; }
 .port { --port-outline: 0 0 0; --port-dot-inset: 0px; position: absolute; width: calc(2 * var(--port-radius)); height: calc(2 * var(--port-radius)); border-radius: var(--r-full); transition: transform 160ms ease; }
 .port::before { content: ''; position: absolute; inset: var(--port-dot-inset); border-radius: inherit; background: var(--paper); box-shadow: var(--port-outline) var(--desktop-port-outline-width) var(--fam, var(--ink)); transition: background 160ms ease; }
@@ -690,9 +692,8 @@ part-ref { display: inline; }
 .parts-rules h3 { margin: 0 0 var(--sp-3); color: var(--muted); font: 600 12px var(--mono); letter-spacing: .06em; }
 .parts-rule-list { display: grid; justify-items: start; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; text-align: start; }
 .parts-rule-list > li,
-.parts-article > :is(h2, p) > :is(.typeset-math, .markup-sentence),
-.ph-sheet:has(.cl-sheet) > .ph-sheet-head h2 > :is(.typeset-math, .markup-sentence),
-.cl-sheet :is(.cl-desc, .pf-desc) > :is(.typeset-math, .markup-sentence) {
+.parts-article > h2 > :is(.typeset-math, .markup-sentence),
+.ph-sheet:has(.cl-sheet) > .ph-sheet-head h2 > :is(.typeset-math, .markup-sentence) {
   display: inline-block;
   box-sizing: border-box;
   max-width: 100%;

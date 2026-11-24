@@ -5,6 +5,7 @@
     "gNot",
     "gAnd",
     "gOr",
+    "gXor",
     "gImp",
     "gTrue",
     "gFalse",

@@ -1,0 +1,25 @@
+{
+  "title": "@level.machine-backward-and.title",
+  "tray": "machine-backward-and",
+  "intro": [{ "t": "@level.machine-backward-and.intro.0.t" }],
+  "after": "@level.machine-backward-and.after",
+  "tasks": [
+    {
+      "id": "machine-backward-and",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-backward-and.tasks.machine-backward-and.brief",
+      "hint": ["@level.machine-backward-and.tasks.machine-backward-and.hint.0"],
+      "tests": [
+        { "goal": "Rain ∧ Wind", "hyps": ["Wind", "Rain"] },
+        { "goal": "Coffee ∧ Tea", "hyps": ["Coffee", "Tea"] }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_andI(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ]
+    }
+  ]
+}

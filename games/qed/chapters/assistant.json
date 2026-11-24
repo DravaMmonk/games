@@ -5,18 +5,27 @@
     "question": "@chapter.assistant.chapter.question"
   },
   "levels": [
+    "qed/machine-cite",
     "qed/machine-rewrite",
     "qed/machine-open",
-    "qed/machine-cite",
     "qed/machine-rewrite-first",
+    "qed/machine-rewrite-swap",
+    "qed/machine-backward-and",
+    "qed/machine-rewrite-distribute",
+    "qed/machine-backward-or",
+    "qed/machine-rewrite-demorgan",
+    "qed/machine-backward-bot",
     "qed/machine-open-first",
     "qed/machine-rewrite-twice",
     "qed/machine-rewrite-join"
   ],
   "rows": [
+    ["qed/machine-cite"],
     ["qed/machine-rewrite", "qed/machine-open"],
-    [null, "qed/machine-cite"],
     ["qed/machine-rewrite-first"],
+    ["qed/machine-rewrite-swap", "qed/machine-backward-and"],
+    ["qed/machine-rewrite-distribute", "qed/machine-backward-or"],
+    ["qed/machine-rewrite-demorgan", "qed/machine-backward-bot"],
     ["qed/machine-open-first"],
     ["qed/machine-rewrite-twice", "qed/machine-rewrite-join"]
   ]

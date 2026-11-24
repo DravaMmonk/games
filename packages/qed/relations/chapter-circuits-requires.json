@@ -26,6 +26,10 @@
       "to": "g-imp"
     },
     {
+      "from": "g-xor",
+      "to": "g-always"
+    },
+    {
       "from": "g-imp",
       "to": "g-always"
     },

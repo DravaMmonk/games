@@ -8,7 +8,8 @@ import { numberText } from 'kernel/view'
 
 import { isFixed } from "../../core/board/presets.js"
 import { evalSettings, failedCheck, partDesc, shows } from "../../core/parts/define.js"
-import SettingField, { formulaOptions, valueWords } from "./SettingField.jsx"
+import SettingField, { formulaOptions, listSelectionPending, valueWords } from "./SettingField.jsx"
+import { WORDS } from "../words.js"
 
 // One face of a defined part (games/design/README.md 6.8): the desktop card's body, the phone tile, or the detail both
 // share, as parts/<name>.json's `views` lays it out in blocks (the default where it says nothing). The kernel draws every
@@ -52,12 +53,18 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
   const readOnly = Boolean(ctx?.readOnly) || !set
   const shown = visibleSettings(def, params, defined, node, ctx)
   const list = given ?? blocksOf(def, face)
-  const valueOf = (s) => params[s.key] ?? s.default ?? (s.control === 'list' ? undefined : s.options?.[0]?.value)
+  const configuredValue = (s) => {
+    const value = params[s.key]
+    return s.control === 'list' && s.single && !value?.length ? s.default : value ?? s.default
+  }
+  const valueOf = (s) => configuredValue(s) ?? (s.control === 'list' ? undefined : s.options?.[0]?.value)
   const words = (s) => valueWords(s, valueOf(s))
   const settingLabel = (s) => {
     if (!s.formula) return words(s)
-    const options = formulaOptions(s)
+    const allowed = defined.allowed?.(def.type, s.key)
+    const options = formulaOptions(s).filter(option => !allowed || allowed.includes(option.value))
     const value = valueOf(s)
+    if (s.control === 'list' && listSelectionPending(options, value)) return [L(WORDS.notConfigured)]
     const selected = Array.isArray(value) ? value : []
     const values = s.control === 'list' ? (selected.length ? selected : s.single && options.length === 1 ? [options[0].value] : []) : [value]
     return (s.single ? values.slice(0, 1) : values).flatMap((picked) => {
@@ -67,7 +74,7 @@ export default function PartFace({ def, face, node, ctx, set, defined, phone = f
   }
   const setting = (s, k) => (
     <div key={s.key} className="pf-slot" {...mark(['settings', k])}>
-      <SettingField setting={s} value={params[s.key] ?? s.default} allowed={defined.allowed?.(def.type, s.key) ?? null} readOnly={readOnly || isFixed(node, s.key)} roomy={roomy} phone={phone} widgets={defined.widgets} controls={defined.controls} onChange={(v) => set({ [s.key]: v }, s.key)} />
+      <SettingField setting={s} value={configuredValue(s)} allowed={defined.allowed?.(def.type, s.key) ?? null} readOnly={readOnly || isFixed(node, s.key)} roomy={roomy} phone={phone} widgets={defined.widgets} controls={defined.controls} onChange={(v) => set({ [s.key]: v }, s.key)} />
     </div>
   )
   const block = (b, path, key) => {

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js",
+    "dev": "node --watch --watch-preserve-output --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --configLoader native",
     "build": "npm run build:games",
     "build:game": "node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js build --config vite.game.config.js",
     "lint": "eslint .",
@@ -21,7 +21,7 @@
     "op": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/ops/cli.js",
     "inspect": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/ops/inspect.mjs",
     "mcp": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/engine/ops/mcp.js",
-    "studio": "node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --mode studio --open /studio.html",
+    "studio": "npm run dev -- --mode studio --open /studio.html",
     "build:games": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/app/build.mjs",
     "publish:content": "node --import ../games/kit/engine/package-imports.mjs ../games/kit/app/content.mjs",
     "test": "node test.mjs",

@@ -38,7 +38,7 @@ export function defineCourse({ levels, eras = null, plan: suppliedPlan = null, c
       }
     },
   }
-  course.availableParts = (level) => trayParts(course, level) ?? Object.keys(parts)
+  course.availableParts = (level, _flags, includeUnlisted = false) => (includeUnlisted ? null : trayParts(course, level)) ?? Object.keys(parts)
   return course
 }
 

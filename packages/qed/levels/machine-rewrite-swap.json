@@ -1,0 +1,30 @@
+{
+  "title": "@level.machine-rewrite-swap.title",
+  "tray": "machine-rewrite-swap",
+  "intro": [{ "t": "@level.machine-rewrite-swap.intro.0.t" }],
+  "after": "@level.machine-rewrite-swap.after",
+  "tasks": [
+    {
+      "id": "machine-rewrite-swap",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-rewrite-swap.tasks.machine-rewrite-swap.brief",
+      "hint": ["@level.machine-rewrite-swap.tasks.machine-rewrite-swap.hint.0"],
+      "tests": [
+        {
+          "goal": "Rain → (Wind → Wet)",
+          "hyps": ["Wind → (Rain → Wet)"]
+        },
+        {
+          "goal": "(Bus → (Bike → OnTime)) ∧ Wet",
+          "hyps": ["(Bike → (Bus → OnTime)) ∧ Wet"]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directRewrite-qed_swap(in)",
+        "close = logic/directBackward-logic_assumption(step1)",
+        "out <- close"
+      ]
+    }
+  ]
+}

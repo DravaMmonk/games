@@ -286,6 +286,6 @@ export function useSlotEditing({ graph, onChange, parts, create, label, openNode
     picking, moving, startMove, unpick: () => { setPicking(null); setMoving(null) }, canLand, onPort, onNode, onSlot, nameOf,
     place, placeFirstFree, resizeFrame, remove, canRemove, edit, toast, say: setToast, pickNote,
     history: { ...history, undo: step(history.undo), redo: step(history.redo) },
-    sources, steps, sinks,
+    sources, steps, sinks, order: ordered,
   }
 }

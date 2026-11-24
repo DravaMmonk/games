@@ -24,6 +24,7 @@
         "results": "hidden",
         "output": "target",
         "tileSettings": "hidden",
+        "layout": "lg-proof-level",
         "taskBoard": [
           "title",
           "brief",

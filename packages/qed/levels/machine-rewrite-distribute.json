@@ -1,0 +1,31 @@
+{
+  "title": "@level.machine-rewrite-distribute.title",
+  "tray": "machine-rewrite-swap",
+  "intro": [{ "t": "@level.machine-rewrite-distribute.intro.0.t" }],
+  "after": "@level.machine-rewrite-distribute.after",
+  "tasks": [
+    {
+      "id": "machine-rewrite-distribute",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-rewrite-distribute.tasks.machine-rewrite-distribute.brief",
+      "hint": ["@level.machine-rewrite-distribute.tasks.machine-rewrite-distribute.hint.0"],
+      "tests": [
+        {
+          "goal": "Rain → (Wind → Slip)",
+          "hyps": ["Rain ↔ Wet", "Wind → (Wet → Slip)"]
+        },
+        {
+          "goal": "(Coffee → (Tea → Awake)) ∨ Alarm",
+          "hyps": ["Coffee ↔ Study", "(Tea → (Study → Awake)) ∨ Alarm"]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directRewrite-qed_swap(in)",
+        "step2 = logic/directRewrite-qed_iffSubst(step1)",
+        "close = logic/directBackward-logic_assumption(step2)",
+        "out <- close"
+      ]
+    }
+  ]
+}

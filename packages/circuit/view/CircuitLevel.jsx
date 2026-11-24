@@ -219,7 +219,7 @@ const nothing = { values: new Map(), errors: new Map() }
  *   tabs            false: the tests are picked in the results, not in tabs
  *   scope           names the board for undo (a level's stage; default the level)
  */
-export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsFitRef, resultsTitle, resultsAside, aboveDock, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef }) {
+export default function CircuitLevel({ screen, board, run, stages = null, parts, trayNames, trayControl, trayActions = [], trayParts, defined = null, items = [], folded = [], types, create, defaults = () => ({}), view = nothing, card: faces = {}, canvas = {}, brief, taskNav, results, resultsFitRef, resultsTitle, resultsAside, aboveDock, above, below, follow, describe, sheet, terminalDetail, terminalTitle, details = false, addSheet, packed, words, meta, pad, tabs = true, tileSettings = true, scope, className = '', rootRef, onCardOrder }) {
   const { game, level, phone } = screen
   const stored = board.circuit
   const ownRoot = useRef(null)
@@ -332,7 +332,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
       }))
     }
     return (
-      <PhoneLevel {...{ blocks: blockView, screen, board: displayedBoard, parts, ctx, card: phoneCard, needsSetting, inside, all, trayItems, terminalBody, terminalTitle, trayFolded: display.folded, trayControl, types, make, describeOf, sheet: detailOf, addSheet, size, above, below, follow, results: (resultsTitle || resultsAside) && results ? <><header className="wb-pane-head"><span>{resultsTitle}</span>{resultsAside}</header>{results}</> : results, onClear, root, history, className }} brief={brief} taskNav={taskNav} tests={testTabs} dock={dock} />
+      <PhoneLevel {...{ blocks: blockView, screen, board: displayedBoard, parts, ctx, card: phoneCard, needsSetting, inside, all, trayItems, terminalBody, terminalTitle, trayFolded: display.folded, trayControl, types, make, describeOf, sheet: detailOf, addSheet, size, above, below, follow, results: (resultsTitle || resultsAside) && results ? <><header className="wb-pane-head"><span>{resultsTitle}</span>{resultsAside}</header>{results}</> : results, onClear, root, history, className, onCardOrder }} brief={brief} taskNav={taskNav} tests={testTabs} dock={dock} />
     )
   }
   const detailNode = circuit.nodes.find((node) => node.id === detail)
@@ -351,6 +351,7 @@ export default function CircuitLevel({ screen, board, run, stages = null, parts,
               key={`${level.id}:${board.key ?? ''}`}
               history={history}
               graph={circuit}
+              onCardOrder={onCardOrder}
               onChange={change}
               parts={parts}
               height={canvas.height}
@@ -401,7 +402,7 @@ function blockActions(circuit, parts, change) {
 // The level on a phone: the shared slot board, the tests pinned at the top, the results below the board, the tray and the run
 // bar; a sheet for a card (what it is, its settings and value, the board inside a packed part, move and delete) and
 // for an empty slot.
-function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needsSetting, inside, all, trayItems, trayFolded, trayControl, terminalBody, terminalTitle, types, make, describeOf, sheet: sheetBody, addSheet, size, above, below, follow, results, onClear, root, history, className, brief, taskNav, tests, dock }) {
+function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needsSetting, inside, all, trayItems, trayFolded, trayControl, terminalBody, terminalTitle, types, make, describeOf, sheet: sheetBody, addSheet, size, above, below, follow, results, onClear, root, history, className, brief, taskNav, tests, dock, onCardOrder }) {
   const { circuit: sourceCircuit, change } = board
   const boardRef = useRef(null)
   const availableWidth = useElementSize(boardRef)?.width || Infinity
@@ -427,6 +428,7 @@ function PhoneLevel({ blocks, screen, board, parts: givenParts, ctx, card, needs
     scroller,
     history,
   })
+  useLayoutEffect(() => { onCardOrder?.(editing.order) }, [onCardOrder, editing.order])
   // While a run shows under the board, the page sits at its bottom (no scrolling to watch), until the player scrolls away.
   const pinned = useRef(false)
   const was = useRef(false)

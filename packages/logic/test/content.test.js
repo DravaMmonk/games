@@ -339,6 +339,52 @@ test('a machine reference can use rule cards granted by its task', () => {
 })
 
 
+test('direct machine cards carry across successor trays and stay gated on parallel routes', () => {
+  const { impI, andI } = logicParts.parts
+  const box = 'logic/directBackward-impI'
+  const join = 'logic/directBackward-andI'
+  const machine = (id, tray, goal, card, withholds) => ({
+    id, title: L(id), tray, withholds, tasks: [{ id, kind: 'logic/machine', want: 'logic/becomes',
+      tests: [{ goal }], ...(card && { solution: [`card = ${card}(in)`, 'out <- card'] }),
+    }],
+  })
+  const levelContent = withProgressFixture({
+    partDefs: { parts: { impI, andI } },
+    trays: { boxes: { items: ['impI'] }, joins: { items: ['andI'] }, legacy: { items: ['impI'] } },
+    registries: {
+      'circuit/tray': { boxes: { directRuleCards: true }, joins: { directRuleCards: true } },
+      tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['impI', 'andI'] } },
+    },
+    eras: [{ id: 'prover', chapter: { title: L('Prover') },
+      levels: ['foundation', 'open', 'split', 'parallel', 'later', 'restricted'].map(id => ({ id })),
+      links: [['foundation', 'open'], ['foundation', 'parallel'], ['open', 'split'], ['split', 'later'], ['later', 'restricted']]
+        .map(([from, to]) => ({ from, to })),
+    }],
+    levels: [
+      proofLevel('foundation', { adds: ['impI', 'andI'], tests: [{ premises: { p: 'A' }, goal: 'A' }],
+        cases: [{ A: 'Rain' }], solution: ['goal <- p'] }),
+      machine('open', 'boxes', 'Rain → Rain', box),
+      machine('split', 'joins', 'Rain ∧ Wind', join),
+      machine('parallel', 'joins', 'Rain ∧ Wind', join),
+      machine('later', 'legacy', 'Rain'),
+      machine('restricted', 'legacy', 'Rain', undefined, ['impI']),
+    ],
+  })
+  const logic = logicWorks(levelContent)
+  const at = id => {
+    const task = logic.LEVELS.find(level => level.id === id).tasks[0]
+    const view = logic.machineBoards.forTask(task)
+    const flags = new Set()
+    return { offer: view.offerIn(task, flags), has: view.holdsIn(task, flags) }
+  }
+  assert.deepEqual(at('open').offer.shown, [box])
+  assert.deepEqual(at('split').offer, { shown: [join], folded: [box], types: [join, box] })
+  assert.ok(at('split').has(box))
+  assert.ok(!at('parallel').has(box))
+  assert.ok(at('later').has(box) && at('later').has(join) && at('later').has('impI'))
+  assert.ok(!at('restricted').has(box) && at('restricted').has(join))
+})
+
 test('proof-board lemma cards expose packed boards and selected forms to workshop expansion', () => {
   const logic = logicWorks(withProgressFixture(CONTENT))
   const use = logic.LEVELS.find(level => level.id === 'useChain').tasks[0]

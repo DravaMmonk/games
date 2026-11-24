@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { all, atom, bin, tvar } from '../core/formula.js'
+import { all, atom, bin, fn, tvar } from '../core/formula.js'
 import { sentenceLanguage } from '../core/sentenceLanguage.js'
 
 test('a formula variable is accepted within its own region or in the surrounding scope', () => {
@@ -11,6 +11,18 @@ test('a formula variable is accepted within its own region or in the surrounding
   assert.equal(language.refuse(tree, [0, 0, 0], x), null)
   assert.ok(language.refuse(tree, [1, 0], x))
   assert.equal(language.refuse(tree, [1, 0], y), null)
+})
+
+test('a predicate with a bare display name still shows its argument and editable slot', () => {
+  const language = sentenceLanguage({ words: { P: 'P', R: '{1} follows {0}' } })
+  const [filled] = language.line(atom('P', [fn('a')]))
+  assert.equal(filled.parts[0], 'P(')
+  assert.deepEqual(filled.parts[1].parts, ['a'])
+  assert.equal(filled.parts[2], ')')
+  const [empty] = language.line(atom('P', [null]))
+  assert.ok(empty.parts[1].hole)
+  assert.equal(language.chipText({ group: 'pred', pred: 'P', places: 1 }), 'P(①)')
+  assert.equal(language.chipText({ group: 'pred', pred: 'R', places: 2 }), '② follows ①')
 })
 
 test('infix chips continue a completed predicate inside its quantifier before an outer hole', () => {

@@ -18,18 +18,23 @@ const QUANT = {
   '∃': (name, body) => catalogText('有一个 {name}，{body}', { name, body }),
 }
 // A term in words: a name by its words, a function by its template (mul: '{0}·{1}'), a variable as written.
-function termWords(t, notation, lang) {
+function termWords(t, notation, lang, mark) {
+  const text = renderTerm(t, notation, lang, mark)
+  return mark ? mark(t, text) : text
+}
+
+function renderTerm(t, notation, lang, mark) {
   if (t.t !== 'fn') return showTerm(t)
   // A word with places is a function's: a bare name of the same letter (a thing a box took, c) is just itself.
   const word = sideOf(notation.words?.[t.f], lang)
-  if (!word || (!t.args.length && /\{\d\}/.test(word))) return t.args.length ? `${t.f}(${t.args.map((a) => termWords(a, notation, lang)).join(', ')})` : t.f
-  return t.args.length ? fill(word, t.args, notation, lang) : word
+  if (!word || (!t.args.length && /\{\d\}/.test(word))) return t.args.length ? `${t.f}(${t.args.map((a) => termWords(a, notation, lang, mark)).join(', ')})` : t.f
+  return t.args.length ? fill(word, t.args, notation, lang, mark) : word
 }
 // A template's places filled in. An argument that is itself an operation keeps brackets, (a·b)⁻¹; after a name
 // written in front (S {0}, Vec {0}), any argument applied to something does: S (S 0), Vec (x + y).
-function fill(word, args, notation, lang) {
+function fill(word, args, notation, lang, mark) {
   const prefix = /^[^{\s]+ \{/.test(word)
-  const arg = (a) => (a.t === 'fn' && a.args.length > (prefix ? 0 : 1) ? `(${termWords(a, notation, lang)})` : termWords(a, notation, lang))
+  const arg = (a) => (a.t === 'fn' && a.args.length > (prefix ? 0 : 1) ? `(${termWords(a, notation, lang, mark)})` : termWords(a, notation, lang, mark))
   return word.replace(/\{(\d)\}/g, (_, k) => arg(args[Number(k)]))
 }
 const WORDS = {
@@ -41,6 +46,7 @@ const WORDS = {
 
 /** A formula in a level's notation, in one language ('zh' | 'en'). */
 export function render(f, notation, lang, outer = -1, mark) {
+  if (f.t) return termWords(f, notation, lang, mark)
   const text = renderNode(f, notation, lang, outer, mark)
   return mark ? mark(f, text) : text
 }
@@ -54,14 +60,14 @@ function renderNode(f, notation, lang, outer, mark) {
   switch (f.op) {
     case 'atom': {
       const word = sideOf(notation.words?.[f.pred], lang)
-      if (word && f.args.length) return fill(word, f.args, notation, lang)
-      if (f.pred === '=') return `${termWords(f.args[0], notation, lang)} = ${termWords(f.args[1], notation, lang)}`
+      if (word && f.args.length) return fill(word, f.args, notation, lang, mark)
+      if (f.pred === '=') return `${termWords(f.args[0], notation, lang, mark)} = ${termWords(f.args[1], notation, lang, mark)}`
       // A predicate named on its own (a test case's P := Human) reads with its places left open.
       if (word && !f.args.length) return word.replace(/\{\d\}/g, '…')
       // A predicate without words (a schema's letter, P) keeps its letter, its things in their words: P(安).
-      return f.args.length ? `${f.pred}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : show(f)
+      return f.args.length ? `${f.pred}(${f.args.map((t) => termWords(t, notation, lang, mark)).join(', ')})` : show(f)
     }
-    case 'meta': return f.args?.length ? `${f.name}(${f.args.map((t) => termWords(t, notation, lang)).join(', ')})` : f.name
+    case 'meta': return f.args?.length ? `${f.name}(${f.args.map((t) => termWords(t, notation, lang, mark)).join(', ')})` : f.name
     case '⟹': return `⟦${draw(f.a)}⟧ ⟹ ${draw(f.b)}`
     case '⊥': return known('⊥') ? '⊥' : sideOf(catalogText('矛盾', {}, 'notation'), lang)
     case '¬': return known('¬') ? `¬${draw(f.a, 9)}` : sideOf(catalogText('并非{formula}', { formula: part(f.a) }), lang)

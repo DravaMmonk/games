@@ -4,7 +4,7 @@ import { sourceOf, srcNode } from "../core/wire-source.js"
 import { openCircuit } from "../core/board-view.js"
 import { TaskStatements, VIEWS, valueText } from 'kernel/view'
 
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Dock } from 'kernel/view'
 import { InteractiveDrawing } from 'kernel/view'
 
@@ -17,8 +17,7 @@ import { traceSteps } from '../core/trace.js'
 import { viewAt } from '../core/trace.js'
 
 import { isPart, outputsOf } from "../core/board/model.js"
-import { cardOrder, numberAt } from "../core/board/card-order.js"
-import { phoneBlockBoard, withNewSlots } from "../core/board/blocks.js"
+import { numberAt } from "../core/board/card-order.js"
 import Glyph from "./board/Glyph.jsx"
 import BoardLabel, { BoardLabelContext } from './board/BoardLabel.jsx'
 import { isFixed } from "../core/board/presets.js"
@@ -190,16 +189,20 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   })
   const board = ready ? { ...state, change: (next, options) => state.change(hold(next), options) } : state
   const { circuit: drawn, change } = board
+  const [cardOrder, setCardOrder] = useState([])
+  const onCardOrder = useCallback((order) => {
+    setCardOrder((previous) => previous.length === order.length && previous.every((id, i) => id === order[i]) ? previous : order)
+  }, [])
   const practice = useTraining(level, drawn, change, training, hasPersonal?.(drawn) ? resolve : undefined)
   const stages = useMemo(() => stagesOf({ task: level, board: board.circuit, chain: circuit.stageChain(level, progress.built), isFixed: (n) => kind.isFixed(n.type) }), [level, board.circuit, circuit, progress.built, kind])
   const [alreadySolved] = useState(solved)
   const revealed = alreadySolved || (revealOnPass && solved)
   const { shown: tests, checked, hidden, report, signature } = useMemo(() => ({
     ...runTestGroups(level, revealed, (task, traceCount) => runOn(task, drawn, base.partOf, {
-      traced: true, traceCount, ...(hasPersonal?.(drawn) && { workshopParts: resolve }),
+      traced: true, traceCount, cardOrder, ...(hasPersonal?.(drawn) && { workshopParts: resolve }),
     })),
     signature: circuitWorkStamp({ level, circuit: drawn, parts }, packed.open, course.runtimeReferences),
-  }), [level, revealed, board.version, base, progress.built, library])
+  }), [level, revealed, board.version, base, progress.built, library, cardOrder])
   const first = usePreferredTest(tests)
   const stepsOf = (r) => (timed ? timeline.steps(r).map((tick) => tick.failed ? { ...tick, failed: failureText(tick.failed) } : tick) : r.trace)
   const run = useLevelRun(screen, board, {
@@ -415,15 +418,13 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const named = useMemo(() => {
     if (!logged) return []
     const boardAt = lookupBoard({ circuit: drawn, level, parts }, packed.open)
-    // Each step is marked by its card as the board shows it: the card's icon, and on the level's own board its number
-    // (① ②…, the phone board's reading order).
-    const order = cardOrder(phoneBlockBoard(withNewSlots(drawn, parts), parts), parts)
+    // Each step is marked by the card's icon and, on the level's own board, its visible number.
     const markOf = (e) => {
       const at = boardAt(e.path ?? [])
       const node = at?.circuit.nodes.find((n) => n.id === e.id)
       if (!node || !isPart(at.parts, node)) return null
       const icon = at.parts.icon?.(node)
-      const index = e.path?.length ? -1 : order.indexOf(node.id)
+      const index = e.path?.length ? -1 : cardOrder.indexOf(node.id)
       return <span className="step-card">{icon && <Glyph icon={icon} size={12} strokeWidth={2} />}{index >= 0 && <span className="step-card-num"><BoardLabel label={(game.formatCardNumber ?? numberAt)(index)} /></span>}</span>
     }
     return traceSteps(runOf.trace, {
@@ -435,7 +436,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
       partName: (type) => cards[type]?.name ?? type,
       detail: stepNote && ((e) => stepNote(e, runOf)),
     }).map((step) => ({ ...step, mark: markOf(step.entry) }))
-  }, [logged, runOf, drawn, level, parts, packed, cards])
+  }, [logged, runOf, drawn, level, parts, packed, cards, cardOrder])
   const stepLog = logged && <StepLog steps={named.slice(0, shown.list.length).map((s) => ({ label: s.label, mark: s.mark, detail: s.detail, value: s.value === undefined ? null : <Show value={s.value} scene="card" text={show} />, failed: s.failed }))} at={shown.at} />
   const final = judged
     ? ended && (checked.constraint || (run.hidden?.failed && run.hidden.note))
@@ -486,6 +487,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
         <PlaneExtent.Provider value={extent}>
         <CircuitLevel
           stages={stages}
+          onCardOrder={log || context ? onCardOrder : undefined}
           screen={screen}
           board={training ? { ...board, clear: () => { board.clear(); practice.clear() } } : surface?.busy ? { ...board, change: () => {}, clear: () => {} } : board}
           run={surface?.busy ? { ...run, select: () => {} } : run}

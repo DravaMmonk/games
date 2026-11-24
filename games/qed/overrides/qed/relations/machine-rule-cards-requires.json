@@ -1,8 +1,20 @@
 {
   "edges": {
     "add": [
-      { "from": "qed/iffUse", "to": "qed/machine-rewrite" },
-      { "from": "qed/iffUse", "to": "qed/machine-open" }
+      { "from": "qed/iffUse", "to": "qed/machine-cite" },
+      { "from": "qed/machine-rewrite", "to": "qed/machine-rewrite-first" },
+      { "from": "qed/machine-open", "to": "qed/machine-rewrite-first" },
+      { "from": "qed/machine-rewrite-first", "to": "qed/machine-rewrite-swap" },
+      { "from": "qed/machine-rewrite-first", "to": "qed/machine-backward-and" },
+      { "from": "qed/machine-rewrite-demorgan", "to": "qed/machine-open-first" },
+      { "from": "qed/machine-backward-bot", "to": "qed/machine-open-first" }
+    ],
+    "remove": [
+      { "from": "qed/machine-rewrite", "to": "qed/machine-rewrite-swap" },
+      { "from": "qed/machine-open", "to": "qed/machine-backward-and" },
+      { "from": "qed/machine-rewrite-demorgan", "to": "qed/machine-rewrite-first" },
+      { "from": "qed/machine-backward-bot", "to": "qed/machine-rewrite-first" },
+      { "from": "qed/machine-rewrite-first", "to": "qed/machine-open-first" }
     ]
   }
 }

@@ -2,7 +2,11 @@
   "title": "@level.machine-cite.title",
   "adds": ["logic/assumption"],
   "tray": "machine-cite",
-  "intro": [{ "t": "@level.machine-cite.intro.0.t" }],
+  "intro": [
+    { "t": "@level.machine-cite.intro.0.t" },
+    { "t": "@level.machine-cite.intro.1.t" },
+    { "t": "@level.machine-cite.intro.2.t" }
+  ],
   "after": "@level.machine-cite.after",
   "tasks": [
     {

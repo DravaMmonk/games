@@ -480,6 +480,10 @@ export function* prepareLogicWorks(content) {
   // work), in every shape it proves.
   const directTray = (task) => (course.tray({ id: task.id, task: task.task }) ?? [])
     .some((name) => content.registries?.['circuit/tray']?.[name]?.directRuleCards)
+  const directStarts = TASKS.filter(task => task.kind === 'logic/machine' && (task.directRuleCards || directTray(task)))
+  const directKey = ({ id, task }) => JSON.stringify([id, task])
+  const directStartSet = new Set(directStarts.map(directKey))
+  const directBefore = new Map()
   for (const level of LEVELS.filter((l) => l.tasks.some((t) => t.kind === 'logic/machine' || t.kind === 'logic/script'))) {
     // The equations proved before it (by the levels it comes after), and in a later task its own.
     const proven = content.standalone ? Object.keys(facts) : Object.keys(facts).filter((type) => references.prior('fact', { id: level.id, task: 0 }).some((entry) => entry.type === type))
@@ -489,7 +493,13 @@ export function* prepareLogicWorks(content) {
       const before = references.prior('fact', one).filter(({ task }) => task.id === one.id).map(({ type }) => type)
       one.ruleParts = partsForResource
       one.proofOperations = partRuleResources
-      if (one.kind === 'logic/machine' && directTray(one)) one.directRuleCards = true
+      if (one.kind === 'logic/machine') {
+        const prior = content.standalone ? [] : directStarts.filter(task => task.id === one.id
+          ? task.task < one.task
+          : course.before(task.id, one.id))
+        directBefore.set(directKey(one), prior)
+        if (directStartSet.has(directKey(one)) || prior.length) one.directRuleCards = true
+      }
       one.holds = content.standalone ? Object.keys(content.registries['circuit/part']) : met(course, { id: level.id, task: one.task })
       one.proven = [...new Set([...proven, ...before, ...(later && level.fact ? [level.fact] : [])])]
       const has = holds(course, { id: level.id, task: one.task }, new Set())
@@ -574,12 +584,23 @@ export function* prepareLogicWorks(content) {
   }
   /** Whether a task holds a part, or a shape of one: has(part), has(part, 'form', shape) (../../course.js holds). */
   const holdsIn = (task, flags) => holds(course, at(task), flags)
-  const directOffered = (task, type, flags) => {
-    const direct = directCardsOf(task).get(type)
-    if (!direct) return false
-    // A level's own axioms, and the rule book of numbers it states, come with the level.
-    if (axiomPartsOf(task).includes(direct.source)) return true
-    return course.availableParts(at(task), flags).includes(course.partOf(direct.source))
+  // A direct tray introduces variants. The same variants can travel along its prerequisite path.
+  const offeredDirect = (task, flags) => {
+    const offered = new Set()
+    const current = directCardsOf(task)
+    if (!current.size) return offered
+    const here = new Set(course.availableParts(at(task), flags, true))
+    const add = (origin, carried) => {
+      const available = new Set(course.availableParts(at(origin), flags))
+      const axioms = new Set(axiomPartsOf(origin))
+      for (const [type, { source }] of directCardsOf(origin)) {
+        const part = course.partOf(source)
+        if (current.has(type) && (!carried || here.has(part)) && (available.has(part) || axioms.has(source))) offered.add(type)
+      }
+    }
+    if (directStartSet.has(directKey(task))) add(task, false)
+    for (const origin of directBefore.get(directKey(task)) ?? []) add(origin, true)
+    return offered
   }
   // On the machine board a rule part is only the rules it gives: the proof-board part of the same type (the
   // assumption box's region and assumption, Apply's two inputs) does not define it there.
@@ -587,10 +608,11 @@ export function* prepareLogicWorks(content) {
     const has = holdsIn(task, flags)
     const rules = rulePartsOf(task)
     const direct = directPartsOf(task).defs
+    const offered = offeredDirect(task, flags)
     const definition = (type, fallback) => direct[type] ?? (rules.has(type) && !machineParts[type] ? fallback : has.definition(type, fallback))
     return Object.assign((type, key, value) => {
       if (!direct[type]) return (!directTray(task) || !rules.has(type)) && has(type, key, value)
-      if (!directOffered(task, type, flags)) return false
+      if (!offered.has(type)) return false
       if (key === undefined) return true
       const setting = direct[type].setting[key]
       return Boolean(setting && (value === undefined || !setting.options || setting.options.some(option => String(option.value) === String(value))))
@@ -602,9 +624,7 @@ export function* prepareLogicWorks(content) {
     const shown = base.shown.filter((type) => !sources.has(type))
     const folded = base.folded.filter((type) => !sources.has(type))
     const needed = new Set(course.needed(at(task)))
-    for (const type of directCardsOf(task).keys()) {
-      if (directOffered(task, type, flags)) (needed.has(type) ? shown : folded).push(type)
-    }
+    for (const type of offeredDirect(task, flags)) (needed.has(type) ? shown : folded).push(type)
     return { shown, folded, types: [...shown, ...folded] }
   }
   // The truth circuits as the kernel's circuit screen reads them (gates.js gateCourse).

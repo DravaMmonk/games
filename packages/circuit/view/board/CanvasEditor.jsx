@@ -19,7 +19,7 @@ import { useSetting } from 'kernel/view'
 
 import { useWorkspaceKeys } from 'kernel/view'
 
-import { useEffect, useEffectEvent, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useImperativeHandle, useLayoutEffect, useReducer, useRef, useState } from 'react'
 import { foldedPartsOf } from "../../core/board/folding.js"
 import { ClearButton } from 'kernel/view'
 import { labelledConnections, sourceLabel, blockOwners, wireKey } from "../../core/board/connections.js"
@@ -40,8 +40,7 @@ import { cardPorts, namesPorts, NO_CARD_PORT, portOnCard } from "../../core/boar
 import { moveInto } from "../../core/board/frames.js"
 import { isOpenRegion, regionAddress, regionsOf } from "../../core/board/regions.js"
 import { canRemoveCard, clearSpot, rowSpot, connectWire, ends, inPort, isPart, outPort, parsePort, removeNode, unplugWire, wireRefusal } from "../../core/board/model.js"
-import { cardOrder } from "../../core/board/card-order.js"
-import { phoneBlockBoard, withNewSlots } from "../../core/board/blocks.js"
+import { canvasCardOrder } from "../../core/board/card-order.js"
 import { leavesLockedRegion, lockedCards, lockedRefusal, PRESET_CARD_REFUSAL } from "../../core/board/presets.js"
 import { useCircuitEdits } from "./useCircuitEdits.js"
 import { historyKey } from 'kernel/view'
@@ -120,7 +119,7 @@ function DraftWire({ ref, anchor, fromOutput, pattern }) {
  * choose: a circuit too big for the board at it starts at its top left, and the rest is a pan away. An editable board
  * receives both its change callback and its history. A display without them only pans, zooms and fits.
  */
-export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect, placing = null }) {
+export default function CanvasEditor({ blocks = null, graph, onChange, history, parts, body, head, caption, outNote, cardClass, wireState, height = 230, corner, types, refit = false, minFit = 0, regionNote, resultNote, onTarget, onClear, inspect, onCardOrder, placing = null }) {
   const boardNumber = useBoardNumber()
   const plain = usePlainProse()
   const [connectionLabels] = useSetting('connectionLabels')
@@ -188,9 +187,6 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const byId = new Map(graph.nodes.map((n) => [n.id, n]))
   const findNode = (id) => byId.get(id)
   const appearanceOf = (port) => appearanceAt(parts, findNode, port)
-  // A part is numbered as the phone board numbers it (① ②…, its reading order there), so a run's report and a phone
-  // name the same card the same way.
-  const order = useMemo(() => cardOrder(phoneBlockBoard(withNewSlots(graph, parts), parts), parts), [graph, parts])
   const size = useElementSize(surface)
   const available = size?.width || Infinity
   const widthOf = (node) => node.hiddenBlock ? node.w : cardWidth(parts, node, available)
@@ -225,6 +221,8 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     return [node.id, proposed ?? { x: node.x ?? 0, y: node.y ?? 0 }]
   }))
   const positions = presentation ?? (needsLayout ? freshPlan?.nodes : storedPositions)
+  const order = canvasCardOrder(graph, parts, positions)
+  useLayoutEffect(() => { onCardOrder?.(order) }, [onCardOrder, order])
   const painting = blocks ? layoutAt(freshPlan, positions, dimensions, spacing) : null
   visible = visible.map((node) => atPosition(node, positions))
   const units = new Map(painting?.units.filter((unit) => unit.block).map((unit) => [unit.block, unit]))
@@ -641,7 +639,10 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         draftPointer.current?.(null)
         setDropInto(null)
         setDropBlock(null)
-        if (g.kind === 'part') place(g)
+        if (g.kind === 'part') {
+          place(g)
+          redraw()
+        }
         if (g.kind === 'port' && parsePort(g.id).side === 'out') connectTo(parsePort(g.id).id, g.over)
       },
       end() {

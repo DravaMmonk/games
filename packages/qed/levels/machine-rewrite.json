@@ -1,20 +1,24 @@
 {
   "title": "@level.machine-rewrite.title",
   "tray": "machine-rewrite",
-  "intro": [{ "t": "@level.machine-rewrite.intro.0.t" }, { "t": "@level.machine-rewrite.intro.1.t" }],
+  "intro": [{ "t": "@level.machine-rewrite.intro.0.t" }],
   "after": "@level.machine-rewrite.after",
   "tasks": [
     {
       "id": "machine-rewrite",
       "kind": "logic/machine",
-      "want": "logic/becomes",
+      "want": "logic/proved",
       "brief": "@level.machine-rewrite.tasks.machine-rewrite.brief",
       "hint": ["@level.machine-rewrite.tasks.machine-rewrite.hint.0"],
       "tests": [
-        { "goal": "Rain ∧ Wind", "hyps": ["Rain ↔ Wet"], "becomes": [["Rain ↔ Wet ⊢ Wet ∧ Wind"]] },
-        { "goal": "Wind → Wet", "hyps": ["Wet ↔ Slip"], "becomes": [["Wet ↔ Slip ⊢ Wind → Slip"]] }
+        { "goal": "Rain ∧ Wind", "hyps": ["Rain ↔ Wet", "Wet ∧ Wind"] },
+        { "goal": "Wind → Wet", "hyps": ["Wet ↔ Slip", "Wind → Slip"] }
       ],
-      "solution": ["step1 = logic/directRewrite-qed_iffSubst(in)", "out <- step1"]
+      "solution": [
+        "step1 = logic/directRewrite-qed_iffSubst(in)",
+        "close = logic/directBackward-logic_assumption(step1)",
+        "out <- close"
+      ]
     }
   ]
 }

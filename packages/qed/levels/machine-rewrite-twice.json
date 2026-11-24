@@ -1,6 +1,5 @@
 {
   "title": "@level.machine-rewrite-twice.title",
-  "withholds": ["impI"],
   "tray": "machine-compose",
   "intro": [{ "t": "@level.machine-rewrite-twice.intro.0.t" }],
   "after": "@level.machine-rewrite-twice.after",

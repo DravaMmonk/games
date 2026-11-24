@@ -98,34 +98,33 @@ function after(s, σ, goals, scopes, fixed = []) {
 
 /* ---------- tactics: state → { results: [state] } | { fail } ---------- */
 
-/** rule: the first goal unified with the rule's conclusion, and replaced by its premises. */
-export function rule(s, R) {
-  if (R.fromHypothesis) return assumption(s)
-  const g = s.goals[0]
+/** Unify the chosen goal with the rule's conclusion and replace it in place by its premises. */
+export function rule(s, R, index = 0) {
+  if (R.fromHypothesis) return assumption(s, index)
+  const g = s.goals[index]
   if (!g) return { fail: NO_GOALS }
   const r = renamed(R, metasOfState(s))
   const scopes = { ...s.scopes, ...Object.fromEntries(r.metas.map((m) => [m, fixesOf(g)])) }
   const u = unify([[r.conclusion, g.goal]], s.inst ?? {}, { scopes, fixed: s.fixed ?? [] })
-  if (u.fail) return { fail: T("「{zh}」的结论对不上第一个目标：{zh2}", {zh: { zh: String(R.name.zh), en: String(R.name.en) }, zh2: { zh: String(u.fail.zh), en: String(u.fail.en) }}) }
+  if (u.fail) return { fail: T('「{rule}」的结论对不上第 {index} 个目标：{reason}', { rule: R.name, index: index + 1, reason: u.fail }) }
   const { goals, fixed } = lift(r.premises, g, s)
-  return { results: [after(s, u.σ, [...goals, ...s.goals.slice(1)], scopes, fixed)] }
+  return { results: [after(s, u.σ, s.goals.toSpliced(index, 1, ...goals), scopes, fixed)] }
 }
 
-/** assumption: the first goal unified with one of its hypotheses (each that fits is a result). */
-export function assumption(s) {
-  const g = s.goals[0]
+/** Unify the chosen goal with one of its hypotheses (each that fits is a result). */
+export function assumption(s, index = 0) {
+  const g = s.goals[index]
   if (!g) return { fail: NO_GOALS }
   const results = []
   const why = []
   for (const h of g.hyps) {
     const u = unify([[g.goal, h]], s.inst ?? {}, { scopes: s.scopes ?? {}, fixed: s.fixed ?? [] })
     if (u.fail) { why.push(u.fail); continue }
-    results.push(after(s, u.σ, s.goals.slice(1), s.scopes ?? {}))
+    results.push(after(s, u.σ, s.goals.toSpliced(index, 1), s.scopes ?? {}))
   }
   if (results.length) return { results }
-  return { fail: late(why) ?? NONE }
+  return { fail: late(why) ?? T('第 {index} 个目标和哪一条已知都对不上', { index: index + 1 }) }
 }
-const NONE = T('第一个目标和哪一条已知都对不上')
 
 // Of the reasons unifying failed, the one worth saying: a metavariable that may not become a thing fixed after it.
 const late = (why) => why.find((w) => /之前留下|was left before/.test(w.en)) ?? null

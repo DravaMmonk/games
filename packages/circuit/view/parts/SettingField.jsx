@@ -9,6 +9,7 @@ import { T, tr } from 'kernel/words'
 
 import { iconOf } from "./icons.js"
 import { numberText } from 'kernel/view'
+import { WORDS } from '../words.js'
 
 
 // One setting of a part, the same in every game (games/design/README.md 6.8): a part definition names one of the kernel controls
@@ -24,17 +25,23 @@ const stop = (e) => e.stopPropagation()
 const optionsOf = (setting, allowed) => setting.options.filter((o) => !allowed || allowed.includes(o.value))
 
 // Formula settings with their own options number the forms locally. Rule books supply board-wide marks.
-export const formulaOptions = (s) => s.control === 'select' ? s.options.map((option, index, options) => ({
-  ...option, mark: options.length === 1 ? 'R' : `R${String(index + 1).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])}`,
+export const formulaOptions = (s) => s.control === 'select' ? s.options.map((option, index) => ({
+  ...option, mark: `R${String(index + 1).replace(/\d/g, (d) => '₀₁₂₃₄₅₆₇₈₉'[d])}`,
 })) : s.options
+
+export const listSelectionPending = (options, value) => options.length > 1
+  && !options.some(option => Array.isArray(value) && value.some(picked => String(picked) === String(option.value)))
 
 /** The values picked, in order: × takes one off, the menu after them adds one. */
 function ListControl({ options, value, onChange, readOnly, label, single, formula, id }) {
   const kept = (Array.isArray(value) ? value : []).map(String).filter((v) => options.some((o) => String(o.value) === v))
   const rest = options.filter((o) => !kept.includes(String(o.value)))
   const labelOf = (v) => L(options.find((o) => String(o.value) === v).label ?? v)
+  const pending = formula && listSelectionPending(options, value)
+  const placeholder = pending ? L(WORDS.notConfigured) : '＋'
+  if (readOnly && pending) return <span className="pf-words formula-row">{placeholder}</span>
   if (single) return <FormulaPicker id={id} options={options} value={kept[0] ?? (options.length === 1 ? String(options[0].value) : undefined)}
-    onChange={(picked) => onChange([picked])} readOnly={readOnly || options.length === 1} label={label} placeholder={label} />
+    onChange={(picked) => onChange([picked])} readOnly={readOnly || options.length === 1} label={label} placeholder={pending ? placeholder : label} />
   return (
     <span className="pf-list" role="group" aria-label={label} onPointerDown={stop}>
       {kept.map((v) => (
@@ -44,7 +51,7 @@ function ListControl({ options, value, onChange, readOnly, label, single, formul
         </span>
       ))}
       {rest.length > 0 && !readOnly && (formula
-        ? <FormulaPicker id={id} options={rest} label={label} placeholder="＋" onChange={(picked) => onChange([...kept, picked])} />
+        ? <FormulaPicker id={id} options={rest} label={label} placeholder={placeholder} onChange={(picked) => onChange([...kept, picked])} />
         : <select id={id} value="" aria-label={label} onChange={(e) => e.target.value && onChange([...kept, e.target.value])}>
           <option value="">＋</option>
           {rest.map((o) => <option key={o.value} value={o.value}>{L(o.label ?? o.value)}</option>)}
@@ -56,7 +63,7 @@ function ListControl({ options, value, onChange, readOnly, label, single, formul
 
 function Control({ setting: s, value, onChange, allowed, readOnly, roomy, phone, widgets, controls, id }) {
   const label = s.label ? L(s.label) : s.about ? L(s.about) : s.key
-  const custom = controls?.[s.control]?.({ setting: s, value, onChange, readOnly, id })
+  const custom = controls?.[s.control]?.({ setting: s, value, onChange, readOnly, roomy, id })
   if (custom != null) return custom
   switch (s.control) {
     case 'select':

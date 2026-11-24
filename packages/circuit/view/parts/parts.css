@@ -1,6 +1,6 @@
 /* Defined parts (games/design/README.md 6.8): their faces and setting controls, the same in every game. A card is compact;
    a sheet (`.is-roomy`) and a phone take touch-sized targets. The domain's colour for a part's family is --fam. */
-.pf-face { --formula-size: var(--machine-readout-size, var(--fs-ui)); display: grid; gap: var(--sp-3); min-width: 0; }
+.pf-face { display: grid; gap: var(--sp-3); min-width: 0; }
 .pf-face.is-card { padding: var(--sp-2) var(--sp-4) 0; }
 .pf-face.is-tile { gap: var(--sp-1); justify-items: center; }
 .pf-settings { display: grid; gap: var(--sp-2); min-width: 0; }
@@ -112,7 +112,7 @@
 .pf-list-item { display: inline-flex; align-items: center; gap: var(--sp-1); }
 .pf-list-item button { border: 0; background: none; padding: 0; color: var(--muted); cursor: pointer; }
 .pf-control > .formula-pick, .pf-control > .pf-list { width: 100%; }
-.pf-face :is(.pf-summary, .pf-words, .pf-list-item) .formula { font-size: var(--formula-size); }
+.pf-face :is(.pf-summary, .pf-words, .pf-list-item) .formula { font-size: var(--formula-size, var(--fs-ui)); }
 /* A part with one scene, its detail, on the studio's part page: the drawing (a built part's board), and beside it its
    own fields. */
 .pp-built { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: var(--sp-5); padding: var(--sp-6); align-items: start; min-height: 100%; }

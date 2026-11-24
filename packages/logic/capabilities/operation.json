@@ -357,6 +357,18 @@
       "params": {
         "type": "obj",
         "fields": {
+          "direction": {
+            "type": "oneOf",
+            "values": ["forward", "reverse"],
+            "options": [
+              { "value": "forward", "label": "@capability.operation.items.iffSubst.params.fields.direction.options.0.label" },
+              { "value": "reverse", "label": "@capability.operation.items.iffSubst.params.fields.direction.options.1.label" }
+            ],
+            "label": "@capability.operation.items.iffSubst.params.fields.direction.label",
+            "control": "buttons",
+            "optional": true,
+            "default": "forward"
+          },
           "at": {
             "type": "str",
             "control": "select",
@@ -408,7 +420,7 @@
       "returns": "logic/machine-value",
       "params": {
         "type": "obj",
-        "fields": {}
+        "fields": { "at": { "type": "str", "control": "select", "optional": true } }
       }
     },
     "directBackward": {
@@ -422,7 +434,7 @@
       "returns": "logic/machine-value",
       "params": {
         "type": "obj",
-        "fields": {}
+        "fields": { "at": { "type": "str", "control": "select", "optional": true } }
       }
     },
     "directRewrite": {
@@ -580,11 +592,7 @@
         "type": "obj",
         "fields": {
           "at": {
-            "type": "oneOf",
-            "values": [
-              "goal",
-              "hyps"
-            ],
+            "type": "str",
             "control": "select",
             "optional": true,
             "default": "goal"
@@ -757,6 +765,24 @@
         "type": "obj",
         "fields": {}
       }
+    },
+    "rewriteOccurrences": {
+      "about": "@capability.operation.items.rewriteOccurrences.about",
+      "args": [
+        { "name": "in", "type": "logic/machine-value" },
+        { "name": "rules", "type": "logic/machine-value", "optional": true }
+      ],
+      "returns": "logic/options",
+      "params": { "type": "obj", "fields": {} }
+    },
+    "backwardPositions": {
+      "about": "@capability.operation.items.backwardPositions.about",
+      "args": [
+        { "name": "in", "type": "logic/machine-value" },
+        { "name": "rules", "type": "logic/machine-value", "optional": true }
+      ],
+      "returns": "logic/options",
+      "params": { "type": "obj", "fields": {} }
     },
     "ruleChoices": {
       "about": "@capability.operation.items.ruleChoices.about",

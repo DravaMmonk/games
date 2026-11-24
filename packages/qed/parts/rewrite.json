@@ -21,17 +21,16 @@
   },
   "views": {
     "card": [
-      { "show": "text", "text": "\\(C[s]\\xRightarrow{s=t}C[t]\\)" },
+      { "show": "text", "text": "\\(\\llbracket s=t;\\,C[s]\\rrbracket\\Longrightarrow C[t]\\)" },
       { "show": "settings" },
       { "show": "value" }
     ],
     "tile": [
       { "show": "value" },
-      { "show": "text", "text": "\\(C[s]\\xRightarrow{s=t}C[t]\\)" },
-      { "show": "summary" }
+      { "show": "text", "text": "\\(\\llbracket s=t;\\,C[s]\\rrbracket\\Longrightarrow C[t]\\)" }
     ],
     "detail": [
-      { "show": "text", "text": "\\(C[s]\\xRightarrow{s=t}C[t]\\)" },
+      { "show": "text", "text": "\\(\\llbracket s=t;\\,C[s]\\rrbracket\\Longrightarrow C[t]\\)" },
       { "show": "desc" },
       { "show": "settings" },
       { "show": "value" }

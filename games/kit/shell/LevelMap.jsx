@@ -9,6 +9,7 @@ import { ArrowRight, Check, Lock, LockOpen, Package, RotateCcw, X } from 'lucide
 import { L, tr } from './i18n.js'
 import { useMedia } from './useMedia.js'
 import ChapterRail, { chapterIndexText } from './ChapterRail.jsx'
+import { groupMapRoutes } from './map-routes.js'
 
 // The player's map draws chapter-local prerequisite wires. Cross-chapter gates appear in the prerequisite prompt.
 // Tree geometry in px: node size, the gap between columns, and the gap under a level: `gap` when a chip sits on its
@@ -23,24 +24,22 @@ function plot(track, byId, saved) {
   const requires = new Map(ids.map((id) => [id, (byId.get(id).requires ?? []).filter((from) => byId.has(from))]))
   const { at } = mapRows(ids, requires, { rows: saved })
   const edges = [...requires].flatMap(([to, from]) => from.map((id) => ({ from: id, to, join: from.length > 1 })))
-  return { at, edges }
+  return { at, ...groupMapRoutes(at, edges) }
 }
 
 /**
  * Heights on the tree. Rows order the levels, but each level goes only as low as it has to: below the levels its wires
  * come from and the level above it in its column, each with its own gap under it, and clear of the turns of wires
  * that cross its column. So a column with no chips stays tight however many chips the next column has.
- * at: id → { col, row }; edges: [{ from, to, kind }]; box(id) → { w, h }; below(id) → the gap under it;
- * x(col) → the column's left edge. Returns { top: id → px, turn: edge → px (where it runs across), height }.
+ * Shared routes reserve room for the horizontal rail and its branches above the destination row.
  */
-function stack({ at, edges, box, below, x, w, join }) {
-  const top = new Map(), turn = new Map()
+function stack({ at, edges, joined, box, below, centre, join }) {
+  const top = new Map(), turn = new Map(), junctions = []
   const bottom = (id) => top.get(id) + box(id).h
-  const centre = (id) => x(at.get(id).col) + w / 2
+  const overlaps = (id, left, right) => centre(id) + box(id).w / 2 > left && centre(id) - box(id).w / 2 < right
   const crosses = (id, e) => {
-    const [l, r] = [centre(id) - box(id).w / 2, centre(id) + box(id).w / 2]
     const [a, b] = [centre(e.from), centre(e.to)].sort((p, q) => p - q)
-    return e.from !== id && e.to !== id && r > a && l < b
+    return e.from !== id && e.to !== id && overlaps(id, a, b)
   }
   const turns = (e) => centre(e.from) !== centre(e.to)
   // A wire that joins branches, or skips rows, turns just above its target; any other just below its source.
@@ -48,6 +47,12 @@ function stack({ at, edges, box, below, x, w, join }) {
   const into = (id) => edges.filter((e) => e.to === id)
   const rows = [...new Set([...at.values()].map((p) => p.row))].sort((a, b) => a - b)
   for (const row of rows) {
+    for (const route of joined.filter((route) => route.row === row)) {
+      const xs = [...route.from, ...route.to].map(centre)
+      const left = Math.min(...xs), right = Math.max(...xs)
+      const y = Math.max(...[...top.keys()].filter((id) => overlaps(id, left, right)).map((id) => bottom(id) + below(id)))
+      junctions.push({ ...route, left, right, y })
+    }
     // Levels whose wires turn just above them go first, so the others in the row keep clear of those turns.
     const ids = [...at.keys()].filter((id) => at.get(id).row === row).sort((a, b) => Number(into(b).some(late)) - Number(into(a).some(late)))
     // Early turns into this row: below their source's gap, and below any level they run across.
@@ -60,6 +65,7 @@ function stack({ at, edges, box, below, x, w, join }) {
     for (const id of ids) {
       const p = at.get(id)
       let y = 0
+      for (const route of junctions) if (overlaps(id, route.left, route.right)) y = Math.max(y, route.y + join)
       for (const e of into(id).filter((e) => top.has(e.from))) {
         y = Math.max(y, bottom(e.from) + below(e.from))
         if (turn.has(e)) y = Math.max(y, turn.get(e) + join)
@@ -76,7 +82,40 @@ function stack({ at, edges, box, below, x, w, join }) {
   }
   const ids = [...at.keys()]
   const height = Math.max(0, ...ids.map((id) => bottom(id) + (below.chip(id) ? below(id) : 0)))
-  return { top, turn, height }
+  return { top, turn, junctions, height }
+}
+
+function wireStyle(lit, optional) {
+  return `${optional ? 'is-optional' : ''} ${lit ? 'is-lit' : ''}`
+}
+
+const turnFromVertical = (x, y, dx) => `Q${x} ${y} ${x + dx} ${y}`
+
+function JoinedRoute({ route, centre, top, bottom, solved, byId }) {
+  const { from, to, left, right, y } = route
+  const lit = from.every((id) => solved.has(id))
+  const optional = (id) => byId.get(id)?.optional
+  const sharedOptional = to.every(optional)
+  const branches = [
+    ...from.map((id) => ({ id, x: centre(id), end: bottom(id), lit: solved.has(id), optional: sharedOptional })),
+    ...to.map((id) => ({ id, x: centre(id), end: top.get(id), lit, optional: optional(id) })),
+  ]
+  // Branches in the same outside column curve into the same endpoint of the rail.
+  const radius = (x) => Math.min(R, ...branches.filter((branch) => branch.x === x)
+    .map((branch) => Math.abs(branch.end - y)))
+  const leftRadius = radius(left), rightRadius = radius(right)
+  const arm = ({ x, end }) => {
+    const dx = x === left ? leftRadius : x === right ? -rightRadius : 0
+    const direction = Math.sign(end - y)
+    const turning = y + direction * Math.abs(dx)
+    return `M${x} ${end}V${turning}${dx ? turnFromVertical(x, y, dx) : ''}`
+  }
+  return (
+    <g className="map-wire-join">
+      <path className={wireStyle(lit, sharedOptional)} d={`M${left + leftRadius} ${y}H${right - rightRadius}`} />
+      {branches.map((branch) => <path key={branch.id} className={wireStyle(branch.lit, branch.optional)} d={arm(branch)} />)}
+    </g>
+  )
 }
 
 /** A level's button on the map: its number, title and kind (or best score), how it stands, and opening it. */
@@ -105,11 +144,12 @@ function LevelButton({ game, level, style, solved, all, best, current, next, nee
 
 export function LevelTree({ game, track, rows, byId, solved, all, best = () => null, current, next, compact, onOpen, needed = null }) {
   const { w, h, col, gap, plain, minor } = compact ? SIZE.compact : SIZE.full
-  const { at, edges } = useMemo(() => plot(track, byId, rows), [track, byId, rows])
+  const { at, direct, joined } = useMemo(() => plot(track, byId, rows), [track, byId, rows])
   const scroll = useRef(null)
   const spots = [...at.values()]
   const half = Math.max(0, ...spots.map((p) => Math.abs(p.col)))
   const x = (c) => (c + half) * (w + col)
+  const centre = (id) => x(at.get(id).col) + w / 2
   const width = x(half) + w
   // Each level's badges, worked out once per render: the layout asks for them again and again (stack below), and a
   // game's badges look back over every level before (mapBadges).
@@ -121,7 +161,8 @@ export function LevelTree({ game, track, rows, byId, solved, all, best = () => n
   const box = (id) => (minorIds.has(id) ? minor : { w, h })
   const chip = (id) => Boolean(byId.get(id) && chipOf(byId.get(id)).length)
   const below = Object.assign((id) => (chip(id) ? gap : plain), { chip })
-  const { top, turn, height } = stack({ at, edges, box, below, x, w, join: plain / 2 })
+  const { top, turn, junctions, height } = stack({ at, edges: direct, joined, box, below, centre, join: plain / 2 })
+  const bottom = (id) => top.get(id) + box(id).h
   // Start a tree wider than the screen on its main path.
   useLayoutEffect(() => {
     const el = scroll.current
@@ -134,8 +175,7 @@ export function LevelTree({ game, track, rows, byId, solved, all, best = () => n
   // One whose drop would run through a level steps aside first, into the nearest gap clear of every level on the way
   // (the side it is heading for first), and comes back in at its turn.
   const wire = (e) => {
-    const a = at.get(e.from), b = at.get(e.to)
-    const x1 = x(a.col) + w / 2, y1 = top.get(e.from) + box(e.from).h, x2 = x(b.col) + w / 2, y2 = top.get(e.to)
+    const x1 = centre(e.from), y1 = bottom(e.from), x2 = centre(e.to), y2 = top.get(e.to)
     const yb = x1 === x2 ? y2 - plain / 2 : turn.get(e)
     const hit = through(e, x1, y1, yb)
     if (hit.length) {
@@ -146,7 +186,7 @@ export function LevelTree({ game, track, rows, byId, solved, all, best = () => n
     }
     if (x1 === x2) return `M${x1} ${y1}V${y2}`
     const s = Math.sign(x2 - x1), r = Math.max(0, Math.min(R, yb - y1, y2 - yb))
-    return `M${x1} ${y1}V${yb - r}Q${x1} ${yb} ${x1 + s * r} ${yb}H${x2 - s * r}Q${x2} ${yb} ${x2} ${yb + r}V${y2}`
+    return `M${x1} ${y1}V${yb - r}${turnFromVertical(x1, yb, s * r)}H${x2 - s * r}Q${x2} ${yb} ${x2} ${yb + r}V${y2}`
   }
   const node = (level, p) => {
     if (!level) return null
@@ -158,7 +198,8 @@ export function LevelTree({ game, track, rows, byId, solved, all, best = () => n
     <div className="map-tree-scroll" ref={scroll}>
       <div className={`map-tree ${compact ? 'is-compact' : ''}`} style={{ width, height }}>
         <svg className="map-wires" width={width} height={height} aria-hidden="true">
-          {edges.map((e) => <path key={`${e.from}-${e.to}`} className={`${byId.get(e.to)?.optional ? 'is-optional' : ''} ${solved.has(e.from) ? 'is-lit' : ''}`} d={wire(e)} />)}
+          {direct.map((e) => <path key={`${e.from}-${e.to}`} className={wireStyle(solved.has(e.from), byId.get(e.to)?.optional)} d={wire(e)} />)}
+          {junctions.map((route) => <JoinedRoute key={route.to[0]} route={route} centre={centre} top={top} bottom={bottom} solved={solved} byId={byId} />)}
         </svg>
         {[...at].map(([id, p]) => node(byId.get(id), p))}
         {[...at].map(([id, p]) => byId.get(id) && <UnlockChip key={`u-${id}`} items={chipOf(byId.get(id))} style={{ left: x(p.col) + w / 2, top: top.get(id) + box(id).h + gap / 2, maxWidth: w + col }} />)}

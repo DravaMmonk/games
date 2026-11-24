@@ -43,6 +43,21 @@ export const scaleOf = el => el.getBoundingClientRect().width / el.offsetWidth |
 /** The card under a press, excluding its ports and controls. Nested cards own their presses. */
 export const cardAt = el => el.closest('[data-p], button, a, input, select, textarea, label') ? null : el.closest('[data-part]');
 
+/** Preview a move and return the element to its original inline position on release. */
+export function dragOffset(el) {
+  const { style } = el;
+  if (el.matches('.node.is-frame')) {
+    // A transformed frame traps its backdrop above the shared wire layer.
+    const { marginLeft, marginTop } = style;
+    return (dx, dy) => {
+      style.marginLeft = dx === undefined ? marginLeft : `calc(${marginLeft || '0px'} + ${dx}px)`;
+      style.marginTop = dy === undefined ? marginTop : `calc(${marginTop || '0px'} + ${dy}px)`;
+    };
+  }
+  const { transform } = style;
+  return (dx, dy) => { style.transform = dx === undefined ? transform : `${transform} translate(${dx}px, ${dy}px)`; };
+}
+
 /**
  * Enable dragging inside `root`. handlers() → { start?(g), move?(g), drop(g), end?(), scroller?, portAt? } | null, read at each
  * pointerdown; `scroller` names the pane to auto-scroll when it is not an ancestor of what is dragged (a board above a
@@ -75,7 +90,8 @@ export function enableDrag(root, handlers) {
     draggedPointer = g.pointerId;
     root.classList.add('dragging', `drag-${g.kind}`);
     if (g.kind === 'part') {
-      g.style = { transform: g.el.style.transform, transition: g.el.style.transition };
+      g.offset = dragOffset(g.el);
+      g.transition = g.el.style.transition;
       g.el.classList.add('lift');
       g.el.style.transition = 'none';
     }
@@ -95,7 +111,7 @@ export function enableDrag(root, handlers) {
     g.dx = (g.x - g.x0) / g.sc;
     g.dy = (g.y - g.y0 + g.scroller.scrollTop - g.st0) / g.sc;
     if (!preview) return;
-    if (g.kind === 'part') g.el.style.transform = `translate(${g.dx}px, ${g.dy}px)`;
+    g.offset?.(g.dx, g.dy);
     if (g.ghost) g.ghost.style.transform = `translate(${g.x - 40}px, ${g.y - 26}px)`;
     if (g.h.move) g.h.move(g);
   }
@@ -130,7 +146,10 @@ export function enableDrag(root, handlers) {
     g = null;
     root.classList.remove('dragging', 'armed', `drag-${done.kind}`);
     done.el.classList.remove('lift', 'armed');
-    if (done.style) Object.assign(done.el.style, done.style);
+    if (done.offset) {
+      done.offset();
+      done.el.style.transition = done.transition;
+    }
     if (done.ghost) done.ghost.remove();
     if (done.over) done.over.classList.remove('over');
     if (done.on) {

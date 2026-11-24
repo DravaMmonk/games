@@ -1,9 +1,15 @@
 {
   "title": "@tag.machine-rule-cards.title",
   "values": [
+    "machine-cite",
     "machine-rewrite",
     "machine-open",
-    "machine-cite",
+    "machine-rewrite-swap",
+    "machine-backward-and",
+    "machine-rewrite-distribute",
+    "machine-backward-or",
+    "machine-rewrite-demorgan",
+    "machine-backward-bot",
     "machine-rewrite-first",
     "machine-open-first",
     "machine-rewrite-twice",

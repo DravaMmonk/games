@@ -18,7 +18,7 @@ export function audit(source, { game, progress, saved }) {
   const [board] = level.boards
   // The tabs are the level's cases and its letters (work.js caseViews): the same declaration and cases read in other
   // words; each runs the cases and says what it finds in its own.
-  const tabs = level.views?.map(({ label }) => ({ label })) ?? [{ label: level.ruleAudit ? T("待检验规则") : T("这份声明") }]
+  const tabs = level.views?.map(({ label, symbolic }) => ({ label, symbolic })) ?? [{ label: level.ruleAudit ? T("待检验规则") : T("这份声明") }]
   const reports = new Map()
   const report = (work, k = 0) => {
     if (reports.get(k)?.work !== work) {

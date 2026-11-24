@@ -87,7 +87,6 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   const pickedLevel = picked?.at?.level ?? null
   const [drawerTab, setDrawerTab] = usePref('copy-drawer-tab', 'audit')
   const [layout, setLayout] = usePref('copy-layout', { tree: 240, audit: 200, side: 380, treeOpen: true, auditOpen: true, sideOpen: true })
-  const [resize, setResize] = useState(null)
   useEffect(() => remember(opened, scope, file), [opened, scope, file])
   useEffect(() => {
     setRawNames(null)
@@ -152,9 +151,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
   // A game edits only its own files here; its packages' texts get its own wording in the table.
   const sideField = picked && (side === 'package' || picked.at.game) ? picked : null
-  const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
-  const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
-  const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
+  const style = { '--tree-w': `${layout.treeOpen ? layout.tree : 0}px`, '--audit-h': `${layout.audit}px`, '--side-w': `${layout.sideOpen ? layout.side : 0}px` }
   // ⌘/Ctrl+Enter plays from the level of the text picked (else the map), as Arrange plays the level picked.
   useWorkspaceKeys((event) => {
     if (!(event.metaKey || event.ctrlKey) || event.key !== 'Enter' || !content) return
@@ -163,7 +160,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
   })
   const ready = content && vocab
   return (
-    <div className={`studio ${resize ? 'is-resizing' : ''}`}>
+    <div className="studio">
       <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}
         mobilePanels={ready && { panel: mobilePanel, onChange: showMobilePanel }}>
         <button type="button" className={`studio-open-name ${['games', 'packages'].includes(shownList) ? 'is-on' : ''}`} onClick={() => { setList(opened.game ? 'games' : 'packages'); showMobilePanel('tree', true) }}
@@ -223,7 +220,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
                 </nav>
               )}
           </aside>
-          <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
+          <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} setLayout={setLayout} />
           <main className="studio-main" {...mobilePanelProps('main')}>
             {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
               onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
@@ -241,7 +238,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
                 </article>}
             </div>
           </main>
-          <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
+          <PanelResizer side="side" size={layout.side} open={layout.sideOpen} setLayout={setLayout} />
           <aside className="studio-side" {...mobilePanelProps('side')}>
             {shownList === 'games' ? <JsonFile name={`${pickedOpen.games}/game.json`} value={games.find((g) => g.id === pickedOpen.games)?.file} note={tr("在编排里编辑")} />
               : shownList === 'packages' ? <JsonFile name={`${pickedOpen.packages}/package.json`} value={packages.find((p) => p.id === pickedOpen.packages)?.file} note={tr("只读：手改文件")} />
@@ -250,7 +247,7 @@ export default function CopyStudio({ opened, packages, games, onOpen, space, cat
               tabs={[]} selection={sideField?.at ?? { game: true }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}
               onNavigate={(path) => pick({ at: sideField.at, path })} />}
           </aside>
-          {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open {...resizer} />}
+          {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open setLayout={setLayout} />}
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}

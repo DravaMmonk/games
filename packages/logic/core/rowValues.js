@@ -32,6 +32,7 @@ export function declarationValues(level, rules, change, scope) {
   return {
     className: 'lg-rule-table',
     head: level.target ? { name: singleRule ? T("结论") : T("待验证结论"), goal: words(sentenceOf(level, level.target)), end: T('为真。') } : null,
+    empty: T('无可推导情形'),
     rows: rules.map((rule, k) => ({
       name: T("可推导情形"), mark: numbered ? k + 1 : undefined,
       toggle: !auto && level.thing && { on: rule.binds.length > 0, label: T("任取 {binder}", {binder}), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },
@@ -82,7 +83,7 @@ export function declaration(level) {
     initial: (saved) => saved?.rules ?? [blankRule()],
     keep: (rules) => ({ rules }),
     judge: Object.assign((rules, at = 0) => judgeAt(at)(rules), { checks: judgeAt(0).checks }),
-    tabs: level.views?.map(({ label }) => ({ label })),
+    tabs: level.views?.map(({ label, symbolic }) => ({ label, symbolic })),
     rows: (rules, change, scope, at = 0) => declarationValues(inView(level, at), rules, change, scope),
     lines: (rules, read, at = 0) => problemsOf(level, rules).length ? [] : ruleLines(inView(level, at), linesOf(rules), read),
     passed: T('这份声明符合需求。'),

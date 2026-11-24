@@ -253,7 +253,7 @@
   "level.in-loop.intro.0.t": "有人这样「定义」一个函数：f x = S (f x)。定义板不会收下它：要算 f 0，先得算 f 0，永远算不完。假如收下了，会怎样？",
   "level.in-loop.tasks.in-loop.brief": "设计一个证明器，证完每一个目标。",
   "level.in-loop.tasks.in-loop.hint.0": "先逆用「先证一句」，用「不等于后继」制造矛盾需要的目标。再从已知中选定实例。",
-  "level.in-loop.tasks.in-loop.hint.1": "用「逆用 · 套用」制造矛盾所需的前提，再用「逆用 · 引用已知」收尾。",
+  "level.in-loop.tasks.in-loop.hint.1": "用「逆用 · 套用」制造矛盾所需的前提，再用「逆用 · 照抄」收尾。",
   "level.in-loop.tasks.in-loop.inputs.0.label": "目标",
   "level.in-loop.title": "停不下来的定义",
   "level.in-noteq.intro.0.t": "没有哪个数等于它自己的后一个：\\(x\\neq S\\) x。",

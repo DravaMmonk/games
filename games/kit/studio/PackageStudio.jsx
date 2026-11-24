@@ -154,7 +154,6 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
   const [moving, setMoving] = useState(null) // the levels being moved in the tree
   const [layout, setLayout] = usePref('layout', { tree: 240, audit: 220, side: 380, treeOpen: true, auditOpen: true, sideOpen: true })
   const openSide = () => setLayout((l) => (l.sideOpen ? l : { ...l, sideOpen: true }))
-  const [resize, setResize] = useState(null)
   const [savedSide, setSide] = usePref('side', 'tree')
   // The list the address names wins over the one last shown.
   useLayoutEffect(() => { if (HEADING && !HEADING_KINDS.includes(HEADING.kind)) setSide(listOfHeading(HEADING.kind)); else if (OPENED.list) setSide(OPENED.list) }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -782,9 +781,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
 
   const ready = content && vocab
   const pickedIds = playOrder.filter((id) => picked.has(id))
-  const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
-  const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
-  const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
+  const style = { '--tree-w': `${layout.treeOpen ? layout.tree : 0}px`, '--audit-h': `${layout.audit}px`, '--side-w': `${layout.sideOpen ? layout.side : 0}px` }
   // A new level: blank (of a kind, when the package has several), or a copy of the one picked (greyed when none is).
   const levelAdds = !content ? [] : [
     ...(levelChoices.length ? [{ value: levelChoices.length === 1 ? levelChoices[0].value : 'blank', label: tr("新建关卡"), ...(levelChoices.length > 1 && { children: levelChoices }) }] : []),
@@ -842,7 +839,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
     git: compared.own,
   }
   return (
-    <div className={`studio ${moving ? 'is-moving' : ''} ${resize ? 'is-resizing' : ''}`}>
+    <div className={`studio ${moving ? 'is-moving' : ''}`}>
       <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: togglePanel }}
         onPalette={() => openOverlay('palette')} mobilePanels={ready && { panel: mobilePanel, onChange: showMobilePanel }}>
         <button type="button" className={`studio-open-name ${side === 'packages' ? 'is-on' : ''}`} onClick={() => { showList('packages'); showMobilePanel('tree', true) }} title={L(packageInfo.desc)}>
@@ -889,7 +886,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
               : <Tree game={game} grouping={grouping('level', levelsBy, setLevelsBy)} namespace={namespace} content={content} order={playOrder} at={at} selectedTask={field?.path?.[0] === 'tasks' ? field.path[1] ?? null : null} picked={picked} setPicked={setPicked} onSelect={openTreeItem} moving={moving} setMoving={setMoving} onMove={move} labels={rawNames?.levels} onTask={(task) => onTaskGo({ task })} onTaskMove={moveTask} stage={listStage('level')} onStage={openStage('level')}
                   addOptions={levelAdds} onAdd={addLevel} /> }
           </aside>
-          <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
+          <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} setLayout={setLayout} />
           <main className="studio-main" {...mobilePanelProps('main')}>
             {objectList && (
               <div className="studio-scroll">
@@ -928,7 +925,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
 
             />
           </main>
-          <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
+          <PanelResizer side="side" size={layout.side} open={layout.sideOpen} setLayout={setLayout} />
           <aside className="studio-side" {...mobilePanelProps('side')}>
             {side === 'packages' ? <JsonFile name={`${pickedPackage}/package.json`} value={packages.find((p) => p.id === pickedPackage)?.file} note={tr("只读：没有改它的操作，手改文件")} />
               : sideCtx && (objectList || heading
@@ -939,7 +936,7 @@ export default function PackageStudio({ pkg, packages, games = [], onPackage, on
                 tabs={inspectorTabs} selection={inspectorSelection} onToggleTab={toggleInspectorTab} onOpenTab={openInspectorTab} onCloseTab={closeInspectorTab}
                 onNavigate={(path, trail) => pickField(path, false, null, trail)} />)}
           </aside>
-          {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open {...resizer} />}
+          {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open setLayout={setLayout} />}
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => togglePanel('audit')} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               audit={<Audit items={items} fresh={fresh} last={last} at={at} busy={busy} open={layout.auditOpen && drawerTab === 'audit'} onOpen={() => openDrawer('audit')} onJump={jumpTo} advice={advice} />}

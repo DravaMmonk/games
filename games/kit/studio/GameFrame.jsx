@@ -71,9 +71,11 @@ export default function GameFrame({ visible, content, play, object, stage = null
   useEffect(() => {
     if (ready) send({ type: 'look', theme, lang })
   }, [ready, theme, lang])
+  // The field mark is message data and can be rebuilt by the editor without changing the selection.
+  const pickedKey = JSON.stringify(picked ?? null)
   useEffect(() => {
-    if (ready) send({ type: 'edit', on: edit, picked })
-  }, [ready, edit, picked, play, object])
+    if (ready) send({ type: 'edit', on: edit, picked: JSON.parse(pickedKey) })
+  }, [ready, edit, pickedKey])
   useEffect(() => {
     if (ready && go) send({ type: 'go', task: go.task })
   }, [ready, go])

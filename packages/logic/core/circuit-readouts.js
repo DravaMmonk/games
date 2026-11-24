@@ -2,7 +2,7 @@ import { punctuation } from 'kernel'
 // Case inputs and values as the circuit screen and text play show them.
 import { L, getLang } from "kernel"
 import { T, tr } from 'kernel/words'
-import { parse } from './formula.js'
+import { BIN, allVars, parse, signature } from './formula.js'
 import { inputsOf, inputsOfLevel, parseGoal, ruleMark, ruleWritten, slotMark, subscript } from './machine.js'
 import { render, say, sayTerm } from './notation.js'
 import { printTerm } from './pterm.js'
@@ -36,6 +36,31 @@ const proofEntries = ({ task, test, run }) => {
 
 export const machineTextOf = (task) => (f) => L(say(f, task.notation))
 export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
+
+/** Read one machine case symbolically without changing its clauses, goals or tests. */
+export function machineGeneralNotation(task, test) {
+  const { in: input } = inputsOf(test, task)
+  const goals = (rows) => rows.flatMap(({ hyps, goal }) => [...hyps, goal])
+  const formulas = [
+    ...(input.kind === 'state' ? goals(input.goals) : input.set.map(clauseFormula)),
+    ...(test.becomes ?? []).flatMap(way => goals(way.map(parseGoal))),
+  ]
+  const { preds, fns } = signature(formulas)
+  const named = [...preds].filter(([name, arity]) => arity === 0 && !/^[A-Z]\d*$/.test(name))
+  const used = new Set([...preds.keys(), ...fns.keys()])
+  for (const formula of formulas) allVars(formula, used)
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  let next = 0
+  const words = Object.fromEntries(named.map(([name]) => {
+    let letter
+    do {
+      const k = next++
+      letter = letters[k % letters.length] + (k < letters.length ? '' : Math.floor(k / letters.length))
+    } while (used.has(letter))
+    return [name, letter]
+  }))
+  return { ...task.notation, symbols: [...Object.keys(BIN), '¬', '∀', '∃', '⊥'], words, propertyWords: false }
+}
 // Marks: a goal is its turnstile, numbered when a state has more than one (⊢₁ ⊢₂ …, a lone goal plain ⊢); a rule is R,
 // numbered by the board's rule slots (R₁ R₂ …: ./machine.js boardRules; a lone slot plain R). A rule
 // part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no

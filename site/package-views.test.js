@@ -25,9 +25,9 @@ after(async () => {
 test('notation labels keep accessible text and use vectors for signs and circled numbers', async () => {
   const entry = new URL('../packages/notation/view/index.jsx', import.meta.url).pathname
   const { NotationLabel } = await loadModule(entry)
-  const label = String.raw`\mark{circle-2} \mark{backward} 引用已知 \mark{rewrite}`
+  const label = String.raw`\mark{circle-2} \mark{backward} 照抄 \mark{rewrite}`
   const html = renderToString(createElement(NotationLabel, { label }))
-  assert.match(html, /notation-label-text">2 (?:逆用|backward) 引用已知 (?:改写|rewrite)<\/span>/)
+  assert.match(html, /notation-label-text">2 (?:逆用|backward) 照抄 (?:改写|rewrite)<\/span>/)
   assert.match(html, /notation-label-art" aria-hidden="true"/)
   assert.deepEqual([...html.matchAll(/<svg [^>]*data-mark="([^"]+)"/g)].map((match) => match[1]), ['circle-2', 'backward', 'rewrite'])
   assert.equal(renderToString(createElement(NotationLabel, { label: 'Given' })), 'Given')

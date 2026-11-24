@@ -103,7 +103,6 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     showMobilePanel('main')
   }
   const [layout, setLayout] = usePref('game-layout', { tree: 220, audit: 200, side: 360, treeOpen: true, auditOpen: true, sideOpen: true })
-  const [resize, setResize] = useState(null)
   useEffect(() => {
     setRawNames(null)
     setField(null)
@@ -328,9 +327,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
     if (path.length) pickField(path)
   }
   const sideCtx = vocab && content && { vocabulary: vocab.vocabulary, levels: content.levels.map((l) => l.id), names, levelOptions, lang: getLang(), onSetting: () => {}, onSettings: () => {}, onPart: () => {} }
-  const shownLayout = resize ? { ...layout, [resize.side]: resize.size } : layout
-  const style = { '--tree-w': `${layout.treeOpen ? shownLayout.tree : 0}px`, '--audit-h': `${shownLayout.audit}px`, '--side-w': `${layout.sideOpen ? shownLayout.side : 0}px` }
-  const resizer = { setLayout, previewResize: setResize, dragging: resize !== null }
+  const style = { '--tree-w': `${layout.treeOpen ? layout.tree : 0}px`, '--audit-h': `${layout.audit}px`, '--side-w': `${layout.sideOpen ? layout.side : 0}px` }
   // ⌘/Ctrl+Enter plays the level picked (else the game, from its map), as the build workspace plays a level.
   useWorkspaceKeys((event) => {
     if (!(event.metaKey || event.ctrlKey) || event.key !== 'Enter' || !content) return
@@ -340,7 +337,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
   const ready = content && vocab
   const busyEditing = saving || shown?.ops !== ops
   return (
-    <div className={`studio ${resize ? 'is-resizing' : ''}`}>
+    <div className="studio">
       <StudioBar space={space} ops={ops} catalog={catalog} busy={busy || !fresh} onUndo={ops.length ? () => back(ops.length - 1) : null} onRedo={redo.length ? again : null} panels={{ tree: layout.treeOpen, side: layout.sideOpen, onToggle: (which) => setLayout((l) => ({ ...l, [`${which}Open`]: !l[`${which}Open`] })) }}
         mobilePanels={ready && { panel: mobilePanel, onChange: showMobilePanel }}>
         <button type="button" className={`studio-open-name ${gamesShown ? 'is-on' : ''}`} onClick={() => { setSide('games'); showMobilePanel('tree', true) }} title={tr("选择游戏")}>
@@ -392,7 +389,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
               ))}
             </nav>)}
           </aside>
-          <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} {...resizer} />
+          <PanelResizer side="tree" size={layout.tree} open={layout.treeOpen} setLayout={setLayout} />
           <main className="studio-main" {...mobilePanelProps('main')}>
             {playOpened && <GameFrame visible={playing} content={content} play={playAt} task={0} go={null} edit={false} picked={null} editable={false}
               onEdit={() => {}} onMessage={() => {}} onRoot={() => {}}
@@ -418,7 +415,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
                 </>)}
             </div>
           </main>
-          <PanelResizer side="side" size={layout.side} open={layout.sideOpen} {...resizer} />
+          <PanelResizer side="side" size={layout.side} open={layout.sideOpen} setLayout={setLayout} />
           <aside className="studio-side" {...mobilePanelProps('side')}>
             {/* The right column is the file: the open game's game.json edited here, another game's read as JSON. */}
             {gamesShown && pickedGame !== game ? <JsonFile name={`${pickedGame}/game.json`} value={games.find((g) => g.id === pickedGame)?.file} note={tr("打开这款游戏后在这里编辑")} />
@@ -431,7 +428,7 @@ export default function GameStudio({ game, games, onGame, onMade, packages = [],
               tabs={[]} selection={at?.game ? { game: true } : { era: e }} onToggleTab={() => {}} onOpenTab={() => {}} onCloseTab={() => {}}
               onNavigate={(path) => pickField(path)} />}
           </aside>
-          {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open {...resizer} />}
+          {layout.auditOpen && <PanelResizer side="audit" size={layout.audit} open setLayout={setLayout} />}
           <aside className="studio-audit">
             <Drawer open={layout.auditOpen} tab={drawerTab} onTab={openDrawer} onToggle={() => setLayout((l) => ({ ...l, auditOpen: !l.auditOpen }))} sum={auditSum(items, last)} fresh={fresh} ops={ops}
               tabs={['audit', 'changes', 'debug']}

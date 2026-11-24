@@ -17,7 +17,7 @@ import { playbackMark } from './run-marks.js'
 //   final?()         why the whole run fails though every test passed (over budget…), or ''
 //   onSolve()        every test passed
 //   onFail?(run)     a run stopped short of passing (a step or a test failed, or `final` had something to say)
-//   onTest?(k)       the run moved on to test k
+//   onTest?(k, restored)  the run moved on to test k, or was restored there
 //   board            anything that changes the board: a new one cancels the run
 //   kept?            the last run's paused position or completed verdict, restored without reporting an outcome again
 //   immediate        show the first step as soon as the player starts
@@ -75,6 +75,7 @@ export function usePlayback({ count, stepsOf, check, final, onSolve, onFail, onT
     return { ...r, board }
   })
   const run = held?.board === board ? held : null
+  const restored = useRef(run)
   const setRun = (r) => setHeld(r && { ...r, board })
   useEffect(() => onKeep?.(playbackMark(run)), [run?.n, run?.playing, run?.over, board])
 
@@ -84,7 +85,7 @@ export function usePlayback({ count, stepsOf, check, final, onSolve, onFail, onT
     const id = setTimeout(() => setRun(advanceBy(run, stride)), per)
     return () => clearTimeout(id)
   }, [run])
-  useEffect(() => { if (run) onTest?.(run.test) }, [run?.test])
+  useEffect(() => { if (run) onTest?.(run.test, run === restored.current) }, [run?.id, run?.test])
   const passed = Boolean(run?.over && run.results.length === count && run.results.every((x) => x.pass) && !run.final)
   // An explicit run reports its outcome once, even when it finishes before rendering an intermediate step.
   const reported = useRef(run?.over ? run.id : null)

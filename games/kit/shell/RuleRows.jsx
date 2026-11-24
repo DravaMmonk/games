@@ -17,8 +17,9 @@ import { FormulaText } from './FormulaText.jsx'
 //             says when only read), add?: { label, text?, run() }, drop?: { label, run() } }]
 //   editor   { title(row, slot), render(row, slot), close?(row, slot) } | null
 //   more     { text, run() } | null       blank   what an unfinished slot says       wide   names as wide as they read
+//   empty    what the table says when it has no rows
 
-export default function RuleRows({ head = null, rows, editor = null, more = null, blank, wide = false, className = '' }) {
+export default function RuleRows({ head = null, rows, editor = null, more = null, blank, empty, wide = false, className = '' }) {
   const [sheet, setSheet] = useState(null) // { row, slot, anchor }: the slot being written, and its button
   const buttons = useRef({}) // each slot's button, by `${row}.${slot}`
   // A slot just added gets its editor once its button is there to point at.
@@ -43,6 +44,7 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
           <span className="rr-body">{head.goal === undefined ? head.body : <><b className="rr-goal"><FormulaText text={head.goal} /></b><span className="rr-end">{L(head.end)}</span></>}</span>
         </div>
       )}
+      {!rows.length && empty && <div className="rr-row"><span className="rr-empty">{L(empty)}</span></div>}
       {rows.map((row, k) => (
         <div key={k} className={`rr-row${row.head ? ' is-head' : ''}`}>
           <span className="rr-name">{row.when && <>{L(row.when)} ⟹ </>}{row.equation ? <><b><FormulaText text={row.name} /></b> =</> : L(row.name)}{row.mark !== undefined && <i>{row.mark}</i>}</span>

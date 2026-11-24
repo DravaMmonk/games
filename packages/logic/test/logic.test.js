@@ -12,6 +12,7 @@ import { checkDeclaration, linesOf, premiseChips, problemsOf, readRuleRows } fro
 import { runOutputTests } from '../../../games/kit/engine/test-run.js'
 import { bin, parse, same, show, subst, substMany, tvar } from '../core/formula.js'
 import { render } from '../core/notation.js'
+import { machineGeneralNotation, machineReadout } from '../core/circuit-readouts.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
 import { MACHINE_BOARD, MACHINE_TESTS, RULE_CHOICES, RULE_DEFINITION, boardRules, directCardsOf, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
@@ -621,6 +622,18 @@ test('a rewrite changes the first place its left side fits, under quantifiers to
   const simp = simplify(startState(parseS('plus(s(s(zero)), s(zero)) = s(s(s(zero)))')), [book['def.0'], book['def.1']])
   assert.deepEqual(goals(simp), ['s(s(s(zero))) = s(s(s(zero)))'])
   assert.ok(simplify(startState(parseS('¬(Rain ∨ Wind)')), [book['dm.notOr'], book['dm.andNot']]).fail)
+})
+
+test('a machine case uses the same symbolic letters in its input and expected result', () => {
+  const task = { notation: { symbols: ['↔', '∧'], words: { Rain: 'it rains', Wet: 'it is wet', Wind: 'it is windy' } } }
+  const test = { hyps: ['Rain ↔ Wet'], goal: 'Rain ∧ Wind', becomes: [['Rain ↔ Wet ⊢ Wet ∧ Wind']] }
+  const general = { ...task, notation: machineGeneralNotation(task, test) }
+  const [input, output] = machineReadout.entries({ task: general, test })
+  assert.equal(machineReadout.show(input.given, { task: general }), 'A ↔ B ⊢ A ∧ C')
+  assert.equal(machineReadout.show(output.want, { task: general }), 'A ↔ B ⊢ B ∧ C')
+  assert.equal(test.goal, 'Rain ∧ Wind')
+  assert.deepEqual(machineGeneralNotation(task, { goal: 'Rain ∧ A' }).words, { Rain: 'B' })
+  assert.deepEqual(Object.keys(machineGeneralNotation(task, { clauses: ['Rain', '¬Rain ∨ Wind'] }).words).sort(), ['Rain', 'Wind'])
 })
 
 test('equivalent substitution replaces one selected occurrence and avoids capture', () => {

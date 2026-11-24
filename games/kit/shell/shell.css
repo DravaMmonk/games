@@ -751,6 +751,7 @@ button.formula-pick, .formula-option { cursor: pointer; }
 .brief-skip { padding: var(--sp-3) var(--sp-4); border: 1px solid var(--rule); border-radius: var(--r-md); background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
 
 .rr-empty { color: var(--faint); font-style: normal; font-size: var(--fs-small); }
+.rr-row > .rr-empty { grid-column: 1 / -1; color: var(--muted); }
 
 /* Value tables. */
 .vt-stage { max-width: 720px; margin: 0 auto; padding: var(--sp-7) var(--sp-7) var(--sp-8); display: grid; gap: var(--sp-6); }

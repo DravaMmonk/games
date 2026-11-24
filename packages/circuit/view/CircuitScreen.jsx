@@ -116,6 +116,7 @@ import "./training.css"
 //                         picked there rather than in tabs; a run goes down it a row at a time, with no steps inside
 //   told?(task, test) → [{ label?, text }]   lines the task says, under it (a sentence, a script to follow)
 //   usePreferredTest?(tests) → index of the case shown first, without moving it in the run
+//   useDisplayTask?(task, test) → the task's presentation for this case, never used for computation
 //   readouts?(task, board, report) → [{ value, label }]   the numbers under the task (Readouts.jsx)
 //   log                   a board run once keeps a step log under its results (StepLog.jsx): every step run so far, the
 //                         card named after the built parts it is in, what it gave or why it failed, the current one marked
@@ -151,6 +152,7 @@ function Value({ value, error, show, of, views, idle = false }) {
 
 const noWorld = () => null
 const noPreferredTest = () => undefined
+const sameDisplayTask = (task) => task
 
 function useBoardParts({ screen, course, base, cards, portLabels, defined, ready, traySource }) {
   const { flags, level: { source: level } } = screen
@@ -165,7 +167,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, usePreferredTest = noPreferredTest, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, context, training, testLabel, usePreferredTest = noPreferredTest, useDisplayTask = sameDisplayTask, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -233,9 +235,11 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const shown = run.playback.shown(run.at)
   // A value in words: in the words of the task and of the test on view.
   const onView = tests[run.at] ?? null
-  const show = (v) => showOf(v, { task: level, test: onView, run: runOf })
+  const displayTask = useDisplayTask(level, onView)
+  const display = { task: displayTask, test: onView, run: runOf }
+  const show = (v) => showOf(v, display)
   // What a card draws of a value: the domain's own drawing (`typeset`), else its words.
-  const cardShow = typeset ? (v) => (v === undefined || v === null || typeof v === 'string' ? show(v) : typeset(v, { task: level, test: onView, run: runOf })) : show
+  const cardShow = typeset ? (v) => (v === undefined || v === null || typeof v === 'string' ? show(v) : typeset(v, display)) : show
   const at = !run.run ? (timed ? 0 : -1) : shown.list.length ? (shown.at >= 0 ? shown.at : shown.list.length - 1) : -1
   const tick = timed && at >= 0 ? timeline.steps(runOf)[at] : null
   // Report boards preview a test until playback reaches it. Once reached, cards show only that test's played steps.
@@ -265,7 +269,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const test = sampled ? null : tests[run.at]
   const ran = ended || !run.run
   const upTo = (list) => list.map((v, t) => (run.run && t <= at ? v : undefined))
-  const testEntries = table && !outputTarget ? [] : entries?.({ task: level, test, run: runOf, sample: sampled?.want ?? null, judged: ended }) ?? []
+  const testEntries = table && !outputTarget ? [] : entries?.({ ...display, test, sample: sampled?.want ?? null, judged: ended }) ?? []
   const offered = testEntries.map((e) => (!('got' in e) ? e : timed ? { ...e, got: upTo(e.got) } : ran ? e : { ...e, got: undefined }))
   const targetOf = (node, ctx) => outputTarget && !ctx.path.length && ctx.board.parts.role(node) === 'sink'
     ? offered.find((entry) => entry.of === node.id && entry.want !== undefined)
@@ -357,10 +361,10 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const definedFaces = useMemo(() => defined && {
     ...defined,
     allowed,
-    controls: settingControls?.(level, onView),
-    options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(level, onView, runOf), node } }, defined.ops),
+    controls: settingControls?.(displayTask, onView),
+    options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(displayTask, onView, runOf), node } }, defined.ops),
     value: (node, ctx, output, face) => (face === 'detail' && inspect ? inspect(node, ctx) : output != null ? <Value value={valueOf(node, output, ctx.view)} error={ctx.view.errors.get(node.id)} idle={ctx.view.idle} show={cardShow} of={valueKey(ctx, sourceOf(node.id, output))} views={valueViews?.(ctx.board.level ?? level, node, valueOf(node, output, ctx.view))} /> : ctx.board.parts.outputs(node) ? null : value(node, ctx)),
-  }, [defined, inspect, allowed, level, onView, drawn, runOf, valueViews, settingControls])
+  }, [defined, inspect, allowed, level, displayTask, onView, drawn, runOf, valueViews, settingControls])
 
   const itemOf = (type) => {
     if (known?.(type)) return { type, label: resolve.definition(type).name, desc: resolve.definition(type).description, icon: CircuitBoard, family: 'built', packed: true }
@@ -440,7 +444,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   const results = reportOnly
     // Only the run's report: a box of one size under the board, there before any run.
     ? <div className="cs-report">{outcome}{Report
-      ? <Report steps={logged ? named.slice(0, shown.list.length) : []} at={logged ? shown.at : -1} started={hasPlayback} ended={ended} run={runOf} task={level} test={test} show={show} phone={onPhone} />
+      ? <Report steps={logged ? named.slice(0, shown.list.length) : []} at={logged ? shown.at : -1} started={hasPlayback} ended={ended} run={runOf} task={displayTask} test={test} show={show} phone={onPhone} />
       : stepLog || (!hasPlayback && <p className="cs-report-empty">{L(WORDS.reportEmpty)}</p>)}</div>
     : <>{outcome}{stepLog}</>
   // A table of cases: a row a test, what the board gives on each as the run reaches it (before a run, on the row picked).
@@ -525,7 +529,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
           describe={(n) => (known?.(n.type) ? resolve.definition(n.type).description : BUILT[n.type] ? builtDefinitions[n.type].desc ?? cards[n.type]?.desc : kind.isFixed(n.type) || !cards[n.type] ? null : game.textAt(cards[n.type], level.id, n.type)?.desc)}
           results={showResults ? strip : undefined}
           resultsFitRef={cases ? casesRef : undefined}
-          aboveDock={showResults && !onPhone && reportAside?.({ run: runOf, task: level })}
+          aboveDock={showResults && !onPhone && reportAside?.({ run: runOf, task: displayTask })}
           pad={surface?.pad ? <Dock pad={surface.pad} /> : undefined}
           tabs={!table || !showResults}
           words={{ go: L(says.go ?? (judged ? WORDS.check : WORDS.run)), done: L(says.done ?? WORDS.passed) }}

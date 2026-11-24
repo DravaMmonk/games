@@ -47,11 +47,10 @@ export default function Workbench({ rootRef: given, className = '', brief, taskN
       const trim = padding(body) + parseFloat(getComputedStyle(strip).borderTopWidth)
       const panelRoom = panel ? parseFloat(getComputedStyle(panel).minHeight) + parseFloat(getComputedStyle(panel.parentElement).rowGap) : 0
       const outer = height(head) + trim
-      strip.style.setProperty('--world-min', `${outer + height(dock) + panelRoom}px`)
-      if (content) {
-        const resultHeight = height(content) + padding(content.parentElement) + height(paneHead)
-        strip.style.setProperty('--world-fit', `${Math.ceil(outer + resultHeight)}px`)
-      }
+      const minimum = outer + height(dock) + panelRoom
+      const fit = content && Math.ceil(outer + height(content) + padding(content.parentElement) + height(paneHead))
+      strip.style.setProperty('--world-min', `${minimum}px`)
+      if (content) strip.style.setProperty('--world-fit', `${fit}px`)
     }
     updateSize()
     const observer = new ResizeObserver(updateSize)
@@ -136,13 +135,28 @@ function WorldHandle() {
   const down = (event) => {
     if (event.button > 0 || !event.isPrimary) return
     event.preventDefault()
+    event.currentTarget.focus({ preventScroll: true })
     const strip = handle.current.parentElement
     const bottom = strip.getBoundingClientRect().bottom
+    const workspace = strip.parentElement.getBoundingClientRect().height
+    if (!workspace) return
     const original = strip.style.getPropertyValue('--world-h')
+    let share
+    let frame = null
     track(event, {
-      move(next) { size(bottom - next.clientY) },
-      finish(commit) {
+      capture: true,
+      move(next) {
+        share = Math.max(0, (bottom - next.clientY) / workspace * 100)
+        if (frame !== null) return
+        frame = requestAnimationFrame(() => {
+          frame = null
+          setShare(strip, share)
+        })
+      },
+      finish(commit, release) {
+        if (frame !== null) cancelAnimationFrame(frame)
         if (!commit) strip.style.setProperty('--world-h', original)
+        else if (share !== undefined) size(bottom - release.clientY)
       },
       escape: true,
     })

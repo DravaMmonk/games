@@ -184,6 +184,11 @@
 /* Formulas typeset in TeX: one face for every sign; a value's lines left-aligned, prose in the page's face. */
 .tx-lines { display: grid; gap: 1px; justify-items: start; text-align: left; min-width: 0; }
 .tx-line { display: block; max-width: 100%; text-align: left; }
+:is(.tx-proof-result, .lg-occurrences) { --proof-result-size: var(--sent-fs); }
+:is(.tx-proof-result, .lg-occurrences) .tx-line.formula { font-size: var(--proof-result-size); }
+@media (max-width: 760px) {
+  :is(.tx-proof-result, .lg-occurrences) { --proof-result-size: var(--fs-ui); }
+}
 .tx-marked > .tx-line { display: inline; }
 .mr-note { color: var(--accent-ink); }
 .tx-line .katex { white-space: normal; }

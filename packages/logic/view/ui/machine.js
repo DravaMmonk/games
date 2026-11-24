@@ -5,15 +5,21 @@
 // the results show the test's inputs, what it wants and what reaches the result. Values (equations, proof states,
 // clause sets, rules) read as lines of text.
 import { T } from 'kernel/words'
+import { useMemo } from 'react'
 import { withPreset } from 'circuit'
 import { directCardsOf, runMachine } from '../../core/machine.js'
 import { presetFor } from '../../core/work.js'
-import { didText, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
+import { didText, machineGeneralNotation, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
+import { useGeneralForm } from '../general-form.js'
 import MachineReport, { machineRuleList } from './MachineReport.jsx'
 import { typesetMachine } from './Formula.jsx'
 
 export const machineScreen = {
   course: (game) => game.logic.machineBoards,
+  useDisplayTask(task, test) {
+    const general = useGeneralForm()
+    return useMemo(() => general && test ? { ...task, notation: machineGeneralNotation(task, test) } : task, [general, task, test])
+  },
   traySource: (task, type) => directCardsOf(task).get(type)?.source,
   play: { ...machineReadout, runLevel: (task, board, _parts, options) => runMachine(task, board, { traced: true, ...options }) },
   context: (task, _test, run) => ({ task, text: machineTextOf(task), term: machineTermOf(task), ruleSlots: run?.ruleSlots }),

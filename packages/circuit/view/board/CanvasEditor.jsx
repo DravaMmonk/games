@@ -7,6 +7,7 @@ import { useElementSize } from 'kernel/view'
 import { usePointerSession } from 'kernel/view'
 
 import useBlockDrag from "./useBlockDrag.js"
+import useCanvasCamera from './useCanvasCamera.js'
 import { containerUnderPointer } from "../../core/board/dropTarget.js"
 import { assignBlock, rectangleMembers } from "../../core/board/blocks.js"
 import { WORDS } from '../words.js'
@@ -18,7 +19,7 @@ import { useSetting } from 'kernel/view'
 
 import { useWorkspaceKeys } from 'kernel/view'
 
-import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useImperativeHandle, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { foldedPartsOf } from "../../core/board/folding.js"
 import { ClearButton } from 'kernel/view'
 import { labelledConnections, sourceLabel, blockOwners, wireKey } from "../../core/board/connections.js"
@@ -86,6 +87,18 @@ function pointerPose(pointers) {
   return { mid, spread }
 }
 
+/** Pointer motion changes only the draft path. The board supplies its anchored endpoint. */
+function DraftWire({ ref, anchor, fromOutput, pattern }) {
+  const [pointer, setPointer] = useState(null)
+  useImperativeHandle(ref, () => setPointer, [])
+  if (!anchor || !pointer) return null
+  const path = fromOutput ? curve(anchor, pointer) : curve(pointer, anchor)
+  return <g className="kw is-draft" data-wire-pattern={pattern}>
+    <path className="kw-line" d={path} />
+    {pattern === 'double' && <path className="kw-gap" d={path} />}
+  </g>
+}
+
 /**
  * @param graph, onChange(graph, { keep })   `keep`: a change to save that does not change what the circuit computes
  *   (a card moved, a view switched), so the game need not re-run it.
@@ -112,7 +125,11 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const plain = usePlainProse()
   const [connectionLabels] = useSetting('connectionLabels')
   const readOnly = !onChange
-  const [view, setView] = useState({ x: 0, y: 0, zoom: 1 })
+  const surface = useRef(null)
+  const layer = useRef(null)
+  const grid = useRef(null)
+  const readout = useRef(null)
+  const { view, setView, flush: flushCamera } = useCanvasCamera(layer, grid, readout)
   const protectedIds = lockedCards(graph)
   const removable = (node) => canRemoveCard(parts, node, protectedIds)
   const [presentation, setPresentation] = useState(null)
@@ -138,16 +155,16 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const { track: trackSelection, cancel: cancelSelection } = usePointerSession()
   const lastModes=useRef(new Map())
   const [selected, setSelected] = useState(null) // { node: id } or { wire }
-  const [drag, setDrag] = useState(null)
+  const [dragFrom, setDragFrom] = useState(null)
   const [dropBlock, setDropBlock] = useState(null)
   const [dropInto, setDropInto] = useState(null) // the region a dragged card would go into, lit while it hovers
   const [picking, setPicking] = usePickedPort(graph, parts)
-  const [pointer, setPointer] = useState(null) // where the pointer is on the board while a dot is picked
+  const draftPointer = useRef(null)
   // A new pick (or none) starts without a pointer, so the draft wire waits for the pointer to move instead of reaching
   // for where the last pick's pointer was.
   const pick = (dot) => {
     setPicking(dot)
-    setPointer(null)
+    draftPointer.current?.(null)
   }
   // Where the dots and cards are drawn (in the layer's own pixels), measured after each render: { ports, sizes }.
   const [geo, setGeo] = useState({ ports: {}, sizes: {} })
@@ -167,8 +184,6 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const timer = setTimeout(() => setRefused(null), 4200)
     return () => clearTimeout(timer)
   }, [refused])
-  const surface = useRef(null)
-  const layer = useRef(null)
   const pointers = useRef(new Map())
   const byId = new Map(graph.nodes.map((n) => [n.id, n]))
   const findNode = (id) => byId.get(id)
@@ -253,14 +268,14 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     for (const el of ownIn(root, '[data-p]')) {
       const box = el.getBoundingClientRect()
       const card = el.closest('[data-node]')
-      if (card) offsets[el.dataset.p] = (box.top + box.height / 2 - card.getBoundingClientRect().top) / view.zoom
+      if (card) offsets[el.dataset.p] = (box.top + box.height / 2 - card.getBoundingClientRect().top) / view.current.zoom
       ports[el.dataset.p] = pointIn(root, box.left + box.width / 2, box.top + box.height / 2).map(Math.round)
     }
     const sizes = {...geoRef.current.sizes}
     for (const el of ownIn(root, '[data-node]')) sizes[el.dataset.node] = [el.offsetWidth, el.offsetHeight]
     // Resolve preset collisions on first measurement and when live previews change size, never on a drag alone.
     const resized = Object.entries(sizes).some(([id, size]) => size.some((value, k) => value !== geoRef.current.sizes[id]?.[k]))
-    if (resized && !groups.length && !drag && !readOnly) {
+    if (resized && !groups.length && !dragFrom && !readOnly) {
       const drawn = painting ? { ...graph, nodes: graph.nodes.map((node) => atPosition(node, positions)) } : graph
       const opening = !Object.keys(geoRef.current.sizes).length
       const aligned = opening && !blocks ? alignTerminals(drawn, sizes, parts.role) : drawn
@@ -381,7 +396,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   // results pane, panning and zooming keep the current camera.
   const known = useRef(null)
   useLayoutEffect(() => {
-    if (moving.current || drag || geoRef.current !== geo) return
+    if (moving.current || dragFrom || geoRef.current !== geo) return
     const board = surface.current
     if (!board?.clientWidth || !board.clientHeight) return
     const { clientWidth: width, clientHeight: height } = board
@@ -389,14 +404,15 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     const before = known.current
     known.current = { cards, width }
     if (!before || !fitted.current || blocks?.keepView) return
+    const { x, y, zoom } = view.current
     const visibleIn = ([left, top, right, bottom], w) => (
-      left * view.zoom + view.x >= -1 && top * view.zoom + view.y >= -1 &&
-      right * view.zoom + view.x <= w + 1 && bottom * view.zoom + view.y <= height + 1
+      left * zoom + x >= -1 && top * zoom + y >= -1 &&
+      right * zoom + x <= w + 1 && bottom * zoom + y <= height + 1
     )
     for (const [id, bounds] of cards) {
       const previous = before.cards.get(id)
       if (!visibleIn(bounds, width) && (!previous || visibleIn(previous, before.width))) {
-        fit(view.zoom)
+        fit(zoom)
         break
       }
     }
@@ -472,16 +488,16 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     pointers.current.set(event.pointerId, [event.clientX, event.clientY])
   }
   const movePointer = (event) => {
-    if (picking) setPointer(pointIn(layer.current, event.clientX, event.clientY))
+    if (picking) draftPointer.current?.(pointIn(layer.current, event.clientX, event.clientY))
     const active = pointers.current
     if (!active.has(event.pointerId)) return
     const before = pointerPose(active)
     active.set(event.pointerId, [event.clientX, event.clientY])
     const now = pointerPose(active)
-    const box = event.currentTarget.getBoundingClientRect()
+    const box = before.spread > 0 ? event.currentTarget.getBoundingClientRect() : null
     setView((v) => {
       let { x, y, zoom } = v
-      if (before.spread > 0) {
+      if (box) {
         const next = clampZoom(zoom * (now.spread / before.spread))
         const k = next / zoom
         const cx = now.mid[0] - box.left
@@ -491,9 +507,11 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         zoom = next
       }
       return { zoom, x: x + now.mid[0] - before.mid[0], y: y + now.mid[1] - before.mid[1] }
-    })
+    }, true)
   }
-  const endPan = (event) => pointers.current.delete(event.pointerId)
+  const endPan = (event) => {
+    if (pointers.current.delete(event.pointerId)) flushCamera()
+  }
 
   useEffect(() => {
     const node = surface.current
@@ -601,7 +619,10 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     handlers.current = {
       start(g) {
         if (g.kind === 'part') choose(byId.get(g.id))
-        if (g.kind === 'port') pick(null)
+        if (g.kind === 'port') {
+          pick(null)
+          if (parsePort(g.id).side === 'out') setDragFrom(g.id)
+        }
       },
       move(g) {
         if (g.kind === 'part') {
@@ -612,19 +633,20 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
           setDropBlock(blockAt(g))
         }
         if (g.kind === 'port' && parsePort(g.id).side === 'out') {
-          const [x, y] = pointIn(layer.current, g.x, g.y)
-          setDrag({ from: parsePort(g.id).id, x, y })
+          draftPointer.current?.(pointIn(layer.current, g.x, g.y))
         }
       },
       drop(g) {
-        setDrag(null)
+        setDragFrom(null)
+        draftPointer.current?.(null)
         setDropInto(null)
         setDropBlock(null)
         if (g.kind === 'part') place(g)
         if (g.kind === 'port' && parsePort(g.id).side === 'out') connectTo(parsePort(g.id).id, g.over)
       },
       end() {
-        setDrag(null)
+        setDragFrom(null)
+        draftPointer.current?.(null)
         setDropInto(null)
         setDropBlock(null)
         redraw()
@@ -744,7 +766,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
     )
   }
 
-  const dragBlock=useBlockDrag({graph,parts,layer,zoom:view.zoom,onChange,redraw,positions:painting?.nodes})
+  const dragBlock=useBlockDrag({graph,parts,layer,view,onChange,redraw,positions:painting?.nodes})
   const stageFrame = (block) => {
     const { x, y, w, h } = units.get(block.id)
     const hidden = block.view === 'hidden'
@@ -793,19 +815,13 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
   const selectedNode = selected?.node ? byId.get(selected.node) : null
   const canDelete = !selectionRefusal && (Boolean(selectedWire) || removable(selectedNode))
 
-  const draft = (port, d) => {
-    const appearance = appearanceOf(port).wire ?? DEFAULT_WIRE_PATTERN
-    return <g className="kw is-draft" data-wire-pattern={appearance}>
-      <path className="kw-line" d={d} />
-      {appearance === 'double' && <path className="kw-gap" d={d} />}
-    </g>
-  }
+  const draftPort = dragFrom ?? picking
 
   return (
     <div className={`kit-board ${picking ? 'is-picking' : ''} ${readOnly ? 'is-readonly' : ''}`} ref={surface} onPointerDownCapture={partitioning ? beginPartition : undefined}
       onPointerDown={beginPan} onPointerMove={movePointer} onPointerUp={endPan} onPointerCancel={endPan} onLostPointerCapture={endPan}>
-      <div className="board-grid" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${20 * view.zoom}px ${20 * view.zoom}px` }} />
-      <div className="board-layer" ref={layer} style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})`, transformOrigin: '0 0' }}>
+      <div className="board-grid" ref={grid} />
+      <div className="board-layer" ref={layer}>
         {groups.map(stageFrame)}
         <svg className="board-wires" width="4000" height="3000">
           {graph.wires.map((wire) => {
@@ -836,8 +852,8 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
               </g>
             )
           })}
-          {drag && at(outPort(drag.from)) && draft(outPort(drag.from), curve(at(outPort(drag.from)), [drag.x, drag.y]))}
-          {picking && pointer && at(picking) && draft(picking, parsePort(picking).side === 'out' ? curve(at(picking), pointer) : curve(pointer, at(picking)))}
+          <DraftWire ref={draftPointer} anchor={draftPort && at(draftPort)} fromOutput={draftPort && parsePort(draftPort).side === 'out'}
+            pattern={draftPort ? appearanceOf(draftPort).wire ?? DEFAULT_WIRE_PATTERN : DEFAULT_WIRE_PATTERN} />
         </svg>
         {visible.map(card)}
         {selectionRect&&<div className="block-selection" style={{left:Math.min(selectionRect[0][0],selectionRect[1][0]),top:Math.min(selectionRect[0][1],selectionRect[1][1]),width:Math.abs(selectionRect[1][0]-selectionRect[0][0]),height:Math.abs(selectionRect[1][1]-selectionRect[0][1])}} />}
@@ -870,7 +886,7 @@ export default function CanvasEditor({ blocks = null, graph, onChange, history, 
         )}
         {!readOnly&&blocks&&<button type="button" aria-label={L(WORDS.partition)} aria-pressed={partitioning} onClick={()=>{if(partitioning)cancelSelection();setPartitioning(!partitioning);setSelectionRect(null)}}><Group size={14} /></button>}
         <button onClick={() => zoomAt(0.85, ...centre())} aria-label={tr('缩小')}><Minus size={14} /></button>
-        <output>{Math.round(view.zoom * 100)}%</output>
+        <output ref={readout}>100%</output>
         <button onClick={() => zoomAt(1 / 0.85, ...centre())} aria-label={tr('放大')}><Plus size={14} /></button>
         <button onClick={() => fit()} aria-label={tr('适配画布')}><Maximize size={13} /></button>
       </div>

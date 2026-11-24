@@ -7,11 +7,11 @@
 .kit-board { position: relative; height: 100%; min-height: 0; overflow: clip; background: var(--canvas); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
 .kit-board:active { cursor: grabbing; }
 /* The dotted grid is the desktop build canvas's alone: a bench in the parts box shows its circuit on a plain board. */
-.board-grid { position: absolute; inset: 0; background-image: radial-gradient(circle, color-mix(in srgb, var(--rule) 70%, transparent) 1px, transparent 1.3px); }
+.board-grid { position: absolute; inset: 0; background-size: 20px 20px; background-image: radial-gradient(circle, color-mix(in srgb, var(--rule) 70%, transparent) 1px, transparent 1.3px); }
 .demo-board .board-grid { background-image: none; }
 /* The card layer is as big as the board and moves and scales with the view: it must never take a press itself, or
    wherever it lands the background stops panning. Only its cards (and the wires' hit strokes) do. */
-.board-layer { position: absolute; inset: 0; pointer-events: none; }
+.board-layer { position: absolute; inset: 0; pointer-events: none; transform: translate(0, 0); transform-origin: 0 0; }
 .board-layer .node { pointer-events: auto; }
 .board-wires { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
 .node { position: absolute; min-width: min-content; padding-bottom: var(--sp-4); border-radius: var(--r-md); background: var(--paper); box-shadow: var(--card); cursor: default; animation: card-in 240ms cubic-bezier(.2, .8, .2, 1); transition: box-shadow 180ms ease; }

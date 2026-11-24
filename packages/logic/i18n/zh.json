@@ -77,7 +77,7 @@
   "capability.operation.items.instances.about": "能代入的东西或句子",
   "capability.operation.items.occurrences.about": "φ 里 s 出现的每一处",
   "capability.operation.items.ruleChoices.about": "规则元件能给出的规则",
-  "capability.primitive.items.assumption.about": "引用已知",
+  "capability.primitive.items.assumption.about": "照抄",
   "capability.primitive.items.hyp.about": "已知里的等式",
   "capability.valueType.items.judgment.about": "带开放假设与证明项的已证公式",
   "capability.valueType.items.machine-value.about": "等式组、证明状态、规则、句子或子句集",

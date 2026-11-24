@@ -1,18 +1,21 @@
 {
   "kind": "requires",
   "edges": [
-    { "from": "machine-cite", "to": "machine-rewrite" },
     { "from": "machine-cite", "to": "machine-open" },
-    { "from": "machine-rewrite", "to": "machine-rewrite-swap" },
-    { "from": "machine-rewrite-swap", "to": "machine-rewrite-distribute" },
-    { "from": "machine-rewrite-distribute", "to": "machine-rewrite-demorgan" },
-    { "from": "machine-rewrite-demorgan", "to": "machine-rewrite-first" },
+    { "from": "machine-cite", "to": "machine-rewrite" },
     { "from": "machine-open", "to": "machine-backward-and" },
-    { "from": "machine-backward-and", "to": "machine-backward-or" },
-    { "from": "machine-backward-or", "to": "machine-backward-bot" },
-    { "from": "machine-backward-bot", "to": "machine-rewrite-first" },
+    { "from": "machine-backward-and", "to": "machine-skip" },
+    { "from": "machine-rewrite", "to": "machine-rewrite-twice" },
+    { "from": "machine-rewrite-twice", "to": "machine-rewrite-swap" },
+    { "from": "machine-skip", "to": "machine-rewrite-first" },
+    { "from": "machine-rewrite-swap", "to": "machine-rewrite-first" },
     { "from": "machine-rewrite-first", "to": "machine-open-first" },
-    { "from": "machine-open-first", "to": "machine-rewrite-twice" },
-    { "from": "machine-open-first", "to": "machine-rewrite-join" }
+    { "from": "machine-open-first", "to": "machine-backward-or" },
+    { "from": "machine-backward-or", "to": "machine-backward-bot" },
+    { "from": "machine-backward-bot", "to": "machine-cite-first" },
+    { "from": "machine-cite-first", "to": "machine-meta" },
+    { "from": "machine-meta", "to": "machine-cases" },
+    { "from": "machine-cases", "to": "machine-meta-order" },
+    { "required": true, "from": "machine-meta-order", "to": "machine-negation" }
   ]
 }

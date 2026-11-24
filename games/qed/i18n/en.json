@@ -1,5 +1,5 @@
 {
-  "chapter.assistant.chapter.question": "Apply rules backwards, matching conclusions with known facts.",
+  "chapter.assistant.chapter.question": "How can a prover handle different proof goals?",
   "chapter.assistant.chapter.title": "The prover",
   "course.eras.automation.chapter.question": "Introduce new axioms for the prover.",
   "course.eras.automation.chapter.title": "The prover III",

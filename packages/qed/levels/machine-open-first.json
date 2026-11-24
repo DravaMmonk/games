@@ -1,8 +1,8 @@
 {
   "title": "@level.machine-open-first.title",
-  "tray": "machine-compose",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [{ "t": "@level.machine-open-first.intro.0.t" }],
-  "after": "@level.machine-open-first.after",
   "tasks": [
     {
       "id": "machine-open-first",
@@ -17,7 +17,14 @@
       "solution": [
         "step1 = logic/directBackward-qed_impI(in)",
         "step2 = logic/directBackward-qed_impI(step1)",
-        "step3 = logic/directRewrite-qed_iffSubst(step2)",
+        "step3 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"]](step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "naive": [
+        "step1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"]](in)",
+        "step2 = logic/directBackward-qed_impI(step1)",
+        "step3 = logic/directBackward-qed_impI(step2)",
         "step4 = logic/directBackward-logic_assumption(step3)",
         "out <- step4"
       ]

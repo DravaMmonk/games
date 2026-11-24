@@ -65,7 +65,7 @@
         },
         {
           "goal": "Rain",
-          "becomes": []
+          "becomes": [["Rain"]]
         }
       ],
       "brief": "@level.s-intro.tasks.s-intro.brief",

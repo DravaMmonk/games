@@ -1,36 +1,30 @@
 {
   "title": "@level.machine-backward-or.title",
-  "tray": "machine-backward-or",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [{ "t": "@level.machine-backward-or.intro.0.t" }],
-  "after": "@level.machine-backward-or.after",
   "tasks": [
     {
-      "id": "machine-backward-or-left",
-      "step": "@level.machine-backward-or.tasks.machine-backward-or-left.step",
+      "id": "machine-backward-or",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "brief": "@level.machine-backward-or.tasks.machine-backward-or-left.brief",
-      "hint": ["@level.machine-backward-or.tasks.machine-backward-or-left.hint.0"],
-      "tests": [{ "goal": "Bus ∨ Bike", "hyps": ["Bus"] }, { "goal": "Coffee ∨ Tea", "hyps": ["Coffee"] }],
+      "brief": "@level.machine-backward-or.tasks.machine-backward-or.brief",
+      "hint": ["@level.machine-backward-or.tasks.machine-backward-or.hint.0"],
+      "tests": [
+        { "goal": "(Bus ∨ Bike) ∨ Late", "hyps": ["Bike"] },
+        { "goal": "(Coffee ∨ Tea) ∨ Awake", "hyps": ["Study", "Tea"] }
+      ],
       "solution": [
         "step1 = logic/directBackward-qed_orI[use=[\"disjI1\"]](in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
-        "out <- step2"
-      ]
-    },
-    {
-      "id": "machine-backward-or-right",
-      "step": "@level.machine-backward-or.tasks.machine-backward-or-right.step",
-      "kind": "logic/machine",
-      "carries": true,
-      "want": "logic/proved",
-      "brief": "@level.machine-backward-or.tasks.machine-backward-or-right.brief",
-      "hint": ["@level.machine-backward-or.tasks.machine-backward-or-right.hint.0"],
-      "tests": [{ "goal": "Bus ∨ Bike", "hyps": ["Bike"] }, { "goal": "Coffee ∨ Tea", "hyps": ["Tea"] }],
-      "solution": [
-        "step1 = logic/directBackward-qed_orI[use=[\"disjI2\"]](in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
-        "out <- step2"
+        "step2 = logic/directBackward-qed_orI[use=[\"disjI2\"]](step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_orI[use=[\"disjI1\"]](in)",
+        "step2 = logic/directBackward-qed_orI[use=[\"disjI1\"]](step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
       ]
     }
   ]

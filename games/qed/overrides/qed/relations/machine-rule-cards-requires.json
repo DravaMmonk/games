@@ -2,19 +2,17 @@
   "edges": {
     "add": [
       { "from": "qed/iffUse", "to": "qed/machine-cite" },
-      { "from": "qed/machine-rewrite", "to": "qed/machine-rewrite-first" },
-      { "from": "qed/machine-open", "to": "qed/machine-rewrite-first" },
-      { "from": "qed/machine-rewrite-first", "to": "qed/machine-rewrite-swap" },
-      { "from": "qed/machine-rewrite-first", "to": "qed/machine-backward-and" },
-      { "from": "qed/machine-rewrite-demorgan", "to": "qed/machine-open-first" },
-      { "from": "qed/machine-backward-bot", "to": "qed/machine-open-first" }
+      { "from": "qed/machine-rewrite-swap", "to": "qed/machine-cite-first" },
+      { "from": "qed/machine-cite-first", "to": "qed/machine-rewrite-first" },
+      { "from": "qed/machine-rewrite-first", "to": "qed/machine-backward-or" },
+      { "from": "qed/machine-open-first", "to": "qed/machine-backward-bot" },
+      { "from": "qed/machine-backward-bot", "to": "qed/machine-meta" }
     ],
     "remove": [
-      { "from": "qed/machine-rewrite", "to": "qed/machine-rewrite-swap" },
-      { "from": "qed/machine-open", "to": "qed/machine-backward-and" },
-      { "from": "qed/machine-rewrite-demorgan", "to": "qed/machine-rewrite-first" },
-      { "from": "qed/machine-backward-bot", "to": "qed/machine-rewrite-first" },
-      { "from": "qed/machine-rewrite-first", "to": "qed/machine-open-first" }
+      { "from": "qed/machine-rewrite-swap", "to": "qed/machine-rewrite-first" },
+      { "from": "qed/machine-open-first", "to": "qed/machine-backward-or" },
+      { "from": "qed/machine-backward-bot", "to": "qed/machine-cite-first" },
+      { "from": "qed/machine-cite-first", "to": "qed/machine-meta" }
     ]
   }
 }

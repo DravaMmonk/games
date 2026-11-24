@@ -1,7 +1,8 @@
 {
   "title": "@level.machine-cite.title",
   "adds": ["logic/assumption"],
-  "tray": "machine-cite",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [
     { "t": "@level.machine-cite.intro.0.t" },
     { "t": "@level.machine-cite.intro.1.t" },

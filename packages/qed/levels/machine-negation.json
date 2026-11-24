@@ -1,0 +1,34 @@
+{
+  "title": "@level.machine-negation.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-negation.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "machine-negation",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-negation.tasks.machine-negation.brief",
+      "hint": ["@level.machine-negation.tasks.machine-negation.hint.0"],
+      "tests": [
+        { "goal": "¬Rain", "hyps": ["Rain → Wet", "¬Wet"] },
+        { "goal": "¬Alarm", "hyps": ["¬OnTime", "Alarm → OnTime"] }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_impI(in)",
+        "step2 = logic/directBackward-qed_mp[use=[\"mp\"]](step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-qed_mp[use=[\"mp\"]](step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "step6 = logic/directBackward-logic_assumption(step5)",
+        "out <- step6"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_mp[use=[\"mp\"]](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ]
+    }
+  ]
+}

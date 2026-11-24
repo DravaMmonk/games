@@ -1,0 +1,32 @@
+{
+  "title": "@level.machine-meta.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-meta.intro.0.t" }],
+  "after": "@level.machine-meta.after",
+  "tasks": [
+    {
+      "id": "machine-meta",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-meta.tasks.machine-meta.brief",
+      "hint": ["@level.machine-meta.tasks.machine-meta.hint.0"],
+      "tests": [
+        { "goal": "Wet", "hyps": ["Rain → Wet", "Rain"] },
+        { "goal": "Slip", "hyps": ["Wind", "Wet → Slip", "Wet"] },
+        { "goal": "Wind → Wet", "hyps": ["Rain → (Wind → Wet)", "Rain"] }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_mp[use=[\"mp\"]](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_mp[use=[\"mp\"]](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ]
+    }
+  ]
+}

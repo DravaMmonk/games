@@ -1,8 +1,8 @@
 {
   "title": "@level.machine-backward-bot.title",
-  "tray": "machine-backward-bot",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [{ "t": "@level.machine-backward-bot.intro.0.t" }],
-  "after": "@level.machine-backward-bot.after",
   "tasks": [
     {
       "id": "machine-backward-bot",
@@ -15,6 +15,12 @@
         "step1 = logic/directBackward-qed_botE(in)",
         "step2 = logic/directBackward-logic_assumption(step1)",
         "out <- step2"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_andI(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
       ]
     }
   ]

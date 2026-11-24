@@ -58,8 +58,8 @@
       "qed/u-ls",
       "qed/u-halt",
       "qed/au-horn",
-      "qed/machine-rewrite-twice",
-      "qed/machine-rewrite-join"
+      "qed/machine-meta-order",
+      "qed/machine-negation"
     ]
   }
 }

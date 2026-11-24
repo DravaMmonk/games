@@ -2,17 +2,20 @@
   "title": "@tag.machine-rule-cards.title",
   "values": [
     "machine-cite",
-    "machine-rewrite",
     "machine-open",
-    "machine-rewrite-swap",
+    "machine-rewrite",
     "machine-backward-and",
-    "machine-rewrite-distribute",
+    "machine-skip",
+    "machine-rewrite-twice",
+    "machine-meta",
     "machine-backward-or",
-    "machine-rewrite-demorgan",
+    "machine-rewrite-swap",
+    "machine-meta-order",
     "machine-backward-bot",
     "machine-rewrite-first",
+    "machine-cases",
+    "machine-cite-first",
     "machine-open-first",
-    "machine-rewrite-twice",
-    "machine-rewrite-join"
+    "machine-negation"
   ]
 }

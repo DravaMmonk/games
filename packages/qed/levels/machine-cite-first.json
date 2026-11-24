@@ -1,0 +1,27 @@
+{
+  "title": "@level.machine-cite-first.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-cite-first.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "machine-cite-first",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-cite-first.tasks.machine-cite-first.brief",
+      "hint": ["@level.machine-cite-first.tasks.machine-cite-first.hint.0"],
+      "tests": [{ "goal": "Rain → Wet", "hyps": ["Rain → Wet"] }, { "goal": "Wind → Wind" }],
+      "solution": [
+        "step1 = logic/directBackward-logic_assumption(in)",
+        "step2 = logic/directBackward-qed_impI(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_impI(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ]
+    }
+  ]
+}

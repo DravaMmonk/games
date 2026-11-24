@@ -1,8 +1,8 @@
 {
   "title": "@level.machine-backward-and.title",
-  "tray": "machine-backward-and",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [{ "t": "@level.machine-backward-and.intro.0.t" }],
-  "after": "@level.machine-backward-and.after",
   "tasks": [
     {
       "id": "machine-backward-and",
@@ -12,13 +12,18 @@
       "hint": ["@level.machine-backward-and.tasks.machine-backward-and.hint.0"],
       "tests": [
         { "goal": "Rain ∧ Wind", "hyps": ["Wind", "Rain"] },
-        { "goal": "Coffee ∧ Tea", "hyps": ["Coffee", "Tea"] }
+        { "goal": "Coffee ∧ Tea", "hyps": ["Coffee", "Awake", "Tea"] }
       ],
       "solution": [
         "step1 = logic/directBackward-qed_andI(in)",
         "step2 = logic/directBackward-logic_assumption(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_andI(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
       ]
     }
   ]

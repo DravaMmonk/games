@@ -1,5 +1,6 @@
 {
   "title": "@level.pl-anc.title",
+  "adds": ["search"],
   "tray": "machine",
   "intro": [
     {

@@ -1,0 +1,33 @@
+{
+  "title": "@level.machine-meta-order.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-meta-order.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "machine-meta-order",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-meta-order.tasks.machine-meta-order.brief",
+      "hint": ["@level.machine-meta-order.tasks.machine-meta-order.hint.0"],
+      "tests": [
+        { "goal": "Rain → Slip", "hyps": ["Rain → (Rain → Wet)", "Wet → Slip"] },
+        { "goal": "Hungry → Full", "hyps": ["Hungry → (Hungry → Eat)", "Eat → Full"] }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_chain(in)",
+        "step2 = logic/directBackward-logic_assumption[at=goal-1](step1)",
+        "step3 = logic/directBackward-qed_merge(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_chain(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-qed_merge(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 {
   "title": "@level.s-loop.title",
+  "adds": ["search"],
   "tray": "machine",
   "intro": [
     {

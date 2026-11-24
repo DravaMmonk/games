@@ -1,11 +1,12 @@
 {
   "title": "@level.machine-rewrite-twice.title",
-  "tray": "machine-compose",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [{ "t": "@level.machine-rewrite-twice.intro.0.t" }],
-  "after": "@level.machine-rewrite-twice.after",
   "tasks": [
     {
       "id": "machine-rewrite-twice",
+      "step": "@level.machine-rewrite-twice.tasks.machine-rewrite-twice.step",
       "kind": "logic/machine",
       "want": "logic/proved",
       "brief": "@level.machine-rewrite-twice.tasks.machine-rewrite-twice.brief",
@@ -15,10 +16,38 @@
         { "goal": "Slip ∨ (Wind ∧ Slip)", "hyps": ["Slip ↔ Wet", "Wet ∨ (Wind ∧ Wet)"] }
       ],
       "solution": [
-        "step1 = logic/directRewrite-qed_iffSubst(in)",
-        "step2 = logic/directRewrite-qed_iffSubst(step1)",
+        "step1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](in)",
+        "step2 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"]](step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ]
+    },
+    {
+      "id": "machine-rewrite-twice-one",
+      "step": "@level.machine-rewrite-twice.tasks.machine-rewrite-twice-one.step",
+      "carries": true,
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-rewrite-twice.tasks.machine-rewrite-twice-one.brief",
+      "hint": ["@level.machine-rewrite-twice.tasks.machine-rewrite-twice-one.hint.0"],
+      "tests": [
+        { "goal": "Rain → (Wind ∧ Rain)", "hyps": ["Rain ↔ Wet", "Rain → (Wind ∧ Wet)"] },
+        { "goal": "Slip ∨ (Wind ∧ Slip)", "hyps": ["Slip ↔ Wet", "Slip ∨ (Wind ∧ Wet)"] }
+      ],
+      "solution": [
+        "step1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-1](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ],
+      "naive": [
+        "step1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
       ]
     }
   ]

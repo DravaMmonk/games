@@ -1,6 +1,7 @@
 {
   "title": "@level.machine-open.title",
-  "tray": "machine-open",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
   "intro": [{ "t": "@level.machine-open.intro.0.t" }],
   "after": "@level.machine-open.after",
   "tasks": [
@@ -18,7 +19,8 @@
         "step1 = logic/directBackward-qed_impI(in)",
         "close = logic/directBackward-logic_assumption(step1)",
         "out <- close"
-      ]
+      ],
+      "naive": ["step1 = logic/directBackward-logic_assumption(in)", "out <- step1"]
     }
   ]
 }

@@ -11,7 +11,7 @@ import { playFor } from 'kernel'
 import { plays } from './plays.js'
 import { builtParts, cardOf, partReferences, publications, settingsOf } from 'circuit'
 import { eraLevels, levelLabels } from 'kernel'
-import { holds, met, offer } from 'circuit'
+import { holds, met, offer, trayMembers } from 'circuit'
 import { courseLayout } from 'kernel'
 import { taskLevels } from 'kernel'
 
@@ -376,7 +376,7 @@ export function* prepareLogicWorks(content) {
     const unlocks = (level.builds ?? []).map(type => `lemma:${type}`)
     const all = tasksOf.get(id).map((task) => ({
       ...task,
-      adds: [...new Set([...(task.adds ?? []),
+      adds: [...new Set([...(level.adds ?? []), ...(task.adds ?? []),
         ...(task.kind === 'logic/machine' ? axiomPartsOf(task) : [])])],
       chapter, requires, unlocks,
     }))
@@ -419,16 +419,19 @@ export function* prepareLogicWorks(content) {
     ...TASKS.filter((task) => task.kind === 'logic/machine' && machines.includes(task.builds)).map((task) => ({ kind: 'logic/machine', type: task.builds, form: null, task })),
     ...TASKS.filter((task) => task.kind === 'logic/gates' && gates[task.builds]).map((task) => ({ kind: 'gate', type: task.builds, form: null, task })),
   ])
+  const directKey = ({ id, task }) => JSON.stringify([id, task])
+  const directStartSet = new Set()
   const course = yield {
     levels: LEVELS, plan,
     intrinsic: axioms,
     local: axioms,
-    additions: ({ id }) => byId.get(id).adds,
+    additions: ({ id, task }) => task === undefined ? byId.get(id).adds
+      : [...new Set(byId.get(id).tasks.slice(0, task + 1).flatMap(one => one.adds))],
     parts: Object.fromEntries(Object.keys(built.parts).filter(isBuilt).map(p => [p, { unlock: `lemma:${p}` }])),
     builds: (l) => byId.get(l.id).tasks.filter(task => l.task === undefined || task.task <= l.task).map(task => task.builds).filter(Boolean),
     grants: (l) => {
       const task = byId.get(l.id).tasks.find(task => task.task === l.task)
-      return task?.kind === 'logic/machine'
+      return task?.kind === 'logic/machine' && !directStartSet.has(directKey(task))
         ? [...rulePartsOf(task).keys()].filter((p) => !machineParts[p]) : []
     },
     machine: (l) => eras[eraOf.get(l.id)]?.machine ?? null,
@@ -478,11 +481,10 @@ export function* prepareLogicWorks(content) {
   // ruleBookOf): the kernel's rules opened by chapter, the lemmas built before it, each in the shapes it has gained by
   // then. A task after the first may use what its level proves already (a law proved on the proof board, then put to
   // work), in every shape it proves.
-  const directTray = (task) => (course.tray({ id: task.id, task: task.task }) ?? [])
-    .some((name) => content.registries?.['circuit/tray']?.[name]?.directRuleCards)
-  const directStarts = TASKS.filter(task => task.kind === 'logic/machine' && (task.directRuleCards || directTray(task)))
-  const directKey = ({ id, task }) => JSON.stringify([id, task])
-  const directStartSet = new Set(directStarts.map(directKey))
+  const directTrays = (task) => (course.tray({ id: task.id, task: task.task }) ?? [])
+    .filter((name) => content.registries?.['circuit/tray']?.[name]?.directRuleCards)
+  const directStarts = TASKS.filter(task => task.kind === 'logic/machine' && (task.directRuleCards || directTrays(task).length))
+  for (const task of directStarts) directStartSet.add(directKey(task))
   const directBefore = new Map()
   for (const level of LEVELS.filter((l) => l.tasks.some((t) => t.kind === 'logic/machine' || t.kind === 'logic/script'))) {
     // The equations proved before it (by the levels it comes after), and in a later task its own.
@@ -500,7 +502,10 @@ export function* prepareLogicWorks(content) {
         directBefore.set(directKey(one), prior)
         if (directStartSet.has(directKey(one)) || prior.length) one.directRuleCards = true
       }
-      one.holds = content.standalone ? Object.keys(content.registries['circuit/part']) : met(course, { id: level.id, task: one.task })
+      const location = { id: level.id, task: one.task }
+      if (one.directRuleCards) one.withheldRuleChoices = new Set(course.withholds(location))
+      const metParts = content.standalone ? Object.keys(content.registries['circuit/part']) : met(course, location)
+      one.holds = directStartSet.has(directKey(one)) ? [...new Set([...metParts, ...course.gives(location)])] : metParts
       one.proven = [...new Set([...proven, ...before, ...(later && level.fact ? [level.fact] : [])])]
       const has = holds(course, { id: level.id, task: one.task }, new Set())
       one.forms = Object.fromEntries(Object.entries(lemmas).filter(([, l]) => l.forms).map(([type, l]) => [type, l.forms.map((f) => f.key).filter((key) => content.standalone || has(type, 'form', key))]))
@@ -550,7 +555,7 @@ export function* prepareLogicWorks(content) {
       const key = JSON.stringify([type, strict, reference.taskId])
       if (!running.has(key)) {
         const builder = () => has.inside(type, null, { strict, kind: 'logic/machine' }).task
-        running.set(key, builtMachine(type, builder, reference, kept.board, settingsOf(built.parts[type]).map((x) => x.key)))
+        running.set(key, builtMachine(type, builder, reference, kept.board, settingsOf(built.parts[type])))
       }
       return running.get(key)
     }
@@ -590,16 +595,19 @@ export function* prepareLogicWorks(content) {
     const current = directCardsOf(task)
     if (!current.size) return offered
     const here = new Set(course.availableParts(at(task), flags, true))
-    const add = (origin, carried) => {
-      const available = new Set(course.availableParts(at(origin), flags))
-      const axioms = new Set(axiomPartsOf(origin))
+    if (directStartSet.has(directKey(task))) {
+      for (const [type, { source }] of current) {
+        if (here.has(course.partOf(source))) offered.add(type)
+      }
+      return offered
+    }
+    for (const origin of directBefore.get(directKey(task)) ?? []) {
+      const available = new Set(course.availableParts(at(origin), flags, true))
       for (const [type, { source }] of directCardsOf(origin)) {
         const part = course.partOf(source)
-        if (current.has(type) && (!carried || here.has(part)) && (available.has(part) || axioms.has(source))) offered.add(type)
+        if (current.has(type) && here.has(part) && available.has(part)) offered.add(type)
       }
     }
-    if (directStartSet.has(directKey(task))) add(task, false)
-    for (const origin of directBefore.get(directKey(task)) ?? []) add(origin, true)
     return offered
   }
   // On the machine board a rule part is only the rules it gives: the proof-board part of the same type (the
@@ -609,22 +617,39 @@ export function* prepareLogicWorks(content) {
     const rules = rulePartsOf(task)
     const direct = directPartsOf(task).defs
     const offered = offeredDirect(task, flags)
+    const sources = directStartSet.has(directKey(task))
+      ? new Set([...rules.keys(), ...[...directCardsOf(task).values()].map(card => card.source)])
+      : new Set()
     const definition = (type, fallback) => direct[type] ?? (rules.has(type) && !machineParts[type] ? fallback : has.definition(type, fallback))
     return Object.assign((type, key, value) => {
-      if (!direct[type]) return (!directTray(task) || !rules.has(type)) && has(type, key, value)
+      if (!direct[type]) return !sources.has(type) && has(type, key, value)
       if (!offered.has(type)) return false
       if (key === undefined) return true
+      if (key === 'use' && value !== undefined) return directCardsOf(task).get(type).entries.some(entry => entry.key === value)
       const setting = direct[type].setting[key]
       return Boolean(setting && (value === undefined || !setting.options || setting.options.some(option => String(option.value) === String(value))))
     }, has, { definition })
   }
   const machineOfferIn = (task, flags) => {
     const base = offerIn(task, flags)
-    const sources = directTray(task) ? rulePartsOf(task) : new Map()
+    const available = offeredDirect(task, flags)
+    const sources = directStartSet.has(directKey(task))
+      ? new Set([...rulePartsOf(task).keys(), ...[...available].map(type => directCardsOf(task).get(type).source)])
+      : new Set()
     const shown = base.shown.filter((type) => !sources.has(type))
     const folded = base.folded.filter((type) => !sources.has(type))
+    // A rule-binding tray follows its package's proof tray. Keep variants of a source together.
+    const sourcesInOrder = [...new Set(directTrays(task).flatMap(name => {
+      const owner = name.slice(0, name.lastIndexOf('/') + 1)
+      return trayMembers(course.trays[`${owner}proof`]).map(course.partOf)
+    }))]
+    const rank = new Map(sourcesInOrder.map((source, index) => [source, index]))
+    const cards = directCardsOf(task)
+    const order = type => rank.get(course.partOf(cards.get(type).source)) ?? rank.size
     const needed = new Set(course.needed(at(task)))
-    for (const type of offeredDirect(task, flags)) (needed.has(type) ? shown : folded).push(type)
+    for (const type of [...available].sort((left, right) => order(left) - order(right))) {
+      (needed.has(type) ? shown : folded).push(type)
+    }
     return { shown, folded, types: [...shown, ...folded] }
   }
   // The truth circuits as the kernel's circuit screen reads them (gates.js gateCourse).

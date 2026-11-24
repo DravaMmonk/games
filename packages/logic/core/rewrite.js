@@ -9,14 +9,19 @@
 // ¬¬A: either way round is a rule), the equations proved (the course's `facts`, chapter 12), the level's definitions (`defs`: equations, maybe with conditions, their
 // variables standing for anything), and the goal's own hypotheses (the card's rule 'hyp': the first hypothesis that is
 // an equation or an equivalence and fits somewhere, its ∀ variables standing for anything).
-import { atom, bin, fn, occurrenceScope, same, show, showTerm, subst, tvar } from './formula.js'
+import { atom, bin, fn, occurrenceScope, show, showTerm, subst, tvar } from './formula.js'
 import { inferenceText, instantiate, isMetaName, lemmaRules, metasIn, parseS, sameSide, sideText } from './schematic.js'
 import { T } from 'kernel/words'
 
 const isTerm = (x) => 't' in x
 const NO_GOALS = T('已经没有目标了')
-export const equivalenceSubstitution = (reverse) => inferenceText(['A ↔ B', reverse ? 'C[B]' : 'C[A]'], reverse ? 'C[A]' : 'C[B]')
-export const equalitySubstitution = inferenceText(['s = t', 'C[s]'], 'C[t]')
+function substitutionStatement(kind, reverse) {
+  const [left, right, condition] = kind === 'eq' ? ['C[s]', 'C[t]', 's = t'] : ['C[A]', 'C[B]', 'A ↔ B']
+  return { left: reverse ? right : left, right: reverse ? left : right, conditions: [condition] }
+}
+const inferenceOf = ({ left, right, conditions }) => inferenceText([...conditions, left], right)
+export const equivalenceSubstitution = (reverse) => inferenceOf(substitutionStatement('iff', reverse))
+export const equalitySubstitution = inferenceOf(substitutionStatement('eq', false))
 
 /* ---------- matching ---------- */
 
@@ -92,13 +97,15 @@ function renamed(f, names) {
 
 // The same traversal supplies the editor and the tactic. Paths identify repeated nodes even when they share an object.
 function* rewriteMatches(formula, rule) {
-  const exact = rule.equivalenceOnly
+  const exact = rule.exact
   const term = isTerm(rule.lhs)
-  const blocks = exact ? occurrenceScope(rule.lhs, rule.rhs) : () => false
+  const freeTerms = exact && term ? freeIn(rule.rhs, freeIn(rule.lhs)) : null
+  const blocks = freeTerms ? node => node.body && !node.prop && freeTerms.has(node.v)
+    : exact ? occurrenceScope(rule.lhs, rule.rhs) : () => false
   function* walk(node, path, depth) {
     const σ = {}
     const names = {}
-    const matches = isTerm(node) === term && (exact ? same(node, rule.lhs) : term
+    const matches = isTerm(node) === term && (exact ? sameSide(node, rule.lhs) : term
       ? matchTerm(rule.lhs, node, σ, new Map())
       : matchForm(rule.lhs, node, σ, new Map(), new Set(), names))
     if (matches) {
@@ -128,21 +135,22 @@ function replaceAt(node, [key, ...rest], value) {
   return { ...node, [key]: replaceAt(node[key], rest, value) }
 }
 
-// A hypothesis as a rule, its ∀ variables standing for anything: an equation of things, or an
-// equivalence. A hypothesis that still has a ?-letter of the proof in it is not one yet.
-function hypRule(h) {
-  if (metasIn(h).size) return null
-  let f = h
+// Strip term binders so their variables can be instantiated by a rewrite match.
+function equationSides(formula) {
+  let f = formula
   const vars = []
-  while (f.op === '∀') { vars.push(f.v); f = f.body }
+  while (f.op === '∀' && !f.prop) { vars.push(f.v); f = f.body }
   const free = (x) => vars.reduce((g, v) => subst(g, v, tvar(`?${v}`)), x)
   if (f.op === 'atom' && f.pred === '=') {
-    const [l, r] = free(f).args
-    return { lhs: l, rhs: r }
+    const [lhs, rhs] = free(f).args
+    return { lhs, rhs }
   }
   if (f.op === '↔') return { lhs: free(f.a), rhs: free(f.b) }
   return null
 }
+
+// Hypotheses with unsolved metavariables are not rewrite rules.
+const hypRule = (h) => metasIn(h).size ? null : equationSides(h)
 
 // An equation proved as a rewrite rule: under its ∀s, maybe after conditions (u = tt → if(u, v, w) = v).
 function factRewrite(f) {
@@ -172,16 +180,22 @@ export const rewritesHyps = (at) => targetOf(at).inHyps
 
 function rulesAt(goal, rule) {
   if (rule.group !== 'hyp') return [rule]
-  if (rule.equivalenceOnly) {
-    return goal.hyps.flatMap((h, sourceHyp) => h.op === '↔' && !metasIn(h).size ? [{
-      ...rule, sourceHyp, lhs: rule.reverse ? h.b : h.a, rhs: rule.reverse ? h.a : h.b,
-    }] : [])
+  if (rule.substitution) {
+    return goal.hyps.flatMap((h, sourceHyp) => {
+      if (metasIn(h).size) return []
+      const sides = rule.substitution === 'iff'
+        ? h.op === '↔' && [h.a, h.b]
+        : h.op === 'atom' && h.pred === '=' && h.args
+      if (!sides) return []
+      const [lhs, rhs] = rule.reverse ? [...sides].reverse() : sides
+      return [{ ...rule, sourceHyp, lhs, rhs }]
+    })
   }
   return goal.hyps.map(hypRule).filter(Boolean).map((r) => ({ ...rule, ...r, conditions: [] }))
 }
 
 function* places(goal, rule, { inHyps, hyp }) {
-  if (inHyps && rule.group === 'hyp' && !rule.equivalenceOnly) return
+  if (inHyps && rule.group === 'hyp' && !rule.substitution) return
   const rules = rulesAt(goal, rule)
   if (!inHyps) {
     for (const local of rules) yield { formula: goal.goal, rule: local }
@@ -243,15 +257,18 @@ export function rewrite(s, rule, at = 'goal') {
     const changed = replaceAt(formula, match.path, match.replacement)
     const goal = hyp === undefined ? { ...g, goal: changed } : { ...g, hyps: g.hyps.map((x, i) => i === hyp ? changed : x) }
     const conditions = local.conditions.map((c) => ({ ...g, goal: instantiate(c, match.σ) }))
-    return { results: [{ ...s, more: undefined, error: undefined, goals: [goal, ...conditions, ...s.goals.slice(1)] }] }
+    return {
+      results: [{ ...s, more: undefined, error: undefined, goals: [goal, ...conditions, ...s.goals.slice(1)] }],
+      change: { path: match.path, ...(hyp !== undefined && { hyp }) },
+    }
   }
   if (target.explicit) return { fail: T('找不到选定的第 {index} 处匹配', { index: target.occurrence + 1 }) }
   if (target.inHyps) {
-    if (rule.equivalenceOnly) return { fail: T('已知里的等价式都无法改写另一条已知') }
-    if (rule.group === 'hyp') return { fail: T('已知里的等式只用来改目标') }
+    if (rule.substitution === 'iff') return { fail: T('已知里的等价式都无法改写另一条已知') }
+    if (rule.group === 'hyp') return { fail: T('目标的已知里，没有一条等式或等价对得上第一个目标的哪一处') }
     return { fail: T("「{zh}」的左边在第一个目标的已知里哪一处都对不上", {zh: { zh: String(rule.name.zh), en: String(rule.name.en) }}) }
   }
-  if (rule.equivalenceOnly) return { fail: T('已知里的等价式都无法改写当前目标') }
+  if (rule.substitution === 'iff') return { fail: T('已知里的等价式都无法改写当前目标') }
   if (rule.group === 'hyp') return { fail: T('目标的已知里，没有一条等式或等价对得上第一个目标的哪一处') }
   return { fail: T("「{zh}」的左边在第一个目标里哪一处都对不上", {zh: { zh: String(rule.name.zh), en: String(rule.name.en) }}) }
 }
@@ -292,14 +309,39 @@ function rewriteShape(from, to) {
   })))
 }
 
-/** Rewrite directions whose converse follows from an available form of the same lemma. */
+/** Rewrite directions justified by the lemma's available equations, equivalences, or converse forms. */
 export function lemmaRewrites(type, lemma, held) {
-  const available = held ?? lemma.forms?.map((form) => form.key)
-  const rules = lemmaRules(type, lemma).filter((rule) => rule.premises.length === 1
-    && (!lemma.forms || available.includes(rule.key.split('.')[1] ?? lemma.forms[0].key)))
-  const shapes = new Set(rules.map((rule) => rewriteShape(rule.premises[0].show, rule.conclusion)))
-  return rules.filter((rule) => shapes.has(rewriteShape(rule.conclusion, rule.premises[0].show)))
-    .map((rule) => ({ key: rule.key, name: rule.name, lhs: rule.premises[0].show, rhs: rule.conclusion, conditions: [], group: 'law' }))
+  const rules = lemmaRules(type, lemma, held)
+  const implications = rules.filter((rule) => rule.premises.length === 1)
+  const shapes = new Set(implications.map((rule) => rewriteShape(rule.premises[0].show, rule.conclusion)))
+  const entry = (rule, lhs, rhs, key = rule.key, conditions = []) => ({
+    key, name: rule.name, lhs, rhs, conditions, group: 'law', source: type,
+  })
+  return rules.flatMap((rule) => {
+    const { conclusion, premises } = rule
+    const equation = equationSides(conclusion)
+    if (equation) {
+      const { lhs, rhs } = equation
+      const conditions = premises.map(premise => premise.show)
+      const direction = (from, to, key) => {
+        const determined = metasIn(from)
+        return [...metasIn(to), ...conditions.flatMap(condition => [...metasIn(condition)])].every(meta => determined.has(meta))
+          ? [entry(rule, from, to, key, conditions)] : []
+      }
+      const directions = [
+        ...direction(lhs, rhs, `${rule.key}.forward`), ...direction(rhs, lhs, `${rule.key}.reverse`),
+      ]
+      if (directions.length) return directions
+    }
+    if (premises.length !== 1 || !shapes.has(rewriteShape(conclusion, premises[0].show))) return []
+    return [entry(rule, premises[0].show, conclusion)]
+  })
+}
+
+export function substitutionRewrites(substitution, source, name) {
+  const base = { name, source, substitution, exact: true, lhs: null, rhs: null, conditions: [], group: 'hyp' }
+  const key = `hyp.${substitution}`
+  return [{ ...base, key }, { ...base, key: `${key}.reverse`, reverse: true }]
 }
 
 /** Rewrites supplied by a task's definitions, proved equations, and current givens. */
@@ -310,10 +352,7 @@ export function localRewrites(level) {
   const hyp = { key: 'hyp', name: T('已知里的等式'), lhs: null, rhs: null, conditions: [], group: 'hyp' }
   const source = level.ruleParts?.['logic/iffSubst']
   const equivalences = source && (!level.holds || level.holds.includes(source))
-    ? [
-      { ...hyp, key: 'hyp.iff', name: level.partDefs[source].name, source, equivalenceOnly: true },
-      { ...hyp, key: 'hyp.iff.reverse', name: level.partDefs[source].name, source, equivalenceOnly: true, reverse: true },
-    ] : []
+    ? substitutionRewrites('iff', source, level.partDefs[source].name) : []
   return [...facts, ...defs, hyp, ...equivalences]
 }
 /**
@@ -329,10 +368,15 @@ export function rewriteBookOf(level) {
   }
   return books.get(level)
 }
-/** A rewrite rule stated with its required conditions on the left. */
-export const rewriteText = (r, formula = show, term = showTerm) => {
-  if (r.group === 'hyp') return r.equivalenceOnly ? equivalenceSubstitution(r.reverse)
-    : `${equalitySubstitution}; ${equivalenceSubstitution(false)}`
-  const showSide = (side) => isTerm(side) ? `C[${term(side)}]` : sideText(side, formula, term)
-  return inferenceText([...r.conditions.map(formula), showSide(r.lhs)], showSide(r.rhs))
+/** A rewrite's separate sides and conditions. A generic given can be an equation or an equivalence. */
+export function rewriteStatements(rule, formula = show, term = showTerm) {
+  if (rule.group === 'hyp') {
+    const kinds = rule.substitution ? [rule.substitution] : ['eq', 'iff']
+    return kinds.map(kind => substitutionStatement(kind, rule.reverse))
+  }
+  const showSide = side => isTerm(side) ? `C[${term(side)}]` : sideText(side, formula, term)
+  return [{ left: showSide(rule.lhs), right: showSide(rule.rhs), conditions: rule.conditions.map(formula) }]
 }
+
+/** A rewrite rule stated with its required conditions on the left. */
+export const rewriteText = (rule, formula, term) => rewriteStatements(rule, formula, term).map(inferenceOf).join('; ')

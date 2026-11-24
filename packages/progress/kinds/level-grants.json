@@ -29,7 +29,8 @@
       "type": "list",
       "of": {
         "type": "str",
-        "reference": "progress/item"
+        "reference": "progress/item",
+        "referencePattern": "^([^=]+?)\\.[A-Za-z_][A-Za-z0-9_-]*=.+$"
       },
       "optional": true
     },

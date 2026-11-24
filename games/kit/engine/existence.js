@@ -82,7 +82,11 @@ export function collectReferences(value, schema, schemas, emit, at) {
   }
 
   const kind = referenceKind(schema)
-  if (kind && typeof value === 'string') emit(kind, value, at, schema.members)
+  if (kind && typeof value === 'string') {
+    // Qualified references can carry a selector after the referenced object's name.
+    const target = schema.referencePattern ? new RegExp(schema.referencePattern).exec(value)?.[1] ?? value : value
+    emit(kind, target, at, schema.members)
+  }
   if (schema.type === 'text') {
     const key = textKey(value) ?? (typeof value === 'string' && value.startsWith('@') ? value.slice(1) : null)
     if (key) emit('i18n', key, at)

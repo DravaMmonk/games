@@ -308,10 +308,17 @@ function premiseText(p, say) {
 // The identity rule checks a hypothesis in scope instead of reducing the goal to a premise.
 export const ASSUMPTION_RULE = { key: 'assumption', part: 'logic/assumption', name: T('照抄'), fromHypothesis: true }
 
+/** An inference's separate conclusion and premises, retaining scoped premises and outer binders. */
+export function ruleStatement(rule, say = show) {
+  if (rule.fromHypothesis) return { conclusion: 'A', premises: ['Γ, A'], fixes: [] }
+  return { conclusion: say(rule.conclusion), premises: rule.premises.map(p => premiseText(p, say)), fixes: rule.fixes ?? [] }
+}
+
 /** A rule written in Isabelle-style notation, with its binders and premises. */
 export function ruleText(rule, say = show) {
   if (rule.fromHypothesis) return 'Γ, A ⊢ A'
-  return withBinders(rule.fixes, inferenceText(rule.premises.map((p) => premiseText(p, say)), say(rule.conclusion)))
+  const { conclusion, premises, fixes } = ruleStatement(rule, say)
+  return withBinders(fixes, inferenceText(premises, conclusion))
 }
 
 /**
@@ -367,10 +374,10 @@ function metaRule(f, letters, bound = []) {
   return f
 }
 /** The rules a lemma (course LEMMAS) gives: one per shape it has, named after it (and the shape). */
-export function lemmaRules(type, l) {
+export function lemmaRules(type, l, held) {
   const forms = l.forms ?? [{ key: null, statement: l.statement, premises: l.premises ?? [] }]
   const read = (text) => metaRule(parse(text, { metas: l.metas }), l.metas)
-  return forms.map((f) => ({
+  return forms.filter(form => !l.forms || !held || held.includes(form.key)).map((f) => ({
     key: f.key ? `${type}.${f.key}` : type,
     name: f.key ? T("{zh} {label}", {label: f.label, zh: { zh: String(l.name.zh), en: String(l.name.en) }}) : l.name,
     premises: f.premises.map((p) => ({ fixes: [], hyps: [], show: read(p) })),

@@ -5,7 +5,7 @@
 const SIGNS = {
   'Γ': '\\Gamma',
   '→': '\\to', '↔': '\\leftrightarrow', '∧': '\\land', '∨': '\\lor', '¬': '\\lnot', '∀': '\\forall', '∃': '\\exists',
-  '⊥': '\\bot', '⊤': '\\top', '⊢': '\\vdash', '⟹': '\\Longrightarrow', '⟵': '\\longleftarrow', '←': '\\leftarrow',
+  '⊥': '\\bot', '⊤': '\\top', '⊢': '\\vdash', '⟹': '\\Longrightarrow', '⟸': '\\Longleftarrow', '⟵': '\\longleftarrow', '←': '\\leftarrow',
   '≡': '\\equiv', '⟼': '\\longmapsto', '↷': '\\curvearrowright', '↻': '\\circlearrowright', '↪': '\\hookrightarrow',
   // A goal moved to the end: a down arrow to a bar (⤓), which KaTeX has no glyph for.
   '⤓': '\\underline{\\downarrow}', '✓': '\\checkmark', '⋀': '\\bigwedge', '⟦': '\\llbracket', '⟧': '\\rrbracket',

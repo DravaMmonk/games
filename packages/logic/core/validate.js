@@ -165,7 +165,11 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
     out.push(...memo(level.id, `machine ${level.task ?? 0}`, () => {
       const out = []
       // Every part of the answer is one its tray holds, a rule part one its books have.
-      const available = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), ...directCardsOf(level).keys(), 'in', 'out'])
+      const available = new Set([...reach(course, { id: level.id, task: level.task }), ...rulePartsOf(level).keys(), 'in', 'out'])
+      const flags = new Set(course.levels.filter(other => course.before(other.id, level.id)).flatMap(other => other.unlocks))
+      const machine = logic.machineBoards.forTask(level)
+      const canUse = machine.holdsIn(level, flags)
+      for (const type of directCardsOf(level).keys()) if (canUse(type)) available.add(type)
       checkSolutionParts(out, level, available)
       const all = withHidden(level)
       const { reference: good, naive } = compare((work) => runMachine(all, work), level)

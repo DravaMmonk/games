@@ -2,6 +2,7 @@ import { T } from 'kernel/words'
 import { MISSING } from 'circuit'
 import { instantiate } from './schematic.js'
 import { resultsOf } from './tactics.js'
+import { proofStateDiff, proofStateInfo } from './proof-state-info.js'
 
 const route = Symbol('proof route')
 const snapshot = ({ [route]: _route, more: _more, ...state }) => state
@@ -39,7 +40,11 @@ export function proofStep(ctx, node, from, state, did, extra) {
   const id = ctx.proof.nextId()
   const rewriting = did?.op === 'rw' || did?.op === 'rwHyps'
   const book = rewriting ? ctx.rewrites : ctx.rules
-  const rules = (did?.rules ?? []).filter(key => book?.[key]).map(key => ({ key, book: rewriting ? 'rewrite' : 'rule', rule: book[key] }))
+  const direct = ctx.directCards?.get(node.type)
+  const rules = (did?.rules ?? []).flatMap(key => {
+    if (direct) return direct.entries.filter(entry => entry.key === key)
+    return book?.[key] ? [{ key, book: rewriting ? 'rewrite' : 'rule', rule: book[key] }] : []
+  })
   const value = { ...snapshot(state), did, didBy: did ? node.id : undefined }
   ctx.trace.push({ id: node.id, key: null, value, ...extra, proof: { id, parent }, proofRules: rules })
   return { ...state, [route]: id }
@@ -57,7 +62,7 @@ export function stopProof(ctx, value, reason) {
 
 /** Use the same numbered entries for both views and keep the card's complete value for playback. */
 export function finishProof(proof, trace, output, want, problem) {
-  const root = { id: 0, value: snapshot(proof.input) }
+  const root = { id: 0, value: snapshot(proof.input), stateInfo: proofStateInfo(proof.input) }
   const entries = []
   const nodes = new Map([[root.id, root]])
   const latest = new Map([[0, 0]])
@@ -65,6 +70,12 @@ export function finishProof(proof, trace, output, want, problem) {
   const add = (entry, step) => {
     const parent = nodes.get(step.parent)
     const { value } = entry
+    entry.status ??= entry.error || value?.error ? 'error' : 'applied'
+    if (value?.kind === 'state') {
+      entry.stateInfo = proofStateInfo(value)
+      if (parent?.value?.kind === 'state') entry.diff = proofStateDiff(parent.value, value, { change: entry.change, did: value.did })
+      delete entry.change
+    }
     if (value?.kind === 'state' && !value.goals.length && parent?.value?.goals.length) {
       const subst = formula => instantiate(formula, value.inst ?? {})
       step.closed = parent.value.goals.map(g => ({ ...g, goal: subst(g.goal), hyps: g.hyps.map(subst) }))
@@ -117,5 +128,20 @@ export function finishProof(proof, trace, output, want, problem) {
       }
     }
   }
-  return { trace: entries, proofRoot: root }
+  const nodeStatuses = new Map()
+  const onPath = new Set()
+  let step = actual.length ? nodes.get(latest.get(actual[0][route])) : entries.at(-1)?.proof
+  while (step && step.id !== root.id) {
+    onPath.add(step.id)
+    step = nodes.get(step.parent)
+  }
+  for (const entry of entries) {
+    if (!entry.path?.length && onPath.has(entry.proof.id)) nodeStatuses.set(entry.id, entry.status)
+  }
+  if (!actual.length) {
+    for (const entry of trace) {
+      if (entry.error && !entry.path?.length && entry.id !== 'out') nodeStatuses.set(entry.id, 'error')
+    }
+  }
+  return { trace: entries, proofRoot: root, nodeStatuses }
 }

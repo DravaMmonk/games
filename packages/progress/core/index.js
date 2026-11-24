@@ -96,7 +96,8 @@ export const progressMeaning = {
       for (const object of [level, ...(level.tasks ?? [])]) {
         for (const field of fields) for (const id of object[field] ?? []) {
           const [kinds, targets] = field === 'requiresObjects' ? [requiredScope(level.id), required] : [scope(level.id), managed]
-          if (!kinds.some(kind => targets.get(kind)?.has(id))) fail(`${object.id}.${field}: ${id} has no applicable progress policy`)
+          const part = field === 'withholds' && /^([^=]+?)\.[A-Za-z_][A-Za-z0-9_-]*=.+$/.exec(id)?.[1]
+          if (!kinds.some(kind => targets.get(kind)?.has(id) || kind === 'circuit/part' && part && targets.get(kind)?.has(part))) fail(`${object.id}.${field}: ${id} has no applicable progress policy`)
         }
       }
     }

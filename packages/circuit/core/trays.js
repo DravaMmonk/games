@@ -9,6 +9,42 @@ export const trayMembers = (tray) => (tray?.items ?? []).flatMap((entry) => type
 /** How many entries the shown tray may hold before its menus gather parts: a tray's `menuThreshold`, else this. */
 export const MENU_THRESHOLD = 7
 
+// The menu each part belongs to: the selected trays' own menus, and for a variant with a traySource its original
+// part's menu, in whichever tray declares it.
+function menusOf(trays, names, items, partOf) {
+  const menusIn = (name) => (trays[name]?.items ?? []).filter((entry) => typeof entry !== 'string')
+    .map((entry) => ({ ...entry, items: entry.items.map(partOf), key: JSON.stringify([name, entry.id]) }))
+  const menus = names.flatMap(menusIn)
+  const menuOf = new Map()
+  for (const menu of menus) for (const type of menu.items) if (!menuOf.has(type)) menuOf.set(type, menu)
+  const sourceMenus = new Map(menuOf)
+  if (items.some(({ traySource }) => traySource)) {
+    const otherMenus = Object.keys(trays).filter((name) => !names.includes(name)).flatMap(menusIn)
+    for (const menu of otherMenus) for (const type of menu.items) if (!sourceMenus.has(type)) sourceMenus.set(type, menu)
+  }
+  const assignedMenu = ({ traySource }) => traySource ? sourceMenus.get(partOf(traySource)) : undefined
+  for (const item of items) {
+    const menu = assignedMenu(item)
+    if (menu) menuOf.set(item.type, menu)
+  }
+  return { menus, menuOf, assignedMenu }
+}
+
+/**
+ * Parts gathered by the menu each belongs to, whatever their number, for a panel that lays a tray out in full:
+ * [{ key, label, items }] in the order the parts come, the parts no menu holds together under no label.
+ */
+export function trayGroups(trays, names, items, partOf = id => id) {
+  const { menuOf } = menusOf(trays, names, items, partOf)
+  const groups = new Map()
+  for (const item of items) {
+    const menu = menuOf.get(item.type)
+    if (!groups.has(menu)) groups.set(menu, { key: menu?.key ?? '', label: menu?.title ?? null, items: [] })
+    groups.get(menu).items.push(item)
+  }
+  return [...groups.values()]
+}
+
 /**
  * Project available parts onto the selected trays, leaving availability to the course.
  *
@@ -24,24 +60,10 @@ export const MENU_THRESHOLD = 7
 export function trayDisplay(trays, names, shown, folded, partOf = id => id) {
   const set = names.map((name) => trays[name]?.menuThreshold).filter(Number.isInteger)
   const threshold = set.length ? Math.min(...set) : MENU_THRESHOLD
-  const menusIn = (name) => (trays[name]?.items ?? []).filter((entry) => typeof entry !== 'string')
-    .map((entry) => ({ ...entry, items: entry.items.map(partOf), key: JSON.stringify([name, entry.id]) }))
-  const menus = names.flatMap(menusIn)
-  const menuOf = new Map()
-  for (const menu of menus) for (const type of menu.items) if (!menuOf.has(type)) menuOf.set(type, menu)
   const items = new Map([...shown, ...folded].map((item) => [item.type, item]))
   const visible = [...new Map(shown.map((item) => [item.type, item])).values()]
-  const sourceMenus = new Map(menuOf)
-  if ([...items.values()].some(({ traySource }) => traySource)) {
-    const otherMenus = Object.keys(trays).filter((name) => !names.includes(name)).flatMap(menusIn)
-    for (const menu of otherMenus) for (const type of menu.items) if (!sourceMenus.has(type)) sourceMenus.set(type, menu)
-  }
-  const assignedMenu = ({ traySource }) => traySource ? sourceMenus.get(partOf(traySource)) : undefined
+  const { menus, menuOf, assignedMenu } = menusOf(trays, names, [...items.values()], partOf)
   const groupingMenus = [...new Set([...menus, ...visible.map(assignedMenu).filter(Boolean)])]
-  for (const item of items.values()) {
-    const menu = assignedMenu(item)
-    if (menu) menuOf.set(item.type, menu)
-  }
   const members = (menu, of) => of.filter(({ type }) => menuOf.get(type) === menu)
   const childrenOf = (menu) => {
     const ordered = [

@@ -6,6 +6,11 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { runBoard } from 'circuit'
 import { logicWorks } from '../core/work.js'
+import { directCardsOf, RULE_CHOICES, runMachine } from '../core/machine.js'
+import { progressMeaning } from '../../progress/core/index.js'
+import levelGrants from '../../progress/kinds/level-grants.json' with { type: 'json' }
+import taskGrants from '../../progress/kinds/task-grants.json' with { type: 'json' }
+import { collectReferences } from '../../../games/kit/engine/existence.js'
 import { fixedTray } from '../../circuit/core/course.js'
 import { chipsOf } from '../core/formulaTree.js'
 import { parse } from '../core/formula.js'
@@ -339,33 +344,43 @@ test('a machine reference can use rule cards granted by its task', () => {
 })
 
 
-test('direct machine cards carry across successor trays and stay gated on parallel routes', () => {
+test('a direct tray splits learned rules by reference use and carries them across successor trays', () => {
   const { impI, andI } = logicParts.parts
+  const iff = { name: L('Substitution'), family: 'logic/rule', icon: 'ArrowRightLeft', op: 'logic/iffSubst' }
   const box = 'logic/directBackward-impI'
   const join = 'logic/directBackward-andI'
-  const machine = (id, tray, goal, card, withholds) => ({
+  const variants = ['logic/directBackward-iff', 'logic/directRewrite-iff']
+  const machine = (id, tray, goal, solution, withholds) => ({
     id, title: L(id), tray, withholds, tasks: [{ id, kind: 'logic/machine', want: 'logic/becomes',
-      tests: [{ goal }], ...(card && { solution: [`card = ${card}(in)`, 'out <- card'] }),
+      tests: [{ goal }], solution,
     }],
   })
+  const use = type => [`card = ${type}(in)`, 'out <- card']
   const levelContent = withProgressFixture({
-    partDefs: { parts: { impI, andI } },
-    trays: { boxes: { items: ['impI'] }, joins: { items: ['andI'] }, legacy: { items: ['impI'] } },
+    partDefs: { parts: { impI, andI, iff } },
+    trays: {
+      shared: { items: ['andI', 'iff', 'impI'] },
+      proof: { items: [{ id: 'if', items: ['impI'] }, { id: 'iff', items: ['iff'] }, { id: 'and', items: ['andI'] }] },
+      legacy: { items: ['impI'] },
+    },
     registries: {
-      'circuit/tray': { boxes: { directRuleCards: true }, joins: { directRuleCards: true } },
-      tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['impI', 'andI'] } },
+      'circuit/tray': { shared: { directRuleCards: true } },
+      tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['impI', 'andI', 'iff'] } },
     },
     eras: [{ id: 'prover', chapter: { title: L('Prover') },
-      levels: ['foundation', 'open', 'split', 'parallel', 'later', 'restricted'].map(id => ({ id })),
-      links: [['foundation', 'open'], ['foundation', 'parallel'], ['open', 'split'], ['split', 'later'], ['later', 'restricted']]
+      levels: ['foundation', 'open', 'split', 'paired', 'parallel', 'later', 'restricted'].map(id => ({ id })),
+      links: [['foundation', 'open'], ['foundation', 'parallel'], ['open', 'split'], ['split', 'paired'], ['split', 'later'], ['later', 'restricted']]
         .map(([from, to]) => ({ from, to })),
     }],
     levels: [
-      proofLevel('foundation', { adds: ['impI', 'andI'], tests: [{ premises: { p: 'A' }, goal: 'A' }],
+      proofLevel('foundation', { adds: ['andI', 'iff'], tests: [{ premises: { p: 'A' }, goal: 'A' }],
         cases: [{ A: 'Rain' }], solution: ['goal <- p'] }),
-      machine('open', 'boxes', 'Rain → Rain', box),
-      machine('split', 'joins', 'Rain ∧ Wind', join),
-      machine('parallel', 'joins', 'Rain ∧ Wind', join),
+      { ...machine('open', 'shared', 'Rain → Rain', use(box)), adds: ['impI'] },
+      machine('split', 'shared', 'Rain ∧ Wind', use(join)),
+      machine('paired', 'shared', 'Rain ∧ Wind', [
+        `split = ${join}(in)`, `rewrite = ${variants[1]}(split)`, `backward = ${variants[0]}(rewrite)`, 'out <- backward',
+      ]),
+      machine('parallel', 'shared', 'Rain ∧ Wind', use(join)),
       machine('later', 'legacy', 'Rain'),
       machine('restricted', 'legacy', 'Rain', undefined, ['impI']),
     ],
@@ -377,12 +392,100 @@ test('direct machine cards carry across successor trays and stay gated on parall
     const flags = new Set()
     return { offer: view.offerIn(task, flags), has: view.holdsIn(task, flags) }
   }
-  assert.deepEqual(at('open').offer.shown, [box])
-  assert.deepEqual(at('split').offer, { shown: [join], folded: [box], types: [join, box] })
+  assert.deepEqual(at('open').offer, { shown: [box], folded: [...variants, join], types: [box, ...variants, join] })
+  assert.deepEqual(at('split').offer, { shown: [join], folded: [box, ...variants], types: [join, box, ...variants] })
+  assert.deepEqual(at('paired').offer, { shown: [...variants, join], folded: [box], types: [...variants, join, box] })
+  assert.deepEqual(at('later').offer.shown, [])
+  assert.ok(at('later').offer.folded.includes(box))
   assert.ok(at('split').has(box))
-  assert.ok(!at('parallel').has(box))
+  assert.ok(!at('parallel').has(box) && at('parallel').has(join))
+  assert.ok(!at('open').has('impI'))
   assert.ok(at('later').has(box) && at('later').has(join) && at('later').has('impI'))
   assert.ok(!at('restricted').has(box) && at('restricted').has(join))
+})
+
+test('a bound card only offers and runs the rule choices held by its task', () => {
+  const { mp, andE } = logicParts.parts
+  const apply = 'logic/directBackward-mp'
+  const split = 'logic/directBackward-andE'
+  const blockApply = ['mp.use=impE', 'mp.use=cut']
+  const blockSplit = ['andE.use=conjE']
+  const task = (id, extra) => ({ id, step: L(id), kind: 'logic/machine', want: 'logic/becomes',
+    tests: [{ goal: 'Rain', becomes: [['?A → Rain', '?A']] }], ...extra })
+  const content = withProgressFixture({
+    partDefs: { parts: { mp, andE } },
+    trays: { prover: { items: [] } },
+    registries: {
+      'circuit/part': { mp, andE },
+      'circuit/tray': { prover: { directRuleCards: true } },
+      tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ['mp', 'andE'] } },
+    },
+    eras: [{ id: 'intro', levels: [{ id: 'prover' }] }],
+    levels: [{ id: 'prover', title: L('Prover'), adds: ['mp', 'andE'], withholds: [...blockApply, ...blockSplit],
+      tasks: [
+        task('restricted', { solution: [`card = ${apply}[use=["mp"]](in)`, 'out <- card'] }),
+        task('all-rules', { withholds: [] }),
+        task('no-split', { withholds: [...blockSplit, 'andE.use=conjunct1', 'andE.use=conjunct2'] }),
+      ],
+    }],
+  })
+  assert.deepEqual(progressMeaning.contentChecks({ content }), [])
+  for (const schema of [levelGrants, taskGrants]) {
+    const targets = []
+    collectReferences(blockApply, schema.fields.withholds, {}, (kind, target) => targets.push([kind, target]), 'withholds')
+    assert.deepEqual(targets, [['progress/item', 'mp'], ['progress/item', 'mp']])
+  }
+  const logic = logicWorks(content)
+  assert.deepEqual(logic.wrong, [])
+  const [limited, unrestricted, removed] = logic.LEVELS[0].tasks
+  const offerAt = task => logic.machineBoards.forTask(task).offerIn(task, new Set())
+  assert.deepEqual(offerAt(limited), { shown: [apply], folded: [split], types: [apply, split] })
+  assert.ok(!offerAt(removed).types.includes(split))
+  const has = logic.machineBoards.forTask(limited).holdsIn(limited, new Set())
+  const choices = type => RULE_CHOICES.run([], {}, { task: limited, node: { type } }).map(({ value }) => value)
+  assert.deepEqual(choices(apply), ['mp'])
+  assert.deepEqual(choices(split), ['conjunct1', 'conjunct2'])
+  assert.deepEqual(directCardsOf(limited).get(apply).definition.settings[0].default, ['mp'])
+  assert.equal(directCardsOf(limited).get(apply).definition.settings[0].when, 'false')
+  assert.equal(directCardsOf(limited).get(split).defaultRule, null)
+  assert.deepEqual(directCardsOf(limited).get(split).definition.settings[0].default, [])
+  assert.equal(directCardsOf(unrestricted).get(split).defaultRule, null)
+  assert.equal(directCardsOf(removed).has(split), false)
+  assert.ok(has(apply, 'use', 'mp') && !has(apply, 'use', 'impE'))
+  assert.ok(has(split, 'use', 'conjunct2') && !has(split, 'use', 'conjE'))
+  assert.equal(runMachine(limited, limited.solution).pass, true)
+  const automatic = { ...limited.solution, nodes: limited.solution.nodes.map(node => node.type === apply
+    ? { ...node, params: {} } : node) }
+  assert.equal(runMachine(limited, automatic).pass, true)
+  const pending = runMachine(unrestricted, automatic, { traced: true }).runs[0]
+  assert.equal(pending.trace[0].status, 'error')
+  assert.equal(pending.trace[0].reason, 'rule-required')
+  const tampered = { ...limited.solution, nodes: limited.solution.nodes.map(node => node.type === apply
+    ? { ...node, params: { ...node.params, use: ['cut'] } } : node) }
+  assert.equal(runMachine(limited, tampered, { traced: true }).runs[0].nodeStatuses.get('card'), 'error')
+})
+
+test('a published proof unlocks its bound rule for successors with the earned flag', () => {
+  const content = structuredClone(CONTENT)
+  content.trays = { shared: { items: [] } }
+  content.registries['circuit/tray'] = { shared: { directRuleCards: true } }
+  for (const [id, from] of [['machineAfterProof', 'chain'], ['machineBeforeProof', 'or']]) {
+    content.eras[0].levels.push({ id })
+    content.eras[0].links.push({ from, to: id })
+    content.levels.push({ id, title: L(id), tray: 'shared', tasks: [
+      { id, kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain → Slip' }] },
+    ] })
+  }
+  const logic = logicWorks(withProgressFixture(content))
+  const type = 'logic/directBackward-chain'
+  const has = (id, flags) => {
+    const task = logic.LEVELS.find(level => level.id === id).tasks[0]
+    return logic.machineBoards.forTask(task).holdsIn(task, flags)(type)
+  }
+  const earned = new Set(['lemma:chain'])
+  assert.ok(!has('machineAfterProof', new Set()))
+  assert.ok(!has('machineBeforeProof', earned))
+  assert.ok(has('machineAfterProof', earned))
 })
 
 test('proof-board lemma cards expose packed boards and selected forms to workshop expansion', () => {

@@ -54,7 +54,7 @@ export { circuitBoard, fixedCardsFit, primitivesOnly, OUTPUTS, INPUTS } from './
 export { boardView, fitsCircuit, previousCircuitTask } from './board-view.js'
 export { packedBoards } from './board/packed-boards.js'
 export { frameTree, regionAddress } from './board/regions.js'
-export { withPreset, presetCardIds, presetOf } from './board/presets.js'
+export { isFixed, withPreset, presetCardIds, presetOf } from './board/presets.js'
 export { boardShape } from './board-shape.js'
 export { VIRTUAL_INPUT, VIRTUAL_OUTPUT } from './board/virtual-terminals.js'
 

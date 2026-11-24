@@ -14,7 +14,7 @@ import { bin, parse, same, show, subst, substMany, tvar } from '../core/formula.
 import { render } from '../core/notation.js'
 import { didText, machineGeneralNotation, machineReadout } from '../core/circuit-readouts.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
-import { BACKWARD_POSITIONS, MACHINE_BOARD, MACHINE_TESTS, RULE_CHOICES, RULE_DEFINITION, boardRules, directCardsOf, inputsOfLevel, rulePartOf, runMachine } from '../core/machine.js'
+import { BACKWARD_POSITIONS, MACHINE_BOARD, MACHINE_TESTS, REWRITE_CHOICES, RULE_CHOICES, RULE_DEFINITION, boardRules, defaultBoundRule, directCardsOf, inputsOfLevel, machineConfigurationCases, machinePositionCases, rulePartOf, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
 import { OPS } from '../core/ops.js'
 import { OPTIONS, PROOF_BOARD, RULES, lemmaGives, proved, runProof } from '../core/proof.js'
@@ -508,13 +508,18 @@ test('ordinary wires retain each alternative for a later proof step', () => {
   assert.equal(traced.pass, true)
   const { trace } = traced.runs[0]
   assert.deepEqual(trace.map(step => step.id), ['left', 'right', 'finish', 'finish'])
+  assert.deepEqual([...traced.runs[0].nodeStatuses], [['right', 'applied'], ['finish', 'applied']])
   const merge = traced.runs[0].values.get('join')
   assert.equal(merge.more[0].goals.length, 1)
   const [left, right] = trace.filter(({ id }) => id === 'left' || id === 'right').map(({ proof }) => proof)
   assert.equal(left.resultPath, undefined)
   assert.equal(right.resultPath, true)
-  const [failed, solved] = trace.filter(({ id }) => id === 'finish')
-  assert.ok(failed.value.error)
+  const [skipped, solved] = trace.filter(({ id }) => id === 'finish')
+  assert.equal(skipped.status, 'skipped')
+  assert.equal(skipped.value.error, undefined)
+  assert.equal(skipped.proof.parent, left.id)
+  assert.equal(skipped.proof.resultPath, undefined)
+  assert.equal(solved.status, 'applied')
   assert.equal(solved.proof.resultPath, true)
   assert.equal(solved.proof.closed.length, 1)
   assert.equal(solved.proof.parent, right.id)
@@ -531,11 +536,10 @@ test('a search report follows the successful path through separate rounds', () =
   const { trace } = report.runs[0]
   assert.ok(trace.every(({ round }) => !round))
   const comparisons = trace.filter(step => step.id === 'search')
-  assert.equal(comparisons.length, 2)
+  assert.equal(comparisons.length, 3)
   assert.ok(comparisons.every(step => step.value.did.op === 'searchCheck'))
   assert.equal(comparisons.filter(step => step.proof.resultPath).length, 1)
   assert.ok(trace.some(({ value, proof }) => value.did?.op === 'assumption' && proof.resultPath))
-  assert.ok(trace.some(({ value, proof }) => value.error && proof && !proof.resultPath))
   const seen = new Set([0])
   for (const { proof } of trace) {
     if (!proof) continue
@@ -726,7 +730,7 @@ test('the direct equivalence card ignores term equations and rewrites one goal o
     ruleParts: { 'logic/iffSubst': source },
     partDefs: { [source]: { name: { en: 'Equivalent substitution', zh: '等价代换' } } },
     tests: [
-      { goal: 'P(x)', hyps: ['x = y'], becomes: [] },
+      { goal: 'P(x)', hyps: ['x = y'], becomes: [['x = y ⊢ P(x)']] },
       { goal: 'P(x) ∧ P(x)', hyps: ['x = y', 'P(x) ↔ Q(x)'], becomes: [['x = y; P(x) ↔ Q(x) ⊢ Q(x) ∧ P(x)']] },
     ],
   }
@@ -736,14 +740,24 @@ test('the direct equivalence card ignores term equations and rewrites one goal o
   const choices = RULE_CHOICES.run([], {}, { task: level, node: { type } })
   assert.equal(choices[0].label, '⟦A ↔ B; C[A]⟧ ⟹ C[B]')
   assert.equal(choices[1].label, '⟦A ↔ B; C[B]⟧ ⟹ C[A]')
+  assert.deepEqual(choices[1].statements, [{ left: 'C[B]', right: 'C[A]', conditions: ['A ↔ B'] }])
+  assert.equal(card.direction, 'rewrite')
+  assert.equal(card.defaultRule, null)
+  const backward = directCardsOf(level).get('logic/directBackward-qed_iffSubst')
+  assert.deepEqual(backward.entries[0].statements, [{ conclusion: 'C[B]', premises: ['A ↔ B', 'C[A]'], fixes: [] }])
   const generic = RULE_CHOICES.run([], {}, { task: level, node: { type: 'logic/directRewrite-logic_hyp' } })
   assert.match(generic[0].label, /C\[s\].*C\[t\].*C\[A\].*C\[B\]/)
   const compiled = compileParts({ [type]: card.definition }, OPS).PARTS
   level.parts = (name) => compiled[name] ?? machineParts(name)
-  const board = machine({ change: [type] }, ['in>change', 'change>out'])
+  const board = machine({ change: [type, { use: ['hyp.iff'], at: 'goal-0' }] }, ['in>change', 'change>out'])
   assert.equal(runMachine(level, board).pass, true)
   const change = board.nodes.find(({ id }) => id === 'change')
-  change.params = { at: 'goal-1' }
+  change.params.at = 'hyp-2-1'
+  const given = runMachine({ ...level, tests: [{ goal: 'P(x)', hyps: ['x = y', 'P(x) ↔ Q(x)', 'P(x) ∧ P(x)'],
+    becomes: [['x = y; P(x) ↔ Q(x); P(x) ∧ Q(x) ⊢ P(x)']] }] }, board, { traced: true })
+  assert.equal(given.pass, true)
+  assert.deepEqual(given.runs[0].trace[0].diff.changed[0].locations, [{ hyp: 2, path: ['b'] }])
+  change.params.at = 'goal-1'
   level.tests[1].becomes = [['x = y; P(x) ↔ Q(x) ⊢ P(x) ∧ Q(x)']]
   assert.equal(runMachine(level, board).pass, true)
   change.params = { use: ['hyp.iff.reverse'], at: 'goal-0' }
@@ -788,6 +802,107 @@ test('a direct rewrite uses only the first rule in an older multi-rule selection
   assert.deepEqual(markOptions('change'), [['dneg.elim', ''], ['dneg.intro', 'R₁']])
 })
 
+test('bound rewrite configuration follows the available occurrences in each case', () => {
+  const type = 'logic/directRewrite-qed_iffSubst'
+  const level = {
+    kind: 'logic/machine', directRuleCards: true, want: 'logic/becomes',
+    ruleParts: { 'logic/iffSubst': 'qed/iffSubst' },
+    partDefs: { 'qed/iffSubst': { name: 'Equivalent substitution' } },
+    tests: [
+      { goal: 'Rain ∧ Rain', hyps: ['Rain ↔ Wet'], becomes: [] },
+      { goal: 'Rain', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Wet']] },
+      { goal: 'Wind', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Wind']] },
+      { goal: 'Wind', hyps: ['Rain ↔ Wet', 'Rain'], becomes: [['Rain ↔ Wet; Wet ⊢ Wind']] },
+    ],
+  }
+  const card = directCardsOf(level).get(type)
+  const { PARTS } = compileParts({ [type]: card.definition }, OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const unconfigured = machine({ change: [type, { use: [], at: 'goal-1' }], next: [type] },
+    ['in>change', 'change>next', 'next>out'])
+  const unconfiguredNode = unconfigured.nodes.find(({ id }) => id === 'change')
+  const missing = runMachine(level, unconfigured, { traced: true })
+  assert.deepEqual([...missing.runs[0].nodeStatuses], [['change', 'error']])
+  assert.equal(missing.runs[0].trace[0].reason, 'rule-required')
+  assert.equal(missing.runs[0].pass, false)
+  assert.deepEqual(machineConfigurationCases(level, unconfiguredNode, [[]]), [{ pending: true, reason: 'rule-required' }])
+
+  const board = machine({ change: [type, { use: ['hyp.iff'] }] }, ['in>change', 'change>out'])
+  const node = board.nodes.find(({ id }) => id === 'change')
+  const report = runMachine(level, board, { traced: true })
+  const cases = report.runs.map(run => [run.values.get('in')])
+  assert.deepEqual(machineConfigurationCases(level, node, cases), [
+    { pending: true, reason: 'position-required' },
+    { pending: false, reason: null },
+    { pending: false, reason: null },
+    { pending: false, reason: null },
+  ])
+  assert.deepEqual(cases.map(inputs => REWRITE_CHOICES.run(inputs, {}, { task: level, node })[0].defaultAt),
+    [null, 'goal-0', null, 'hyp-1-0'])
+  assert.deepEqual(report.runs.map(run => run.pass), [false, true, true, true])
+  assert.deepEqual(report.runs.map(run => [run.trace[0].status, run.trace[0].reason]), [
+    ['error', 'position-required'], ['applied', undefined], ['skipped', 'rule-mismatch'], ['applied', undefined],
+  ])
+  assert.equal(report.runs[0].outputs.out.configurationError, 'position-required')
+  assert.deepEqual(report.runs[0].outputs.out.goals, cases[0][0].goals)
+
+  node.params.at = 'goal-1'
+  assert.deepEqual(machineConfigurationCases(level, node, [cases[0]]), [{ pending: false, reason: null }])
+  const repeat = machine({ loop: ['repeat'], change: [type, { use: ['hyp.iff'] }] },
+    ['in>loop.in', 'loop#body>change.in', 'change>loop.body', 'loop>out'])
+  const frame = runMachine(level, repeat, { traced: true }).runs[0]
+  assert.equal(frame.outputs.out.configurationError, 'position-required')
+  assert.equal(frame.nodeStatuses.get('change'), 'error')
+})
+
+test('optional first-choice defaults agree across rewrite runs, previews and position pickers', () => {
+  const source = 'example/substitute'
+  const type = 'logic/directRewrite-example_substitute'
+  const level = {
+    kind: 'logic/machine', directRuleCards: true, want: 'logic/becomes',
+    ruleParts: { 'logic/iffSubst': source }, partDefs: { [source]: { name: 'Substitution' } },
+    tests: [{ goal: 'Rain ∧ Rain', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Wet ∧ Rain']] }],
+  }
+  const card = directCardsOf(level).get(type)
+  const { PARTS } = compileParts({ [type]: card.definition }, OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const board = machine({ change: [type], preview: [type] }, ['in>change', 'change>out', 'in>preview'])
+  const node = board.nodes.find(({ id }) => id === 'change')
+  const enabled = { autoFirst: true }
+  const strict = runMachine(level, board, { autoFirst: false, traced: true }).runs[0]
+  const automatic = runMachine(level, board, { ...enabled, traced: true }).runs[0]
+  const inputs = [automatic.values.get('in')]
+  assert.equal(strict.trace[0].reason, 'rule-required')
+  assert.equal(runMachine(level, board).pass, false)
+  assert.equal(defaultBoundRule(card), null)
+  assert.equal(defaultBoundRule(card, enabled), 'hyp.iff')
+  assert.equal(automatic.pass, true)
+  assert.equal(automatic.trace[0].status, 'applied')
+  assert.equal(automatic.ruleSlots[0].entry.key, 'hyp.iff')
+  assert.deepEqual(automatic.values.get('preview').goals, automatic.outputs.out.goals)
+  assert.equal(strict.values.get('preview').configurationError, 'rule-required')
+  assert.deepEqual(machineConfigurationCases(level, node, [[], inputs], enabled), [
+    { pending: false, reason: null }, { pending: false, reason: null },
+  ])
+  assert.equal(REWRITE_CHOICES.run(inputs, {}, { task: level, node, ...enabled })[0].defaultAt, 'goal-0')
+  assert.deepEqual(machinePositionCases(level, node, [inputs], enabled).map(({ value, cases }) => [value, cases[0].isDefault]),
+    [['goal-0', true], ['goal-1', false]])
+
+  node.params.use = ['hyp.iff']
+  assert.equal(runMachine(level, board).runs[0].outputs.out.configurationError, 'position-required')
+  assert.equal(runMachine(level, board, enabled).pass, true)
+  node.params.at = 'goal-1'
+  assert.equal(show(runMachine(level, board, enabled).runs[0].outputs.out.goals[0].goal), 'Rain ∧ Wet')
+  node.params.use = ['hyp.iff.reverse']
+  assert.equal(runMachine(level, board, { ...enabled, traced: true }).runs[0].trace[0].reason, 'position-missing')
+
+  const filtered = { ...level, withheldRuleChoices: new Set([`${source}.use=hyp.iff`]),
+    tests: [{ goal: 'Wet ∧ Wet', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Rain ∧ Wet']] }] }
+  assert.equal(defaultBoundRule(directCardsOf(filtered).get(type), enabled), 'hyp.iff.reverse')
+  node.params = {}
+  assert.equal(runMachine(filtered, board, enabled).pass, true)
+})
+
 test('identical rule formulas share a number across different rule keys', () => {
   const level = { directRuleCards: true, rules: {
     first: { name: 'First', premises: ['?A'], conclusion: '?B' },
@@ -809,7 +924,7 @@ test('direct cards follow each source part and its declared proof operation', ()
     directRuleCards: true,
     holds: ['firstBox', 'secondBox'],
     partDefs: {
-      firstBox: { name: { zh: '甲框', en: 'First box' } },
+      firstBox: { name: { zh: '甲框', en: 'First box' }, family: 'logic/box', icon: 'Box', desc: { en: 'A proof box' } },
       secondBox: { name: { zh: '乙框', en: 'Second box' } },
     },
     proofOperations: { firstBox: ['logic/impI', 'logic/impI'], secondBox: ['logic/impI'] },
@@ -818,11 +933,18 @@ test('direct cards follow each source part and its declared proof operation', ()
   for (const source of ['firstBox', 'secondBox']) {
     const card = cards.get(`logic/directBackward-${source}`)
     assert.equal(card.source, source)
+    assert.equal(card.direction, 'backward')
+    assert.equal(card.defaultRule, 'impI')
+    assert.equal(card.definition.desc, undefined)
     assert.deepEqual(card.entries.map((entry) => entry.key), ['impI'])
+    assert.deepEqual(card.entries[0].statements, [{ conclusion: 'A → B', premises: ['⟦A⟧ ⟹ B'], fixes: [] }])
   }
   assert.ok(!cards.has('logic/directBackward-mp'))
   const type = 'logic/directBackward-firstBox'
-  const compiled = compileParts({ [type]: cards.get(type).definition }, OPS).PARTS
+  const { definition } = cards.get(type)
+  assert.equal(definition.family, 'logic/box')
+  assert.equal(definition.icon, 'Box')
+  const compiled = compileParts({ [type]: definition }, OPS).PARTS
   const board = machine({ step: [type] }, ['in>step', 'step>out'])
   const level = {
     ...task, kind: 'logic/machine', want: 'logic/becomes',
@@ -832,7 +954,7 @@ test('direct cards follow each source part and its declared proof operation', ()
   assert.equal(runMachine(level, board).pass, true)
 })
 
-test('a direct rule card skips a completed proof but still fails on an unmatched goal', () => {
+test('a direct rule card reports when a completed or unmatched proof passes through', () => {
   const level = { kind: 'logic/machine', want: 'logic/proved', directRuleCards: true, tests: [{ goal: 'Rain → Rain' }] }
   const box = 'logic/directBackward-impI'
   const given = 'logic/directBackward-logic_assumption'
@@ -843,12 +965,154 @@ test('a direct rule card skips a completed proof but still fails on an unmatched
   const solved = runMachine(level, board, { traced: true })
   assert.equal(solved.pass, true)
   const { trace } = solved.runs[0]
-  assert.deepEqual(trace.map(step => step.id), ['open', 'finish'])
+  assert.deepEqual(trace.map(({ id, status }) => [id, status]), [
+    ['open', 'applied'], ['finish', 'applied'], ['extra', 'skipped'],
+  ])
   assert.equal(trace.at(-1).proof.resultPath, true)
+  assert.equal(trace.at(-1).reason, 'proved')
+  assert.deepEqual([...solved.runs[0].nodeStatuses], [['open', 'applied'], ['finish', 'applied'], ['extra', 'skipped']])
+  assert.deepEqual(trace[0].diff, {
+    changed: [{ beforeGoalIndex: 0, goalIndex: 0, locations: [{ path: [] }, { hyp: 0, path: [] }] }],
+    added: [], closed: [],
+  })
+  assert.deepEqual(trace[1].diff.closed, [0])
+  assert.equal(trace[1].stateInfo.defaultGoalIndex, null)
   const forwarded = solved.runs[0].values.get('extra')
   assert.deepEqual(forwarded.goals, [])
   assert.equal(forwarded.error, undefined)
-  assert.equal(runMachine({ ...level, tests: [{ goal: 'Rain → Wind' }] }, board).pass, false)
+  const unmatched = runMachine({ ...level, tests: [{ goal: 'Rain → Wind' }] }, board, { traced: true })
+  assert.equal(unmatched.pass, false)
+  assert.deepEqual(unmatched.runs[0].trace.map(step => step.status), ['applied', 'skipped', 'skipped'])
+  assert.equal(unmatched.runs[0].outputs.out.error, undefined)
+  assert.deepEqual(unmatched.runs[0].trace.slice(1).map(step => step.reason), ['rule-mismatch', 'rule-mismatch'])
+  assert.equal(unmatched.runs[0].nodeStatuses.get('extra'), 'skipped')
+  const config = board.nodes.find(node => node.id === 'open')
+  config.params = { use: ['unknown'] }
+  const invalid = runMachine(level, board, { traced: true }).runs[0]
+  assert.deepEqual([...invalid.nodeStatuses], [['open', 'error']])
+  assert.equal(invalid.trace[0].status, 'error')
+  assert.equal(invalid.trace[0].reason, undefined)
+})
+
+test('rewrite and citation cards pass unchanged goals to later attempts', () => {
+  const source = 'qed/iffSubst'
+  const rewrite = 'logic/directRewrite-qed_iffSubst'
+  const cite = 'logic/directBackward-logic_assumption'
+  const level = {
+    kind: 'logic/machine', want: 'logic/proved', directRuleCards: true,
+    ruleParts: { 'logic/iffSubst': source },
+    partDefs: { [source]: { name: { en: 'Equivalent substitution', zh: '等价代换' } } },
+    tests: [
+      { goal: 'Rain ∧ Rain', hyps: ['Wet ↔ Rain', 'Wet ∧ Rain'] },
+      { goal: 'Rain ∧ Rain', hyps: ['Rain ↔ Wet', 'Rain ∧ Wet'] },
+    ],
+  }
+  const cards = directCardsOf(level)
+  const { PARTS } = compileParts(Object.fromEntries([rewrite, cite].map(type => [type, cards.get(type).definition])), OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const board = machine({
+    first: [rewrite, { use: ['hyp.iff.reverse'], at: 'goal-0' }],
+    second: [rewrite, { use: ['hyp.iff'], at: 'goal-1' }], finish: [cite],
+  }, ['in>first', 'first>second', 'second>finish', 'finish>out'])
+  const result = runMachine(level, board, { traced: true })
+  assert.equal(result.pass, true)
+  assert.deepEqual(result.runs.map(run => run.trace.map(step => step.status)), [
+    ['applied', 'skipped', 'applied'], ['skipped', 'applied', 'applied'],
+  ])
+  assert.equal(result.runs[0].trace[1].reason, 'position-missing')
+  assert.deepEqual(result.runs[1].trace[1].diff.changed[0].locations, [{ path: ['b'] }])
+  const selected = board.nodes.find(node => node.id === 'second')
+  const positions = machinePositionCases(level, selected, result.runs.map(run => [run.values.get('first')]))
+  const summary = value => positions.find(position => position.value === value).cases.map(({ exists, isDefault }) => [exists, isDefault])
+  assert.deepEqual(summary('goal-0'), [[true, false], [true, false]])
+  assert.deepEqual(summary('goal-1'), [[false, false], [true, false]])
+})
+
+test('bound apply, elimination, cut and proved lemmas leave metavariables that citation solves', () => {
+  const types = ['mp', 'andE', 'logic_assumption', 'chain'].map(source => `logic/directBackward-${source}`)
+  const [apply, eliminate, cite, chain] = types
+  const level = { kind: 'logic/machine', directRuleCards: true, want: 'logic/proved', lemmas: {
+    chain: { name: { en: 'Chain', zh: '串联' }, metas: ['A', 'B', 'C'], statement: 'A → C', premises: ['A → B', 'B → C'] },
+  } }
+  const cards = directCardsOf(level)
+  const { PARTS } = compileParts(Object.fromEntries(types.map(type => [type, cards.get(type).definition])), OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const cases = [
+    { type: apply, params: { use: ['mp'] }, input: { goal: 'Wet', hyps: ['Rain → Wet', 'Rain'] }, goals: ['?A → Wet', '?A'], inst: 'Rain' },
+    { type: eliminate, params: { use: ['conjunct1'] }, input: { goal: 'Rain', hyps: ['Rain ∧ Wet'] }, goals: ['Rain ∧ ?B'], inst: 'Wet', meta: '?B' },
+    { type: apply, params: { use: ['cut'] }, input: { goal: 'Wet', hyps: ['Rain', 'Wet'] }, goals: ['?A', 'Wet'], inst: 'Rain' },
+    { type: chain, params: {}, input: { goal: 'Rain → Slip', hyps: ['Rain → Wet', 'Wet → Slip'] },
+      goals: ['Rain → ?B', '?B → Slip'], inst: 'Wet', meta: '?B' },
+  ]
+  for (const { type, params, input, goals, inst, meta = '?A' } of cases) {
+    level.tests = [input]
+    const board = machine({ step: [type, params], first: [cite], second: [cite] },
+      ['in>step', 'step>first', 'first>second', 'second>out'])
+    const result = runMachine(level, board, { traced: true })
+    assert.equal(result.pass, true)
+    assert.deepEqual(result.runs[0].trace[0].value.goals.map(goal => show(goal.goal)), goals)
+    assert.equal(show(result.runs[0].outputs.out.inst[meta]), inst)
+    if (params.use?.[0] === 'mp') {
+      const [split, first] = result.runs[0].trace
+      assert.deepEqual(split.stateInfo.unknowns, ['?A'])
+      assert.deepEqual(split.stateInfo.contexts.map(({ goalIndices }) => goalIndices), [[0, 1]])
+      assert.equal(split.stateInfo.defaultGoalIndex, 0)
+      assert.deepEqual(split.diff.added, [1])
+      assert.deepEqual(first.diff, {
+        changed: [{ beforeGoalIndex: 1, goalIndex: 0, locations: [{ path: [] }] }],
+        added: [], closed: [0],
+      })
+      assert.deepEqual(first.stateInfo.unknowns, [])
+    }
+  }
+})
+
+test('given equations and equivalences have forward and backward substitution cards', () => {
+  const name = { en: 'Substitution', zh: '代换' }
+  const level = {
+    kind: 'logic/machine', directRuleCards: true, want: 'logic/becomes',
+    partDefs: { equality: { name }, equivalence: { name } },
+    proofOperations: { equality: ['logic/rewrite'], equivalence: ['logic/iffSubst'] },
+  }
+  const cards = directCardsOf(level)
+  const { PARTS } = compileParts(Object.fromEntries([...cards].map(([type, card]) => [type, card.definition])), OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  for (const [type, key, goal, hyps, becomes] of [
+    ['directBackward-equality', 'hyp.eq', 'P(y)', ['x = y'], 'x = y ⊢ P(x)'],
+    ['directRewrite-equality', 'hyp.eq', 'P(x)', ['x = y'], 'x = y ⊢ P(y)'],
+    ['directBackward-equivalence', 'hyp.iff', 'Wet', ['Rain ↔ Wet'], 'Rain ↔ Wet ⊢ Rain'],
+    ['directRewrite-equivalence', 'hyp.iff', 'Rain', ['Rain ↔ Wet'], 'Rain ↔ Wet ⊢ Wet'],
+    ['directRewrite-equality', 'hyp.eq', '∀x. P(x)', ['x = y'], 'x = y ⊢ ∀x. P(x)'],
+  ]) {
+    level.tests = [{ goal, hyps, becomes: [[becomes]] }]
+    const result = runMachine(level, machine({ step: [`logic/${type}`, { use: [key] }] }, ['in>step', 'step>out']), { traced: true })
+    assert.equal(result.pass, true, type)
+    assert.equal(result.runs[0].trace[0].status, goal.startsWith('∀') ? 'skipped' : 'applied')
+  }
+})
+
+test('a proved equivalence is rewritten only when its form is available', () => {
+  const lemma = { name: { en: 'Law', zh: '定理' }, metas: ['A'], forms: [
+    { key: 'law', label: '', statement: '¬¬A ↔ A', premises: [] },
+  ] }
+  const type = 'logic/directRewrite-law'
+  const level = {
+    kind: 'logic/machine', want: 'logic/becomes', directRuleCards: true, lemmas: { law: lemma },
+    holds: ['law', 'andI'], forms: { law: ['law'] },
+    tests: [{ goal: 'Rain ∧ ¬¬Wet', becomes: [['Rain', 'Wet']] }],
+  }
+  assert.ok(!directCardsOf({ ...level, forms: { law: [] } }).has(type))
+  const cards = directCardsOf(level)
+  const { PARTS } = compileParts(Object.fromEntries([...cards].map(([key, card]) => [key, card.definition])), OPS)
+  level.parts = key => PARTS[key] ?? machineParts(key)
+  const board = machine({ split: ['logic/directBackward-andI'], change: [type, { use: ['law.law.forward'] }] }, ['in>split', 'split>change', 'change>out'])
+  const result = runMachine(level, board)
+  assert.equal(result.pass, true)
+  const node = board.nodes.find(node => node.id === 'change')
+  node.params.at = 'g1:goal-0'
+  assert.equal(runMachine(level, board).pass, true)
+  node.params.at = 'goal-0'
+  assert.equal(runMachine(level, board).pass, false)
 })
 
 test('backward rules preview and apply to a selected goal without moving the other goals', () => {
@@ -872,18 +1136,54 @@ test('backward rules preview and apply to a selected goal without moving the oth
     assert.deepEqual(options.find(({ value }) => value === 'goal-1').result, output.goals)
     assert.equal(output.did.goalIndex, 1)
   }
+  const positions = machinePositionCases(level, node, report.runs.map(run => [run.values.get('split')]))
+  assert.deepEqual(positions.map(({ value, cases }) => [value, cases.map(({ exists, isDefault }) => [exists, isDefault])]), [
+    ['goal-0', [[true, true], [false, false]]], ['goal-1', [[true, false], [true, true]]],
+  ])
   delete node.params.at
   const automatic = runMachine(level, board)
   assert.deepEqual(automatic.runs.map(run => run.pass), [false, true])
+  const autoFirst = { autoFirst: true }
+  assert.deepEqual(runMachine(level, board, autoFirst).runs.map(run => run.outputs.out), automatic.runs.map(run => run.outputs.out))
+  assert.deepEqual(machinePositionCases(level, node, report.runs.map(run => [run.values.get('split')]), autoFirst), positions)
   node.params.at = 'goal-3'
-  assert.ok(runMachine(level, board).runs.every(run => run.outputs.out.error))
+  for (const run of runMachine(level, board).runs) {
+    assert.equal(run.outputs.out.error, undefined)
+    assert.deepEqual(run.outputs.out.goals, run.values.get('split').goals)
+  }
   node.params.at = 'hyp-0-0'
-  assert.ok(runMachine(level, board).runs.every(run => run.outputs.out.error))
+  for (const run of runMachine(level, board).runs) {
+    assert.equal(run.outputs.out.error, undefined)
+    assert.deepEqual(run.outputs.out.goals, run.values.get('split').goals)
+  }
 
   const wired = wireRules(machine({ split: [split], open: ['rule', { rule: 'impI' }] }, ['in>split', 'split>open', 'open>out']), level)
-  assert.deepEqual(runMachine(level, wired).runs.map(run => run.pass), [false, true])
+  assert.deepEqual(runMachine(level, wired).runs.map(run => run.pass), [false, false])
   wired.nodes.find(node => node.id === 'open').params.at = 'goal-1'
   assert.equal(runMachine(level, wired).pass, true)
+})
+
+test('a backward card uses the first bound rule only with autoFirst when no rule is selected', () => {
+  const type = 'logic/directBackward-orI'
+  const level = {
+    kind: 'logic/machine', want: 'logic/becomes', directRuleCards: true,
+    tests: [{ goal: 'Rain ∨ Wet', becomes: [['Rain']] }],
+  }
+  const { PARTS } = compileParts({ [type]: directCardsOf(level).get(type).definition }, OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const board = machine({ step: [type] }, ['in>step', 'step>out'])
+  const node = board.nodes.find(({ id }) => id === 'step')
+  const autoFirst = { autoFirst: true }
+  const automatic = runMachine(level, board, autoFirst).runs[0]
+  const inputs = [automatic.values.get('in')]
+  assert.equal(runMachine(level, board).runs[0].outputs.out.configurationError, 'rule-required')
+  assert.equal(automatic.pass, true)
+  assert.equal(BACKWARD_POSITIONS.run(inputs, {}, { task: level, node })[0].defaultAt, null)
+  const [header, choice] = BACKWARD_POSITIONS.run(inputs, {}, { task: level, node, ...autoFirst })
+  assert.equal(header.defaultAt, 'goal-0')
+  assert.deepEqual(choice.result, automatic.outputs.out.goals)
+  node.params.use = ['disjI2']
+  assert.equal(show(runMachine(level, board, autoFirst).runs[0].outputs.out.goals[0].goal), 'Wet')
 })
 
 test('rule and equation displays keep complete term wording', async () => {

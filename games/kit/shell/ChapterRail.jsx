@@ -1,3 +1,4 @@
+import { lastIndexMatching } from '../engine/array-tools.js'
 import { useEffect, useState } from 'react'
 import { L, tr } from './i18n.js'
 
@@ -16,7 +17,7 @@ export default function ChapterRail({ chapters, list, viewport }) {
       const sections = Array.from(track.children)
       const end = scroller.scrollTop > 0 && scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop <= 1
       const readingLine = scroller.getBoundingClientRect().top + Math.min(scroller.clientHeight / 4, 76)
-      setActive(end ? sections.length - 1 : Math.max(0, sections.findLastIndex((section) => section.getBoundingClientRect().top <= readingLine)))
+      setActive(end ? sections.length - 1 : Math.max(0, lastIndexMatching(sections, (section) => section.getBoundingClientRect().top <= readingLine)))
     }
     const resize = new ResizeObserver(update)
     resize.observe(track)

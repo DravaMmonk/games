@@ -1,3 +1,4 @@
+import { copyData } from './json-value.js'
 import { isLanguageNeutral, isText, textEntries, textKey } from './i18n.js'
 import { createHash } from 'node:crypto'
 
@@ -229,7 +230,7 @@ export function versionMetadataBaseline(input, retiredDependency) {
 
 /** Step 6 changes chapter identities and removes the retired display-order representation only. */
 export function collectionFieldsBaseline(value) {
-  const result = structuredClone(value)
+  const result = copyData(value)
   const local = id => typeof id === 'string' ? id.replace(/^@(?:[^/]+\/)?/, '') : String(id)
   if (result.structure?.relations) delete result.structure.relations.order
   for (const era of Array.isArray(result.structure?.eras) ? result.structure.eras : []) {

@@ -1,6 +1,6 @@
 import { solutionStamp } from './stamp.js'
 // Circuit saved works, publications, rewards and availability derived from task progress.
-import { createProgress as createProgressStore, current as currentProgress, fresh as freshProgress, taskKey, completedTask, taskPassed } from 'kernel'
+import { createProgress as createProgressStore, current as currentProgress, fresh as freshProgress, taskKey, completedTask, taskPassed, copyData } from 'kernel'
 import { openPackedPart, packedWorkReferences } from './board/packed-boards.js'
 import { workExtension } from './board/work-extension.js'
 
@@ -18,7 +18,7 @@ export function inheritedBoard(progress, task) {
   if (!task) return undefined
   const saved = passedWork(progress, task)
   const board = saved?.nodes ? saved : progress.all ? (task.source?.solution ?? task.solution) : undefined
-  return board?.nodes ? structuredClone(board) : undefined
+  return board?.nodes ? copyData(board) : undefined
 }
 
 function isCarried(game, level, at) {

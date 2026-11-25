@@ -108,7 +108,7 @@ export function rule(s, R, index = 0) {
   const u = unify([[r.conclusion, g.goal]], s.inst ?? {}, { scopes, fixed: s.fixed ?? [] })
   if (u.fail) return { fail: T('「{rule}」的结论对不上第 {index} 个目标：{reason}', { rule: R.name, index: index + 1, reason: u.fail }) }
   const { goals, fixed } = lift(r.premises, g, s)
-  return { results: [after(s, u.σ, s.goals.toSpliced(index, 1, ...goals), scopes, fixed)] }
+  return { results: [after(s, u.σ, [...s.goals.slice(0, index), ...goals, ...s.goals.slice(index + 1)], scopes, fixed)] }
 }
 
 /** Unify the chosen goal with one of its hypotheses (each that fits is a result). */
@@ -120,7 +120,7 @@ export function assumption(s, index = 0) {
   for (const h of g.hyps) {
     const u = unify([[g.goal, h]], s.inst ?? {}, { scopes: s.scopes ?? {}, fixed: s.fixed ?? [] })
     if (u.fail) { why.push(u.fail); continue }
-    results.push(after(s, u.σ, s.goals.toSpliced(index, 1), s.scopes ?? {}))
+    results.push(after(s, u.σ, s.goals.slice(0, index).concat(s.goals.slice(index + 1)), s.scopes ?? {}))
   }
   if (results.length) return { results }
   return { fail: late(why) ?? T('第 {index} 个目标和哪一条已知都对不上', { index: index + 1 }) }

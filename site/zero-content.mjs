@@ -172,6 +172,7 @@ try {
 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.getByRole('link', { name: /^(返回构建|Back to Build)$/ }).click()
+  await page.getByRole('button', { name: /^(对象|Objects)$/ }).click()
   await page.getByRole('tab', { name: /^(关卡|Levels)$/ }).click().catch(async error => {
     console.error(await page.locator('body').innerText(), errors)
     throw error
@@ -198,7 +199,7 @@ try {
   base = await openServer()
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto(`${base}/studio.html?space=arrange&game=minimal`)
-  const chapterTitle = page.locator('#arrange-main h1 input')
+  const chapterTitle = page.locator('.chapter-head h1').getByRole('textbox', { name: /^(章名|Chapter title)$/ })
   const courseFinding = page.locator('.audit-row.is-fail').filter({ hasText: 'Course needs a second level' })
   const audit = page.getByRole('tab', { name: /^(审计|Audit)$/ })
   await chapterTitle.waitFor()
@@ -229,7 +230,7 @@ try {
     { from: 'text/hello', to: 'text/final' },
   ] })
   put('games/minimal/chapters/main.json', { chapter: { title: 'Main' }, levels: ['text/hello', 'text/added', 'text/final'] })
-  const added = page.locator('#arrange-main').getByText('Added on disk', { exact: true }).first()
+  const added = page.locator('.arrange').getByText('Added on disk', { exact: true }).first()
   const redundant = page.locator('.audit-row.is-warn').filter({ hasText: 'the direct prerequisite text/hello is redundant because text/added already requires it' })
   await added.waitFor()
   assert.equal(await chapterTitle.inputValue(), 'Studio draft')

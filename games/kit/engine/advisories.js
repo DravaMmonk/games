@@ -1,3 +1,4 @@
+import { lastMatching } from './array-tools.js'
 // Advisories (games/design/README.md 5.2): house conventions a machine can see, raised for a human to decide on. They
 // are never a check: nothing here fails content, gates a write or a release, or reaches an agent's tools. Only the
 // Studio's background lane reads them (../app/studio-advisories.js).
@@ -55,7 +56,7 @@ export function adviseText(field, text, { first = false } = {}) {
 // A text's field is the nearest key the rules know (a paragraph of an intro is `intro[2].t`), else its own key.
 const fieldOf = (path) => {
   const keys = path.filter(key => typeof key === 'string')
-  return keys.findLast(key => key in LIMITS) ?? keys.at(-1)
+  return lastMatching(keys, key => key in LIMITS) ?? keys.at(-1)
 }
 const zhOf = text => plain(typeof text === 'string' ? text : text?.zh)
 

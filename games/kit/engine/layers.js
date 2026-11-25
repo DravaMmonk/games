@@ -1,3 +1,4 @@
+import { copyData } from './json-value.js'
 import { collectionContribution, mergeFields } from './collections.js'
 import { layerProblems } from './kind-policy.js'
 // Dependency ordering, override composition and provenance shared by readers and author operations.
@@ -49,7 +50,7 @@ export function visibleOverrides(content, layer = content.layerOrder?.at(-1)) {
   const visible = new Set()
   const visit = (id) => { if (visible.has(id)) return; visible.add(id); for (const dep of content.layerUses?.[id] ?? []) visit(dep) }
   visit(layer)
-  return (content.overrideHistory ?? []).filter((event) => visible.has(event.layer)).sort((a, b) => content.layerOrder.indexOf(a.layer) - content.layerOrder.indexOf(b.layer)).map((event) => structuredClone(event))
+  return (content.overrideHistory ?? []).filter((event) => visible.has(event.layer)).sort((a, b) => content.layerOrder.indexOf(a.layer) - content.layerOrder.indexOf(b.layer)).map(copyData)
 }
 
 function contextFor(layer, layers, schemas) {
@@ -102,7 +103,7 @@ export function composeLayers(layers, schemas) {
       }
       if (collaborative) contributors.add(layer.id)
       collectionContributions.set(`${kind}:${key}`, contributors)
-      history.push({ kind, name, ...(kind === 'tag' && { member: value.kind }), layer: layer.id, file: structuredClone(sourceValue(file, layer.id)), before: structuredClone(kind === 'i18n' ? before : sourceValue(before)), after: structuredClone(kind === 'i18n' ? value : sourceValue(value)) })
+      history.push({ kind, name, ...(kind === 'tag' && { member: value.kind }), layer: layer.id, file: sourceValue(file, layer.id), before: kind === 'i18n' ? copyData(before) : sourceValue(before), after: kind === 'i18n' ? copyData(value) : sourceValue(value) })
       sources[kind][key].overrides.push(layer.id)
     } else sources[kind][key] = { ...sources[kind][key], declaration: layer.id, overrides: [] }
     const source = sources[kind][key]

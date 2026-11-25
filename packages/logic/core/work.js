@@ -13,7 +13,7 @@ import { builtParts, cardOf, partReferences, publications, settingsOf } from 'ci
 import { eraLevels, levelLabels } from 'kernel'
 import { holds, met, offer, trayMembers } from 'circuit'
 import { courseLayout } from 'kernel'
-import { taskLevels } from 'kernel'
+import { lastIndexMatching, taskLevels } from 'kernel'
 
 import { keyOf } from 'kernel'
 import { readWorks } from 'circuit'
@@ -242,7 +242,7 @@ const wordsOf = (list = [], sets = {}) => Object.assign({}, ...list.map((w) => (
  */
 function readTasks(level, wordSets, positions) {
   const { builds, fact, intro: _intro, after: _after, ...base } = level
-  const publishers = (builds ?? []).map(type => [type, level.tasks.findLastIndex(task => task.publishes?.some(({ part }) => part === type))])
+  const publishers = (builds ?? []).map(type => [type, lastIndexMatching(level.tasks, task => task.publishes?.some(({ part }) => part === type))])
   return taskLevels(base, positions).map((t, k, all) => {
     const last = k === all.length - 1
     const types = publishers.filter(([, index]) => index === k).map(([type]) => type)

@@ -1,3 +1,4 @@
+import { lastIndexMatching } from 'kernel'
 // Formulas and terms of the logic domain (《证明完毕》), as plain trees:
 //
 //   formula  { op: 'atom', pred, args: [term] }   P, Q(x), R(x, f(y)); a proposition letter is an atom with no args
@@ -285,8 +286,8 @@ export function substMany(f, bindings) {
 
 // The nearest binder wins on each side. Free names have to agree literally.
 function sameName(a, b, binders) {
-  const left = binders.findLastIndex(([name]) => name === a)
-  const right = binders.findLastIndex(([, name]) => name === b)
+  const left = lastIndexMatching(binders, ([name]) => name === a)
+  const right = lastIndexMatching(binders, ([, name]) => name === b)
   return left === right && (left >= 0 || a === b)
 }
 

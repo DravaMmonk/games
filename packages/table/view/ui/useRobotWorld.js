@@ -1,3 +1,4 @@
+import { lastIndexMatching } from 'kernel'
 import { tableAt } from 'circuit'
 import { splitSource } from 'circuit'
 import { useEffect, useState } from 'react'
@@ -102,7 +103,7 @@ export function useRobotWorld({ screen, task, test, run, report, at, ended, circ
       return
     }
     if (!view.end) return
-    const focus = view.res.steps.slice(0, view.k).findLastIndex((step) => step.at.includes(id))
+    const focus = lastIndexMatching(view.res.steps.slice(0, view.k), (step) => step.at.includes(id))
     if (focus < 0) return
     put({ focus: view.focus === focus ? null : focus })
     buzz(6)

@@ -2,7 +2,7 @@ import { T as catalogText } from 'kernel/words'
 import { workNodes } from 'circuit'
 import { OperationError } from 'kernel'
 import { runBoard, sink, source } from 'circuit'
-import { runOutputTests } from 'kernel'
+import { copyData, runOutputTests } from 'kernel'
 import { channel, compare, compose, image } from 'imglib'
 import { gradientStep } from 'mllib'
 
@@ -148,7 +148,7 @@ export function runnerOf(types, partsFor = (_task, parts) => parts) {
     }
     const applyWeights = values => {
       if (values === weights) return graph
-      const next = structuredClone(graph)
+      const next = copyData(graph)
       slots.forEach(({ index, key, offset }, i) => { next.nodes[index].params[key][offset] = values[i] })
       return next
     }

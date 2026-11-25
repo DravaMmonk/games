@@ -272,7 +272,7 @@ function backwardAt(s, ctx, rules, index) {
 function rewriteGoal(s, rule, at, index) {
   const result = rewrite({ ...s, goals: [s.goals[index]] }, rule, at)
   if (result.fail) return result
-  return { ...result, results: result.results.map(state => ({ ...state, goals: s.goals.toSpliced(index, 1, ...state.goals) })) }
+  return { ...result, results: result.results.map(state => ({ ...state, goals: [...s.goals.slice(0, index), ...state.goals, ...s.goals.slice(index + 1)] })) }
 }
 const succeeds = result => result.attempts?.some(attempt => attempt.state)
 function applyRule(s, ctx, node, rules, { allGoals = true } = {}) {

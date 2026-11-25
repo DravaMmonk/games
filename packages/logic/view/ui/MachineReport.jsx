@@ -1,3 +1,4 @@
+import { lastIndexMatching } from 'kernel'
 // The prover's run report (a machine level's `report`, ../../../circuit/view/CircuitScreen.jsx): the rules on the
 // board are numbered once (R₁ R₂ …). The initial goal starts the report.
 // Each step links down to its result box: the step's number, the card's name and what the
@@ -100,7 +101,7 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
   }
   const nextOf = (id) => actedOn.get(id) ?? undefined
   const open = ended && run?.outputs?.out?.kind === 'state' && run.outputs.out.goals.length > 0
-  const stuck = open ? steps.findLastIndex((s) => s.entry.status === 'skipped') : -1
+  const stuck = open ? lastIndexMatching(steps, (s) => s.entry.status === 'skipped') : -1
   const start = startOf(test, task)
   const rules = phone && machineRuleList({ run, task })
   useLayoutEffect(() => {

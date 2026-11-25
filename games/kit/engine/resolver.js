@@ -1,3 +1,4 @@
+import { groupByKey } from './array-tools.js'
 import { withCapabilityDeclarations } from './capabilities.js'
 import { memoResolution } from './read-cache.js'
 import { projectVocabulary } from './kind-meanings.js'
@@ -178,7 +179,7 @@ function readDeclaredObjects(layer, dir, definitions) {
   const declared = { ...objectFoldersFor(id, definitions), ...(id.startsWith('@') && objectFoldersFor(id, definitions, 'package')) }
   const objects = [...layer.objects]
   for (const [kind, folder] of Object.entries(declared)) for (const [name, file] of objectFiles(dir, folder)) objects.push({ kind, name, value: json(file) })
-  const builtins = Map.groupBy(layer.overrides, override => override.name.split('/')[0])
+  const builtins = groupByKey(layer.overrides, override => override.name.split('/')[0])
   const overrideDir = resolve(dir, 'overrides')
   const overrides = overrideNamespaces(overrideDir).flatMap(namespace => [
     ...(builtins.get(namespace) ?? []), ...readOverrides(overrideDir, namespace, objectFoldersFor(namespace, definitions)),

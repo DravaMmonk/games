@@ -1,3 +1,4 @@
+import { lastMatching } from 'kernel'
 // A declaration is an ordered list of introduction rules, each with the things it takes and the sentences it needs.
 // The rules generate the elimination rule: one case for every way to introduce the declared sentence.
 //
@@ -30,7 +31,7 @@ function satisfy(rule, ctx) {
     const pairs = [...bindings]
     const premises = rule.needs.map((need) => {
       const instance = substMany(ctx.read(need), pairs)
-      return ctx.have.findLast(({ formula }) => same(formula, instance))?.evidence
+      return lastMatching(ctx.have, ({ formula }) => same(formula, instance))?.evidence
     })
     if (premises.every(Boolean)) {
       const things = rule.binds.map((name) => ({ kind: 'thing', name: showTerm(bindings.get(name)) }))

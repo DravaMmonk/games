@@ -1,15 +1,15 @@
 import { importProblem } from '../games/kit/engine/plugin-boundaries.js'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
-// Lint for the games kit (../games/kit), run from the repository root: npm run lint:kit. Two things only: plain
-// mistakes (undefined names, unused ones) and the layering (games/design/engine-package-boundaries.md) — a domain imports no
-// other domain, and the kernel imports no domain (it loads one by name: engine/resolver.js).
+// Lint the games kit for code mistakes, older Safari APIs and package boundaries.
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 const KIT = 'games/kit'
+const kitSources = [`${KIT}/**/*.{js,jsx,mjs}`, 'packages/*/{core,view}/**/*.{js,jsx,mjs}']
+const browserApiMessage = 'Use an equivalent supported by older iOS Safari.'
 const root = resolve(import.meta.dirname, '..')
 const packages = resolve(root, 'packages')
 const packageIds = new Set(existsSync(packages)
@@ -61,7 +61,7 @@ const kitBoundary = {
 export default defineConfig([
   globalIgnores(['**/node_modules', '**/versions']),
   {
-    files: [`${KIT}/**/*.{js,jsx,mjs}`, 'packages/*/{core,view}/**/*.{js,jsx,mjs}'],
+    files: kitSources,
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 'latest',
@@ -79,6 +79,23 @@ export default defineConfig([
       'no-control-regex': 'off',
       'no-regex-spaces': 'off',
       'require-yield': 'off',
+    },
+  },
+  {
+    files: kitSources,
+    ignores: ['**/*.test.{js,jsx,mjs}'],
+    rules: {
+      'no-restricted-globals': ['error', { name: 'structuredClone', message: browserApiMessage }],
+      'no-restricted-properties': ['error',
+        ...['toSpliced', 'toSorted', 'toReversed', 'findLast', 'findLastIndex', 'structuredClone']
+          .map(property => ({ property, message: browserApiMessage })),
+        ...[['Object', 'groupBy'], ['Map', 'groupBy'], ['Array', 'fromAsync'], ['Promise', 'withResolvers']]
+          .map(([object, property]) => ({ object, property, message: browserApiMessage })),
+      ],
+      'no-restricted-syntax': ['error', {
+        selector: 'CallExpression[callee.type="MemberExpression"]:matches([callee.property.name="with"], [callee.property.value="with"])',
+        message: browserApiMessage,
+      }],
     },
   },
   {

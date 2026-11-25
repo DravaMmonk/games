@@ -1,3 +1,4 @@
+import { groupByKey } from './array-tools.js'
 // Audit the production locales and the UI keys read by each package.
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
@@ -76,7 +77,7 @@ const locales = targets.map(target => ({ ...target, catalogs: readCatalogs(resol
 const languages = [...new Set([...LANGS.map(([lang]) => lang), ...locales.flatMap(({ catalogs }) => Object.keys(catalogs))])]
 const counts = { player: 0, developer: 0, invalid: 0 }
 const check = process.argv.includes('--check')
-const usage = Map.groupBy(targets.flatMap(({ sources }) => sources.flatMap(wordsIn)), word => word.dir)
+const usage = groupByKey(targets.flatMap(({ sources }) => sources.flatMap(wordsIn)), word => word.dir)
 
 for (const { dir, game, catalogs } of locales) {
   const prefix = relative(ROOT, dir)

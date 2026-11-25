@@ -1,3 +1,4 @@
+import { lastMatching } from 'kernel'
 import { L } from "kernel"
 import { T } from 'kernel/words'
 import { passedWork } from 'circuit'
@@ -10,7 +11,7 @@ import { caseCells, DERIVABLE } from './auditCells.js'
 import { declarationValues, inView, ruleLines } from './rowValues.js'
 
 export function audit(source, { game, progress, saved }) {
-  const parent = game.byId[source.carry]?.source.tasks.findLast((task) => task.kind === 'logic/iso' && task.play !== 'logic/audit')
+  const parent = lastMatching(game.byId[source.carry]?.source.tasks ?? [], (task) => task.kind === 'logic/iso' && task.play !== 'logic/audit')
   const kept = passedWork(progress, parent)?.rules
   const carried = kept && !checkDeclaration(parent)(kept) ? linesOf(kept) : null
   // One task tests one declaration; a level with several to test has a task for each.

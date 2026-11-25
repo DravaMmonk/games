@@ -36,6 +36,8 @@ export { firstText, isLanguageNeutral, joinCopy, textEntries } from './i18n.js'
 export { dependencyOrder } from '../graph.js'
 export { indexEdges } from '../graph.js'
 export { sameJson } from './json-value.js'
+export { copyData } from './json-value.js'
+export { lastIndexMatching, lastMatching } from './array-tools.js'
 export { wouldCycle } from '../graph.js'
 export { canonicalJson } from './json-value.js'
 // Public headless API for package authors. No view modules are exported here.

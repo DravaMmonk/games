@@ -1,3 +1,4 @@
+import { lastMatching } from 'kernel'
 import { PART_REFERENCE_FIELDS } from './parts/reference-fields.js'
 import { resolveSettings } from "./parts/settings.js"
 export { resolveSettings } from "./parts/settings.js"
@@ -65,7 +66,7 @@ export function partReferences(entries, { before, passed, useLatest = false, inc
     const here = matches(available(type, at, strict, kind))
     const all = matches(available(type, null, false, kind))
     const candidates = here.length || strict ? here : useLatest ? all : all.slice(0, 1)
-    return (reference ? null : candidates.findLast(({ task }) => passed(task))) ?? candidates.at(-1) ?? null
+    return (reference ? null : lastMatching(candidates, ({ task }) => passed(task))) ?? candidates.at(-1) ?? null
   }
   const entriesOf = (kind) => allEntries.filter((entry) => entry.kind === kind)
   const prior = (kind, at) => entriesOf(kind).filter(({ task }) => task.id === at.id ? task.task < at.task : before(task.id, at.id))

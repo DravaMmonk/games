@@ -1,3 +1,4 @@
+import { lastMatching } from '../engine/array-tools.js'
 import { eraLevels } from '../course.js'
 import { mergeFields } from '../engine/collections.js'
 import { expandRelations, readTag, referenceResolver, RELATION } from '../engine/objects.js'
@@ -7,7 +8,7 @@ const writes = new WeakMap()
 const isRelation = (op) => op.kind === 'relation' && (op.op === 'override.put' || op.op === 'override.remove')
 export const isMapRowsEdit = (op) => (op.op === 'chapter.set' || op.op === 'chapter.unset') && op.path?.[0] === 'rows'
 const keepsGraph = (op) => op.op === 'text.override' || isMapRowsEdit(op)
-const lastWrite = (ops, layer, name) => ops.findLast((op) => isRelation(op) && op.layer === layer && op.name === name)
+const lastWrite = (ops, layer, name) => lastMatching(ops, (op) => isRelation(op) && op.layer === layer && op.name === name)
 
 /** Keep the view of each game-layer relation immediately before and after a wire edit. */
 export function noteMapWires(content, ops, changes) {

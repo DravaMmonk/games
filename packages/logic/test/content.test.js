@@ -21,6 +21,8 @@ import { PROOF_BOARD, runProof, startProof } from '../core/proof.js'
 import { GATE_BOARD, checkGates, gateParts, rowsFor, startGates } from '../core/gates.js'
 import { deepFreeze } from '../../../games/kit/engine/content.js'
 import { openPackedPart } from '../../circuit/core/board/packed-boards.js'
+import { openCircuit } from '../../circuit/core/board-view.js'
+import { fresh } from '../../circuit/core/progress.js'
 import { packedBoards } from 'circuit'
 import { trayDisplay } from '../../circuit/core/trays.js'
 import domain from '../core/runtime.js'
@@ -341,6 +343,31 @@ test('a machine reference can use rule cards granted by its task', () => {
   const logic = logicWorks(withProgressFixture(content))
   const task = logic.LEVELS.at(-1).tasks[0]
   assert.ok(logic.course.gives(task).includes('own'))
+})
+
+test('a machine task opens saved work, then a passing board, then the unlocked reference', () => {
+  const machine = (id, fields) => ({
+    id, step: L(id), kind: 'logic/machine', want: 'logic/becomes',
+    tests: [{ goal: 'Rain', becomes: [['Rain']] }], ...fields,
+  })
+  const logic = logicWorks(withProgressFixture({
+    partDefs: { parts: {} },
+    eras: [{ id: 'intro', levels: [{ id: 'machine' }] }],
+    levels: [{ id: 'machine', title: L('Machine'), tasks: [
+      machine('first', { solution: ['out <- in'] }),
+      machine('second', { carries: true }),
+    ] }],
+  }))
+  const [first, second] = logic.LEVELS[0].tasks
+  const view = logic.machineBoards.forTask(second)
+  const empty = view.board.startBoard(second)
+  const passed = { ...first.solution, wires: first.solution.wires.map(wire => ({ ...wire, waypoints: [{ x: 250, y: 40 }] })) }
+  const work = { ...fresh(), passed: [first.taskId], built: { [first.taskId]: passed } }
+  assert.deepEqual(openCircuit(view, second, work, empty), empty)
+  assert.deepEqual(openCircuit(view, second, work), passed)
+  assert.deepEqual(openCircuit(view, second, { ...work, all: true }), passed)
+  assert.deepEqual(openCircuit(view, second, { ...fresh(), all: true }), first.solution)
+  assert.deepEqual(openCircuit(view, second, fresh()), empty)
 })
 
 

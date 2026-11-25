@@ -25,8 +25,6 @@
   "part.botE.desc": "由矛盾 ⊥ 得到元件上选定的任意一句。",
   "part.botE.inputs.0.label": "⊥",
   "part.botE.name": "爆炸",
-  "part.defer.desc": "把第一个目标移到最后，原来的第二个目标成为第一个。",
-  "part.defer.name": "目标后移",
   "part.each.desc": "框内的元件对每个目标各执行一次，每次只看到这一个目标；任一目标失败，整个元件失败。",
   "part.each.name": "逐个目标",
   "part.each.regions.0.label": "逐个目标",

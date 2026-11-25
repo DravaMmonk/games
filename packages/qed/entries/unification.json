@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.unification.title",
-  "at": "r-meta",
+  "at": "machine-meta",
   "body": ["@glossary.entries.unification.body.0"],
   "see": ["mgu", "pattern"]
 }

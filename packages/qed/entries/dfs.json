@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.dfs.title",
-  "at": "s-search",
+  "at": "s-loop",
   "body": ["@glossary.entries.dfs.body.0"],
   "see": ["backtracking", "tactic"]
 }

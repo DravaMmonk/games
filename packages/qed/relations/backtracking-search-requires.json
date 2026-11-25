@@ -1,9 +1,4 @@
 {
   "kind": "requires",
-  "edges": [
-    {
-      "from": "s-append",
-      "to": "s-loop"
-    }
-  ]
+  "edges": []
 }

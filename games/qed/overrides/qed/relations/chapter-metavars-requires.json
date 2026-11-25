@@ -1,7 +1,0 @@
-{
-  "edges": {
-    "remove": [
-      { "from": "qed/r-subgoals", "to": "qed/r-elim" }
-    ]
-  }
-}

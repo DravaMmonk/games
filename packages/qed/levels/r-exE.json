@@ -1,6 +1,7 @@
 {
   "title": "@level.r-exE.title",
-  "tray": "machine",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.r-exE.intro.0.t"
@@ -11,43 +12,39 @@
       "id": "r-exE",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.r-exE.tasks.r-exE.inputs.0.label"
-        }
+      "brief": "@level.r-exE.tasks.r-exE.brief",
+      "hint": [
+        "@level.r-exE.tasks.r-exE.hint.0"
       ],
       "tests": [
         {
-          "goal": "Pigs",
+          "goal": "∃x. Likes(x, i)",
           "hyps": [
-            "∃x. Human(x) ∧ ¬Human(x)"
+            "∃x. Human(x) ∧ Likes(x, i)"
           ]
         },
         {
-          "goal": "Moon",
+          "goal": "∃y. Flies(y)",
           "hyps": [
-            "∃y. ¬Bird(y) ∧ Bird(y)"
+            "∃x. Bird(x) ∧ Flies(x)"
           ]
         }
       ],
-      "brief": "@level.r-exE.tasks.r-exE.brief",
-      "hint": [
-        "@level.r-exE.tasks.r-exE.hint.0",
-        "@level.r-exE.tasks.r-exE.hint.1"
-      ],
       "solution": [
-        "hypRule = logic/assumption()",
-        "c0r0 = botE()",
-        "c1r0 = exE()",
-        "c2r0 = andE[use=[conjE]]()",
-        "c3r0 = mp[use=[mp]]()",
-        "c0 = rule(in, c0r0)",
-        "c1 = erule(c0, c1r0)",
-        "c2 = erule(c1, c2r0)",
-        "c3 = erule(c2, c3r0)",
-        "c4 = rule(c3, hypRule)",
-        "out <- c4"
+        "step1 = logic/directBackward-qed_exE(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-qed_exI(step2)",
+        "step4 = logic/directBackward-qed_andE[use=[\"conjunct2\"]](step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "out <- step5"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_exI(in)",
+        "step2 = logic/directBackward-qed_exE(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-qed_andE[use=[\"conjunct2\"]](step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "out <- step5"
       ]
     }
   ]

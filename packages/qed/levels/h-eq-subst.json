@@ -4,7 +4,8 @@
   "intro": [
     {
       "t": "@level.h-eq-subst.intro.0.t"
-    }
+    },
+    { "t": "@level.h-eq-subst.intro.1.t" }
   ],
   "after": "@level.h-eq-subst.after",
   "tasks": [

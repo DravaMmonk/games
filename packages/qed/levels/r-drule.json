@@ -1,29 +1,21 @@
 {
   "title": "@level.r-drule.title",
-  "tray": "machine",
+  "after": "@level.r-drule.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.r-drule.intro.0.t"
-    },
-    {
-      "t": "@level.r-drule.intro.1.t"
     }
   ],
-  "after": "@level.r-drule.after",
   "tasks": [
     {
       "id": "r-drule",
       "kind": "logic/machine",
-      "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.r-drule.tasks.r-drule.inputs.0.label"
-        },
-        {
-          "name": "rules",
-          "label": "@level.r-drule.tasks.r-drule.inputs.1.label"
-        }
+      "want": "logic/proved",
+      "brief": "@level.r-drule.tasks.r-drule.brief",
+      "hint": [
+        "@level.r-drule.tasks.r-drule.hint.0"
       ],
       "tests": [
         {
@@ -31,29 +23,6 @@
           "hyps": [
             "∀x. Human(x) → Mortal(x)",
             "Human(h)"
-          ],
-          "rules": [
-            "spec"
-          ],
-          "becomes": [
-            [
-              "∀x. Human(x) → Mortal(x); Human(h); Human(?t) → Mortal(?t) ⊢ Mortal(h)"
-            ]
-          ]
-        },
-        {
-          "goal": "Flies(k)",
-          "hyps": [
-            "∀x. Bird(x) → Flies(x)",
-            "Bird(k)"
-          ],
-          "rules": [
-            "spec"
-          ],
-          "becomes": [
-            [
-              "∀x. Bird(x) → Flies(x); Bird(k); Bird(?t) → Flies(?t) ⊢ Flies(k)"
-            ]
           ]
         },
         {
@@ -61,33 +30,30 @@
           "hyps": [
             "Human(j)",
             "∀y. Human(y) → Likes(i, y)"
-          ],
-          "rules": [
-            "spec"
-          ],
-          "becomes": [
-            [
-              "Human(j); ∀y. Human(y) → Likes(i, y); Human(?t) → Likes(i, ?t) ⊢ Likes(i, j)"
-            ]
+          ]
+        },
+        {
+          "goal": "Flies(k)",
+          "hyps": [
+            "Bird(k)",
+            "Bird(l)",
+            "∀x. Bird(x) → Flies(x)"
           ]
         }
       ],
-      "brief": "@level.r-drule.tasks.r-drule.brief",
-      "hint": [
-        "@level.r-drule.tasks.r-drule.hint.0",
-        "@level.r-drule.tasks.r-drule.hint.1"
-      ],
       "solution": [
-        "c0r0 = mp[use=[cut]]()",
-        "c0 = rule(in, c0r0)",
-        "c1 = erule(c0, rules)",
-        "out <- c1"
+        "step1 = logic/directBackward-qed_allE(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-qed_mp(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "out <- step5"
       ],
-      "publishes": [
-        {
-          "part": "frule",
-          "variant": "base"
-        }
+      "naive": [
+        "step1 = logic/directBackward-qed_mp(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
       ]
     }
   ]

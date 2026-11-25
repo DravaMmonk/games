@@ -8,8 +8,7 @@ import { countMachineSteps, finishProof, machineEvents, proofStep, stopProof, tr
 // inputs, its sink `out` is checked against what the level wants. A part is a tactic, a frame
 // that runs what it holds again and again (repeat, depth-first search, every goal), a junction for alternative
 // routes, a rewrite, or a step on clauses (resolution.js); the level's parts come from the course as
-// on every board. A part the player builds (erule, frule, the introduction and elimination steps, auto,
-// simp, the clause machines) runs the board that built it: the player's, as it last passed (builtMachine).
+// on every board. A part the player builds (auto, simp, the clause machines) runs the board that built it: the player's, as it last passed (builtMachine).
 //
 //   value   { kind: 'state', … } (tactics.js)
 //           | { kind: 'clauses', set, from?, endless? } (resolution.js) | { kind: 'rules', keys, entries }
@@ -34,7 +33,7 @@ import { countMachineSteps, finishProof, machineEvents, proofStep, stopProof, tr
 // (a kernel rule's proof-board part, a lemma, the level's own axiom, an equation given). Numbers and lists (chapter 12)
 // are one part, the rule book of numbers (MATH): the rules the level's datatypes give, its definitions' equations and
 // the equations proved so far (the course's facts, a level's `proven`). A rule part gives a list of rules: those wired into it (`before`), then its own (those
-// added on it, `use`, in the order they were added, when it has several; its first until any is). A card that uses rules (rule, erule, frule, rw, simp) reads the list
+// added on it, `use`, in the order they were added, when it has several; its first until any is). A card that uses rules (rule, rw, simp) reads the list
 // on its port `rules`: the first that applies, in order (with backtracking, each one's results in turn); simp the
 // whole list, in order. A rule list is a constant: it may be wired into a frame from outside. Until a level says
 // `backtrack`, a tactic gives only its first result; from then on, every result, and each card after it works on each
@@ -44,8 +43,8 @@ import { OperationError } from 'kernel'
 import { packed, runBoard } from 'circuit'
 import { runOutputTests } from 'kernel'
 import { FORMULA_TEXT, all, fn, subst, tvar } from './formula.js'
-import { KERNEL, answerOf, asValue, defer, depthFirst, resultsOf, rule, startState } from './tactics.js'
-import { ASSUMPTION_RULE, inferenceText, instantiate, lemmaRules, parseS, ruleOf, ruleStatement, ruleText, sideText, stated } from './schematic.js'
+import { KERNEL, answerOf, asValue, depthFirst, resultsOf, rule, startState } from './tactics.js'
+import { ASSUMPTION_RULE, inferenceText, instantiate, lemmaRules, metasIn, parseS, ruleOf, ruleStatement, ruleText, sideText, stated } from './schematic.js'
 import { lemmaRewrites, localRewrites, rewrite, rewriteBookOf, rewriteOptions, rewritesHyps, rewriteStatements, rewriteText, simplify, substitutionRewrites } from './rewrite.js'
 import { datatypesRules } from './datatype.js'
 import { clausesOfState, oracleRound, parseClause, refuted, replay, resolveRound, saturate } from './resolution.js'
@@ -171,7 +170,7 @@ const ruleOrigin = Symbol('rule origin')
 const unsaid = (s) => (s.did === undefined && s.didBy === undefined ? s : { ...s, did: undefined, didBy: undefined })
 // A tactic card: on each result it is handed (only the first, until the level backtracks), every result it makes; a
 // failure is the state with what went wrong (a frame reads it). An input that failed passes through.
-const tactic = (t, say, { work = true, ruleCard = false, configure } = {}) => ({
+const tactic = (t, say, { ruleCard = false, configure } = {}) => ({
   inputs: ['in'],
   eval: ({ in: v }, node, ctx) => {
     const s = stateIn(v)
@@ -181,8 +180,7 @@ const tactic = (t, say, { work = true, ruleCard = false, configure } = {}) => ({
     let applied = 0
     let failed = null
     let attempted = false
-    const record = work ? proofStep : (_ctx, _node, _from, value) => value
-    const skip = (one, reason) => record(ctx, node, one, {
+    const skip = (one, reason) => proofStep(ctx, node, one, {
       ...unsaid(one), ...(one.goals.length && { [ruleOrigin]: { goals: one.goals, skipped: true } }),
     }, undefined, { status: 'skipped', reason })
     for (const one of ctx.backtrack ? resultsOf(s) : [firstOf(s)]) {
@@ -195,7 +193,7 @@ const tactic = (t, say, { work = true, ruleCard = false, configure } = {}) => ({
       if (applied >= 24) continue
       const r = setup?.fail ? setup : t(one, ctx, node, setup?.rules)
       if (r.configurationError) {
-        return record(ctx, node, one, { ...unsaid(one), error: r.fail, configurationError: r.configurationError },
+        return proofStep(ctx, node, one, { ...unsaid(one), error: r.fail, configurationError: r.configurationError },
           undefined, { status: 'error', reason: r.configurationError })
       }
       if (r.unchanged) {
@@ -207,13 +205,13 @@ const tactic = (t, say, { work = true, ruleCard = false, configure } = {}) => ({
       for (const { by, state, error } of r.attempts ?? (r.fail ? [{ error: r.fail }] : r.results.map(state => ({ state })))) {
         if (error) {
           const bad = { ...unsaid(one), error }
-          const value = by || ruleCard ? record(ctx, node, one, bad, by && note(by), { status: 'error' }) : bad
+          const value = by || ruleCard ? proofStep(ctx, node, one, bad, by && note(by), { status: 'error' }) : bad
           attempted ||= Boolean(by || ruleCard)
           failed ??= value
         } else {
           const { [ruleOrigin]: _origin, ...value } = unsaid(state)
           const next = ruleCard ? { ...value, [ruleOrigin]: { goals: one.goals, skipped: false } } : value
-          out.push({ ...record(ctx, node, one, next, note(by), ruleCard ? { status: 'applied', ...(by?.change && { change: by.change }) } : undefined), by })
+          out.push({ ...proofStep(ctx, node, one, next, note(by), ruleCard ? { status: 'applied', ...(by?.change && { change: by.change }) } : undefined), by })
           attempted = true
           applied++
           if (!ctx.backtrack) break
@@ -222,7 +220,7 @@ const tactic = (t, say, { work = true, ruleCard = false, configure } = {}) => ({
     }
     out.push(...unchanged)
     const by = out.map((x) => x.by).filter(Boolean)
-    if (!work || !attempted) traceFlow(ctx, node)
+    if (!attempted) traceFlow(ctx, node)
     const did = applied && say && { ...say(by, node), goals: s.goals.length }
     const made = asValue(out.map(({ by: _by, ...x }) => x), failed)
     const said = did && out.length ? { ...made, did, didBy: node.id } : made
@@ -284,7 +282,7 @@ function applyRule(s, ctx, node, rules, { allGoals = true } = {}) {
     return s.goals[index] ? backwardAt(s, ctx, rules, index) : { unchanged: 'position-missing', fail: T('找不到选定的应用位置') }
   }
   const first = backwardAt(s, ctx, rules, 0)
-  if (!allGoals || succeeds(first)) return first
+  if (!allGoals || ctx.searchBody || succeeds(first)) return first
   for (let i = 1; i < s.goals.length; i++) {
     const attempt = backwardAt(s, ctx, rules, i)
     if (succeeds(attempt)) return attempt
@@ -399,9 +397,11 @@ const AGAIN = '↻'
 const OUT = '↪'
 
 const LIMIT = 250
+const hasSentenceMeta = formula => [...metasIn(formula)].some(name => /^\?[A-Z]/.test(name))
 /**
  * Depth-first search: what the region makes of each result it is handed, and of each result of that, deeper and
- * deeper, every state with no goal left found, in order. A path stops at the card's depth, when it has one.
+ * deeper, every state with no goal left found, in order. Only rounds that settle sentence metavariables continue.
+ * Unpinned backward cards work on the first goal in this region. A path stops at the card's depth, when it has one.
  */
 const search = {
   inputs: ['in'],
@@ -410,16 +410,24 @@ const search = {
     if (key) return v
     const s = stateIn(v)
     if (s.error || (!s.goals.length && !s.more?.length)) return s
-    const round = ctx.region('body')
+    const round = ctx.region('body', { searchBody: true })
     const depth = Number(node.params?.depth) || Infinity
+    const onStop = ctx.proof ? (value, reason) => stopProof(ctx, value, reason) : undefined
     let configurationFailure
     const expand = (x) => {
       if (configurationFailure) return []
       const out = round(x)
       if (out.configurationError) configurationFailure = out
-      return out.error ? [] : resultsOf(out)
+      if (out.error) return []
+      return resultsOf(out).filter(value => {
+        if (!value.goals.some(({ goal, hyps }) => hasSentenceMeta(goal) || hyps.some(hasSentenceMeta))) return true
+        if (onStop) {
+          const checked = proofStep(ctx, node, value, value, null, { key: 'body', transient: true })
+          onStop(checked, 'unresolved-sentence-meta')
+        }
+        return false
+      })
     }
-    const onStop = ctx.proof ? (value, reason) => stopProof(ctx, value, reason) : undefined
     const onCompare = (value, pruned) => proofStep(ctx, node, value, value, { op: 'searchCheck', pruned }, { key: 'body', transient: true })
     const { found, stopped } = depthFirst(resultsOf(s), expand, { depth, limit: LIMIT, most: 60, onStop, onCompare })
     if (configurationFailure) return configurationFailure
@@ -501,7 +509,6 @@ const BODIES = {
   // Tactics (chapters 8 and 9).
   rule: usesRules((s, ctx, node, rules) => applyRule(s, ctx, node, wired(rules, ctx.rules ?? KERNEL, NOT_RULE), { allGoals: false }), DID.rule, { atomic: true }),
   directBackward: directCard(applyRule, DID.rule),
-  defer: tactic(defer, null, { work: false }),
   search,
   each,
   // Rewriting (chapter 10): one rule once, on the goal or the hypotheses.
@@ -954,7 +961,7 @@ export function builtMachine(type, builder, reference, ownBoard, settings = []) 
     outputs: ['out'], defaults,
     inside: (ctx) => {
       const b = builder()
-      return { ...ctx, ruleArgument: hasRuleArgument(b), rules: { ...ruleBookOf(b), ...ctx.rules }, rewrites: { ...rewriteBookOf(b), ...ctx.rewrites }, ruleParts: merged(rulePartsOf(b), ctx.ruleParts), directCards: merged(directCardsOf(b), ctx.directCards), backtrack: ctx.backtrack || Boolean(b.backtrack) }
+      return { ...ctx, ruleArgument: hasRuleArgument(b), rules: { ...ruleBookOf(b), ...ctx.rules }, rewrites: { ...rewriteBookOf(b), ...ctx.rewrites }, ruleParts: merged(rulePartsOf(b), ctx.ruleParts), directCards: merged(ctx.directCards, directCardsOf(b)), backtrack: ctx.backtrack || Boolean(b.backtrack) }
     },
   })
   return {

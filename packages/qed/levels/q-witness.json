@@ -1,5 +1,6 @@
 {
   "title": "@level.q-witness.title",
+  "intro": [{ "t": "@level.q-witness.intro.0.t" }],
   "tasks": [
     {
       "id": "q-witness",

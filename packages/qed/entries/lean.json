@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.lean.title",
-  "at": "r-rule",
+  "at": "machine-open",
   "body": ["@glossary.entries.lean.body.0"],
   "see": ["isabelle", "provers"]
 }

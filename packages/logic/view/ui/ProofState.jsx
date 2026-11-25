@@ -91,15 +91,27 @@ export function Sentence({ formula, text, paths = [], whole = false }) {
   return whole ? <mark className="lg-changed">{body}</mark> : body
 }
 
+// A search with no end piles goal on goal: past this many, a state shows its first goals and the marks of the rest.
+const MOST_GOALS = 12
+
 /**
  * A state's lines laid out: `groups` = [{ fixes, hyps: [element], goals: [{ index, body, closed? }] }], a group for the
  * goals that share their fixed things and knowns; `next` the goal a rule acts on by default.
  */
 export function StateLayout({ groups, next = null }) {
-  const several = groups.reduce((count, group) => count + group.goals.length, 0) > 1
+  const count = groups.reduce((sum, group) => sum + group.goals.length, 0)
+  const several = count > 1
+  let room = count > MOST_GOALS ? MOST_GOALS - 1 : count
+  const shown = []
+  for (const group of groups) {
+    if (!room) break
+    shown.push(group.goals.length > room ? { ...group, goals: group.goals.slice(0, room) } : group)
+    room -= shown.at(-1).goals.length
+  }
+  const drawn = shown.reduce((sum, group) => sum + group.goals.length, 0)
   return (
     <span className="ps">
-      {groups.map((group, k) => (
+      {shown.map((group, k) => (
         <span key={k} className="ps-group">
           {(group.fixes.length > 0 || group.hyps.length > 0) && (
             <span className="ps-given">
@@ -115,6 +127,11 @@ export function StateLayout({ groups, next = null }) {
                 {closed && <span className="ps-closed" role="img" aria-label={tr('目标已证完')} title={tr('目标已证完')}><Check size="1em" aria-hidden="true" /></span>}
               </span>
             ))}
+            {drawn < count && k === shown.length - 1 && (
+              <span className="ps-goal ps-rest is-later">
+                <Formula text={goalMark(drawn)} className="ps-mark" /><span aria-hidden="true">⋯</span><Formula text={goalMark(count - 1)} className="ps-mark" />
+              </span>
+            )}
           </span>
         </span>
       ))}
@@ -135,8 +152,9 @@ function changedIn(diff) {
   return (goalIndex, hyp) => paths.get(`${goalIndex}:${hyp ?? ''}`)
 }
 
-/** A proof state with goals open; `diff` what the step that gave it changed, when a step did. */
-export function ProofState({ value, text, diff }) {
+/** A proof state with goals open; `diff` what the step that gave it changed, when a step did; `next` the goal that
+ *  was acted on after it, where that is known and is not the default. */
+export function ProofState({ value, text, diff, next }) {
   const info = proofStateInfo(value)
   // A rule used backwards replaces the goal it acts on, so that goal is marked whole, like the goals it adds.
   const replaced = diff && value.did?.op === 'rule' ? value.did.goalIndex ?? 0 : null
@@ -150,8 +168,14 @@ export function ProofState({ value, text, diff }) {
         whole={index === replaced || added.has(index)} />,
     })),
   }))
-  return <StateLayout groups={groups} next={info.defaultGoalIndex} />
+  return <StateLayout groups={groups} next={next ?? info.defaultGoalIndex} />
 }
+
+// Inside a frame that runs its cards round after round, the state on a card's input wire and the state the card shows
+// can come from different rounds. A card's work on one goal closes it or replaces it, so a state that lost more goals
+// than that, or never had the goal worked on, is not the one this card was handed.
+const follows = (before, value) => !['rule', 'assumption', 'rw', 'rwHyps'].includes(value.did?.op)
+  || (before.goals.length > (value.did.goalIndex ?? 0) && value.goals.length >= before.goals.length - 1)
 
 /**
  * A rule-bound card's own state on a phone tile, read only: what the card gave, with what it changed tinted as a
@@ -159,7 +183,7 @@ export function ProofState({ value, text, diff }) {
  * or not the card's output reaches the result. Places are picked in the card's detail, where they are boxes.
  */
 export function StepState({ before, value, text }) {
-  const diff = before?.kind === 'state' && value.didBy ? proofStateDiff(before, value, { did: value.did }) : undefined
+  const diff = before?.kind === 'state' && value.didBy && follows(before, value) ? proofStateDiff(before, value, { did: value.did }) : undefined
   return <span className="tx-lines formula-row"><ProofState value={value} text={text} diff={diff} /></span>
 }
 

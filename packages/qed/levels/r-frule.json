@@ -1,9 +1,7 @@
 {
-  "adds": [
-    "frule"
-  ],
-  "tray": "machine",
   "title": "@level.r-frule.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.r-frule.intro.0.t"
@@ -14,48 +12,54 @@
       "id": "r-frule",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.r-frule.tasks.r-frule.inputs.0.label"
-        }
-      ],
-      "tests": [
-        {
-          "goal": "Even(s(s(s(s(zero)))))",
-          "hyps": [
-            "∀x. Even(x) → Even(s(s(x)))",
-            "Even(zero)"
-          ]
-        },
-        {
-          "goal": "Odd(s(s(s(s(s(zero))))))",
-          "hyps": [
-            "∀x. Odd(x) → Odd(s(s(x)))",
-            "Odd(s(zero))"
-          ]
-        }
-      ],
       "brief": "@level.r-frule.tasks.r-frule.brief",
       "hint": [
         "@level.r-frule.tasks.r-frule.hint.0"
       ],
+      "tests": [
+        {
+          "goal": "Mortal(i) ∧ Mortal(j)",
+          "hyps": [
+            "∀x. Human(x) → Mortal(x)",
+            "Human(i)",
+            "Human(j)"
+          ]
+        },
+        {
+          "goal": "Flies(k) ∧ Flies(l)",
+          "hyps": [
+            "Bird(l)",
+            "Bird(k)",
+            "∀x. Bird(x) → Flies(x)"
+          ]
+        }
+      ],
       "solution": [
-        "hypRule = logic/assumption()",
-        "c0r0 = allE[use=[spec]]()",
-        "c1r0 = allE[use=[spec]]()",
-        "c2r0 = mp[use=[mp]]()",
-        "c3r0 = mp[use=[mp]]()",
-        "c0 = frule(in, c0r0)",
-        "c1 = frule(c0, c1r0)",
-        "c2 = erule(c1, c2r0)",
-        "c3 = erule(c2, c3r0)",
-        "c4 = rule(c3, hypRule)",
-        "out <- c4"
+        "step1 = logic/directBackward-qed_allE(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-qed_allE(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "step5 = logic/directBackward-qed_andI(step4)",
+        "step6 = logic/directBackward-qed_mp(step5)",
+        "step7 = logic/directBackward-logic_assumption(step6)",
+        "step8 = logic/directBackward-logic_assumption(step7)",
+        "step9 = logic/directBackward-qed_mp(step8)",
+        "step10 = logic/directBackward-logic_assumption(step9)",
+        "step11 = logic/directBackward-logic_assumption(step10)",
+        "out <- step11"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_allE(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-qed_andI(step2)",
+        "step4 = logic/directBackward-qed_mp(step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "step6 = logic/directBackward-logic_assumption(step5)",
+        "step7 = logic/directBackward-qed_mp(step6)",
+        "step8 = logic/directBackward-logic_assumption(step7)",
+        "step9 = logic/directBackward-logic_assumption(step8)",
+        "out <- step9"
       ]
     }
-  ],
-  "local": [
-    "frule"
   ]
 }

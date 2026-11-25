@@ -19,7 +19,6 @@ const marks = new Map([
   ['turn', ['↷', '转向', 'turn']],
   ['repeat', ['↻', '重复', 'repeat']],
   ['exit', ['↪', '跳出', 'exit']],
-  ['defer', ['⤓', '后移', 'defer']],
   ['dot-equals', ['≐', '带点等号', 'dotted equals']],
   ['not-equal', ['≠', '不等于', 'not equal']],
   ['at-most', ['≤', '小于等于', 'at most']],

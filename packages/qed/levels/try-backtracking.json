@@ -2,7 +2,6 @@
   "title": "@level.try-backtracking.title",
   "intro": [{ "t": "@level.try-backtracking.intro.0.t" }, { "t": "@level.try-backtracking.intro.1.t" }],
   "after": "@level.try-backtracking.after",
-  "requires": ["r-assumption"],
   "tray": "prover",
   "tasks": [
     {

@@ -423,7 +423,6 @@
   "capability.operation.items.rule.about": "Rule",
   "capability.operation.items.directBackward.about": "Apply this card’s inference rules backwards",
   "capability.operation.items.directRewrite.about": "Apply this card’s rewrite rules",
-  "capability.operation.items.defer.about": "Defer",
   "capability.operation.items.append.about": "Alternatives",
   "capability.operation.items.search.about": "Search",
   "capability.operation.items.each.about": "Every goal",

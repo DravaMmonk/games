@@ -10,7 +10,7 @@
 //                where they are the task's own (its rule parts…) and not the game's alone
 //       offerIn, holdsIn, syncOwn   the course's (../course.js offer, holds; the boards the player passed with)
 //       tasksAt(level)   the tasks to find a preceding task when the new board carries one forward
-//       opening(task, progress, viewOf)   override how the board opens using the active views
+//       opening(task, progress, viewOf, carried)   prepare the opening using the active views and any valid inherited board
 //     → { BUILT, builtBy, parts, forTask(task) → the task's view }: BUILT, builtBy and parts outside any task
 
 import { inheritedBoard } from './progress.js'
@@ -40,7 +40,7 @@ export function openCircuit(view, task, progress, saved, prepare = (board) => bo
 export function boardView({ board, parts, built = () => ({}), builder = () => null, defined = null, offerIn, holdsIn, syncOwn, runtime, tasksAt, opening }) {
   const builtBy = (task) => (type, params) => (built(task)[type] ? builder(type, task, params) : null)
   const views = new WeakMap()
-  const open = (task, progress, viewOf) => {
+  const inherit = (task, progress, viewOf) => {
     const previous = tasksAt && previousCircuitTask(task, tasksAt)
     const kept = previous && previous.kind === task.kind && progress && inheritedBoard(progress, previous)
     if (kept && fitsCircuit(kept, previous, viewOf(previous))) {
@@ -48,7 +48,6 @@ export function boardView({ board, parts, built = () => ({}), builder = () => nu
       const carried = board.carriedOnto(task, kept, circuit.board.wiring(task, circuit))
       if (fitsCircuit(carried, task, circuit)) return carried
     }
-    return board.startBoard(task)
   }
   const view = (task) => {
     const has = holdsIn?.(task, new Set())
@@ -78,10 +77,11 @@ export function boardView({ board, parts, built = () => ({}), builder = () => nu
         return { shown: shown.filter(supported), folded: folded.filter(supported), types: types.filter(supported) }
       },
       holdsIn,
-      opening: (task, progress, project) => (opening ?? open)(task, progress, (t) => {
-        const scope = forTask(t)
-        return project ? project(scope) : scope
-      }),
+      opening: (task, progress, project) => {
+        const viewOf = project ? (t) => project(forTask(t)) : forTask
+        const carried = inherit(task, progress, viewOf)
+        return opening ? opening(task, progress, viewOf, carried) : carried ?? board.startBoard(task)
+      },
       stageChain: () => [],
       ...(defined ? { defined: defined(task) } : {}),
     }

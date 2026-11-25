@@ -1,6 +1,8 @@
 {
   "title": "@level.r-exI.title",
-  "tray": "machine",
+  "after": "@level.r-exI.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.r-exI.intro.0.t"
@@ -11,17 +13,14 @@
       "id": "r-exI",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.r-exI.tasks.r-exI.inputs.0.label"
-        }
+      "brief": "@level.r-exI.tasks.r-exI.brief",
+      "hint": [
+        "@level.r-exI.tasks.r-exI.hint.0"
       ],
       "tests": [
         {
-          "goal": "∃x. Human(x) ∧ Likes(x, i)",
+          "goal": "∃x. Likes(x, i)",
           "hyps": [
-            "Human(j)",
             "Likes(j, i)"
           ]
         },
@@ -36,23 +35,23 @@
           "goal": "∃y. Student(y) ∧ School(y)",
           "hyps": [
             "Student(l)",
-            "School(l)"
+            "School(l)",
+            "Human(l)"
           ]
         }
       ],
-      "brief": "@level.r-exI.tasks.r-exI.brief",
-      "hint": [
-        "@level.r-exI.tasks.r-exI.hint.0"
-      ],
       "solution": [
-        "hypRule = logic/assumption()",
-        "c0r0 = exI()",
-        "c1r0 = andI()",
-        "c0 = rule(in, c0r0)",
-        "c1 = rule(c0, c1r0)",
-        "c2 = rule(c1, hypRule)",
-        "c3 = rule(c2, hypRule)",
-        "out <- c3"
+        "step1 = logic/directBackward-qed_exI(in)",
+        "step2 = logic/directBackward-qed_andI(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_andI(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
       ]
     }
   ]

@@ -2,59 +2,47 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/r-exE",
-      "to": "qed/s-defer"
-    },
-    {
-      "from": "qed/s-try",
-      "to": "qed/s-append"
-    },
-    {
-      "from": "qed/s-try",
-      "to": "qed/s-intro"
-    },
-    {
-      "from": "qed/s-intro",
-      "to": "qed/s-elim"
-    },
-    {
-      "from": "qed/s-elim",
-      "to": "qed/s-auto"
+      "required": true,
+      "from": "q-grand",
+      "to": "pl-grand"
     },
     {
       "required": true,
-      "from": "qed/q-grand",
-      "to": "qed/pl-grand"
+      "from": "pl-grand",
+      "to": "pl-anc"
     },
     {
       "required": true,
-      "from": "qed/pl-grand",
-      "to": "qed/pl-anc"
+      "from": "pl-anc",
+      "to": "pl-order"
     },
     {
-      "required": true,
-      "from": "qed/pl-anc",
-      "to": "qed/pl-order"
+      "from": "r-eq",
+      "to": "s-append"
     },
     {
-      "from": "qed/r-exE",
-      "to": "qed/s-try"
+      "from": "r-eq",
+      "to": "s-rounds"
     },
     {
-      "from": "qed/s-defer",
-      "to": "qed/s-append"
+      "from": "s-append",
+      "to": "s-explore"
     },
     {
-      "from": "qed/s-defer",
-      "to": "qed/s-intro"
+      "from": "s-rounds",
+      "to": "s-explore"
     },
     {
-      "from": "qed/s-append",
-      "to": "qed/pl-grand"
+      "from": "s-explore",
+      "to": "s-auto"
     },
     {
-      "from": "qed/s-append",
-      "to": "qed/s-loop"
+      "from": "s-auto",
+      "to": "s-loop"
+    },
+    {
+      "from": "s-explore",
+      "to": "pl-grand"
     }
   ]
 }

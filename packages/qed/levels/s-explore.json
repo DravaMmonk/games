@@ -1,0 +1,47 @@
+{
+  "title": "@level.s-explore.title",
+  "after": "@level.s-explore.after",
+  "adds": ["search"],
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.s-explore.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "s-explore",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "backtrack": true,
+      "budget": 6,
+      "brief": "@level.s-explore.tasks.s-explore.brief",
+      "hint": ["@level.s-explore.tasks.s-explore.hint.0"],
+      "tests": [
+        { "goal": "(Rain ∨ Wind) ∨ Wet", "hyps": ["Wind"] },
+        { "goal": "Rain ∨ (Wind ∨ Wet)", "hyps": ["Wet"] },
+        { "goal": "Rain ∨ Wind", "hyps": ["Rain"] },
+        { "goal": "((Rain ∨ Wind) ∨ Wet) ∨ (Slip ∨ (Fall ∨ Sun))", "hyps": ["Fall"] }
+      ],
+      "solution": [
+        "c0 = search(in, body: c1) {",
+        "  body {",
+        "    left = logic/directBackward-qed_orI[use=[\"disjI1\"]](c0.body)",
+        "    right = logic/directBackward-qed_orI[use=[\"disjI2\"]](c0.body)",
+        "    both = append(first: left, second: right)",
+        "    c1 = logic/directBackward-logic_assumption(both)",
+        "  }",
+        "}",
+        "out <- c0"
+      ],
+      "naive": [
+        "c0 = repeat(in, body: c1) {",
+        "  body {",
+        "    left = logic/directBackward-qed_orI[use=[\"disjI1\"]](c0.body)",
+        "    right = logic/directBackward-qed_orI[use=[\"disjI2\"]](c0.body)",
+        "    both = append(first: left, second: right)",
+        "    c1 = logic/directBackward-logic_assumption(both)",
+        "  }",
+        "}",
+        "out <- c0"
+      ]
+    }
+  ]
+}

@@ -3,10 +3,6 @@
   "values": [
     "rule",
     "logic/assumption",
-    "erule-s-results-desc",
-    "frule",
-    "introRules",
-    "elimRules",
     "auto"
   ]
 }

@@ -11,11 +11,5 @@
       "closes": true
     }
   ],
-  "op": "logic/repeat",
-  "stages": [
-    {
-      "id": "repeat-s-results-desc",
-      "desc": "@part.repeat.revisions.0.desc"
-    }
-  ]
+  "op": "logic/repeat"
 }

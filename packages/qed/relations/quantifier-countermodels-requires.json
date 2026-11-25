@@ -26,14 +26,6 @@
       "to": "p-only"
     },
     {
-      "from": "m-counter",
-      "to": "p-split"
-    },
-    {
-      "from": "fo-some",
-      "to": "p-split"
-    },
-    {
       "required": true,
       "from": "p-split",
       "to": "p-exAnd"

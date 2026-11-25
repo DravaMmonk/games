@@ -30,7 +30,7 @@ import { equations } from './define.js'
 import { lemmaReference, PROOF_BOARD } from './proof.js'
 import { OPS, partsOf } from './ops.js'
 import { primitivesOnly } from 'circuit'
-import { boardView, fitsCircuit } from 'circuit'
+import { boardView, fitsCircuit, withBoardRuntime } from 'circuit'
 import { keptBoards } from 'circuit'
 import { workView } from 'circuit'
 import { GATE_BOARD, builtGates, gateCourse, gateTests } from './gates.js'
@@ -527,11 +527,25 @@ export function* prepareLogicWorks(content) {
     ...machineParts,
     ...directPartsOf(task).PARTS,
   })
+  // Packed boards resolve their bound cards in the builder's scope, even when the calling task has none.
+  const packedBoards = new WeakMap()
+  const packedBoard = (task, board) => {
+    const direct = directPartsOf(task).PARTS
+    if (!packedBoards.has(board)) {
+      packedBoards.set(board, withBoardRuntime(board, partOf => type => direct[type] ?? partOf(type)))
+    }
+    return packedBoards.get(board)
+  }
   // A machine's answers are read now that its rule book, and so its rule parts, are known.
-  for (const one of TASKS.filter((t) => t.kind === 'logic/machine')) Object.assign(one, readAnswers(one, machineBlueprint(one)))
+  for (const one of TASKS.filter((t) => t.kind === 'logic/machine')) {
+    Object.assign(one, readAnswers(one, machineBlueprint(one)))
+    if (one.partSolution) one.partSolution = packedBoard(one, one.partSolution)
+  }
   for (const { type, variant, task, reference } of built.machineRefs) if (!taskById.has(task)) {
     const one = { ...reference, ...declarations(reference, type), lemmas, facts, ruleParts: partsForResource, proofOperations: partRuleResources, partDefs: defs }
-    references.register([{ kind: 'logic/machine', type, form: null, task: standalone(`${type}:${variant}`, one, machineBlueprint(one)) }])
+    const builder = standalone(`${type}:${variant}`, one, machineBlueprint(one))
+    builder.partSolution = packedBoard(builder, builder.partSolution)
+    references.register([{ kind: 'logic/machine', type, form: null, task: builder }])
   }
   // The gates the levels build run their boards (gates.js builtGates).
   const gateBuilders = Object.fromEntries(references.entriesOf('gate').map(({ type, task }) => [type, task]))
@@ -544,6 +558,10 @@ export function* prepareLogicWorks(content) {
   Object.assign(boardGates, gateParts)
   // Machine cards share a packed instance when their visible sequence of references is the same.
   const running = new Map()
+  const keptMachineBoard = (id) => {
+    const board = kept.board(id)
+    return board && packedBoard(taskById.get(id), board)
+  }
   const machineTypes = [...new Set(references.entriesOf('logic/machine').map(({ type }) => type))]
   for (const one of TASKS) {
     one.partResources = partResources
@@ -555,7 +573,7 @@ export function* prepareLogicWorks(content) {
       const key = JSON.stringify([type, strict, reference.taskId])
       if (!running.has(key)) {
         const builder = () => has.inside(type, null, { strict, kind: 'logic/machine' }).task
-        running.set(key, builtMachine(type, builder, reference, kept.board, settingsOf(built.parts[type])))
+        running.set(key, builtMachine(type, builder, reference, keptMachineBoard, settingsOf(built.parts[type])))
       }
       return running.get(key)
     }
@@ -680,10 +698,13 @@ export function* prepareLogicWorks(content) {
     offerIn: machineOfferIn,
     holdsIn: machineHoldsIn,
     syncOwn: kept.sync,
+    tasksAt: (id) => byId.get(id)?.tasks,
     // A machine level that upgrades a part opens on the board that part runs; a preset stays locked in.
-    opening: (task, _progress, viewOf) => {
+    opening: (task, _progress, viewOf, carried) => {
+      const preset = presetFor(task)
+      if (carried) return withPreset(carried, preset)
       const from = task.upgrades?.opens().circuit
-      return withPreset(from && fitsCircuit(from, task, viewOf(task)) ? from : startMachine(task), presetFor(task))
+      return withPreset(from && fitsCircuit(from, task, viewOf(task)) ? from : startMachine(task), preset)
     },
   })
   function proofWorkReferences(task, work) {

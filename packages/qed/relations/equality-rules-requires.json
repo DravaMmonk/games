@@ -8,10 +8,6 @@
     {
       "from": "q-eq",
       "to": "q-sym"
-    },
-    {
-      "from": "q-sym",
-      "to": "q-trans"
     }
   ]
 }

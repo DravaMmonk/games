@@ -23,7 +23,6 @@
       "logic/assumption",
       "qed/append",
       "qed/each",
-      "qed/defer",
       "qed/search",
       "qed/rw",
       "logic/hyp",

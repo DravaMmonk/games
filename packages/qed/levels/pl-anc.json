@@ -1,7 +1,7 @@
 {
   "title": "@level.pl-anc.title",
-  "adds": ["search"],
-  "tray": "machine",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.pl-anc.intro.0.t"
@@ -12,12 +12,6 @@
       "id": "pl-anc",
       "kind": "logic/machine",
       "want": "logic/answers",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.pl-anc.tasks.pl-anc.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "rules": {
         "anc1": {
@@ -36,6 +30,10 @@
           "conclusion": "Anc(?x, ?z)"
         }
       },
+      "brief": "@level.pl-anc.tasks.pl-anc.brief",
+      "hint": [
+        "@level.pl-anc.tasks.pl-anc.hint.0"
+      ],
       "tests": [
         {
           "goal": "Anc(i, ?w)",
@@ -70,23 +68,25 @@
           ]
         }
       ],
-      "brief": "@level.pl-anc.tasks.pl-anc.brief",
-      "hint": [
-        "@level.pl-anc.tasks.pl-anc.hint.0"
-      ],
       "solution": [
-        "hypRule = logic/assumption()",
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c2 = rule(c0.body, hypRule)",
-        "    c3r0 = anc1()",
-        "    c3 = rule(c0.body, c3r0)",
-        "    c4r0 = anc2()",
-        "    c4 = rule(c0.body, c4r0)",
-        "    c1 = append[ways=\"3\"](first: c2, second: c3, third: c4)",
+        "    one = logic/directBackward-anc1(c0.body)",
+        "    more = logic/directBackward-anc2(c0.body)",
+        "    both = append(first: one, second: more)",
+        "    c1 = logic/directBackward-logic_assumption(both)",
         "  }",
         "}",
         "out <- c0"
+      ],
+      "naive": [
+        "one = logic/directBackward-anc1(in)",
+        "more = logic/directBackward-anc2(in)",
+        "both = append(first: one, second: more)",
+        "fact = logic/directBackward-logic_assumption(both)",
+        "next = logic/directBackward-anc1(fact)",
+        "close = logic/directBackward-logic_assumption(next)",
+        "out <- close"
       ]
     }
   ]

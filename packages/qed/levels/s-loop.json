@@ -1,7 +1,8 @@
 {
   "title": "@level.s-loop.title",
-  "adds": ["search"],
-  "tray": "machine",
+  "after": "@level.s-loop.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.s-loop.intro.0.t"
@@ -12,12 +13,6 @@
       "id": "s-loop",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.s-loop.tasks.s-loop.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "rules": {
         "trans": {
@@ -29,6 +24,11 @@
           "conclusion": "Older(?x, ?z)"
         }
       },
+      "brief": "@level.s-loop.tasks.s-loop.brief",
+      "hint": [
+        "@level.s-loop.tasks.s-loop.hint.0",
+        "@level.s-loop.tasks.s-loop.hint.1"
+      ],
       "tests": [
         {
           "goal": "Older(i, k)",
@@ -53,31 +53,22 @@
           "want": "logic/fails"
         }
       ],
-      "brief": "@level.s-loop.tasks.s-loop.brief",
-      "hint": [
-        "@level.s-loop.tasks.s-loop.hint.0",
-        "@level.s-loop.tasks.s-loop.hint.1"
-      ],
       "solution": [
-        "hypRule = logic/assumption()",
         "c0 = search[depth=\"3\"](in, body: c1) {",
         "  body {",
-        "    c2 = rule(c0.body, hypRule)",
-        "    c3r0 = trans()",
-        "    c3 = rule(c0.body, c3r0)",
-        "    c1 = append(first: c2, second: c3)",
+        "    cite = logic/directBackward-logic_assumption(c0.body)",
+        "    pass = logic/directBackward-trans(c0.body)",
+        "    c1 = append(first: cite, second: pass)",
         "  }",
         "}",
         "out <- c0"
       ],
       "naive": [
-        "hypRule = logic/assumption()",
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c2 = rule(c0.body, hypRule)",
-        "    c3r0 = trans()",
-        "    c3 = rule(c0.body, c3r0)",
-        "    c1 = append(first: c2, second: c3)",
+        "    cite = logic/directBackward-logic_assumption(c0.body)",
+        "    pass = logic/directBackward-trans(c0.body)",
+        "    c1 = append(first: cite, second: pass)",
         "  }",
         "}",
         "out <- c0"

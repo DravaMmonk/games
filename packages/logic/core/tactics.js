@@ -129,12 +129,6 @@ export function assumption(s, index = 0) {
 // Of the reasons unifying failed, the one worth saying: a metavariable that may not become a thing fixed after it.
 const late = (why) => why.find((w) => /之前留下|was left before/.test(w.en)) ?? null
 
-/** defer: the first goal moved to the end. */
-export function defer(s) {
-  if (!s.goals.length) return { fail: NO_GOALS }
-  return { results: [{ ...s, more: undefined, error: undefined, goals: [...s.goals.slice(1), s.goals[0]] }] }
-}
-
 // A hypothesis written out with its ?-letters named in the order they appear: Human(?t1) → Animal(?t1) is the same
 // hypothesis as Human(?t) → Animal(?t), so taking one again with a new ?-letter is nothing new. (Goals keep their
 // letters: a goal asking the same of a new ?-letter, as a rule calling itself does, may well be progress.)

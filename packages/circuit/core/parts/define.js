@@ -213,7 +213,7 @@ export function compileParts(parts, ops, code = {}) {
         if (def.nulls !== 'pass' && read.some((n) => ins[n] === null || (ins[n] === undefined && !optional.has(n)))) return null
         const tree = trees[def.outputNames ? key : '']
         if (!tree) throw new OperationError(catalogText("这个元件的运算写错了"))
-        const card = { ...ctx, node, key, ins, region: (name) => runRegion(node, ctx, name) }
+        const card = { ...ctx, node, key, ins, region: (name, extra) => runRegion(node, extra ? { ...ctx, ...extra } : ctx, name) }
         const env = { ins, settings: settingsFor(def, node?.params), run: runner(ops, card), noCase }
         if (!ctx?.tape) return evaluate(tree, env)
         // A run that trains: number the values on the tape (../tape.js); a parameter resource makes this card a leaf.

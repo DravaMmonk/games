@@ -1,5 +1,6 @@
 {
   "title": "@level.q-sym.title",
+  "intro": [{ "t": "@level.q-sym.intro.0.t" }],
   "tray": "proof",
   "tasks": [
     {

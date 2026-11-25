@@ -5,8 +5,8 @@
 // the results show the test's inputs, what it wants and what reaches the result. Values (equations, proof states,
 // clause sets, rules) read as lines of text.
 import { T } from 'kernel/words'
-import { createElement, Fragment, useMemo } from 'react'
-import { withPreset } from 'circuit'
+import { createElement, useMemo } from 'react'
+import { frameTree, withPreset } from 'circuit'
 import { CIRCUIT_WORDS } from 'circuit/view'
 import { L } from 'kernel/view'
 import { defaultBoundRule, directCardsOf, machineConfigurationCases, runMachine } from '../../core/machine.js'
@@ -14,22 +14,47 @@ import { useMachineRunOptions } from '../auto-first.js'
 import { presetFor } from '../../core/work.js'
 import { didText, machineGeneralNotation, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
 import { useGeneralForm } from '../general-form.js'
-import { MachineApplicationChoice } from './OccurrenceChoice.jsx'
+import { FirstGoalOnly, MachineApplicationChoice } from './OccurrenceChoice.jsx'
 import MachineReport, { machineRuleList } from './MachineReport.jsx'
 import BoundRule from './BoundRule.jsx'
 import RulePanel from './RulePanel.jsx'
 import { StepState, markedTextOf, typesetMachine } from './ProofState.jsx'
 
-/** How a played run left a card: a rule that did not apply fades, apart from one whose chosen position is not in this case. */
+const stepsByProof = new WeakMap()
+/** A run's steps by their place in its tree of candidates (../../core/proof-tree.js). */
+function byProof(run) {
+  if (!stepsByProof.has(run)) stepsByProof.set(run, new Map(run.trace.filter((entry) => entry.proof).map((entry) => [entry.proof.id, entry])))
+  return stepsByProof.get(run)
+}
+
+/**
+ * How a played run left a card: a rule that did not apply fades, apart from one whose chosen position is not in this
+ * case. While a run that tries several candidates plays, a card shows what it did on the way to the step on view, not
+ * what it last did on a path the run has since left; once played through, what it did on the way to the result.
+ */
 function playedClass(node, ctx) {
   const played = ctx.view?.played
   if (!played || ctx.path.length) return ''
   const { run, upTo } = played
+  const own = (entry) => entry.id === node.id && !entry.path?.length && entry.status
   let last = null
-  for (const entry of run.trace.slice(0, upTo + 1)) if (entry.id === node.id && !entry.path?.length && entry.status) last = entry
+  const at = run.trace[Math.min(upTo, run.trace.length - 1)]
+  if (at?.proof) {
+    const steps = byProof(run)
+    for (let entry = at; entry && !last; entry = steps.get(entry.proof.parent)) if (own(entry)) last = entry
+  } else {
+    for (const entry of run.trace.slice(0, upTo + 1)) if (own(entry)) last = entry
+  }
   const status = upTo >= run.trace.length - 1 ? run.nodeStatuses?.get(node.id) ?? last?.status : last?.status
   if (status !== 'skipped') return ''
   return last?.reason === 'position-missing' ? 'is-skipped is-unplaced' : 'is-skipped'
+}
+
+/** Whether a card stands inside a search frame, where a backward card with no goal picked works on the first goal
+ *  alone (../../core/machine.js search). */
+function inSearchBody(level, board, node) {
+  const tree = frameTree(board.nodes)
+  return (tree.ancestors(node.in) ?? []).some((region) => level.partDefs?.[tree.node(region.slice(0, region.lastIndexOf('/')))?.type]?.op === 'logic/search')
 }
 
 export const machineScreen = {
@@ -68,11 +93,12 @@ export const machineScreen = {
       return own ? createElement(StepState, { before: wire && ctx.view.values.get(wire.from), value, text: markedTextOf(level) }) : drawn
     }
     const rule = createElement(BoundRule, { card, node, unpicked: defaultBoundRule(card, { autoFirst }), task: level, run: ctx.path.length ? null : run, set: slot === 'tileExtra' ? null : set, open: slot === 'detail' })
-    return createElement(Fragment, null, rule, drawn)
+    return createElement(FirstGoalOnly.Provider, { value: inSearchBody(level, ctx.board.circuit, node) }, rule, drawn)
   },
   // A preset (a level's locked cards) stays on the board whatever is saved.
   ready: (board, task) => withPreset(board, presetFor(task)),
-  readouts: (task, _circuit, { score }) => [{ value: score.steps, label: T("元件") }, task.budget !== undefined && { value: task.budget, label: T('最多') }],
+  // Only a task with a card budget reads a number off the board: cards used over cards allowed, in the failure colour past it.
+  readouts: (task, _circuit, { score }) => [task.budget !== undefined && { value: `${score.steps}/${task.budget}`, label: T("元件"), fail: score.steps > task.budget }],
   says: { go: T('运行全部测试'), done: T("全部通过") },
   log: true,
   // A step says what it did beside the card's name, in marks: which rule changed which goal (⊢ ⟵ R₁).

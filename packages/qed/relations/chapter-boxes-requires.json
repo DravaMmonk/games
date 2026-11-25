@@ -2,72 +2,60 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/s-search",
-      "to": "qed/and"
+      "from": "and",
+      "to": "curry"
     },
     {
-      "from": "qed/and",
-      "to": "qed/curry"
+      "from": "or",
+      "to": "cases"
     },
     {
-      "from": "qed/s-search",
-      "to": "qed/or"
+      "from": "cases",
+      "to": "orSwap"
     },
     {
-      "from": "qed/or",
-      "to": "qed/cases"
+      "from": "bot",
+      "to": "notI"
     },
     {
-      "from": "qed/cases",
-      "to": "qed/orSwap"
+      "from": "notI",
+      "to": "mt"
     },
     {
-      "from": "qed/s-search",
-      "to": "qed/bot"
+      "from": "curry",
+      "to": "iffUse"
     },
     {
-      "from": "qed/bot",
-      "to": "qed/notI"
+      "from": "orSwap",
+      "to": "iffUse"
     },
     {
-      "from": "qed/notI",
-      "to": "qed/mt"
-    },
-    {
-      "from": "qed/curry",
-      "to": "qed/iffUse"
-    },
-    {
-      "from": "qed/orSwap",
-      "to": "qed/iffUse"
-    },
-    {
-      "from": "qed/mt",
-      "to": "qed/iffUse"
+      "from": "mt",
+      "to": "iffUse"
     },
     {
       "required": true,
-      "from": "qed/mergeBoth",
-      "to": "qed/orImp"
+      "from": "mergeBoth",
+      "to": "orImp"
     },
     {
-      "from": "qed/iffUse",
-      "to": "qed/orImp"
-    },
-    {
-      "required": true,
-      "from": "qed/orImp",
-      "to": "qed/contra"
+      "from": "iffUse",
+      "to": "orImp"
     },
     {
       "required": true,
-      "from": "qed/contra",
-      "to": "qed/dist"
+      "from": "orImp",
+      "to": "contra"
     },
     {
       "required": true,
-      "from": "qed/dist",
-      "to": "qed/dsyll"
+      "from": "contra",
+      "to": "dist"
+    },
+    {
+      "required": true,
+      "from": "dist",
+      "to": "dsyll"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.provers.title",
-  "at": "r-rule",
+  "at": "machine-cite",
   "body": ["@glossary.entries.provers.body.0", "@glossary.entries.provers.body.1"],
   "see": ["lean", "isabelle"]
 }

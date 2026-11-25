@@ -1,11 +1,8 @@
 {
-  "adds": [
-    "introRules",
-    "elimRules",
-    "search"
-  ],
-  "tray": "machine",
   "title": "@level.s-auto.title",
+  "after": "@level.s-auto.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.s-auto.intro.0.t"
@@ -13,16 +10,68 @@
   ],
   "tasks": [
     {
+      "id": "s-auto-goal",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "backtrack": true,
+      "step": "@level.s-auto.tasks.s-auto-goal.step",
+      "brief": "@level.s-auto.tasks.s-auto-goal.brief",
+      "hint": [
+        "@level.s-auto.tasks.s-auto-goal.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "Rain ∨ Wind",
+          "hyps": [
+            "Wind"
+          ]
+        },
+        {
+          "goal": "Rain → (Wind → Wind ∧ Rain)"
+        },
+        {
+          "goal": "∀x. Human(x) → Human(x) ∨ Bird(x)"
+        },
+        {
+          "goal": "∃x. Likes(x, i)",
+          "hyps": ["Likes(k, j)", "Likes(j, i)"]
+        },
+        {
+          "goal": "Rain → (Wet ∨ Rain) ∧ (Rain ∨ Wind)"
+        },
+        { "goal": "Rain → Wind", "want": "logic/fails" }
+      ],
+      "solution": [
+        "c0 = search(in, body: c1) {",
+        "  body {",
+        "    cite = logic/directBackward-logic_assumption(c0.body)",
+        "    open = logic/directBackward-qed_impI(c0.body)",
+        "    any = logic/directBackward-qed_allI(open)",
+        "    join = logic/directBackward-qed_andI(any)",
+        "    left = logic/directBackward-qed_orI[use=[\"disjI1\"]](c0.body)",
+        "    right = logic/directBackward-qed_orI[use=[\"disjI2\"]](c0.body)",
+        "    example = logic/directBackward-qed_exI(c0.body)",
+        "    c1 = append[ways=\"5\"](first: cite, second: join, third: left, fourth: right, fifth: example)",
+        "  }",
+        "}",
+        "out <- c0"
+      ]
+    },
+    {
       "id": "s-auto",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
+      "backtrack": true,
+      "step": "@level.s-auto.tasks.s-auto.step",
+      "carries": true,
+      "publishes": [
         {
-          "name": "in",
-          "label": "@level.s-auto.tasks.s-auto.inputs.0.label"
+          "part": "auto",
+          "variant": "base"
         }
       ],
-      "backtrack": true,
+      "brief": "@level.s-auto.tasks.s-auto.brief",
+      "hint": ["@level.s-auto.tasks.s-auto.hint.0"],
       "tests": [
         {
           "goal": "Rain ∨ Wind",
@@ -41,35 +90,48 @@
         },
         {
           "goal": "(∀x. Human(x) ∧ Bird(x)) → ∀x. Bird(x)"
-        }
-      ],
-      "brief": "@level.s-auto.tasks.s-auto.brief",
-      "hint": [
-        "@level.s-auto.tasks.s-auto.hint.0",
-        "@level.s-auto.tasks.s-auto.hint.1"
+        },
+        { "goal": "Rain → Wind", "want": "logic/fails" },
+        { "goal": "Rain ∨ Wind", "hyps": ["Wet"], "want": "logic/fails" },
+        { "goal": "¬¬Rain → Rain", "want": "logic/fails" }
       ],
       "solution": [
-        "hypRule = logic/assumption()",
         "c0 = search(in, body: c1) {",
         "  body {",
-        "    c2 = rule(c0.body, hypRule)",
-        "    c3 = introRules(c0.body)",
-        "    c4 = elimRules(c0.body)",
-        "    c1 = append[ways=\"3\"](first: c2, second: c3, third: c4)",
+        "    cite = logic/directBackward-logic_assumption(c0.body)",
+        "    open = logic/directBackward-qed_impI(c0.body)",
+        "    any = logic/directBackward-qed_allI(open)",
+        "    join = logic/directBackward-qed_andI(any)",
+        "    left = logic/directBackward-qed_orI[use=[\"disjI1\"]](c0.body)",
+        "    right = logic/directBackward-qed_orI[use=[\"disjI2\"]](c0.body)",
+        "    example = logic/directBackward-qed_exI(c0.body)",
+        "    e1 = logic/directBackward-qed_andE[use=[\"conjE\"]](c0.body)",
+        "    e2 = logic/directBackward-qed_orE(c0.body)",
+        "    e3 = logic/directBackward-qed_mp[use=[\"mp\"]](c0.body)",
+        "    e4 = logic/directBackward-qed_exE(c0.body)",
+        "    e5 = logic/directBackward-qed_allE[use=[\"allE\"]](c0.body)",
+        "    given = append[ways=\"5\"](first: e1, second: e2, third: e3, fourth: e4, fifth: e5)",
+        "    use = logic/directBackward-logic_assumption(given)",
+        "    c1 = append[ways=\"6\"](first: cite, second: join, third: left, fourth: right, fifth: example, sixth: use)",
         "  }",
         "}",
         "out <- c0"
       ],
-      "publishes": [
-        {
-          "part": "auto",
-          "variant": "base"
-        }
+      "naive": [
+        "c0 = search(in, body: c1) {",
+        "  body {",
+        "    cite = logic/directBackward-logic_assumption(c0.body)",
+        "    open = logic/directBackward-qed_impI(c0.body)",
+        "    any = logic/directBackward-qed_allI(open)",
+        "    join = logic/directBackward-qed_andI(any)",
+        "    left = logic/directBackward-qed_orI[use=[\"disjI1\"]](c0.body)",
+        "    right = logic/directBackward-qed_orI[use=[\"disjI2\"]](c0.body)",
+        "    example = logic/directBackward-qed_exI(c0.body)",
+        "    c1 = append[ways=\"5\"](first: cite, second: join, third: left, fourth: right, fifth: example)",
+        "  }",
+        "}",
+        "out <- c0"
       ]
     }
-  ],
-  "local": [
-    "introRules",
-    "elimRules"
   ]
 }

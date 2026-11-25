@@ -1,6 +1,9 @@
 {
   "title": "@level.s-append.title",
-  "tray": "machine",
+  "after": "@level.s-append.after",
+  "adds": ["append"],
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.s-append.intro.0.t"
@@ -11,13 +14,11 @@
       "id": "s-append",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.s-append.tasks.s-append.inputs.0.label"
-        }
-      ],
       "backtrack": true,
+      "brief": "@level.s-append.tasks.s-append.brief",
+      "hint": [
+        "@level.s-append.tasks.s-append.hint.0"
+      ],
       "tests": [
         {
           "goal": "Rain ∨ Wind",
@@ -38,79 +39,17 @@
           ]
         }
       ],
-      "brief": "@level.s-append.tasks.s-append.brief",
-      "hint": [
-        "@level.s-append.tasks.s-append.hint.0"
-      ],
       "solution": [
-        "hypRule = logic/assumption()",
-        "c1r0 = orI[use=[disjI1]]()",
-        "c1 = rule(in, c1r0)",
-        "c2r0 = orI[use=[disjI2]]()",
-        "c2 = rule(in, c2r0)",
-        "c0 = append(first: c1, second: c2)",
-        "c3 = rule(c0, hypRule)",
-        "out <- c3"
-      ],
-      "step": "@level.s-append.tasks.s-append.step",
-      "naive": [
-        "hypRule = logic/assumption()",
-        "c1r0 = orI[use=[disjI1]]()",
-        "c1 = rule(in, c1r0)",
-        "c3 = rule(c1, hypRule)",
-        "out <- c3"
-      ]
-    },
-    {
-      "id": "s-append-both",
-      "step": "@level.s-append-both.step",
-      "intro": [
-        {
-          "t": "@level.s-append-both.intro"
-        }
-      ],
-      "kind": "logic/machine",
-      "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.s-append-both.inputs.0.label"
-        }
-      ],
-      "tests": [
-        {
-          "goal": "Rain ∧ Wind",
-          "hyps": [
-            "Wind",
-            "Rain"
-          ]
-        },
-        {
-          "goal": "Wet ∧ Slip",
-          "hyps": [
-            "Wet",
-            "Slip"
-          ]
-        }
-      ],
-      "brief": "@level.s-append-both.brief",
-      "hint": [
-        "@level.s-append-both.hint"
-      ],
-      "solution": [
-        "hypRule = logic/assumption()",
-        "join = andI()",
-        "split = rule(in, join)",
-        "left = rule(split, hypRule)",
-        "right = rule(left, hypRule)",
-        "out <- right"
+        "left = logic/directBackward-qed_orI[use=[\"disjI1\"]](in)",
+        "right = logic/directBackward-qed_orI[use=[\"disjI2\"]](in)",
+        "both = append(first: left, second: right)",
+        "close = logic/directBackward-logic_assumption(both)",
+        "out <- close"
       ],
       "naive": [
-        "hypRule = logic/assumption()",
-        "join = andI()",
-        "split = rule(in, join)",
-        "left = rule(split, hypRule)",
-        "out <- left"
+        "left = logic/directBackward-qed_orI[use=[\"disjI1\"]](in)",
+        "close = logic/directBackward-logic_assumption(left)",
+        "out <- close"
       ]
     }
   ]

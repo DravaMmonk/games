@@ -1,0 +1,32 @@
+{
+  "title": "@level.r-eq.title",
+  "after": "@level.r-eq.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.r-eq.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "r-eq",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.r-eq.tasks.r-eq.brief",
+      "hint": ["@level.r-eq.tasks.r-eq.hint.0"],
+      "tests": [
+        { "goal": "Bright(j)", "hyps": ["i = j", "Bright(i)"] },
+        { "goal": "j = i", "hyps": ["i = j"] },
+        { "goal": "Likes(k, j)", "hyps": ["Likes(k, i)", "i = j"] }
+      ],
+      "solution": [
+        "step1 = logic/directRewrite-qed_rewrite[use=[\"hyp.eq\"]](in)",
+        "step2 = logic/directBackward-qed_refl(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directRewrite-qed_rewrite[use=[\"hyp.eq\"]](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ]
+    }
+  ]
+}

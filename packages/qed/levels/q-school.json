@@ -1,5 +1,6 @@
 {
   "title": "@level.q-school.title",
+  "intro": [{ "t": "@level.q-school.intro.0.t" }],
   "tasks": [
     {
       "id": "q-school",

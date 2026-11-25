@@ -10,9 +10,6 @@
       { "from": "qed/mergeUse", "to": "qed/try-rules" }
     ],
     "remove": [
-      { "from": "qed/s-search", "to": "qed/bot" },
-      { "from": "qed/s-search", "to": "qed/and" },
-      { "from": "qed/s-search", "to": "qed/or" },
       { "from": "qed/mergeBoth", "to": "qed/orImp", "required": true }
     ]
   }

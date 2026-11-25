@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.recursor.title",
-  "at": "decl-or",
+  "at": "decl-and",
   "body": ["@glossary.entries.recursor.body.0", "@glossary.entries.recursor.body.1"],
   "see": ["elim-rule", "declaration"]
 }

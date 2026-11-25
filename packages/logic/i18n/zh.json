@@ -68,7 +68,6 @@
   "capability.operation.items.rule.about": "逆用规则",
   "capability.operation.items.directBackward.about": "直接逆用卡上的推理规则",
   "capability.operation.items.directRewrite.about": "直接应用卡上的改写规则",
-  "capability.operation.items.defer.about": "目标后移",
   "capability.operation.items.append.about": "依次尝试",
   "capability.operation.items.search.about": "回溯搜索",
   "capability.operation.items.each.about": "逐个目标",

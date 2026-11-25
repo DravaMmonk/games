@@ -16,6 +16,12 @@
     "machine-cases",
     "machine-cite-first",
     "machine-open-first",
-    "machine-negation"
+    "machine-negation",
+    "r-allI",
+    "r-exI",
+    "r-exE",
+    "r-drule",
+    "r-eq",
+    "r-frule"
   ]
 }

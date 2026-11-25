@@ -440,9 +440,6 @@ test('rules used backwards leave ?-letters that a given settles later, and a fix
   const { parseS } = await import('../core/schematic.js')
   const { KERNEL, assumption, rule, startState } = await import('../core/tactics.js')
   const step = (s, ...r) => { const out = r[0](s, ...r.slice(1)); assert.ok(out.results, JSON.stringify(out.fail)); return out.results[0] }
-  // Rule on a given and Forward, as the player builds them: a rule, then Assumption; Have, then a rule on a given.
-  const erule = (s, R) => { const r = rule(s, R); return r.fail ? r : assumption(r.results[0]) }
-  const frule = (s, R) => { const c = rule(s, KERNEL.cut); return c.fail ? c : erule(c.results[0], R) }
   let s = startState(parseS('Wet'), ['Rain → Wet', 'Rain'].map(parseS))
   s = step(s, rule, KERNEL.mp)
   assert.equal(show(s.goals[1].goal), '?A')
@@ -452,13 +449,16 @@ test('rules used backwards leave ?-letters that a given settles later, and a fix
   // Take one only fits forwards: backwards ?P(?t) is no pattern.
   const t = startState(parseS('Mortal(soc)'), ['∀x. Human(x) → Mortal(x)', 'Human(soc)'].map(parseS))
   assert.ok(rule(t, KERNEL.spec).fail)
-  // Forward is Have, then the rule on a given: the given stays, and the rule's conclusion joins it.
-  const f = step(t, frule, KERNEL.spec)
+  // Cut makes a premise to prove. After instantiation and assumption, the conclusion joins the givens.
+  const have = step(t, rule, KERNEL.cut)
+  const f = step(step(have, rule, KERNEL.spec), assumption)
   assert.equal(f.goals[0].hyps.length, 3)
-  assert.equal(step(step(f, erule, KERNEL.mp), assumption).goals.length, 0)
+  assert.equal(step(step(step(f, rule, KERNEL.mp), assumption), assumption).goals.length, 0)
   // An example left before the thing was taken out cannot become it.
   let u = startState(parseS('∃x. Rich(x)'), [parseS('∃x. Human(x) ∧ Rich(x)')])
-  u = step(step(step(u, rule, KERNEL.exI), erule, KERNEL.exE), erule, KERNEL.conjE)
+  u = step(u, rule, KERNEL.exI)
+  u = step(step(u, rule, KERNEL.exE), assumption)
+  u = step(step(u, rule, KERNEL.conjE), assumption)
   assert.match(assumption(u).fail.en, /was left before/)
 })
 
@@ -549,14 +549,78 @@ test('a search report follows the successful path through separate rounds', () =
   }
 })
 
-test('a repeat counts its comparison and leaves frame plumbing and goal ordering off the report', () => {
-  const level = onMachine({ kind: 'logic/machine', want: 'logic/becomes', tests: [{ goal: 'Rain', becomes: [['Rain']] }] })
-  const board = machine({ loop: ['repeat'], order: ['defer', {}, 'loop'] }, ['in>loop.in', 'loop#body>order.in', 'order>loop.body', 'loop>out'])
+test('search prunes a round with sentence metavariables in goals or hypotheses', () => {
+  const level = onMachine({
+    kind: 'logic/machine', want: 'logic/proved', backtrack: true, directRuleCards: true,
+    tests: [
+      { goal: '?P(a) → (Rain → Rain)', want: 'logic/fails' },
+      { goal: 'Human(?w) → (Rain → Rain)' },
+      { goal: 'Rain → Human(?w)', hyps: ['Human(a)'], want: 'logic/answers', answers: ['a'] },
+      { goal: 'Rain', hyps: ['Wind'], want: 'logic/fails' },
+      { goal: 'Rain', hyps: ['Rain ∧ Wet', 'Wind'] },
+    ],
+  })
+  const board = wireRules(machine({
+    search: ['search'],
+    intro: ['rule', { rule: 'impI' }, 'search'],
+    elim: ['logic/directBackward-andE', { use: ['conjE'] }, 'search'],
+    cite: ['logic/directBackward-logic_assumption', {}, 'search'],
+    join: ['append', { ways: '3' }, 'search'],
+    finish: ['logic/directBackward-logic_assumption', {}, 'search'],
+  }, [
+    'in>search', 'search#body>intro', 'search#body>elim', 'elim>cite',
+    'search#body>finish', 'intro>join.first', 'cite>join.second', 'finish>join.third',
+    'join>search.body', 'search>out',
+  ]), level)
+  const cards = directCardsOf(level)
+  const { PARTS } = compileParts(Object.fromEntries([...cards].map(([type, card]) => [type, card.definition])), OPS)
+  level.parts = type => PARTS[type] ?? machineParts(type)
+
   const report = runMachine(level, board, { traced: true })
   assert.equal(report.pass, true)
-  const { trace, values } = report.runs[0]
-  assert.deepEqual(trace.map(({ id, label }) => [id, label]), [['loop', '↪']])
-  assert.ok(values.has('order'))
+  assert.equal(runMachine(level, board).pass, true)
+  const pruned = run => run.trace.filter(step => step.proof.stopReasonKey === 'unresolved-sentence-meta')
+  const [hypothesis, , , goal, settled] = report.runs
+  assert.ok(pruned(hypothesis).some(step => step.value.goals.length === 1
+    && show(step.value.goals[0].goal) === 'Rain → Rain' && step.value.goals[0].hyps[0].name === '?P'))
+  assert.ok(pruned(goal).some(step => step.value.goals[0].goal.op === '∧'))
+  assert.ok(goal.trace.some(step => step.id === 'cite' && step.status === 'skipped' && step.reason === 'rule-mismatch'))
+  assert.equal(goal.outputs.out.endless, undefined)
+  assert.ok(settled.trace.some(step => step.id === 'cite' && step.status === 'applied' && step.proof.resultPath))
+})
+
+test('search limits unpinned backward cards to the first goal and honors explicit later targets', () => {
+  const level = onMachine({
+    kind: 'logic/machine', want: 'logic/fails', backtrack: true, directRuleCards: true,
+    tests: [{ goal: 'Rain ∧ (Wind → Slip)' }],
+  })
+  const open = 'logic/directBackward-impI'
+  const { PARTS } = compileParts({ [open]: directCardsOf(level).get(open).definition }, OPS)
+  level.parts = type => PARTS[type] ?? machineParts(type)
+  const board = wireRules(machine({
+    split: ['rule', { rule: 'conjI' }],
+    search: ['search'],
+    open: [open, {}, 'search'],
+  }, ['in>split', 'split>search', 'search#body>open', 'open>search.body', 'search>out']), level)
+  const node = board.nodes.find(node => node.id === 'open')
+  const opening = task => runMachine(task, board, { traced: true }).runs[0].trace.find(step => step.id === 'open')
+  const skipped = opening(level)
+  assert.equal(skipped.status, 'skipped')
+  assert.equal(skipped.reason, 'rule-mismatch')
+  assert.deepEqual(skipped.value.goals.map(g => show(g.goal)), ['Rain', 'Wind → Slip'])
+  assert.equal(opening({ ...level, backtrack: false }).status, 'skipped')
+
+  node.params.at = 'goal-1'
+  const selected = opening(level)
+  assert.equal(selected.status, 'applied')
+  assert.deepEqual(selected.value.goals.map(g => show(g.goal)), ['Rain', 'Slip'])
+  assert.deepEqual(selected.value.goals[1].hyps.map(show), ['Wind'])
+
+  const outside = wireRules(machine({
+    split: ['rule', { rule: 'conjI' }], open: [open],
+  }, ['in>split', 'split>open', 'open>out']), level)
+  const straight = { ...level, want: 'logic/becomes', tests: [{ ...level.tests[0], becomes: [['Rain', 'Wind ⊢ Slip']] }] }
+  assert.equal(runMachine(straight, outside).pass, true)
 })
 
 test('the hypothesis rule closes only a goal with a matching given and retains every match', () => {

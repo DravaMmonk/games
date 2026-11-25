@@ -1,9 +1,14 @@
+import { createContext, useContext } from 'react'
 import { LocateOff } from 'lucide-react'
 import { sameJson } from 'kernel'
 import { tr } from 'kernel/words'
 import { rewritePreview } from '../../core/rewrite.js'
 import { Formula } from './Formula.jsx'
 import { Piece, Sentence, StateLayout } from './ProofState.jsx'
+
+/** Whether the card drawn stands in a search frame: a backward rule with no goal picked then works on the first
+ *  goal alone, so the picker marks that goal or none (the machine screen provides it around a card's face). */
+export const FirstGoalOnly = createContext(false)
 
 function ApplicationBox({ selected, readOnly, fixed, label, onPick, children }) {
   return (
@@ -130,8 +135,9 @@ function backwardRows({ sequents, options, option, text, readOnly, fixed, onChan
  */
 export function MachineApplicationChoice({ setting, id, value, text, readOnly, onChange, rewrite }) {
   const [{ sequents, defaultAt }, ...options] = setting.options
+  const firstOnly = useContext(FirstGoalOnly) && !rewrite
   const configured = value == null || value === '' ? undefined : value
-  const target = configured ?? defaultAt
+  const target = configured ?? (firstOnly ? options.find(({ index }) => index === 0)?.value : defaultAt)
   const picked = rewrite && target === 'hyps' ? options.find(({ hyp }) => hyp !== undefined)?.value
     : rewrite && target === 'goal' ? 'goal-0' : target
   const option = options.find((item) => item.value === picked)
@@ -139,11 +145,12 @@ export function MachineApplicationChoice({ setting, id, value, text, readOnly, o
   const props = { sequents, options, option, text, readOnly, fixed, onChange }
   const { rows, more } = rewrite ? rewriteRows({ ...props, value: picked }) : backwardRows(props)
   const missing = configured !== undefined && !option
-  // Several places and none picked: the card waits for the player, every place a box.
-  const pending = !readOnly && configured === undefined && !option && options.length > 1
+  // Several places and none picked: the card waits for the player, every place a box. In a search frame it does not
+  // wait: with the first goal out of its rule's reach it hands the state on.
+  const pending = !readOnly && configured === undefined && !option && options.length > 1 && !firstOnly
   return (
     <div id={id} className={`lg-application-result ${pending ? 'is-pending' : ''}`} role="group" aria-label={tr('应用位置')}>
-      <StateLayout groups={grouped(rows, text)} next={0} />
+      <StateLayout groups={grouped(rows, text)} next={option ? (rewrite ? option.goalIndex ?? 0 : option.index) : 0} />
       {more.length > 0 && <details className="lg-application-more">
         <summary>{tr('其他可改写位置')}</summary>
         {more}

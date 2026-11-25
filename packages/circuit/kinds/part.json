@@ -236,6 +236,14 @@
                       "type": "any",
                       "optional": true
                     },
+                    "directRuleCards": {
+                      "type": "bool",
+                      "optional": true
+                    },
+                    "backtrack": {
+                      "type": "bool",
+                      "optional": true
+                    },
                     "in": {
                       "type": "any",
                       "optional": true

@@ -2,49 +2,32 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/r-elim",
-      "to": "qed/r-cases"
+      "from": "r-drule",
+      "to": "r-frule"
     },
     {
-      "from": "qed/r-cases",
-      "to": "qed/r-false"
+      "from": "q-eq",
+      "to": "r-allI"
     },
     {
-      "from": "qed/r-false",
-      "to": "qed/r-allI"
+      "from": "q-eq",
+      "to": "r-exI"
     },
     {
-      "from": "qed/r-allI",
-      "to": "qed/r-exI"
+      "from": "r-allI",
+      "to": "r-exE"
     },
     {
-      "from": "qed/r-exI",
-      "to": "qed/r-drule"
+      "from": "r-exI",
+      "to": "r-exE"
     },
     {
-      "from": "qed/r-drule",
-      "to": "qed/r-frule"
+      "from": "r-exE",
+      "to": "r-drule"
     },
     {
-      "from": "qed/r-frule",
-      "to": "qed/r-exE"
-    },
-    {
-      "required": true,
-      "from": "qed/q-bigger",
-      "to": "qed/r-dist"
-    },
-    {
-      "from": "qed/r-exE",
-      "to": "qed/r-dist"
-    },
-    {
-      "from": "qed/r-exE",
-      "to": "qed/r-order"
-    },
-    {
-      "from": "qed/r-subgoals",
-      "to": "qed/r-elim"
+      "from": "r-drule",
+      "to": "r-eq"
     }
   ]
 }

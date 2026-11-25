@@ -2,101 +2,96 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/s-auto",
-      "to": "qed/c-wall"
+      "from": "c-wall",
+      "to": "raa"
     },
     {
-      "from": "qed/c-wall",
-      "to": "qed/raa"
+      "from": "raa",
+      "to": "byContra"
     },
     {
-      "from": "qed/raa",
-      "to": "qed/byContra"
+      "from": "raa",
+      "to": "lemCases"
     },
     {
-      "from": "qed/raa",
-      "to": "qed/lemCases"
+      "from": "raa",
+      "to": "s-lem"
     },
     {
-      "from": "qed/raa",
-      "to": "qed/s-lem"
+      "from": "byContra",
+      "to": "c-dneg"
     },
     {
-      "from": "qed/byContra",
-      "to": "qed/c-dneg"
+      "from": "lemCases",
+      "to": "c-dneg"
     },
     {
-      "from": "qed/lemCases",
-      "to": "qed/c-dneg"
+      "from": "s-lem",
+      "to": "c-dneg"
     },
     {
-      "from": "qed/s-lem",
-      "to": "qed/c-dneg"
+      "from": "c-dneg",
+      "to": "c-arrow"
     },
     {
-      "from": "qed/c-dneg",
-      "to": "qed/c-arrow"
+      "from": "c-arrow",
+      "to": "c-dist"
     },
     {
-      "from": "qed/c-arrow",
-      "to": "qed/c-dist"
+      "from": "byContra",
+      "to": "demorgan"
     },
     {
-      "from": "qed/byContra",
-      "to": "qed/demorgan"
+      "from": "lemCases",
+      "to": "demorgan"
     },
     {
-      "from": "qed/lemCases",
-      "to": "qed/demorgan"
+      "from": "s-lem",
+      "to": "demorgan"
     },
     {
-      "from": "qed/s-lem",
-      "to": "qed/demorgan"
-    },
-    {
-      "from": "qed/demorgan",
-      "to": "qed/q-dm"
+      "from": "demorgan",
+      "to": "q-dm"
     },
     {
       "required": true,
-      "from": "qed/e-three",
-      "to": "qed/kk-one"
+      "from": "e-three",
+      "to": "kk-one"
     },
     {
-      "from": "qed/lemCases",
-      "to": "qed/kk-one"
-    },
-    {
-      "required": true,
-      "from": "qed/kk-one",
-      "to": "qed/kk-two"
+      "from": "lemCases",
+      "to": "kk-one"
     },
     {
       "required": true,
-      "from": "qed/kk-two",
-      "to": "qed/kk-three"
+      "from": "kk-one",
+      "to": "kk-two"
     },
     {
       "required": true,
-      "from": "qed/r-dist",
-      "to": "qed/c-contra"
+      "from": "kk-two",
+      "to": "kk-three"
     },
     {
-      "from": "qed/q-dm",
-      "to": "qed/c-contra"
+      "from": "q-dm",
+      "to": "c-contra"
     },
     {
       "required": true,
-      "from": "qed/c-contra",
-      "to": "qed/c-either"
+      "from": "c-contra",
+      "to": "c-either"
     },
     {
-      "from": "qed/lemCases",
-      "to": "qed/peirce"
+      "from": "lemCases",
+      "to": "peirce"
     },
     {
-      "from": "qed/q-dm",
-      "to": "qed/drinker"
+      "from": "q-dm",
+      "to": "drinker"
+    },
+    {
+      "from": "s-loop",
+      "to": "c-wall"
     }
   ]
 }

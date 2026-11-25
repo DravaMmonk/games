@@ -2,7 +2,6 @@
   "title": "@level.try-direct-backward.title",
   "intro": [{ "t": "@level.try-direct-backward.intro.0.t" }],
   "after": "@level.try-direct-backward.after",
-  "requires": ["r-assumption"],
   "tasks": [
     {
       "id": "try-direct-backward",

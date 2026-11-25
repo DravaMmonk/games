@@ -237,6 +237,25 @@
 .lg-machine-level .pb-tile.is-skipped.is-step { box-shadow: 0 0 0 2.5px var(--accent); }
 .lg-machine-level .pb-tile.is-skipped > :is(.pb-name, .pb-thumb, .pb-param) { opacity: .5; }
 
+/* A candidate a search drops for the sentences still unknown in it: the step shows those letters as a state writes
+   an unknown, and the box (in the tree, the node) is dashed, a branch nothing follows. */
+.mr-unsettled { gap: var(--sp-2); }
+.mr-box.is-cut { border-style: dashed; border-color: var(--rule); color: var(--muted); }
+.mr-branch.is-cut > .mr-branch-node { border-style: dashed; }
+.mr-branch-node > .mr-unsettled { display: inline-flex; gap: var(--sp-2); }
+
+/* The gap in a long run's report: the stretch of lines folded between its start and where it has got to, on a
+   dashed link; the button opens more of it. */
+.mr-step.mr-gap { border-left-style: dashed; padding-block: var(--sp-2); }
+.mr-step.mr-gap::after { content: none; }
+.mr-gap > button { justify-content: center; width: var(--sp-8); padding: 0; border: 1px solid var(--hairline); border-radius: var(--r-full); background: var(--paper); color: var(--muted); cursor: pointer; }
+.mr-gap > button:hover { border-color: var(--rule); color: var(--ink); }
+.mr-gap > button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (pointer: coarse) {
+  .mr-gap > button { position: relative; }
+  .mr-gap > button::before { content: ''; position: absolute; inset: calc((var(--mr-row) - 44px) / 2) calc((var(--sp-8) - 44px) / 2); }
+}
+
 /* A card that waits for its rule or position: the run stops on it, in the accent, with no arrow on. */
 .mr-step.is-waiting { border-left-color: var(--accent); }
 .mr-step.is-waiting::after { content: none; }
@@ -285,6 +304,7 @@
 :lang(en) .ps-hyp + .ps-hyp { margin-inline-start: var(--sp-2); }
 .ps-mark { margin-inline-end: var(--sp-2); color: var(--accent-ink); }
 .ps-goal.is-later .ps-mark { color: var(--faint); }
+.ps-rest { display: flex; align-items: baseline; gap: var(--sp-1); color: var(--faint); }
 .ps-closed { display: inline-flex; margin-inline-start: var(--sp-1); color: var(--status); vertical-align: middle; }
 .lg-changed { padding: 1px var(--sp-1); border-radius: var(--r-xs); color: inherit; background: color-mix(in srgb, var(--accent) 20%, transparent); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .lg-unknown { border-bottom: 1px dashed var(--accent); color: var(--accent-ink); }

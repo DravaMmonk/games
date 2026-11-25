@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.backward.title",
-  "at": "r-rule",
+  "at": "machine-open",
   "body": ["@glossary.entries.backward.body.0"],
   "see": ["forward", "proof-state"]
 }

@@ -13,6 +13,7 @@ import { pageContent } from '../../../games/kit/app/page-content.js'
 import { contentSchemas } from '../../../games/kit/engine/content.js'
 import { holds } from '../../circuit/core/index.js'
 import { usable } from '../../circuit/core/course.js'
+import { runMachine } from '../../logic/core/machine.js'
 import { openPackage } from '../../../games/kit/engine/ops/workspace.js'
 import { adopt, readLog, runChangeset, undo } from '../../../games/kit/engine/ops/changeset.js'
 import { proofsRoot, installLogicFixture } from './fixture.js'
@@ -135,6 +136,34 @@ test('a direct rule tray offers the bound cards instead of their rule sources', 
   const view = logic.machineBoards.forTask(task)
   assert.deepEqual(view.offerIn(task, new Set()), { shown: [card], folded: [], types: [card] })
   assert.equal(view.holdsIn(task, new Set())(`${id}/impI`), false)
+})
+
+test('a standalone machine reference runs its bound rules in a task without bound cards', async () => {
+  const { root, id } = proofsRoot()
+  roots.push(root)
+  const part = `${id}/close`
+  const task = { kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain → Rain' }] }
+  writeFileSync(resolve(root, 'packages', id, 'parts/close.json'), JSON.stringify({
+    name: 'Close', desc: 'Prove an implication from its own premise.', family: 'logic/built',
+    inputs: [{ name: 'in', type: 'logic/machine-value' }], outputType: 'logic/machine-value',
+    inside: [{ id: 'base', reference: {
+      ...task, directRuleCards: true, backtrack: true,
+      solution: [`open = logic/directBackward-${id}_impI(in)`, 'cite = logic/directBackward-logic_assumption(open)', 'out <- cite'],
+    } }],
+  }))
+  writeFileSync(resolve(root, 'packages', id, 'levels/suppose.json'), JSON.stringify({
+    title: 'Close an implication',
+    tasks: [{ ...task, id: 'suppose', solution: [`close = ${part}(in)`, 'out <- close'] }],
+  }))
+  const content = readPackage(id, root)
+  const domain = await runtimeOf(content)
+  const { lines } = await checkGame(content, { domain, root, authoring: true })
+  assert.deepEqual(lines.filter(line => line.fail), [])
+  const shell = packageLevel(content, `${id}/suppose`)
+  const { logic } = domain.forContent(shell).spec(shell)
+  const [caller] = logic.LEVELS[0].tasks
+  assert.equal(Boolean(caller.directRuleCards), false)
+  assert.equal(runMachine(caller, caller.solution).pass, true)
 })
 
 test('a levels-only package plays dependency parts and checks references and naive answers independently', async () => {

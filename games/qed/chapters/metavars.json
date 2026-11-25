@@ -5,26 +5,17 @@
     "desc": "@course.eras.metavars.chapter.desc"
   },
   "levels": [
-    "qed/r-elim",
-    "qed/r-cases",
-    "qed/r-false",
     "qed/r-allI",
     "qed/r-exI",
-    "qed/r-drule",
-    "qed/r-frule",
     "qed/r-exE",
-    "qed/r-dist",
-    "qed/r-order"
+    "qed/r-drule",
+    "qed/r-eq",
+    "qed/r-frule"
   ],
   "rows": [
-    ["qed/r-elim"],
-    ["qed/r-cases"],
-    ["qed/r-false"],
-    ["qed/r-allI"],
-    ["qed/r-exI"],
-    ["qed/r-drule"],
-    ["qed/r-frule"],
+    ["qed/r-allI", "qed/r-exI"],
     ["qed/r-exE"],
-    ["qed/r-dist", "qed/r-order"]
+    ["qed/r-drule"],
+    ["qed/r-eq", "qed/r-frule"]
   ]
 }

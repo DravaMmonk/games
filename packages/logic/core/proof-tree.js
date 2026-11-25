@@ -54,15 +54,24 @@ const SEARCH_STOP = {
   limit: T('搜索达到运行上限。'),
   depth: T('这条分支达到搜索深度上限。'),
   noProgress: T('这一步的目标没有比路径上已有的目标更容易证明。'),
+  'unresolved-sentence-meta': { zh: '这条分支仍有未确定的整句，停止搜索。', en: 'This branch still has an unresolved sentence metavariable.' },
 }
 
 export function stopProof(ctx, value, reason) {
-  if (ctx.proof && value[route] !== undefined) ctx.trace?.push({ proofStop: { id: value[route], reason: SEARCH_STOP[reason] } })
+  if (ctx.proof && value[route] !== undefined) ctx.trace?.push({ proofStop: { id: value[route], reason } })
 }
 
 /** Use the same numbered entries for both views and keep the card's complete value for playback. */
 export function finishProof(proof, trace, output, want, problem) {
-  const root = { id: 0, value: snapshot(proof.input), stateInfo: proofStateInfo(proof.input) }
+  // Candidates can share immutable goals and contexts across many steps of one run.
+  const serialized = new WeakMap()
+  const json = value => {
+    if (value === null || typeof value !== 'object') return JSON.stringify(value)
+    if (!serialized.has(value)) serialized.set(value, JSON.stringify(value))
+    return serialized.get(value)
+  }
+  const equal = (left, right) => left === right || json(left) === json(right)
+  const root = { id: 0, value: snapshot(proof.input), stateInfo: proofStateInfo(proof.input, equal) }
   const entries = []
   const nodes = new Map([[root.id, root]])
   const latest = new Map([[0, 0]])
@@ -72,8 +81,8 @@ export function finishProof(proof, trace, output, want, problem) {
     const { value } = entry
     entry.status ??= entry.error || value?.error ? 'error' : 'applied'
     if (value?.kind === 'state') {
-      entry.stateInfo = proofStateInfo(value)
-      if (parent?.value?.kind === 'state') entry.diff = proofStateDiff(parent.value, value, { change: entry.change, did: value.did })
+      entry.stateInfo = proofStateInfo(value, equal)
+      if (parent?.value?.kind === 'state') entry.diff = proofStateDiff(parent.value, value, { change: entry.change, did: value.did, equal })
       delete entry.change
     }
     if (value?.kind === 'state' && !value.goals.length && parent?.value?.goals.length) {
@@ -90,7 +99,10 @@ export function finishProof(proof, trace, output, want, problem) {
     if (entry.proofStop) {
       const { id, reason } = entry.proofStop
       const stopped = nodes.get(latest.get(id))
-      if (stopped) stopped.stopReason = reason
+      if (stopped) {
+        stopped.stopReasonKey = reason
+        stopped.stopReason = SEARCH_STOP[reason]
+      }
       continue
     }
     const key = keyOf(entry)

@@ -31,12 +31,6 @@
     }
   },
   "op": "logic/append",
-  "stages": [
-    {
-      "id": "append-s-results-desc",
-      "desc": "@part.append.revisions.0.desc"
-    }
-  ],
   "inputs": [
     {
       "name": "first",

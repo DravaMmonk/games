@@ -24,7 +24,6 @@ const paths = {
   'turn': 'M3 11a5 5 0 0 1 10 0m-3-2 3 2 2-3',
   'repeat': 'M13 7a5 5 0 1 0-1 5m-2-6 3 1 1-3',
   'exit': 'M2 11V9a2 2 0 0 1 2-2h10m-3-3 3 3-3 3',
-  'defer': 'M8 2v9m-3-3 3 3 3-3M4 14h8',
   'dot-equals': 'M3 7h10M3 11h10M8 3v.1',
   'not-equal': 'M3 6h10M3 10h10m-2-7-6 10',
   'at-most': 'm12 3-8 4 8 4M4 14h8',

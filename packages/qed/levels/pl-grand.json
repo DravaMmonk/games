@@ -1,6 +1,8 @@
 {
   "title": "@level.pl-grand.title",
-  "tray": "machine",
+  "after": "@level.pl-grand.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.pl-grand.intro.0.t"
@@ -9,18 +11,11 @@
       "t": "@level.pl-grand.intro.1.t"
     }
   ],
-  "after": "@level.pl-grand.after",
   "tasks": [
     {
       "id": "pl-grand",
       "kind": "logic/machine",
       "want": "logic/answers",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.pl-grand.tasks.pl-grand.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "rules": {
         "grand": {
@@ -32,6 +27,11 @@
           "conclusion": "Grand(?x, ?z)"
         }
       },
+      "brief": "@level.pl-grand.tasks.pl-grand.brief",
+      "hint": [
+        "@level.pl-grand.tasks.pl-grand.hint.0",
+        "@level.pl-grand.tasks.pl-grand.hint.1"
+      ],
       "tests": [
         {
           "goal": "Grand(?w, k)",
@@ -74,18 +74,16 @@
           ]
         }
       ],
-      "brief": "@level.pl-grand.tasks.pl-grand.brief",
-      "hint": [
-        "@level.pl-grand.tasks.pl-grand.hint.0",
-        "@level.pl-grand.tasks.pl-grand.hint.1"
-      ],
       "solution": [
-        "hypRule = logic/assumption()",
-        "c0r0 = grand()",
-        "c0 = rule(in, c0r0)",
-        "c1 = rule(c0, hypRule)",
-        "c2 = rule(c1, hypRule)",
-        "out <- c2"
+        "step1 = logic/directBackward-grand(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-grand(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
       ]
     }
   ]

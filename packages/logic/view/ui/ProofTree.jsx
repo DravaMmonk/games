@@ -1,23 +1,36 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { L, Popover } from 'kernel/view'
 import { tr } from 'kernel/words'
-import { didText, goalLines, goalMark, stepExplained } from '../../core/circuit-readouts.js'
-import { Formula, MarkedFormula } from './Formula.jsx'
+import { didText, goalMark, stepExplained } from '../../core/circuit-readouts.js'
+import { Formula } from './Formula.jsx'
+import { ProofState, markedTextOf } from './ProofState.jsx'
 import { layoutProofTree } from './proof-tree-layout.js'
+
+/** The sentences still unknown in a candidate its search dropped for them (../../core/machine.js search), or null. */
+export const unsettled = (entry) => (entry.proof?.stopReasonKey === 'unresolved-sentence-meta'
+  ? entry.stateInfo?.unknowns.filter((name) => /^\?[A-Z]/.test(name)) ?? []
+  : null)
+
+/** Those letters as a state writes an unknown: in the accent, over a dashed line. */
+export function Unsettled({ names }) {
+  return <span className="mr-unsettled">{names.map((name) => <span key={name} className="lg-unknown"><Formula text={name} /></span>)}</span>
+}
 
 function Branch({ node, run, selected, open }) {
   const { id, parent, s, number, current, children, resultPath, error } = node
   const did = s && s.value?.didBy === s.entry.id ? s.value.did : null
-  const symbol = (did && didText(did, run, { marksOnly: true })) || s?.entry.label || (s?.entry.round ? '↻' : goalMark())
+  // A candidate dropped for its unknown sentences shows those letters, on a node drawn as a branch cut off.
+  const left = s ? unsettled(s.entry) : null
+  const symbol = left?.join(' ') || (did && didText(did, run, { marksOnly: true })) || s?.entry.label || (s?.entry.round ? '↻' : goalMark())
   const label = number ? `${number} · ${L(s.label)} · ${symbol}` : symbol
   return (
-    <li className={`mr-branch ${resultPath ? 'is-result' : ''} ${error && !resultPath ? 'is-error' : ''} ${s?.entry.status === 'skipped' ? 'is-skipped' : ''}`}>
+    <li className={`mr-branch ${resultPath ? 'is-result' : ''} ${left ? 'is-cut' : error && !resultPath ? 'is-error' : ''} ${s?.entry.status === 'skipped' ? 'is-skipped' : ''}`}>
       <button type="button" className={`mr-branch-node ${current ? 'is-on' : ''}`} aria-label={label} aria-expanded={selected === id}
         aria-current={current ? 'step' : undefined}
         data-branch={id} data-parent={parent}
         onClick={event => open(selected === id ? null : { id, anchor: event.currentTarget })}>
         {number != null && <span className="mr-branch-num">{number}</span>}
-        <Formula text={symbol} />
+        {left ? <Unsettled names={left} /> : <Formula text={symbol} />}
       </button>
       {children.length > 0 && <ul>{children.map(child => <Branch key={child.id} node={child} run={run} selected={selected} open={open} />)}</ul>}
     </li>
@@ -101,8 +114,9 @@ export function ProofTree({ root, steps, ended, run, task }) {
     return () => resize.disconnect()
   }, [nodes, root, steps])
   const node = nodes.get(detail?.id)
-  const explanation = node?.error || (node?.s && stepExplained(node.s.entry, run))
-  const value = node?.closed ? { ...node.value, goals: node.closed } : node?.value
+  const explanation = node?.error || node?.stopReason || (node?.s && stepExplained(node.s.entry, run))
+  // The goals a finished branch closed stand as they were proved; an open state carries what its step changed.
+  const state = node?.value?.kind === 'state' && (node.closed ? { ...node.value, goals: node.closed, did: undefined } : node.value)
   return (
     <>
       <div className="mr-tree-scroll">
@@ -120,7 +134,7 @@ export function ProofTree({ root, steps, ended, run, task }) {
           <div className="mr-branch-detail">
             {explanation && <p className="mr-told">{L(explanation)}</p>}
             {node.closed && <Formula text={tr('证明完毕')} className="mr-line" upright />}
-            {value && goalLines(value, task).map((line, i) => <MarkedFormula key={i} line={line} className="mr-line" />)}
+            {state && state.goals.length > 0 && <span className="mr-branch-state formula-row"><ProofState value={state} text={markedTextOf(task)} diff={node.closed ? undefined : node.s?.entry.diff} /></span>}
           </div>
         </Popover>
       )}

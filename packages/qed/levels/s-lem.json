@@ -1,5 +1,6 @@
 {
   "title": "@level.s-lem.title",
+  "adds": ["rule"],
   "tray": "machine",
   "intro": [
     {

@@ -1,6 +1,8 @@
 {
   "title": "@level.r-allI.title",
-  "tray": "machine",
+  "after": "@level.r-allI.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.r-allI.intro.0.t"
@@ -11,37 +13,33 @@
       "id": "r-allI",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.r-allI.tasks.r-allI.inputs.0.label"
-        }
-      ],
-      "tests": [
-        {
-          "goal": "∀x. Student(x) ∧ Human(x) → Human(x) ∧ Student(x)"
-        },
-        {
-          "goal": "∀y. Bird(y) ∧ Flies(y) → Flies(y) ∧ Bird(y)"
-        }
-      ],
       "brief": "@level.r-allI.tasks.r-allI.brief",
       "hint": [
         "@level.r-allI.tasks.r-allI.hint.0"
       ],
+      "tests": [
+        {
+          "goal": "∀x. Human(x) → Human(x) ∨ Bird(x)"
+        },
+        {
+          "goal": "∀x. ∀y. Likes(x, y) → Likes(x, y) ∨ Knows(x, y)"
+        },
+        { "goal": "Rain → Rain ∨ Wind" }
+      ],
       "solution": [
-        "hypRule = logic/assumption()",
-        "c0r0 = allI()",
-        "c1r0 = impI()",
-        "c2r0 = andE[use=[conjE]]()",
-        "c3r0 = andI()",
-        "c0 = rule(in, c0r0)",
-        "c1 = rule(c0, c1r0)",
-        "c2 = erule(c1, c2r0)",
-        "c3 = rule(c2, c3r0)",
-        "c4 = rule(c3, hypRule)",
-        "c5 = rule(c4, hypRule)",
-        "out <- c5"
+        "step1 = logic/directBackward-qed_allI(in)",
+        "step2 = logic/directBackward-qed_allI(step1)",
+        "step3 = logic/directBackward-qed_impI(step2)",
+        "step4 = logic/directBackward-qed_orI[use=[\"disjI1\"]](step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "out <- step5"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_allI(in)",
+        "step2 = logic/directBackward-qed_impI(step1)",
+        "step3 = logic/directBackward-qed_orI[use=[\"disjI1\"]](step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
       ]
     }
   ]

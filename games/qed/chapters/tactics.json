@@ -5,23 +5,20 @@
     "desc": "@course.eras.tactics.chapter.desc"
   },
   "levels": [
-    "qed/s-try",
-    "qed/s-defer",
     "qed/s-append",
-    "qed/s-intro",
-    "qed/s-elim",
+    "qed/s-rounds",
+    "qed/s-explore",
     "qed/s-auto",
+    "qed/s-loop",
     "qed/pl-grand",
     "qed/pl-anc",
-    "qed/pl-order",
-    "qed/s-loop"
+    "qed/pl-order"
   ],
   "rows": [
-    ["qed/s-try", "qed/s-defer"],
-    ["qed/s-append", "qed/s-intro"],
-    ["qed/s-loop", "qed/s-elim"],
+    ["qed/s-append", "qed/s-rounds"],
+    ["qed/s-explore"],
     ["qed/s-auto", "qed/pl-grand"],
-    [null, "qed/pl-anc"],
+    ["qed/s-loop", "qed/pl-anc"],
     [null, "qed/pl-order"]
   ]
 }

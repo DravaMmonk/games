@@ -26,7 +26,7 @@ const level = (id, tasks, once = {}) => ({ id, title: L(id), after: L('a'), intr
 const wide = ['l = image/shift[dir=left](in)', 'r = image/shift[dir=right](in)', 'h = image/max(l, r)', 'out <- h']
 const content = deepFreeze(withProgressFixture({
   registries: { tag: { 'circuit/part:circuit/primitives': { kind: 'circuit/part', values: ["image/const", "image/add", "image/sub", "image/mul", "image/arith", "image/merge"] } } },
-  eras: [{ id: 0, levels: [{ id: 'wide' }, { id: 'use' }, { id: 'two' }], links: [{ from: 'wide', to: 'use' }, { from: 'use', to: 'two' }], chapter: { title: L('c'), label: L('l'), question: L('q') } }],
+  eras: [{ id: 0, levels: [{ id: 'wide' }, { id: 'use' }, { id: 'two' }], links: [{ from: 'wide', to: 'use' }, { from: 'use', to: 'two' }], chapter: { title: L('c'), label: L('l'), desc: L('q') } }],
   levels: [
     level('wide', [filter('wide', { solution: wide, publishes: [{ part: 'widen', variant: 'base' }] })]),
     level('use', [filter('use', { solution: ['k = image/const[c="pi/8"]()', 'm = image/arith[op=mul](in, k)', 'p = widen(m)', 'out <- p'], naive: ['out <- in'] })]),

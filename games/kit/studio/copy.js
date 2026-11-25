@@ -24,7 +24,7 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
   if (scope === 'ui') return uiCopyRows(content)
   const rows = []
   const add = (file, name) => ({ path, value }) => {
-    const own = file.game ? 'game' : 'package'
+    const own = file.game || file.object?.kind === 'chapter' ? 'game' : 'package'
     if (side === 'package' && own === 'game') return
     rows.push({ key: `${name}|${showPath(path)}`, file, name, path, value, own })
   }
@@ -53,7 +53,11 @@ export function copyRows(content, vocabulary, scope, order, side = 'package') {
   const era = typeof scope === 'number' ? content.eras?.[scope] : null
   const group = typeof scope === 'string' && scope.startsWith('group:') ? scope.slice('group:'.length) : null
   const ids = era ? new Set(eraLevels(era)) : group !== null ? new Set((levelTags(content)[group]?.levels ?? []).map(({ id }) => id)) : null
-  if (era) find(kindSchemas(vocabulary).chapter, content.sourceChapters?.[scope] ?? era, 'text', { vocabulary }).forEach((t) => add({ game: true }, String(era.id))({ ...t, path: ['chapters', scope, ...t.path] }))
+  if (era && side === 'game') {
+    const { id, ...chapter } = content.sourceChapters[scope]
+    const file = { object: { kind: 'chapter', name: id, folder: 'chapters' } }
+    find(kindSchemas(vocabulary).chapter, chapter, 'text', { vocabulary }).forEach(add(file, id))
+  }
   if (scope === 'all') {
     const game = Object.fromEntries(Object.entries(content).filter(([k]) => !NOT_GAME.includes(k)))
     find(vocabulary.game, game, 'text', { vocabulary }).forEach(add({ game: true }, side === 'game' ? 'game.json' : 'package.json'))
@@ -91,7 +95,7 @@ export const allCopyRows = (content, vocabulary, order, side = 'package') => ['a
 
 export const copyLanguages = (rows) => [...new Set(['en', 'zh', ...languagesOf(rows.map((row) => row.value))])].sort()
 
-const fileOf = (row) => row.file.object ? { kind: row.file.object.kind, name: row.file.object.name } : row.file.target ?? (row.file.level !== undefined ? { level: row.file.level } : row.file.group !== undefined ? { group: row.file.group } : { in: 'game' })
+const fileOf = (row) => row.file.object?.kind === 'chapter' ? { chapter: row.file.object.name } : row.file.object ? { kind: row.file.object.kind, name: row.file.object.name } : row.file.target ?? (row.file.level !== undefined ? { level: row.file.level } : row.file.group !== undefined ? { group: row.file.group } : { in: 'game' })
 
 /** The edit of a row's text in `lang`: in the game workspace, a package text gets the game's own wording (text.override). */
 export function copyEdit(row, lang, value, side = 'package') {

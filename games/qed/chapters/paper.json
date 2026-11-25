@@ -2,7 +2,7 @@
   "machine": null,
   "chapter": {
     "title": "@course.eras.paper.chapter.title",
-    "question": "@course.eras.paper.chapter.question"
+    "desc": "@course.eras.paper.chapter.desc"
   },
   "levels": [
     "qed/table",

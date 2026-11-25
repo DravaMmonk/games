@@ -58,10 +58,10 @@ export function storyRoot({ runtimeProbe = false } = {}) {
     function Answer() { return null }
     export function register(kernel) { kernel.play('story/answer', { component: Answer, preview: Answer }) }
   `)
-  put('games/story/i18n/en.json', { opening: 'Opening' })
+  put('games/story/i18n/en.json', { opening: 'Opening', 'opening.desc': 'An introduction' })
   put('packages/story/levels/given.json', { title: 'Question', tasks: [{ id: 'given', play: 'story/answer', brief: 'Answer yes.' }] })
   put('games/story/game.json', { kernel: '^0.0.0', packages: { story: '^0.0.0' }, title: 'Story', chapters: ['@story/ground'] })
-  put('games/story/chapters/ground.json', { levels: ['story/given'], chapter: { title: '@opening' } })
+  put('games/story/chapters/ground.json', { levels: ['story/given'], chapter: { title: '@opening', desc: '@opening.desc' } })
   lockFixture(root)
   return { root, id }
 }

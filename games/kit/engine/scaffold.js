@@ -62,7 +62,7 @@ const refs = (value, out = new Set()) => {
 /**
  * A new game on an existing package (the studio's game workspace, games/design/README.md 6.7): games/<id>/ with its own course,
  * which keeps the course settings of `from` (a game on the same package) and starts with one empty chapter shaped
- * like its first; registered on the hub as hidden and in development. Returns the folder.
+ * like its first, including the title and description; registered on the hub as hidden and in development. Returns the folder.
  */
 export function gameOnPackage({ root = contentRoot(), id, from, title }) {
   if (!/^[a-z][a-z0-9-]*$/.test(id ?? '')) fail(`a game id is lowercase letters, digits and dashes: ${id}`)

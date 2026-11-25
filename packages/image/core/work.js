@@ -70,7 +70,7 @@ function playable({ intro: _, play, ...source }, kit, keep, items) {
 }
 
 /**
- * content: { eras (games/design/README.md 2: each with its chapter { title, label, question }), levels (in any order: the
+ * content: { eras (games/design/README.md 2: each with its chapter { title, label, desc }), levels (in any order: the
  * eras give the order), levels with opensViews (pixels is there from the start), trays: { tray: { name, desc, items } } (../../course.js trays),
  * replaces: { part: [part] } the parts a part supersedes
  * once met }.

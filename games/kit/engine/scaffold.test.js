@@ -32,6 +32,7 @@ test('games copy installed selections and settings with an empty chapter', () =>
   gameOnPackage({ root, id: 'sample', from: id, title: 'Sample' })
   const content = readContent('sample', root)
   assert.deepEqual(content.sourceChapters[0].levels, [])
+  assert.equal(content.sourceChapters[0].chapter.desc.en, 'An introduction')
   assert.equal(content.title.en, 'Sample')
   assert.throws(() => gameOnPackage({ root, id: 'sample', from: id }), /there already/)
 })

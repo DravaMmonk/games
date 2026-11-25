@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.metavars.chapter.title",
-    "question": "@course.eras.metavars.chapter.question"
+    "desc": "@course.eras.metavars.chapter.desc"
   },
   "levels": [
     "qed/r-elim",

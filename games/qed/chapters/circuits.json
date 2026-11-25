@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.circuits.chapter.title",
-    "question": "@course.eras.circuits.chapter.question"
+    "desc": "@course.eras.circuits.chapter.desc"
   },
   "levels": [
     "qed/g-not",

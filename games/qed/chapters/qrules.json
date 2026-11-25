@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.qrules.chapter.title",
-    "question": "@course.eras.qrules.chapter.question"
+    "desc": "@course.eras.qrules.chapter.desc"
   },
   "levels": [
     "qed/q-allI",

@@ -78,7 +78,7 @@ export default function tableGame(content, table = tableWorks(content), { Hero }
     title: content.title,
     lede: content.lede,
     Hero,
-    chapters: CHAPTERS.map((chapter, id) => ({ id, kicker: chapter.kicker, title: chapter.name, question: chapter.desc, track: TRACKS.get(chapter.era), rows: ROWS.get(chapter.era) })),
+    chapters: CHAPTERS.map((chapter, id) => ({ id, kicker: chapter.kicker, title: chapter.name, desc: chapter.desc, track: TRACKS.get(chapter.era), rows: ROWS.get(chapter.era) })),
     levels,
     // Numbered as in DESIGN.md: 1-4 on an era's main path, S2 in a topic, C1 for a challenge.
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),

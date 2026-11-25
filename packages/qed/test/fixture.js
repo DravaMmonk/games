@@ -57,7 +57,7 @@ const GAME = {
     id: 'ground',
     machine: 'prover',
     levels: ['given', 'apply', 'suppose'],
-    chapter: { title: T('The foundation'), question: T('What can be built from Apply and the assumption box alone?') },
+    chapter: { title: T('The foundation'), desc: T('What can be built from Apply and the assumption box alone?') },
   }],
 }
 const qedKernel = createPluginKernel()

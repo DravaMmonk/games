@@ -143,7 +143,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     title: content.title,
     lede: content.lede,
     Hero: kernel?.tables.display.get(content.hero),
-    chapters: CHAPTERS.map((chapter, id) => ({ id, title: chapter.title, question: chapter.question, track: chapter.track, rows: chapter.rows })),
+    chapters: CHAPTERS.map((chapter, id) => ({ id, title: chapter.title, desc: chapter.desc, track: chapter.track, rows: chapter.rows })),
     levels,
     levelLabel: (level) => LABELS.get(level.id) ?? String(level.index + 1),
     settings: [generalFormSetting, autoFirstSetting],

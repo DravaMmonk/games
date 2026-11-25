@@ -220,7 +220,7 @@ export function MapChapter({ game, chapter, k, solved, all, best, next, compact,
       <header {...fileMark(edit, 'game', ['eras', k])}>
         <span className="chapter-index">{chapterIndexText(chapter)}{chapter.label ? <> · {L(chapter.label)}</> : null}</span>
         <h2>{L(chapter.title)}</h2>
-        {chapter.question && <p>{L(chapter.question)}</p>}
+        {chapter.desc && <p>{L(chapter.desc)}</p>}
         <span className="chapter-meter"><i style={{ width: `${(finished / inChapter.length) * 100}%` }} /></span>
       </header>
       <LevelTree game={game} track={chapter.track} rows={chapter.rows} byId={byId} solved={solved} all={all} best={best} next={next} compact={compact} onOpen={onOpen} needed={needed} />

@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.classical.chapter.title",
-    "question": "@course.eras.classical.chapter.question"
+    "desc": "@course.eras.classical.chapter.desc"
   },
   "levels": [
     "qed/c-wall",

@@ -22,7 +22,7 @@ const base = () => ({
   primitives: [{ part: 'reg', about: t('x'), why: t('x') }, { part: 'add', about: t('x'), why: t('x') }],
   built: [{ part: 'counter', about: t('x'), from: ['reg', 'add'] }],
   eras: [{
-    id: 1, machine: 'm1', title: t('e'), question: t('q'), why: t('w'),
+    id: 1, machine: 'm1', title: t('e'), desc: t('q'), why: t('w'),
     series: [
       series('mem', [
         slot('1-1', { teaches: 'memory', adds: ['reg'], uses: ['wire', 'reg', 'memory'] }),
@@ -115,6 +115,7 @@ test('the eras a blueprint lays out: routes and optional levels', () => {
   bp.eras[0].series.push(series('other', [slot('1-8', { uses: ['reg'] })], { parallel: 'p' }))
   bp.eras[0].series.push(series('top', [slot('N1', { role: 'intro', uses: ['counter'] })], { kind: 'topic', after: '1-5' }))
   const [era] = erasOf(bp)
+  assert.deepEqual(era.desc, bp.eras[0].desc)
   assert.deepEqual(era.levels.map(({ id }) => id), ['1-1', '1-2', '1-3', '1-4', '1-5', '1-8', 'N1'])
   assert.deepEqual(layout([era]).requires.get('1-8'), ['1-3'])
   assert.deepEqual(layout([era]).requires.get('N1'), ['1-5'])

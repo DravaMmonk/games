@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.automation.chapter.title",
-    "question": "@course.eras.automation.chapter.question"
+    "desc": "@course.eras.automation.chapter.desc"
   },
   "levels": [
     "qed/au-negate",

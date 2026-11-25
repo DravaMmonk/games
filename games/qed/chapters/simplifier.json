@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.simplifier.chapter.title",
-    "question": "@course.eras.simplifier.chapter.question"
+    "desc": "@course.eras.simplifier.chapter.desc"
   },
   "levels": [
     "qed/sp-rw",

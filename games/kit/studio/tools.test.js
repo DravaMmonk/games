@@ -7,12 +7,12 @@ import { defineVocabulary } from '../engine/vocabulary.js'
 import { contentSchemas } from '../engine/content.js'
 import { firstText } from '../engine/i18n.js'
 import { readContent } from '../engine/resolver.js'
-import { openPackage } from '../engine/ops/workspace.js'
+import { openGame, openPackage } from '../engine/ops/workspace.js'
 import { runChangeset } from '../engine/ops/changeset.js'
 import { storyRoot } from '../engine/test-fixture.js'
 import { glossarySchemas } from '../../../packages/wiki/test/fixture.js'
 import { bulkAdds, bulkPatch, bulkSet, bulkUnset, commonFields } from './bulk.js'
-import { copyRows } from './copy.js'
+import { copyEdit, copyRows } from './copy.js'
 import { navigableProjections } from './editors.js'
 import { paletteIndex, rankPalette, scoreOf } from './palette.js'
 import { itemOf } from './worklist.js'
@@ -110,7 +110,7 @@ test('the palette indexes levels, eras, fields, entries, findings, recent fields
   assert.ok(scoreOf('Search', 'se') > scoreOf('the search', 'se') && scoreOf('the search', 'se') > scoreOf('lose', 'se') && scoreOf('lose', 'se') > scoreOf('s-x-e', 'se'))
 })
 
-test('copy rows use chapter scope, explicit level order and workspace ownership', t => {
+test('copy rows use chapter scope, explicit level order and workspace ownership', async t => {
   const { root, id } = storyWithTwoLevels(t)
   const content = readContent(id, root)
   const vocabulary = contentSchemas.get(content)
@@ -125,8 +125,10 @@ test('copy rows use chapter scope, explicit level order and workspace ownership'
     { key: 'story/end|title', own: 'package', file: { level: 'story/end' }, text: 'Last question' },
     { key: 'story/end|tasks[0].brief', own: 'package', file: { level: 'story/end' }, text: 'Answer again.' },
   ]
+  const chapterFile = { object: { kind: 'chapter', name: '@story/ground', folder: 'chapters' } }
   assert.deepEqual(rows(0, 'game'), [
-    { key: '@story/ground|chapters[0].chapter.title', own: 'game', file: { game: true }, text: 'Opening' },
+    { key: '@story/ground|chapter.title', own: 'game', file: chapterFile, text: 'Opening' },
+    { key: '@story/ground|chapter.desc', own: 'game', file: chapterFile, text: 'An introduction' },
     ...given,
   ])
   assert.deepEqual(rows('all', 'game'), [
@@ -134,4 +136,10 @@ test('copy rows use chapter scope, explicit level order and workspace ownership'
     ...end, ...given,
   ])
   assert.deepEqual(rows('all', 'package'), [...end, ...given])
+  const desc = copyRows(content, vocabulary, 0, order, 'game').find(({ key }) => key === '@story/ground|chapter.desc')
+  const op = copyEdit(desc, 'en', 'A new introduction', 'game')
+  assert.deepEqual(op, { op: 'text.set', chapter: '@story/ground', path: ['chapter', 'desc'], lang: 'en', value: 'A new introduction' })
+  const result = await runChangeset(openGame(id, root), { ops: [op] }, { check: false })
+  assert.equal(result.ok, true, result.problems.join('\n'))
+  assert.equal(result.content.sourceChapters[0].chapter.desc.en, 'A new introduction')
 })

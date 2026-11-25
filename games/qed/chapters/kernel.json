@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.kernel.chapter.title",
-    "question": "@course.eras.kernel.chapter.question"
+    "desc": "@course.eras.kernel.chapter.desc"
   },
   "levels": [
     "qed/copy",

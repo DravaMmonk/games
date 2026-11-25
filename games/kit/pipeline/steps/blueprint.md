@@ -10,6 +10,7 @@ choose the number of levels, task structure, routes and scaffolding for the topi
 The current `parallel` layout requires all routes before the join.
 
 Describe the course, sources, knowledge, machines, mechanisms, parts, eras, series and slots in the schema's terms.
+Give each era a short description in `desc` to accompany its title.
 Record `requests` for needed domain or kernel capabilities, with affected slots and status. Explain deferred scope,
 design tradeoffs and uncertain prerequisites. For each slot, provide enough of its question, actions and evidence
 for the level designer to develop and review it. Texts are keyed by locale and ids follow the schema.

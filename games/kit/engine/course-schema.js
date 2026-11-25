@@ -6,8 +6,8 @@ export const COURSE_FIELDS = {
 }
 export const CHAPTER = S.obj({
   number: S.opt(S.int({ min: 0 })),
-  title: S.opt(S.text()), question: S.opt(S.text()), desc: S.opt(S.text()),
-  chapter: S.opt(S.obj({ title: S.text(), label: S.opt(S.text()), question: S.opt(S.text()), desc: S.opt(S.text()) })),
+  title: S.opt(S.text()), desc: S.opt(S.text()),
+  chapter: S.opt(S.obj({ title: S.text(), label: S.opt(S.text()), desc: S.opt(S.text()) })),
   machine: S.opt(S.either(S.str(), S.oneOf([null]))),
   ...COURSE_FIELDS,
 })

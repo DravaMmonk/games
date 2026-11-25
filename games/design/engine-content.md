@@ -20,7 +20,7 @@
 | 托盘 `circuit/tray` | `trays/<名>.json` | 元件 `values`、二级 `menus`、标题、说明；进度包扩展 `workshop` |
 | 百科分组 `section` | `sections/<名>.json` | 标题、说明和词条或词条标签的 `values` |
 | 对象类型 `kind` | `kinds/<名>.json` | schema、目录、引用方、关系、覆盖、文案与左栏声明；全名 `<包>/<名>` |
-| 章 `chapter` | 游戏 `chapters/<名>.json` | `levels: list<level>`、`rows`、文案与显示配置 |
+| 章 `chapter` | 游戏 `chapters/<名>.json` | `levels: list<level>`、`rows`、`chapter.title` 与 `chapter.desc`（标题下的简要说明）及显示配置 |
 | 游戏配置 `game` | 游戏 `game.json` | 选包、`chapters: list<chapter>`、入口文案 |
 | 包声明的对象 | `<声明目录>/<名>.json` | 自动参与引用、标签、关系、覆盖、来源、文案和操作集 |
 | 包声明的内容类型 | 声明指定的目录 | 例如 `qed/wordset`，以及图像内容包各自的 power、box |

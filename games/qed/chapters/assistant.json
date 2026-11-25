@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@chapter.assistant.chapter.title",
-    "question": "@chapter.assistant.chapter.question"
+    "desc": "@chapter.assistant.chapter.desc"
   },
   "levels": [
     "qed/machine-cite",

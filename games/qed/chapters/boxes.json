@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.boxes.chapter.title",
-    "question": "@course.eras.boxes.chapter.question"
+    "desc": "@course.eras.boxes.chapter.desc"
   },
   "levels": [
     "qed/try-rules",

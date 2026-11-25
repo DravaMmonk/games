@@ -3,7 +3,7 @@
   "chapter": {
     "title": "@course.eras.9.chapter.title",
     "label": "@course.eras.9.chapter.label",
-    "question": "@course.eras.9.chapter.question"
+    "desc": "@course.eras.9.chapter.desc"
   },
   "levels": [
     "vision-complete/9-1",

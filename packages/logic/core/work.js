@@ -115,7 +115,7 @@ function readBuilt(content) {
 /**
  * content (../../engine/content.js assemble; the fields are vocabulary.js GAME): {
  *   eras        the course's eras, one proof machine each (games/design/README.md 2), each with its map chapter
- *               { title, question }; a topic has a `code` for its numbers
+ *               { title, desc }; a topic has a `code` for its numbers
  *   levels      every level; a level may introduce syntax parts (`adds`), see notation.js
  *   words       the default word set every level reads its letters, predicates and
  *               names in, unless it names its own (`words`): { letter: { zh, en } } the everyday sentence each reads as

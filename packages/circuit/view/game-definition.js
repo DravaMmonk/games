@@ -5,7 +5,7 @@ import { defineGame as defineShellGame } from 'kernel/view'
 import { earnedUnlocks, circuitProgress, createProgress } from '../core/progress.js'
 /**
  * Describe a game for GameShell. Required: id, title, lede ({ zh, en } pairs), chapters
- * ([{ id, title, track, label?, question?, number?, kicker? }], track: the chapter's level tree from kit/course.js
+ * ([{ id, title, track, label?, desc?, number?, kicker? }], track: the chapter's level tree from kit/course.js
  * layout), levels ([{ id, chapter, title, kind, tasks: [{ key, kind?, step?, brief?, hint?, intro?, after?, carries?,
  * opens? … }], requires?, unlocks?, keeps?, after?, note? … }], in play order, every level one task or more;
  * `keeps`: whether passing a task keeps the board it passed with in progress.built, for a part that runs it, by default

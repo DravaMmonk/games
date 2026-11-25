@@ -104,7 +104,7 @@ export const BLUEPRINT = S.obj({
     machine: ID,
     tray: S.opt(ID),
     title: S.text(),
-    question: S.text(),
+    desc: S.text(),
     why: S.text({ about: t('上一台机器为什么不够；第一章：从哪里起步') }),
     series: S.list(SERIES, { min: 1 }),
   }), { min: 1 }),
@@ -180,7 +180,7 @@ export function erasOf(bp) {
     const optionalSet = new Set(optional)
     for (const link of links) if (optionalSet.has(link.from)) link.required = true
     return {
-      id: era.id, title: era.title, question: era.question,
+      id: era.id, title: era.title, desc: era.desc,
       levels: [...path.flatMap(({ lanes }) => lanes.flat().map((id) => ({ id }))), ...optional.map((id) => ({ id, optional: true }))],
       links,
     }

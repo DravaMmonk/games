@@ -2,7 +2,7 @@
   "machine": "prover",
   "chapter": {
     "title": "@course.eras.quantifiers.chapter.title",
-    "question": "@course.eras.quantifiers.chapter.question"
+    "desc": "@course.eras.quantifiers.chapter.desc"
   },
   "levels": [
     "qed/fo-atoms",

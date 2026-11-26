@@ -7,8 +7,14 @@
       "id": "base",
       "reference": {
         "kind": "logic/gates",
-        "target": "¬((Rain → Wet) ∨ (Wet → Rain))",
-        "solution": ["t = gTrue(Rain, Wet)", "n = gNot(t)", "out <- n"]
+        "target": "(Rain → Wet) ∧ (Rain ∧ ¬Wet)",
+        "solution": [
+          "i = gImp(Rain, Wet)",
+          "n = gNot(Wet)",
+          "a1 = gAnd(Rain, n)",
+          "a2 = gAnd(i, a1)",
+          "out <- a2"
+        ]
       }
     }
   ],

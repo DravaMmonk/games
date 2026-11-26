@@ -25,18 +25,6 @@
         "out <- o"
       ],
       "publishes": [{ "part": "gTrue", "variant": "base" }]
-    },
-    {
-      "id": "g-always-false",
-      "step": "@level.g-always.tasks.g-always-false.step",
-      "intro": [{ "t": "@level.g-always.tasks.g-always-false.intro.0.t" }],
-      "kind": "logic/gates",
-      "target": "¬((Rain → Wet) ∨ (Wet → Rain))",
-      "hideTarget": true,
-      "brief": "@level.g-always.tasks.g-always-false.brief",
-      "hint": ["@level.g-always.tasks.g-always-false.hint.0"],
-      "solution": ["t = gTrue(Rain, Wet)", "n = gNot(t)", "out <- n"],
-      "publishes": [{ "part": "gFalse", "variant": "base" }]
     }
   ]
 }

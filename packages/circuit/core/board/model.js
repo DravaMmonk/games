@@ -220,8 +220,8 @@ export function layout(graph, parts) {
 //
 // A frame's regions (frames.js) are grids of their own, inside the frame's block: `region` names one, and a part's
 // slot counts in the grid of the region it sits in. The frame spans the rows its regions take, each region a row for
-// its head (the value it opens), its own rows, and a row for its foot (the dot its result goes into), so its cells line
-// up with the cells beside it. Each frame's regions use the columns it covers in its parent grid.
+// its head (the value it opens), its own rows, and a row for its foot (the dot its result goes into), a foot sharing
+// its row with the next region's head, so its cells line up with the cells beside it. Each frame's regions use the columns it covers in its parent grid.
 //
 //   { cell: id → slot, span: id → [columns, rows], cols, rows, size, free: [slot] }
 export function placement(graph, parts, region = null, { fixed = false } = {}) {
@@ -249,7 +249,7 @@ export function placement(graph, parts, region = null, { fixed = false } = {}) {
       if (!frames.length) return [cardColumns(parts, n, width, cols), 1]
       const children = frames.map((g) => place(regionAddress(n.id, g.name)))
       const frameColumns = children[0].cols
-      return [frameColumns, children.reduce((sum, child) => sum + 2 + child.rows, 0)]
+      return [frameColumns, children.reduce((sum, child) => sum + 1 + child.rows, 1)]
     }
     const take = (node, at, size) => {
       cell.set(node.id, at)

@@ -440,17 +440,21 @@
 .frame-field { position: relative; pointer-events: auto; cursor: grab; }
 
 /* A frame on the phone board (SlotBoard frameBlock): as wide as the columns it covers.
-   It spans rows of the grid it sits in (a subgrid), for each region a head row, the region's rows and a foot row, so
-   the cells beside it line up with its rows. Its edges are a cell's, as a part's are: its name and padding sit inside
+   It spans rows of the grid it sits in (a subgrid), for each region a head row, the region's rows and a foot row (a
+   foot sharing its row with the next head), so the cells beside it line up with its rows. Its edges are a cell's, as a part's are: its name and padding sit inside
    them, making its first and last rows a little taller. */
-.pb-cell.is-frame, .pb-frame, .pb-region, .pb-grid.is-region { display: grid; grid-template-rows: subgrid; grid-template-columns: subgrid; grid-column: 1 / -1; min-height: 0; gap: normal; }
+.pb-cell.is-frame, .pb-frame, .pb-grid.is-region { display: grid; grid-template-rows: subgrid; grid-template-columns: subgrid; grid-column: 1 / -1; min-height: 0; gap: normal; }
 .pb-frame { grid-row: 1 / -1; position: relative; border-radius: var(--r-md); background: color-mix(in srgb, var(--fam, var(--accent)) 5%, var(--paper)); box-shadow: inset 0 3px 0 var(--fam, var(--rule)), inset 0 0 0 1px color-mix(in srgb, var(--fam, var(--accent)) 30%, transparent), var(--card); -webkit-touch-callout: none; }
-.pb-region { padding: 0; }
 /* A region's head row: its name, then the value it opens, its dot on the row's foot. */
 .pb-region-head, .pb-closes { grid-column: 1 / -1; position: relative; min-height: 0; color: var(--muted); font-size: 11.5px; }
-.pb-region-head { grid-row: 1; box-sizing: border-box; min-height: var(--pb-tile-height); padding: var(--sp-6) var(--pb-tile-padding); display: grid; align-content: start; gap: var(--sp-1); }
+.pb-region-head { box-sizing: border-box; min-height: var(--pb-tile-height); padding: var(--sp-6) var(--pb-tile-padding); display: grid; align-content: start; gap: var(--sp-1); }
 .pb-region-head.has-port { border-bottom: 1px dashed color-mix(in srgb, var(--fam, var(--accent)) 25%, var(--hairline)); }
-.pb-closes { grid-row: -2; padding: calc(var(--pb-dot) / 2 + var(--sp-3)) var(--sp-4); border-top: 1px dashed color-mix(in srgb, var(--fam, var(--accent)) 25%, var(--hairline)); }
+.pb-closes { padding: calc(var(--pb-dot) / 2 + var(--sp-3)) var(--sp-4); border-top: 1px dashed color-mix(in srgb, var(--fam, var(--accent)) 25%, var(--hairline)); }
+/* Where one region ends and the next begins (the cases of a case split): the foot and the next head in one row,
+   parted by a solid line of the dashed lines' colour and weight. */
+.pb-region-joint { grid-column: 1 / -1; display: flex; flex-direction: column; }
+.pb-region-joint > .pb-closes { padding-bottom: var(--sp-3); }
+.pb-region-joint > .pb-region-head { min-height: 0; padding-block: var(--sp-3) calc(var(--pb-dot) / 2 + var(--sp-3)); border-top: 1px solid color-mix(in srgb, var(--fam, var(--accent)) 25%, var(--hairline)); }
 .pb-region-readout { display: flex; align-items: baseline; justify-content: center; gap: var(--sp-3); }
 .pb-region-readout em { flex: none; max-width: 50%; font-style: normal; overflow-wrap: anywhere; }
 .pb-region-value { min-width: 0; overflow-wrap: anywhere; }

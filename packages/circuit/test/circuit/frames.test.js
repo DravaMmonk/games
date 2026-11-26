@@ -177,13 +177,13 @@ test('a frame whose id carries its package namespace keeps its saved span and it
   assert.equal(placement(graph, parts, 'qed/impI1/body').cols, 1)
 })
 
-test('each empty region uses three rows with the title in the first one at either width', () => {
+test('each empty region uses three rows with the title in the first one at either width, the next region sharing the foot row', () => {
   const frame = { id: 'f', type: 'box', span: 1 }
   const graph = { nodes: [frame], wires: [] }
   assert.deepEqual(placement(graph, parts).span.get('f'), [1, 3])
   assert.deepEqual(placement({ ...graph, nodes: [{ ...frame, span: 2 }] }, parts).span.get('f'), [2, 3])
   const branches = { ...parts, frames: () => [{ name: 'left' }, { name: 'right' }] }
-  assert.deepEqual(placement(graph, branches).span.get('f'), [1, 6])
+  assert.deepEqual(placement(graph, branches).span.get('f'), [1, 5])
 })
 
 test('a frame passes its width to its regions, limiting the saved width of nested frames', () => {

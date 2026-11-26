@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { worldCheck } from '../core/worldValues.js'
+import { queryCheck } from '../core/formulaWork.js'
 
 const meant = '∀x. ∃y. Likes(x, y)'
 const wrong = '∃y. ∀x. Likes(x, y)'
@@ -47,4 +48,26 @@ test('a world checks an inference one premise at a time and requires a false con
     ['true', 'true', true],
     ['false', 'false', true],
   ])
+})
+
+test('a comparison board lists the meaning and the translation under test', () => {
+  assert.deepEqual(check.board.rows.map((row) => row.name.en), ['Intended meaning', 'Translation under test'])
+  assert.equal(check.compare, true)
+})
+
+test('a query is checked family by family against what the player expects it to pick', () => {
+  const lookup = queryCheck({
+    target: 'Parent(ann, x)', notation: {},
+    vocab: { names: ['ann', 'bo', 'cy'], consts: [], preds: [['Parent', 2]] },
+    worlds: [
+      { title: { zh: '第一家', en: 'First' }, things: ['ann', 'bo', 'cy'], preds: { Parent: [['ann', 'bo']] } },
+      { title: { zh: '第二家', en: 'Second' }, things: ['ann', 'bo', 'cy'], preds: { Parent: [['ann', 'bo'], ['ann', 'cy']] } },
+    ],
+  })
+  assert.deepEqual(lookup.initial, [[], []])
+  assert.deepEqual(lookup.answer, [[1], [1, 2]])
+  assert.equal(lookup.judge(lookup.answer), null)
+  const wrong = lookup.run([[1], [1]])
+  assert.deepEqual(wrong.steps, [{}, { failed: lookup.judge([[1], [1]]).why }])
+  assert.deepEqual(wrong.lines.map((line) => line.right), [true, false])
 })

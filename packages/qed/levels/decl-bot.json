@@ -16,6 +16,7 @@
     {
       "id": "decl-bot",
       "kind": "logic/iso",
+      "say": "@level.decl-bot.tasks.decl-bot.say",
       "declare": "@level.decl-bot.tasks.decl-bot.declare",
       "target": "⊥",
       "sentences": [

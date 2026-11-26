@@ -7,7 +7,7 @@ import { checkDefine } from './define.js'
 import { checkDeclaration, readRuleRows } from './ruleLines.js'
 import { checkIso, readPremise } from './iso.js'
 import { runAudit } from './audit-cases.js'
-import { translation, query } from './formulaWork.js'
+import { translation, query, queryCheck } from './formulaWork.js'
 import { worldCheck } from './worldValues.js'
 import { inspectScript } from './script.js'
 import { parse } from './formula.js'
@@ -37,6 +37,10 @@ function logicReport(task) {
       return examples(task, work => observed(report(work)), task.answer)
     }
     case 'logic/translate': case 'logic/query': {
+      if (task.play === 'logic/lookup') {
+        const check = queryCheck(task)
+        return examples(task, work => judged(check.judge(work)), check.answer)
+      }
       const judge = (task.kind === 'logic/query' ? query : translation)(task).judge
       return examples(task, work => judged(judge(typeof work === 'string' ? parse(work, { consts: task.vocab.names }) : work)), task.target)
     }

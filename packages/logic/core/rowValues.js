@@ -87,6 +87,7 @@ export function declaration(level) {
     tabs: level.views?.map(({ label, symbolic }) => ({ label, symbolic })),
     rows: (rules, change, scope, at = 0) => declarationValues(inView(level, at), rules, change, scope),
     lines: (rules, read, at = 0) => problemsOf(level, rules).length ? [] : ruleLines(inView(level, at), linesOf(rules), read),
+    prompt: level.say,
     passed: T('这份声明符合需求。'),
     completion: declarationResult,
   }

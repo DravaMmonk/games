@@ -4,6 +4,7 @@
   "tasks": [
     {
       "id": "q-school",
+      "step": "@level.q-school.tasks.q-school.step",
       "kind": "logic/query",
       "consts": [
         "h",
@@ -97,6 +98,100 @@
         "@level.q-school.tasks.q-school.hint.0",
         "@level.q-school.tasks.q-school.hint.1"
       ]
+    },
+    {
+      "id": "q-school-check",
+      "step": "@level.q-school.tasks.q-school-check.step",
+      "kind": "logic/query",
+      "play": "logic/lookup",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "worlds": [
+        {
+          "title": "@level.q-school.tasks.q-school-check.worlds.0.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "i",
+                "j"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "j",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ]
+            ],
+            "School": [
+              "l"
+            ]
+          }
+        },
+        {
+          "title": "@level.q-school.tasks.q-school-check.worlds.1.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "j",
+                "i"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "i",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ],
+              [
+                "l",
+                "n"
+              ]
+            ],
+            "School": [
+              "k",
+              "l",
+              "m",
+              "n"
+            ]
+          }
+        }
+      ],
+      "say": "@level.q-school.tasks.q-school-check.say",
+      "target": "(∃y. Parent(x, y)) ∧ ∀y. Parent(x, y) → School(y)",
+      "brief": "@level.q-school.tasks.q-school-check.brief"
     }
   ]
 }

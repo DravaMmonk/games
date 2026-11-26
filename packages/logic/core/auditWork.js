@@ -38,6 +38,7 @@ export function audit(source, { game, progress, saved }) {
       ? board.rules.map(({ needs }) => ({ name: read(T('待检验规则')), text: statedRule(ruleOf(null, null, needs, level.target)) }))
       : ruleLines(inView(level, k), board.rules, read),
     completion: auditResult,
+    prompt: level.say,
     result: (work, _tab, reached) => {
       const { rows } = report(work)
       return (k) => {

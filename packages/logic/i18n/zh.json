@@ -202,6 +202,7 @@
   "shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.1.of.fields.goal.about": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
   "shape.level.fields.tasks.of.cases.logic-iso.fields.naive.of.1.of.fields.uses.of.about": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
   "shape.level.fields.tasks.of.cases.logic-iso.fields.play.about": "用条例检验别人的声明",
+  "shape.level.fields.tasks.of.cases.logic-query.fields.play.about": "逐家检验别人写好的查询",
   "shape.level.fields.tasks.of.cases.logic-iso.fields.boards.of.fields.rules.of.fields.needs.of.about": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",
   "shape.level.fields.tasks.of.cases.logic-iso.fields.boards.of.fields.rules.about": "一份声明：每条引入规则一行，取的东西和前提（规则表的写法）",
   "shape.level.fields.tasks.of.cases.logic-iso.fields.answer.of.fields.given.of.about": "一句话，按 formula.js 的写法：Rain → Wet、∀x. Human(x)、?A ∧ ?B",

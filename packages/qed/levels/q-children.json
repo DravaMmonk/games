@@ -11,6 +11,7 @@
   "tasks": [
     {
       "id": "q-children",
+      "step": "@level.q-children.tasks.q-children.step",
       "kind": "logic/query",
       "consts": [
         "h",
@@ -106,6 +107,100 @@
       "hint": [
         "@level.q-children.tasks.q-children.hint.0"
       ]
+    },
+    {
+      "id": "q-children-check",
+      "step": "@level.q-children.tasks.q-children-check.step",
+      "kind": "logic/query",
+      "play": "logic/lookup",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "worlds": [
+        {
+          "title": "@level.q-children.tasks.q-children-check.worlds.0.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "i",
+                "j"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "j",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ]
+            ],
+            "School": [
+              "l"
+            ]
+          }
+        },
+        {
+          "title": "@level.q-children.tasks.q-children-check.worlds.1.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "j",
+                "i"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "i",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ],
+              [
+                "l",
+                "n"
+              ]
+            ],
+            "School": [
+              "k",
+              "l",
+              "m",
+              "n"
+            ]
+          }
+        }
+      ],
+      "say": "@level.q-children.tasks.q-children-check.say",
+      "target": "Parent(i, x)",
+      "brief": "@level.q-children.tasks.q-children-check.brief"
     }
   ]
 }

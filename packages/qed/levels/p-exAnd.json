@@ -29,6 +29,7 @@
       "kind": "logic/model",
       "step": "@level.p-exAnd.tasks.p-exAnd-2.step",
       "brief": "@level.p-exAnd.tasks.p-exAnd-2.brief",
+      "say": "@level.p-exAnd.tasks.p-exAnd-2.say",
       "answer": {
         "size": 2,
         "preds": {

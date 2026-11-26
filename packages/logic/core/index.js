@@ -9,7 +9,7 @@ import { startProof, runProof } from './proof.js'
 import { startGates, checkGates } from './gates.js'
 import { startMachine, runMachine } from './machine.js'
 import { truth } from './truthValues.js'
-import { translation, query } from './formulaWork.js'
+import { translation, query, queryCheck } from './formulaWork.js'
 import { worldCheck } from './worldValues.js'
 import { scriptJudge } from './script.js'
 import { checkDefine } from './define.js'
@@ -63,6 +63,7 @@ export function register(kernel) {
         if (name === 'logic/truth') return { fill: [], marks: [], tried: {} }
         if (name === 'logic/script') return task.given ?? []
         if (name === 'logic/model') return worldCheck(task).initial
+        if (name === 'logic/lookup') return queryCheck(task).initial
         return null
       },
       read(work, context) {
@@ -82,6 +83,7 @@ export function register(kernel) {
           case 'logic/translate': return judged(translation(task).judge, work)
           case 'logic/query': return judged(query(task).judge, work)
           case 'logic/model': return judged(worldCheck(task).judge, work)
+          case 'logic/lookup': return judged(queryCheck(task).judge, work)
           case 'logic/script': return judged(scriptJudge(task), work)
           case 'logic/define': return judged(checkDefine(task), work)
           case 'logic/rule': {

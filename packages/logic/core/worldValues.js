@@ -59,12 +59,19 @@ export function worldCheck(level) {
   const read = (value) => parse(value, { consts: vocab.names })
   const words = (value) => say(read(value), notation)
   const name = (k) => level.given.length > 1 ? T('前提 {k}', { k: k + 1 }) : T('前提')
-  const board = level.meant ? null : {
+  // The sentences the world is checked against, as the board's rows: the meaning and the translation under test, or an
+  // inference's conclusion and premises.
+  const board = {
     className: 'lg-rule-table',
-    rows: [
-      { name: T('结论'), head: true, slots: [{ text: words(level.goal) }] },
-      { name: T('前提'), slots: level.given.map((f) => ({ text: words(f) })), empty: T('无需前提') },
-    ],
+    rows: level.meant
+      ? [
+        { name: T('原意'), head: true, slots: [{ text: words(level.meant) }] },
+        { name: T('待检验译文'), slots: [{ text: words(level.wrong) }] },
+      ]
+      : [
+        { name: T('结论'), head: true, slots: [{ text: words(level.goal) }] },
+        { name: T('前提'), slots: level.given.map((f) => ({ text: words(f) })), empty: T('无需前提') },
+      ],
   }
   const reason = (row) => {
     if (level.meant) {
@@ -88,17 +95,16 @@ export function worldCheck(level) {
     const steps = found.rows.slice(0, fail ? fail.check + 1 : undefined).map((_, k) => k === fail?.check ? { failed: fail.why } : {})
     const lines = found.rows.map((row, k) => ({
       name: level.meant ? T('待检验译文') : row.premise ? name(k) : T('结论'),
-      formula: level.meant ? words(row.f) : null,
       expected: level.meant ? null : truth(row.premise),
       text: truth(row.value), right: row.right, step: k,
     }))
-    if (level.meant) lines.unshift({ name: T('原意'), formula: words(level.meant), text: truth(found.meant), step: 0 })
+    if (level.meant) lines.unshift({ name: T('原意'), expected: T('两句真假不同'), text: truth(found.meant), step: 0 })
     return { fail, run: { steps, lines } }
   }
   return {
     judge,
     initial: { size: Math.min(2, MAX_WORLD), preds: {}, consts: {} },
-    prompt: level.say, board,
+    prompt: level.say, board, compare: Boolean(level.meant),
     report,
     run: world => report(world).run,
     fields: (world, change) => {

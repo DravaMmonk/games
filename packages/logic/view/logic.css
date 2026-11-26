@@ -93,6 +93,16 @@
 
 /* Formulas built from chips (formulaWork.js, on the shared strip): the sentence to say, and a colour per kind of part. */
 .fo-prompt { font-size: 20px; }
+/* The board's tray, where a sentence written in place is built (plays/SentenceBoard.jsx), and why a sentence failed. */
+.lg-tray { display: grid; gap: var(--sp-5); }
+.lg-board > .fo-prompt { display: block; }
+.lg-board .rr-item.is-live { flex: 1 1 auto; min-width: 0; }
+.lg-board .rr-item.is-live .ks-strip { flex: 1; padding: var(--sp-2) var(--sp-5); font-size: 22px; }
+.tree-evidence { display: grid; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-radius: var(--r-md); background: color-mix(in srgb, var(--fail) 6%, var(--paper)); font-size: var(--fs-small); }
+.tree-evidence p { margin: 0; }
+.tree-description { display: grid; gap: var(--sp-2); font-size: var(--fs-small); line-height: 1.6; color: var(--body, var(--ink)); }
+.tree-description p { margin: 0; }
+.tree-description .is-muted { color: var(--muted); }
 .fo-level { --fam-pred: #3f7fb5; --fam-name: #2f918f; --fam-var: #7a6fb0; --fam-quant: #b4579a; --fam-conn: #b98516; }
 :root[data-theme='night'] .fo-level, :root[data-theme='blueprint'] .fo-level { --fam-pred: #8db3d6; --fam-name: #7fc2c2; --fam-var: #b3a9dc; --fam-quant: #c5a0cc; --fam-conn: #e0ac4f; }
 .fo-level [data-family='pred'] { --fam: var(--fam-pred); }
@@ -125,8 +135,32 @@
 .ck-lines .tx-line { min-width: 0; }
 .ck-goal .tx-line { text-align: center; }
 
+.ck-fixed,
+.ck-fixed :is(.ck-placeholder, .rr-slot),
+.ck .rr-slot:disabled,
+.rt-form .rr-slot:disabled,
+.lg-rule-table .rr-slot.is-fixed {
+  color: color-mix(in srgb, var(--muted) 85%, var(--ink));
+}
+
+/* A world built for a check (plays/ScenarioCheck.jsx): its cell in the case table says it in short and opens its
+   settings; each sentence it is checked against names itself. */
+.ck-world-cell { width: 100%; padding: var(--sp-3) var(--sp-4); border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: inherit; text-align: left; cursor: pointer; transition: border-color 140ms ease, background 140ms ease; }
+.ck-world-cell:hover { border-color: var(--rule); }
+.ck-world-cell[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); }
+.ck-world-summary { display: grid; gap: var(--sp-1); font-size: var(--fs-small); line-height: 1.5; }
+.ck-world-summary > span { white-space: nowrap; }
+.ck-world td { vertical-align: top; }
+.ck-family { display: grid; gap: var(--sp-1); font-size: var(--fs-small); line-height: 1.5; min-width: 12em; }
+.ck-family .is-muted { color: var(--muted); }
+.ck-picks { min-width: 9.5em; display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.ck-picks button { min-width: 36px; min-height: 34px; padding: 0 var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: inherit; cursor: pointer; }
+.ck-picks button[aria-pressed='true'] { background: color-mix(in srgb, var(--accent) 22%, var(--paper)); box-shadow: inset 0 0 0 1px var(--accent); }
+@media (pointer: coarse) { .ck-picks button { min-width: 44px; min-height: 44px; } }
+
 /* A scenario as a player-written check. */
-.ck-world .rt-table { width: 100%; }
+/* Every check table on a board spans it, a declaration's cases as a world's sentences. */
+.lg-board .ck .rt-table { width: 100%; }
 .ck-scenario-cells { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .ck-world-settings button { min-width: 36px; min-height: 34px; padding: 0 var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: inherit; cursor: pointer; }
 .ck-world-settings button[aria-pressed='true'] { color: var(--ink); background: color-mix(in srgb, var(--accent) 22%, var(--paper)); box-shadow: inset 0 0 0 1px var(--accent); }

@@ -1,6 +1,8 @@
 import { useRef } from 'react'
-import TreeEditor from './strip/TreeEditor.jsx'
-import { L, Markup, RunDock, Verdict, checkAction, PlayLayout, inspectWork, useCheckedWork, WorkGoal } from 'kernel/view'
+import { TreeEditor } from 'sentence/view'
+import { T } from 'kernel/words'
+import { L, RunDock, Verdict, checkAction, PlayLayout, inspectWork, useCheckedWork } from 'kernel/view'
+import BoardStage from './BoardStage.jsx'
 
 function TextLines({ lines }) {
   return (
@@ -12,20 +14,8 @@ function TextLines({ lines }) {
   )
 }
 
-function Examples({ examples }) {
-  return (
-    <div className="tree-examples">
-      {examples.map(({ title, lines }, k) => (
-        <details key={k} open={k === 0}>
-          <summary>{L(title)}</summary>
-          <TextLines lines={lines} />
-        </details>
-      ))}
-    </div>
-  )
-}
-
-export default function SentenceWork({ screen, resource, play }) {
+/** One sentence built in place: its strip stands in the conclusion's row, the tray of cards under the rows. */
+export default function SentenceBoard({ screen, resource, play }) {
   const { level: entry } = screen
   const { work: tree, verdict, check, change } = useCheckedWork(screen, {
     read: (saved) => saved?.tree ?? resource.initial ?? null,
@@ -33,18 +23,21 @@ export default function SentenceWork({ screen, resource, play }) {
   }, inspectWork(play, resource.judge))
   const editor = useRef(null)
   const stage = (
-    <div className={`sentence-stage ${play.stage}`.trim()}>
-      {resource.prompt && <p className="sentence-prompt"><Markup text={resource.prompt} /></p>}
-      {resource.goal && <WorkGoal premises={resource.premises} goal={resource.goal} />}
-      {play.checks === 'shown' && resource.examples && <Examples examples={resource.examples} />}
-      <TreeEditor tree={tree} onChange={change} chips={resource.chips(tree)} language={resource.language} scope={`${entry.id}:${entry.source.task}`} ref={editor} />
-    </div>
+    <TreeEditor
+      ref={editor} tree={tree} onChange={change} chips={resource.chips(tree)} language={resource.language} scope={`${entry.id}:${entry.source.task}`}
+      layout={({ tools, strip, note, chips }) => (
+        <BoardStage
+          className={play.stage} say={resource.prompt}
+          rows={{ className: 'lg-rule-table', rows: [{ name: T('结论'), head: true, slots: [{ live: strip }] }] }}
+          workspace={<div className="lg-tray">{tools}{note}{chips}</div>}
+        />
+      )}
+    />
   )
   const { failure } = verdict ?? {}
   let results = null
   if (verdict?.pass) results = <Verdict pass compact>{L(resource.passed)}</Verdict>
   else if (failure?.lines) results = <div className="tree-evidence"><p>{L(failure.why)}</p>{failure.lines.length > 0 && <TextLines lines={failure.lines} />}</div>
-  else if (failure && resource.goal) results = <Verdict compact>{L(failure.why)}</Verdict>
   else if (failure) results = <p className="lg-error">{L(failure.why)}</p>
   const dock = <RunDock go={checkAction(() => {
     editor.current?.clearSelection()

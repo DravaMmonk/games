@@ -14,7 +14,7 @@ import { L, tr } from './i18n.js'
 //
 //   rows            [row]                          onChange(rows)   the rows saved (absent: the table is read only)
 //   columns         [{ key, label, cell(row, k), edit?(row, set, k) the in-place editor on a desktop, align?: 'start'
-//                    (default centred), className? }]
+//                    (default centred), className?, span?(k) how many rows row k's cell spans (0: one above spans it) }]
 //   phone           edit through the form
 //   form(row, set, k) → the fields editing row k (set(next) replaces it)      blank() → a new row
 //   max?            how many rows at most          addLabel, formTitle(k)   { zh, en } pairs or a function
@@ -68,7 +68,10 @@ export default function RowTable({ rows, columns, onChange = null, form, blank, 
                   pick(k)
                 }}
               >
-                {columns.map((c) => <td key={c.key} className={cellClass(c)}><div className="rt-cell">{c.edit && inPlace ? c.edit(row, (next) => setRow(k, next), k) : c.cell(row, k)}</div></td>)}
+                {columns.map((c) => {
+                  const span = c.span?.(k) ?? 1
+                  return span > 0 && <td key={c.key} rowSpan={span > 1 ? span : undefined} className={cellClass(c)}><div className="rt-cell">{c.edit && inPlace ? c.edit(row, (next) => setRow(k, next), k) : c.cell(row, k)}</div></td>
+                })}
                 {deleteColumn && (
                   <td className="rt-actions">
                     <button type="button" className="rt-drop" aria-label={tr("删除这一行")} onClick={(e) => { e.stopPropagation(); remove(k) }}><X size={14} /></button>

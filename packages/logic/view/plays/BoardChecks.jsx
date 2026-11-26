@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Checks from './Checks.jsx'
-import { L, NamedLines, RunDock, TestTabs, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
-import TreeRows from './TreeRows.jsx'
+import { L, RunDock, TestTabs, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
+import BoardStage from './BoardStage.jsx'
 import { usePreferredTest } from '../general-form.js'
 
 /** Inspect given works and write cases that check how they behave. */
@@ -31,17 +31,14 @@ export default function BoardChecks({ screen, resource, play }) {
   const { run, passed, states } = playback
   const result = resource.result(work, at, playback.shown(at).list.length)
   const text = run?.over ? passed ? L(resource.passed(work)) : run.results.at(-1)?.reason : null
-  const stage = (
-    <div className={play.stage}>
-      <TreeRows {...resource.rows(at)} />
-      <NamedLines lines={resource.lines(at, L)} formulas />
-      <Checks
-        {...fields} phone={phone} rows={work} onChange={change} onPick={setRow}
-        rowClass={(k) => k === row ? 'is-on' : ''}
-        result={{ label: resultLabel, at: result }}
-      />
-    </div>
+  const table = (
+    <Checks
+      {...fields} phone={phone} rows={work} onChange={change} onPick={setRow}
+      rowClass={(k) => k === row ? 'is-on' : ''}
+      result={{ label: resultLabel, at: result }}
+    />
   )
+  const stage = <BoardStage className={play.stage} say={resource.prompt} rows={resource.rows(at)} lines={resource.lines(at, L)} table={table} />
   const tests = play.checks === 'shown' && <TestTabs tests={tabs} states={states} first={first} index={at} onSelect={select} phone={phone} />
   const dock = <RunDock {...playback.dock({ go: L(resource.go), done: L(resource.done) })} />
   return <PlayLayout screen={screen} play={play} tests={tests} stage={stage} results={text ? <Verdict pass={passed}>{text}</Verdict> : null} dock={dock} />

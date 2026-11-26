@@ -29,6 +29,7 @@
       "kind": "logic/model",
       "step": "@level.p-split.tasks.p-split-2.step",
       "brief": "@level.p-split.tasks.p-split-2.brief",
+      "say": "@level.p-split.tasks.p-split-2.say",
       "answer": {
         "size": 2,
         "preds": {

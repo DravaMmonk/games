@@ -12,6 +12,7 @@
       "id": "decl-iff-2",
       "kind": "logic/iso",
       "step": "@level.decl-iff.tasks.decl-iff-2.step",
+      "say": "@level.iffUse.tasks.decl-iff-2.say",
       "intro": [{ "t": "@level.decl-iff.tasks.decl-iff-2.intro.0.t" }],
       "brief": "@level.decl-iff.tasks.decl-iff-2.brief",
       "hint": [

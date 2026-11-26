@@ -12,8 +12,11 @@ function follows(path, previous) {
   return other < 0 || path[other] > previous[other]
 }
 
-/** Edit a work on a strip. The language describes its tree, parts, accepted holes and text. */
-const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, language, scope }, ref) {
+/**
+ * Edit a work on a strip. The language describes its tree, parts, accepted holes and text. `layout({ tools, strip,
+ * note, chips })` places the editor's pieces apart (the strip in a rule row, the tray under it); by default they stack.
+ */
+const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, language, scope, layout = null }, ref) {
   const { nodeAt, setAt, holesOf, joinsOnto, complete } = language
   const byKey = useMemo(() => new Map(chips.map((chip) => [chip.key, chip])), [chips])
   const [recent, setRecent] = useState(null)
@@ -66,14 +69,13 @@ const TreeEditor = forwardRef(function TreeEditor({ tree, onChange, chips, langu
   })).filter((group) => group.chips.length)
   const problem = language.problem?.(tree)
   const note = strip.note ?? (problem ? { text: problem, bad: true } : null)
-  return (
-    <>
-      <StripTools history={history} onClear={() => replace(null)} empty={tree == null} />
-      <Strip line={language.line(tree)} label={language.label} next={next} selected={strip.selected} flash={strip.flash} onSlot={strip.onSlot} />
-      {note ? <p className={`ks-note ${note.bad ? 'is-bad' : ''}`} role="status">{L(note.text)}</p> : <p className="ks-note">{tr('点击文字可以删除。')}</p>}
-      <Chips groups={groups} onChip={strip.onChip} />
-    </>
-  )
+  const pieces = {
+    tools: <StripTools history={history} onClear={() => replace(null)} empty={tree == null} />,
+    strip: <Strip line={language.line(tree)} label={language.label} next={next} selected={strip.selected} flash={strip.flash} onSlot={strip.onSlot} />,
+    note: note ? <p className={`ks-note ${note.bad ? 'is-bad' : ''}`} role="status">{L(note.text)}</p> : <p className="ks-note">{tr('点击文字可以删除。')}</p>,
+    chips: <Chips groups={groups} onChip={strip.onChip} />,
+  }
+  return layout ? layout(pieces) : <>{pieces.tools}{pieces.strip}{pieces.note}{pieces.chips}</>
 })
 
 export default TreeEditor

@@ -70,7 +70,7 @@
         "judge": "check",
         "checks": "hidden",
         "resources": "translation",
-        "stage": "",
+        "stage": "fo-stage",
         "layout": "fo-level",
         "taskBoard": [
           "title",
@@ -83,9 +83,24 @@
       "configuration": {
         "editor": "sentence",
         "judge": "check",
-        "checks": "shown",
+        "checks": "hidden",
         "resources": "query",
-        "stage": "",
+        "stage": "fo-stage",
+        "layout": "fo-level",
+        "taskBoard": [
+          "title",
+          "brief",
+          "hints"
+        ]
+      }
+    },
+    "lookup": {
+      "configuration": {
+        "editor": "lookup",
+        "judge": "steps",
+        "checks": "shown",
+        "resources": "queryCheck",
+        "stage": "fo-stage",
         "layout": "fo-level",
         "taskBoard": [
           "title",

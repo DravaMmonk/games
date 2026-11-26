@@ -35,6 +35,7 @@
       "kind": "logic/model",
       "step": "@level.m-counter.tasks.m-counter-2.step",
       "brief": "@level.m-counter.tasks.m-counter-2.brief",
+      "say": "@level.m-counter.tasks.m-counter-2.say",
       "answer": {
         "size": 1,
         "preds": {

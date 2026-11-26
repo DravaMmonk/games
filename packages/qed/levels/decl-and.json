@@ -23,6 +23,7 @@
     {
       "id": "decl-and",
       "kind": "logic/iso",
+      "say": "@level.decl-and.tasks.decl-and.say",
       "declare": "@level.decl-and.tasks.decl-and.declare",
       "target": "A ∧ B",
       "sentences": [

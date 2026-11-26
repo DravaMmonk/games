@@ -90,6 +90,7 @@
       "id": "decl-ex-1",
       "kind": "logic/iso",
       "step": "@level.decl-ex.tasks.decl-ex-1.step",
+      "say": "@level.decl-ex.tasks.decl-ex-1.say",
       "play": "logic/audit",
       "want": "logic/expose",
       "boards": [
@@ -172,6 +173,7 @@
       "id": "decl-ex-2",
       "kind": "logic/iso",
       "step": "@level.decl-ex.tasks.decl-ex-2.step",
+      "say": "@level.decl-ex.tasks.decl-ex-2.say",
       "intro": [
         {
           "t": "@level.decl-ex.tasks.decl-ex-2.intro.0.t"

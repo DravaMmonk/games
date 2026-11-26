@@ -13,6 +13,7 @@ const schemas = {
   sentence: sentencePlaySchema,
   tree: resourcePlaySchema('tree', ['once']),
   scenario: resourcePlaySchema('scenario', ['steps']),
+  lookup: resourcePlaySchema('lookup', ['steps']),
   checks: resourcePlaySchema('checks', ['boards']),
 }
 

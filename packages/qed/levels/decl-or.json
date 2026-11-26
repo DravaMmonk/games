@@ -92,6 +92,7 @@
       "id": "decl-or-1",
       "kind": "logic/iso",
       "step": "@level.decl-or.tasks.decl-or-1.step",
+      "say": "@level.decl-or.tasks.decl-or-1.say",
       "play": "logic/audit",
       "boards": [
         {
@@ -134,6 +135,7 @@
       "id": "decl-or-2",
       "kind": "logic/iso",
       "step": "@level.decl-or.tasks.decl-or-2.step",
+      "say": "@level.decl-or.tasks.decl-or-2.say",
       "play": "logic/audit",
       "boards": [
         {
@@ -181,6 +183,7 @@
       "kind": "logic/iso",
       "step": "@level.decl-or.tasks.decl-or-3.step",
       "brief": "@level.decl-or.tasks.decl-or-3.brief",
+      "say": "@level.decl-or.tasks.decl-or-3.say",
       "hint": [
         "@level.decl-or.tasks.decl-or-3.hint.0"
       ]

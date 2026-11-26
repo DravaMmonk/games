@@ -1963,6 +1963,14 @@
                 "type": "ref",
                 "kind": "kind"
               },
+              "play": {
+                "type": "oneOf",
+                "values": [
+                  "logic/lookup"
+                ],
+                "about": "@shape.level.fields.tasks.of.cases.logic-query.fields.play.about",
+                "optional": true
+              },
               "brief": {
                 "type": "text",
                 "optional": true

@@ -9,18 +9,18 @@ const placeholder = (cell) => <span className="ck-placeholder">{L(cell.placehold
 // In a form, a list of sentences reads as a rule row (strip/TreePick.jsx SentenceRow); a table keeps text.
 const sentences = (cell, value) => <SentenceRow texts={value.map((item) => L(cell.build.text(item)))} end={cell.end} />
 
-function display(cell, row, phone) {
+function display(cell, row) {
   const value = read(cell, row)
   switch (cell.shape) {
     case 'tree': return value ? <Formula text={cell.build.text(value)} /> : placeholder(cell)
     case 'tree-list': return value.length
       ? <span className="ck-lines">{value.map((item, k) => (
-        <span key={k}>{value.length > 1 && <span className="ck-number">{k + 1}.</span>}<Formula text={cell.build.text(item)} /></span>
+        <span key={k} className={cell.kept?.(row)?.includes(item) ? 'ck-fixed' : undefined}>
+          {value.length > 1 && <span className="ck-number">{k + 1}.</span>}<Formula text={cell.build.text(item)} />
+        </span>
       ))}</span>
       : placeholder(cell)
-    case 'choice': return phone
-      ? L(cell.options.find((option) => option.value === value)?.label) ?? '—'
-      : <InlineChoice label={cell.fixedLabel ?? cell.label} options={cell.options} value={value} disabled />
+    case 'choice': return L(cell.options.find((option) => option.value === value)?.label) ?? '—'
   }
 }
 
@@ -44,11 +44,10 @@ function edit(cell, row, set, at, phone) {
 function CellForm({ cell, row, set, at }) {
   if (cell.fixed?.(row)) {
     const value = read(cell, row)
-    // Fixed, a field reads as it would be written, only locked: the sentence in its box, the situation's premises in
-    // short boxes, the choice's buttons with the one it holds lit.
-    if (cell.shape === 'choice') return <ChoiceField label={cell.fixedLabel} options={cell.options} value={value} disabled />
-    if (cell.shape === 'tree') return <Field label={cell.fixedLabel}><span className="ff-fixed">{value ? <Formula text={cell.build.text(value)} /> : L(cell.placeholder)}</span></Field>
-    return <Field label={cell.fixedLabel}>{value.length ? sentences(cell, value) : placeholder(cell)}</Field>
+    const content = cell.shape === 'tree-list' && value.length
+      ? <span className="ck-fixed">{sentences(cell, value)}</span>
+      : <span className="ff-fixed ck-fixed">{display(cell, row)}</span>
+    return <Field label={cell.fixedLabel}>{content}</Field>
   }
   const field = edit(cell, row, set, at, true)
   if (cell.shape === 'choice') return field
@@ -77,12 +76,15 @@ export function CheckScenario({ fields }) {
 
 /** Each row is a check. The shape of a value chooses its table display and editor. */
 export default function Checks({ cells, rows, onChange, result, rowClass, onPick, verdict, phone, ...table }) {
-  const columns = cells.map((cell) => ({
-    key: cell.name, label: cell.label, align: cell.align,
-    className: cell.name === 'goal' ? 'ck-goal' : undefined,
-    cell: (row) => display(cell, row, phone),
-    edit: (row, set, at) => cell.fixed?.(row) ? display(cell, row) : edit(cell, row, set, at, false),
-  }))
+  const columns = cells.map((cell) => {
+    const fixedValue = (row) => <span className="ck-fixed">{display(cell, row)}</span>
+    return {
+      key: cell.name, label: cell.label, align: cell.align,
+      className: cell.name === 'goal' ? 'ck-goal' : undefined,
+      cell: (row) => cell.fixed?.(row) ? fixedValue(row) : display(cell, row),
+      edit: (row, set, at) => cell.fixed?.(row) ? fixedValue(row) : edit(cell, row, set, at, false),
+    }
+  })
   if (result) columns.push({
     key: 'result',
     label: result.label,

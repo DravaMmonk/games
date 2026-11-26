@@ -1,5 +1,4 @@
 import { T as catalogText } from 'kernel/words'
-import { sentenceScreen } from 'sentence/view'
 import { NotationText } from 'notation/view'
 import { notationNumber, notationPlain } from 'notation'
 import { L } from 'kernel/view'
@@ -16,7 +15,7 @@ import { defineGame } from 'circuit/view'
 import { fresh, isCore } from 'circuit'
 import { logicPartCatalog } from '../core/part-catalog.js'
 import { worldCheck } from '../core/worldValues.js'
-import { query, translation } from '../core/formulaWork.js'
+import { query, queryCheck, translation } from '../core/formulaWork.js'
 import { script } from '../core/scriptValues.js'
 import { KERNEL_RULES, lemmaRules, statedRule } from '../core/schematic.js'
 import { RULES } from '../core/proof.js'
@@ -32,8 +31,10 @@ import { ruleStatement } from '../core/ruleStatement.js'
 import { truth } from '../core/truthValues.js'
 
 import Rows from './plays/Rows.jsx'
+import SentenceBoard from './plays/SentenceBoard.jsx'
 import BoardChecks from './plays/BoardChecks.jsx'
 import ScenarioCheck from './plays/ScenarioCheck.jsx'
+import LookupCheck from './plays/LookupCheck.jsx'
 
 export const playPresentation = {
   'logic/proof': { icon: Workflow, label: catalogText("证明") },
@@ -44,6 +45,7 @@ export const playPresentation = {
   'logic/define': { icon: SquareFunction, label: catalogText("定义", {}, "game") },
   'logic/translate': { icon: Languages, label: catalogText("翻译") },
   'logic/query': { icon: Search, label: catalogText("查询") },
+  'logic/lookup': { icon: ClipboardCheck, label: catalogText("检验查询") },
   'logic/model': { icon: FileSignature, label: catalogText("构造情形") },
   'logic/audit': { icon: ClipboardCheck, label: catalogText("声明审计") },
   'logic/rule': { icon: ClipboardPen, label: catalogText("写规则") },
@@ -52,9 +54,10 @@ export const playPresentation = {
 
 const bindings = {
   circuit: (play, config) => circuitScreen(play, { ...config, usePreferredTest }),
-  sentence: sentenceScreen,
+  sentence: (play, prepare) => resourceScreen(SentenceBoard, play, prepare),
   tree: (play, prepare) => resourceScreen(Rows, play, prepare),
   scenario: (play, prepare) => resourceScreen(ScenarioCheck, play, prepare),
+  lookup: (play, prepare) => resourceScreen(LookupCheck, play, prepare),
   checks: (play, prepare) => resourceScreen(BoardChecks, play, prepare),
 }
 
@@ -149,7 +152,7 @@ export default function logicGame(content, logic = logicWorks(content), { kernel
     settings: [generalFormSetting, autoFirstSetting],
     intro: (level) => level.source.intro,
     kinds: playKinds(plays, {
-      declaration, definition, audit, ruleStatement, truth, translation, query, script, worldCheck,
+      declaration, definition, audit, ruleStatement, truth, translation, query, queryCheck, script, worldCheck,
       proof: { ...ui['logic/proof-screen'], cards }, machine: { ...ui['logic/machine-screen'], cards }, gates: { ...ui['logic/gates-screen'], cards },
     }, playPresentation, bindings),
     // What passing a level gives: the parts it builds, and the proof-board parts a declaration or a generator gives (its

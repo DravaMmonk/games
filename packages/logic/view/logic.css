@@ -102,7 +102,6 @@
 .tree-evidence p { margin: 0; }
 .tree-description { display: grid; gap: var(--sp-2); font-size: var(--fs-small); line-height: 1.6; color: var(--body, var(--ink)); }
 .tree-description p { margin: 0; }
-.tree-description .is-muted { color: var(--muted); }
 .fo-level { --fam-pred: #3f7fb5; --fam-name: #2f918f; --fam-var: #7a6fb0; --fam-quant: #b4579a; --fam-conn: #b98516; }
 :root[data-theme='night'] .fo-level, :root[data-theme='blueprint'] .fo-level { --fam-pred: #8db3d6; --fam-name: #7fc2c2; --fam-var: #b3a9dc; --fam-quant: #c5a0cc; --fam-conn: #e0ac4f; }
 .fo-level [data-family='pred'] { --fam: var(--fam-pred); }
@@ -143,32 +142,75 @@
   color: color-mix(in srgb, var(--muted) 85%, var(--ink));
 }
 
-/* A world built for a check (plays/ScenarioCheck.jsx): its cell in the case table says it in short and opens its
-   settings; each sentence it is checked against names itself. */
-.ck-world-cell { width: 100%; padding: var(--sp-3) var(--sp-4); border: 1px solid var(--line); border-radius: var(--r-md); color: var(--ink); background: var(--canvas); font: inherit; text-align: left; cursor: pointer; transition: border-color 140ms ease, background 140ms ease; }
-.ck-world-cell:hover { border-color: var(--rule); }
-.ck-world-cell[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); }
-.ck-world-summary { display: grid; gap: var(--sp-1); font-size: var(--fs-small); line-height: 1.5; }
-.ck-world-summary > span { white-space: nowrap; }
 .ck-world td { vertical-align: top; }
 .ck-family { display: grid; gap: var(--sp-1); font-size: var(--fs-small); line-height: 1.5; min-width: 12em; }
-.ck-family .is-muted { color: var(--muted); }
 .ck-picks { min-width: 9.5em; display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .ck-picks button { min-width: 36px; min-height: 34px; padding: 0 var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: inherit; cursor: pointer; }
 .ck-picks button[aria-pressed='true'] { background: color-mix(in srgb, var(--accent) 22%, var(--paper)); box-shadow: inset 0 0 0 1px var(--accent); }
 @media (pointer: coarse) { .ck-picks button { min-width: 44px; min-height: 44px; } }
 
-/* A scenario as a player-written check. */
 /* Every check table on a board spans it, a declaration's cases as a world's sentences. */
 .lg-board .ck .rt-table { width: 100%; }
-.ck-scenario-cells { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
-.ck-world-settings button { min-width: 36px; min-height: 34px; padding: 0 var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: inherit; cursor: pointer; }
-.ck-world-settings button[aria-pressed='true'] { color: var(--ink); background: color-mix(in srgb, var(--accent) 22%, var(--paper)); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* A world (ui/WorldGraph.jsx), built under a check's sentences or shown where a translation is caught: things in a
+   row, arrows between them, each thing's chips under it. */
+.wg { display: grid; gap: var(--sp-4); padding: var(--sp-5) var(--sp-5) var(--sp-6); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line), 0 1px 2px rgba(30, 26, 18, .04); }
+.tree-evidence .wg { padding: var(--sp-3) 0 0; background: transparent; box-shadow: none; }
+.wg-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); min-height: 32px; }
+.wg-keys { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.wg-key { min-height: 30px; padding: 0 var(--sp-4); display: inline-flex; align-items: center; gap: var(--sp-2); border: 0; border-radius: var(--r-full); color: var(--muted); background: transparent; font: 500 13.5px var(--sans); }
+button.wg-key { box-shadow: inset 0 0 0 1px var(--line); cursor: pointer; }
+button.wg-key[aria-pressed='true'] { color: var(--ink); background: color-mix(in srgb, var(--accent) 13%, transparent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.wg-size { display: inline-flex; margin-left: auto; border-radius: var(--r-md); box-shadow: inset 0 0 0 1px var(--line); }
+.wg-size button { width: 36px; height: 32px; display: grid; place-items: center; border: 0; color: var(--ink); background: transparent; cursor: pointer; }
+.wg-size button + button { box-shadow: inset 1px 0 0 var(--line); }
+.wg-size button:hover:not(:disabled) { background: var(--hover); }
+.wg-size button:disabled { color: var(--faint); cursor: default; }
+.wg-scroll { overflow-x: auto; }
+.wg-stage { margin-inline: auto; }
+.wg-svg { display: block; overflow: visible; }
+.wg-ground { fill: transparent; }
+.wg-dot { fill: var(--paper); stroke: var(--rule); stroke-width: 1.5; transition: fill 140ms ease, stroke 140ms ease; }
+.wg-mark { fill: var(--ink); font: 500 16px var(--sans); pointer-events: none; }
+.wg-var { fill: var(--accent-ink); font: italic 600 14px var(--serif); pointer-events: none; }
+.wg-thing.is-bound .wg-dot { stroke: var(--accent); stroke-width: 2.4; }
+.wg-thing[role='button'] { cursor: pointer; outline: none; }
+.wg-thing[role='button']:hover .wg-dot { stroke: var(--accent); }
+.wg-thing[role='button']:focus-visible .wg-dot { stroke: var(--accent); stroke-width: 2.4; }
+.wg-thing.is-picked .wg-dot { fill: color-mix(in srgb, var(--accent) 22%, var(--paper)); stroke: var(--accent); stroke-width: 2.4; }
+.wg-hit { fill: transparent; stroke: transparent; stroke-width: 16; }
+.wg-line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; transition: stroke 140ms ease, opacity 140ms ease; }
+.wg-arrow.is-other .wg-line { opacity: .3; }
+.wg-line.is-rel-1 { stroke-dasharray: 7 4; }
+.wg-line.is-rel-2 { stroke-dasharray: 1.5 4; }
+.wg-sample { flex: none; }
+.wg-sample .wg-line { stroke: currentColor; stroke-width: 1.4; }
+.wg-sample-head { fill: currentColor; }
+.wg-arrow.is-ghost .wg-line { stroke: var(--faint); stroke-dasharray: 4 5; }
+.wg.is-edit .wg-arrow:not(.is-other) { cursor: pointer; }
+.wg.is-edit .wg-arrow:not(.is-other):hover .wg-line { stroke: var(--accent); }
+.wg-arrow.is-read .wg-line, .wg-line.is-read { stroke: var(--accent); stroke-width: 2.6; }
+.wg-line.is-off { stroke: var(--fail); stroke-dasharray: 4 5; }
+.wg-head path { fill: var(--ink); }
+.wg-head.is-faint path { fill: var(--faint); }
+.wg-head.is-read path { fill: var(--accent); }
+.wg-head.is-off path { fill: var(--fail); }
+.wg-cols { display: grid; }
+.wg-col { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); }
+.wg-facts { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3); }
+.wg-chip { min-height: 30px; max-width: calc(100% - var(--sp-3)); padding: 0 var(--sp-4); display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: var(--r-full); color: var(--faint); background: transparent; box-shadow: inset 0 0 0 1px var(--hairline); font: 500 13.5px var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 140ms ease, background 140ms ease, box-shadow 140ms ease; }
+button.wg-chip { cursor: pointer; }
+button.wg-chip:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule); }
+.wg-chip:is([aria-pressed='true'], [data-on]) { color: var(--ink); background: color-mix(in srgb, var(--accent) 16%, var(--paper)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent); }
+.wg-name { font-weight: 600; }
+.wg-name:not([aria-pressed='true']):not([data-on]) { box-shadow: none; outline: 1px dashed var(--line); outline-offset: -1px; }
+.wg-chip.is-read { box-shadow: inset 0 0 0 2px var(--accent); }
+.wg-chip.is-read.is-off { color: var(--fail); box-shadow: inset 0 0 0 2px var(--fail); }
 @media (pointer: coarse) {
-  .ck-world-settings button { min-width: 44px; min-height: 44px; }
+  .wg-chip { min-height: 40px; padding: 0 var(--sp-5); }
+  .wg-size button { width: 44px; height: 40px; }
+  .wg-key { min-height: 36px; }
 }
-.ck-grid { border-collapse: separate; border-spacing: 4px; }
-.rt-table .ck-grid td { padding: 0; border: 0; }
 
 /* Scope board formula metrics to the game so the same settings reach its portalled sheets and popovers. */
 :is(.lg-machine-level, .lg-proof-level, .game:has(.lg-machine-level, .lg-proof-level)) { --formula-inline-padding: var(--sp-2); }

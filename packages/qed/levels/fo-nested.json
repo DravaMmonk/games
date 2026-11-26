@@ -50,6 +50,7 @@
       "kind": "logic/model",
       "step": "@level.fo-nested.tasks.fo-nested-3.step",
       "translationFrom": "fo-nested-1",
+      "intro": [{ "t": "@level.fo-nested.tasks.fo-nested-3.intro.0.t" }],
       "say": "@level.fo-nested.tasks.fo-nested-3.say",
       "meant": "∀x. ∃y. Likes(x, y)",
       "brief": "@level.fo-nested.tasks.fo-nested-3.brief",

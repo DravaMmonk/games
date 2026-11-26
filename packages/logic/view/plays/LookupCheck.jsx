@@ -31,7 +31,7 @@ export default function LookupCheck({ screen, resource, play }) {
       cell: (row) => (
         <span className="ck-family">
           <b>{L(row.title)}</b>
-          {row.lines.map((line, j) => <span key={j} className={line.muted ? 'is-muted' : ''}>{L(line.text)}{line.strong && L(line.strong)}</span>)}
+          {row.lines.map((line, j) => <span key={j}>{L(line.text)}{line.strong && L(line.strong)}</span>)}
         </span>
       ),
     },

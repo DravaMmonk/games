@@ -2,36 +2,33 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "c-dist",
-      "to": "sp-back"
-    },
-    {
-      "from": "q-dm",
-      "to": "sp-back"
-    },
-    {
-      "from": "sp-back",
-      "to": "sp-repeat"
-    },
-    {
       "from": "sp-repeat",
       "to": "sp-simp"
-    },
-    {
-      "from": "sp-simp",
-      "to": "au-iff"
     },
     {
       "from": "au-iff",
       "to": "sp-nnf"
     },
     {
-      "from": "sp-nnf",
-      "to": "sp-order"
+      "from": "r-drule",
+      "to": "machine-rewrite"
     },
     {
-      "from": "sp-order",
-      "to": "au-negate"
-    }
+      "from": "machine-rewrite",
+      "to": "sp-back"
+    },
+    {
+      "from": "sp-back",
+      "to": "machine-rewrite-swap"
+    },
+    {
+      "from": "machine-rewrite-swap",
+      "to": "r-eq"
+    },
+    {
+      "from": "r-eq",
+      "to": "machine-cite-first"
+    },
+    { "from": "machine-cite-first", "to": "sp-repeat" }
   ]
 }

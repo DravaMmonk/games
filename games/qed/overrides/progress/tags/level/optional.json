@@ -17,7 +17,6 @@
       "qed/mergeBoth",
       "qed/orImp",
       "qed/contra",
-      "qed/dist",
       "qed/dsyll",
       "qed/p-only",
       "qed/p-split",
@@ -54,8 +53,9 @@
       "qed/u-ls",
       "qed/u-halt",
       "qed/au-horn",
-      "qed/machine-meta-order",
-      "qed/machine-negation"
+      "qed/curry",
+      "qed/orSwap",
+      "qed/mt"
     ]
   }
 }

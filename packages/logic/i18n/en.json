@@ -272,7 +272,7 @@
     "预期": "Expected",
     "这一轮改变了证明状态，再做一轮。": "This round changed the proof state, so it runs once more.",
     "倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。": "{rules} used backwards: its conclusion matches goal {goal}, and the goal becomes its premises.",
-    "正着用 {rules}：已知对上它的前提，结论加进已知。": "{rules} is used forwards by matching its premises to the givens and adding its conclusion to them.",
+    "正着用 {rules}：已知对上它的前提，结论加进已知。": "{rules} is used forwards: its premises match the givens, and the proof state changes accordingly.",
     "用 {rules} 改写目标 {goal}。": "{rules} rewrites goal {goal}.",
     "用 {rules} 改写目标 {goal} 的已知。": "{rules} rewrites the givens of goal {goal}.",
     "照抄": "Cite a given",

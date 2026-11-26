@@ -5,11 +5,22 @@
     "desc": "@course.eras.simplifier.chapter.desc"
   },
   "levels": [
+    "qed/machine-rewrite",
+    "qed/machine-rewrite-twice",
     "qed/sp-back",
+    "qed/machine-rewrite-swap",
+    "qed/r-eq",
+    "qed/machine-cite-first",
     "qed/sp-repeat",
-    "qed/sp-simp",
-    "qed/au-iff",
-    "qed/sp-nnf",
-    "qed/sp-order"
+    "qed/sp-simp"
+  ],
+  "rows": [
+    ["qed/machine-rewrite"],
+    ["qed/machine-rewrite-twice", "qed/sp-back"],
+    ["qed/machine-rewrite-swap"],
+    ["qed/r-eq"],
+    ["qed/machine-cite-first"],
+    ["qed/sp-repeat"],
+    ["qed/sp-simp"]
   ]
 }

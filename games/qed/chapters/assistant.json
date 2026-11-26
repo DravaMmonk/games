@@ -5,35 +5,23 @@
     "desc": "@chapter.assistant.chapter.desc"
   },
   "levels": [
+    "qed/try-rules",
+    "qed/try-rule-box",
     "qed/machine-cite",
     "qed/machine-open",
-    "qed/machine-rewrite",
-    "qed/machine-backward-and",
-    "qed/machine-rewrite-twice",
     "qed/machine-skip",
-    "qed/machine-rewrite-swap",
-    "qed/machine-cite-first",
-    "qed/machine-rewrite-first",
-    "qed/machine-open-first",
-    "qed/machine-backward-or",
-    "qed/machine-backward-bot",
     "qed/machine-meta",
-    "qed/machine-cases",
     "qed/machine-meta-order",
-    "qed/machine-negation"
+    "qed/machine-forward"
   ],
   "rows": [
+    ["qed/try-rules"],
+    ["qed/try-rule-box"],
     ["qed/machine-cite"],
-    ["qed/machine-open", "qed/machine-rewrite"],
-    ["qed/machine-backward-and", "qed/machine-rewrite-twice"],
-    ["qed/machine-skip", "qed/machine-rewrite-swap"],
-    [null, "qed/machine-cite-first"],
-    ["qed/machine-rewrite-first"],
-    ["qed/machine-open-first", "qed/machine-backward-or"],
-    ["qed/machine-backward-bot"],
+    ["qed/machine-open"],
+    ["qed/machine-skip"],
     ["qed/machine-meta"],
-    ["qed/machine-cases"],
     ["qed/machine-meta-order"],
-    ["qed/machine-negation"]
+    ["qed/machine-forward"]
   ]
 }

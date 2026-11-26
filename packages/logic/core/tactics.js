@@ -231,7 +231,10 @@ export function forward(s, R, { at, first = false } = {}) {
     return first
   }
   visit([], pairs)
-  return { matches, reason: matches.length ? null : at ? 'position-missing' : matched ? 'nothing-new' : 'rule-mismatch' }
+  if (matches.length) return { matches, reason: null }
+  if (matched) return { matches, reason: 'nothing-new' }
+  const elsewhere = at && forward(s, R, { first: true }).reason !== 'rule-mismatch'
+  return { matches, reason: elsewhere ? 'position-missing' : 'rule-mismatch' }
 }
 
 /** Unify the chosen goal with one of its hypotheses (each that fits is a result). */

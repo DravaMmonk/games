@@ -220,6 +220,8 @@ html.is-game-playing, html.is-game-playing body { height: 100%; overflow: hidden
 .task-steps button.is-on i { color: var(--paper); background: var(--accent); }
 .task-steps button:disabled { opacity: .5; cursor: not-allowed; }
 .task-steps button:not(:disabled):not(.is-on):hover { color: var(--ink); background: var(--hover); }
+/* A short quoted sentence (Markup.jsx) keeps its quotation marks with it on one line. */
+.markup-quote { white-space: nowrap; }
 .brief-text { margin: calc(var(--sp-4) * -1) 0 0; color: var(--heading); font-family: var(--sans); font-size: 17px; line-height: 1.7; }
 .task-statement { margin: 0; color: var(--muted); font-size: var(--fs-ui); white-space: pre-wrap; }
 .task-statement b { margin: 0 var(--sp-2); color: var(--ink); }

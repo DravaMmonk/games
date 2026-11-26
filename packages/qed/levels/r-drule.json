@@ -1,6 +1,5 @@
 {
   "title": "@level.r-drule.title",
-  "after": "@level.r-drule.after",
   "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
   "tray": "prover",
   "intro": [
@@ -42,18 +41,15 @@
         }
       ],
       "solution": [
-        "step1 = logic/directBackward-qed_allE(in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
-        "step3 = logic/directBackward-qed_mp(step2)",
-        "step4 = logic/directBackward-logic_assumption(step3)",
-        "step5 = logic/directBackward-logic_assumption(step4)",
-        "out <- step5"
-      ],
-      "naive": [
-        "step1 = logic/directBackward-qed_mp(in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step1 = logic/directForward-qed_allE(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
       ]
     }
   ]

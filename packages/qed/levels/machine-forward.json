@@ -1,0 +1,35 @@
+{
+  "title": "@level.machine-forward.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-forward.intro.0.t" }],
+  "after": "@level.machine-forward.after",
+  "tasks": [
+    {
+      "id": "machine-forward",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-forward.tasks.machine-forward.brief",
+      "hint": ["@level.machine-forward.tasks.machine-forward.hint.0"],
+      "tests": [
+        { "goal": "Slip", "hyps": ["Rain → Wet", "Wet → Slip", "Rain"] },
+        { "goal": "Slip", "hyps": ["Wet → Slip", "Rain", "Rain → Wet"] },
+        { "goal": "Wet", "hyps": ["Rain → Wet", "Rain"] }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_mp[use=[\"mp\"]](in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-qed_mp[use=[\"mp\"]](step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "out <- step5"
+      ]
+    }
+  ]
+}

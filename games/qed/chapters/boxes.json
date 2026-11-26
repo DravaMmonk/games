@@ -5,36 +5,34 @@
     "desc": "@course.eras.boxes.chapter.desc"
   },
   "levels": [
-    "qed/try-rules",
-    "qed/try-rule-box",
     "qed/decl-and",
     "qed/and",
+    "qed/machine-backward-and",
     "qed/decl-or",
     "qed/or",
+    "qed/machine-cases",
     "qed/decl-bot",
     "qed/bot",
-    "qed/curry",
-    "qed/cases",
+    "qed/machine-backward-bot",
     "qed/notI",
-    "qed/orSwap",
-    "qed/mt",
+    "qed/machine-negation",
     "qed/iffUse",
+    "qed/curry",
     "qed/orImp",
     "qed/contra",
-    "qed/dist",
-    "qed/dsyll"
+    "qed/orSwap",
+    "qed/dsyll",
+    "qed/mt"
   ],
   "rows": [
-    ["qed/try-rules"],
-    ["qed/try-rule-box"],
     ["qed/decl-and", "qed/decl-or", "qed/decl-bot"],
     ["qed/and", "qed/or", "qed/bot"],
-    ["qed/curry", "qed/cases", "qed/notI"],
-    [null, "qed/orSwap", "qed/mt"],
+    ["qed/machine-backward-and", "qed/machine-cases", "qed/machine-backward-bot"],
+    ["qed/notI"],
+    ["qed/machine-negation"],
     ["qed/iffUse"],
-    ["qed/orImp"],
-    ["qed/contra"],
-    ["qed/dist"],
-    ["qed/dsyll"]
+    ["qed/curry", "qed/orSwap", "qed/mt"],
+    ["qed/orImp", "qed/dsyll", null],
+    ["qed/contra", null, null]
   ]
 }

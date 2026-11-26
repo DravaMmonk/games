@@ -7,20 +7,33 @@
   "levels": [
     "qed/c-wall",
     "qed/raa",
-    "qed/byContra",
     "qed/lemCases",
+    "qed/byContra",
     "qed/s-lem",
+    "qed/kk-one",
     "qed/c-dneg",
     "qed/demorgan",
+    "qed/kk-two",
     "qed/c-arrow",
     "qed/q-dm",
-    "qed/c-dist",
-    "qed/kk-one",
-    "qed/kk-two",
     "qed/kk-three",
-    "qed/c-contra",
-    "qed/c-either",
+    "qed/c-dist",
     "qed/peirce",
-    "qed/drinker"
+    "qed/au-iff",
+    "qed/drinker",
+    "qed/sp-nnf",
+    "qed/c-contra",
+    "qed/c-either"
+  ],
+  "rows": [
+    ["qed/c-wall"],
+    ["qed/raa"],
+    ["qed/lemCases", "qed/byContra", "qed/s-lem"],
+    ["qed/kk-one", "qed/c-dneg", "qed/demorgan"],
+    ["qed/kk-two", "qed/c-arrow", "qed/q-dm"],
+    ["qed/kk-three", "qed/c-dist", null],
+    ["qed/peirce", "qed/au-iff", "qed/drinker"],
+    [null, "qed/sp-nnf", "qed/c-contra"],
+    [null, null, "qed/c-either"]
   ]
 }

@@ -17,19 +17,7 @@
       "to": "pl-order"
     },
     {
-      "from": "r-eq",
-      "to": "s-append"
-    },
-    {
-      "from": "r-eq",
-      "to": "s-rounds"
-    },
-    {
       "from": "s-append",
-      "to": "s-explore"
-    },
-    {
-      "from": "s-rounds",
       "to": "s-explore"
     },
     {
@@ -43,6 +31,11 @@
     {
       "from": "s-explore",
       "to": "pl-grand"
-    }
+    },
+    {
+      "from": "sp-simp",
+      "to": "s-append"
+    },
+    { "from": "s-loop", "to": "s-equal" }
   ]
 }

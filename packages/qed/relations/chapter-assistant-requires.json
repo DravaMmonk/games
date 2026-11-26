@@ -1,4 +1,11 @@
 {
   "kind": "requires",
-  "edges": []
+  "edges": [
+    { "from": "try-rule-box", "to": "machine-cite" },
+    { "from": "machine-open", "to": "machine-skip" },
+    { "from": "machine-skip", "to": "machine-meta" },
+    { "from": "machine-meta", "to": "machine-meta-order" },
+    { "from": "machine-meta-order", "to": "machine-forward" },
+    { "from": "machine-skip", "to": "machine-cite-first" }
+  ]
 }

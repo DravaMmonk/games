@@ -16,16 +16,14 @@
       ],
       "solution": [
         "step1 = logic/directBackward-qed_impI(in)",
-        "step2 = logic/directBackward-qed_mp[use=[\"mp\"]](step1)",
-        "step3 = logic/directBackward-logic_assumption(step2)",
-        "step4 = logic/directBackward-qed_mp[use=[\"mp\"]](step3)",
-        "step5 = logic/directBackward-logic_assumption(step4)",
-        "step6 = logic/directBackward-logic_assumption(step5)",
-        "out <- step6"
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directForward-qed_mp(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
       ],
       "naive": [
-        "step1 = logic/directBackward-qed_mp[use=[\"mp\"]](in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "out <- step3"
       ]

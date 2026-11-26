@@ -1,12 +1,14 @@
 {
   "title": "@level.sp-repeat.title",
+  "after": "@level.sp-repeat.after",
   "adds": ["repeat"],
   "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
   "tray": "prover",
   "intro": [
     {
       "t": "@level.sp-repeat.intro.0.t"
-    }
+    },
+    { "t": "@level.sp-repeat.intro.1.t" }
   ],
   "tasks": [
     {

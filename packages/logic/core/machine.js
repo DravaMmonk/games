@@ -197,7 +197,10 @@ function applyRule(s, ctx, node, rules) {
   const at = node.params?.at
   if (at) {
     const index = Number(/^goal-(\d+)$/.exec(at)?.[1])
-    return s.goals[index] ? backwardAt(s, ctx, rules, index) : { unchanged: 'position-missing', fail: T('找不到选定的应用位置') }
+    const selected = s.goals[index] && backwardAt(s, ctx, rules, index)
+    if (selected && succeeds(selected)) return selected
+    const elsewhere = s.goals.some((_, i) => i !== index && succeeds(backwardAt(s, {}, rules, i)))
+    return { unchanged: elsewhere ? 'position-missing' : 'rule-mismatch' }
   }
   const first = backwardAt(s, ctx, rules, 0)
   if (ctx.searchBody || succeeds(first)) return first
@@ -239,9 +242,13 @@ function directRewriteAt(s, ctx, node, rules) {
   }
   const target = /^(?:g([1-9]\d*):)?(goal(?:-\d+)?|hyps|hyp-\d+-\d+)$/.exec(at)
   const index = Number(target?.[1] ?? 0)
-  if (!target || !s.goals[index]) return { unchanged: 'position-missing' }
-  const result = firstThatApplies(rules, ctx, r => rewriteGoal(s, r, target[2], index), target[2], index)
-  return !succeeds(result) && /-\d+$/.test(target[2]) ? { unchanged: 'position-missing' } : result
+  if (target && s.goals[index]) {
+    const result = firstThatApplies(rules, ctx, r => rewriteGoal(s, r, target[2], index), target[2], index)
+    if (succeeds(result)) return result
+  }
+  const elsewhere = s.goals.some(goal => rules.some(rule =>
+    ['goal', 'hyps'].some(at => !rewrite({ ...s, goals: [goal] }, rule, at).fail)))
+  return { unchanged: elsewhere ? 'position-missing' : 'rule-mismatch' }
 }
 
 function directEntries(entries, use, autoFirst) {

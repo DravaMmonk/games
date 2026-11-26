@@ -6,19 +6,19 @@
   },
   "levels": [
     "qed/s-append",
-    "qed/s-rounds",
     "qed/s-explore",
     "qed/s-auto",
     "qed/s-loop",
+    "qed/s-equal",
     "qed/pl-grand",
     "qed/pl-anc",
     "qed/pl-order"
   ],
   "rows": [
-    ["qed/s-append", "qed/s-rounds"],
+    ["qed/s-append"],
     ["qed/s-explore"],
     ["qed/s-auto", "qed/pl-grand"],
     ["qed/s-loop", "qed/pl-anc"],
-    [null, "qed/pl-order"]
+    ["qed/s-equal", "qed/pl-order"]
   ]
 }

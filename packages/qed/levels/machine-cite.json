@@ -18,7 +18,7 @@
       "hint": ["@level.machine-cite.tasks.machine-cite.hint.0"],
       "tests": [
         { "goal": "Rain", "hyps": ["Wind", "Rain"] },
-        { "goal": "Wet ∧ Slip", "hyps": ["Wet ∧ Slip", "Wind"] }
+        { "goal": "Wet → Slip", "hyps": ["Wet → Slip", "Wind"] }
       ],
       "solution": ["step1 = logic/directBackward-logic_assumption(in)", "out <- step1"]
     }

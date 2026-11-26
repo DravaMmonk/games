@@ -155,6 +155,20 @@ function Value({ value, error, show, of, views, idle = false }) {
   return <Show value={value} scene="card" text={show} of={of} views={views} />
 }
 
+/** A packed part has no step of its own in a trace, only its cards' (under its id, `path`): once a run is past the
+ *  last of them, the part shows what it gave, as it does before the run is played. */
+function withPackedResults(view, run, upTo) {
+  if (!(run.values instanceof Map)) return view
+  const last = new Map()
+  run.trace.forEach((entry, k) => { if (entry.path?.length) last.set(entry.path[0], k) })
+  const values = new Map(view.values)
+  for (const [key, value] of run.values) {
+    const done = last.get(srcNode(key))
+    if (done !== undefined && done <= upTo && !values.has(key)) values.set(key, value)
+  }
+  return { ...view, values }
+}
+
 const noWorld = () => null
 const noPreferredTest = () => undefined
 const sameDisplayTask = (task) => task
@@ -173,7 +187,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
   }
 }
 
-export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, partFace, partsPanel: PartsPanel, context, training, testLabel, usePreferredTest = noPreferredTest, useDisplayTask = sameDisplayTask, useRunOptions = noRunOptions, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
+export default function CircuitScreen({ screen, course, cards, traySource, run: runOn, show: showOf, entries, settle, figure, judged = false, once, timeline, sample, ready, fresh, clearable, settings, defaults, portLabels = {}, defined: gameDefined = null, inspect, sheet, details = false, card: faces = {}, canvas = { height: 120 }, words = TEST_WORDS, says = {}, table = null, told, readouts, valueViews, viewControls, settingControls, partFace, partsPanel: PartsPanel, context, training, testLabel, usePreferredTest = noPreferredTest, useDisplayTask = sameDisplayTask, useRunOptions = noRunOptions, useWorld = noWorld, log = false, stepNote, report: Report, reportAside, typeset, revealOnPass = false, showResults = true, reportOnly = false, outputTarget = false, tileSettings = true, taskBoard, className = '' }) {
   const { game, level: entry, solved, progress } = screen
   const level = entry.source
   const base = course.forTask(level)
@@ -266,7 +280,10 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
   }, [drawn, kind])
   const inputs = () => [...runOf.values ?? []].filter(([from]) => !tested.has(srcNode(from)) || kind.isFixed(drawn.nodes.find((n) => n.id === srcNode(from))?.type))
   const played = () => {
-    const view = { ...viewAt(runOf.trace, at), played: { run: runOf, upTo: at } }
+    const base = withPackedResults(viewAt(runOf.trace, at), runOf, at)
+    // Played through, a run may settle its board on the way to its result rather than on its last step (a search).
+    const values = settle && at >= runOf.trace.length - 1 ? settle(runOf, base.values) : base.values
+    const view = { ...base, values, played: { run: runOf, upTo: at } }
     return stepwise ? { ...view, values: new Map([...inputs(), ...view.values]), idle: true } : view
   }
   const computed = timed ? tick ?? undefined : whole || !hasPlayback ? runOf : played()
@@ -573,13 +590,14 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
  * functions, no component of its own):
  *
  *   play         the domain's run.js whole: its runLevel, entries, and where it has them show (how a value reads; else
- *                the kit's valueText) and once (which tasks run the board once per test)
+ *                the kit's valueText), once (which tasks run the board once per test) and settle(run, values) (the
+ *                values a board shows once a run is played through, when not those of its last step)
  *   course(game) → the course read the screen plays (circuit-game.js: game.circuit)
  *   says, portLabels?, words?, canvas?, sample?, table?, figure?, told?, readouts?   as CircuitScreen
  *                takes them
  */
 export function circuitScreen(config, { play, course, labelRenderer, ...declared }) {
-  const played = { run: play.runLevel, entries: play.entries, show: play.show ?? valueText, once: play.once }
+  const played = { run: play.runLevel, entries: play.entries, show: play.show ?? valueText, once: play.once, settle: play.settle }
   const judged = config.judge === 'once' || config.judge === 'outputs'
   const revealOnPass = config.checks === 'afterPass'
   return function Screen(screen) {

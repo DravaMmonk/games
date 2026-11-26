@@ -6,7 +6,7 @@
 // clause sets, rules) read as lines of text.
 import { T } from 'kernel/words'
 import { createElement, useMemo } from 'react'
-import { frameTree, settingsOf, withPreset } from 'circuit'
+import { frameTree, settingsOf, sourceOf, withPreset } from 'circuit'
 import { CIRCUIT_WORDS } from 'circuit/view'
 import { L } from 'kernel/view'
 import { defaultBoundRule, directCardsOf, machineConfigurationCases, runMachine } from '../../core/machine.js'
@@ -31,7 +31,8 @@ function byProof(run) {
 /**
  * How a played run left a card: a rule that did not apply fades, apart from one whose chosen position is not in this
  * case. While a run that tries several candidates plays, a card shows what it did on the way to the step on view, not
- * what it last did on a path the run has since left; once played through, what it did on the way to the result.
+ * what it last did on a path the run has since left; once played through, what it did on the way to the result: in a
+ * search, in the round that reached it (finalRounds).
  */
 function playedClass(node, ctx) {
   const played = ctx.view?.played
@@ -39,14 +40,16 @@ function playedClass(node, ctx) {
   const { run, upTo } = played
   const own = (entry) => entry.id === node.id && !entry.path?.length && entry.status
   let last = null
+  const through = upTo >= run.trace.length - 1
   const at = run.trace[Math.min(upTo, run.trace.length - 1)]
-  if (at?.proof) {
+  if (through && finalRounds(run).has(node.id)) last = finalRounds(run).get(node.id)
+  else if (at?.proof) {
     const steps = byProof(run)
     for (let entry = at; entry && !last; entry = steps.get(entry.proof.parent)) if (own(entry)) last = entry
   } else {
     for (const entry of run.trace.slice(0, upTo + 1)) if (own(entry)) last = entry
   }
-  const status = upTo >= run.trace.length - 1 ? run.nodeStatuses?.get(node.id) ?? last?.status : last?.status
+  const status = through && !finalRounds(run).has(node.id) ? run.nodeStatuses?.get(node.id) ?? last?.status : last?.status
   if (status !== 'skipped') return ''
   return last?.reason === 'position-missing' ? 'is-skipped is-unplaced' : 'is-skipped'
 }
@@ -59,6 +62,35 @@ function framesAround(level, board, node) {
 }
 const RUN_AGAIN = ['logic/search', 'logic/repeat']
 
+const rounds = new WeakMap()
+/**
+ * Where a played search rests: each frame that went round on the way to the result, in the round that reached it, and
+ * not in the candidates it tried after it (the last steps of the trace). By source (sourceOf), the last entry of every
+ * card and frame in those rounds; empty for a run that searched nothing.
+ */
+function finalRounds(run) {
+  if (rounds.has(run)) return rounds.get(run)
+  const own = (entry) => !entry.path?.length
+  const starts = new Map()
+  run.trace.forEach((entry, k) => { if (own(entry) && entry.key != null && entry.proof?.resultPath) starts.set(sourceOf(entry.id, entry.key), k) })
+  const settled = new Map()
+  for (const [source, from] of starts) {
+    const next = run.trace.findIndex((entry, k) => k > from && own(entry) && sourceOf(entry.id, entry.key) === source)
+    for (const entry of run.trace.slice(from, next < 0 ? undefined : next)) if (own(entry)) settled.set(sourceOf(entry.id, entry.key), entry)
+  }
+  rounds.set(run, settled)
+  return settled
+}
+
+/** The values a played-through run leaves on the board: a search's in the round that reached the result. */
+function settledValues(run, values) {
+  const settled = finalRounds(run)
+  if (!settled.size) return values
+  const shown = new Map(values)
+  for (const [source, entry] of settled) if (!entry.error) shown.set(source, entry.playbackValue ?? entry.value)
+  return shown
+}
+
 export const machineScreen = {
   course: (game) => game.logic.machineBoards,
   useDisplayTask(task, test) {
@@ -66,7 +98,7 @@ export const machineScreen = {
     return useMemo(() => general && test ? { ...task, notation: machineGeneralNotation(task, test) } : task, [general, task, test])
   },
   traySource: (task, type) => directCardsOf(task).get(type)?.source,
-  play: { ...machineReadout, runLevel: (task, board, _parts, options) => runMachine(task, board, { traced: true, ...options }) },
+  play: { ...machineReadout, runLevel: (task, board, _parts, options) => runMachine(task, board, { traced: true, ...options }), settle: settledValues },
   useRunOptions: useMachineRunOptions,
   context: (task, _test, run, options) => ({ task, text: machineTextOf(task), term: machineTermOf(task), ruleSlots: run?.ruleSlots, autoFirst: options.autoFirst }),
   settingControls: (task) => ({

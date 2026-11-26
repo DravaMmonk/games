@@ -9,13 +9,12 @@
     "qed/r-exI",
     "qed/r-exE",
     "qed/r-drule",
-    "qed/r-eq",
     "qed/r-frule"
   ],
   "rows": [
     ["qed/r-allI", "qed/r-exI"],
     ["qed/r-exE"],
     ["qed/r-drule"],
-    ["qed/r-eq", "qed/r-frule"]
+    ["qed/r-frule"]
   ]
 }

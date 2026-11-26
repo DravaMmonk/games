@@ -13,7 +13,7 @@ import { bin, parse, same, show, subst, substMany, tvar } from '../core/formula.
 import { render } from '../core/notation.js'
 import { didText, machineGeneralNotation, machineReadout, stepExplained } from '../core/circuit-readouts.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
-import { BACKWARD_POSITIONS, MACHINE_BOARD, REWRITE_CHOICES, RULE_CHOICES, boardRules, defaultBoundRule, directCardsOf, inputsOfLevel, machineConfigurationCases, machinePositionCases, runMachine } from '../core/machine.js'
+import { BACKWARD_POSITIONS, MACHINE_BOARD, REWRITE_CHOICES, RULE_CHOICES, boardRules, builtMachine, defaultBoundRule, directCardsOf, inputsOfLevel, machineConfigurationCases, machinePositionCases, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
 import { OPS } from '../core/ops.js'
 import { OPTIONS, PROOF_BOARD, RULES, lemmaGives, proved, runProof } from '../core/proof.js'
@@ -534,6 +534,53 @@ test('a search report follows the successful path through separate rounds', () =
   }
 })
 
+test('a single-proof report ends at the judged answer even when the search continues', () => {
+  const goal = 'Human(?w)'
+  const hyps = ['Human(ann)', 'Human(bo)']
+  const level = onMachine({
+    kind: 'logic/machine', want: 'logic/proved', backtrack: true,
+    rules: { defer: { name: 'Defer', premises: ['Other(?x)'], conclusion: 'Human(?x)' } },
+    tests: [
+      { goal, hyps }, { goal, hyps, want: 'logic/answers', answers: ['ann', 'bo'] },
+      { goal, hyps: [], want: 'logic/fails' },
+    ],
+  })
+  const board = machine({
+    search: ['search', { depth: 2 }], cite: [CITE, {}, 'search'],
+    defer: ['logic/directBackward-defer', {}, 'search'], join: ['append', {}, 'search'],
+  }, [
+    'in>search', 'search#body>cite', 'search#body>defer',
+    'cite>join.first', 'defer>join.second', 'join>search.body', 'search>out',
+  ])
+
+  const traced = runMachine(level, board, { traced: true })
+  const plain = runMachine(level, board)
+  assert.equal(traced.pass, true)
+  assert.equal(plain.pass, true)
+  assert.deepEqual(traced.runs.map(run => structuredClone(run.outputs)), plain.runs.map(run => structuredClone(run.outputs)))
+  const [proved, answers, exhausted] = traced.runs
+  assert.equal(proved.outputs.out.more.length, 1)
+  const last = proved.trace.at(-1)
+  assert.equal(last.id, 'cite')
+  assert.deepEqual(last.value.goals, [])
+  assert.deepEqual(last.value.inst, proved.outputs.out.inst)
+  assert.equal(last.proof.resultPath, true)
+  assert.ok(answers.trace.length > proved.trace.length)
+  assert.equal(answers.trace.filter(step => step.proof.resultPath && !step.value.goals.length).length, 2)
+  assert.equal(answers.trace.at(-1).proof.stopReasonKey, 'noProgress')
+  assert.ok(exhausted.trace.some(step => step.proof.stopReasonKey === 'noProgress'))
+
+  const packed = builtMachine('auto', () => level, level, () => board)
+  const packedLevel = { ...level, parts: type => type === 'auto' ? packed : level.parts(type) }
+  const packedBoard = machine({ packed: ['auto'] }, ['in>packed', 'packed>out'])
+  const packedReport = runMachine(packedLevel, packedBoard, { traced: true })
+  assert.equal(packedReport.pass, true)
+  const packedLast = packedReport.runs[0].trace.at(-1)
+  assert.deepEqual(packedLast.path, ['packed'])
+  assert.deepEqual(packedLast.value.goals, [])
+  assert.equal(packedLast.proof.resultPath, true)
+})
+
 test('search prunes a round with sentence metavariables in goals or hypotheses', () => {
   const level = onMachine({
     kind: 'logic/machine', want: 'logic/proved', backtrack: true,
@@ -589,6 +636,14 @@ test('search limits unpinned backward cards to the first goal and honors explici
   assert.equal(skipped.reason, 'rule-mismatch')
   assert.deepEqual(skipped.value.goals.map(g => show(g.goal)), ['Rain', 'Wind → Slip'])
   assert.equal(opening({ ...level, backtrack: false }).status, 'skipped')
+
+  node.params.at = 'goal-0'
+  assert.equal(opening(level).reason, 'position-missing')
+  const noMatch = { ...level, tests: [{ goal: 'Rain ∧ Wind' }] }
+  assert.equal(opening(noMatch).reason, 'rule-mismatch')
+  node.params.at = 'goal-3'
+  assert.equal(opening(level).reason, 'position-missing')
+  assert.equal(opening(noMatch).reason, 'rule-mismatch')
 
   node.params.at = 'goal-1'
   const selected = opening(level)
@@ -937,7 +992,7 @@ test('optional first-choice defaults agree across rewrite runs, previews and pos
   node.params.at = 'goal-1'
   assert.equal(show(runMachine(level, board, enabled).runs[0].outputs.out.goals[0].goal), 'Rain ∧ Wet')
   node.params.use = ['hyp.iff.reverse']
-  assert.equal(runMachine(level, board, { ...enabled, traced: true }).runs[0].trace[0].reason, 'position-missing')
+  assert.equal(runMachine(level, board, { ...enabled, traced: true }).runs[0].trace[0].reason, 'rule-mismatch')
 
   const filtered = { ...level, withheldRuleChoices: new Set([`${source}.use=hyp.iff`]),
     tests: [{ goal: 'Wet ∧ Wet', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Rain ∧ Wet']] }] }
@@ -1069,6 +1124,29 @@ test('rewrite and citation cards pass unchanged goals to later attempts', () => 
   const summary = value => positions.find(position => position.value === value).cases.map(({ exists, isDefault }) => [exists, isDefault])
   assert.deepEqual(summary('goal-0'), [[true, false], [true, false]])
   assert.deepEqual(summary('goal-1'), [[false, false], [true, false]])
+})
+
+test('pinned rewrites in repeat and search distinguish exhaustion from a match elsewhere', () => {
+  const source = 'example/substitute'
+  const type = 'logic/directRewrite-example_substitute'
+  const level = onMachine({
+    kind: 'logic/machine', want: 'logic/becomes', backtrack: true,
+    ruleParts: { 'logic/iffSubst': source }, partDefs: { [source]: { name: 'Substitution' } },
+    tests: [
+      { goal: 'Rain', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Wet']] },
+      { goal: 'Wind', hyps: ['Rain ↔ Wet', 'Rain'], becomes: [['Rain ↔ Wet; Rain ⊢ Wind']] },
+      { goal: 'Wind', hyps: ['Rain ↔ Wet'], becomes: [['Rain ↔ Wet ⊢ Wind']] },
+    ],
+  })
+  const card = [type, { use: ['hyp.iff'], at: 'goal-0' }, 'frame']
+  for (const frame of ['repeat', 'search']) {
+    const board = machine({ frame: [frame], change: card },
+      ['in>frame', 'frame#body>change', 'change>frame.body', 'frame>out'])
+    const report = runMachine(frame === 'search' ? { ...level, want: 'logic/fails' } : level, board, { traced: true })
+    assert.equal(report.pass, true)
+    assert.deepEqual(report.runs.map(run => run.trace.filter(step => step.id === 'change').map(step => step.reason)),
+      [[undefined, 'rule-mismatch'], ['position-missing'], ['rule-mismatch']])
+  }
 })
 
 test('bound apply, elimination, cut and proved lemmas leave metavariables that citation solves', () => {
@@ -1593,6 +1671,9 @@ test('forward application adds givens, skips a missing premise or duplicate, and
     [['hyp-1', [true, false, false]]])
   assert.deepEqual(machineConfigurationCases(level, node, cases), cases.map(() => ({ pending: false, reason: null })))
   node.params.at = 'hyp-0'
+  assert.deepEqual(runMachine(level, board, { traced: true }).runs.map(run => run.trace[0].reason),
+    ['nothing-new', 'rule-mismatch', 'nothing-new'])
+  node.params.at = 'hyp-2'
   const pinned = runMachine(level, board, { traced: true }).runs[0]
   assert.equal(pinned.trace[0].reason, 'position-missing')
   assert.deepEqual(pinned.values.get('in').goals, pinned.outputs.out.goals)

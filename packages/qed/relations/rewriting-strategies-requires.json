@@ -2,10 +2,6 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "sp-back",
-      "to": "sp-repeat"
-    },
-    {
       "from": "sp-repeat",
       "to": "sp-simp"
     }

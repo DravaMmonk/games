@@ -1,0 +1,34 @@
+{
+  "title": "@level.s-equal.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.s-equal.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "s-equal",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "backtrack": true,
+      "brief": "@level.s-equal.tasks.s-equal.brief",
+      "hint": ["@level.s-equal.tasks.s-equal.hint.0"],
+      "tests": [
+        { "goal": "Bright(i) ∨ Wind", "hyps": ["i = j", "Bright(j)"] },
+        { "goal": "∃x. Likes(x, i)", "hyps": ["i = j", "Likes(k, j)"] },
+        { "goal": "Rain ∨ Wind", "hyps": ["Wind"] },
+        { "goal": "i = j → (Bright(j) → Bright(i))" },
+        { "goal": "Bright(i)", "hyps": ["i = j"], "want": "logic/fails" }
+      ],
+      "solution": [
+        "r = repeat(in, body: o) {",
+        "  body {",
+        "    o = logic/directBackward-qed_impI(r.body)",
+        "  }",
+        "}",
+        "a = simp(r)",
+        "b = auto(a)",
+        "out <- b"
+      ],
+      "naive": ["a = simp(in)", "b = auto(a)", "out <- b"]
+    }
+  ]
+}

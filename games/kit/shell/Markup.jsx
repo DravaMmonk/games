@@ -11,12 +11,13 @@ import { SettingsContext } from './useSetting.js'
 
 // A sentence quoted in a text — 「A ∧ B」, 「∃y. P(y)」: letters and logic's signs, not words — is a formula, typeset as
 // every formula is (FormulaText), in every text unless `sentences` is turned off; 「并且」 or 「若…则…」 stay text.
-// The same in English, between “ and ”.
+// The same in English, between “ and ”. A short one keeps its quotation marks on its line: a line never starts with 」.
 const QUOTED = /(「[^「」]+」|“[^“”]+”)/
 const SENTENCE = /^[「“](?=[^」”]*(?:\b[A-Z]\b|[⊥⊤]))[A-Za-z0-9\s∀∃¬∧∨→↔⊥⊤().,·=≐+'?×]+[」”]$/
 const prose = (text, Prose) => Prose ? <Prose text={text} /> : text
+const SHORT = 32
 const quoted = (text, key, Prose) => text.split(QUOTED).map((part, k) => (SENTENCE.test(part)
-  ? <Fragment key={`${key}.${k}`}>{part[0]}<FormulaText text={part.slice(1, -1)} className="markup-sentence" />{part.at(-1)}</Fragment>
+  ? <span key={`${key}.${k}`} className={part.length <= SHORT ? 'markup-quote' : undefined}>{part[0]}<FormulaText text={part.slice(1, -1)} className="markup-sentence" />{part.at(-1)}</span>
   : <Fragment key={`${key}.${k}`}>{prose(part, Prose)}</Fragment>))
 
 const draw = (nodes, sentences, Prose) => nodes.map((node, i) => {

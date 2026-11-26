@@ -11,19 +11,22 @@
       "brief": "@level.machine-backward-and.tasks.machine-backward-and.brief",
       "hint": ["@level.machine-backward-and.tasks.machine-backward-and.hint.0"],
       "tests": [
+        { "goal": "Wind ∧ Rain", "hyps": ["Rain ∧ Wind"] },
         { "goal": "Rain ∧ Wind", "hyps": ["Wind", "Rain"] },
-        { "goal": "Coffee ∧ Tea", "hyps": ["Coffee", "Awake", "Tea"] }
+        { "goal": "Awake ∧ Tea", "hyps": ["Coffee ∧ Tea", "Awake"] }
       ],
       "solution": [
-        "step1 = logic/directBackward-qed_andI(in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step1 = logic/directForward-qed_andE(in)",
+        "step2 = logic/directBackward-qed_andI(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
-        "out <- step3"
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
       ],
       "naive": [
         "step1 = logic/directBackward-qed_andI(in)",
         "step2 = logic/directBackward-logic_assumption(step1)",
-        "out <- step2"
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
       ]
     }
   ]

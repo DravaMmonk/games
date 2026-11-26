@@ -12,6 +12,7 @@
   "tasks": [
     {
       "id": "or",
+      "step": "@level.or.tasks.or.step",
       "kind": "logic/proof",
       "tests": [
         {
@@ -39,6 +40,34 @@
         "i = orI[other=B, side=right](p)",
         "j = orI[other=B, side=left](i)",
         "goal <- j"
+      ]
+    },
+    {
+      "id": "cases",
+      "step": "@level.or.tasks.cases.step",
+      "kind": "logic/proof",
+      "intro": [
+        { "t": "@level.or.tasks.cases.intro.0.t" },
+        { "t": "@level.or.tasks.cases.intro.1.t" },
+        { "t": "@level.or.tasks.cases.intro.2.t" }
+      ],
+      "tests": [{ "premises": { "p": "A ∨ B", "q": "A → C", "r": "B → C" }, "goal": "C" }],
+      "cases": [{ "A": "Bus", "B": "Bike", "C": "OnTime" }, { "A": "Sat", "B": "Sun", "C": "Rest" }],
+      "hint": [
+        "@level.cases.tasks.cases.hint.0",
+        "@level.cases.tasks.cases.hint.1",
+        "@level.cases.tasks.cases.hint.2"
+      ],
+      "solution": [
+        "e = orE(p, left: m, right: m2) {",
+        "  left {",
+        "    m = mp(q, e.left)",
+        "  }",
+        "  right {",
+        "    m2 = mp(r, e.right)",
+        "  }",
+        "}",
+        "goal <- e"
       ]
     }
   ]

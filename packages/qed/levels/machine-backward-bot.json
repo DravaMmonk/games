@@ -10,17 +10,20 @@
       "want": "logic/proved",
       "brief": "@level.machine-backward-bot.tasks.machine-backward-bot.brief",
       "hint": ["@level.machine-backward-bot.tasks.machine-backward-bot.hint.0"],
-      "tests": [{ "goal": "Rain ∧ Wind", "hyps": ["Rain", "⊥"] }, { "goal": "Bus ∨ Bike", "hyps": ["⊥"] }],
+      "tests": [
+        { "goal": "Rain ∧ Wind", "hyps": ["Rain", "⊥"] },
+        { "goal": "Bus ∨ Bike", "hyps": ["⊥"] },
+        { "goal": "Wet", "hyps": ["Wind", "Wet"] }
+      ],
       "solution": [
-        "step1 = logic/directBackward-qed_botE(in)",
+        "step1 = logic/directForward-qed_botE(in)",
         "step2 = logic/directBackward-logic_assumption(step1)",
         "out <- step2"
       ],
       "naive": [
-        "step1 = logic/directBackward-qed_andI(in)",
+        "step1 = logic/directBackward-qed_botE(in)",
         "step2 = logic/directBackward-logic_assumption(step1)",
-        "step3 = logic/directBackward-logic_assumption(step2)",
-        "out <- step3"
+        "out <- step2"
       ]
     }
   ]

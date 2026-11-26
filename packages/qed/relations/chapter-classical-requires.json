@@ -73,7 +73,7 @@
       "to": "kk-three"
     },
     {
-      "from": "q-dm",
+      "from": "au-iff",
       "to": "c-contra"
     },
     {
@@ -82,16 +82,15 @@
       "to": "c-either"
     },
     {
-      "from": "lemCases",
+      "from": "c-dist",
       "to": "peirce"
     },
     {
       "from": "q-dm",
       "to": "drinker"
     },
-    {
-      "from": "s-loop",
-      "to": "c-wall"
-    }
+    { "from": "c-dist", "to": "au-iff" },
+    { "from": "q-dm", "to": "au-iff" },
+    { "from": "s-equal", "to": "c-wall" }
   ]
 }

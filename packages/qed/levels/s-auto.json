@@ -1,7 +1,7 @@
 {
   "title": "@level.s-auto.title",
   "after": "@level.s-auto.after",
-  "withholds": ["mp.use=impE", "mp.use=cut", "allE.use=spec"],
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
   "tray": "prover",
   "intro": [
     {
@@ -93,7 +93,9 @@
         },
         { "goal": "Rain → Wind", "want": "logic/fails" },
         { "goal": "Rain ∨ Wind", "hyps": ["Wet"], "want": "logic/fails" },
-        { "goal": "¬¬Rain → Rain", "want": "logic/fails" }
+        { "goal": "¬¬Rain → Rain", "want": "logic/fails" },
+        { "goal": "Slip", "hyps": ["Rain ∧ Wind → Slip", "Rain", "Wind"] },
+        { "goal": "Mortal(i) ∧ Mortal(j)", "hyps": ["∀x. Human(x) → Mortal(x)", "Human(i)", "Human(j)"] }
       ],
       "solution": [
         "c0 = search(in, body: c1) {",
@@ -105,14 +107,14 @@
         "    left = logic/directBackward-qed_orI[use=[\"disjI1\"]](c0.body)",
         "    right = logic/directBackward-qed_orI[use=[\"disjI2\"]](c0.body)",
         "    example = logic/directBackward-qed_exI(c0.body)",
-        "    e1 = logic/directBackward-qed_andE[use=[\"conjE\"]](c0.body)",
-        "    e2 = logic/directBackward-qed_orE(c0.body)",
+        "    f1 = logic/directForward-qed_andE(c0.body)",
+        "    f2 = logic/directForward-qed_orE(f1)",
+        "    f3 = logic/directForward-qed_exE(f2)",
+        "    f4 = logic/directForward-qed_allE(f3)",
         "    e3 = logic/directBackward-qed_mp[use=[\"mp\"]](c0.body)",
-        "    e4 = logic/directBackward-qed_exE(c0.body)",
-        "    e5 = logic/directBackward-qed_allE[use=[\"allE\"]](c0.body)",
-        "    given = append[ways=\"5\"](first: e1, second: e2, third: e3, fourth: e4, fifth: e5)",
-        "    use = logic/directBackward-logic_assumption(given)",
-        "    c1 = append[ways=\"6\"](first: cite, second: join, third: left, fourth: right, fifth: example, sixth: use)",
+        "    use = logic/directBackward-logic_assumption(e3)",
+        "    given = append(first: f4, second: use)",
+        "    c1 = append[ways=\"6\"](first: cite, second: join, third: left, fourth: right, fifth: example, sixth: given)",
         "  }",
         "}",
         "out <- c0"

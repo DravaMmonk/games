@@ -24,10 +24,9 @@
     "s-loop",
     "sp-back",
     "sp-nnf",
-    "sp-order",
     "sp-repeat",
     "sp-simp",
-    "s-rounds",
-    "s-explore"
+    "s-explore",
+    "s-equal"
   ]
 }

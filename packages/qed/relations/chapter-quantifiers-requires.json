@@ -40,10 +40,6 @@
       "to": "q-grand"
     },
     {
-      "from": "machine-cases",
-      "to": "fo-atoms"
-    },
-    {
       "required": true,
       "from": "p-only",
       "to": "p-split"
@@ -52,6 +48,10 @@
       "required": true,
       "from": "q-grand",
       "to": "q-school"
+    },
+    {
+      "from": "iffUse",
+      "to": "fo-atoms"
     }
   ]
 }

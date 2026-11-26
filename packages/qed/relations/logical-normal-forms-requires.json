@@ -4,10 +4,6 @@
     {
       "from": "au-iff",
       "to": "sp-nnf"
-    },
-    {
-      "from": "sp-nnf",
-      "to": "sp-order"
     }
   ]
 }

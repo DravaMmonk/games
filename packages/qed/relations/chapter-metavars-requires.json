@@ -24,10 +24,6 @@
     {
       "from": "r-exE",
       "to": "r-drule"
-    },
-    {
-      "from": "r-drule",
-      "to": "r-eq"
     }
   ]
 }

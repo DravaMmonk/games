@@ -14,10 +14,6 @@
       "to": "decl-or"
     },
     {
-      "from": "decl-or",
-      "to": "decl-bot"
-    },
-    {
       "from": "decl-bot",
       "to": "decl-true"
     },

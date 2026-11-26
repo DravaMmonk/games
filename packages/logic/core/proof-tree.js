@@ -139,6 +139,16 @@ export function finishProof(proof, trace, output, want, problem) {
         step = nodes.get(step.parent)
       }
     }
+    // A single-proof report ends at the proof used by the judge. Evaluation may
+    // still need every candidate, including those tried after this result.
+    if (want === 'logic/proved') {
+      for (let i = entries.length - 1; i >= 0; i--) {
+        const { proof, value } = entries[i]
+        if (!proof.resultPath || value?.kind !== 'state' || value.goals.length) continue
+        entries.length = i + 1
+        break
+      }
+    }
   }
   const nodeStatuses = new Map()
   const onPath = new Set()

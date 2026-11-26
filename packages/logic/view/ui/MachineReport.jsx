@@ -1,10 +1,11 @@
-import { lastIndexMatching } from 'kernel'
+import { lastIndexMatching, sameJson } from 'kernel'
 // The prover's run report (a machine level's `report`, ../../../circuit/view/CircuitScreen.jsx): the rules on the
 // board are numbered once (R₁ R₂ …). The initial goal starts the report.
 // Each step links down to its result box: the step's number, the card's name and what the
 // card did in marks (⊢ ⟵ R₁, ⊢ ✓ …, ../../core/circuit-readouts.js didText). A box holds only goals (⊢₁ ⊢₂ …). A step
 // that fails says why, and no box follows it. A rule that did not apply hands its state on unchanged: its step is a
-// hollow number with no box of its own, on the line of the step that gave the state it left alone. The current step is
+// hollow number with no box of its own, on the line of the step that gave the state it left alone; so is a step that
+// did its work and left the goals as they were (a frame going round or out). The current step is
 // marked and kept in view, inside the report only; a run that ends with goals open rests on the last skipped step.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { CopyCheck, Ellipsis, Info, ListOrdered, LocateOff, Network } from 'lucide-react'
@@ -25,6 +26,11 @@ const TAIL_LINES = 48
 const GAP_LINES = 8
 // The work a card does on one goal of the state it is handed (../../core/machine.js `did`).
 const ACTS = ['rule', 'assumption', 'rw', 'rwHyps']
+// A card still waiting for its rule or its position: it stops the run there.
+const WAITING = ['rule-required', 'position-required']
+/** Whether a step's state has the goals of the box above it: the step changed nothing the report shows. */
+const sameGoals = (value, above) => value?.kind === 'state' && above?.kind === 'state' && !value.error && !above.error
+  && (value.more?.length ?? 0) === (above.more?.length ?? 0) && sameJson(value.goals, above.goals)
 const REPORT_VIEWS = [
   { view: 'steps', label: T('运行步骤'), icon: ListOrdered },
   { view: 'tree', label: T('分支树'), icon: Network },
@@ -69,16 +75,21 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
   const canShowTree = Boolean(run?.proofRoot)
   const tree = canShowTree && mode === 'tree'
   const shown = steps.map((s, k) => ({ s, k, number: k + 1, current: k === at }))
-  // A line holds the step that gave the box under it and every step after it that left the state as it was; steps
-  // skipped before anything changed the initial state lead the first step that does.
+  const start = startOf(test, task)
+  // A line holds the step that gave the box under it and every step after it that left the state as it was: skipped,
+  // or done without changing the goals; such steps before anything changed the initial state lead the first step that does.
   const rows = []
   let leading = []
+  let above = start
   for (const step of shown) {
-    if (step.s.entry.status !== 'skipped') {
+    const { entry, value, failed } = step.s
+    const kept = entry.status !== 'skipped' && !failed && !unsettled(entry) && !WAITING.includes(entry.reason) && sameGoals(value, above)
+    if (entry.status !== 'skipped' && !kept) {
       rows.push({ lead: leading, step, trail: [] })
       leading = []
-    } else if (rows.length) rows.at(-1).trail.push(step)
-    else leading.push(step)
+      above = value
+    } else if (rows.length) rows.at(-1).trail.push({ ...step, kept })
+    else leading.push({ ...step, kept })
   }
   if (leading.length) rows.push({ lead: leading, step: null, trail: [] })
   // A search that never stops runs to hundreds of steps: the report keeps the lines it began with and the lines it
@@ -102,7 +113,6 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
   const nextOf = (id) => actedOn.get(id) ?? undefined
   const open = ended && run?.outputs?.out?.kind === 'state' && run.outputs.out.goals.length > 0
   const stuck = open ? lastIndexMatching(steps, (s) => s.entry.status === 'skipped') : -1
-  const start = startOf(test, task)
   const rules = phone && machineRuleList({ run, task })
   useLayoutEffect(() => {
     if (phone) return
@@ -137,7 +147,7 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
   useEffect(() => {
     const el = tree ? box.current?.querySelector('.mr-tree-scroll') : box.current
     if (!el) return
-    const marked = el.querySelector(tree ? '.mr-branch-node.is-on' : '.mr-skip.is-stuck, .mr-step.is-on, .mr-skip.is-on') ?? (!tree && el.querySelector('.mr-flow')?.lastElementChild)
+    const marked = el.querySelector(tree ? '.mr-branch-node.is-on' : '.mr-skip.is-stuck, .mr-step.is-on, .mr-skip.is-on, .mr-kept.is-on') ?? (!tree && el.querySelector('.mr-flow')?.lastElementChild)
     if (!marked) { if (tree) el.scrollTop = 0; return }
     // A skipped step is kept in view with the whole line it stands on.
     const on = (!tree && marked.closest('.mr-step')) || marked
@@ -160,6 +170,12 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
         {tree ? <ProofTree key={JSON.stringify(test)} root={run.proofRoot} steps={shown} ended={ended} run={run} task={task} /> : <ol className="mr-flow" ref={flow} aria-label={tr('运行步骤')}>
           {start !== undefined && <Box value={start} task={task} show={show} next={nextOf(0)} />}
           {lines.flatMap(({ gap, lead, step, trail }) => {
+            // A step's ⓘ: what it did, in a sentence (`known` when the caller has already asked whether there is one).
+            const info = (s, k, known = false) => (known || stepExplained(s.entry, run)) && (
+              <button type="button" className="mr-info" aria-label={tr('这一步做了什么')} aria-expanded={told?.k === k} onClick={(event) => setTold(told?.k === k ? null : { k, anchor: event.currentTarget })}>
+                <Info size={13} />
+              </button>
+            )
             if (gap) {
               const first = (gap[0].step ?? gap[0].lead[0]).number
               const last = (gap.at(-1).trail.at(-1) ?? gap.at(-1).step ?? gap.at(-1).lead.at(-1)).number
@@ -167,7 +183,14 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
                 <button type="button" aria-label={`${tr('运行步骤')} ${first}–${last}`} onClick={() => setOpened({ test, lines: (opened.test === test ? opened.lines : 0) + TAIL_LINES })}><Ellipsis size={14} aria-hidden="true" /></button>
               </li>]
             }
-            const skip = ({ s, k, number, current }) => (
+            const skip = ({ s, k, number, current, kept }) => kept ? (
+              <span key={k} className={`mr-item mr-kept ${current ? 'is-on' : ''}`}>
+                <span className="mr-num">{number}</span>
+                <span className="mr-name">{s.mark}<NotationLabel label={L(s.label)} /></span>
+                {s.detail && <Formula text={s.detail} className="mr-note" />}
+                {info(s, k)}
+              </span>
+            ) : (
               <span key={k} className={`mr-item mr-skip ${current ? 'is-on' : ''} ${k === stuck ? 'is-stuck' : ''}`}>
                 <span className="mr-num">{number}</span>
                 <span className="mr-name">{s.mark}<NotationLabel label={L(s.label)} /></span>
@@ -176,14 +199,16 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
               </span>
             )
             if (!step) return [<li key={`s${lead[0].k}`} className="mr-step is-skips">{lead.map(skip)}</li>]
-            const { s, k, number, current } = step
+            const { s, k, number } = step
+            // The line is on while any step on it is: they all left the state its box shows.
+            const current = step.current || trail.some((x) => x.kept && x.current)
             // A card that cannot do its step says ✗ (why, on a long press or hover) and gives back the state it was handed:
             // the next box. A card that cannot run at all (an input missing) says why, and nothing follows. A card still
             // waiting for its rule or its position stops the run there: it says what it lacks, in the accent rather than
             // as a failure, and hands nothing on.
             const broken = s.failed
             const refused = !broken && s.value?.kind === 'state' && s.value.error ? s.value.error : null
-            const waiting = s.entry.reason === 'rule-required' || s.entry.reason === 'position-required'
+            const waiting = WAITING.includes(s.entry.reason)
             // A candidate a search drops for the sentences still unknown in it: those letters stand as what the step
             // found, and its box is drawn as a branch cut off.
             const left = unsettled(s.entry)
@@ -192,17 +217,13 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
             return [
               <li key={`s${k}`} className={`mr-step ${current ? 'is-on' : ''} ${state}`}>
                 {lead.map(skip)}
-                <span className="mr-item">
+                <span className={`mr-item ${step.current ? 'is-on' : ''}`}>
                   <span className="mr-num">{number}</span>
                   <span className="mr-name">{s.mark}<NotationLabel label={L(s.label)} /></span>
                   {refused && !waiting ? <span className="mr-wrong" aria-label={L(refused)}><NotationLabel label={mark('cross')} /></span>
                     : left ? <Unsettled names={left} />
                     : !waiting && s.detail && <Formula text={s.detail} className="mr-note" />}
-                  {explained && (
-                    <button type="button" className="mr-info" aria-label={tr('这一步做了什么')} aria-expanded={told?.k === k} onClick={(event) => setTold(told?.k === k ? null : { k, anchor: event.currentTarget })}>
-                      <Info size={13} />
-                    </button>
-                  )}
+                  {explained && info(s, k, true)}
                 </span>
                 {trail.map(skip)}
                 {(broken || waiting) && <span className="mr-why">{L(broken || refused)}</span>}

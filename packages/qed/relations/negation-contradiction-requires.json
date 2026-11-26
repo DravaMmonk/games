@@ -4,14 +4,6 @@
     {
       "from": "decl-bot",
       "to": "bot"
-    },
-    {
-      "from": "bot",
-      "to": "notI"
-    },
-    {
-      "from": "notI",
-      "to": "mt"
     }
   ]
 }

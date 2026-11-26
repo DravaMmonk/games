@@ -33,10 +33,6 @@
       "required": true,
       "from": "c-contra",
       "to": "c-either"
-    },
-    {
-      "from": "lemCases",
-      "to": "peirce"
     }
   ]
 }

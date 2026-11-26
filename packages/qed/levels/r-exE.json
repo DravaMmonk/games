@@ -31,20 +31,18 @@
         }
       ],
       "solution": [
-        "step1 = logic/directBackward-qed_exE(in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step1 = logic/directForward-qed_exE(in)",
+        "step2 = logic/directForward-qed_andE(step1)",
         "step3 = logic/directBackward-qed_exI(step2)",
-        "step4 = logic/directBackward-qed_andE[use=[\"conjunct2\"]](step3)",
-        "step5 = logic/directBackward-logic_assumption(step4)",
-        "out <- step5"
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
       ],
       "naive": [
         "step1 = logic/directBackward-qed_exI(in)",
-        "step2 = logic/directBackward-qed_exE(step1)",
-        "step3 = logic/directBackward-logic_assumption(step2)",
-        "step4 = logic/directBackward-qed_andE[use=[\"conjunct2\"]](step3)",
-        "step5 = logic/directBackward-logic_assumption(step4)",
-        "out <- step5"
+        "step2 = logic/directForward-qed_exE(step1)",
+        "step3 = logic/directForward-qed_andE(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
       ]
     }
   ]

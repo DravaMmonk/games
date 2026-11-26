@@ -2,60 +2,63 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "and",
-      "to": "curry"
-    },
-    {
-      "from": "or",
-      "to": "cases"
-    },
-    {
-      "from": "cases",
-      "to": "orSwap"
-    },
-    {
-      "from": "bot",
-      "to": "notI"
-    },
-    {
-      "from": "notI",
-      "to": "mt"
-    },
-    {
-      "from": "curry",
-      "to": "iffUse"
-    },
-    {
-      "from": "orSwap",
-      "to": "iffUse"
-    },
-    {
-      "from": "mt",
-      "to": "iffUse"
-    },
-    {
-      "required": true,
-      "from": "mergeBoth",
-      "to": "orImp"
-    },
-    {
-      "from": "iffUse",
-      "to": "orImp"
-    },
-    {
       "required": true,
       "from": "orImp",
       "to": "contra"
     },
     {
-      "required": true,
-      "from": "contra",
-      "to": "dist"
+      "from": "machine-forward",
+      "to": "decl-and"
     },
     {
-      "required": true,
-      "from": "dist",
-      "to": "dsyll"
-    }
+      "from": "machine-forward",
+      "to": "decl-or"
+    },
+    {
+      "from": "machine-forward",
+      "to": "decl-bot"
+    },
+    {
+      "from": "decl-and",
+      "to": "and"
+    },
+    {
+      "from": "and",
+      "to": "machine-backward-and"
+    },
+    {
+      "from": "decl-or",
+      "to": "or"
+    },
+    {
+      "from": "or",
+      "to": "machine-cases"
+    },
+    {
+      "from": "bot",
+      "to": "machine-backward-bot"
+    },
+    {
+      "from": "machine-backward-and",
+      "to": "notI"
+    },
+    {
+      "from": "machine-cases",
+      "to": "notI"
+    },
+    {
+      "from": "machine-backward-bot",
+      "to": "notI"
+    },
+    {
+      "from": "notI",
+      "to": "machine-negation"
+    },
+    { "from": "machine-negation", "to": "iffUse" },
+    { "from": "iffUse", "to": "curry" },
+    { "required": true, "from": "curry", "to": "orImp" },
+    { "from": "iffUse", "to": "orSwap" },
+    { "required": true, "from": "orSwap", "to": "dsyll" },
+    { "from": "iffUse", "to": "mt" }
   ]
 }

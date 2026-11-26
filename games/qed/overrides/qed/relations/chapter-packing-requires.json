@@ -1,8 +1,7 @@
 {
   "edges": {
     "remove": [
-      { "from": "qed/decl-strength", "to": "qed/decl-or" },
-      { "from": "qed/decl-or", "to": "qed/decl-bot" }
+      { "from": "qed/decl-strength", "to": "qed/decl-or" }
     ]
   }
 }

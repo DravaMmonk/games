@@ -35,30 +35,23 @@
         }
       ],
       "solution": [
-        "step1 = logic/directBackward-qed_allE(in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
-        "step3 = logic/directBackward-qed_allE(step2)",
-        "step4 = logic/directBackward-logic_assumption(step3)",
+        "step1 = logic/directForward-qed_allE(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directForward-qed_allE(step2)",
+        "step4 = logic/directForward-qed_mp(step3)",
         "step5 = logic/directBackward-qed_andI(step4)",
-        "step6 = logic/directBackward-qed_mp(step5)",
+        "step6 = logic/directBackward-logic_assumption(step5)",
         "step7 = logic/directBackward-logic_assumption(step6)",
-        "step8 = logic/directBackward-logic_assumption(step7)",
-        "step9 = logic/directBackward-qed_mp(step8)",
-        "step10 = logic/directBackward-logic_assumption(step9)",
-        "step11 = logic/directBackward-logic_assumption(step10)",
-        "out <- step11"
+        "out <- step7"
       ],
       "naive": [
-        "step1 = logic/directBackward-qed_allE(in)",
-        "step2 = logic/directBackward-logic_assumption(step1)",
-        "step3 = logic/directBackward-qed_andI(step2)",
-        "step4 = logic/directBackward-qed_mp(step3)",
+        "step1 = logic/directForward-qed_allE(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directForward-qed_mp(step2)",
+        "step4 = logic/directBackward-qed_andI(step3)",
         "step5 = logic/directBackward-logic_assumption(step4)",
         "step6 = logic/directBackward-logic_assumption(step5)",
-        "step7 = logic/directBackward-qed_mp(step6)",
-        "step8 = logic/directBackward-logic_assumption(step7)",
-        "step9 = logic/directBackward-logic_assumption(step8)",
-        "out <- step9"
+        "out <- step6"
       ]
     }
   ]

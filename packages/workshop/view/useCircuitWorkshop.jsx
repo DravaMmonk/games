@@ -45,7 +45,7 @@ export function useCircuitWorkshop({ screen, course, base, cards, portLabels, de
   const types = [...offers.types, ...personal.map(({ id }) => id)]
   const held = new Set(types)
   const hasPersonal = (graph) => graph.nodes.some((node) => Object.hasOwn(library.parts, node.type))
-  const hold = (graph) => ready ? ready(graph, level, parts) : graph
+  const hold = (graph, before) => ready ? ready(graph, level, parts, before) : graph
   function openForCapture(node, at) {
     const opened = packed.open(node, at)
     return opened && { ...opened, open: (part) => openForCapture(part, opened) }

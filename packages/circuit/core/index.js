@@ -53,7 +53,7 @@ export { workView, workExtension, withWorkExtension, workNodes } from './board/w
 export { circuitBoard, fixedCardsFit, primitivesOnly, OUTPUTS, INPUTS } from './board-cards.js'
 export { boardView, fitsCircuit, previousCircuitTask } from './board-view.js'
 export { packedBoards } from './board/packed-boards.js'
-export { frameTree, regionAddress } from './board/regions.js'
+export { frameId, frameTree, regionAddress } from './board/regions.js'
 export { isFixed, withPreset, presetCardIds, presetOf } from './board/presets.js'
 export { boardShape } from './board-shape.js'
 export { VIRTUAL_INPUT, VIRTUAL_OUTPUT } from './board/virtual-terminals.js'

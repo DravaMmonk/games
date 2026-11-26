@@ -24,6 +24,7 @@ import { frameTree, regionAddress } from 'circuit'
 import { BOT, FORMULA_TEXT, all, allVars, and, asAnd, asImp, bin, eq, fn, freeVars, imp, mapFormulaOccurrences, mapTermOccurrences, mentionsSentence, occurrences, or, parse, replaceAtoms, replaceFormula, replaceTerm, same, signature, subst, substSentence, termsOf, tvar } from './formula.js'
 import { say, sayTerm } from './notation.js'
 import { choicesOf } from './choices.js'
+import { bindsThing, boxNames, pickableAt, reservedIn } from './names.js'
 import { cancelOne, disjunction, literalsIn } from './resolution.js'
 import { absurd, alphaEq, cases, fst, inl, inr, lam, obj, open as unpack, pair, papp, parseTerm, pconst, printTerm, psubst, pvar, raa, rfl, snd } from './pterm.js'
 import { T } from 'kernel/words'
@@ -85,6 +86,8 @@ const hypName = (node, ctx) => {
   if (!scope) throw fail('框的区域出现循环嵌套', 'Frame regions form a containment cycle')
   return `h${scope.length + 1}`
 }
+// The particular thing a box takes (names.js): its board's, not the player's to choose.
+const boxName = (node, ctx) => boxNames(ctx.graph ?? { nodes: [node] }, bindsThing(ctx.engine?.parts), ctx.reserved)[node.id]
 const assumed = (node, region, formula, ctx) => proved(formula, new Map([[hypId(node, region), formula]]), pvar(hypName(node, ctx)))
 /** What induction on ∀x. φ(x) asks of its boxes, with a the second box's number: φ(0), and φ(S a) from φ(a). */
 export function inductionCases(G, a, consts = []) {
@@ -177,12 +180,12 @@ const BODIES = {
 
   // ---- quantifiers and equality ----
   allI: {
+    binds: true,
     inputs: ['body'],
     eval: ({ body }, node, ctx) => {
-      const x = node.params?.x
-      if (!x) throw fail('先选好任取的那一样叫什么', 'Name the thing taken first')
-      // An upper-case name takes any sentence at all, about which nothing is assumed: outside, ∀R. … holds for every
-      // sentence (Lean's ∀ (R : Prop), HOL's ∀R::bool), R left as it is.
+      // A letter chosen on the card (R) takes any sentence at all, about which nothing is assumed: outside, ∀R. … holds
+      // for every sentence (Lean's ∀ (R : Prop), HOL's ∀R::bool), R left as it is. Otherwise the box takes a thing.
+      const x = /^[A-Z]/.test(node.params?.x ?? '') ? node.params.x : boxName(node, ctx)
       if (/^[A-Z]/.test(x)) {
         for (const h of body.hyps.values()) if (mentionsSentence(h, x)) throw fail(`${x} 出现在还开着的假设 ${sayIn(ctx, h).zh} 里：这样的 ${x} 不是任意一句话`, `${x} occurs in the open hypothesis ${sayIn(ctx, h).en}, so it is not any sentence at all`)
         return proved({ op: '∀', v: x, prop: true, body: body.formula }, body.hyps, lam(x, body.term))
@@ -221,11 +224,11 @@ const BODIES = {
     },
   },
   exE: {
+    binds: true,
     inputs: ['ex', 'body'],
     eval: ({ ex: e, body }, node, ctx, key) => {
       if (e.formula.op !== '∃') throw need(ctx, SHAPE.ex, e.formula)
-      const y = node.params?.x
-      if (!y) throw fail('先给见证起个名字', 'Name the witness first')
+      const y = boxName(node, ctx)
       if (key) return assumed(node, key, subst(e.formula.body, e.formula.v, tvar(y)), ctx)
       if (freeVars(body.formula).has(y)) throw fail(`结论里不能有见证 ${y}`, `The conclusion may not mention the witness ${y}`)
       const open = without(body.hyps, hypId(node, 'body'))
@@ -234,16 +237,16 @@ const BODIES = {
     },
   },
   // ---- induction on numbers (chapter 12) ----
-  // The sentence chosen on the card, ∀x. φ(x), from two boxes: the first proves φ(0); the second takes a number a
-  // (named on the card), opens φ(a) as the induction hypothesis and proves φ(S a). Like For any, a must be new.
+  // The sentence chosen on the card, ∀x. φ(x), from two boxes: the first proves φ(0); the second takes a number a,
+  // opens φ(a) as the induction hypothesis and proves φ(S a). Like For any, a must be new.
   natInd: {
+    binds: true,
     inputs: ['zero', 'step'],
     eval: ({ zero, step }, node, ctx, key) => {
       const G = param(node, 'P', ctx)
       if (G.op !== '∀') throw need(ctx, SHAPE.all, G)
-      const a = node.params?.x
-      if (!a) throw fail('先选好第二个框里那个数叫什么', 'Name the number of the second box first')
-      if (freeVars(G).has(a)) throw fail(`${a} 已经出现在要证的那句里，换一个名字`, `${a} already occurs in the sentence to prove: pick another name`)
+      const a = boxName(node, ctx)
+      if (freeVars(G).has(a)) throw fail(`${a} 已经出现在要证的那句里`, `${a} already occurs in the sentence to prove`)
       const want = inductionCases(G, a, ctx.consts)
       if (key) return assumed(node, key, want.hyp, ctx)
       if (!same(zero.formula, want.zero)) throw need(ctx, want.zero, zero.formula)
@@ -409,7 +412,8 @@ function byProof({ type, key, name, bind, binders }, givens, want, ctx) {
   const subst = Object.fromEntries(Object.entries(bind).filter(([m]) => !m.startsWith('$')).map(([m, f]) => [m, arity.get(m) && binders[m] ? property(m, f) : f]))
   const premises = Object.fromEntries(names.map((n, k) => [n, proved(givens[k], new Map([[n, givens[k]]]), pvar(n))]))
   const goals = circuit.nodes.filter((n) => n.type === 'goal').map((n) => n.id)
-  const run = runBoard(circuit, { parts: ctx.engine.parts, bind: premises, targets: goals, ctx: { consts, notation: ctx.notation, subst, exists: choicesOf(level).exists, lemmas: ctx.lemmas, proofs: ctx.proofs, proving: [...(ctx.proving ?? []), type] } })
+  const reserved = reservedIn(level)
+  const run = runBoard(circuit, { parts: ctx.engine.parts, bind: premises, targets: goals, ctx: { consts, reserved, notation: ctx.notation, subst, exists: choicesOf(level).exists, lemmas: ctx.lemmas, proofs: ctx.proofs, proving: [...(ctx.proving ?? []), type] } })
   const got = run.outputs.goal
   const problem = (!got && [...run.errors.values()].find((e) => e !== MISSING)) || closes(got, want, names, ctx.notation)
   if (!problem) return got.formula
@@ -489,20 +493,33 @@ export const LEMMA = {
 }
 // A thing in the level's words: the left side of t = t as the level writes it.
 const thingText = (t, ctx) => sayTerm(parse(`${t} = ${t}`, { consts: ctx.task.consts ?? [] }).args[0], ctx.task.notation)
+// The things a card picks from where it sits on the board (names.js): none a box elsewhere takes, each one around it.
+function pickable(values, ctx) {
+  if (!ctx.graph || !ctx.node) return values
+  try {
+    return pickableAt(values, ctx.graph, ctx.node, bindsThing(ctx.task.parts), reservedIn(ctx.task))
+  } catch (error) {
+    if (error instanceof OperationError) return values
+    throw error
+  }
+}
+
 /**
  * What a proof card's settings offer, worked out on the screen for its task (ctx.task, ctx.text: a formula in the
  * test's words; ../ui/proof.js): the particular things to name, the things to choose, the instances to put in (a
  * thing, or a sentence where the level has a ∀ over sentences), and the places a rewrite may replace.
  */
 export const OPTIONS = {
-  names: { args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).name.map((value) => ({ value, label: value })) },
-  things: { args: [], run: (_v, _n, ctx) => choicesOf(ctx.task).term.map((value) => ({ value, label: thingText(value, ctx) })) },
+  // What a for-any box may take besides a thing: a level's ∀ over sentences offers its letter (R).
+  letters: { args: [], run: (_v, _n, ctx) => { const letters = choicesOf(ctx.task).letter; return letters.length ? [{ value: 'thing', label: T('一样东西') }, ...letters.map((value) => ({ value, label: value }))] : [] } },
+  things: { args: [], run: (_v, _n, ctx) => pickable(choicesOf(ctx.task).term, ctx).map((value) => ({ value, label: thingText(value, ctx) })) },
   instances: {
     about: T("能代入的东西或句子"),
     args: [],
     run: (_v, _n, ctx) => {
       const offer = choicesOf(ctx.task)
-      return offer.instance.map((value) => ({ value, label: offer.term.includes(value) ? thingText(value, ctx) : ctx.text(parse(value, { consts: ctx.task.consts ?? [] })) }))
+      const things = new Set(pickable(offer.term, ctx))
+      return pickable(offer.instance, ctx).map((value) => ({ value, label: things.has(value) ? thingText(value, ctx) : ctx.text(parse(value, { consts: ctx.task.consts ?? [] })) }))
     },
   },
   occurrences: {
@@ -579,8 +596,10 @@ export function premisesOf(test, consts = []) {
 const LOGIC_TESTS = {
   runTest: (level, circuit, test, { workshopParts } = {}) => {
     const consts = level.consts ?? []
-    const run = runBoard(circuit, { parts: workshopParts ?? level.parts, bind: premisesOf(test, consts), ctx: { consts, notation: level.notation, subst: test.subst, exists: choicesOf(level).exists, lemmas: level.lemmas, proofs: level.proofs } })
-    return { ...run, trace: [], outputs: { goal: run.outputs.goal } }
+    const reserved = reservedIn(level)
+    const parts = workshopParts ?? level.parts
+    const run = runBoard(circuit, { parts, bind: premisesOf(test, consts), ctx: { consts, reserved, notation: level.notation, subst: test.subst, exists: choicesOf(level).exists, lemmas: level.lemmas, proofs: level.proofs } })
+    return { ...run, trace: [], outputs: { goal: run.outputs.goal }, names: shownNames(circuit, parts, reserved) }
   },
   // A test may ask for the proof's term too (chapter 7): the same up to the names it binds.
   check: (level, test, outputs) => {
@@ -595,6 +614,17 @@ const LOGIC_TESTS = {
   }),
 }
 const countSteps = (circuit) => circuit.nodes.filter((node) => node.type !== 'premise' && node.type !== 'goal').length
+
+// The names the board's boxes take, for the screen to show (a box that opens no assumption shows its own); none on a
+// board whose boxes do not nest (the run says why).
+function shownNames(circuit, parts, reserved) {
+  try {
+    return boxNames(circuit, bindsThing(parts), reserved)
+  } catch (error) {
+    if (error instanceof OperationError) return {}
+    throw error
+  }
+}
 
 /** Judge a proof with the same premise, goal and term checks everywhere it runs. */
 export const runProof = (task, circuit, options) => runOutputTests(LOGIC_TESTS, task, circuit, options)

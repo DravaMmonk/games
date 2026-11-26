@@ -52,11 +52,11 @@
         "@level.q-swap.tasks.q-swap-2.hint.1"
       ],
       "solution": [
-        "g = allI[x=b](body: f) {",
+        "g = allI(body: f) {",
         "  body {",
-        "    f = exE[x=a](p, body: i) {",
+        "    f = exE(p, body: i) {",
         "      body {",
-        "        e = allE[t=b](f.body)",
+        "        e = allE[t=a](f.body)",
         "        i = exI(e)",
         "      }",
         "    }",

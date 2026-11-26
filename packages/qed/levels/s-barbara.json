@@ -39,7 +39,7 @@
         "@level.s-barbara.tasks.s-barbara.hint.0"
       ],
       "solution": [
-        "g = allI[x=a](body: h) {",
+        "g = allI(body: h) {",
         "  body {",
         "    h = impI[A=\"A(a)\"](body: m2) {",
         "      body {",

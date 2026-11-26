@@ -51,7 +51,7 @@
       "hint": ["@level.in-zero.tasks.in-zero-2.hint.0", "@level.in-zero.tasks.in-zero-2.hint.1"],
       "intro": [{ "t": "@level.in-zero.tasks.in-zero-2.intro.0.t" }],
       "solution": [
-        "n = proof-kit/natInd[P=\"forall x. plus(x, zero) = x\", x=a](zero: z, step: w) {",
+        "n = proof-kit/natInd[P=\"forall x. plus(x, zero) = x\"](zero: z, step: w) {",
         "  zero {",
         "    z = proof-kit/allE[t=zero](d0)",
         "  }",

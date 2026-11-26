@@ -27,10 +27,10 @@
         "@level.u-cantor.tasks.u-cantor.hint.2"
       ],
       "solution": [
-        "e1 = exE[x=a](d, body: e2) {",
+        "e1 = exE(d, body: e2) {",
         "  body {",
         "    a1 = allE[t=a](s)",
-        "    e2 = exE[x=b](a1, body: l) {",
+        "    e2 = exE(a1, body: l) {",
         "      body {",
         "        a3 = allE[t=b](e1.body)",
         "        a2 = allE[t=b](e2.body)",
@@ -47,7 +47,7 @@
         "goal <- e1"
       ],
       "naive": [
-        "e1 = exE[x=a](d, body: l) {",
+        "e1 = exE(d, body: l) {",
         "  body {",
         "    a3 = allE[t=a](e1.body)",
         "    l = liar(a3)",

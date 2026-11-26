@@ -33,7 +33,7 @@
         "@level.s-carroll.tasks.s-carroll.hint.1"
       ],
       "solution": [
-        "g = allI[x=a](body: h) {",
+        "g = allI(body: h) {",
         "  body {",
         "    h = impI[A=\"A(a)\"](body: k) {",
         "      body {",

@@ -256,14 +256,7 @@
       "returns": "logic/judgment",
       "params": {
         "type": "obj",
-        "fields": {
-          "x": {
-            "type": "str",
-            "control": "tree",
-            "optional": true,
-            "default": ""
-          }
-        }
+        "fields": {}
       }
     },
     "natInd": {
@@ -283,12 +276,6 @@
         "type": "obj",
         "fields": {
           "P": {
-            "type": "str",
-            "control": "tree",
-            "optional": true,
-            "default": ""
-          },
-          "x": {
             "type": "str",
             "control": "tree",
             "optional": true,
@@ -636,7 +623,7 @@
         "fields": {}
       }
     },
-    "names": {
+    "letters": {
       "args": [],
       "returns": "logic/options",
       "params": {

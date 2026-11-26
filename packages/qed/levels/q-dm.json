@@ -35,7 +35,7 @@
         "@level.q-dm.tasks.q-dm-1.hint.1"
       ],
       "solution": [
-        "g = allI[x=a](body: f) {",
+        "g = allI(body: f) {",
         "  body {",
         "    f = impI[A=\"P(a)\"](body: m) {",
         "      body {",
@@ -84,7 +84,7 @@
       "solution": [
         "f = impI[A=\"exists x. P(x)\"](body: e) {",
         "  body {",
-        "    e = exE[x=a](f.body, body: m) {",
+        "    e = exE(f.body, body: m) {",
         "      body {",
         "        a = allE[t=a](p)",
         "        m = mp(a, e.body)",
@@ -131,7 +131,7 @@
       "solution": [
         "f = impI[A=\"forall x. P(x)\"](body: e) {",
         "  body {",
-        "    e = exE[x=a](p, body: m) {",
+        "    e = exE(p, body: m) {",
         "      body {",
         "        a = allE[t=a](f.body)",
         "        m = mp(e.body, a)",
@@ -181,7 +181,7 @@
       "solution": [
         "k = impI[A=\"~exists x. ~P(x)\"](body: m2) {",
         "  body {",
-        "    g = allI[x=a](body: r1) {",
+        "    g = allI(body: r1) {",
         "      body {",
         "        j = impI[A=\"~P(a)\"](body: mj) {",
         "          body {",

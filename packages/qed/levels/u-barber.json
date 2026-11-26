@@ -33,7 +33,7 @@
         "@level.u-barber.tasks.u-barber.hint.1"
       ],
       "solution": [
-        "f = exE[x=a](p, body: l) {",
+        "f = exE(p, body: l) {",
         "  body {",
         "    a = allE[t=a](f.body)",
         "    l = liar(a)",

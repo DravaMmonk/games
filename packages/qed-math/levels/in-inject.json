@@ -37,9 +37,9 @@
       "brief": "@level.in-inject.tasks.in-inject-2.brief",
       "hint": ["@level.in-inject.tasks.in-inject-2.hint.0", "@level.in-inject.tasks.in-inject-2.hint.1"],
       "solution": [
-        "gx = proof-kit/allI[x=a](body: gy) {",
+        "gx = proof-kit/allI(body: gy) {",
         "  body {",
-        "    gy = proof-kit/allI[x=b](body: f) {",
+        "    gy = proof-kit/allI(body: f) {",
         "      body {",
         "        f = proof-kit/impI[A=\"s(a) = s(b)\"](body: w2) {",
         "          body {",

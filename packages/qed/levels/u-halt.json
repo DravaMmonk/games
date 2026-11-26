@@ -32,7 +32,7 @@
         "  body {",
         "    m1 = mp(red, h.body)",
         "    m2 = mp(con, m1)",
-        "    e = exE[x=a](m2, body: l) {",
+        "    e = exE(m2, body: l) {",
         "      body {",
         "        a = allE[t=a](e.body)",
         "        l = liar(a)",

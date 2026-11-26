@@ -9,13 +9,6 @@
       "label": "∃x. P(x)"
     }
   ],
-  "settings": {
-    "x": {
-      "control": "select",
-      "label": "@part.exE.settings.x.label",
-      "from": "logic/names()"
-    }
-  },
   "regions": [
     {
       "name": "body",

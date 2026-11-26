@@ -4,8 +4,7 @@
   "icon": "Box",
   "family": "logic/box",
   "settings": {
-    "P": { "label": "@part.natInd.settings.P.label" },
-    "x": { "control": "select", "label": "@part.natInd.settings.x.label", "from": "logic/names()" }
+    "P": { "label": "@part.natInd.settings.P.label" }
   },
   "regions": [
     { "name": "zero", "label": "@part.natInd.regions.0.label", "closes": true },

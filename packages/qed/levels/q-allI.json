@@ -37,7 +37,7 @@
         "@level.q-allI.tasks.q-allI.hint.1"
       ],
       "solution": [
-        "g = allI[x=a](body: h) {",
+        "g = allI(body: h) {",
         "  body {",
         "    h = impI[A=\"P(a)\"](body: h.body)",
         "  }",

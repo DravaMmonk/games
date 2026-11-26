@@ -9,13 +9,6 @@
       "label": "@part.exE.inputs.0.label"
     }
   ],
-  "settings": {
-    "x": {
-      "control": "select",
-      "label": "@part.exE.settings.x.label",
-      "from": "logic/names()"
-    }
-  },
   "regions": [
     {
       "name": "body",

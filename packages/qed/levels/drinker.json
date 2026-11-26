@@ -37,7 +37,7 @@
         "  }",
         "  right {",
         "    q = dm[form=notAll](e.right)",
-        "    f = exE[x=a](q, body: i2) {",
+        "    f = exE(q, body: i2) {",
         "      body {",
         "        h2 = impI[A=\"D(a)\"](body: b) {",
         "          body {",

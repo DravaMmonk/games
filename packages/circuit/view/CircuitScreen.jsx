@@ -96,8 +96,8 @@ import "./training.css"
 //                         is one to show (on a board run tick by tick, from its first tick), `at` the tick shown
 //   judged                a board run once is checked in one go, with nothing to step through
 //   sample?(task, board) → the board's run on the task's `sample`, a tab after the tests, never judged (judged boards)
-//   ready?(board, task, parts)   prepare the entire board with its active wiring, on opening and every
-//                         change (a preset locked back in…)
+//   ready?(board, task, parts, before)   prepare the entire board with its active wiring, on opening and every
+//                         change, `before` the board the change was made on (a preset locked back in, names followed…)
 //   settings?(node, ctx)  a card's pickers: [{ key, label, value, options: [[value, label], …] }]
 //   defaults?(type)       a new card's settings
 //   portLabels?           { type: { port: label } }               defined?  the game's parts.json parts (CircuitLevel)
@@ -183,7 +183,7 @@ function useBoardParts({ screen, course, base, cards, portLabels, defined, ready
     has, circuit: base, parts,
     packed: packedView(course, { cards, portLabels, defined, traySource }), palette, folded, types,
     held: new Set(types),
-    hold: graph => ready ? ready(graph, level, parts) : graph,
+    hold: (graph, before) => ready ? ready(graph, level, parts, before) : graph,
   }
 }
 
@@ -208,7 +208,7 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
     fresh: () => hold(fresh ? fresh(level) : opening()),
     clearable,
   })
-  const board = ready ? { ...state, change: (next, options) => state.change(hold(next), options) } : state
+  const board = ready ? { ...state, change: (next, options) => state.change(hold(next, state.circuit), options) } : state
   const { circuit: drawn, change } = board
   const [cardOrder, setCardOrder] = useState([])
   const onCardOrder = useCallback((order) => {
@@ -384,14 +384,15 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
     const open = setting.options?.map((o) => o.value).filter((v) => has(type, key, String(v)))
     return !open || open.length === setting.options.length ? null : open
   }, [defined, has])
-  // A setting's options worked out on a card: by its resource, on what is wired into the card on the test on view.
+  // A setting's options worked out on a card: by its resource, on what is wired into the card on the test on view and
+  // the board it sits on.
   const insOf = (node, ctx) => Object.fromEntries((ctx?.board?.circuit ?? drawn).wires.filter((w) => w.to === node.id).map((w) => [w.port, ctx?.view?.values.get(w.from)]))
   const definedFaces = useMemo(() => defined && {
     ...defined,
     allowed,
     controls: settingControls?.(displayTask, onView),
     frame: partFace?.(displayTask, onView, runOf, runOptions),
-    options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(displayTask, onView, runOf, runOptions), node } }, defined.ops),
+    options: (def, setting, node, ctx) => optionsOf(setting, def, { params: node?.params, ins: node ? insOf(node, ctx) : {}, ctx: { ...context?.(displayTask, onView, runOf, runOptions), node, graph: ctx?.board?.circuit } }, defined.ops),
     value: (node, ctx, output, face) => (face === 'detail' && inspect ? inspect(node, ctx) : output != null ? <Value value={valueOf(node, output, ctx.view)} error={ctx.view.errors.get(node.id)} idle={ctx.view.idle} show={cardShow} of={valueKey(ctx, sourceOf(node.id, output))} views={valueViews?.(ctx.board.level ?? level, node, valueOf(node, output, ctx.view))} /> : ctx.board.parts.outputs(node) ? null : value(node, ctx)),
   }, [defined, inspect, allowed, level, displayTask, onView, drawn, runOf, valueViews, settingControls, partFace, runOptions])
 
@@ -543,13 +544,16 @@ export default function CircuitScreen({ screen, course, cards, traySource, run: 
             },
             ...(settings && { configurable: (node, ctx) => !ctx.readOnly && settings(node, { ...ctx, task: ctx.board.level ?? level }).some(({ key, options }) => options.length > 1 && !isFixed(node, key)) }),
             ...(surface?.wireState && { wireState: (wire, ctx) => ctx.path.length ? undefined : surface.wireState(wire) }),
-            // A frame's region says at its edge what it opens with, and by its result what the frame gives, or why not.
+            resultNote: (node, _region, ctx) => <Value value={valueOf(node, null, ctx.view)} error={ctx.view.errors.get(node.id)} idle={ctx.view.idle} show={cardShow} />,
+            ...faces,
+            // A frame's region says at its edge what it opens with (the screen's say first), and by its result what the
+            // frame gives, or why not.
             regionNote: (node, region, ctx) => {
+              const own = faces.regionNote?.(node, region, ctx)
+              if (own !== undefined) return own
               const v = valueOf(node, region, ctx.view)
               return v === undefined ? null : <Value value={v} show={cardShow} />
             },
-            resultNote: (node, _region, ctx) => <Value value={valueOf(node, null, ctx.view)} error={ctx.view.errors.get(node.id)} idle={ctx.view.idle} show={cardShow} />,
-            ...faces,
             ...(outputTarget && { cardClass: withTargetClass(faces.cardClass), sinkClass: withTargetClass(faces.sinkClass) }),
           }}
           canvas={canvas}

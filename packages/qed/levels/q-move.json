@@ -35,7 +35,7 @@
       "solution": [
         "g = impI[A=\"exists x. P(x)\"](body: f) {",
         "  body {",
-        "    f = exE[x=a](g.body, body: m) {",
+        "    f = exE(g.body, body: m) {",
         "      body {",
         "        e = allE[t=a](p)",
         "        m = mp(e, f.body)",
@@ -72,7 +72,7 @@
         "@level.q-move.tasks.q-move-2.hint.0"
       ],
       "solution": [
-        "g = allI[x=a](body: h) {",
+        "g = allI(body: h) {",
         "  body {",
         "    h = impI[A=\"P(a)\"](body: m) {",
         "      body {",

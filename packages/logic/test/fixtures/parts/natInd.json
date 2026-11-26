@@ -6,11 +6,6 @@
   "settings": {
     "P": {
       "label": "@part.natInd.settings.P.label"
-    },
-    "x": {
-      "control": "select",
-      "label": "@part.natInd.settings.x.label",
-      "from": "logic/names()"
     }
   },
   "regions": [

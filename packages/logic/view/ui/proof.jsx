@@ -12,8 +12,9 @@ import { vocabulary } from '../../core/fol.js'
 import { sentencePicker } from '../../core/sentenceLanguage.js'
 import { scriptLines } from '../../core/script.js'
 import { runProof } from '../../core/proof.js'
+import { bindsThing, followNames, reservedIn } from '../../core/names.js'
 import { proofMarkedTextOf, proofReadout, proofTextOf as textOf } from '../../core/circuit-readouts.js'
-import { typesetOne } from './Formula.jsx'
+import { Formula, typesetOne } from './Formula.jsx'
 import OccurrenceChoice from './OccurrenceChoice.jsx'
 
 /** The language a card's sentence is built in: the parts of the level's sentences, each letter read as the test's. */
@@ -53,9 +54,19 @@ export const proofScreen = {
     }
   },
   context: (task, test) => ({ task, text: textOf(task, test) }),
+  // A box moved into or out of another takes another name, and the cards inside it follow (names.js).
+  ready: (board, task, _parts, before) => (before ? followNames(before, board, bindsThing(task.parts), reservedIn(task)) : board),
   // A sentence on a card (and the goal wanted) is typeset in TeX, as every formula is.
   typeset: typesetOne(proofReadout.show),
-  card: { phoneRegionLabel: (node, index) => node.type.split('/').at(-1) === 'orE' ? '①②'[index] : undefined },
+  card: {
+    phoneRegionLabel: (node, index) => node.type.split('/').at(-1) === 'orE' ? '①②'[index] : undefined,
+    // A box that takes a thing but opens no assumption (For any) shows at its edge the name it takes.
+    regionNote: (node, region, ctx) => {
+      const name = !ctx.path.length && (ctx.view.played?.run ?? ctx.view).names?.[node.id]
+      const frames = ctx.board.parts.frames?.(node) ?? []
+      return name && frames.every((r) => !r.opens) ? <span className="vw-value"><span className="tx-lines formula-row"><Formula text={name} upright /></span></span> : undefined
+    },
+  },
   // A script the proof follows, a line each, indented as its blocks are.
   told: (task, test) => (task.script ? scriptLines(task.script, (t) => textOf(task, test)(parse(t, { consts: [...(task.consts ?? []), ...(task.things ?? [])] }))).map(([depth, text]) => ({ text: `${'  '.repeat(depth)}${text}` })) : []),
   readouts: (_task, _circuit, { score }) => [{ value: score.steps, label: T('步数') }],

@@ -19,6 +19,7 @@ import { OPS } from '../core/ops.js'
 import { OPTIONS, PROOF_BOARD, RULES, lemmaGives, proved, runProof } from '../core/proof.js'
 import { partsOf } from '../core/ops.js'
 import { printTerm } from '../core/pterm.js'
+import { boxNames, followNames, pickableAt } from '../core/names.js'
 import { validate } from '../core/validate.js'
 
 test('proof inputs have a goal label while specialised inputs keep their names', () => {
@@ -144,11 +145,48 @@ test('∨ elimination needs both cases to agree', () => {
   assert.match(run(level, apart).runs[0].errors.get('e').en, /different/)
 })
 
-test('∀ introduction refuses a variable an open hypothesis mentions', () => {
-  const level = { tests: [{ premises: { p: 'P(x)' }, goal: '∀x. P(x)' }] }
-  const r = run(level, proof({ g: ['allI', { x: 'x' }] }, ['p>g.body', 'g>goal'], { premises: ['p'] }))
+test('a box takes the first name nothing around it uses', () => {
+  const binds = (node) => node.type === 'box'
+  const nodes = [
+    { id: 'g', type: 'box' }, { id: 'e', type: 'box', in: 'g/body' }, { id: 's', type: 'box' },
+    { id: 'h', type: 'impI', params: { A: 'P(a)' } }, { id: 'i', type: 'box', in: 'h/body' },
+  ]
+  assert.deepEqual(boxNames({ nodes }, binds), { g: 'a', e: 'b', s: 'a', i: 'b' })
+  assert.deepEqual(boxNames({ nodes }, binds, ['a']), { g: 'b', e: 'c', s: 'b', i: 'b' })
+  // A premise's name is no arbitrary thing: the for-any box takes another, and generalises nothing.
+  const level = { tests: [{ premises: { p: 'P(a)' }, goal: '∀x. P(x)' }] }
+  const r = run(level, proof({ g: ['allI'] }, ['p>g.body', 'g>goal'], { premises: ['p'] }))
   assert.equal(r.pass, false)
-  assert.match(r.runs[0].errors.get('g').en, /not arbitrary/)
+  assert.equal(show(r.runs[0].outputs.goal.formula), '∀x. P(a)')
+})
+
+test('a card picks only the things in scope where it sits', () => {
+  const binds = (node) => node.type === 'box'
+  const nodes = [
+    { id: 'g', type: 'box' }, { id: 'e', type: 'box', in: 'g/body' }, { id: 'u', type: 'allE', in: 'e/body' },
+    { id: 's', type: 'box' }, { id: 'v', type: 'allE', in: 's/body' }, { id: 'w', type: 'allE' },
+  ]
+  assert.deepEqual(pickableAt(['zero', 'a', 's(b)'], { nodes }, nodes[2], binds), ['zero', 'a', 's(b)', 'b'])
+  assert.deepEqual(pickableAt(['zero', 'a', 's(b)'], { nodes }, nodes[4], binds), ['zero', 'a'])
+  assert.deepEqual(pickableAt(['zero'], { nodes }, nodes[2], binds), ['zero', 'a', 'b'])
+  // Outside every box, a name a box takes is out of reach; one the level's sentences use is not.
+  assert.deepEqual(pickableAt(['zero', 'a', 'b'], { nodes }, nodes[5], binds), ['zero'])
+  assert.deepEqual(pickableAt(['zero', 'a', 'b'], { nodes }, nodes[5], binds, ['a']), ['zero', 'a'])
+})
+
+test('cards inside a moved box follow the name it takes', () => {
+  const binds = (node) => node.type === 'box'
+  const before = { nodes: [
+    { id: 'g', type: 'box' }, { id: 'e', type: 'box' },
+    { id: 'u', type: 'allE', in: 'e/body', params: { t: 'a' } }, { id: 'h', type: 'impI', in: 'e/body', params: { A: 'P(a) & Q(b)' } },
+  ] }
+  const moved = { nodes: before.nodes.map((node) => (node.id === 'e' ? { ...node, in: 'g/body' } : node)) }
+  const after = followNames(before, moved, binds)
+  assert.deepEqual(after.nodes.map((node) => node.params), [undefined, undefined, { t: 'b' }, { A: 'P(b) & Q(b)' }])
+  assert.equal(followNames(before, before, binds), before)
+  // A board put in place of another keeps the names it was written with.
+  const other = { nodes: moved.nodes.map((node) => (node.id === 'u' ? { ...node, params: { t: 'b' } } : node)) }
+  assert.equal(followNames(before, other, binds), other)
 })
 
 // Chain as chapter 2 proves it: A → C from A → B and B → C, and the proof of A → A.
@@ -188,7 +226,7 @@ test('a proof that does not hold for an instance of its letters gives nothing th
   // ¬∃x. P ⟹ ∀x. ¬P, proved with the thing taken named a: where the property speaks of some a (a variable, as inside
   // a for-any box), that a is not arbitrary.
   const lemmas = { qdm: { name: { zh: '量词德摩根', en: 'Quantifier De Morgan' }, statement: '∀x. ¬P', premises: ['¬∃x. P'], metas: ['P'] } }
-  const board = proof({ g: ['allI', { x: 'a' }], f: ['impI', { A: 'P(a)' }, 'g'], i: ['exI', {}, 'g/body'], m: ['mp', {}, 'g/body'] }, ['f#body>i.a', 'p>m.imp', 'i>m.a', 'm>f.body', 'f>g.body', 'g>goal'], { premises: ['p'] })
+  const board = proof({ g: ['allI'], f: ['impI', { A: 'P(a)' }, 'g'], i: ['exI', {}, 'g/body'], m: ['mp', {}, 'g/body'] }, ['f#body>i.a', 'p>m.imp', 'i>m.a', 'm>f.body', 'f>g.body', 'g>goal'], { premises: ['p'] })
   const proofs = { qdm: { '': provenBy({ premises: { p: '¬∃x. P(x)' }, goal: '∀x. ¬P(x)' }, board) } }
   const use = proof({ c: ['qdm'] }, ['p>c.p0', 'c>goal'], { premises: ['p'] })
   const at = (premise, goal) => run({ lemmas, proofs, tests: [{ premises: { p: premise }, goal }] }, use)
@@ -334,7 +372,7 @@ test('only chips with leading holes join, using the written order of arguments',
 
 // ¬∀x. P(x) ⟹ ∃x. ¬P(x), classically (q-dm's last task): suppose there is no x with ¬P(x); then every x has P(x).
 const NOT_ALL = proof({
-  k: ['impI', { A: '¬∃x. ¬P(x)' }], g: ['allI', { x: 'a' }, 'k'], j: ['impI', { A: '¬P(a)' }, 'g'], i: ['exI', { target: '∃x. ¬P(x)' }, 'j'], mj: ['mp', {}, 'j'], r1: ['raa', {}, 'g'], m2: ['mp', {}, 'k'], r2: ['raa'],
+  k: ['impI', { A: '¬∃x. ¬P(x)' }], g: ['allI', {}, 'k'], j: ['impI', { A: '¬P(a)' }, 'g'], i: ['exI', { target: '∃x. ¬P(x)' }, 'j'], mj: ['mp', {}, 'j'], r1: ['raa', {}, 'g'], m2: ['mp', {}, 'k'], r2: ['raa'],
 }, ['j#body>i.a', 'k#body>mj.imp', 'i>mj.a', 'mj>j.body', 'j>r1.nna', 'r1>g.body', 'p>m2.imp', 'g>m2.a', 'm2>k.body', 'k>r2.nna', 'r2>goal'], { premises: ['p'] })
 
 test('a lemma over a quantified letter fits any variable and keeps it', async () => {

@@ -46,7 +46,7 @@
       "hint": ["@level.in-induct.tasks.in-induct-2.hint.0", "@level.in-induct.tasks.in-induct-2.hint.1"],
       "solution": [
         "r = proof-kit/refl[t=zero]()",
-        "a = proof-kit/allI[x=a](body: h) {",
+        "a = proof-kit/allI(body: h) {",
         "  body {",
         "    h = proof-kit/impI[A=\"a = zero | (exists m. a = s(m))\"](body: o2) {",
         "      body {",

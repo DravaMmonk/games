@@ -33,7 +33,7 @@
         "@level.q-exE.tasks.q-exE.hint.0"
       ],
       "solution": [
-        "f = exE[x=a](p, body: i) {",
+        "f = exE(p, body: i) {",
         "  body {",
         "    s = andE(f.body)",
         "    i = exI(s.left)",

@@ -18,6 +18,7 @@ import { scriptJudge, methodsOf, sentencesOf } from './script.js'
 import { lettersOf, tautology } from './truth.js'
 import { directCardsOf, inputsOfLevel, runMachine } from './machine.js'
 import { SETTING_KINDS, choiceKey, choicesOf } from './choices.js'
+import { bindsThing, pickableAt, reservedIn } from './names.js'
 import { chipsFrom, chipsOf, missingChips } from './formulaTree.js'
 import { checkGates, rowsFor, startGates } from './gates.js'
 import { checkIso, readPremise } from './iso.js'
@@ -290,6 +291,7 @@ export function validate({ levels: given, course, logic, memo = (_id, _name, f) 
             const missing = missingChips(parse(value, { consts: level.consts ?? [] }), sentenceChips)
             if (missing.length) out.push({ level: level.id, fail: true, text: `${level.id}: the solution builds ${value} on ${n.type} from parts its card does not offer: ${missing.join(', ')} (add a sentence with them to the level's sentences)` })
           } else if (!offered[kind].has(choiceKey(kind, value, level))) out.push({ level: level.id, fail: true, text: `${level.id}: the solution picks ${value} on ${n.type}, which its card does not offer (add it to the level's sentences)` })
+          else if (!pickableAt([value], level.solution, n, bindsThing(level.parts), reservedIn(level)).includes(value)) out.push({ level: level.id, fail: true, text: `${level.id}: the solution picks ${value} on ${n.type}, a thing only a box elsewhere takes` })
         }
       }
       // A card of a part with forms is in a shape the task holds.

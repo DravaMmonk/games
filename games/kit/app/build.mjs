@@ -1,11 +1,13 @@
 /* global process */
-// Build the standalone site: the hub at dist-games/index.html, each game at dist-games/<id>/.
+// Build the standalone site: the hub at dist-games/index.html, each game at dist-games/<id>/, then the service worker
+// that caches all of it for offline play.
 import { execFile } from 'node:child_process'
 import { availableParallelism } from 'node:os'
 import { resolve } from 'node:path'
 import { promisify } from 'node:util'
 import { existsSync } from 'node:fs'
 import { contentTargets, gameDirectory } from '../engine/resolver.js'
+import { writeOffline } from './offline-build.js'
 
 const cwd = resolve(import.meta.dirname, '../../../site')
 const run = promisify(execFile)
@@ -30,3 +32,4 @@ const worker = async () => {
   for (let id = queue.shift(); id; id = queue.shift()) await build(id, 'vite.game.config.js', { GAME: id })
 }
 await Promise.all(Array.from({ length: availableParallelism() }, worker))
+console.log(`\noffline: ${writeOffline(resolve(cwd, 'dist-games'))} files cached by sw.js`)

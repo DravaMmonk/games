@@ -17,6 +17,7 @@ import { loadDomain } from 'virtual:game'
 import { assetSignature, cleanRefreshURL, recoveryURL } from './release.js'
 import { ReleaseWatch, Unreadable } from './ReleaseWatch.jsx'
 import { pageContent } from './page-content.js'
+import { registerOffline } from './offline.js'
 
 async function open() {
   const [{ define, vocabulary: sourceVocabulary }, response] = await Promise.all([loadDomain(), fetch(new URL('content.json', window.location.href), { cache: 'no-store' })])
@@ -56,3 +57,4 @@ async function start() {
 }
 
 void start()
+registerOffline(new URL('../', window.location.href))

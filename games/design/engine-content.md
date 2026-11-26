@@ -65,6 +65,8 @@
 
 包和游戏各有 `i18n/<lang>.json`、`changes.jsonl`。游戏另有 `game.json`、`chapters/`，安装百科时也可有 `entries/` 和 `sections/`，可有作者侧 `blueprint.json`、`pipeline.json`。`resolver.js` 读盘，`content.js` 组装；页面加载构建出的 `content.json` 和语言文件，`publish:content` 检查后只发布内容。文件按职责放，开发按对象做：Studio 聚合对象的定义、文案、标签、关系和覆盖，不要求作者来回找文件。
 
+**离线游玩。** `build:games` 最后在站点根写出 `sw.js`（`kit/app/offline-build.js`）和可安装到主屏幕的 `manifest.webmanifest`。每个页面都注册这一个 service worker：安装时缓存全部构建文件，所以在线打开过一次站点，之后断网也能玩每一款游戏。带哈希的资源直接取缓存；页面、`content.json` 和语言文件先取网络，断网时才用缓存，所以 `publish:content` 和更新提示照旧。
+
 ### 6.1.1 版本、锁定、发布与解析器
 
 **上线前保持 `0.0.0`。** 平台版本在 `kit/platform.json`，包版本在 `package.json`；依赖范围统一为 `^0.0.0`。工作区源目录代表当前实现。源目录与本地平台的哈希变化允许继续检查、组装与构建，锁定仍检查范围和依赖集合。兼容性预览给出 `proposed`，`next` 为 `null`。

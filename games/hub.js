@@ -10,6 +10,7 @@ import { solvedCount } from './kit/shell/progress.js';
 import { mountBoxy } from '../packages/state-graph/view/boxy.js';
 import { mountPress } from './press/press.js';
 import { mountDetach } from 'qed/view';
+import { registerOffline } from './kit/app/offline.js';
 
 // Card art: each game's illustration, mounted live into its row. The anatomy-kit figures are built into plain modules
 // for this page (each folder's build.mjs): State Graph's robot Boxy, Vision Complete's filter press, Q.E.D.'s Detach
@@ -51,3 +52,4 @@ paintPage();
 render();
 // Progress may change in another tab.
 addEventListener('pageshow', render);
+registerOffline(new URL('./', location.href));

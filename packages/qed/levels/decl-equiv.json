@@ -1,0 +1,111 @@
+{
+  "title": "@level.decl-equiv.title",
+  "intro": [
+    {
+      "t": "@level.decl-equiv.intro.0.t"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "decl-iff-2",
+      "kind": "logic/iso",
+      "step": "@level.decl-equiv.tasks.decl-iff-2.step",
+      "say": "@level.decl-equiv.tasks.decl-iff-2.say",
+      "intro": [
+        {
+          "t": "@level.decl-equiv.tasks.decl-iff-2.intro.0.t"
+        }
+      ],
+      "brief": "@level.decl-equiv.tasks.decl-iff-2.brief",
+      "hint": [
+        "@level.decl-equiv.tasks.decl-iff-2.hint.0"
+      ],
+      "declare": "@level.decl-equiv.tasks.decl-iff-2.declare",
+      "target": "A ↔ B",
+      "sentences": [
+        "A → B",
+        "B → A"
+      ],
+      "tests": [
+        {
+          "given": [
+            "A → B",
+            "B → A"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "A → B"
+          ],
+          "make": false
+        },
+        {
+          "given": [
+            "B → A"
+          ],
+          "make": false
+        },
+        {
+          "given": [],
+          "make": false
+        },
+        {
+          "given": [
+            "A ↔ B"
+          ],
+          "goal": "A → B",
+          "make": true
+        },
+        {
+          "given": [
+            "A ↔ B",
+            "B"
+          ],
+          "goal": "A",
+          "make": true
+        },
+        {
+          "given": [
+            "A ↔ B"
+          ],
+          "goal": "A",
+          "make": false
+        }
+      ],
+      "solution": [
+        {
+          "binds": [],
+          "needs": [
+            "A → B",
+            "B → A"
+          ]
+        }
+      ],
+      "naive": [
+        {
+          "binds": [],
+          "needs": [
+            "A → B"
+          ]
+        },
+        {
+          "binds": [],
+          "needs": [
+            "B → A"
+          ]
+        }
+      ],
+      "cases": [
+        {
+          "A": "Rain",
+          "B": "Wet"
+        },
+        {
+          "A": "Hungry",
+          "B": "Eat"
+        }
+      ]
+    }
+  ]
+}

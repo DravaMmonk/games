@@ -1,1 +1,7 @@
-{ "title": "@tag.equality-rules.title", "values": ["decl-eq", "q-eq", "q-sym"] }
+{
+  "title": "@tag.equality-rules.title",
+  "values": [
+    "decl-ex",
+    "q-eq"
+  ]
+}

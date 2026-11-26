@@ -2,19 +2,19 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "fo-atoms",
-      "to": "fo-all"
+      "from": "machine-backward-and",
+      "to": "fo-atoms"
     },
     {
-      "from": "fo-all",
-      "to": "m-counter"
+      "from": "fo-atoms",
+      "to": "fo-all"
     },
     {
       "from": "fo-atoms",
       "to": "fo-some"
     },
     {
-      "from": "m-counter",
+      "from": "fo-all",
       "to": "fo-nested"
     },
     {
@@ -23,35 +23,52 @@
     },
     {
       "from": "fo-nested",
-      "to": "p-only"
+      "to": "q-allI"
     },
     {
-      "required": true,
-      "from": "p-split",
-      "to": "p-exAnd"
+      "from": "q-allI",
+      "to": "decl-ex"
+    },
+    {
+      "from": "decl-ex",
+      "to": "q-exE"
+    },
+    {
+      "from": "decl-ex",
+      "to": "q-eq"
+    },
+    {
+      "from": "q-exE",
+      "to": "r-allI"
+    },
+    {
+      "from": "fo-nested",
+      "to": "p-only"
     },
     {
       "from": "fo-nested",
       "to": "q-children"
     },
     {
-      "required": true,
-      "from": "q-children",
-      "to": "q-grand"
+      "from": "q-allI",
+      "to": "s-barbara"
     },
     {
-      "required": true,
-      "from": "p-only",
+      "from": "q-exE",
       "to": "p-split"
     },
     {
-      "required": true,
-      "from": "q-grand",
-      "to": "q-school"
+      "from": "q-exE",
+      "to": "q-swap"
     },
     {
-      "from": "iffUse",
-      "to": "fo-atoms"
+      "from": "decl-ex",
+      "to": "h-and-make"
+    },
+    {
+      "required": true,
+      "from": "k",
+      "to": "h-and-make"
     }
   ]
 }

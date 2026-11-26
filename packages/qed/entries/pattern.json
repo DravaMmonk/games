@@ -1,6 +1,11 @@
 {
   "title": "@glossary.entries.pattern.title",
-  "at": "r-exE",
-  "body": ["@glossary.entries.pattern.body.0"],
-  "see": ["unification", "mgu"]
+  "at": "r-allI",
+  "body": [
+    "@glossary.entries.pattern.body.0"
+  ],
+  "see": [
+    "unification",
+    "mgu"
+  ]
 }

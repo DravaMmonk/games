@@ -1,1 +1,6 @@
-{ "title": "@tag.family-queries.title", "values": ["q-children", "q-grand", "q-school"] }
+{
+  "title": "@tag.family-queries.title",
+  "values": [
+    "q-children"
+  ]
+}

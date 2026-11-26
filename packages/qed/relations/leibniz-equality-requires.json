@@ -1,10 +1,4 @@
 {
   "kind": "requires",
-  "edges": [
-    {
-      "required": true,
-      "from": "h-eq-subst",
-      "to": "h-eq-sym"
-    }
-  ]
+  "edges": []
 }

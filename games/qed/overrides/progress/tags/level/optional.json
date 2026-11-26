@@ -15,26 +15,13 @@
       "qed/x-merge",
       "qed/mergeLong",
       "qed/mergeBoth",
-      "qed/orImp",
       "qed/contra",
-      "qed/dsyll",
       "qed/p-only",
       "qed/p-split",
-      "qed/p-exAnd",
       "qed/q-children",
-      "qed/q-grand",
-      "qed/q-school",
-      "qed/q-witness",
-      "qed/q-sym",
       "qed/h-and-make",
-      "qed/h-eq-subst",
-      "qed/h-eq-sym",
       "qed/s-barbara",
-      "qed/s-carroll",
       "qed/q-swap",
-      "qed/q-move",
-      "qed/q-bigger",
-      "qed/r-frule",
       "qed/pl-grand",
       "qed/pl-anc",
       "qed/pl-order",
@@ -54,8 +41,7 @@
       "qed/u-halt",
       "qed/au-horn",
       "qed/curry",
-      "qed/orSwap",
-      "qed/mt"
+      "qed/orSwap"
     ]
   }
 }

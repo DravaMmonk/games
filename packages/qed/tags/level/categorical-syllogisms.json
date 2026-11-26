@@ -1,1 +1,6 @@
-{ "title": "@tag.categorical-syllogisms.title", "values": ["s-barbara", "s-carroll"] }
+{
+  "title": "@tag.categorical-syllogisms.title",
+  "values": [
+    "s-barbara"
+  ]
+}

@@ -1,8 +1,5 @@
 {
   "title": "@level.r-allI.title",
-  "after": "@level.r-allI.after",
-  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
-  "tray": "prover",
   "intro": [
     {
       "t": "@level.r-allI.intro.0.t"
@@ -24,7 +21,9 @@
         {
           "goal": "∀x. ∀y. Likes(x, y) → Likes(x, y) ∨ Knows(x, y)"
         },
-        { "goal": "Rain → Rain ∨ Wind" }
+        {
+          "goal": "Rain → Rain ∨ Wind"
+        }
       ],
       "solution": [
         "step1 = logic/directBackward-qed_allI(in)",
@@ -40,7 +39,246 @@
         "step3 = logic/directBackward-qed_orI[use=[\"disjI1\"]](step2)",
         "step4 = logic/directBackward-logic_assumption(step3)",
         "out <- step4"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE",
+        "allE.use=spec"
+      ],
+      "step": "@level.r-allI.tasks.r-allI.step",
+      "after": "@level.r-allI.tasks.r-allI.after",
+      "intro": [
+        {
+          "t": "@level.r-allI.tasks.r-allI.intro.0.t"
+        }
       ]
+    },
+    {
+      "id": "r-exI",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.r-allI.tasks.r-exI.brief",
+      "hint": [
+        "@level.r-allI.tasks.r-exI.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "∃x. Likes(x, i)",
+          "hyps": [
+            "Likes(j, i)"
+          ]
+        },
+        {
+          "goal": "∃x. Bird(x) ∧ Flies(x)",
+          "hyps": [
+            "Flies(k)",
+            "Bird(k)"
+          ]
+        },
+        {
+          "goal": "∃y. Student(y) ∧ School(y)",
+          "hyps": [
+            "Student(l)",
+            "School(l)",
+            "Human(l)"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_exI(in)",
+        "step2 = logic/directBackward-qed_andI(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_andI(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE",
+        "allE.use=spec"
+      ],
+      "intro": [
+        {
+          "t": "@level.r-allI.tasks.r-exI.intro.0.t"
+        }
+      ],
+      "step": "@level.r-allI.tasks.r-exI.step",
+      "after": "@level.r-allI.tasks.r-exI.after"
+    },
+    {
+      "id": "r-exE",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.r-allI.tasks.r-exE.brief",
+      "hint": [
+        "@level.r-allI.tasks.r-exE.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "∃x. Likes(x, i)",
+          "hyps": [
+            "∃x. Human(x) ∧ Likes(x, i)"
+          ]
+        },
+        {
+          "goal": "∃y. Flies(y)",
+          "hyps": [
+            "∃x. Bird(x) ∧ Flies(x)"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_exE(in)",
+        "step2 = logic/directForward-qed_andE(step1)",
+        "step3 = logic/directBackward-qed_exI(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_exI(in)",
+        "step2 = logic/directForward-qed_exE(step1)",
+        "step3 = logic/directForward-qed_andE(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE",
+        "allE.use=spec"
+      ],
+      "intro": [
+        {
+          "t": "@level.r-allI.tasks.r-exE.intro.0.t"
+        }
+      ],
+      "step": "@level.r-allI.tasks.r-exE.step"
+    },
+    {
+      "id": "r-drule",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.r-allI.tasks.r-drule.brief",
+      "hint": [
+        "@level.r-allI.tasks.r-drule.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "Mortal(h)",
+          "hyps": [
+            "∀x. Human(x) → Mortal(x)",
+            "Human(h)"
+          ]
+        },
+        {
+          "goal": "Likes(i, j)",
+          "hyps": [
+            "Human(j)",
+            "∀y. Human(y) → Likes(i, y)"
+          ]
+        },
+        {
+          "goal": "Flies(k)",
+          "hyps": [
+            "Bird(k)",
+            "Bird(l)",
+            "∀x. Bird(x) → Flies(x)"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_allE(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE",
+        "allE.use=spec"
+      ],
+      "intro": [
+        {
+          "t": "@level.r-allI.tasks.r-drule.intro.0.t"
+        }
+      ],
+      "step": "@level.r-allI.tasks.r-drule.step"
+    },
+    {
+      "id": "r-frule",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.r-allI.tasks.r-frule.brief",
+      "hint": [
+        "@level.r-allI.tasks.r-frule.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "Mortal(i) ∧ Mortal(j)",
+          "hyps": [
+            "∀x. Human(x) → Mortal(x)",
+            "Human(i)",
+            "Human(j)"
+          ]
+        },
+        {
+          "goal": "Flies(k) ∧ Flies(l)",
+          "hyps": [
+            "Bird(l)",
+            "Bird(k)",
+            "∀x. Bird(x) → Flies(x)"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_allE(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directForward-qed_allE(step2)",
+        "step4 = logic/directForward-qed_mp(step3)",
+        "step5 = logic/directBackward-qed_andI(step4)",
+        "step6 = logic/directBackward-logic_assumption(step5)",
+        "step7 = logic/directBackward-logic_assumption(step6)",
+        "out <- step7"
+      ],
+      "naive": [
+        "step1 = logic/directForward-qed_allE(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directForward-qed_mp(step2)",
+        "step4 = logic/directBackward-qed_andI(step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "step6 = logic/directBackward-logic_assumption(step5)",
+        "out <- step6"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE",
+        "allE.use=spec"
+      ],
+      "intro": [
+        {
+          "t": "@level.r-allI.tasks.r-frule.intro.0.t"
+        }
+      ],
+      "step": "@level.r-allI.tasks.r-frule.step"
     }
   ]
 }

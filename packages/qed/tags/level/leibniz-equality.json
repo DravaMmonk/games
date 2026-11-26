@@ -1,1 +1,6 @@
-{ "title": "@tag.leibniz-equality.title", "values": ["h-eq-subst", "h-eq-sym"] }
+{
+  "title": "@tag.leibniz-equality.title",
+  "values": [
+    "h-and-make"
+  ]
+}

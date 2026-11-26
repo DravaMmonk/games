@@ -10,10 +10,6 @@
       "to": "sp-nnf"
     },
     {
-      "from": "r-drule",
-      "to": "machine-rewrite"
-    },
-    {
       "from": "machine-rewrite",
       "to": "sp-back"
     },
@@ -29,6 +25,17 @@
       "from": "r-eq",
       "to": "machine-cite-first"
     },
-    { "from": "machine-cite-first", "to": "sp-repeat" }
+    {
+      "from": "machine-cite-first",
+      "to": "sp-repeat"
+    },
+    {
+      "from": "r-allI",
+      "to": "machine-rewrite"
+    },
+    {
+      "from": "q-eq",
+      "to": "machine-rewrite"
+    }
   ]
 }

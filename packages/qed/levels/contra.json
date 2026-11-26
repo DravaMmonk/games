@@ -1,6 +1,5 @@
 {
   "title": "@level.contra.title",
-  "tray": "proof",
   "intro": [
     {
       "t": "@level.contra.intro.0.t"
@@ -40,7 +39,70 @@
         "  }",
         "}",
         "goal <- f"
+      ],
+      "tray": "proof",
+      "step": "@level.contra.tasks.contra.step"
+    },
+    {
+      "id": "mt-1",
+      "kind": "logic/proof",
+      "step": "@level.contra.tasks.mt-1.step",
+      "tests": [
+        {
+          "premises": {
+            "p": "A → B",
+            "q": "B → C",
+            "r": "¬C"
+          },
+          "goal": "¬A"
+        }
+      ],
+      "cases": [
+        {
+          "A": "Rain",
+          "B": "Wet",
+          "C": "Slip"
+        },
+        {
+          "A": "Alarm",
+          "B": "Up",
+          "C": "OnTime"
+        }
+      ],
+      "hint": [
+        "@level.contra.tasks.mt-1.hint.0"
+      ],
+      "solution": [
+        "c1 = chain(p, q)",
+        "c2 = chain(c1, r)",
+        "goal <- c2"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.contra.tasks.mt-1.intro.0.t"
+        }
       ]
+    },
+    {
+      "id": "mt-2",
+      "kind": "logic/truth",
+      "step": "@level.contra.tasks.mt-2.step",
+      "ask": "counter",
+      "formulas": [
+        "(Rain → Wet) → (¬Rain → ¬Wet)"
+      ],
+      "brief": "@level.contra.tasks.mt-2.brief",
+      "hint": [
+        "@level.contra.tasks.mt-2.hint.0",
+        "@level.contra.tasks.mt-2.hint.1"
+      ],
+      "intro": [
+        {
+          "t": "@level.contra.tasks.mt-2.intro.0.t"
+        }
+      ],
+      "tray": "proof"
     }
   ]
 }

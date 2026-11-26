@@ -1,19 +1,40 @@
 {
   "title": "@level.machine-backward-and.title",
-  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
-  "tray": "prover",
-  "intro": [{ "t": "@level.machine-backward-and.intro.0.t" }],
+  "intro": [
+    {
+      "t": "@level.machine-backward-and.intro.0.t"
+    }
+  ],
   "tasks": [
     {
       "id": "machine-backward-and",
       "kind": "logic/machine",
       "want": "logic/proved",
       "brief": "@level.machine-backward-and.tasks.machine-backward-and.brief",
-      "hint": ["@level.machine-backward-and.tasks.machine-backward-and.hint.0"],
+      "hint": [
+        "@level.machine-backward-and.tasks.machine-backward-and.hint.0"
+      ],
       "tests": [
-        { "goal": "Wind ∧ Rain", "hyps": ["Rain ∧ Wind"] },
-        { "goal": "Rain ∧ Wind", "hyps": ["Wind", "Rain"] },
-        { "goal": "Awake ∧ Tea", "hyps": ["Coffee ∧ Tea", "Awake"] }
+        {
+          "goal": "Wind ∧ Rain",
+          "hyps": [
+            "Rain ∧ Wind"
+          ]
+        },
+        {
+          "goal": "Rain ∧ Wind",
+          "hyps": [
+            "Wind",
+            "Rain"
+          ]
+        },
+        {
+          "goal": "Awake ∧ Tea",
+          "hyps": [
+            "Coffee ∧ Tea",
+            "Awake"
+          ]
+        }
       ],
       "solution": [
         "step1 = logic/directForward-qed_andE(in)",
@@ -27,7 +48,172 @@
         "step2 = logic/directBackward-logic_assumption(step1)",
         "step3 = logic/directBackward-logic_assumption(step2)",
         "out <- step3"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE"
+      ],
+      "step": "@level.machine-backward-and.tasks.machine-backward-and.step",
+      "intro": [
+        {
+          "t": "@level.machine-backward-and.tasks.machine-backward-and.intro.0.t"
+        }
       ]
+    },
+    {
+      "id": "machine-cases",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-backward-and.tasks.machine-cases.brief",
+      "hint": [
+        "@level.machine-backward-and.tasks.machine-cases.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "Wind ∨ Rain",
+          "hyps": [
+            "Rain ∨ Wind"
+          ]
+        },
+        {
+          "goal": "Bike ∨ Bus",
+          "hyps": [
+            "Bus ∨ Bike"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_orE(in)",
+        "step2 = logic/directBackward-qed_orI[use=[\"disjI2\"]](step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-qed_orI[use=[\"disjI1\"]](step3)",
+        "step5 = logic/directBackward-logic_assumption(step4)",
+        "out <- step5"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_orI[use=[\"disjI1\"]](in)",
+        "step2 = logic/directForward-qed_orE(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE"
+      ],
+      "intro": [
+        {
+          "t": "@level.machine-backward-and.tasks.machine-cases.intro.0.t"
+        }
+      ],
+      "step": "@level.machine-backward-and.tasks.machine-cases.step"
+    },
+    {
+      "id": "machine-backward-bot",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-backward-and.tasks.machine-backward-bot.brief",
+      "hint": [
+        "@level.machine-backward-and.tasks.machine-backward-bot.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "Rain ∧ Wind",
+          "hyps": [
+            "Rain",
+            "⊥"
+          ]
+        },
+        {
+          "goal": "Bus ∨ Bike",
+          "hyps": [
+            "⊥"
+          ]
+        },
+        {
+          "goal": "Wet",
+          "hyps": [
+            "Wind",
+            "Wet"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_botE(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ],
+      "naive": [
+        "step1 = logic/directBackward-qed_botE(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE"
+      ],
+      "intro": [
+        {
+          "t": "@level.machine-backward-and.tasks.machine-backward-bot.intro.0.t"
+        }
+      ],
+      "step": "@level.machine-backward-and.tasks.machine-backward-bot.step"
+    },
+    {
+      "id": "machine-negation",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-backward-and.tasks.machine-negation.brief",
+      "hint": [
+        "@level.machine-backward-and.tasks.machine-negation.hint.0"
+      ],
+      "tests": [
+        {
+          "goal": "¬Rain",
+          "hyps": [
+            "Rain → Wet",
+            "¬Wet"
+          ]
+        },
+        {
+          "goal": "¬Alarm",
+          "hyps": [
+            "¬OnTime",
+            "Alarm → OnTime"
+          ]
+        }
+      ],
+      "solution": [
+        "step1 = logic/directBackward-qed_impI(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directForward-qed_mp(step2)",
+        "step4 = logic/directBackward-logic_assumption(step3)",
+        "out <- step4"
+      ],
+      "naive": [
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "tray": "prover",
+      "withholds": [
+        "mp.use=impE",
+        "mp.use=cut",
+        "andE.use=conjE"
+      ],
+      "intro": [
+        {
+          "t": "@level.machine-backward-and.tasks.machine-negation.intro.0.t"
+        }
+      ],
+      "step": "@level.machine-backward-and.tasks.machine-negation.step"
     }
   ]
 }

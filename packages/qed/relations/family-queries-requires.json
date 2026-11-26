@@ -1,10 +1,4 @@
 {
   "kind": "requires",
-  "edges": [
-    {
-      "required": true,
-      "from": "q-children",
-      "to": "q-grand"
-    }
-  ]
+  "edges": []
 }

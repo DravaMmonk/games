@@ -201,6 +201,400 @@
       "say": "@level.q-children.tasks.q-children-check.say",
       "target": "Parent(i, x)",
       "brief": "@level.q-children.tasks.q-children-check.brief"
+    },
+    {
+      "id": "q-grand",
+      "step": "@level.q-children.tasks.q-grand.step",
+      "kind": "logic/query",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "worlds": [
+        {
+          "title": "@level.q-children.tasks.q-grand.worlds.0.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "i",
+                "j"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "j",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ]
+            ],
+            "School": [
+              "l"
+            ]
+          }
+        },
+        {
+          "title": "@level.q-children.tasks.q-grand.worlds.1.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "j",
+                "i"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "i",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ],
+              [
+                "l",
+                "n"
+              ]
+            ],
+            "School": [
+              "k",
+              "l",
+              "m",
+              "n"
+            ]
+          }
+        }
+      ],
+      "say": "@level.q-children.tasks.q-grand.say",
+      "target": "∃y. ∃z. Parent(x, y) ∧ Parent(y, z)",
+      "decoys": [
+        "School(x)"
+      ],
+      "brief": "@level.q-children.tasks.q-grand.brief",
+      "hint": [
+        "@level.q-children.tasks.q-grand.hint.0"
+      ],
+      "intro": [
+        {
+          "t": "@level.q-children.tasks.q-grand.intro.0.t"
+        }
+      ]
+    },
+    {
+      "id": "q-grand-check",
+      "step": "@level.q-children.tasks.q-grand-check.step",
+      "kind": "logic/query",
+      "play": "logic/lookup",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "worlds": [
+        {
+          "title": "@level.q-children.tasks.q-grand-check.worlds.0.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "i",
+                "j"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "j",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ]
+            ],
+            "School": [
+              "l"
+            ]
+          }
+        },
+        {
+          "title": "@level.q-children.tasks.q-grand-check.worlds.1.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "j",
+                "i"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "i",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ],
+              [
+                "l",
+                "n"
+              ]
+            ],
+            "School": [
+              "k",
+              "l",
+              "m",
+              "n"
+            ]
+          }
+        }
+      ],
+      "say": "@level.q-children.tasks.q-grand-check.say",
+      "target": "∃y. ∃z. Parent(x, y) ∧ Parent(y, z)",
+      "brief": "@level.q-children.tasks.q-grand-check.brief"
+    },
+    {
+      "id": "q-school",
+      "step": "@level.q-children.tasks.q-school.step",
+      "kind": "logic/query",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "worlds": [
+        {
+          "title": "@level.q-children.tasks.q-school.worlds.0.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "i",
+                "j"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "j",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ]
+            ],
+            "School": [
+              "l"
+            ]
+          }
+        },
+        {
+          "title": "@level.q-children.tasks.q-school.worlds.1.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "j",
+                "i"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "i",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ],
+              [
+                "l",
+                "n"
+              ]
+            ],
+            "School": [
+              "k",
+              "l",
+              "m",
+              "n"
+            ]
+          }
+        }
+      ],
+      "say": "@level.q-children.tasks.q-school.say",
+      "target": "(∃y. Parent(x, y)) ∧ ∀y. Parent(x, y) → School(y)",
+      "brief": "@level.q-children.tasks.q-school.brief",
+      "hint": [
+        "@level.q-children.tasks.q-school.hint.0",
+        "@level.q-children.tasks.q-school.hint.1"
+      ],
+      "intro": [
+        {
+          "t": "@level.q-children.tasks.q-school.intro.0.t"
+        }
+      ]
+    },
+    {
+      "id": "q-school-check",
+      "step": "@level.q-children.tasks.q-school-check.step",
+      "kind": "logic/query",
+      "play": "logic/lookup",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "worlds": [
+        {
+          "title": "@level.q-children.tasks.q-school-check.worlds.0.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "i",
+                "j"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "j",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ]
+            ],
+            "School": [
+              "l"
+            ]
+          }
+        },
+        {
+          "title": "@level.q-children.tasks.q-school-check.worlds.1.title",
+          "things": [
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n"
+          ],
+          "preds": {
+            "Parent": [
+              [
+                "j",
+                "i"
+              ],
+              [
+                "i",
+                "k"
+              ],
+              [
+                "i",
+                "l"
+              ],
+              [
+                "k",
+                "m"
+              ],
+              [
+                "l",
+                "n"
+              ]
+            ],
+            "School": [
+              "k",
+              "l",
+              "m",
+              "n"
+            ]
+          }
+        }
+      ],
+      "say": "@level.q-children.tasks.q-school-check.say",
+      "target": "(∃y. Parent(x, y)) ∧ ∀y. Parent(x, y) → School(y)",
+      "brief": "@level.q-children.tasks.q-school-check.brief"
     }
   ]
 }

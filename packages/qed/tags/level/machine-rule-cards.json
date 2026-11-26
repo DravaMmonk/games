@@ -10,18 +10,11 @@
     "machine-meta",
     "machine-rewrite-swap",
     "machine-meta-order",
-    "machine-backward-bot",
-    "machine-cases",
     "machine-cite-first",
-    "machine-negation",
     "machine-derive",
     "machine-forward",
     "machine-forward-link",
     "r-allI",
-    "r-exI",
-    "r-exE",
-    "r-drule",
-    "r-eq",
-    "r-frule"
+    "r-eq"
   ]
 }

@@ -6,15 +6,11 @@
       "to": "fo-all"
     },
     {
-      "from": "fo-all",
-      "to": "m-counter"
-    },
-    {
       "from": "fo-atoms",
       "to": "fo-some"
     },
     {
-      "from": "m-counter",
+      "from": "fo-all",
       "to": "fo-nested"
     },
     {
@@ -24,16 +20,6 @@
     {
       "from": "fo-nested",
       "to": "p-only"
-    },
-    {
-      "required": true,
-      "from": "p-split",
-      "to": "p-exAnd"
-    },
-    {
-      "required": true,
-      "from": "q-swap",
-      "to": "q-move"
     }
   ]
 }

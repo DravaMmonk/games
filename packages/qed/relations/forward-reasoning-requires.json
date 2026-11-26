@@ -1,9 +1,4 @@
 {
   "kind": "requires",
-  "edges": [
-    {
-      "from": "r-drule",
-      "to": "r-frule"
-    }
-  ]
+  "edges": []
 }

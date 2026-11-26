@@ -1,1 +1,8 @@
-{ "title": "@tag.disjunction-cases.title", "values": ["decl-or", "or", "orSwap", "orImp", "dsyll"] }
+{
+  "title": "@tag.disjunction-cases.title",
+  "values": [
+    "decl-or",
+    "or",
+    "orSwap"
+  ]
+}

@@ -1,6 +1,11 @@
 {
   "title": "@glossary.entries.contrapositive.title",
-  "at": "machine-negation",
-  "body": ["@glossary.entries.contrapositive.body.0", "@glossary.entries.contrapositive.body.1"],
-  "see": ["counterexample"]
+  "at": "notI",
+  "body": [
+    "@glossary.entries.contrapositive.body.0",
+    "@glossary.entries.contrapositive.body.1"
+  ],
+  "see": [
+    "counterexample"
+  ]
 }

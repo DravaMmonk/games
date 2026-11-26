@@ -1,9 +1,4 @@
 {
   "kind": "requires",
-  "edges": [
-    {
-      "from": "q-allI",
-      "to": "q-allE"
-    }
-  ]
+  "edges": []
 }

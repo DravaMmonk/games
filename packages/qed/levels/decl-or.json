@@ -1,92 +1,10 @@
 {
-  "adds": [
-    "orI",
-    "orE"
-  ],
   "title": "@level.decl-or.title",
-  "declare": "@level.decl-or.declare",
-  "target": "A ∨ B",
-  "sentences": [
-    "A",
-    "B"
-  ],
-  "tests": [
-    {
-      "given": [
-        "A"
-      ],
-      "make": true
-    },
-    {
-      "given": [
-        "B"
-      ],
-      "make": true
-    },
-    {
-      "given": [
-        "A",
-        "B"
-      ],
-      "make": true
-    },
-    {
-      "given": [],
-      "make": false
-    },
-    {
-      "given": [
-        "A ∨ B"
-      ],
-      "goal": "A",
-      "make": false
-    },
-    {
-      "given": [
-        "A ∨ B",
-        "A → C",
-        "B → C"
-      ],
-      "goal": "C",
-      "make": true
-    },
-    {
-      "given": [
-        "A ∨ B",
-        "A → C"
-      ],
-      "goal": "C",
-      "make": false
-    }
-  ],
   "intro": [
     {
       "t": "@level.decl-or.intro.0.t"
     }
   ],
-  "solution": [
-    {
-      "binds": [],
-      "needs": [
-        "A"
-      ]
-    },
-    {
-      "binds": [],
-      "needs": [
-        "B"
-      ]
-    }
-  ],
-  "naive": [
-    {
-      "binds": [],
-      "needs": [
-        "A"
-      ]
-    }
-  ],
-  "after": "@level.decl-or.after",
   "tasks": [
     {
       "id": "decl-or-1",
@@ -129,29 +47,53 @@
       "brief": "@level.decl-or.tasks.decl-or-1.brief",
       "hint": [
         "@level.decl-or.tasks.decl-or-1.hint.0"
-      ]
-    },
-    {
-      "id": "decl-or-2",
-      "kind": "logic/iso",
-      "step": "@level.decl-or.tasks.decl-or-2.step",
-      "say": "@level.decl-or.tasks.decl-or-2.say",
-      "play": "logic/audit",
-      "boards": [
-        {
-          "rules": [
-            {
-              "binds": [],
-              "needs": [
-                "A"
-              ]
-            }
-          ]
-        }
       ],
-      "slots": 1,
-      "caseGoal": "C",
-      "answer": [
+      "declare": "@level.decl-or.tasks.decl-or-1.declare",
+      "target": "A ∨ B",
+      "sentences": [
+        "A",
+        "B"
+      ],
+      "tests": [
+        {
+          "given": [
+            "A"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "B"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "A",
+            "B"
+          ],
+          "make": true
+        },
+        {
+          "given": [],
+          "make": false
+        },
+        {
+          "given": [
+            "A ∨ B"
+          ],
+          "goal": "A",
+          "make": false
+        },
+        {
+          "given": [
+            "A ∨ B",
+            "A → C",
+            "B → C"
+          ],
+          "goal": "C",
+          "make": true
+        },
         {
           "given": [
             "A ∨ B",
@@ -161,22 +103,36 @@
           "make": false
         }
       ],
-      "naive": [
+      "solution": [
         {
-          "given": [
-            "A ∨ B",
-            "A → C",
-            "B → C"
-          ],
-          "goal": "C",
-          "make": true
+          "binds": [],
+          "needs": [
+            "A"
+          ]
+        },
+        {
+          "binds": [],
+          "needs": [
+            "B"
+          ]
         }
       ],
-      "brief": "@level.decl-or.tasks.decl-or-2.brief",
-      "hint": [
-        "@level.decl-or.tasks.decl-or-2.hint.0"
+      "cases": [
+        {
+          "A": "Sat",
+          "B": "Sun",
+          "C": "Rest"
+        },
+        {
+          "A": "Bus",
+          "B": "Bike",
+          "C": "OnTime"
+        }
       ],
-      "after": "@level.decl-or.tasks.decl-or-2.after"
+      "adds": [
+        "orE",
+        "orI"
+      ]
     },
     {
       "id": "decl-or-3",
@@ -186,19 +142,97 @@
       "say": "@level.decl-or.tasks.decl-or-3.say",
       "hint": [
         "@level.decl-or.tasks.decl-or-3.hint.0"
-      ]
-    }
-  ],
-  "cases": [
-    {
-      "A": "Sat",
-      "B": "Sun",
-      "C": "Rest"
-    },
-    {
-      "A": "Bus",
-      "B": "Bike",
-      "C": "OnTime"
+      ],
+      "declare": "@level.decl-or.tasks.decl-or-3.declare",
+      "target": "A ∨ B",
+      "sentences": [
+        "A",
+        "B"
+      ],
+      "tests": [
+        {
+          "given": [
+            "A"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "B"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "A",
+            "B"
+          ],
+          "make": true
+        },
+        {
+          "given": [],
+          "make": false
+        },
+        {
+          "given": [
+            "A ∨ B"
+          ],
+          "goal": "A",
+          "make": false
+        },
+        {
+          "given": [
+            "A ∨ B",
+            "A → C",
+            "B → C"
+          ],
+          "goal": "C",
+          "make": true
+        },
+        {
+          "given": [
+            "A ∨ B",
+            "A → C"
+          ],
+          "goal": "C",
+          "make": false
+        }
+      ],
+      "solution": [
+        {
+          "binds": [],
+          "needs": [
+            "A"
+          ]
+        },
+        {
+          "binds": [],
+          "needs": [
+            "B"
+          ]
+        }
+      ],
+      "naive": [
+        {
+          "binds": [],
+          "needs": [
+            "A"
+          ]
+        }
+      ],
+      "cases": [
+        {
+          "A": "Sat",
+          "B": "Sun",
+          "C": "Rest"
+        },
+        {
+          "A": "Bus",
+          "B": "Bike",
+          "C": "OnTime"
+        }
+      ],
+      "after": "@level.decl-or.tasks.decl-or-3.after"
     }
   ]
 }

@@ -1,6 +1,11 @@
 {
   "title": "@glossary.entries.capture.title",
-  "at": "q-allE",
-  "body": ["@glossary.entries.capture.body.0"],
-  "see": ["bound", "free"]
+  "at": "q-allI",
+  "body": [
+    "@glossary.entries.capture.body.0"
+  ],
+  "see": [
+    "bound",
+    "free"
+  ]
 }

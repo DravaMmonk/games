@@ -1,6 +1,5 @@
 {
   "title": "@level.q-eq.title",
-  "tray": "proof",
   "intro": [
     {
       "t": "@level.q-eq.intro.0.t"
@@ -49,7 +48,47 @@
         "e = allE[t=b](t)",
         "m = mp(e, r)",
         "goal <- m"
-      ]
+      ],
+      "tray": "proof",
+      "step": "@level.q-eq.tasks.q-eq.step"
+    },
+    {
+      "id": "q-sym",
+      "words": [
+        "qed/everyday",
+        "qed/stars"
+      ],
+      "kind": "logic/proof",
+      "consts": [
+        "i",
+        "j"
+      ],
+      "tests": [
+        {
+          "premises": {
+            "p": "i = j"
+          },
+          "goal": "j = i"
+        }
+      ],
+      "cases": [],
+      "brief": "@level.q-eq.tasks.q-sym.brief",
+      "hint": [
+        "@level.q-eq.tasks.q-sym.hint.0",
+        "@level.q-eq.tasks.q-sym.hint.1"
+      ],
+      "solution": [
+        "r = refl[t=i]()",
+        "w = rewrite[at=[0]](p, r)",
+        "goal <- w"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.q-eq.tasks.q-sym.intro.0.t"
+        }
+      ],
+      "step": "@level.q-eq.tasks.q-sym.step"
     }
   ]
 }

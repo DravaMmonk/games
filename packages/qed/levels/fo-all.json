@@ -1,13 +1,4 @@
 {
-  "consts": [
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n"
-  ],
   "title": "@level.fo-all.title",
   "intro": [
     {
@@ -17,7 +8,6 @@
       "t": "@level.fo-all.intro.1.t"
     }
   ],
-  "after": "@level.fo-all.after",
   "tasks": [
     {
       "id": "fo-all-1",
@@ -33,6 +23,15 @@
       "decoys": [
         "∀x. Human(x) ∧ Mortal(x)",
         "∀x. Mortal(x) → Human(x)"
+      ],
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
       ]
     },
     {
@@ -59,28 +58,97 @@
         {
           "t": "@level.fo-all.tasks.fo-all-2.intro.1.t"
         }
+      ],
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "after": "@level.fo-all.tasks.fo-all-2.after"
+    },
+    {
+      "id": "m-counter-1",
+      "kind": "logic/iso",
+      "step": "@level.fo-all.tasks.m-counter-1.step",
+      "brief": "@level.fo-all.tasks.m-counter-1.brief",
+      "say": "@level.fo-all.tasks.m-counter-1.say",
+      "hint": [
+        "@level.fo-all.tasks.m-counter-1.hint.0"
+      ],
+      "play": "logic/rule",
+      "things": [
+        "h"
+      ],
+      "sentences": [
+        "∀x. Human(x) → Mortal(x)",
+        "Mortal(h)",
+        "Human(h)"
+      ],
+      "rule": {
+        "premises": [
+          "∀x. Human(x) → Mortal(x)",
+          "Mortal(h)"
+        ],
+        "conclusion": "Human(h)"
+      },
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "intro": [
+        {
+          "t": "@level.fo-all.tasks.m-counter-1.intro.0.t"
+        }
       ]
     },
     {
-      "id": "fo-all-3",
+      "id": "m-counter-2",
       "kind": "logic/model",
-      "step": "@level.fo-all.tasks.fo-all-3.step",
-      "translationFrom": "fo-all-1",
-      "say": "@level.fo-all.tasks.fo-all-3.say",
-      "meant": "∀x. Human(x) → Mortal(x)",
-      "brief": "@level.fo-all.tasks.fo-all-3.brief",
-      "wrong": "∀x. Mortal(x) → Human(x)",
+      "step": "@level.fo-all.tasks.m-counter-2.step",
+      "brief": "@level.fo-all.tasks.m-counter-2.brief",
+      "say": "@level.fo-all.tasks.m-counter-2.say",
       "answer": {
         "size": 1,
         "preds": {
-          "Human": [
+          "Mortal": [
             "0"
           ]
+        },
+        "consts": {
+          "h": 0
         }
       },
       "hint": [
-        "@level.fo-all.tasks.fo-all-3.hint.0"
-      ]
+        "@level.fo-all.tasks.m-counter-2.hint.0"
+      ],
+      "intro": [
+        {
+          "t": "@level.fo-all.tasks.m-counter-2.intro.0.t"
+        },
+        {
+          "t": "@level.fo-all.tasks.m-counter-2.intro.1.t"
+        }
+      ],
+      "ruleFrom": "m-counter-1",
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "after": "@level.fo-all.tasks.m-counter-2.after"
     }
   ]
 }

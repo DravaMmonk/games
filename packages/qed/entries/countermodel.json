@@ -1,6 +1,11 @@
 {
   "title": "@glossary.entries.countermodel.title",
-  "at": "m-counter",
-  "body": ["@glossary.entries.countermodel.body.0"],
-  "see": ["world", "soundness"]
+  "at": "fo-all",
+  "body": [
+    "@glossary.entries.countermodel.body.0"
+  ],
+  "see": [
+    "world",
+    "soundness"
+  ]
 }

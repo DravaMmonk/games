@@ -8,22 +8,48 @@
     "qed/fo-atoms",
     "qed/fo-all",
     "qed/fo-some",
-    "qed/m-counter",
     "qed/fo-nested",
+    "qed/q-allI",
     "qed/p-only",
-    "qed/p-split",
-    "qed/p-exAnd",
     "qed/q-children",
-    "qed/q-grand",
-    "qed/q-school"
+    "qed/decl-ex",
+    "qed/s-barbara",
+    "qed/q-exE",
+    "qed/q-eq",
+    "qed/h-and-make",
+    "qed/r-allI",
+    "qed/p-split",
+    "qed/q-swap"
   ],
   "rows": [
-    ["qed/fo-atoms"],
-    ["qed/fo-all", "qed/fo-some"],
-    ["qed/m-counter", null],
-    ["qed/fo-nested"],
-    ["qed/p-only", "qed/q-children"],
-    ["qed/p-split", "qed/q-grand"],
-    ["qed/p-exAnd", "qed/q-school"]
+    [
+      "qed/fo-atoms"
+    ],
+    [
+      "qed/fo-all",
+      "qed/fo-some"
+    ],
+    [
+      "qed/fo-nested"
+    ],
+    [
+      "qed/q-allI",
+      "qed/p-only",
+      "qed/q-children"
+    ],
+    [
+      "qed/decl-ex",
+      "qed/s-barbara"
+    ],
+    [
+      "qed/q-exE",
+      "qed/q-eq",
+      "qed/h-and-make"
+    ],
+    [
+      "qed/r-allI",
+      "qed/p-split",
+      "qed/q-swap"
+    ]
   ]
 }

@@ -1,13 +1,46 @@
 {
   "title": "@level.q-exE.title",
-  "tray": "proof",
   "intro": [
     {
       "t": "@level.q-exE.intro.0.t"
     }
   ],
-  "after": "@level.q-exE.after",
   "tasks": [
+    {
+      "id": "q-exI",
+      "kind": "logic/proof",
+      "consts": [
+        "i"
+      ],
+      "tests": [
+        {
+          "premises": {
+            "p": "P(i) ∧ Q(i)"
+          },
+          "goal": "∃x. Q(x)"
+        }
+      ],
+      "cases": [
+        {
+          "P": "Human",
+          "Q": "Mortal"
+        },
+        {
+          "P": "Student",
+          "Q": "School"
+        }
+      ],
+      "hint": [
+        "@level.q-exE.tasks.q-exI.hint.0"
+      ],
+      "solution": [
+        "s = andE(p)",
+        "i = exI(s.right)",
+        "goal <- i"
+      ],
+      "tray": "proof",
+      "step": "@level.q-exE.tasks.q-exI.step"
+    },
     {
       "id": "q-exE",
       "kind": "logic/proof",
@@ -40,7 +73,15 @@
         "  }",
         "}",
         "goal <- f"
-      ]
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.q-exE.tasks.q-exE.intro.0.t"
+        }
+      ],
+      "step": "@level.q-exE.tasks.q-exE.step",
+      "after": "@level.q-exE.tasks.q-exE.after"
     }
   ]
 }

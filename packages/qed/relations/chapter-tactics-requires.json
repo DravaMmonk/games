@@ -3,7 +3,7 @@
   "edges": [
     {
       "required": true,
-      "from": "q-grand",
+      "from": "q-children",
       "to": "pl-grand"
     },
     {
@@ -36,6 +36,9 @@
       "from": "sp-simp",
       "to": "s-append"
     },
-    { "from": "s-loop", "to": "s-equal" }
+    {
+      "from": "s-loop",
+      "to": "s-equal"
+    }
   ]
 }

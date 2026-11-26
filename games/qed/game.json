@@ -22,8 +22,6 @@
     "@qed/assistant",
     "@qed/boxes",
     "@qed/quantifiers",
-    "@qed/qrules",
-    "@qed/metavars",
     "@qed/simplifier",
     "@qed/tactics",
     "@qed/classical",

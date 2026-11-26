@@ -3,15 +3,11 @@
   "edges": [
     {
       "from": "decl-ex",
-      "to": "q-exI"
-    },
-    {
-      "from": "q-exI",
       "to": "q-exE"
     },
     {
       "from": "q-exE",
-      "to": "q-witness"
+      "to": "p-split"
     }
   ]
 }

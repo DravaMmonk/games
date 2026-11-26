@@ -4,12 +4,9 @@
     "fo-atoms",
     "fo-all",
     "fo-some",
-    "m-counter",
     "fo-nested",
     "p-only",
     "p-split",
-    "p-exAnd",
-    "q-swap",
-    "q-move"
+    "q-swap"
   ]
 }

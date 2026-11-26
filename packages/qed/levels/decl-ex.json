@@ -1,88 +1,8 @@
 {
-  "adds": [
-    "exI",
-    "exE"
-  ],
   "title": "@level.decl-ex.title",
-  "declare": "@level.decl-ex.declare",
-  "target": "∃y. P(y)",
-  "sentences": [
-    "P(x)",
-    "Q(x)"
-  ],
-  "things": [
-    "h",
-    "i"
-  ],
-  "thing": true,
-  "tests": [
-    {
-      "given": [
-        "P(h)"
-      ],
-      "make": true
-    },
-    {
-      "given": [
-        "P(i)"
-      ],
-      "make": true
-    },
-    {
-      "given": [
-        "Q(h)"
-      ],
-      "make": false
-    },
-    {
-      "given": [],
-      "make": false
-    },
-    {
-      "given": [
-        "∃y. P(y)"
-      ],
-      "goal": "P(h)",
-      "make": false
-    },
-    {
-      "given": [
-        "∃y. P(y)",
-        "∀x. P(x) → Q(x)"
-      ],
-      "goal": "∃y. Q(y)",
-      "make": true
-    },
-    {
-      "given": [
-        "∃y. P(y)",
-        "∀x. P(x) → Q(x)"
-      ],
-      "goal": "Q(h)",
-      "make": false
-    }
-  ],
   "intro": [
     {
       "t": "@level.decl-ex.intro.0.t"
-    }
-  ],
-  "solution": [
-    {
-      "binds": [
-        "x"
-      ],
-      "needs": [
-        "P(x)"
-      ]
-    }
-  ],
-  "naive": [
-    {
-      "binds": [],
-      "needs": [
-        "P(x)"
-      ]
     }
   ],
   "tasks": [
@@ -167,6 +87,88 @@
       "hint": [
         "@level.decl-ex.tasks.decl-ex-1.hint.0",
         "@level.decl-ex.tasks.decl-ex-1.hint.1"
+      ],
+      "declare": "@level.decl-ex.tasks.decl-ex-1.declare",
+      "target": "∃y. P(y)",
+      "sentences": [
+        "P(x)",
+        "Q(x)"
+      ],
+      "tests": [
+        {
+          "given": [
+            "P(h)"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "P(i)"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "Q(h)"
+          ],
+          "make": false
+        },
+        {
+          "given": [],
+          "make": false
+        },
+        {
+          "given": [
+            "∃y. P(y)"
+          ],
+          "goal": "P(h)",
+          "make": false
+        },
+        {
+          "given": [
+            "∃y. P(y)",
+            "∀x. P(x) → Q(x)"
+          ],
+          "goal": "∃y. Q(y)",
+          "make": true
+        },
+        {
+          "given": [
+            "∃y. P(y)",
+            "∀x. P(x) → Q(x)"
+          ],
+          "goal": "Q(h)",
+          "make": false
+        }
+      ],
+      "solution": [
+        {
+          "binds": [
+            "x"
+          ],
+          "needs": [
+            "P(x)"
+          ]
+        }
+      ],
+      "things": [
+        "h",
+        "i"
+      ],
+      "thing": true,
+      "cases": [
+        {
+          "P": "Human",
+          "Q": "Mortal"
+        },
+        {
+          "P": "Bird",
+          "Q": "Flies"
+        }
+      ],
+      "adds": [
+        "exE",
+        "exI"
       ]
     },
     {
@@ -183,17 +185,165 @@
       "hint": [
         "@level.decl-ex.tasks.decl-ex-2.hint.0",
         "@level.decl-ex.tasks.decl-ex-2.hint.1"
+      ],
+      "declare": "@level.decl-ex.tasks.decl-ex-2.declare",
+      "target": "∃y. P(y)",
+      "sentences": [
+        "P(x)",
+        "Q(x)"
+      ],
+      "tests": [
+        {
+          "given": [
+            "P(h)"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "P(i)"
+          ],
+          "make": true
+        },
+        {
+          "given": [
+            "Q(h)"
+          ],
+          "make": false
+        },
+        {
+          "given": [],
+          "make": false
+        },
+        {
+          "given": [
+            "∃y. P(y)"
+          ],
+          "goal": "P(h)",
+          "make": false
+        },
+        {
+          "given": [
+            "∃y. P(y)",
+            "∀x. P(x) → Q(x)"
+          ],
+          "goal": "∃y. Q(y)",
+          "make": true
+        },
+        {
+          "given": [
+            "∃y. P(y)",
+            "∀x. P(x) → Q(x)"
+          ],
+          "goal": "Q(h)",
+          "make": false
+        }
+      ],
+      "solution": [
+        {
+          "binds": [
+            "x"
+          ],
+          "needs": [
+            "P(x)"
+          ]
+        }
+      ],
+      "naive": [
+        {
+          "binds": [],
+          "needs": [
+            "P(x)"
+          ]
+        }
+      ],
+      "things": [
+        "h",
+        "i"
+      ],
+      "thing": true,
+      "cases": [
+        {
+          "P": "Human",
+          "Q": "Mortal"
+        },
+        {
+          "P": "Bird",
+          "Q": "Flies"
+        }
       ]
-    }
-  ],
-  "cases": [
-    {
-      "P": "Human",
-      "Q": "Mortal"
     },
     {
-      "P": "Bird",
-      "Q": "Flies"
+      "id": "decl-eq",
+      "kind": "logic/iso",
+      "say": "@level.decl-ex.tasks.decl-eq.say",
+      "words": [
+        "qed/everyday",
+        "qed/terms",
+        "qed/stars"
+      ],
+      "declare": "@level.decl-ex.tasks.decl-eq.declare",
+      "target": "a = a",
+      "binder": "a",
+      "sentences": [],
+      "things": [
+        "i",
+        "j"
+      ],
+      "thing": true,
+      "tests": [
+        {
+          "given": [],
+          "goal": "i = i",
+          "make": true
+        },
+        {
+          "given": [],
+          "goal": "j = j",
+          "make": true
+        },
+        {
+          "given": [],
+          "goal": "i = j",
+          "make": false
+        }
+      ],
+      "take": {
+        "premises": [
+          "?a = ?b",
+          "?P(?a)"
+        ],
+        "conclusion": "?P(?b)"
+      },
+      "brief": "@level.decl-ex.tasks.decl-eq.brief",
+      "hint": [
+        "@level.decl-ex.tasks.decl-eq.hint.0"
+      ],
+      "solution": [
+        {
+          "binds": [
+            "a"
+          ],
+          "needs": []
+        }
+      ],
+      "naive": [
+        {
+          "binds": [],
+          "needs": []
+        }
+      ],
+      "adds": [
+        "refl",
+        "rewrite"
+      ],
+      "intro": [
+        {
+          "t": "@level.decl-ex.tasks.decl-eq.intro.0.t"
+        }
+      ],
+      "step": "@level.decl-ex.tasks.decl-eq.step",
+      "after": "@level.decl-ex.tasks.decl-eq.after"
     }
   ]
 }

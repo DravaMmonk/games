@@ -1,6 +1,5 @@
 {
   "title": "@level.h-and-make.title",
-  "tray": "proof",
   "intro": [
     {
       "t": "@level.h-and-make.intro.0.t"
@@ -9,7 +8,6 @@
       "t": "@level.h-and-make.intro.1.t"
     }
   ],
-  "after": "@level.h-and-make.after",
   "tasks": [
     {
       "id": "h-and-make-1",
@@ -50,7 +48,8 @@
         "  }",
         "}",
         "goal <- s"
-      ]
+      ],
+      "tray": "proof"
     },
     {
       "id": "h-and-make-2",
@@ -88,7 +87,106 @@
         "e = allE[t=A](p)",
         "m = mp(e, k)",
         "goal <- m"
-      ]
+      ],
+      "tray": "proof",
+      "after": "@level.h-and-make.tasks.h-and-make-2.after"
+    },
+    {
+      "id": "h-eq-subst",
+      "kind": "logic/proof",
+      "consts": [
+        "i",
+        "j"
+      ],
+      "propertyWords": true,
+      "words": [
+        "qed/everyday",
+        "qed/stars",
+        "qed/properties"
+      ],
+      "tests": [
+        {
+          "premises": {
+            "e": "∀P. P(i) → P(j)",
+            "p": "B(i)"
+          },
+          "goal": "B(j)"
+        }
+      ],
+      "cases": [
+        {
+          "B": "Bright"
+        },
+        {
+          "B": "Seen"
+        }
+      ],
+      "hint": [
+        "@level.h-and-make.tasks.h-eq-subst.hint.0",
+        "@level.h-and-make.tasks.h-eq-subst.hint.1"
+      ],
+      "solution": [
+        "i = allE[t=\"B(x)\"](e)",
+        "m = mp(i, p)",
+        "goal <- m"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.h-and-make.tasks.h-eq-subst.intro.0.t"
+        },
+        {
+          "t": "@level.h-and-make.tasks.h-eq-subst.intro.1.t"
+        }
+      ],
+      "step": "@level.h-and-make.tasks.h-eq-subst.step",
+      "after": "@level.h-and-make.tasks.h-eq-subst.after"
+    },
+    {
+      "id": "h-eq-sym",
+      "kind": "logic/proof",
+      "consts": [
+        "i",
+        "j"
+      ],
+      "propertyWords": true,
+      "words": [
+        "qed/everyday",
+        "qed/stars",
+        "qed/properties"
+      ],
+      "tests": [
+        {
+          "premises": {
+            "e": "∀P. P(i) → P(j)"
+          },
+          "goal": "∀Q. Q(j) → Q(i)"
+        }
+      ],
+      "cases": [],
+      "brief": "@level.h-and-make.tasks.h-eq-sym.brief",
+      "hint": [
+        "@level.h-and-make.tasks.h-eq-sym.hint.0",
+        "@level.h-and-make.tasks.h-eq-sym.hint.1"
+      ],
+      "solution": [
+        "s = allI[x=Q](body: m) {",
+        "  body {",
+        "    f = impI[A=\"Q(i)\"](body: f.body)",
+        "    i = allE[t=\"Q(x) -> Q(i)\"](e)",
+        "    m = mp(i, f)",
+        "  }",
+        "}",
+        "goal <- s"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.h-and-make.tasks.h-eq-sym.intro.0.t"
+        }
+      ],
+      "step": "@level.h-and-make.tasks.h-eq-sym.step",
+      "after": "@level.h-and-make.tasks.h-eq-sym.after"
     }
   ]
 }

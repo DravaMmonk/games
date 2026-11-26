@@ -1,8 +1,10 @@
 {
   "title": "@level.q-swap.title",
-  "intro": [{ "t": "@level.q-swap.intro.0.t" }],
-  "tray": "proof",
-  "after": "@level.q-swap.after",
+  "intro": [
+    {
+      "t": "@level.q-swap.intro.0.t"
+    }
+  ],
   "tasks": [
     {
       "id": "q-swap-1",
@@ -63,7 +65,133 @@
         "  }",
         "}",
         "goal <- g"
+      ],
+      "tray": "proof",
+      "after": "@level.q-swap.tasks.q-swap-2.after"
+    },
+    {
+      "id": "q-move-1",
+      "kind": "logic/proof",
+      "step": "@level.q-swap.tasks.q-move-1.step",
+      "tests": [
+        {
+          "premises": {
+            "p": "∀x. P(x) → Q"
+          },
+          "goal": "(∃x. P(x)) → Q"
+        }
+      ],
+      "cases": [
+        {
+          "P": "IsLate",
+          "Q": "Angry"
+        },
+        {
+          "P": "Cries",
+          "Q": "Woken"
+        }
+      ],
+      "hint": [
+        "@level.q-swap.tasks.q-move-1.hint.0"
+      ],
+      "solution": [
+        "g = impI[A=\"exists x. P(x)\"](body: f) {",
+        "  body {",
+        "    f = exE(g.body, body: m) {",
+        "      body {",
+        "        e = allE[t=a](p)",
+        "        m = mp(e, f.body)",
+        "      }",
+        "    }",
+        "  }",
+        "}",
+        "goal <- g"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.q-swap.tasks.q-move-1.intro.0.t"
+        }
       ]
+    },
+    {
+      "id": "q-move-2",
+      "kind": "logic/proof",
+      "step": "@level.q-swap.tasks.q-move-2.step",
+      "tests": [
+        {
+          "premises": {
+            "p": "(∃x. P(x)) → Q"
+          },
+          "goal": "∀x. P(x) → Q"
+        }
+      ],
+      "cases": [
+        {
+          "P": "IsLate",
+          "Q": "Angry"
+        },
+        {
+          "P": "Cries",
+          "Q": "Woken"
+        }
+      ],
+      "hint": [
+        "@level.q-swap.tasks.q-move-2.hint.0"
+      ],
+      "solution": [
+        "g = allI(body: h) {",
+        "  body {",
+        "    h = impI[A=\"P(a)\"](body: m) {",
+        "      body {",
+        "        i = exI(h.body)",
+        "        m = mp(p, i)",
+        "      }",
+        "    }",
+        "  }",
+        "}",
+        "goal <- g"
+      ],
+      "tray": "proof"
+    },
+    {
+      "id": "q-bigger",
+      "kind": "logic/proof",
+      "tests": [
+        {
+          "premises": {
+            "p": "∀x. R(x, s(x))"
+          },
+          "goal": "∀x. ∃y. R(x, y)"
+        }
+      ],
+      "cases": [
+        {
+          "R": "Less"
+        },
+        {
+          "R": "Older"
+        }
+      ],
+      "hint": [
+        "@level.q-swap.tasks.q-bigger.hint.0"
+      ],
+      "solution": [
+        "g = allI(body: i) {",
+        "  body {",
+        "    e = allE[t=a](p)",
+        "    i = exI(e)",
+        "  }",
+        "}",
+        "goal <- g"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.q-swap.tasks.q-bigger.intro.0.t"
+        }
+      ],
+      "step": "@level.q-swap.tasks.q-bigger.step"
     }
   ]
 }

@@ -1,1 +1,6 @@
-{ "title": "@tag.universal-rules.title", "values": ["q-allI", "q-allE"] }
+{
+  "title": "@tag.universal-rules.title",
+  "values": [
+    "q-allI"
+  ]
+}

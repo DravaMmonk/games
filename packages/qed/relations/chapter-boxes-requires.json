@@ -2,57 +2,76 @@
   "kind": "requires",
   "edges": [
     {
-      "required": true,
-      "from": "orImp",
-      "to": "contra"
+      "from": "machine-meta-order",
+      "to": "decl-and"
+    },
+    {
+      "from": "machine-meta-order",
+      "to": "decl-or"
+    },
+    {
+      "from": "machine-meta-order",
+      "to": "decl-bot"
+    },
+    {
+      "from": "machine-forward-link",
+      "to": "decl-and"
+    },
+    {
+      "from": "machine-forward-link",
+      "to": "decl-or"
+    },
+    {
+      "from": "machine-forward-link",
+      "to": "decl-bot"
     },
     {
       "from": "decl-and",
       "to": "and"
     },
     {
-      "from": "and",
-      "to": "machine-backward-and"
-    },
-    {
       "from": "decl-or",
       "to": "or"
     },
     {
+      "from": "decl-bot",
+      "to": "bot"
+    },
+    {
+      "from": "and",
+      "to": "notI"
+    },
+    {
       "from": "or",
-      "to": "machine-cases"
+      "to": "notI"
     },
     {
       "from": "bot",
-      "to": "machine-backward-bot"
-    },
-    {
-      "from": "machine-backward-and",
-      "to": "notI"
-    },
-    {
-      "from": "machine-cases",
-      "to": "notI"
-    },
-    {
-      "from": "machine-backward-bot",
       "to": "notI"
     },
     {
       "from": "notI",
-      "to": "machine-negation"
+      "to": "decl-equiv"
     },
-    { "from": "machine-negation", "to": "iffUse" },
-    { "from": "iffUse", "to": "curry" },
-    { "required": true, "from": "curry", "to": "orImp" },
-    { "from": "iffUse", "to": "orSwap" },
-    { "required": true, "from": "orSwap", "to": "dsyll" },
-    { "from": "iffUse", "to": "mt" },
-    { "from": "machine-meta-order", "to": "decl-and" },
-    { "from": "machine-meta-order", "to": "decl-or" },
-    { "from": "machine-meta-order", "to": "decl-bot" },
-    { "from": "machine-forward-link", "to": "decl-and" },
-    { "from": "machine-forward-link", "to": "decl-or" },
-    { "from": "machine-forward-link", "to": "decl-bot" }
+    {
+      "from": "decl-equiv",
+      "to": "iffUse"
+    },
+    {
+      "from": "iffUse",
+      "to": "machine-backward-and"
+    },
+    {
+      "from": "notI",
+      "to": "contra"
+    },
+    {
+      "from": "iffUse",
+      "to": "curry"
+    },
+    {
+      "from": "iffUse",
+      "to": "orSwap"
+    }
   ]
 }

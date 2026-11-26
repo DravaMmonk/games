@@ -6,33 +6,44 @@
   },
   "levels": [
     "qed/decl-and",
-    "qed/and",
-    "qed/machine-backward-and",
     "qed/decl-or",
-    "qed/or",
-    "qed/machine-cases",
     "qed/decl-bot",
+    "qed/and",
+    "qed/or",
     "qed/bot",
-    "qed/machine-backward-bot",
     "qed/notI",
-    "qed/machine-negation",
-    "qed/iffUse",
-    "qed/curry",
-    "qed/orImp",
+    "qed/decl-equiv",
     "qed/contra",
-    "qed/orSwap",
-    "qed/dsyll",
-    "qed/mt"
+    "qed/iffUse",
+    "qed/machine-backward-and",
+    "qed/curry",
+    "qed/orSwap"
   ],
   "rows": [
-    ["qed/decl-and", "qed/decl-or", "qed/decl-bot"],
-    ["qed/and", "qed/or", "qed/bot"],
-    ["qed/machine-backward-and", "qed/machine-cases", "qed/machine-backward-bot"],
-    ["qed/notI"],
-    ["qed/machine-negation"],
-    ["qed/iffUse"],
-    ["qed/curry", "qed/orSwap", "qed/mt"],
-    ["qed/orImp", "qed/dsyll", null],
-    ["qed/contra", null, null]
+    [
+      "qed/decl-and",
+      "qed/decl-or",
+      "qed/decl-bot"
+    ],
+    [
+      "qed/and",
+      "qed/or",
+      "qed/bot"
+    ],
+    [
+      "qed/notI"
+    ],
+    [
+      "qed/decl-equiv",
+      "qed/contra"
+    ],
+    [
+      "qed/iffUse"
+    ],
+    [
+      "qed/machine-backward-and",
+      "qed/curry",
+      "qed/orSwap"
+    ]
   ]
 }

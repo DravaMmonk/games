@@ -1,6 +1,5 @@
 {
   "title": "@level.orSwap.title",
-  "tray": "proof",
   "tasks": [
     {
       "id": "orSwap",
@@ -36,7 +35,102 @@
         "  }",
         "}",
         "goal <- e"
-      ]
+      ],
+      "tray": "proof",
+      "step": "@level.orSwap.tasks.orSwap.step"
+    },
+    {
+      "id": "dsyll",
+      "kind": "logic/proof",
+      "tests": [
+        {
+          "premises": {
+            "p": "A ∨ B",
+            "q": "¬A"
+          },
+          "goal": "B"
+        }
+      ],
+      "cases": [
+        {
+          "A": "Bus",
+          "B": "Bike"
+        },
+        {
+          "A": "Coffee",
+          "B": "Tea"
+        }
+      ],
+      "hint": [
+        "@level.orSwap.tasks.dsyll.hint.0"
+      ],
+      "solution": [
+        "e = orE(p, left: b, right: e.right) {",
+        "  left {",
+        "    m = mp(q, e.left)",
+        "    b = botE[C=B](m)",
+        "  }",
+        "}",
+        "goal <- e"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.orSwap.tasks.dsyll.intro.0.t"
+        }
+      ],
+      "step": "@level.orSwap.tasks.dsyll.step",
+      "after": "@level.orSwap.tasks.dsyll.after"
+    },
+    {
+      "id": "orImp",
+      "kind": "logic/proof",
+      "tests": [
+        {
+          "premises": {
+            "p": "A → C",
+            "q": "B → C"
+          },
+          "goal": "A ∨ B → C"
+        }
+      ],
+      "cases": [
+        {
+          "A": "Bus",
+          "B": "Bike",
+          "C": "OnTime"
+        },
+        {
+          "A": "Sat",
+          "B": "Sun",
+          "C": "Rest"
+        }
+      ],
+      "hint": [
+        "@level.orSwap.tasks.orImp.hint.0"
+      ],
+      "solution": [
+        "f = impI[A=\"A | B\"](body: e) {",
+        "  body {",
+        "    e = orE(f.body, left: m1, right: m2) {",
+        "      left {",
+        "        m1 = mp(p, e.left)",
+        "      }",
+        "      right {",
+        "        m2 = mp(q, e.right)",
+        "      }",
+        "    }",
+        "  }",
+        "}",
+        "goal <- f"
+      ],
+      "tray": "proof",
+      "intro": [
+        {
+          "t": "@level.orSwap.tasks.orImp.intro.0.t"
+        }
+      ],
+      "step": "@level.orSwap.tasks.orImp.step"
     }
   ]
 }

@@ -19,7 +19,7 @@ import { keyOf } from 'kernel'
 import { readWorks } from 'circuit'
 import { parse, replaceAtoms, show } from './formula.js'
 import { claimSentences, vocabulary } from './fol.js'
-import { MACHINE_BOARD, axiomPartsOf, builtMachine, directCardsOf, inputsOfLevel, startMachine } from './machine.js'
+import { DIRECTION_CARDS, MACHINE_BOARD, axiomPartsOf, builtMachine, directCardsOf, inputsOfLevel, startMachine } from './machine.js'
 import { operationsOf } from 'circuit'
 import { compileParts } from 'circuit'
 import { presetCardIds, presetOf, withPreset } from 'circuit'
@@ -486,6 +486,13 @@ export function* prepareLogicWorks(content) {
     .filter((name) => content.registries?.['circuit/tray']?.[name]?.directRuleCards)
   const directStarts = TASKS.filter(task => task.kind === 'logic/machine' && (task.directRuleCards || directTrays(task).length))
   for (const task of directStarts) directStartSet.add(directKey(task))
+  // Backward cards come with the machine. Forward and rewrite cards open at the first task whose reference answer uses
+  // them, and stay open on every task after it on the tree (machine.js directCardsOf).
+  const directionOpeners = Object.entries(DIRECTION_CARDS).map(([direction, prefix]) => [direction,
+    TASKS.filter(task => task.kind === 'logic/machine' && [task.solution ?? []].flat().some(line => String(line).includes(prefix)))])
+  const directionsAt = (one) => new Set(['backward', ...directionOpeners
+    .filter(([, openers]) => openers.some(task => (task.id === one.id ? task.task <= one.task : course.before(task.id, one.id))))
+    .map(([direction]) => direction)])
   const directBefore = new Map()
   for (const level of LEVELS.filter((l) => l.tasks.some((t) => t.kind === 'logic/machine' || t.kind === 'logic/script'))) {
     // The equations proved before it (by the levels it comes after), and in a later task its own.
@@ -502,6 +509,7 @@ export function* prepareLogicWorks(content) {
           : course.before(task.id, one.id))
         directBefore.set(directKey(one), prior)
         if (directStartSet.has(directKey(one)) || prior.length) one.directRuleCards = true
+        if (one.directRuleCards && !content.standalone) one.directions = directionsAt(one)
       }
       const location = { id: level.id, task: one.task }
       if (one.directRuleCards) one.withheldRuleChoices = new Set(course.withholds(location))

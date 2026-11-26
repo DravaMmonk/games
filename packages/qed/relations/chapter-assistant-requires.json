@@ -5,7 +5,9 @@
     { "from": "machine-open", "to": "machine-skip" },
     { "from": "machine-skip", "to": "machine-meta" },
     { "from": "machine-meta", "to": "machine-meta-order" },
-    { "from": "machine-meta-order", "to": "machine-forward" },
+    { "from": "machine-cite", "to": "machine-derive" },
+    { "from": "machine-derive", "to": "machine-forward" },
+    { "from": "machine-forward", "to": "machine-forward-link" },
     { "from": "machine-skip", "to": "machine-cite-first" }
   ]
 }

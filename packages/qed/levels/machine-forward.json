@@ -23,12 +23,9 @@
         "out <- step3"
       ],
       "naive": [
-        "step1 = logic/directBackward-qed_mp[use=[\"mp\"]](in)",
+        "step1 = logic/directForward-qed_mp(in)",
         "step2 = logic/directBackward-logic_assumption(step1)",
-        "step3 = logic/directBackward-qed_mp[use=[\"mp\"]](step2)",
-        "step4 = logic/directBackward-logic_assumption(step3)",
-        "step5 = logic/directBackward-logic_assumption(step4)",
-        "out <- step5"
+        "out <- step2"
       ]
     }
   ]

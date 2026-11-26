@@ -1,0 +1,26 @@
+{
+  "title": "@level.machine-derive.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-derive.intro.0.t" }],
+  "after": "@level.machine-derive.after",
+  "tasks": [
+    {
+      "id": "machine-derive",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-derive.tasks.machine-derive.brief",
+      "hint": ["@level.machine-derive.tasks.machine-derive.hint.0"],
+      "tests": [
+        { "goal": "Up", "hyps": ["Alarm → Up", "Alarm"] },
+        { "goal": "Pass", "hyps": ["Study", "Study → Pass"] }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directBackward-logic_assumption(step1)",
+        "out <- step2"
+      ],
+      "naive": ["step1 = logic/directBackward-logic_assumption(in)", "out <- step1"]
+    }
+  ]
+}

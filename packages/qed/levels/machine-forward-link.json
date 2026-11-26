@@ -1,0 +1,32 @@
+{
+  "title": "@level.machine-forward-link.title",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE"],
+  "tray": "prover",
+  "intro": [{ "t": "@level.machine-forward-link.intro.0.t" }],
+  "tasks": [
+    {
+      "id": "machine-forward-link",
+      "kind": "logic/machine",
+      "want": "logic/proved",
+      "brief": "@level.machine-forward-link.tasks.machine-forward-link.brief",
+      "hint": ["@level.machine-forward-link.tasks.machine-forward-link.hint.0"],
+      "tests": [
+        { "goal": "Fall", "hyps": ["Rain → Wet", "Wet → Slip", "(Rain → Slip) → Fall"] },
+        { "goal": "Happy", "hyps": ["Eat → Full", "Hungry → Eat", "(Hungry → Full) → Happy"] },
+        { "goal": "Pass", "hyps": ["Exam → Study", "(Exam → Study) → Pass"] }
+      ],
+      "solution": [
+        "step1 = logic/directForward-qed_chain(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ],
+      "naive": [
+        "step1 = logic/directForward-qed_mp(in)",
+        "step2 = logic/directForward-qed_mp(step1)",
+        "step3 = logic/directBackward-logic_assumption(step2)",
+        "out <- step3"
+      ]
+    }
+  ]
+}

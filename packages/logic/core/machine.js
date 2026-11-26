@@ -570,6 +570,8 @@ export function directRuleStatements({ book, rule }, text, term) {
 }
 
 const directCards = new WeakMap()
+/** The card types a reference answer names when it uses a direction other than backward. */
+export const DIRECTION_CARDS = { forward: 'logic/directForward-', rewrite: 'logic/directRewrite-' }
 const REWRITE_AT = { key: 'at', control: 'select', from: 'logic/rewriteOccurrences(in)' }
 const BACKWARD_AT = { key: 'at', control: 'select', from: 'logic/backwardPositions(in)' }
 const FORWARD_AT = { key: 'at', control: 'select', from: 'logic/forwardPositions(in)' }
@@ -615,7 +617,7 @@ function rulesForSource(level, source, taskRewrites) {
 const REDUNDANT_FORWARD = new Set(['impE', 'cut', 'conjunct1', 'conjunct2', 'allE'])
 const forwardEntry = ({ rule }) => canReadGivens(rule) && !(rule.part && KERNEL[rule.key] && REDUNDANT_FORWARD.has(rule.key))
 
-/** Project source parts into the operations they support on a proof state. */
+/** Project source parts into the operations they support on a proof state, in the directions the level has opened (`directions`). */
 export function directCardsOf(level) {
   if (!directCards.has(level)) {
     const cards = new Map()
@@ -635,6 +637,7 @@ export function directCardsOf(level) {
           ['rule', 'forward', 'directForward', FORWARD_AT],
           ['rewrite', 'rewrite', 'directRewrite', REWRITE_AT],
         ]) {
+          if (level.directions && !level.directions.has(direction)) continue
           const bookEntries = rules.filter(entry => entry.book === book)
           const original = direction === 'forward' ? uniqueForwardRules(bookEntries.filter(forwardEntry)) : bookEntries
           const entries = original.filter(entry => direction === 'forward' || !level.withheldRuleChoices?.has(`${source}.use=${entry.key}`))

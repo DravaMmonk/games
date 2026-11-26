@@ -7,18 +7,6 @@
       "to": "contra"
     },
     {
-      "from": "machine-forward",
-      "to": "decl-and"
-    },
-    {
-      "from": "machine-forward",
-      "to": "decl-or"
-    },
-    {
-      "from": "machine-forward",
-      "to": "decl-bot"
-    },
-    {
       "from": "decl-and",
       "to": "and"
     },
@@ -59,6 +47,12 @@
     { "required": true, "from": "curry", "to": "orImp" },
     { "from": "iffUse", "to": "orSwap" },
     { "required": true, "from": "orSwap", "to": "dsyll" },
-    { "from": "iffUse", "to": "mt" }
+    { "from": "iffUse", "to": "mt" },
+    { "from": "machine-meta-order", "to": "decl-and" },
+    { "from": "machine-meta-order", "to": "decl-or" },
+    { "from": "machine-meta-order", "to": "decl-bot" },
+    { "from": "machine-forward-link", "to": "decl-and" },
+    { "from": "machine-forward-link", "to": "decl-or" },
+    { "from": "machine-forward-link", "to": "decl-bot" }
   ]
 }

@@ -380,7 +380,7 @@ test('a machine task opens saved work, then a passing board, then the unlocked r
 })
 
 
-test('a direct tray splits learned rules by reference use and carries them across successor trays', () => {
+test('a direct tray splits learned rules by reference use, opens each direction where a reference uses it, and carries them across successor trays', () => {
   const { impI, andI } = logicParts.parts
   const iff = { name: L('Substitution'), family: 'logic/rule', icon: 'ArrowRightLeft', op: 'logic/iffSubst' }
   const box = 'logic/directBackward-impI'
@@ -413,7 +413,7 @@ test('a direct tray splits learned rules by reference use and carries them acros
       proofLevel('foundation', { adds: ['andI', 'iff'], tests: [{ premises: { p: 'A' }, goal: 'A' }],
         cases: [{ A: 'Rain' }], solution: ['goal <- p'] }),
       { ...machine('open', 'shared', 'Rain → Rain', use(box)), adds: ['impI'] },
-      machine('split', 'shared', 'Rain ∧ Wind', use(join)),
+      machine('split', 'shared', 'Rain ∧ Wind', use(forwardJoin)),
       machine('paired', 'shared', 'Rain ∧ Wind', [`split = ${join}(in)`, `rewrite = ${rewrite}(split)`, 'out <- rewrite']),
       machine('parallel', 'shared', 'Rain ∧ Wind', use(join)),
       machine('later', 'successor', 'Rain'),
@@ -427,11 +427,13 @@ test('a direct tray splits learned rules by reference use and carries them acros
     const flags = new Set()
     return { offer: view.offerIn(task, flags), has: view.holdsIn(task, flags) }
   }
-  assert.deepEqual(at('open').offer, { shown: [box], folded: [rewrite, join, forwardJoin], types: [box, rewrite, join, forwardJoin] })
-  assert.deepEqual(at('split').offer, { shown: [join], folded: [box, rewrite, forwardJoin], types: [join, box, rewrite, forwardJoin] })
+  assert.deepEqual(at('open').offer, { shown: [box], folded: [join], types: [box, join] })
+  assert.deepEqual(at('split').offer, { shown: [forwardJoin], folded: [box, join], types: [forwardJoin, box, join] })
   assert.deepEqual(at('paired').offer, { shown: [rewrite, join], folded: [box, forwardJoin], types: [rewrite, join, box, forwardJoin] })
   assert.deepEqual(at('later').offer.shown, [])
-  assert.ok(at('later').offer.folded.includes(box))
+  assert.ok(at('later').offer.folded.includes(box) && at('later').offer.folded.includes(forwardJoin))
+  assert.ok(!at('later').offer.types.includes(rewrite))
+  assert.ok(!at('parallel').offer.types.includes(forwardJoin))
   assert.ok(at('split').has(box))
   assert.ok(!at('parallel').has(box) && at('parallel').has(join))
   assert.ok(!at('open').has('impI'))
@@ -463,7 +465,7 @@ test('a bound card only offers and runs the rule choices held by its task', () =
     levels: [{ id: 'prover', title: L('Prover'), adds: ['mp', 'andE'], withholds: [...blockApply, ...blockSplit],
       tasks: [
         task('restricted', { solution: [`card = ${apply}[use=["mp"]](in)`, 'out <- card'] }),
-        task('all-rules', { withholds: [] }),
+        task('all-rules', { withholds: [], solution: [`card = ${forwardSplit}(in)`, 'out <- card'] }),
         task('no-split', { withholds: [...blockSplit, 'andE.use=conjunct1', 'andE.use=conjunct2'] }),
       ],
     }],
@@ -478,15 +480,16 @@ test('a bound card only offers and runs the rule choices held by its task', () =
   assert.deepEqual(logic.wrong, [])
   const [limited, unrestricted, removed] = logic.LEVELS[0].tasks
   const offerAt = task => logic.machineBoards.forTask(task).offerIn(task, new Set())
-  assert.deepEqual(offerAt(limited), { shown: [apply], folded: [forwardApply, split, forwardSplit], types: [apply, forwardApply, split, forwardSplit] })
+  assert.deepEqual(offerAt(limited), { shown: [apply], folded: [split], types: [apply, split] })
+  assert.ok(offerAt(unrestricted).types.includes(forwardSplit))
   assert.ok(!offerAt(removed).types.includes(split))
   assert.ok(offerAt(removed).types.includes(forwardSplit))
   const has = logic.machineBoards.forTask(limited).holdsIn(limited, new Set())
-  const choices = type => RULE_CHOICES.run([], {}, { task: limited, node: { type } }).map(({ value }) => value)
+  const choices = (type, task = limited) => RULE_CHOICES.run([], {}, { task, node: { type } }).map(({ value }) => value)
   assert.deepEqual(choices(apply), ['mp'])
   assert.deepEqual(choices(split), ['conjunct1', 'conjunct2'])
-  assert.deepEqual(choices(forwardApply), ['mp'])
-  assert.deepEqual(choices(forwardSplit), ['conjE'])
+  assert.deepEqual(choices(forwardApply, unrestricted), ['mp'])
+  assert.deepEqual(choices(forwardSplit, unrestricted), ['conjE'])
   assert.deepEqual(directCardsOf(limited).get(apply).definition.settings[0].default, ['mp'])
   assert.equal(directCardsOf(limited).get(apply).definition.settings[0].when, 'false')
   assert.equal(directCardsOf(limited).get(split).defaultRule, null)

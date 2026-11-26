@@ -473,7 +473,7 @@
   "level.box.tasks.box.briefNote": "用假设框。",
   "level.box.tasks.box.hint.0": "目标「若」后面的是什么？",
   "level.box.tasks.box.hint.1": "先点一下框里的空白，再放元件，元件就落在框里。",
-  "level.box.title": "假设框",
+  "level.box.title": "消去一个条件",
   "level.byContra.intro.0.t": "「假设门没锁，就会推出矛盾，所以门锁着。」这是<b>反证法</b>。",
   "level.byContra.tasks.byContra.hint.0": "比较两条已知：它们的条件相同吗？结论又是什么关系？",
   "level.byContra.tasks.byContra.hint.1": "什么情况下这两条已知会同时给出相反的结论？",

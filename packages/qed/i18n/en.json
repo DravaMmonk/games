@@ -473,7 +473,7 @@
   "level.box.tasks.box.briefNote": "With the assumption box.",
   "level.box.tasks.box.hint.0": "What follows the “if” in the goal?",
   "level.box.tasks.box.hint.1": "Click the empty space inside the box first, and the parts you place next land in it.",
-  "level.box.title": "Assume",
+  "level.box.title": "Eliminate a condition",
   "level.byContra.intro.0.t": "“Suppose the door is not locked; that leads to a contradiction; so it is locked.” This is <b>proof by contradiction</b>.",
   "level.byContra.tasks.byContra.hint.0": "Compare the givens. Do they have the same condition? How are their conclusions related?",
   "level.byContra.tasks.byContra.hint.1": "When would these givens produce opposite conclusions at the same time?",

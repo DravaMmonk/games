@@ -631,6 +631,12 @@ button.formula-pick, .formula-option { cursor: pointer; }
 .rr-slot:not(:disabled):not(.is-read):hover { border-color: var(--rule); }
 .rr-slot[aria-expanded='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
 .rr-slot.is-bad { color: var(--fail); border-color: var(--fail); background: color-mix(in srgb, var(--fail) 7%, var(--paper)); }
+.rr-slot.is-on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.rr-result { min-width: 1.9em; height: 1.9em; margin-left: var(--sp-3); padding: 0 var(--sp-3); display: inline-grid; place-items: center; border-radius: var(--r-full); color: var(--muted); background: var(--canvas); font: 600 13px var(--sans); animation: rr-result-in 220ms cubic-bezier(.16, 1, .3, 1); }
+.rr-result.is-right { color: var(--status); background: color-mix(in srgb, var(--status) 14%, var(--paper)); }
+.rr-result.is-wrong { color: var(--fail); background: color-mix(in srgb, var(--fail) 11%, var(--paper)); }
+@keyframes rr-result-in { from { opacity: 0; transform: scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .rr-result { animation: none; } }
 .rr-slot:disabled, .rr-slot.is-read { cursor: default; }
 .rr-add { margin-left: var(--sp-4); transition: color 140ms ease, border-color 140ms ease, background 140ms ease; }
 .rr-body > .rr-add:first-child, .rr-lead + .rr-add { margin-left: 0; }

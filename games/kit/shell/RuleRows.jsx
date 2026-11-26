@@ -13,9 +13,10 @@ import { FormulaText } from './FormulaText.jsx'
 // function's rows, each right side a term) are both this.
 //
 //   head     { name, body } | null
-//   rows     [{ name, head?, slots: [{ text (null: nothing whole yet), bad?, fixed? } | { live }], end?, empty? (what a row with no slot
+//   rows     [{ name, head?, slots: [{ text (null: nothing whole yet), bad?, fixed?, on?, result? } | { live }], end?, empty? (what a row with no slot
 //             says when only read), add?: { label, text?, run() }, drop?: { label, run() } }]
-//            (`live`: what the slot is written with in place, such as a sentence's strip with its tray under the rows)
+//            (`live`: what the slot is written with in place, such as a sentence's strip with its tray under the rows;
+//            `on`: the slot a run is at; `result`: { text, right? } what a run found for it, after it)
 //   editor   { title(row, slot), render(row, slot), close?(row, slot) } | null
 //   more     { text, run() } | null       blank   what an unfinished slot says       wide   names as wide as they read
 //   empty    what the table says when it has no rows
@@ -57,7 +58,7 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
                 {slot.live ?? <button
                   type="button"
                   ref={(el) => { buttons.current[`${k}.${j}`] = el }}
-                  className={`rr-slot ${slot.text === null ? 'is-blank' : ''} ${slot.bad ? 'is-bad' : ''} ${slot.fixed ? 'is-fixed' : ''}`}
+                  className={`rr-slot ${slot.text === null ? 'is-blank' : ''} ${slot.bad ? 'is-bad' : ''} ${slot.fixed ? 'is-fixed' : ''} ${slot.on ? 'is-on' : ''}`}
                   aria-label={L(slot.text ?? blank)}
                   aria-expanded={sheet?.row === k && sheet?.slot === j}
                   disabled={!editor || slot.fixed}
@@ -65,6 +66,7 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
                 >
                   {slot.text === null ? L(blank) : <FormulaText text={slot.text} />}
                 </button>}
+                {slot.result && <b className={`rr-result${slot.result.right === undefined ? '' : slot.result.right ? ' is-right' : ' is-wrong'}`}>{L(slot.result.text)}</b>}
                 {/* What comes between two slots stays with the one before it, so a wrapped row never starts with it. */}
                 {j < row.slots.length - 1 ? <span className="rr-sep">；</span> : row.end && <span className="rr-end">{L(row.end)}</span>}
               </span>

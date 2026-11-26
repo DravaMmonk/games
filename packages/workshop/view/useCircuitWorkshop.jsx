@@ -50,14 +50,19 @@ export function useCircuitWorkshop({ screen, course, base, cards, portLabels, de
     const opened = packed.open(node, at)
     return opened && { ...opened, open: (part) => openForCapture(part, opened) }
   }
-  const capture = (graph, details) => captureWorkshop(graph, {
-    scope: `user_${crypto.randomUUID().replaceAll('-', '')}`,
-    open: (node) => openForCapture(node, { level, circuit: graph, parts }),
-    needsSnapshot: (type) => Boolean(game.partDefs?.parts?.[type]?.inside),
-    ...details, parts: details.parts ?? parts, resolve: runtime, identity,
-    defaults: (type) => definition?.of(type) ? definition.defaults(type) : defaults?.(type),
-    book: library,
-  })
+  const capture = (graph, details) => {
+    // Random bytes are available on local-network HTTP, where randomUUID requires a secure context.
+    const bytes = crypto.getRandomValues(new Uint8Array(16))
+    const id = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
+    return captureWorkshop(graph, {
+      scope: `user_${id}`,
+      open: (node) => openForCapture(node, { level, circuit: graph, parts }),
+      needsSnapshot: (type) => Boolean(game.partDefs?.parts?.[type]?.inside),
+      ...details, parts: details.parts ?? parts, resolve: runtime, identity,
+      defaults: (type) => definition?.of(type) ? definition.defaults(type) : defaults?.(type),
+      book: library,
+    })
+  }
   const put = (part, lineage, rank, replaces) => update((current) => publishWorkshop(current, part, {
     id: part.id, lineage, rank, replaces,
   }))

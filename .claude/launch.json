@@ -9,20 +9,18 @@
     },
     {
       "name": "studio",
-      "runtimeExecutable": "sh",
+      "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "-c",
-        "cd site && exec node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --mode studio --port 5190 --strictPort --force"
+        "--prefix", "site", "run", "dev", "--", "--mode", "studio", "--port", "5190", "--strictPort", "--force"
       ],
       "port": 5190,
       "url": "http://localhost:5190"
     },
     {
       "name": "studio-lan",
-      "runtimeExecutable": "sh",
+      "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "-c",
-        "cd site && exec node --import ../games/kit/engine/package-imports.mjs node_modules/vite/bin/vite.js --mode studio --host 0.0.0.0 --port 5191 --strictPort --force"
+        "--prefix", "site", "run", "dev", "--", "--mode", "studio", "--host", "0.0.0.0", "--port", "5191", "--strictPort", "--force"
       ],
       "port": 5191,
       "url": "http://localhost:5191"

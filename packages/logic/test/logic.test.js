@@ -1337,8 +1337,22 @@ test('a backward card uses the first bound rule only with autoFirst when no rule
   const [header, choice] = BACKWARD_POSITIONS.run(inputs, {}, { task: level, node, ...autoFirst })
   assert.equal(header.defaultAt, 'goal-0')
   assert.deepEqual(choice.result, automatic.outputs.out.goals)
+  assert.deepEqual(choice.hyps, [])
   node.params.use = ['disjI2']
   assert.equal(show(runMachine(level, board, autoFirst).runs[0].outputs.out.goals[0].goal), 'Wet')
+})
+
+test('a copy card reports the given it reads as the place it closes', () => {
+  const type = 'logic/directBackward-logic_assumption'
+  const level = { kind: 'logic/machine', want: 'logic/proved', directRuleCards: true, holds: ['logic/assumption'],
+    tests: [{ goal: 'Wet', hyps: ['Rain', 'Wet'] }] }
+  const { PARTS } = compileParts({ [type]: directCardsOf(level).get(type).definition }, OPS)
+  level.parts = name => PARTS[name] ?? machineParts(name)
+  const board = machine({ step: [type] }, ['in>step', 'step>out'])
+  const node = board.nodes.find(({ id }) => id === 'step')
+  const run = runMachine(level, board).runs[0]
+  const [, choice] = BACKWARD_POSITIONS.run([run.values.get('in')], {}, { task: level, node })
+  assert.deepEqual(choice.hyps, [1])
 })
 
 test('rule and equation displays keep complete term wording', async () => {

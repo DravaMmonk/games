@@ -1,10 +1,13 @@
 // The rule a rule-bound machine card carries (../../core/machine.js directCardsOf), as the card's lead line on every
-// face and in the parts panel. A rule reads as it is stated, "⟦premises⟧ ⟹ conclusion", the part the card matches
-// against the state standing out: used backwards (⟵) its conclusion, against a goal; used forwards (⟶) the premises
-// it reads off the givens (a premise with premises of its own is left to prove, not read). A rewrite reads
-// "left ≡ right" (what it needs after ⟸). A card with several rules shows the one picked; on a face that can set it
-// the line opens in place to the others. Until one of several is picked the card has no rule: the face that can set
-// it lists them all, and a face that only reads leaves the line out.
+// face and in the parts panel. A rule reads as it is stated, "⟦premises⟧ ⟹ conclusion", each part marked by what the
+// card does with it, as the state on the card marks the sentences (OccurrenceChoice.jsx): the part matched against the
+// place picked is tinted, the parts matched against other givens and those the card makes stand in their colours. Used
+// backwards (⟵) the conclusion is tinted and the premises are made, as goals; used forwards (⟶) the first premise it
+// reads is tinted, the others it reads are matched, and the conclusion (with any premise left to prove) is made. A
+// rewrite reads "left ≡ right" (what it needs after ⟸): the left side tinted, the right side and the conditions made.
+// A card with several rules shows the one picked; on a face that can set it the line opens in place to the others.
+// Until one of several is picked the card has no rule: the face that can set it lists them all, and a face that only
+// reads leaves the line out.
 import { useId, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { FormulaText } from 'kernel/view'
@@ -21,32 +24,39 @@ export const statementLines = (statements) => statements.map((statement) => 'lef
   : statement.premises.length ? `⟦${statement.premises.join('; ')}⟧ ⟹ ${statement.conclusion}` : statement.conclusion)
 
 /**
- * A statement cut into [text, matched] pieces: what a card used in `direction` matches against the state, and the
- * rest. The identity rule reads Γ, A ⊢ A, its A matched; a rewrite is matched whole.
+ * A statement cut into [text, role] pieces, the role what a card used in `direction` does with the piece: 'picked'
+ * (matched against the place the card acts on), 'matched' (against another given), 'made', or null. The identity
+ * rule reads Γ, A ⊢ A: the A among the givens matched, the A it proves picked.
  */
 export function statementPieces(entry, statement, direction) {
-  if ('left' in statement) return [[statementLines([statement])[0], true]]
-  if (entry.rule?.fromHypothesis) return [['Γ, A ⊢ ', false], [statement.conclusion, true]]
+  if ('left' in statement) {
+    // A substitution reads its equation off the givens; a law's conditions are left to prove.
+    const condition = entry.rule?.group === 'hyp' ? 'matched' : 'made'
+    const conditions = statement.conditions.flatMap((text, k) => [...(k ? [['; ', null]] : []), [text, condition]])
+    return [[statement.left, 'picked'], [' ≡ ', null], [statement.right, 'made'], ...(conditions.length ? [[' ⟸ ', null], ...conditions] : [])]
+  }
+  if (entry.rule?.fromHypothesis) return [['Γ, ', null], [statement.conclusion, 'matched'], [' ⊢ ', null], [statement.conclusion, 'picked']]
   const read = (k) => { const premise = entry.rule?.premises?.[k]; return !premise?.hyps?.length && !premise?.fixes?.length }
   const forward = direction === 'forward'
-  const pieces = statement.fixes?.length ? [[`⋀${statement.fixes.join(' ')}. `, false]] : []
+  const first = forward ? statement.premises.findIndex((_, k) => read(k)) : -1
+  const role = (k) => (!forward || !read(k) ? 'made' : k === first ? 'picked' : 'matched')
+  const pieces = statement.fixes?.length ? [[`⋀${statement.fixes.join(' ')}. `, null]] : []
   if (statement.premises.length) {
-    pieces.push(['⟦', false])
-    statement.premises.forEach((premise, k) => pieces.push(...(k ? [['; ', false]] : []), [premise, forward && read(k)]))
-    pieces.push(['⟧ ⟹ ', false])
+    pieces.push(['⟦', null])
+    statement.premises.forEach((premise, k) => pieces.push(...(k ? [['; ', null]] : []), [premise, role(k)]))
+    pieces.push(['⟧ ⟹ ', null])
   }
-  pieces.push([statement.conclusion, !forward])
+  pieces.push([statement.conclusion, forward ? 'made' : 'picked'])
   return pieces
 }
 
-/** One statement, typeset, with the part the card matches standing out and its reference mark (R₁) before it. */
+/** One statement, typeset, each piece marked by its role and its reference mark (R₁) before it. */
 export function RuleLine({ entry, statement, direction, mark }) {
   const pieces = statementPieces(entry, statement, direction)
-  const all = pieces.every(([, matched]) => matched)
   return (
     <span className="formula-label lg-rule-line">
       {mark && <><FormulaText text={mark} className="formula-mark" />{' '}</>}
-      {pieces.map(([text, matched], k) => <span key={k} className={all || matched ? 'lg-rule-match' : 'lg-rule-rest'}><Piece text={text} /></span>)}
+      {pieces.map(([text, role], k) => <span key={k} className={role ? `lg-${role}` : 'lg-rule-rest'}><Piece text={text} /></span>)}
     </span>
   )
 }

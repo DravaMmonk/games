@@ -682,7 +682,11 @@ export const REWRITE_CHOICES = {
   },
 }
 
-/** Preview the first result at each goal using the same rule order as the card's run. */
+// The given a goal is copied from: the first that matches, the one the run takes.
+const copiedFrom = (state, index) => state.goals[index].hyps.findIndex(hyp =>
+  !rule({ ...state, goals: [{ ...state.goals[index], hyps: [hyp] }] }, ASSUMPTION_RULE, 0).fail)
+
+/** Preview the first result at each goal using the same rule order as the card's run; `hyps` the givens it reads. */
 export const BACKWARD_POSITIONS = {
   run: ([state], _named, { task, node, autoFirst = false }) => {
     if (state?.kind !== 'state' || !state.goals.length || state.error) return []
@@ -690,8 +694,10 @@ export const BACKWARD_POSITIONS = {
     if (!card) return []
     const available = directRules(card, node, autoFirst)
     const choices = state.goals.flatMap((_, index) => {
-      const result = backwardAt(state, {}, available, index).attempts?.find(attempt => attempt.state)?.state.goals
-      return result ? [{ value: `goal-${index}`, index, result }] : []
+      const attempt = backwardAt(state, {}, available, index).attempts?.find(attempt => attempt.state)
+      if (!attempt) return []
+      const hyps = attempt.by.rule === ASSUMPTION_RULE.key ? [copiedFrom(state, index)] : []
+      return [{ value: `goal-${index}`, index, result: attempt.state.goals, hyps }]
     })
     return positionChoices(state.goals, choices, choices[0]?.value ?? null)
   },

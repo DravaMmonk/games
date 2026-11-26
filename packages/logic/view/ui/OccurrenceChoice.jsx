@@ -52,6 +52,7 @@ function OccurrenceContents({ setting, text, value, applied = value, onChange, r
     const auto = !selected && occurrence === applied && Boolean(preview)
     const option = byValue.get(occurrence)
     const formula = selected && !preview ? text(option.replacement) : words
+    // On a card the place acted on shows what the rewrite made there.
     const pick = () => {
       if (multiple) onChange(selected ? selection.filter((item) => item !== occurrence) : [...selection, occurrence])
       else onChange(selected && !rewrite ? null : occurrence)
@@ -59,25 +60,34 @@ function OccurrenceContents({ setting, text, value, applied = value, onChange, r
     return (
       <ApplicationBox key={`pick-${index}`} selected={selected} auto={auto} readOnly={readOnly} fixed={fixed}
         label={tr('第 {index} 处：{formula}', { index: (option.index ?? Number(occurrence)) + 1, formula })} onPick={pick}>
-        <Formula text={formula} />
+        {rewrite && (selected || auto) ? <span className="lg-made"><Formula text={formula} /></span> : <Formula text={formula} />}
       </ApplicationBox>
     )
   })
 }
 
-// Goals that share their fixed things and knowns stand in one group; a goal whose knowns hold places to pick keeps its own.
+// A given as a card marks it: matched by its rule, made by it, or neither.
+const Given = ({ formula, text, role }) => role === 'matched'
+  ? <span className="lg-matched"><Sentence formula={formula} text={text} /></span>
+  : <Sentence formula={formula} text={text} whole={role === 'made'} />
+
+// Goals that share their fixed things and knowns stand in one group, each given marked as a goal of the group marks it
+// (`marks`: role by given); a goal whose knowns hold places to pick keeps its own.
 function grouped(rows, text) {
   const groups = []
-  for (const { sequent, hyps, ...goal } of rows) {
+  for (const { sequent, hyps, marks = {}, ...goal } of rows) {
     const fixes = sequent.fixes ?? []
     let group = !hyps && groups.find((other) => other.shared && sameJson(other.fixes, fixes) && sameJson(other.given, sequent.hyps))
     if (!group) {
-      group = { shared: !hyps, fixes, given: sequent.hyps, hyps: hyps ?? sequent.hyps.map((formula, k) => <Sentence key={k} formula={formula} text={text} />), goals: [] }
+      group = { shared: !hyps, fixes, given: sequent.hyps, hyps, marks: {}, goals: [] }
       groups.push(group)
     }
+    Object.assign(group.marks, marks)
     group.goals.push(goal)
   }
-  return groups
+  return groups.map(({ given, hyps, marks, ...group }) => ({
+    ...group, hyps: hyps ?? given.map((formula, k) => <Given key={k} formula={formula} text={text} role={marks[k]} />),
+  }))
 }
 
 function rewriteRows({ sequents, options, option, ...props }) {
@@ -88,9 +98,12 @@ function rewriteRows({ sequents, options, option, ...props }) {
     const here = options.filter(({ goalIndex = 0 }) => goalIndex === index)
     const depthOf = (hyp) => (option && here.includes(option) && option.hyp === hyp ? option.depth ?? 0 : 0)
     const at = (hyp) => here.filter((choice) => choice.hyp === hyp)
+    // The given a substitution reads its equation off is matched.
+    const source = option && here.includes(option) ? option.source : undefined
     const sentence = (formula, hyp) => {
       const matches = at(hyp).filter(({ depth }) => depth === depthOf(hyp))
-      return matches.length ? <span className="ps-sentence">{contents(matches)}</span> : <Sentence formula={formula} text={props.text} />
+      return matches.length ? <span className="ps-sentence">{contents(matches)}</span>
+        : <Given formula={formula} text={props.text} role={hyp !== undefined && hyp === source ? 'matched' : undefined} />
     }
     for (const choice of here.filter(({ hyp, depth }) => depth !== depthOf(hyp))) {
       const key = `${index}-${choice.hyp ?? 'goal'}-${choice.depth}`
@@ -100,7 +113,8 @@ function rewriteRows({ sequents, options, option, ...props }) {
     const picksKnown = here.some(({ hyp }) => hyp !== undefined)
     return {
       sequent, index, body: sentence(sequent.goal),
-      ...(picksKnown && { hyps: sequent.hyps.map((formula, hyp) => <span key={hyp}>{sentence(formula, hyp)}</span>) }),
+      ...(picksKnown ? { hyps: sequent.hyps.map((formula, hyp) => <span key={hyp}>{sentence(formula, hyp)}</span>) }
+        : source !== undefined && { marks: { [source]: 'matched' } }),
     }
   })
   return { rows, more: [...overlaps].map(([key, hidden]) => <div key={key} className="lg-occurrences">{contents(hidden)}</div>) }
@@ -117,14 +131,19 @@ function backwardRows({ sequents, options, option, text, readOnly, fixed, onChan
     const replacementCount = choice.result.length - sequents.length + 1
     const closed = selected && replacementCount === 0
     const results = selected && !closed ? choice.result.slice(index, index + replacementCount) : [original]
-    // The place picked shows what the rule leaves there: its first goal in the box, the goals it adds after it.
+    const made = selected && !closed
+    // The place picked shows what the rule leaves there: its first goal in the box, the goals it adds after it, all
+    // made, with the givens it adds; a goal it copies from a given marks that given matched.
+    const marks = (sequent) => made
+      ? Object.fromEntries(sequent.hyps.flatMap((hyp, k) => (original.hyps.some((old) => sameJson(old, hyp)) ? [] : [[k, 'made']])))
+      : closed ? Object.fromEntries((choice.hyps ?? []).filter((k) => k >= 0).map((k) => [k, 'matched'])) : {}
     return results.map((sequent, k) => ({
-      sequent, index: shownIndex + k, closed,
+      sequent, index: shownIndex + k, closed, marks: marks(sequent),
       body: k > 0 ? <Sentence formula={sequent.goal} text={text} whole /> : (
         <ApplicationBox selected={selected} readOnly={readOnly} fixed={fixed}
           label={tr('第 {index} 处：{formula}', { index: index + 1, formula: text(original.goal) })}
           onPick={() => onChange(choice.value)}>
-          <Sentence formula={sequent.goal} text={text} />
+          <Sentence formula={sequent.goal} text={text} whole={made} />
         </ApplicationBox>
       ),
     }))
@@ -134,7 +153,7 @@ function backwardRows({ sequents, options, option, text, readOnly, fixed, onChan
 
 /**
  * A rule used forwards, drawn as the state it leaves: each given its first premise can read is a box, the one it reads
- * framed; the givens it adds tinted whole, as are goals its premises still to prove add. Groups starting on the same
+ * framed; the other givens it reads matched; the givens it adds made, as are goals its premises still to prove add. Groups starting on the same
  * given show the first, the one a run takes.
  */
 function forwardRows({ sequents, options, option, text, readOnly, fixed, onChange }) {
@@ -144,13 +163,15 @@ function forwardRows({ sequents, options, option, text, readOnly, fixed, onChang
   const result = option?.result ?? sequents
   const closed = option !== undefined && result.length < sequents.length
   const added = (k, formula) => (option?.addedHyps ?? []).some(({ goalIndex, hyps }) => goalIndex === k && hyps.some((hyp) => sameJson(hyp, formula)))
+  // The givens the rule reads besides the one picked are matched; those it adds are made.
+  const role = (k, formula, hyp) => (added(k, formula) ? 'made' : k === 0 && option?.indices?.slice(1).includes(hyp) ? 'matched' : undefined)
   // The goals the rule leaves in place of the first: its own, with what it added, then any it opened.
   const opened = closed ? [goal] : result.slice(0, result.length - rest.length)
   const rows = opened.map((sequent, k) => ({
     sequent, index: k, closed, body: <Sentence formula={sequent.goal} text={text} whole={k > 0} />,
     hyps: sequent.hyps.map((formula, hyp) => {
       const choice = k === 0 && first.get(hyp)
-      const sentence = <Sentence formula={formula} text={text} whole={added(k, formula)} />
+      const sentence = <Given formula={formula} text={text} role={role(k, formula, hyp)} />
       if (!choice) return <span key={hyp}>{sentence}</span>
       return (
         <ApplicationBox key={hyp} selected={choice.index === option?.index} readOnly={readOnly} fixed={fixed}
@@ -166,7 +187,7 @@ function forwardRows({ sequents, options, option, text, readOnly, fixed, onChang
 
 /**
  * Where a rule applies to the proof state handed to its card, drawn as the state the rule leaves: the place it acts on
- * tinted as a change. Every other place it could act on is a box to pick, drawn once the card is selected or the
+ * framed, the givens its rule matches besides and what it makes in their colours (BoundRule.jsx marks the rule alike). Every other place it could act on is a box to pick, drawn once the card is selected or the
  * picker stands in a detail sheet; a place picked by hand keeps its frame. With several places and none picked the rule
  * waits: the state stands as it came, every place a box.
  */

@@ -208,7 +208,7 @@ function* places(goal, rule, { inHyps, hyp }) {
   }
 }
 
-/** The available occurrences for the first rule that matches each sentence. */
+/** The available occurrences for the first rule that matches each sentence; `source` the given a substitution reads. */
 export function rewriteOptions(state, rules) {
   const goal = state?.goals?.[0]
   if (!goal || state.error) return []
@@ -225,6 +225,7 @@ export function rewriteOptions(state, rules) {
         matches.forEach(({ path, depth, replacement }, index) => options.push({
           value: hyp === undefined ? `goal-${index}` : `hyp-${hyp}-${index}`,
           label: '', original, node: atPath(original, path), path, replacement, hyp, index, depth,
+          ...(local.sourceHyp !== undefined && { source: local.sourceHyp }),
         }))
       }
     }

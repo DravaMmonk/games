@@ -339,7 +339,13 @@
 .ps-goal.is-later .ps-mark { color: var(--faint); }
 .ps-rest { display: flex; align-items: baseline; gap: var(--sp-1); color: var(--faint); }
 .ps-closed { display: inline-flex; margin-inline-start: var(--sp-1); color: var(--status); vertical-align: middle; }
-.lg-changed { padding: 1px var(--sp-1); border-radius: var(--r-xs); color: inherit; background: color-mix(in srgb, var(--accent) 20%, transparent); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* What a card does with a sentence, the same on its rule (ui/BoundRule.jsx), its state (ui/OccurrenceChoice.jsx) and the
+   run report (ui/ProofState.jsx): the place it acts on is framed in the state and tinted in the rule; the givens its rule
+   matches besides, and what it makes, change colour only. */
+:root { --lg-matched: color-mix(in srgb, var(--n1) 85%, var(--ink)); --lg-made: color-mix(in srgb, var(--w3) 72%, var(--ink)); }
+.lg-picked { padding: 1px var(--sp-1); border-radius: var(--r-xs); background: color-mix(in srgb, var(--accent) 20%, transparent); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.lg-matched { color: var(--lg-matched); }
+.lg-made { padding: 0; background: none; color: var(--lg-made); }
 .lg-unknown { border-bottom: 1px dashed var(--accent); color: var(--accent-ink); }
 
 /* The rule a rule-bound card carries (ui/BoundRule.jsx): the card's lead line. With several rules the line is a

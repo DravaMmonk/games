@@ -1,6 +1,7 @@
 {
   "title": "@section.assist.title",
   "values": [
+    "prover",
     "provers",
     "isabelle",
     "lean",

@@ -1,0 +1,12 @@
+{
+  "title": "@entry.prover.title",
+  "at": "machine-cite",
+  "body": [
+    "@entry.prover.body.0",
+    "@entry.prover.body.1",
+    "@entry.prover.body.2",
+    "@entry.prover.body.3",
+    "@entry.prover.body.4"
+  ],
+  "see": ["proof-state", "provers"]
+}

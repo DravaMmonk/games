@@ -27,6 +27,7 @@ test('equivalence substitution checks the goal first, then givens in their own o
   const state = startState(parse('A'), ['C ↔ D', 'A ↔ B', 'A ∧ B', 'C ∧ D'].map(parse))
   const options = rewriteOptions(state, [forward])
   assert.deepEqual(options.map(({ value }) => value), ['goal-0', 'hyp-2-0', 'hyp-3-0'])
+  assert.deepEqual(options.map(({ source }) => source), [1, 1, 0])
   assert.equal(rewriteTarget(undefined, options), 'goal-0')
   const result = rewrite(state, forward, 'hyps').results[0].goals[0]
   assert.deepEqual(result.hyps.map((formula) => show(formula)), ['C ↔ D', 'A ↔ B', 'B ∧ B', 'C ∧ D'])

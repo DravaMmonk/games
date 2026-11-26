@@ -1,7 +1,9 @@
 // A proof state as the prover draws it wherever one stands (a report box, a card, a phone tile, the position picker):
 // goals that share their fixed things and knowns write those once, with the goals in a column beside them. With several
-// goals open, the one a rule acts on by default keeps the accent on its mark. What a step changed is tinted, a goal
-// it added tinted whole, and a letter still unknown (?A) is drawn in the accent wherever it stands.
+// goals open, the one a rule acts on by default keeps the accent on its mark. What a step made (a subformula it
+// changed, a goal or given it added) stands in the colour of what is made; the givens a rule used forwards read are
+// marked as its card marks them (the first tinted, the rest matched); and a letter still unknown (?A) is drawn in the
+// accent wherever it stands.
 import { Fragment } from 'react'
 import { Check } from 'lucide-react'
 import { getLang, punctuation } from 'kernel'
@@ -69,7 +71,7 @@ const CHANGED = 'c'
 const isUnknown = (node) => (node.op === 'meta' || node.t === 'var') && isMetaName(node.name)
 const drawMark = (kind, children) => {
   const body = kind.includes(UNKNOWN) ? <span className="lg-unknown">{children}</span> : children
-  return kind.includes(CHANGED) ? <mark className="lg-changed">{body}</mark> : body
+  return kind.includes(CHANGED) ? <mark className="lg-made">{body}</mark> : body
 }
 
 // A copy of a sentence in which the subformula at `path` is an object of its own. Formulas share subformulas (a
@@ -82,13 +84,13 @@ function alone(formula, path) {
 }
 const at = (formula, path) => path.reduce((node, key) => node?.[key], formula)
 
-/** One sentence of a state: its unknown letters in the accent, the subformulas at `paths` (or all of it) tinted. */
+/** One sentence of a state: its unknown letters in the accent, the subformulas at `paths` (or all of it) marked made. */
 export function Sentence({ formula, text, paths = [], whole = false }) {
   const shown = paths.filter((path) => at(formula, path)).reduce(alone, formula)
   const marked = new Set(paths.map((path) => at(shown, path)))
   const kindOf = (node) => `${marked.has(node) ? CHANGED : ''}${isUnknown(node) ? UNKNOWN : ''}`
   const body = <span className="ps-sentence"><Pieces pieces={piecesOf(shown, text, kindOf)} draw={drawMark} /></span>
-  return whole ? <mark className="lg-changed">{body}</mark> : body
+  return whole ? <mark className="lg-made">{body}</mark> : body
 }
 
 // A search with no end piles goal on goal: past this many, a state shows its first goals and the marks of the rest.
@@ -156,13 +158,21 @@ function changedIn(diff) {
  *  was acted on after it, where that is known and is not the default. */
 export function ProofState({ value, text, diff, next }) {
   const info = proofStateInfo(value)
-  // A rule used backwards replaces the goal it acts on, so that goal is marked whole, like the goals it adds.
+  // A rule used backwards replaces the goal it acts on, so that goal is made whole, like the goals it adds.
   const replaced = diff && value.did?.op === 'rule' ? value.did.goalIndex ?? 0 : null
   const paths = changedIn(diff)
   const added = new Set(diff?.added)
+  // A rule used forwards read givens of the first goal: the first is the place it acted on, the rest matched.
+  const [picked, ...matched] = diff && value.did?.op === 'forward' ? value.did.givens ?? [] : []
+  const given = (hyp, i, goalIndex) => {
+    const sentence = <Sentence formula={hyp} text={text} paths={paths(goalIndex, i)} />
+    if (goalIndex !== 0) return sentence
+    if (i === picked) return <span className="lg-picked">{sentence}</span>
+    return matched.includes(i) ? <span className="lg-matched">{sentence}</span> : sentence
+  }
   const groups = info.contexts.map(({ fixes, hyps, goalIndices }) => ({
     fixes,
-    hyps: hyps.map((hyp, i) => <Sentence key={i} formula={hyp} text={text} paths={paths(goalIndices[0], i)} />),
+    hyps: hyps.map((hyp, i) => <Fragment key={i}>{given(hyp, i, goalIndices[0])}</Fragment>),
     goals: goalIndices.map((index) => ({
       index, body: <Sentence formula={value.goals[index].goal} text={text} paths={index === replaced ? [] : paths(index)}
         whole={index === replaced || added.has(index)} />,
@@ -178,8 +188,8 @@ const follows = (before, value) => !['rule', 'assumption', 'rw', 'rwHyps'].inclu
   || (before.goals.length > (value.did.goalIndex ?? 0) && value.goals.length >= before.goals.length - 1)
 
 /**
- * A rule-bound card's own state on a phone tile, read only: what the card gave, with what it changed tinted as a
- * report box tints it. The marks come from the state it was handed and the state it gave alone, so they stand whether
+ * A rule-bound card's own state on a phone tile, read only: what the card gave, with what it made marked as a
+ * report box marks it. The marks come from the state it was handed and the state it gave alone, so they stand whether
  * or not the card's output reaches the result. Places are picked in the card's detail, where they are boxes.
  */
 export function StepState({ before, value, text }) {

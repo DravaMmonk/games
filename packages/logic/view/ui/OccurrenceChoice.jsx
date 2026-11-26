@@ -9,10 +9,13 @@ import { Piece, Sentence, StateLayout } from './ProofState.jsx'
 /** Whether the card drawn stands in a search frame: a backward rule with no goal picked then works on the first
  *  goal alone, so the picker marks that goal or none (the machine screen provides it around a card's face). */
 export const FirstGoalOnly = createContext(false)
+/** Whether the card drawn runs again on later states (a repeat or search frame's region): the one place its first
+ *  round offers is no settled choice there, so the player can still pin it. */
+export const RunsAgain = createContext(false)
 
-function ApplicationBox({ selected, readOnly, fixed, label, onPick, children }) {
+function ApplicationBox({ selected, auto = false, readOnly, fixed, label, onPick, children }) {
   return (
-    <button type="button" className="lg-occurrence" aria-pressed={selected} disabled={readOnly}
+    <button type="button" className={`lg-occurrence ${auto ? 'is-auto' : ''}`} aria-pressed={selected} disabled={readOnly}
       aria-disabled={fixed || undefined} aria-label={label} onClick={event => { event.stopPropagation(); if (!fixed) onPick() }}>
       <span className="lg-occurrence-frame">{children}</span>
     </button>
@@ -28,10 +31,10 @@ export default function OccurrenceChoice({ id, label, ...props }) {
   )
 }
 
-function OccurrenceContents({ setting, text, value, onChange, readOnly, fixed = false, preview, rewrite = false }) {
+function OccurrenceContents({ setting, text, value, applied = value, onChange, readOnly, fixed = false, preview, rewrite = false }) {
   const { options } = setting
   const original = preview?.original ?? options[0].original
-  const indices = new Map(options.map((option) => [option.value === value && preview ? preview.node : option.node, option]))
+  const indices = new Map(options.map((option) => [option.value === applied && preview ? preview.node : option.node, option]))
   // Each occurrence splits the formatted sentence into prose, index and subformula.
   const line = text(original, (node, words) => {
     const option = indices.get(node)
@@ -45,6 +48,8 @@ function OccurrenceContents({ setting, text, value, onChange, readOnly, fixed = 
     if (index % 3 === 0) return <Piece key={`text-${index}`} text={words} />
     const occurrence = line[index - 1]
     const selected = selection.includes(occurrence)
+    // The place a card acts on without having been picked: drawn as the change it makes, still a place to pick.
+    const auto = !selected && occurrence === applied && Boolean(preview)
     const option = byValue.get(occurrence)
     const formula = selected && !preview ? text(option.replacement) : words
     const pick = () => {
@@ -52,7 +57,7 @@ function OccurrenceContents({ setting, text, value, onChange, readOnly, fixed = 
       else onChange(selected && !rewrite ? null : occurrence)
     }
     return (
-      <ApplicationBox key={`pick-${index}`} selected={selected} readOnly={readOnly} fixed={fixed}
+      <ApplicationBox key={`pick-${index}`} selected={selected} auto={auto} readOnly={readOnly} fixed={fixed}
         label={tr('第 {index} 处：{formula}', { index: (option.index ?? Number(occurrence)) + 1, formula })} onPick={pick}>
         <Formula text={formula} />
       </ApplicationBox>
@@ -76,7 +81,7 @@ function grouped(rows, text) {
 }
 
 function rewriteRows({ sequents, options, option, ...props }) {
-  const contents = (matches) => <OccurrenceContents {...props} setting={{ options: matches }} rewrite
+  const contents = (matches) => <OccurrenceContents {...props} setting={{ options: matches }} rewrite applied={option?.value}
     preview={matches.includes(option) ? rewritePreview(option) : undefined} />
   const overlaps = new Map()
   const rows = sequents.map((sequent, index) => {
@@ -128,29 +133,68 @@ function backwardRows({ sequents, options, option, text, readOnly, fixed, onChan
 }
 
 /**
+ * A rule used forwards, drawn as the state it leaves: each given its first premise can read is a box, the one it reads
+ * framed; the givens it adds tinted whole, as are goals its premises still to prove add. Groups starting on the same
+ * given show the first, the one a run takes.
+ */
+function forwardRows({ sequents, options, option, text, readOnly, fixed, onChange }) {
+  const first = new Map()
+  for (const choice of options) if (!first.has(choice.index)) first.set(choice.index, choice)
+  const [goal, ...rest] = sequents
+  const result = option?.result ?? sequents
+  const closed = option !== undefined && result.length < sequents.length
+  const added = (k, formula) => (option?.addedHyps ?? []).some(({ goalIndex, hyps }) => goalIndex === k && hyps.some((hyp) => sameJson(hyp, formula)))
+  // The goals the rule leaves in place of the first: its own, with what it added, then any it opened.
+  const opened = closed ? [goal] : result.slice(0, result.length - rest.length)
+  const rows = opened.map((sequent, k) => ({
+    sequent, index: k, closed, body: <Sentence formula={sequent.goal} text={text} whole={k > 0} />,
+    hyps: sequent.hyps.map((formula, hyp) => {
+      const choice = k === 0 && first.get(hyp)
+      const sentence = <Sentence formula={formula} text={text} whole={added(k, formula)} />
+      if (!choice) return <span key={hyp}>{sentence}</span>
+      return (
+        <ApplicationBox key={hyp} selected={choice.index === option?.index} readOnly={readOnly} fixed={fixed}
+          label={tr('第 {index} 处：{formula}', { index: hyp + 1, formula: text(goal.hyps[hyp]) })} onPick={() => onChange(choice.value)}>
+          {sentence}
+        </ApplicationBox>
+      )
+    }),
+  }))
+  rest.forEach((sequent, k) => rows.push({ sequent, index: opened.length + k, body: <Sentence formula={sequent.goal} text={text} /> }))
+  return { rows, more: [] }
+}
+
+/**
  * Where a rule applies to the proof state handed to its card, drawn as the state the rule leaves: the place it acts on
  * tinted as a change. Every other place it could act on is a box to pick, drawn once the card is selected or the
  * picker stands in a detail sheet; a place picked by hand keeps its frame. With several places and none picked the rule
  * waits: the state stands as it came, every place a box.
  */
-export function MachineApplicationChoice({ setting, id, value, text, readOnly, onChange, rewrite }) {
+export function MachineApplicationChoice({ setting, id, value, text, readOnly, onChange, direction = 'backward' }) {
   const [{ sequents, defaultAt }, ...options] = setting.options
-  const firstOnly = useContext(FirstGoalOnly) && !rewrite
+  const rewrite = direction === 'rewrite'
+  const forward = direction === 'forward'
+  const firstOnly = useContext(FirstGoalOnly) && direction === 'backward'
+  const again = useContext(RunsAgain) && rewrite
   const configured = value == null || value === '' ? undefined : value
   const target = configured ?? (firstOnly ? options.find(({ index }) => index === 0)?.value : defaultAt)
   const picked = rewrite && target === 'hyps' ? options.find(({ hyp }) => hyp !== undefined)?.value
     : rewrite && target === 'goal' ? 'goal-0' : target
   const option = options.find((item) => item.value === picked)
-  const fixed = options.length === 1 && option !== undefined
+  // A rewrite in a frame that runs it again acts on its one place unpicked: later rounds may offer more.
+  const places = forward ? new Set(options.map(({ index }) => index)).size : options.length
+  const fixed = places === 1 && option !== undefined && !again
   const props = { sequents, options, option, text, readOnly, fixed, onChange }
-  const { rows, more } = rewrite ? rewriteRows({ ...props, value: picked }) : backwardRows(props)
+  const { rows, more } = rewrite ? rewriteRows({ ...props, value: again && configured === undefined ? undefined : picked })
+    : forward ? forwardRows(props) : backwardRows(props)
   const missing = configured !== undefined && !option
   // Several places and none picked: the card waits for the player, every place a box. In a search frame it does not
   // wait: with the first goal out of its rule's reach it hands the state on.
-  const pending = !readOnly && configured === undefined && !option && options.length > 1 && !firstOnly
+  // A rule used forwards never waits: it reads the first group it can.
+  const pending = !readOnly && !forward && configured === undefined && !option && options.length > 1 && !firstOnly
   return (
     <div id={id} className={`lg-application-result ${pending ? 'is-pending' : ''}`} role="group" aria-label={tr('应用位置')}>
-      <StateLayout groups={grouped(rows, text)} next={option ? (rewrite ? option.goalIndex ?? 0 : option.index) : 0} />
+      <StateLayout groups={grouped(rows, text)} next={option && direction === 'backward' ? option.index : option?.goalIndex ?? 0} />
       {more.length > 0 && <details className="lg-application-more">
         <summary>{tr('其他可改写位置')}</summary>
         {more}

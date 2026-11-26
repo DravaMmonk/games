@@ -2,56 +2,36 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/c-dist",
-      "to": "qed/sp-rw"
+      "from": "c-dist",
+      "to": "sp-back"
     },
     {
-      "from": "qed/q-dm",
-      "to": "qed/sp-rw"
+      "from": "q-dm",
+      "to": "sp-back"
     },
     {
-      "from": "qed/sp-rw",
-      "to": "qed/sp-laws"
+      "from": "sp-back",
+      "to": "sp-repeat"
     },
     {
-      "from": "qed/sp-rw",
-      "to": "qed/sp-dm"
+      "from": "sp-repeat",
+      "to": "sp-simp"
     },
     {
-      "from": "qed/sp-dm",
-      "to": "qed/sp-back"
+      "from": "sp-simp",
+      "to": "au-iff"
     },
     {
-      "from": "qed/sp-rw",
-      "to": "qed/sp-where"
+      "from": "au-iff",
+      "to": "sp-nnf"
     },
     {
-      "from": "qed/sp-where",
-      "to": "qed/sp-repeat"
+      "from": "sp-nnf",
+      "to": "sp-order"
     },
     {
-      "from": "qed/sp-laws",
-      "to": "qed/sp-simp"
-    },
-    {
-      "from": "qed/sp-back",
-      "to": "qed/sp-simp"
-    },
-    {
-      "from": "qed/sp-repeat",
-      "to": "qed/sp-simp"
-    },
-    {
-      "from": "qed/sp-simp",
-      "to": "qed/sp-nnf"
-    },
-    {
-      "from": "qed/sp-nnf",
-      "to": "qed/sp-cnf"
-    },
-    {
-      "from": "qed/sp-cnf",
-      "to": "qed/sp-order"
+      "from": "sp-order",
+      "to": "au-negate"
     }
   ]
 }

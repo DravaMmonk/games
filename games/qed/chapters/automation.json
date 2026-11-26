@@ -6,8 +6,6 @@
   },
   "levels": [
     "qed/au-negate",
-    "qed/au-iff",
-    "qed/au-hyps",
     "qed/au-skolem",
     "qed/au-clauses",
     "qed/au-resolve",

@@ -3,7 +3,7 @@
     "saturate",
     "clausify"
   ],
-  "tray": "machine",
+  "tray": "prover",
   "title": "@level.au-sledge.title",
   "after": "@level.au-sledge.after",
   "tasks": [
@@ -11,12 +11,6 @@
       "id": "au-sledge-1",
       "kind": "logic/machine",
       "want": "logic/decide",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-sledge.tasks.au-sledge-1.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "step": "@level.au-sledge.tasks.au-sledge-1.step",
       "tests": [

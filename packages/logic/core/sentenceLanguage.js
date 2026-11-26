@@ -54,12 +54,6 @@ function segmentOf(node, path, kind, notation, bracket = false) {
   }
 }
 
-/** A whole sentence on a strip that cannot be changed (a sentence a level shows), its parts keyed under `key`. */
-export function fixedLine(f, notation, key) {
-  const fix = (part) => typeof part === 'string' || part.hole ? part : part.region ? { region: part.region.map(fix) } : { ...part, fixed: true, parts: part.parts.map(fix) }
-  return [fix(segmentOf(f, [key], 'formula', notation))]
-}
-
 export function sentenceLanguage(notation, root = 'formula', free) {
   const argumentWords = (node) => node.args?.length ? wordsOf(notation, node.pred ?? node.f, node.args.length) : ''
   const orderOf = (node, kids) => {

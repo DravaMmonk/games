@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { checkAction, RunDock, Verdict, L, NamedLines, PlayLayout, TestTabs, inspectWork, useCheckedWork } from 'kernel/view'
+import { checkAction, RunDock, Verdict, L, Markup, NamedLines, PlayLayout, TestTabs, inspectWork, useCheckedWork } from 'kernel/view'
 import TreeRows from './TreeRows.jsx'
 import { usePreferredTest } from '../general-form.js'
 
@@ -15,6 +15,7 @@ export default function Rows({ screen, resource, play }) {
   const dock = <RunDock go={checkAction(check, Boolean(verdict?.pass))} />
   const stage = (
     <div className={play.stage}>
+      {resource.prompt && <p className="fo-say fo-prompt"><Markup text={resource.prompt} /></p>}
       <TreeRows {...resource.rows(work, change, `${entry.id}:${entry.source.task}`, at)} />
       {resource.lines && <NamedLines lines={resource.lines(work, L, at)} formulas />}
     </div>

@@ -6,6 +6,7 @@ const marks = new Map([
   ['implies', ['→', '蕴涵', 'implies']],
   ['left', ['←', '左箭头', 'left arrow']],
   ['backward', ['⟵', '逆用', 'backward']],
+  ['forward', ['⟶', '正用', 'forward']],
   ['iff', ['↔', '等价', 'if and only if']],
   ['entails', ['⟹', '推出', 'entails']],
   ['maps-to', ['⟼', '映到', 'maps to']],

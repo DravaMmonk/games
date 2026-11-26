@@ -3,7 +3,7 @@
   "adds": [
     "resolve"
   ],
-  "tray": "machine",
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.au-saturate.intro.0.t"
@@ -15,12 +15,6 @@
       "id": "au-saturate",
       "kind": "logic/machine",
       "want": "logic/decide",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-saturate.tasks.au-saturate.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "tests": [
         {

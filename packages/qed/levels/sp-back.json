@@ -1,6 +1,7 @@
 {
   "title": "@level.sp-back.title",
-  "tray": "machine",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.sp-back.intro.0.t"
@@ -11,51 +12,35 @@
       "id": "sp-back",
       "kind": "logic/machine",
       "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.sp-back.tasks.sp-back.inputs.0.label"
-        }
-      ],
-      "backtrack": true,
-      "tests": [
-        {
-          "goal": "¬Rain ∧ ¬Wind → Wet",
-          "becomes": [
-            [
-              "¬(Rain ∨ Wind) → Wet"
-            ]
-          ]
-        },
-        {
-          "goal": "¬Wet ∨ ¬Slip",
-          "becomes": [
-            [
-              "¬(Wet ∧ Slip)"
-            ]
-          ]
-        },
-        {
-          "goal": "Happy ∧ (¬Sat ∧ ¬Sun)",
-          "becomes": [
-            [
-              "Happy ∧ ¬(Sat ∨ Sun)"
-            ]
-          ]
-        }
-      ],
       "brief": "@level.sp-back.tasks.sp-back.brief",
       "hint": [
         "@level.sp-back.tasks.sp-back.hint.0"
       ],
+      "tests": [
+        {
+          "goal": "Wind ∧ Wet",
+          "hyps": ["Rain ↔ Wet"],
+          "becomes": [
+            [
+              "Rain ↔ Wet ⊢ Wind ∧ Rain"
+            ]
+          ]
+        },
+        {
+          "goal": "Fall → Wet",
+          "hyps": ["Slip ↔ Fall"],
+          "becomes": [
+            [
+              "Slip ↔ Fall ⊢ Slip → Wet"
+            ]
+          ]
+        }
+      ],
       "solution": [
-        "c1r0 = dm[use=[\"dm.andNot\"]]()",
-        "c1 = rw(in, c1r0)",
-        "c2r0 = dm[use=[\"dm.orNot\"]]()",
-        "c2 = rw(in, c2r0)",
-        "c0 = append(first: c1, second: c2)",
-        "out <- c0"
-      ]
+        "a = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff.reverse\"]](in)",
+        "out <- a"
+      ],
+      "naive": ["a = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"]](in)", "out <- a"]
     }
   ]
 }

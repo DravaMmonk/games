@@ -1,6 +1,6 @@
 {
   "title": "@level.au-machine.title",
-  "tray": "machine",
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.au-machine.intro.0.t"
@@ -11,12 +11,6 @@
       "id": "au-machine",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-machine.tasks.au-machine.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "tests": [
         {

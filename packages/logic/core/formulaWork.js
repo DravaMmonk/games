@@ -30,11 +30,11 @@ export function translation(level) {
     return {
       want: !first,
       got: first,
-      why: first ? T('在下面的世界中，你写的句子为真，原句却为假：') : T('在下面的世界中，原句为真，你写的句子却为假：'),
+      why: first ? T('在以下情形中，你写的句子为真，原句却为假：') : T('在以下情形中，原句为真，你写的句子却为假：'),
       lines: worldDescription(model, notation, level.vocab.preds, { spell: true }),
     }
   })
-  return { judge, prompt: level.say, chips: () => chips, language: sentenceLanguage(notation, 'formula', []), passed: T('在每个小世界中，真假都与原句一致。') }
+  return { judge, prompt: level.say, chips: () => chips, language: sentenceLanguage(notation, 'formula', []), passed: T('在检验过的所有情形中，真假都与原句一致。') }
 }
 
 

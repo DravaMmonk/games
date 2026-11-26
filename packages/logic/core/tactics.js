@@ -1,8 +1,8 @@
 // Proof states and tactics (《证明完毕》 chapters 8 and 9). A proof state is the goals still open, each with the things
 // it has fixed and the hypotheses it may use; metavariables a rule left in them are shared by every goal, and filled in
 // wherever one is unified (Isabelle's ?A, Lean's ?m). A tactic takes a state to the states it can make of it: none
-// (it fails, and says why), one, or several (chapter 9: one for each way it applies, tried in order). Tactics only use
-// rules, read backwards: whatever they prove, the kernel proves too.
+// (it fails, and says why), one, or several (one for each way it applies, tried in order). The rules act on goals
+// backwards or read givens forwards.
 //
 //   state  { kind: 'state', goals: [goal], scopes: { ?name: [fixed] }, inst: σ, fixed: [name], query: [?name],
 //            error?: { zh, en }, more?: [state], endless? }
@@ -12,8 +12,8 @@
 // metavariables have become so far, `query` the metavariables of the start (a question: who is a grandparent?), and
 // `more` the further results after this one, when a tactic gives several, and `endless` that a search making them did
 // not stop (schematic.js does the unifying).
-import { fn, subst } from './formula.js'
-import { KERNEL_RULES, instantiate, metasIn, unify } from './schematic.js'
+import { fn, matchThings, same, subst, tvar } from './formula.js'
+import { KERNEL_RULES, instantiate, metasIn, namesIn, unify } from './schematic.js'
 import { T } from 'kernel/words'
 
 const NO_GOALS = T('已经没有目标了')
@@ -56,25 +56,45 @@ function renamed(rule, used) {
   return { ...rule, conclusion: ren(rule.conclusion), premises: rule.premises.map((p) => ({ ...p, show: ren(p.show), hyps: p.hyps.map(ren) })), metas: Object.values(names) }
 }
 // A formula (or term) with its metavariables renamed, applied ones keeping what they are applied to.
-function renameMetas(x, names) {
-  if ('t' in x) return x.t === 'var' ? (names[x.name] ? { ...x, name: names[x.name] } : x) : { ...x, args: x.args.map((a) => renameMetas(a, names)) }
+function renameMetas(x, names, witnesses) {
+  const rename = side => renameMetas(side, names, witnesses)
+  if ('t' in x) {
+    if (x.t === 'var') return names[x.name] ? { ...x, name: names[x.name] } : x
+    if (!x.args.length && witnesses?.has(x.f)) return tvar(witnesses.get(x.f))
+    return { ...x, args: x.args.map(rename) }
+  }
   switch (x.op) {
-    case 'meta': return { ...x, name: names[x.name] ?? x.name, ...(x.args ? { args: x.args.map((a) => renameMetas(a, names)) } : {}) }
-    case 'atom': return { ...x, args: x.args.map((a) => renameMetas(a, names)) }
-    case '¬': return { ...x, a: renameMetas(x.a, names) }
-    case '∀': case '∃': return { ...x, body: renameMetas(x.body, names) }
+    case 'meta': return { ...x, name: names[x.name] ?? x.name, ...(x.args ? { args: x.args.map(rename) } : {}) }
+    case 'atom': return { ...x, args: x.args.map(rename) }
+    case '¬': return { ...x, a: rename(x.a) }
+    case '∀': case '∃': return { ...x, body: rename(x.body) }
     case '⊥': return x
-    default: return { ...x, a: renameMetas(x.a, names), b: renameMetas(x.b, names) }
+    default: return { ...x, a: rename(x.a), b: rename(x.b) }
   }
 }
 
 // The goals a rule's premises make of goal g: each with g's fixed things and hypotheses, its own assumptions, and a new
 // fixed thing for each of its ⋀ variables.
-function lift(premises, g, s) {
+function lift(premises, g, s, conclusion) {
   const taken = new Set([...(s.fixed ?? []), ...fixesOf(g)])
+  if (premises.some(p => p.fixes.length)) {
+    const formulas = [conclusion, ...Object.values(s.inst ?? {}), ...s.goals.flatMap(({ goal, hyps }) => [goal, ...hyps]),
+      ...premises.flatMap(p => [p.show, ...p.hyps])]
+    for (const f of formulas) namesIn(f, taken)
+  }
   const fixed = []
   const goals = premises.map((p) => {
-    const names = p.fixes.map(() => { const n = FIXED.find((x) => !taken.has(x)); taken.add(n); fixed.push(n); return n })
+    const names = p.fixes.map(() => {
+      let n = FIXED.find(x => !taken.has(x))
+      if (!n) {
+        let index = 1
+        while (taken.has(`a${index}`)) index++
+        n = `a${index}`
+      }
+      taken.add(n)
+      fixed.push(n)
+      return n
+    })
     const put = (f) => p.fixes.reduce((h, v, k) => subst(h, v, fn(names[k])), f)
     return { fixes: [...fixesOf(g), ...names], hyps: [...g.hyps, ...p.hyps.map(put)], goal: put(p.show) }
   })
@@ -82,6 +102,10 @@ function lift(premises, g, s) {
 }
 const keyOf = (f) => JSON.stringify(f)
 const unique = (fs) => [...new Map(fs.map((f) => [keyOf(f), f])).values()]
+const forwardMetas = Symbol('forward metavariables')
+const isSentenceMeta = name => /^\?[A-Z]/.test(name)
+export const hasUnresolvedSentence = (s, formula) => [...metasIn(formula)]
+  .some(name => isSentenceMeta(name) && !s[forwardMetas]?.has(name))
 // The state after a step: the new goals in front of the rest, everything with σ put in; a hypothesis already there is
 // not kept twice.
 function after(s, σ, goals, scopes, fixed = []) {
@@ -93,6 +117,7 @@ function after(s, σ, goals, scopes, fixed = []) {
     inst: σ,
     fixed: [...(s.fixed ?? []), ...fixed],
     query: s.query ?? [],
+    ...(s[forwardMetas] && { [forwardMetas]: s[forwardMetas] }),
   }
 }
 
@@ -107,8 +132,106 @@ export function rule(s, R, index = 0) {
   const scopes = { ...s.scopes, ...Object.fromEntries(r.metas.map((m) => [m, fixesOf(g)])) }
   const u = unify([[r.conclusion, g.goal]], s.inst ?? {}, { scopes, fixed: s.fixed ?? [] })
   if (u.fail) return { fail: T('「{rule}」的结论对不上第 {index} 个目标：{reason}', { rule: R.name, index: index + 1, reason: u.fail }) }
-  const { goals, fixed } = lift(r.premises, g, s)
+  const { goals, fixed } = lift(r.premises, g, s, r.conclusion)
   return { results: [after(s, u.σ, [...s.goals.slice(0, index), ...goals, ...s.goals.slice(index + 1)], scopes, fixed)] }
+}
+
+const isPlain = ({ fixes, hyps }) => !fixes.length && !hyps.length
+export const canReadGivens = rule => rule.premises?.some(isPlain) ?? false
+const canonicalNames = formulas => Object.fromEntries(
+  [...formulas.reduce((found, formula) => metasIn(formula, found), new Set())].map((name, index) => [name, `?${index}`]))
+const canonicalMetas = (formula, witnesses) => renameMetas(formula, canonicalNames([formula]), witnesses)
+
+// Preserve shared schematic variables across the whole rule when comparing forms.
+function canonicalRule({ premises, conclusion }) {
+  const ordered = [...premises.filter(isPlain), ...premises.filter(p => !isPlain(p))]
+  const names = canonicalNames([...ordered.flatMap(p => [p.show, ...p.hyps]), conclusion])
+  const rename = formula => renameMetas(formula, names)
+  return { conclusion: rename(conclusion), premises: ordered.map(p => ({ ...p, show: rename(p.show), hyps: p.hyps.map(rename) })) }
+}
+
+export function uniqueForwardRules(entries) {
+  const seen = []
+  return entries.filter(({ rule }) => {
+    const { premises, conclusion } = canonicalRule(rule)
+    if (seen.some(other => premises.length === other.premises.length && same(conclusion, other.conclusion)
+      && premises.every((p, index) => {
+        const q = other.premises[index]
+        if (p.fixes.length !== q.fixes.length || p.hyps.length !== q.hyps.length) return false
+        const binders = p.fixes.map((name, i) => [name, q.fixes[i]])
+        return same(p.show, q.show, binders) && p.hyps.every((hyp, i) => same(hyp, q.hyps[i], binders))
+      }))) return false
+    seen.push({ premises, conclusion })
+    return true
+  })
+}
+
+// Only names introduced by this step can stand for a different witness. Each such
+// name must stand for the same individual at all its occurrences in the sentence.
+function isNewGiven(formula, old, fixed) {
+  if (!fixed.length) {
+    const normalized = canonicalMetas(formula)
+    return !old.some(hyp => same(normalized, hyp))
+  }
+  const witnesses = new Map(fixed.map((name, index) => [name, `?witness${index}`]))
+  const pattern = canonicalMetas(formula, witnesses)
+  return !old.some(hyp => {
+    const bindings = matchThings(pattern, hyp, witnesses.values())
+    return bindings && [...bindings.values()].every(term => term.t === 'fn' && !term.args.length)
+  })
+}
+
+/** Match every unboxed premise against the first goal's givens, in input order. */
+export function forward(s, R, { at, first = false } = {}) {
+  const g = s.goals[0]
+  if (!g || !canReadGivens(R)) return { matches: [], reason: 'rule-mismatch' }
+  const r = renamed(R, metasOfState(s))
+  const plain = r.premises.filter(isPlain)
+  const boxed = r.premises.filter(p => !isPlain(p))
+  const { conclusion } = r
+  const eliminate = conclusion.op === 'meta' && !conclusion.args?.length
+    && !plain.some(p => metasIn(p.show).has(conclusion.name))
+  const scopes = { ...s.scopes, ...Object.fromEntries(r.metas.map(m => [m, fixesOf(g)])) }
+  const opts = { scopes, fixed: s.fixed ?? [] }
+  const pairs = eliminate ? [[conclusion, g.goal]] : []
+  const { goals, fixed } = lift(boxed, g, s, conclusion)
+  const matches = []
+  let matched = false
+  const visit = (indices, equations) => {
+    if (indices.length < plain.length) {
+      return g.hyps.some((hyp, index) => {
+        if (!indices.length && at && at !== `hyp-${index}`) return false
+        return visit([...indices, index], [...equations, [plain[indices.length].show, hyp]])
+      })
+    }
+    // Solve all premises together so a later one can determine an earlier pattern.
+    const u = unify(equations, s.inst ?? {}, opts)
+    if (u.fail) return false
+    matched = true
+    const put = formula => instantiate(formula, u.σ)
+    const existing = g.hyps.map(hyp => canonicalMetas(put(hyp)))
+    const continuation = { ...g, hyps: [...g.hyps, conclusion] }
+    const head = eliminate ? goals : [...goals, continuation]
+    const addedHyps = head.flatMap((goal, goalIndex) => {
+      const added = goal.hyps.slice(g.hyps.length).map(put)
+        .filter(hyp => isNewGiven(hyp, existing, fixesOf(goal).slice(fixesOf(g).length)))
+      return added.length ? [{ goalIndex, hyps: unique(added) }] : []
+    })
+    if (eliminate) {
+      // An unchanged branch would still ask for the original proof with the same givens.
+      if (goals.some((goal, index) => same(put(goal.goal), put(g.goal))
+        && !addedHyps.some(added => added.goalIndex === index))) return false
+    } else if (!addedHyps.some(added => added.goalIndex === boxed.length)) return false
+    const state = after(s, u.σ, [...head, ...s.goals.slice(1)], scopes, fixed)
+    // N1 still rejects sentence holes left by backward applications. Forward
+    // schematics stand in derived givens or scoped obligations and may be read later.
+    const own = r.metas.filter(name => isSentenceMeta(name) && !u.σ[name])
+    if (own.length) state[forwardMetas] = new Set([...(s[forwardMetas] ?? []), ...own])
+    matches.push({ state, indices, addedHyps })
+    return first
+  }
+  visit([], pairs)
+  return { matches, reason: matches.length ? null : at ? 'position-missing' : matched ? 'nothing-new' : 'rule-mismatch' }
 }
 
 /** Unify the chosen goal with one of its hypotheses (each that fits is a result). */

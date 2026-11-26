@@ -4,7 +4,6 @@
     "au-adder",
     "au-cert",
     "au-clauses",
-    "au-hyps",
     "au-iff",
     "au-machine",
     "au-negate",
@@ -24,15 +23,10 @@
     "s-lem",
     "s-loop",
     "sp-back",
-    "sp-cnf",
-    "sp-dm",
-    "sp-laws",
     "sp-nnf",
     "sp-order",
     "sp-repeat",
-    "sp-rw",
     "sp-simp",
-    "sp-where",
     "s-rounds",
     "s-explore"
   ]

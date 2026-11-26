@@ -14,6 +14,7 @@
 import { asImp, fn, parse, same, show, subst } from './formula.js'
 import { KERNEL, assumption, depthFirst, rule } from './tactics.js'
 import { ruleBookOf, runTactic } from './machine.js'
+import { rewriteBookOf, simplify } from './rewrite.js'
 import { T } from 'kernel/words'
 
 
@@ -89,21 +90,26 @@ export function proves(level, method, goal, hyps) {
     const out = runTactic(level, method, s)
     return done(out) ? '' : out.error ?? T("{method} 没有证完", {method})
   }
-  const simpWith = (x, extra = []) => {
-    const out = runTactic(level, 'simp', x, [...(level.simp ?? []), ...extra])
-    if (out.error) return [out]
+  const rewrites = rewriteBookOf(level)
+  const simpRules = (level.simp ?? []).map((key) => Object.hasOwn(rewrites, key) ? rewrites[key] : undefined)
+  const simpWith = (x, rules) => {
+    if (rules.some((r) => !r)) return []
+    const { results } = simplify(x, rules)
+    if (!results) return []
+    const [out] = results
     return [out, ...(rule(out, KERNEL.refl).results ?? []), ...(assumption(out).results ?? [])]
   }
-  if (method === 'simp') return simpWith(s).some((x) => done(x) || closed([x])) ? '' : T('化简完了，两边还不一样')
+  if (method === 'simp') return simpWith(s, simpRules).some((x) => done(x) || closed([x])) ? '' : T('化简完了，两边还不一样')
   if (method === 'induct') {
     const [type] = Object.keys(level.datatypes ?? {})
     const out = rule(s, book[`${type}.induct`])
     if (out.fail) return out.fail
     // Each case: simp with the level's simp set and what the case assumes, then both sides alike.
+    const caseRules = [...simpRules, rewrites.hyp]
     const each = (x) => {
       if (!x.goals.length) return true
       const one = { ...x, goals: [x.goals[0]] }
-      return simpWith(one, ['hyp']).some((y) => (done(y) || closed([y])) && each({ ...x, inst: y.inst, goals: x.goals.slice(1) }))
+      return simpWith(one, caseRules).some((y) => (done(y) || closed([y])) && each({ ...x, inst: y.inst, goals: x.goals.slice(1) }))
     }
     return out.results.some(each) ? '' : T('归纳的某一种情况没有证完')
   }

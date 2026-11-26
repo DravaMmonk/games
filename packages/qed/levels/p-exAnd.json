@@ -13,28 +13,22 @@
   "tasks": [
     {
       "id": "p-exAnd-1",
-      "kind": "logic/translate",
+      "kind": "logic/iso",
       "step": "@level.p-exAnd.tasks.p-exAnd-1.step",
       "brief": "@level.p-exAnd.tasks.p-exAnd-1.brief",
       "say": "@level.p-exAnd.tasks.p-exAnd-1.say",
-      "target": "(∃x. Bird(x)) ∧ (∃x. Flies(x)) → (∃x. Bird(x) ∧ Flies(x))",
       "hint": [
         "@level.p-exAnd.tasks.p-exAnd-1.hint.0"
       ],
-      "decoys": []
+      "play": "logic/rule",
+      "sentences": ["∃x. Bird(x)", "∃x. Flies(x)", "∃x. Bird(x) ∧ Flies(x)"],
+      "rule": { "premises": ["∃x. Bird(x)", "∃x. Flies(x)"], "conclusion": "∃x. Bird(x) ∧ Flies(x)" }
     },
     {
       "id": "p-exAnd-2",
       "kind": "logic/model",
       "step": "@level.p-exAnd.tasks.p-exAnd-2.step",
-      "translationFrom": "p-exAnd-1",
-      "say": "@level.p-exAnd.tasks.p-exAnd-2.say",
       "brief": "@level.p-exAnd.tasks.p-exAnd-2.brief",
-      "given": [
-        "∃x. Bird(x)",
-        "∃x. Flies(x)"
-      ],
-      "goal": "∃x. Bird(x) ∧ Flies(x)",
       "answer": {
         "size": 2,
         "preds": {
@@ -48,7 +42,8 @@
       },
       "hint": [
         "@level.p-exAnd.tasks.p-exAnd-2.hint.0"
-      ]
+      ],
+      "ruleFrom": "p-exAnd-1"
     }
   ]
 }

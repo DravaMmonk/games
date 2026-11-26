@@ -88,47 +88,6 @@
       "awards": [
         "iff-intro"
       ]
-    },
-    {
-      "id": "au-iff-3",
-      "kind": "logic/machine",
-      "tray": "machine",
-      "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-iff.tasks.au-iff-3.inputs.0.label"
-        }
-      ],
-      "backtrack": true,
-      "step": "@level.au-iff.tasks.au-iff-3.step",
-      "tests": [
-        {
-          "goal": "Sat ↔ Rest",
-          "becomes": [
-            [
-              "(¬Sat ∨ Rest) ∧ (¬Rest ∨ Sat)"
-            ]
-          ]
-        },
-        {
-          "goal": "(KA ↔ ¬KB) ∧ KC",
-          "becomes": [
-            [
-              "((¬KA ∨ ¬KB) ∧ (¬¬KB ∨ KA)) ∧ KC"
-            ]
-          ]
-        }
-      ],
-      "brief": "@level.au-iff.tasks.au-iff-3.brief",
-      "hint": [
-        "@level.au-iff.tasks.au-iff-3.hint.0"
-      ],
-      "solution": [
-        "c0r0 = iff[use=[\"iff.elim\"]]()",
-        "c0 = rw(in, c0r0)",
-        "out <- c0"
-      ]
     }
   ]
 }

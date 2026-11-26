@@ -7,7 +7,7 @@ import { lastIndexMatching } from 'kernel'
 // hollow number with no box of its own, on the line of the step that gave the state it left alone. The current step is
 // marked and kept in view, inside the report only; a run that ends with goals open rests on the last skipped step.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Ellipsis, Info, ListOrdered, LocateOff, Network } from 'lucide-react'
+import { CopyCheck, Ellipsis, Info, ListOrdered, LocateOff, Network } from 'lucide-react'
 import { L, Popover, ViewPicker } from 'kernel/view'
 import { T, tr } from 'kernel/words'
 import { NotationLabel } from 'notation/view'
@@ -172,6 +172,7 @@ export default function MachineReport({ steps, at, ended, run, task, test, show,
                 <span className="mr-num">{number}</span>
                 <span className="mr-name">{s.mark}<NotationLabel label={L(s.label)} /></span>
                 {s.entry.reason === 'position-missing' && <span className="mr-unplaced" role="img" aria-label={tr('找不到选定的应用位置')} title={tr('找不到选定的应用位置')}><LocateOff size={12} aria-hidden="true" /></span>}
+                {s.entry.reason === 'nothing-new' && <span className="mr-unplaced" role="img" aria-label={tr('得到的已知都已经在已知里')} title={tr('得到的已知都已经在已知里')}><CopyCheck size={12} aria-hidden="true" /></span>}
               </span>
             )
             if (!step) return [<li key={`s${lead[0].k}`} className="mr-step is-skips">{lead.map(skip)}</li>]

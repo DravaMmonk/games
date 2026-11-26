@@ -39,7 +39,7 @@ export const machineTermOf = (task) => (t) => L(sayTerm(t, task.notation))
 
 /** Read one machine case symbolically without changing its clauses, goals or tests. */
 export function machineGeneralNotation(task, test) {
-  const { in: input } = inputsOf(test, task)
+  const { in: input } = inputsOf(test)
   const goals = (rows) => rows.flatMap(({ hyps, goal }) => [...hyps, goal])
   const formulas = [
     ...(input.kind === 'state' ? goals(input.goals) : input.set.map(clauseFormula)),
@@ -61,9 +61,7 @@ export function machineGeneralNotation(task, test) {
   }))
   return { ...task.notation, symbols: [...Object.keys(BIN), '¬', '∀', '∃', '⊥'], words, propertyWords: false }
 }
-// Marks: goals and rule slots are always numbered (⊢₁ ⊢₂ … and R₁ R₂ …). A rule
-// part's card shows only the rules it adds (`own`), not those wired in before it. A goal with no
-// hypotheses keeps its turnstile in front.
+// Number goals and rule slots as ⊢₁ ⊢₂ … and R₁ R₂ …. A goal with no hypotheses keeps its turnstile.
 export const goalMark = (index = 0) => `⊢${subscript(index + 1)}`
 const markedLine = (mark, text, before = '') => ({ s: [before, mark, text].filter(Boolean).join(' '), formula: true, before, mark, text })
 const goalLine = (g, text, mark) => markedLine(mark, text(g.goal),
@@ -79,12 +77,13 @@ export const ruleLines = ({ ruleSlots = [] }, task) => {
   const term = machineTermOf(task)
   return ruleSlots.flatMap(({ entry }, index) => entry ? [{ mark: slotMark(index), text: ruleWritten(entry, text, term) }] : [])
 }
-/** What a tactic did (machine.js `did`), in marks: ⊢₁ ⟵ R₁ (a rule backwards), ⊢₁ ≡ R₁ (a rewrite), ⊢₁ ✓ (a hypothesis
- *  closes it), ⊢₁ ⤓ (moved to the end). */
+/** What a tactic did (machine.js `did`), in marks: ⊢₁ ⟵ R₁ (a rule backwards), Γ ⊢₁ ⟶ R₁ (a rule forwards),
+ *  ⊢₁ ≡ R₁ (a rewrite), ⊢₁ ✓ (a hypothesis closes it), ⊢₁ ⤓ (moved to the end). */
 export function didText(did, run, { marksOnly = false } = {}) {
   const goal = goalMark(did.goalIndex)
   const rules = citedRules(did, run)
   if (did.op === 'rule') return `${goal} ⟵ ${rules}`
+  if (did.op === 'forward') return `Γ ${goal} ⟶ ${rules}`
   if (did.op === 'rw') return `${goal} ≡ ${rules}`
   if (did.op === 'rwHyps') return marksOnly ? `Γ ${goal} ≡ ${rules}` : T("{goal} 的已知 ≡ {rules}", { goal, rules })
   if (did.op === 'assumption') return `${goal} ✓ ${rules}`
@@ -110,6 +109,7 @@ export function stepExplained(entry, run) {
   const goal = goalMark(did.goalIndex)
   const rules = citedRules(did, run)
   if (did.op === 'rule') return T('倒着用 {rules}：它的结论对上目标 {goal}，目标换成它的前提。', { rules, goal })
+  if (did.op === 'forward') return T('正着用 {rules}：已知对上它的前提，结论加进已知。', { rules })
   if (did.op === 'rw') return T('用 {rules} 改写目标 {goal}。', { rules, goal })
   if (did.op === 'rwHyps') return T('用 {rules} 改写目标 {goal} 的已知。', { rules, goal })
   if (did.op === 'assumption') return T('目标 {goal} 和它的一条已知对上，证完了。', { goal })
@@ -118,12 +118,11 @@ export function stepExplained(entry, run) {
 const proofComplete = () => ({ s: tr('证明完毕'), formula: true, upright: true })
 
 /**
- * A value in words, a line each: the rules a rule part gives (R₁ …, numbered for the board
- * when a run is given); a proof state's goals (⊢₁ …) (or that
- * it is proved, or that the step failed, and why); a clause set, once ⊥ is in only the clauses ⊥ comes from.
+ * A value in words, a line each: a proof state's goals (⊢₁ …), completion or failure,
+ * or a clause set limited to the clauses that give ⊥ when a certificate is available.
  * Each line is prose or a formula (`formula`: what the board typesets); showMachine joins them as text.
  */
-export function machineLines(v, { task, run }) {
+export function machineLines(v, { task }) {
   // Prose is a note on the value (why a step failed, how many results) or, `result`, the value itself said in words.
   const prose = (list) => list.filter(Boolean).map((s) => ({ s, formula: false }))
   const result = (s) => (s ? [{ s, formula: false, result: true }] : [])
@@ -132,12 +131,6 @@ export function machineLines(v, { task, run }) {
   if (typeof v === 'string') return prose([v])
   if (v.kind === 'want') return v.lines
   const text = machineTextOf(task)
-  const term = machineTermOf(task)
-  if (v.kind === 'rules') {
-    const slots = run?.ruleSlots ?? v.entries.map((entry) => ({ entry }))
-    const shown = v.own === undefined ? v.entries : v.entries.slice(v.entries.length - v.own)
-    return shown.map((e) => markedLine(ruleMark(e.key, slots), ruleWritten(e, text, term)))
-  }
   if (v.kind === 'state') {
     const others = v.more?.length ?? 0
     return [
@@ -190,7 +183,7 @@ const machineEntries = ({ task, test, run }) => {
   const labels = new Map(inputsOfLevel(task).map((i) => [i.name, i.label]))
   return [
     ...(task.datatypes ? [{ of: 'types', label: T('类型'), shape: 'scalar', given: Object.entries(task.datatypes).map(([type, d]) => typeText(type, d, term)).join(punctuation("；")) }] : []),
-    ...Object.entries(inputsOf(test, task)).map(([name, v]) => ({ of: name, label: labels.get(name) ?? T("输入"), shape: 'scalar', given: v })),
+    ...Object.entries(inputsOf(test)).map(([name, v]) => ({ of: name, label: labels.get(name) ?? T("输入"), shape: 'scalar', given: v })),
     { of: 'out', label: T("预期"), shape: 'scalar', want: wantOf(task, test), got: run?.outputs?.out },
   ]
 }

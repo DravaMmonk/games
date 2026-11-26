@@ -25,27 +25,25 @@
       "reference": {
         "kind": "logic/machine",
         "solution": [
-          "c0 = repeat(in, body: c1) {",
+          "c0 = repeat(in, body: s2) {",
           "  body {",
-          "    c1 = rw(c0.body, rules)",
+          "    s1 = logic/directRewrite-qed_rewrite[use=[\"hyp.eq\"],at=goal-0](c0.body)",
+          "    s2 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](s1)",
           "  }",
           "}",
           "out <- c0"
         ],
         "want": "logic/becomes",
+        "directRuleCards": true,
         "inputs": [
           {
             "name": "in",
             "label": "in"
-          },
-          {
-            "name": "rules",
-            "label": "rules"
           }
         ],
         "tests": [
           {
-            "goal": "¬(Rain ∨ ¬Wind)"
+            "goal": "Bright(i) ∧ Wind"
           }
         ]
       }
@@ -55,17 +53,7 @@
     {
       "name": "in",
       "type": "logic/machine-value"
-    },
-    {
-      "name": "rules",
-      "type": "logic/machine-value"
     }
   ],
-  "outputType": "logic/machine-value",
-  "stages": [
-    {
-      "id": "simp-au-hyps-desc",
-      "desc": "@part.simp.revisions.0.desc"
-    }
-  ]
+  "outputType": "logic/machine-value"
 }

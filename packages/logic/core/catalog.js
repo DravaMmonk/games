@@ -9,6 +9,11 @@ const vocabularyProjection = Symbol.for('games.logic-vocabulary')
 
 export const meaning = {
   type: 'level', read: value => value, baselineReports: logicReports,
+  levelPuzzle({ level }) {
+    // A world check depends on the referenced rule even when the model task itself is unchanged.
+    const ruleIds = new Set(level.tasks.filter(task => task.kind === 'logic/model' && task.ruleFrom).map(task => task.ruleFrom))
+    return ruleIds.size ? { checkedRules: level.tasks.filter(task => ruleIds.has(task.id)).map(task => [task.id, task.rule, task.things]) } : {}
+  },
   blueprintRules: ({ objects }) => Object.entries(objects['circuit/part'] ?? {}).filter(([, part]) => part.inside && ['logic/lemma', 'logic/rule'].includes(part.family)).map(([id]) => id.split('/').at(-1)),
   baselineStructure: ({ content }) => Object.keys(content.registries['logic/symbol'] ?? {}).length ? { symbols: content.registries['logic/symbol'] } : {},
   vocabulary(base) {

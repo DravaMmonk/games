@@ -17,7 +17,7 @@
   "course.eras.paper.chapter.title": "Pen and paper",
   "course.eras.qrules.chapter.desc": "Build proofs using quantifier and equality rules",
   "course.eras.qrules.chapter.title": "Quantifiers and equality",
-  "course.eras.quantifiers.chapter.desc": "Describe things with quantifiers and check sentences in worlds",
+  "course.eras.quantifiers.chapter.desc": "Describe things with quantifiers and check sentences in different scenarios",
   "course.eras.quantifiers.chapter.title": "First-order language",
   "course.eras.simplifier.chapter.desc": "Transform logical formulas",
   "course.eras.simplifier.chapter.title": "Simplification",

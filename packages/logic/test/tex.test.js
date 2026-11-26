@@ -22,6 +22,10 @@ test("a step's marks: a rule backwards, a goal closed", () => {
   assert.equal(texOf('¬¬?A ⟼ ?A'), '\\lnot \\lnot ?A\\longmapsto ?A')
 })
 
+test('a forward step typesets its context, goal number and rule reference', () => {
+  assert.equal(texOf('Γ ⊢₁ ⟶ R₁'), '\\Gamma \\vdash _{1}\\longrightarrow R_{1}')
+})
+
 test("TeX's own characters inside words are escaped", () => {
   const tex = texOf('50% & more_than')
   for (const escaped of ['\\%', '\\&', '\\_']) assert.ok(tex.includes(escaped), tex)

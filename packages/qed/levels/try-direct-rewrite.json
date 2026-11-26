@@ -2,7 +2,7 @@
   "title": "@level.try-direct-rewrite.title",
   "intro": [{ "t": "@level.try-direct-rewrite.intro.0.t" }],
   "after": "@level.try-direct-rewrite.after",
-  "requires": ["sp-rw"],
+  "requires": ["machine-rewrite"],
   "tasks": [
     {
       "id": "try-direct-rewrite",

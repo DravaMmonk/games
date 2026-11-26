@@ -8,21 +8,15 @@
       "reference": {
         "kind": "logic/machine",
         "solution": [
-          "c0r0 = raa()",
-          "c1r0 = impI()",
-          "c2r0 = iff[use=[\"iff.elim\"]]()",
-          "c0 = rule(in, c0r0)",
-          "c2r1 = arrow[use=[\"arrow.elim\"]](c2r0)",
-          "c1 = rule(c0, c1r0)",
-          "c2r2 = dneg[use=[\"dneg.elim\"]](c2r1)",
-          "c2r3 = dm[use=[\"dm.notOr\", \"dm.notAnd\", \"dm.notEx\", \"dm.notAll\"]](c2r2)",
-          "c2r7 = dist[use=[\"dist.orAndR\", \"dist.orAndL\"]](c2r3)",
-          "c2 = simp[at=hyps](c1, c2r7)",
-          "c3 = skolem(c2)",
-          "c4 = toClauses(c3)",
-          "out <- c4"
+          "a = logic/directBackward-qed_raa(in)",
+          "b = logic/directBackward-qed_impI(a)",
+          "c = cnf[at=hyps](b)",
+          "d = skolem(c)",
+          "e = toClauses(d)",
+          "out <- e"
         ],
         "want": "logic/clauses",
+        "directRuleCards": true,
         "inputs": [{ "name": "in", "label": "in" }],
         "tests": [{ "goal": "Wet" }]
       }

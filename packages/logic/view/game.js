@@ -44,7 +44,7 @@ export const playPresentation = {
   'logic/define': { icon: SquareFunction, label: catalogText("定义", {}, "game") },
   'logic/translate': { icon: Languages, label: catalogText("翻译") },
   'logic/query': { icon: Search, label: catalogText("查询") },
-  'logic/model': { icon: FileSignature, label: catalogText("造世界") },
+  'logic/model': { icon: FileSignature, label: catalogText("构造情形") },
   'logic/audit': { icon: ClipboardCheck, label: catalogText("声明审计") },
   'logic/rule': { icon: ClipboardPen, label: catalogText("写规则") },
   'logic/script': { icon: ScrollText, label: catalogText("写脚本") },

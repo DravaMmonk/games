@@ -3,26 +3,66 @@
   "adds": [
     "skolem"
   ],
-  "tray": "machine",
+  "local": [
+    "skolem"
+  ],
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
+  "after": "@level.au-skolem.after",
   "intro": [
     {
       "t": "@level.au-skolem.intro.0.t"
-    }
+    },
+    { "t": "@level.au-skolem.intro.1.t" }
   ],
-  "after": "@level.au-skolem.after",
   "tasks": [
     {
       "id": "au-skolem",
       "kind": "logic/machine",
       "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-skolem.tasks.au-skolem.inputs.0.label"
-        }
+      "brief": "@level.au-skolem.tasks.au-skolem.brief",
+      "hint": [
+        "@level.au-skolem.tasks.au-skolem.hint.0",
+        "@level.au-skolem.tasks.au-skolem.hint.1"
       ],
-      "backtrack": true,
       "tests": [
+        {
+          "goal": "⊥",
+          "hyps": [
+            "Rain → Wet",
+            "Rain",
+            "¬Wet"
+          ],
+          "becomes": [
+            [
+              "¬Rain ∨ Wet; Rain; ¬Wet ⊢ ⊥"
+            ]
+          ]
+        },
+        {
+          "goal": "⊥",
+          "hyps": [
+            "Bus ∨ (Bike ∧ Rain)",
+            "¬(Bus → OnTime)"
+          ],
+          "becomes": [
+            [
+              "(Bus ∨ Bike) ∧ (Bus ∨ Rain); Bus ∧ ¬OnTime ⊢ ⊥"
+            ]
+          ]
+        },
+        {
+          "goal": "⊥",
+          "hyps": [
+            "KA ↔ ¬KB",
+            "¬¬KA"
+          ],
+          "becomes": [
+            [
+              "(¬KA ∨ ¬KB) ∧ (KB ∨ KA); KA ⊢ ⊥"
+            ]
+          ]
+        },
         {
           "goal": "⊥",
           "hyps": [
@@ -59,28 +99,16 @@
           ]
         }
       ],
-      "brief": "@level.au-skolem.tasks.au-skolem.brief",
-      "hint": [
-        "@level.au-skolem.tasks.au-skolem.hint.0",
-        "@level.au-skolem.tasks.au-skolem.hint.1"
-      ],
       "solution": [
-        "c0r0 = iff[use=[\"iff.elim\"]]()",
-        "c0r1 = arrow[use=[\"arrow.elim\"]](c0r0)",
-        "c0r2 = dneg[use=[\"dneg.elim\"]](c0r1)",
-        "c0r3 = dm[use=[\"dm.notOr\", \"dm.notAnd\", \"dm.notEx\", \"dm.notAll\"]](c0r2)",
-        "c0r7 = dist[use=[\"dist.orAndR\", \"dist.orAndL\"]](c0r3)",
-        "c0 = simp[at=hyps](in, c0r7)",
-        "c1 = skolem(c0)",
-        "out <- c1"
+        "a = cnf[at=hyps](in)",
+        "b = skolem(a)",
+        "out <- b"
       ],
       "naive": [
-        "c0 = skolem(in)",
-        "out <- c0"
+        "a = cnf(in)",
+        "b = skolem(a)",
+        "out <- b"
       ]
     }
-  ],
-  "local": [
-    "skolem"
   ]
 }

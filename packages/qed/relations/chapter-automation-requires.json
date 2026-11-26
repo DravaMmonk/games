@@ -2,111 +2,103 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "qed/sp-order",
-      "to": "qed/au-negate"
+      "from": "au-negate",
+      "to": "au-skolem"
     },
     {
-      "from": "qed/au-negate",
-      "to": "qed/au-iff"
+      "from": "sp-order",
+      "to": "au-negate"
     },
     {
-      "from": "qed/au-iff",
-      "to": "qed/au-hyps"
+      "from": "au-skolem",
+      "to": "au-clauses"
     },
     {
-      "from": "qed/au-hyps",
-      "to": "qed/au-skolem"
+      "from": "au-clauses",
+      "to": "au-resolve"
     },
     {
-      "from": "qed/au-skolem",
-      "to": "qed/au-clauses"
+      "from": "au-resolve",
+      "to": "au-refute"
     },
     {
-      "from": "qed/au-clauses",
-      "to": "qed/au-resolve"
+      "from": "au-refute",
+      "to": "au-onepair"
     },
     {
-      "from": "qed/au-resolve",
-      "to": "qed/au-refute"
+      "from": "au-onepair",
+      "to": "au-saturate"
     },
     {
-      "from": "qed/au-refute",
-      "to": "qed/au-onepair"
+      "from": "au-saturate",
+      "to": "au-sledge"
     },
     {
-      "from": "qed/au-onepair",
-      "to": "qed/au-saturate"
+      "from": "au-sledge",
+      "to": "au-cert"
     },
     {
-      "from": "qed/au-saturate",
-      "to": "qed/au-sledge"
+      "from": "au-cert",
+      "to": "au-replay"
     },
     {
-      "from": "qed/au-sledge",
-      "to": "qed/au-cert"
+      "from": "au-replay",
+      "to": "au-wrong"
     },
     {
-      "from": "qed/au-cert",
-      "to": "qed/au-replay"
+      "from": "au-wrong",
+      "to": "au-adder"
     },
     {
-      "from": "qed/au-replay",
-      "to": "qed/au-wrong"
+      "from": "au-adder",
+      "to": "au-machine"
     },
     {
-      "from": "qed/au-wrong",
-      "to": "qed/au-adder"
-    },
-    {
-      "from": "qed/au-adder",
-      "to": "qed/au-machine"
-    },
-    {
-      "from": "qed/au-replay",
-      "to": "qed/is-three"
+      "from": "au-replay",
+      "to": "is-three"
     },
     {
       "required": true,
-      "from": "qed/kk-three",
-      "to": "qed/is-three"
+      "from": "kk-three",
+      "to": "is-three"
     },
     {
       "required": true,
-      "from": "qed/is-three",
-      "to": "qed/is-silent"
+      "from": "is-three",
+      "to": "is-silent"
     },
     {
       "required": true,
-      "from": "qed/is-silent",
-      "to": "qed/is-ten"
+      "from": "is-silent",
+      "to": "is-ten"
     },
     {
-      "from": "qed/au-machine",
-      "to": "qed/u-barber"
-    },
-    {
-      "required": true,
-      "from": "qed/kk-one",
-      "to": "qed/u-barber"
+      "from": "au-machine",
+      "to": "u-barber"
     },
     {
       "required": true,
-      "from": "qed/u-barber",
-      "to": "qed/u-cantor"
+      "from": "kk-one",
+      "to": "u-barber"
     },
     {
       "required": true,
-      "from": "qed/u-cantor",
-      "to": "qed/u-ls"
+      "from": "u-barber",
+      "to": "u-cantor"
     },
     {
       "required": true,
-      "from": "qed/u-ls",
-      "to": "qed/u-halt"
+      "from": "u-cantor",
+      "to": "u-ls"
     },
     {
-      "from": "qed/au-saturate",
-      "to": "qed/au-horn"
+      "required": true,
+      "from": "u-ls",
+      "to": "u-halt"
+    },
+    {
+      "from": "au-saturate",
+      "to": "au-horn"
     }
   ]
 }

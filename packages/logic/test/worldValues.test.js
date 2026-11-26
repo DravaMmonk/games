@@ -12,7 +12,7 @@ const check = worldCheck({
 test('counterexample checks reject an empty domain and formula text before evaluation', () => {
   for (const work of [wrong, { size: 0, preds: {} }, null]) {
     const { fail, run } = check.report(work)
-    assert.equal(fail.why.en, 'This is not a world.')
+    assert.equal(fail.why.en, 'Enter valid scenario settings.')
     assert.deepEqual(run, { steps: [{ failed: fail.why }], lines: [] })
   }
 })
@@ -26,4 +26,25 @@ test('a nonempty world must separate the translations', () => {
   const distinct = { size: 2, preds: { Likes: ['0,0', '1,1'] } }
   assert.equal(check.judge(distinct), null)
   assert.deepEqual(check.run(distinct).steps, [{}])
+})
+
+test('a world checks an inference one premise at a time and requires a false conclusion', () => {
+  const inference = worldCheck({
+    given: ['∀x. Human(x) → Mortal(x)', 'Mortal(h)'],
+    goal: 'Human(h)',
+    notation: { symbols: ['∀', '→'] },
+    vocab: { names: ['h'], consts: ['h'], preds: [['Human', 1], ['Mortal', 1]] },
+  })
+  assert.equal(inference.board.rows[0].slots[0].text.en, 'Human(h)')
+  assert.equal(inference.board.rows[1].slots.length, 2)
+  const failed = inference.report({ size: 1, preds: {} })
+  assert.equal(failed.fail.check, 1)
+  assert.equal(failed.run.steps.length, 2)
+  const passed = inference.report({ size: 1, preds: { Mortal: ['0'] } })
+  assert.equal(passed.fail, null)
+  assert.deepEqual(passed.run.lines.map(row => [row.expected.en, row.text.en, row.right]), [
+    ['true', 'true', true],
+    ['true', 'true', true],
+    ['false', 'false', true],
+  ])
 })

@@ -6,7 +6,7 @@
 // clause sets, rules) read as lines of text.
 import { T } from 'kernel/words'
 import { createElement, useMemo } from 'react'
-import { frameTree, withPreset } from 'circuit'
+import { frameTree, settingsOf, withPreset } from 'circuit'
 import { CIRCUIT_WORDS } from 'circuit/view'
 import { L } from 'kernel/view'
 import { defaultBoundRule, directCardsOf, machineConfigurationCases, runMachine } from '../../core/machine.js'
@@ -14,11 +14,12 @@ import { useMachineRunOptions } from '../auto-first.js'
 import { presetFor } from '../../core/work.js'
 import { didText, machineGeneralNotation, machineReadout, machineTextOf, machineTermOf } from '../../core/circuit-readouts.js'
 import { useGeneralForm } from '../general-form.js'
-import { FirstGoalOnly, MachineApplicationChoice } from './OccurrenceChoice.jsx'
+import { FirstGoalOnly, MachineApplicationChoice, RunsAgain } from './OccurrenceChoice.jsx'
 import MachineReport, { machineRuleList } from './MachineReport.jsx'
 import BoundRule from './BoundRule.jsx'
 import RulePanel from './RulePanel.jsx'
 import { StepState, markedTextOf, typesetMachine } from './ProofState.jsx'
+import SequentSide, { isSequentSide } from './SequentSide.jsx'
 
 const stepsByProof = new WeakMap()
 /** A run's steps by their place in its tree of candidates (../../core/proof-tree.js). */
@@ -50,12 +51,13 @@ function playedClass(node, ctx) {
   return last?.reason === 'position-missing' ? 'is-skipped is-unplaced' : 'is-skipped'
 }
 
-/** Whether a card stands inside a search frame, where a backward card with no goal picked works on the first goal
- *  alone (../../core/machine.js search). */
-function inSearchBody(level, board, node) {
+/** The operations of the frames a card stands in: in a search frame a backward card with no goal picked works on the
+ *  first goal alone; a repeat or search frame runs it again (../../core/machine.js search, repeat). */
+function framesAround(level, board, node) {
   const tree = frameTree(board.nodes)
-  return (tree.ancestors(node.in) ?? []).some((region) => level.partDefs?.[tree.node(region.slice(0, region.lastIndexOf('/')))?.type]?.op === 'logic/search')
+  return new Set((tree.ancestors(node.in) ?? []).map((region) => level.partDefs?.[tree.node(region.slice(0, region.lastIndexOf('/')))?.type]?.op))
 }
+const RUN_AGAIN = ['logic/search', 'logic/repeat']
 
 export const machineScreen = {
   course: (game) => game.logic.machineBoards,
@@ -68,20 +70,25 @@ export const machineScreen = {
   useRunOptions: useMachineRunOptions,
   context: (task, _test, run, options) => ({ task, text: machineTextOf(task), term: machineTermOf(task), ruleSlots: run?.ruleSlots, autoFirst: options.autoFirst }),
   settingControls: (task) => ({
-    select: (props) => /^logic\/(rewriteOccurrences|backwardPositions)\(/.test(props.setting.from ?? '')
+    select: (props) => /^logic\/(rewriteOccurrences|backwardPositions|forwardPositions)\(/.test(props.setting.from ?? '')
       ? createElement(MachineApplicationChoice, {
         ...props,
-        rewrite: props.setting.from.startsWith('logic/rewriteOccurrences('),
+        direction: props.setting.from.startsWith('logic/rewriteOccurrences(') ? 'rewrite' : props.setting.from.startsWith('logic/forwardPositions(') ? 'forward' : 'backward',
         text: markedTextOf(task),
       })
-      : null,
+      : isSequentSide(props.setting) ? createElement(SequentSide, props) : null,
   }),
   partsPanel: RulePanel,
   // A rule-bound card leads every face with its rule: picked on the card and in its detail, read on a phone tile.
-  partFace: (task, _test, run, { autoFirst }) => (drawn, { slot, node, ctx, set }) => {
+  partFace: (task, _test, run, { autoFirst }) => (drawn, { def, slot, node, ctx, set }) => {
     // Inside a built part the card belongs to the task that built it.
     const level = ctx.path.length ? ctx.board.level : task
     const card = directCardsOf(level).get(node.type)
+    // A part that works on one side of ⊢ (simp, cnf) shows that side on its phone tile as on its card.
+    if (!card && slot === 'tileExtra' && def && !def.views?.tile) {
+      const side = settingsOf(def).find(isSequentSide)
+      if (side) return createElement('div', { className: 'pf-face is-tile' }, createElement(SequentSide, { setting: side, value: node.params?.at, readOnly: true }))
+    }
     if (!card) return drawn
     // On a phone tile a card that still lacks its rule or its position says so in place of a state.
     if (slot === 'thumb') {
@@ -93,7 +100,9 @@ export const machineScreen = {
       return own ? createElement(StepState, { before: wire && ctx.view.values.get(wire.from), value, text: markedTextOf(level) }) : drawn
     }
     const rule = createElement(BoundRule, { card, node, unpicked: defaultBoundRule(card, { autoFirst }), task: level, run: ctx.path.length ? null : run, set: slot === 'tileExtra' ? null : set, open: slot === 'detail' })
-    return createElement(FirstGoalOnly.Provider, { value: inSearchBody(level, ctx.board.circuit, node) }, rule, drawn)
+    const frames = framesAround(level, ctx.board.circuit, node)
+    return createElement(FirstGoalOnly.Provider, { value: frames.has('logic/search') },
+      createElement(RunsAgain.Provider, { value: RUN_AGAIN.some((op) => frames.has(op)) }, rule, drawn))
   },
   // A preset (a level's locked cards) stays on the board whatever is saved.
   ready: (board, task) => withPreset(board, presetFor(task)),

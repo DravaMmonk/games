@@ -5,16 +5,15 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { checkIso, declaredRules, derives, follows } from '../core/iso.js'
 import { auditCaseProblems, restoreAuditCases, runAudit } from '../core/audit-cases.js'
-import { ASSUMPTION_RULE, parseSide, ruleOf, ruleText } from '../core/schematic.js'
+import { ASSUMPTION_RULE, parseSide, ruleOf, ruleText, unify } from '../core/schematic.js'
 import { checkDefine } from '../core/define.js'
 import { failureText } from '../../../games/kit/engine/failure-text.js'
 import { checkDeclaration, linesOf, premiseChips, problemsOf, readRuleRows } from '../core/ruleLines.js'
-import { runOutputTests } from '../../../games/kit/engine/test-run.js'
 import { bin, parse, same, show, subst, substMany, tvar } from '../core/formula.js'
 import { render } from '../core/notation.js'
-import { didText, machineGeneralNotation, machineReadout } from '../core/circuit-readouts.js'
+import { didText, machineGeneralNotation, machineReadout, stepExplained } from '../core/circuit-readouts.js'
 import { countermodel, countermodelSearch, holds } from '../core/models.js'
-import { BACKWARD_POSITIONS, MACHINE_BOARD, MACHINE_TESTS, REWRITE_CHOICES, RULE_CHOICES, RULE_DEFINITION, boardRules, defaultBoundRule, directCardsOf, inputsOfLevel, machineConfigurationCases, machinePositionCases, rulePartOf, runMachine } from '../core/machine.js'
+import { BACKWARD_POSITIONS, MACHINE_BOARD, REWRITE_CHOICES, RULE_CHOICES, boardRules, defaultBoundRule, directCardsOf, inputsOfLevel, machineConfigurationCases, machinePositionCases, runMachine } from '../core/machine.js'
 import { compileParts } from 'circuit'
 import { OPS } from '../core/ops.js'
 import { OPTIONS, PROOF_BOARD, RULES, lemmaGives, proved, runProof } from '../core/proof.js'
@@ -24,19 +23,24 @@ import { validate } from '../core/validate.js'
 
 test('proof inputs have a goal label while specialised inputs keep their names', () => {
   assert.deepEqual(inputsOfLevel({}), [{ name: 'in', label: { zh: '目标', en: 'Goal' } }])
-  const inputs = [{ name: 'in', label: { zh: '子句', en: 'Clauses' } }, { name: 'rules', label: { zh: '规则', en: 'Rules' } }]
+  const inputs = [{ name: 'in', label: { zh: '子句', en: 'Clauses' } }, { name: 'extra', label: { zh: '额外输入', en: 'Extra input' } }]
   assert.deepEqual(inputsOfLevel({ inputs }), inputs)
 })
 
 // Proofs use the operation fixtures together with their local lemmas.
 const proofParts = (lemmas) => ({ ...PROOF_BOARD.FIXED_PARTS, ...partsOf(logicParts, lemmas).PARTS })
 const run = (level, circuit) => runProof({ parts: proofParts(level.lemmas), ...level }, circuit)
-// A machine runs on the tactic and loop fixtures and supplies its rule parts separately.
+// A machine runs on the tactic and loop fixtures and the task's bound cards.
 const defined = partsOf(logicParts)
 const MACHINE_ONLY = Object.fromEntries(Object.entries(defined.PARTS).filter(([type]) => ['logic/tactic', 'logic/loop'].includes(defined.defs[type].family)))
-const RULE_ENGINE = compileParts({ rules: RULE_DEFINITION }, OPS).PARTS.rules
-const machineParts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? MACHINE_ONLY[type] ?? RULE_ENGINE
-const onMachine = (level) => ({ parts: machineParts, ...level })
+const machineParts = (type) => MACHINE_BOARD.FIXED_PARTS[type] ?? MACHINE_ONLY[type]
+const onMachine = (fields) => {
+  const task = { directRuleCards: true, ...fields }
+  const { PARTS } = compileParts(Object.fromEntries([...directCardsOf(task)].map(([type, card]) => [type, card.definition])), OPS)
+  task.parts = type => PARTS[type] ?? machineParts(type)
+  return task
+}
+const CITE = 'logic/directBackward-logic_assumption'
 
 /* ---------- boards written short ---------- */
 
@@ -61,32 +65,6 @@ const machine = (nodes, wires, { inputs = ['in'] } = {}) => ({
   nodes: [...inputs.map((name) => ({ id: name, type: 'in', params: { name } })), ...cardsOf(nodes, MACHINE_ONLY), { id: 'out', type: 'out', params: { name: 'out' } }],
   wires: wiresOf(wires),
 })
-/** A machine board whose cards name their rules (`rule`, `rewrite`: keys of the level's books, comma-separated), as
- *  the player wires them: a chain of rule parts into the card's port `rules`, keys one part gives in a row one part. */
-function wireRules(circuit, level) {
-  const nodes = []
-  const wires = [...circuit.wires]
-  for (const n of circuit.nodes) {
-    const keys = ['rule', 'rewrite'].flatMap((k) => String(n.params?.[k] ?? '').split(',').filter(Boolean))
-    if (!keys.length) { nodes.push(n); continue }
-    nodes.push({ ...n, params: {} })
-    let prev = null
-    keys.forEach((key, i) => {
-      const at = rulePartOf(level, key)
-      const last = nodes.at(-1)
-      if (at.use && last.id === prev && last.type === at.type) {
-        last.params.use = [...last.params.use, key]
-        return
-      }
-      const id = `${n.id}r${i}`
-      nodes.push({ id, type: at.type, params: at.use ? { use: at.use } : {}, ...(n.in ? { in: n.in } : {}) })
-      if (prev) wires.push({ from: prev, to: id, port: 'before' })
-      prev = id
-    })
-    wires.push({ from: prev, to: n.id, port: 'rules' })
-  }
-  return { ...circuit, nodes, wires }
-}
 /** A declaration of ways each needing these sentences (a sentence needed under others: [sentence, …those]). */
 const declaration = (...ways) => ways.map((needs) => ({ binds: [], needs }))
 /** A lemma's shape as a course proves it (course.js lemmaProofs): the proof task (`schema` in letters, its title, its
@@ -477,29 +455,29 @@ test('a search does not follow a step that gives nothing new, so using givens ag
   assert.equal(lost.found.length + Number(lost.stopped), 0)
 })
 
-test('a machine backtracks once its level says so, and a search finds every answer to a question', async () => {
-  const script = machine({ a: ['rule', { rule: 'exI' }], b: ['rule', { rule: 'conjI' }], c: ['rule', { rule: 'assumption' }], d: ['rule', { rule: 'assumption' }] }, ['in>a.in', 'a>b.in', 'b>c.in', 'c>d.in', 'd>out'])
+test('a machine backtracks once its level says so, and a search finds every answer to a question', () => {
+  const board = machine({
+    a: ['logic/directBackward-exI'], b: ['logic/directBackward-andI'], c: [CITE], d: [CITE],
+  }, ['in>a', 'a>b', 'b>c', 'c>d', 'd>out'])
   const test1 = { goal: '∃x. Human(x) ∧ Likes(x, ann)', hyps: ['Human(cy)', 'Human(bo)', 'Likes(bo, ann)'] }
-  const level = { kind: 'logic/machine', want: 'logic/proved', tests: [test1] }
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine(level), wireRules(script, level)).pass, false)
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine({ ...level, backtrack: true }), wireRules(script, level)).pass, true)
-  const ask = {
+  const level = onMachine({ kind: 'logic/machine', want: 'logic/proved', tests: [test1] })
+  assert.equal(runMachine(level, board).pass, false)
+  assert.equal(runMachine({ ...level, backtrack: true }, board).pass, true)
+  const ask = onMachine({
     kind: 'logic/machine', want: 'logic/answers', backtrack: true,
     rules: { grand: { name: { zh: '祖父母', en: 'Grandparent' }, premises: ['Parent(?x, ?y)', 'Parent(?y, ?z)'], conclusion: 'Grand(?x, ?z)' } },
     tests: [{ goal: 'Grand(ann, ?w)', hyps: ['Parent(ann, bo)', 'Parent(bo, cy)', 'Parent(bo, dee)'], answers: ['cy', 'dee'] }],
-  }
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine(ask), wireRules(machine({ g: ['rule', { rule: 'grand' }], a: ['rule', { rule: 'assumption' }], b: ['rule', { rule: 'assumption' }] }, ['in>g.in', 'g>a.in', 'a>b.in', 'b>out']), ask)).pass, true)
-  // A card wired a list of rules uses the first that applies.
-  const either = wireRules(machine({ g: ['rule', { rule: 'conjI,grand' }], a: ['rule', { rule: 'assumption' }], b: ['rule', { rule: 'assumption' }] }, ['in>g.in', 'g>a.in', 'a>b.in', 'b>out']), ask)
-  assert.equal(either.nodes.filter((n) => n.type === 'grand' || n.type === 'andI').length, 2)
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine(ask), either).pass, true)
+  })
+  const query = machine({ g: ['logic/directBackward-grand'], a: [CITE], b: [CITE] }, ['in>g', 'g>a', 'a>b', 'b>out'])
+  assert.equal(runMachine(ask, query).pass, true)
 })
 
 test('ordinary wires retain each alternative for a later proof step', () => {
   const level = onMachine({ kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain ∨ Wind', hyps: ['Wind'] }] })
-  const board = wireRules(machine({
-    left: ['rule', { rule: 'disjI1' }], right: ['rule', { rule: 'disjI2' }], join: ['append'], finish: ['rule', { rule: 'assumption' }],
-  }, ['in>left', 'in>right', 'left>join.first', 'right>join.second', 'join>finish', 'finish>out']), level)
+  const board = machine({
+    left: ['logic/directBackward-orI', { use: ['disjI1'] }], right: ['logic/directBackward-orI', { use: ['disjI2'] }],
+    join: ['append'], finish: [CITE],
+  }, ['in>left', 'in>right', 'left>join.first', 'right>join.second', 'join>finish', 'finish>out'])
   const junction = board.nodes.find(({ id }) => id === 'join')
   assert.deepEqual(machineParts('append').inputs(junction), ['first', 'second'])
   assert.deepEqual(machineParts('append').inputs({ ...junction, params: { ways: '3' } }), ['first', 'second', 'third'])
@@ -528,9 +506,16 @@ test('ordinary wires retain each alternative for a later proof step', () => {
 
 test('a search report follows the successful path through separate rounds', () => {
   const level = onMachine({ kind: 'logic/machine', want: 'logic/proved', backtrack: true, tests: [{ goal: 'Rain ∨ Wind', hyps: ['Wind'] }] })
-  const board = wireRules(machine({
-    search: ['search', { depth: 3 }], step: ['rule', { rule: 'assumption,disjI1,disjI2' }, 'search'],
-  }, ['in>search.in', 'search#body>step.in', 'step>search.body', 'search>out']), level)
+  const board = machine({
+    search: ['search', { depth: 3 }],
+    left: ['logic/directBackward-orI', { use: ['disjI1'] }, 'search'],
+    right: ['logic/directBackward-orI', { use: ['disjI2'] }, 'search'],
+    cite: [CITE, {}, 'search'],
+    join: ['append', { ways: '3' }, 'search'],
+  }, [
+    'in>search', 'search#body>left', 'search#body>right', 'search#body>cite',
+    'left>join.first', 'right>join.second', 'cite>join.third', 'join>search.body', 'search>out',
+  ])
   const report = runMachine(level, board, { traced: true })
   assert.equal(report.pass, true)
   const { trace } = report.runs[0]
@@ -551,7 +536,7 @@ test('a search report follows the successful path through separate rounds', () =
 
 test('search prunes a round with sentence metavariables in goals or hypotheses', () => {
   const level = onMachine({
-    kind: 'logic/machine', want: 'logic/proved', backtrack: true, directRuleCards: true,
+    kind: 'logic/machine', want: 'logic/proved', backtrack: true,
     tests: [
       { goal: '?P(a) → (Rain → Rain)', want: 'logic/fails' },
       { goal: 'Human(?w) → (Rain → Rain)' },
@@ -560,21 +545,18 @@ test('search prunes a round with sentence metavariables in goals or hypotheses',
       { goal: 'Rain', hyps: ['Rain ∧ Wet', 'Wind'] },
     ],
   })
-  const board = wireRules(machine({
+  const board = machine({
     search: ['search'],
-    intro: ['rule', { rule: 'impI' }, 'search'],
+    intro: ['logic/directBackward-impI', {}, 'search'],
     elim: ['logic/directBackward-andE', { use: ['conjE'] }, 'search'],
-    cite: ['logic/directBackward-logic_assumption', {}, 'search'],
+    cite: [CITE, {}, 'search'],
     join: ['append', { ways: '3' }, 'search'],
-    finish: ['logic/directBackward-logic_assumption', {}, 'search'],
+    finish: [CITE, {}, 'search'],
   }, [
     'in>search', 'search#body>intro', 'search#body>elim', 'elim>cite',
     'search#body>finish', 'intro>join.first', 'cite>join.second', 'finish>join.third',
     'join>search.body', 'search>out',
-  ]), level)
-  const cards = directCardsOf(level)
-  const { PARTS } = compileParts(Object.fromEntries([...cards].map(([type, card]) => [type, card.definition])), OPS)
-  level.parts = type => PARTS[type] ?? machineParts(type)
+  ])
 
   const report = runMachine(level, board, { traced: true })
   assert.equal(report.pass, true)
@@ -591,17 +573,15 @@ test('search prunes a round with sentence metavariables in goals or hypotheses',
 
 test('search limits unpinned backward cards to the first goal and honors explicit later targets', () => {
   const level = onMachine({
-    kind: 'logic/machine', want: 'logic/fails', backtrack: true, directRuleCards: true,
+    kind: 'logic/machine', want: 'logic/fails', backtrack: true,
     tests: [{ goal: 'Rain ∧ (Wind → Slip)' }],
   })
   const open = 'logic/directBackward-impI'
-  const { PARTS } = compileParts({ [open]: directCardsOf(level).get(open).definition }, OPS)
-  level.parts = type => PARTS[type] ?? machineParts(type)
-  const board = wireRules(machine({
-    split: ['rule', { rule: 'conjI' }],
+  const board = machine({
+    split: ['logic/directBackward-andI'],
     search: ['search'],
     open: [open, {}, 'search'],
-  }, ['in>split', 'split>search', 'search#body>open', 'open>search.body', 'search>out']), level)
+  }, ['in>split', 'split>search', 'search#body>open', 'open>search.body', 'search>out'])
   const node = board.nodes.find(node => node.id === 'open')
   const opening = task => runMachine(task, board, { traced: true }).runs[0].trace.find(step => step.id === 'open')
   const skipped = opening(level)
@@ -616,15 +596,15 @@ test('search limits unpinned backward cards to the first goal and honors explici
   assert.deepEqual(selected.value.goals.map(g => show(g.goal)), ['Rain', 'Slip'])
   assert.deepEqual(selected.value.goals[1].hyps.map(show), ['Wind'])
 
-  const outside = wireRules(machine({
-    split: ['rule', { rule: 'conjI' }], open: [open],
-  }, ['in>split', 'split>open', 'open>out']), level)
+  const outside = machine({
+    split: ['logic/directBackward-andI'], open: [open],
+  }, ['in>split', 'split>open', 'open>out'])
   const straight = { ...level, want: 'logic/becomes', tests: [{ ...level.tests[0], becomes: [['Rain', 'Wind ⊢ Slip']] }] }
   assert.equal(runMachine(straight, outside).pass, true)
 })
 
 test('the hypothesis rule closes only a goal with a matching given and retains every match', () => {
-  const board = machine({ fact: ['logic/assumption'], use: ['rule'] }, ['in>use.in', 'fact>use.rules', 'use>out'])
+  const board = machine({ use: [CITE] }, ['in>use', 'use>out'])
   const task = { kind: 'logic/machine', want: 'logic/answers', backtrack: true, tests: [
     { goal: 'Human(?w)', hyps: ['Human(ann)', 'Human(bo)'], answers: ['ann', 'bo'] },
   ] }
@@ -639,19 +619,20 @@ test('a machine uses the same evaluation for its playback and the final board', 
   const evaluated = []
   const task = onMachine({
     kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }],
-    parts(type) {
-      const part = machineParts(type)
-      if (type !== 'rule') return part
-      return {
-        ...part,
-        eval(ins, node, ctx, key) {
-          evaluated.push(node.id)
-          return part.eval(ins, node, ctx, key)
-        },
-      }
-    },
   })
-  const board = wireRules(machine({ spare: ['rule', { rule: 'assumption' }], end: ['rule', { rule: 'assumption' }] }, ['in>spare.in', 'in>end.in', 'end>out']), task)
+  const parts = task.parts
+  task.parts = type => {
+    const part = parts(type)
+    if (type !== CITE) return part
+    return {
+      ...part,
+      eval(ins, node, ctx, key) {
+        evaluated.push(node.id)
+        return part.eval(ins, node, ctx, key)
+      },
+    }
+  }
+  const board = machine({ spare: [CITE], end: [CITE] }, ['in>spare', 'in>end', 'end>out'])
   const report = runMachine(task, board, { traced: true })
   assert.equal(report.pass, true)
   assert.deepEqual(evaluated, ['end', 'spare'])
@@ -662,7 +643,7 @@ test('a machine uses the same evaluation for its playback and the final board', 
 
 test('a proof machine must meet its card budget after its cases pass', () => {
   const task = { kind: 'logic/machine', want: 'logic/proved', tests: [{ goal: 'Rain', hyps: ['Rain'] }] }
-  const board = wireRules(machine({ a: ['rule', { rule: 'assumption' }] }, ['in>a.in', 'a>out']), task)
+  const board = machine({ a: [CITE] }, ['in>a', 'a>out'])
   assert.equal(runMachine(onMachine({ ...task, budget: 1 }), board).pass, true)
   const report = runMachine(onMachine({ ...task, budget: 0 }), board)
   assert.deepEqual(report.runs.map((run) => run.pass), [true])
@@ -740,7 +721,7 @@ test('a rewrite card defaults to a unique match in a given and reports that targ
     kind: 'logic/machine', want: 'logic/becomes', defs: ['f(x) = x'],
     tests: [{ goal: 'R(a)', hyps: ['P(a)', 'Q(f(a))'], becomes: [['P(a); Q(a) ⊢ R(a)']] }],
   })
-  const board = wireRules(machine({ change: ['rw', { rewrite: 'def.0' }] }, ['in>change', 'change>out']), task)
+  const board = machine({ change: ['logic/directRewrite-math'] }, ['in>change', 'change>out'])
   const report = runMachine(task, board)
   assert.equal(report.pass, true)
   assert.equal(report.runs[0].values.get('change').did.op, 'rwHyps')
@@ -807,8 +788,6 @@ test('the direct equivalence card ignores term equations and rewrites one goal o
   assert.deepEqual(choices[1].statements, [{ left: 'C[B]', right: 'C[A]', conditions: ['A ↔ B'] }])
   assert.equal(card.direction, 'rewrite')
   assert.equal(card.defaultRule, null)
-  const backward = directCardsOf(level).get('logic/directBackward-qed_iffSubst')
-  assert.deepEqual(backward.entries[0].statements, [{ conclusion: 'C[B]', premises: ['A ↔ B', 'C[A]'], fixes: [] }])
   const generic = RULE_CHOICES.run([], {}, { task: level, node: { type: 'logic/directRewrite-logic_hyp' } })
   assert.match(generic[0].label, /C\[s\].*C\[t\].*C\[A\].*C\[B\]/)
   const compiled = compileParts({ [type]: card.definition }, OPS).PARTS
@@ -846,7 +825,7 @@ test('a direct rewrite uses only the first rule in an older multi-rule selection
   const change = board.nodes.find(({ id }) => id === 'change')
   board.nodes.push({ ...change, id: 'other', params: { use: ['dneg.intro'] } })
   let order = ['change', 'other']
-  const slots = () => boardRules(level, board, undefined, order)
+  const slots = () => boardRules(level, board, order)
   const keys = () => slots().map(({ entry }) => entry.key)
   const markOptions = (id) => RULE_CHOICES.run([], {}, {
     task: level, node: { id, type }, ruleSlots: slots(),
@@ -978,7 +957,7 @@ test('identical rule formulas share a number across different rule keys', () => 
     duplicate: ['logic/directBackward-duplicate'],
     reverse: ['logic/directBackward-reverse'],
   }, [])
-  const ruleSlots = boardRules(level, board, undefined, ['duplicate', 'reverse', 'first'])
+  const ruleSlots = boardRules(level, board, ['duplicate', 'reverse', 'first'])
   assert.deepEqual(ruleSlots.map(({ entry }) => entry.key), ['duplicate', 'reverse'])
   assert.equal(didText({ op: 'rule', rules: ['first', 'duplicate'] }, { ruleSlots }), '⊢₁ ⟵ R₁')
 })
@@ -1131,7 +1110,7 @@ test('bound apply, elimination, cut and proved lemmas leave metavariables that c
   }
 })
 
-test('given equations and equivalences have forward and backward substitution cards', () => {
+test('given equations and equivalences only generate direct rewrite cards', () => {
   const name = { en: 'Substitution', zh: '代换' }
   const level = {
     kind: 'logic/machine', directRuleCards: true, want: 'logic/becomes',
@@ -1139,12 +1118,13 @@ test('given equations and equivalences have forward and backward substitution ca
     proofOperations: { equality: ['logic/rewrite'], equivalence: ['logic/iffSubst'] },
   }
   const cards = directCardsOf(level)
+  for (const source of ['equality', 'equivalence']) {
+    assert.deepEqual([...cards.values()].filter(card => card.source === source).map(card => card.direction), ['rewrite'])
+  }
   const { PARTS } = compileParts(Object.fromEntries([...cards].map(([type, card]) => [type, card.definition])), OPS)
   level.parts = name => PARTS[name] ?? machineParts(name)
   for (const [type, key, goal, hyps, becomes] of [
-    ['directBackward-equality', 'hyp.eq', 'P(y)', ['x = y'], 'x = y ⊢ P(x)'],
     ['directRewrite-equality', 'hyp.eq', 'P(x)', ['x = y'], 'x = y ⊢ P(y)'],
-    ['directBackward-equivalence', 'hyp.iff', 'Wet', ['Rain ↔ Wet'], 'Rain ↔ Wet ⊢ Rain'],
     ['directRewrite-equivalence', 'hyp.iff', 'Rain', ['Rain ↔ Wet'], 'Rain ↔ Wet ⊢ Wet'],
     ['directRewrite-equality', 'hyp.eq', '∀x. P(x)', ['x = y'], 'x = y ⊢ ∀x. P(x)'],
   ]) {
@@ -1220,11 +1200,6 @@ test('backward rules preview and apply to a selected goal without moving the oth
     assert.equal(run.outputs.out.error, undefined)
     assert.deepEqual(run.outputs.out.goals, run.values.get('split').goals)
   }
-
-  const wired = wireRules(machine({ split: [split], open: ['rule', { rule: 'impI' }] }, ['in>split', 'split>open', 'open>out']), level)
-  assert.deepEqual(runMachine(level, wired).runs.map(run => run.pass), [false, false])
-  wired.nodes.find(node => node.id === 'open').params.at = 'goal-1'
-  assert.equal(runMachine(level, wired).pass, true)
 })
 
 test('a backward card uses the first bound rule only with autoFirst when no rule is selected', () => {
@@ -1274,9 +1249,23 @@ test('a declaration gives its rules, and induction read off a goal proves an equ
   const rules = Object.fromEntries(datatypeRules('nat', 'zero | s(nat)').map((r) => [r.key, ruleText(r)]))
   assert.deepEqual(Object.keys(rules), ['nat.distinct1', 'nat.distinct2', 'nat.exhaust', 'nat.induct'])
   assert.equal(rules['nat.induct'], '⟦?P(zero); (⋀x. ⟦?P(x)⟧ ⟹ ?P(s(x)))⟧ ⟹ ∀x. ?P(x)')
-  const level = { kind: 'logic/machine', want: 'logic/proved', datatypes: { nat: 'zero | s(nat)' }, defs: ['plus(zero, y) = y', 'plus(s(x), y) = s(plus(x, y))'], tests: [{ goal: '∀x. plus(x, zero) = x' }] }
-  const byInduction = machine({ i: ['rule', { rule: 'nat.induct' }], e: ['each'], p: ['repeat', {}, 'e'], s: ['rw', { rewrite: 'def.0,def.1,hyp' }, 'p'], r: ['rule', { rule: 'refl' }, 'e'] }, ['in>i.in', 'i>e.in', 'e#body>p.in', 'p#body>s.in', 's>p.body', 'p>r.in', 'r>e.body', 'e>out'])
-  assert.equal(runOutputTests(MACHINE_TESTS, onMachine(level), wireRules(byInduction, level)).pass, true)
+  const level = onMachine({
+    kind: 'logic/machine', want: 'logic/proved', datatypes: { nat: 'zero | s(nat)' },
+    defs: ['plus(zero, y) = y', 'plus(s(x), y) = s(plus(x, y))'],
+    tests: [{ goal: '∀x. plus(x, zero) = x' }],
+  })
+  const byInduction = machine({
+    i: ['logic/directBackward-math', { use: ['nat.induct'] }],
+    e: ['each'], p: ['repeat', {}, 'e'],
+    zero: ['logic/directRewrite-math', { use: ['def.0'] }, 'p'],
+    succ: ['logic/directRewrite-math', { use: ['def.1'] }, 'p'],
+    hyp: ['logic/directRewrite-logic_hyp', { use: ['hyp'] }, 'p'],
+    r: ['logic/directBackward-refl', {}, 'e'],
+  }, [
+    'in>i', 'i>e', 'e#body>p', 'p#body>zero', 'zero>succ', 'succ>hyp', 'hyp>p.body',
+    'p>r', 'r>e.body', 'e>out',
+  ])
+  assert.equal(runMachine(level, byInduction).pass, true)
 })
 
 test('clauses: split from a goal turned round, saturated with unification, and the certificate replayed', async () => {
@@ -1538,4 +1527,172 @@ test('written and authored rule rows use the same premises and binder', () => {
   const unavailable = judge(readRuleRows(level, declaration(['Snow'])))
   assert.deepEqual(unavailable.at, { row: 0, slot: 0 })
   assert.match(unavailable.why.en, /not on offer: P:Snow/)
+})
+
+function bindMachineCards(task) {
+  const cards = directCardsOf(task)
+  const { PARTS } = compileParts(Object.fromEntries([...cards].map(([type, card]) => [type, card.definition])), OPS)
+  task.parts = type => PARTS[type] ?? machineParts(type)
+  return cards
+}
+
+test('forward cards project only eligible rule shapes and keep the three variants in order', () => {
+  const law = { name: { en: 'Law', zh: '定律' }, metas: ['A', 'B'], forms: [
+    { key: 'elim', label: '', statement: 'A', premises: ['¬¬A'] },
+    { key: 'intro', label: '', statement: '¬¬A', premises: ['A'] },
+    { key: 'duplicate', label: '', statement: 'B', premises: ['¬¬B'] },
+  ] }
+  const level = { directRuleCards: true, lemmas: { law }, rules: {
+    given: { name: 'Local', premises: ['P'], conclusion: 'Q' },
+    axiom: { name: 'Axiom', premises: [], conclusion: 'P' },
+  }, withheldRuleChoices: new Set(['mp.use=mp', 'andE.use=conjE', 'allE.use=spec']) }
+  const cards = directCardsOf(level)
+  for (const [source, keys] of Object.entries({
+    mp: ['mp'], andE: ['conjE'], allE: ['spec'], orE: ['disjE'], exE: ['exE'], botE: ['botE'],
+    raa: ['raa'], andI: ['conjI'], orI: ['disjI1', 'disjI2'], exI: ['exI'], given: ['given'],
+  })) {
+    const card = cards.get(`logic/directForward-${source}`)
+    assert.equal(card.direction, 'forward')
+    assert.equal(card.definition.op, 'logic/directForward')
+    assert.ok(card.definition.name.en.startsWith('\\mark{forward} '))
+    assert.deepEqual(card.entries.map(entry => entry.key), keys)
+    assert.equal(card.defaultRule, keys.length === 1 ? keys[0] : null)
+  }
+  for (const source of ['impI', 'allI', 'refl', 'logic_assumption', 'axiom']) {
+    assert.ok(!cards.has(`logic/directForward-${source}`))
+  }
+  assert.deepEqual([...cards.values()].filter(card => card.source === 'law').map(card => card.direction),
+    ['backward', 'forward', 'rewrite'])
+  assert.deepEqual(cards.get('logic/directForward-law').entries.map(entry => entry.key), ['law.elim', 'law.intro'])
+})
+
+test('forward application adds givens, skips a missing premise or duplicate, and can pin the major given', () => {
+  const type = 'logic/directForward-mp'
+  const level = { directRuleCards: true, want: 'logic/becomes', tests: [
+    { goal: 'Goal', hyps: ['P → Q', 'R → S', 'P', 'R', 'Q'], becomes: [['P → Q; R → S; P; R; Q; S ⊢ Goal']] },
+    { goal: 'Goal', hyps: ['P → Q'], becomes: [['P → Q ⊢ Goal']] },
+    { goal: 'Goal', hyps: ['P → Q', 'P', 'Q'], becomes: [['P → Q; P; Q ⊢ Goal']] },
+  ] }
+  bindMachineCards(level)
+  const board = machine({ step: [type] }, ['in>step', 'step>out'])
+  const node = board.nodes.find(node => node.id === 'step')
+  const report = runMachine(level, board, { traced: true })
+  assert.equal(report.pass, true)
+  const cases = report.runs.map(run => [run.values.get('in')])
+  assert.deepEqual(report.runs.map(run => [run.trace[0].status, run.trace[0].reason]), [
+    ['applied', undefined], ['skipped', 'rule-mismatch'], ['skipped', 'nothing-new'],
+  ])
+  assert.deepEqual(report.runs[0].trace[0].diff.addedHyps, [{ goalIndex: 0, hyp: 5 }])
+  const [applied, ...skipped] = report.runs
+  const { zh, en } = stepExplained(applied.trace[0], applied)
+  assert.match(zh, /R₁/)
+  assert.match(en, /R₁/)
+  assert.notEqual(zh, en)
+  for (const run of skipped) assert.equal(stepExplained(run.trace[0], run), null)
+  assert.deepEqual(machinePositionCases(level, node, cases).map(({ value, cases }) => [value, cases.map(c => c.exists)]),
+    [['hyp-1', [true, false, false]]])
+  assert.deepEqual(machineConfigurationCases(level, node, cases), cases.map(() => ({ pending: false, reason: null })))
+  node.params.at = 'hyp-0'
+  const pinned = runMachine(level, board, { traced: true }).runs[0]
+  assert.equal(pinned.trace[0].reason, 'position-missing')
+  assert.deepEqual(pinned.values.get('in').goals, pinned.outputs.out.goals)
+  node.params.at = 'hyp-1'
+  assert.equal(runMachine(level, board, { traced: true }).runs[0].pass, true)
+})
+
+test('forward position previews and backtracking keep all combinations under the same pin', () => {
+  const type = 'logic/directForward-mp'
+  const level = { directRuleCards: true, want: 'logic/proved', backtrack: true, tests: [
+    { goal: 'Goal', hyps: ['∀x. P(x) → Q(x)', 'P(i)', 'P(j)', 'P(k)'] },
+  ] }
+  bindMachineCards(level)
+  const board = machine({ spec: ['logic/directForward-allE'], step: [type, { at: 'hyp-4' }] },
+    ['in>spec', 'spec>step', 'step>out'])
+  const node = board.nodes.find(node => node.id === 'step')
+  const run = runMachine(level, board, { traced: true }).runs[0]
+  const input = [run.values.get('spec')]
+  const [header, ...choices] = OPS['logic/forwardPositions'].run(input, {}, { task: level, node })
+  assert.equal(header.defaultAt, 'hyp-4')
+  assert.deepEqual(choices.map(c => [c.value, c.indices, c.isDefault, show(c.addedHyps[0].hyps[0])]), [
+    ['hyp-4', [4, 1], true, 'Q(i)'], ['hyp-4', [4, 2], false, 'Q(j)'], ['hyp-4', [4, 3], false, 'Q(k)'],
+  ])
+  assert.deepEqual(machinePositionCases(level, node, [input])[0].cases[0].choices, choices)
+  assert.deepEqual([run.outputs.out, ...run.outputs.out.more].map(result => result.goals), choices.map(choice => choice.result))
+  const first = runMachine({ ...level, backtrack: false }, board).runs[0].outputs.out
+  assert.equal(first.more, undefined)
+  assert.deepEqual(first.goals, choices[0].result)
+})
+
+test('forward matching reads plain premises after a box and resolves patterns jointly', () => {
+  const level = { directRuleCards: true, want: 'logic/becomes', rules: {
+    scoped: { name: 'Scoped', premises: ['⟦Guard⟧ ⟹ Pending', '?P(?t)', '∀x. ?P(x)', 'Anchor(?t)'], conclusion: 'Done(?t)' },
+  }, tests: [{ goal: 'Goal', hyps: ['P(i)', '∀x. P(x)', 'Anchor(i)'],
+    becomes: [['P(i); ∀x. P(x); Anchor(i); Guard ⊢ Pending', 'P(i); ∀x. P(x); Anchor(i); Done(i) ⊢ Goal']] }] }
+  bindMachineCards(level)
+  const board = machine({ f: ['logic/directForward-scoped'] }, ['in>f', 'f>out'])
+  const run = runMachine(level, board, { traced: true }).runs[0]
+  assert.equal(run.pass, true)
+  assert.deepEqual(run.trace[0].value.did.givens, [0, 1, 2])
+  assert.deepEqual(run.trace[0].diff.addedHyps, [{ goalIndex: 0, hyp: 3 }, { goalIndex: 1, hyp: 3 }])
+})
+
+test('forward elimination replaces the first goal in place and handles duplicate context and closure', () => {
+  const level = { directRuleCards: true, want: 'logic/becomes', tests: [
+    { goal: 'Goal ∧ Tail', hyps: ['P ∨ Q'], becomes: [['P ∨ Q; P ⊢ Goal', 'P ∨ Q; Q ⊢ Goal', 'P ∨ Q ⊢ Tail']] },
+    { goal: 'Goal ∧ Tail', hyps: ['P ∨ Q', 'P'], becomes: [['P ∨ Q; P ⊢ Goal', 'P ∨ Q; P ⊢ Tail']] },
+    { goal: 'Goal ∧ Tail', hyps: ['⊥'], becomes: [['⊥ ⊢ Tail']] },
+  ] }
+  bindMachineCards(level)
+  const board = machine({
+    split: ['logic/directBackward-andI'], cases: ['logic/directForward-orE'], close: ['logic/directForward-botE'],
+  }, ['in>split', 'split>cases', 'cases>close', 'close>out'])
+  const report = runMachine(level, board, { traced: true })
+  assert.equal(report.pass, true)
+  const step = (index, id) => report.runs[index].trace.find(entry => entry.id === id)
+  assert.deepEqual(step(0, 'cases').diff.addedHyps, [{ goalIndex: 0, hyp: 1 }, { goalIndex: 1, hyp: 1 }])
+  assert.equal(step(1, 'cases').reason, 'nothing-new')
+  assert.deepEqual(step(2, 'close').diff.closed, [0])
+  assert.deepEqual(step(2, 'close').diff.addedHyps, [])
+})
+
+test('forward novelty ignores renamed unknowns and consistently renamed fresh witnesses', () => {
+  const level = { directRuleCards: true, want: 'logic/becomes', tests: [
+    { goal: 'Goal', hyps: ['∀x. P(x)'], becomes: [['∀x. P(x); P(?t) ⊢ Goal']] },
+    { goal: 'Goal', hyps: ['∃x. Pair(x, x)', 'Pair(k, k)'], becomes: [['∃x. Pair(x, x); Pair(k, k) ⊢ Goal']] },
+    { goal: 'Goal', hyps: ['∃x. Pair(x, x)', 'Pair(a, k)'], becomes: [['⋀b. ∃x. Pair(x, x); Pair(a, k); Pair(b, b) ⊢ Goal']] },
+    { goal: 'Goal', hyps: ['∀x. P(x, x)', 'P(?t, ?u)'], becomes: [['∀x. P(x, x); P(?t, ?u); P(?v, ?v) ⊢ Goal']] },
+  ] }
+  bindMachineCards(level)
+  const board = machine({
+    loop: ['repeat'], spec: ['logic/directForward-allE', {}, 'loop'], witness: ['logic/directForward-exE', {}, 'loop'],
+  }, ['in>loop.in', 'loop#body>spec', 'spec>witness', 'witness>loop.body', 'loop>out'])
+  const report = runMachine(level, board, { traced: true })
+  assert.equal(report.pass, true)
+  assert.ok(report.runs[0].trace.some(step => step.id === 'spec' && step.reason === 'nothing-new'))
+  assert.ok(report.runs[1].trace.some(step => step.id === 'witness' && step.reason === 'nothing-new'))
+})
+
+test('forward sentence unknowns survive search while rule selection is still required', () => {
+  const type = 'logic/directForward-orI'
+  const level = { directRuleCards: true, want: 'logic/proved', backtrack: true, tests: [{ goal: 'P ∨ Q', hyps: ['P'] }] }
+  bindMachineCards(level)
+  const board = machine({
+    search: ['search', { depth: '2' }], derive: [type, {}, 'search'],
+    cite: ['logic/directBackward-logic_assumption', {}, 'search'], join: ['append', {}, 'search'],
+  }, ['in>search.in', 'search#body>derive', 'search#body>cite', 'cite>join.first', 'derive>join.second', 'join>search.body', 'search>out'])
+  const node = board.nodes.find(node => node.id === 'derive')
+  assert.deepEqual(machineConfigurationCases(level, node, [[]]), [{ pending: true, reason: 'rule-required' }])
+  assert.equal(runMachine(level, board).pass, false)
+  node.params.use = ['disjI1']
+  assert.equal(runMachine(level, board).pass, true)
+})
+
+test('a forward match cannot fill an older unknown through a newer alias outside its scope', () => {
+  const older = parseSide('?t')
+  const alias = parseSide('?u')
+  const witness = parseSide('a')
+  const { σ } = unify([[older, alias]])
+  const scopes = { '?t': [], '?u': ['a'] }
+  assert.ok(unify([[alias, witness]], σ, { scopes, fixed: ['a'] }).fail)
+  assert.equal(unify([[alias, witness]], σ, { scopes: { ...scopes, '?t': ['a'] }, fixed: ['a'] }).fail, undefined)
 })

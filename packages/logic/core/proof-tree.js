@@ -19,7 +19,7 @@ export function machineEvents(trace) {
   for (const entry of trace) {
     if (entry.flow) { flows.add(keyOf(entry)); continue }
     const flow = !entry.inner && !entry.proof && flows.delete(keyOf(entry))
-    if (flow || entry.forwarding || entry.value?.kind === 'rules' || entry.error === MISSING) entry.free = true
+    if (flow || entry.forwarding || entry.error === MISSING) entry.free = true
     events.push(entry)
   }
   return events

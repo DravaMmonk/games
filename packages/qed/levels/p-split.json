@@ -13,27 +13,22 @@
   "tasks": [
     {
       "id": "p-split-1",
-      "kind": "logic/translate",
+      "kind": "logic/iso",
       "step": "@level.p-split.tasks.p-split-1.step",
       "brief": "@level.p-split.tasks.p-split-1.brief",
       "say": "@level.p-split.tasks.p-split-1.say",
-      "target": "((∀x. Bird(x)) → (∀x. Flies(x))) → (∀x. Bird(x) → Flies(x))",
       "hint": [
         "@level.p-split.tasks.p-split-1.hint.0"
       ],
-      "decoys": []
+      "play": "logic/rule",
+      "sentences": ["(∀x. Bird(x)) → (∀x. Flies(x))", "∀x. Bird(x) → Flies(x)"],
+      "rule": { "premises": ["(∀x. Bird(x)) → (∀x. Flies(x))"], "conclusion": "∀x. Bird(x) → Flies(x)" }
     },
     {
       "id": "p-split-2",
       "kind": "logic/model",
       "step": "@level.p-split.tasks.p-split-2.step",
-      "translationFrom": "p-split-1",
-      "say": "@level.p-split.tasks.p-split-2.say",
       "brief": "@level.p-split.tasks.p-split-2.brief",
-      "given": [
-        "(∀x. Bird(x)) → (∀x. Flies(x))"
-      ],
-      "goal": "∀x. Bird(x) → Flies(x)",
       "answer": {
         "size": 2,
         "preds": {
@@ -44,7 +39,8 @@
       },
       "hint": [
         "@level.p-split.tasks.p-split-2.hint.0"
-      ]
+      ],
+      "ruleFrom": "p-split-1"
     }
   ]
 }

@@ -1,7 +1,8 @@
 {
   "title": "@level.sp-repeat.title",
   "adds": ["repeat"],
-  "tray": "machine",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.sp-repeat.intro.0.t"
@@ -11,59 +12,41 @@
     {
       "id": "sp-repeat",
       "kind": "logic/machine",
-      "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.sp-repeat.tasks.sp-repeat.inputs.0.label"
-        }
-      ],
-      "backtrack": true,
-      "tests": [
-        {
-          "goal": "¬¬Rain",
-          "becomes": [
-            [
-              "Rain"
-            ]
-          ]
-        },
-        {
-          "goal": "¬¬Rain ∧ ¬¬Wind",
-          "becomes": [
-            [
-              "Rain ∧ Wind"
-            ]
-          ]
-        },
-        {
-          "goal": "¬¬(¬¬Rain ∨ ¬¬¬¬Wind)",
-          "becomes": [
-            [
-              "Rain ∨ Wind"
-            ]
-          ]
-        }
-      ],
+      "want": "logic/proved",
+      "budget": 3,
       "brief": "@level.sp-repeat.tasks.sp-repeat.brief",
       "hint": [
         "@level.sp-repeat.tasks.sp-repeat.hint.0"
       ],
+      "tests": [
+        {
+          "goal": "Rain",
+          "hyps": ["Rain ↔ Wet", "Wet"]
+        },
+        {
+          "goal": "Rain ∧ (Wind → Rain)",
+          "hyps": ["Rain ↔ Wet", "Wet ∧ (Wind → Wet)"]
+        },
+        {
+          "goal": "(Rain ∨ Slip) ∧ (Rain → (Wind ∧ Rain))",
+          "hyps": ["Rain ↔ Wet", "(Wet ∨ Slip) ∧ (Wet → (Wind ∧ Wet))"]
+        },
+        { "goal": "Wind", "hyps": ["Wind"] }
+      ],
       "solution": [
-        "c0 = repeat(in, body: c1) {",
+        "c0 = repeat(in, body: s1) {",
         "  body {",
-        "    c1r0 = dneg[use=[\"dneg.elim\"]]()",
-        "    c1 = rw(c0.body, c1r0)",
+        "    s1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](c0.body)",
         "  }",
         "}",
-        "out <- c0"
+        "cite = logic/directBackward-logic_assumption(c0)",
+        "out <- cite"
       ],
       "naive": [
-        "c0r0 = dneg[use=[\"dneg.elim\"]]()",
-        "c1r0 = dneg[use=[\"dneg.elim\"]]()",
-        "c0 = rw(in, c0r0)",
-        "c1 = rw(c0, c1r0)",
-        "out <- c1"
+        "t1 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](in)",
+        "t2 = logic/directRewrite-qed_iffSubst[use=[\"hyp.iff\"],at=goal-0](t1)",
+        "t3 = logic/directBackward-logic_assumption(t2)",
+        "out <- t3"
       ]
     }
   ]

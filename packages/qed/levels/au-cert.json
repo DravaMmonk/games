@@ -15,14 +15,8 @@
     {
       "id": "au-cert-1",
       "kind": "logic/machine",
-      "tray": "machine",
+      "tray": "prover",
       "want": "logic/refuted",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-cert.tasks.au-cert-1.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "step": "@level.au-cert.tasks.au-cert-1.step",
       "tests": [

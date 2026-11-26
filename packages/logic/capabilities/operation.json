@@ -405,24 +405,6 @@
         "fields": {}
       }
     },
-    "rule": {
-      "about": "@capability.operation.items.rule.about",
-      "args": [
-        {
-          "name": "in",
-          "type": "logic/machine-value"
-        },
-        {
-          "name": "rules",
-          "type": "logic/machine-value"
-        }
-      ],
-      "returns": "logic/machine-value",
-      "params": {
-        "type": "obj",
-        "fields": { "at": { "type": "str", "control": "select", "optional": true } }
-      }
-    },
     "directBackward": {
       "about": "@capability.operation.items.directBackward.about",
       "args": [
@@ -435,6 +417,18 @@
       "params": {
         "type": "obj",
         "fields": { "at": { "type": "str", "control": "select", "optional": true } }
+      }
+    },
+    "directForward": {
+      "about": "@capability.operation.items.directForward.about",
+      "args": [{ "name": "in", "type": "logic/machine-value" }],
+      "returns": "logic/machine-value",
+      "params": {
+        "type": "obj",
+        "fields": {
+          "use": { "type": "list", "of": { "type": "str" }, "optional": true },
+          "at": { "type": "str", "control": "select", "optional": true }
+        }
       }
     },
     "directRewrite": {
@@ -561,31 +555,6 @@
         "fields": {}
       }
     },
-    "rw": {
-      "about": "@capability.operation.items.rw.about",
-      "args": [
-        {
-          "name": "in",
-          "type": "logic/machine-value"
-        },
-        {
-          "name": "rules",
-          "type": "logic/machine-value"
-        }
-      ],
-      "returns": "logic/machine-value",
-      "params": {
-        "type": "obj",
-        "fields": {
-          "at": {
-            "type": "str",
-            "control": "select",
-            "optional": true,
-            "default": "goal"
-          }
-        }
-      }
-    },
     "skolem": {
       "about": "@capability.operation.items.skolem.about",
       "args": [
@@ -667,30 +636,6 @@
         "fields": {}
       }
     },
-    "rules": {
-      "about": "@capability.operation.items.rules.about",
-      "args": [
-        {
-          "name": "before",
-          "type": "logic/machine-value"
-        }
-      ],
-      "returns": "logic/machine-value",
-      "params": {
-        "type": "obj",
-        "fields": {
-          "use": {
-            "type": "list",
-            "of": {
-              "type": "str"
-            },
-            "control": "list",
-            "optional": true,
-            "default": []
-          }
-        }
-      }
-    },
     "names": {
       "args": [],
       "returns": "logic/options",
@@ -755,8 +700,7 @@
     "rewriteOccurrences": {
       "about": "@capability.operation.items.rewriteOccurrences.about",
       "args": [
-        { "name": "in", "type": "logic/machine-value" },
-        { "name": "rules", "type": "logic/machine-value", "optional": true }
+        { "name": "in", "type": "logic/machine-value" }
       ],
       "returns": "logic/options",
       "params": { "type": "obj", "fields": {} }
@@ -764,9 +708,14 @@
     "backwardPositions": {
       "about": "@capability.operation.items.backwardPositions.about",
       "args": [
-        { "name": "in", "type": "logic/machine-value" },
-        { "name": "rules", "type": "logic/machine-value", "optional": true }
+        { "name": "in", "type": "logic/machine-value" }
       ],
+      "returns": "logic/options",
+      "params": { "type": "obj", "fields": {} }
+    },
+    "forwardPositions": {
+      "about": "@capability.operation.items.forwardPositions.about",
+      "args": [{ "name": "in", "type": "logic/machine-value" }],
       "returns": "logic/options",
       "params": { "type": "obj", "fields": {} }
     },

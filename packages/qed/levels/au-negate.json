@@ -1,6 +1,7 @@
 {
   "title": "@level.au-negate.title",
-  "tray": "machine",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.au-negate.intro.0.t"
@@ -11,13 +12,10 @@
       "id": "au-negate",
       "kind": "logic/machine",
       "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.au-negate.tasks.au-negate.inputs.0.label"
-        }
+      "brief": "@level.au-negate.tasks.au-negate.brief",
+      "hint": [
+        "@level.au-negate.tasks.au-negate.hint.0"
       ],
-      "backtrack": true,
       "tests": [
         {
           "goal": "Wet",
@@ -52,21 +50,14 @@
           ]
         }
       ],
-      "brief": "@level.au-negate.tasks.au-negate.brief",
-      "hint": [
-        "@level.au-negate.tasks.au-negate.hint.0"
-      ],
       "solution": [
-        "c0r0 = raa()",
-        "c1r0 = impI()",
-        "c0 = rule(in, c0r0)",
-        "c1 = rule(c0, c1r0)",
-        "out <- c1"
+        "a = logic/directBackward-qed_raa(in)",
+        "b = logic/directBackward-qed_impI(a)",
+        "out <- b"
       ],
       "naive": [
-        "c0r0 = raa()",
-        "c0 = rule(in, c0r0)",
-        "out <- c0"
+        "a = logic/directBackward-qed_raa(in)",
+        "out <- a"
       ]
     }
   ]

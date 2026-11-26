@@ -2,11 +2,11 @@
   "kind": "requires",
   "edges": [
     {
-      "from": "sp-nnf",
-      "to": "sp-cnf"
+      "from": "au-iff",
+      "to": "sp-nnf"
     },
     {
-      "from": "sp-cnf",
+      "from": "sp-nnf",
       "to": "sp-order"
     }
   ]

@@ -5,7 +5,6 @@ import { say } from './notation.js'
 import { cases, inOrder, property } from 'kernel'
 import { builtWorld, claimIn, MAX_WORLD } from './fol.js'
 import { atom, parse } from './formula.js'
-import { fixedLine } from './sentenceLanguage.js'
 
 const MARKS = ['①', '②', '③', '④']
 
@@ -30,7 +29,7 @@ function describe(model, notation, preds, world, spell, lang) {
   // A named world's things are their own names: only other names need saying.
   const consts = Object.entries(model.fns).filter(([c, m]) => m.has('') && !world?.things.includes(c)).map(([c, m]) => `${L(notation.words?.[c] ?? c)} = ${name(m.get(''))}`)
   return [
-    { text: L(T("这个世界有 {length} 样东西：", {length: model.domain.length, value: model.domain.length === 1 ? '' : 's'})), strong: model.domain.map(name).join(punctuation("、", lang)) },
+    { text: L(T("这种情形包含 {length} 样东西：", {length: model.domain.length, value: model.domain.length === 1 ? '' : 's'})), strong: model.domain.map(name).join(punctuation("、", lang)) },
     ...(consts.length ? [{ text: consts.join(punctuation("；", lang)) }] : []),
     { text: atoms.length ? atoms.join(punctuation("；", lang)) : L(T('什么都不成立。')) },
     ...(missing.length && atoms.length ? [{ text: L(T('不成立：')) + missing.join(punctuation("；", lang)), muted: true }] : []),
@@ -50,24 +49,32 @@ export function worldDescription(model, notation, preds, { world = null, spell =
 const truth = (value) => value ? T("真", {}, "world-values") : T("假", {}, "world-values")
 const isWorld = (work) => work !== null && typeof work === 'object' && !Array.isArray(work) && Number.isInteger(work.size) && work.size >= 1
 const worldShape = inOrder(
-  property(isWorld, () => ({ why: T("这不是一个世界。") })),
-  property((work) => work.size <= MAX_WORLD, () => ({ why: T("这个世界里的东西太多。") })),
+  property(isWorld, () => ({ why: T("请输入有效的情形设定。") })),
+  property((work) => work.size <= MAX_WORLD, () => ({ why: T("这种情形包含的东西太多。") })),
 )
 
 export function worldCheck(level) {
-  const { notation, vocab } = level
+  const { vocab } = level
+  const notation = { symbols: [], ...level.notation }
   const read = (value) => parse(value, { consts: vocab.names })
-  const strip = (value, key) => fixedLine(read(value), notation, key)
   const words = (value) => say(read(value), notation)
+  const name = (k) => level.given.length > 1 ? T('前提 {k}', { k: k + 1 }) : T('前提')
+  const board = level.meant ? null : {
+    className: 'lg-rule-table',
+    rows: [
+      { name: T('结论'), head: true, slots: [{ text: words(level.goal) }] },
+      { name: T('前提'), slots: level.given.map((f) => ({ text: words(f) })), empty: T('无需前提') },
+    ],
+  }
   const reason = (row) => {
     if (level.meant) {
       const value = truth(row.value)
-      return T("在这个世界里，两份译文都为{zh}：真假一致。", {zh: { zh: String(value.zh), en: String(value.en) }})
+      return T("在这种情形下，两份译文都为{zh}。", {zh: { zh: String(value.zh), en: String(value.en) }})
     }
     const sentence = words(row.f)
     return row.premise
-      ? T("前提「{zh}」在这个世界里不成立。", {zh: { zh: String(sentence.zh), en: String(sentence.en) }})
-      : T("结论「{zh}」在这个世界里也成立，这个世界不是反例。", {zh: { zh: String(sentence.zh), en: String(sentence.en) }})
+      ? T("前提「{zh}」在这种情形下不成立。", {zh: { zh: String(sentence.zh), en: String(sentence.en) }})
+      : T("结论「{zh}」在这种情形下仍然成立，无法构成反例。", {zh: { zh: String(sentence.zh), en: String(sentence.en) }})
   }
   const judgeClaims = (world, { rows }) => cases(rows, (_, row) => row.right
     ? null
@@ -79,21 +86,25 @@ export function worldCheck(level) {
     const found = claimIn(level, world)
     const fail = judgeClaims(world, found)
     const steps = found.rows.slice(0, fail ? fail.check + 1 : undefined).map((_, k) => k === fail?.check ? { failed: fail.why } : {})
-    const lines = found.rows.map((row, k) => ({ strip: strip(row.f, `s${k}`), text: truth(row.value), right: row.right, step: k }))
-    if (level.meant) lines.unshift({ strip: strip(level.meant, 'meant'), text: truth(found.meant), right: true, step: 0 })
-    else lines[lines.length - 1].separator = true
+    const lines = found.rows.map((row, k) => ({
+      name: level.meant ? T('待检验译文') : row.premise ? name(k) : T('结论'),
+      formula: level.meant ? words(row.f) : null,
+      expected: level.meant ? null : truth(row.premise),
+      text: truth(row.value), right: row.right, step: k,
+    }))
+    if (level.meant) lines.unshift({ name: T('原意'), formula: words(level.meant), text: truth(found.meant), step: 0 })
     return { fail, run: { steps, lines } }
   }
   return {
     judge,
     initial: { size: Math.min(2, MAX_WORLD), preds: {}, consts: {} },
-    prompt: level.say,
+    prompt: level.say, board,
     report,
     run: world => report(world).run,
     fields: (world, change) => {
       const valid = !worldShape(world)
       const sizes = {
-        key: 'size', name: T('东西的数目'), before: T('这个世界有'), after: T('样东西'),
+        name: T('东西的数目'),
         cells: Array.from({ length: MAX_WORLD }, (_, k) => ({
           key: k, on: valid && world.size === k + 1, text: k + 1,
           change: () => change(valid ? { ...world, size: k + 1 } : { size: k + 1, preds: {}, consts: {} }),
@@ -110,7 +121,7 @@ export function worldCheck(level) {
       const relation = (p, ...args) => {
         const key = args.join(',')
         const on = model.preds[p].has(key)
-        const old = world.preds[p] ?? []
+        const old = world.preds?.[p] ?? []
         return {
           key, on, text: args.map((k) => MARKS[k]).join(''), title: args.length > 1 ? wordOf(p, args.map((k) => MARKS[k])) : null,
           change: () => put('preds', { ...world.preds, [p]: on ? old.filter((x) => x !== key) : [...old, key] }),
@@ -118,24 +129,21 @@ export function worldCheck(level) {
       }
       return [
         sizes,
-        ...vocab.consts.map((c) => {
-          const name = notation.words?.[c] ?? { zh: c, en: c }
-          return {
-            key: `constant:${c}`, before: T("{zh} =", {zh: { zh: String(name.zh), en: String(name.en ?? name.zh) }}),
-            cells: model.domain.map((k) => ({ key: k, on: model.fns[c].get('') === k, text: MARKS[k], change: () => put('consts', { ...world.consts, [c]: k }) })),
-          }
-        }),
+        ...vocab.consts.map((c) => ({
+          name: notation.words?.[c] ?? c,
+          cells: model.domain.map((k) => ({ key: k, on: model.fns[c].get('') === k, text: MARKS[k], change: () => put('consts', { ...world.consts, [c]: k }) })),
+        })),
         ...vocab.preds.map(([p, arity]) => {
           if (arity === 0) return {
-            key: `predicate:${p}`, cells: [{ key: p, on: model.preds[p], text: say(atom(p), notation), change: () => put('preds', { ...world.preds, [p]: !world.preds[p] }) }],
+            name: say(atom(p), notation), cells: [{ key: p, on: model.preds[p], text: truth(model.preds[p]), change: () => put('preds', { ...world.preds, [p]: !model.preds[p] }) }],
           }
-          const before = wordOf(p, Array(arity).fill('…'))
-          if (arity === 1) return { key: `predicate:${p}`, before, cells: model.domain.map((k) => relation(p, k)) }
-          return { key: `predicate:${p}`, before, grid: model.domain.map((a) => model.domain.map((b) => relation(p, a, b))) }
+          const name = wordOf(p, Array(arity).fill('…'))
+          if (arity === 1) return { name, cells: model.domain.map((k) => relation(p, k)) }
+          return { name, grid: model.domain.map((a) => model.domain.map((b) => relation(p, a, b))) }
         }),
       ]
     },
     go: T('运行'), done: T('找到反例'),
-    passed: level.meant ? T('在这个世界里，译文和原意真假不同：这个世界是反例。') : T('前提都成立，结论不成立：这个世界是反例。'),
+    passed: level.meant ? T('在这种情形下，译文和原意真假不同。这种情形就是反例。') : T('前提都为真，结论为假。这种情形就是反例。'),
   }
 }

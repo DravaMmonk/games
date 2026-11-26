@@ -1,7 +1,6 @@
 {
   "title": "@tag.machine-reasoning.title",
   "values": [
-    "rule",
     "logic/assumption",
     "auto"
   ]

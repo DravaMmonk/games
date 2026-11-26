@@ -17,7 +17,18 @@
     "#proof-equivalences",
     "append",
     "repeat",
-    "search"
+    "search",
+    "auto",
+    "simp",
+    "cnf",
+    "skolem",
+    "toClauses",
+    "clausify",
+    "resolve",
+    "saturate",
+    "replay",
+    "oracle",
+    "metis"
   ],
   "menus": []
 }

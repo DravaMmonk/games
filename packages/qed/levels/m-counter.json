@@ -18,28 +18,23 @@
   "tasks": [
     {
       "id": "m-counter-1",
-      "kind": "logic/translate",
+      "kind": "logic/iso",
       "step": "@level.m-counter.tasks.m-counter-1.step",
       "brief": "@level.m-counter.tasks.m-counter-1.brief",
       "say": "@level.m-counter.tasks.m-counter-1.say",
-      "target": "(∀x. Human(x) → Mortal(x)) ∧ Mortal(h) → Human(h)",
       "hint": [
         "@level.m-counter.tasks.m-counter-1.hint.0"
       ],
-      "decoys": []
+      "play": "logic/rule",
+      "things": ["h"],
+      "sentences": ["∀x. Human(x) → Mortal(x)", "Mortal(h)", "Human(h)"],
+      "rule": { "premises": ["∀x. Human(x) → Mortal(x)", "Mortal(h)"], "conclusion": "Human(h)" }
     },
     {
       "id": "m-counter-2",
       "kind": "logic/model",
       "step": "@level.m-counter.tasks.m-counter-2.step",
-      "translationFrom": "m-counter-1",
-      "say": "@level.m-counter.tasks.m-counter-2.say",
       "brief": "@level.m-counter.tasks.m-counter-2.brief",
-      "given": [
-        "∀x. Human(x) → Mortal(x)",
-        "Mortal(h)"
-      ],
-      "goal": "Human(h)",
       "answer": {
         "size": 1,
         "preds": {
@@ -61,7 +56,8 @@
         {
           "t": "@level.m-counter.tasks.m-counter-2.intro.1.t"
         }
-      ]
+      ],
+      "ruleFrom": "m-counter-1"
     }
   ]
 }

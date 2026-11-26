@@ -86,9 +86,8 @@ const fail = (text) => new OperationError(text)
 /**
  * A region run on its own, as a function: a frame that runs its region again and again (a loop, a search, one item of a
  * list at a time) calls it with the value the region opens with and gets back what reaches the region's result. The
- * cards in the region run; from outside it a card may read only what the frame opens and constants: a card with no
- * frame whose every input is a constant (a card with no inputs at all), or a board input the run names constant
- * (ctx.constants, by name). ctx is the frame's (engine/circuit.js: ctx.graph the board, ctx.engine its parts).
+ * cards in the region run. From outside, a card may read what the frame opens and constants. A constant is a card
+ * without a frame whose inputs all come from constants, including a card with no inputs.
  * Returns run(value, quiet) → the result; quiet keeps the cards' steps out of a traced run.
  */
 export function runRegion(node, ctx, region) {
@@ -108,8 +107,8 @@ export function runRegion(node, ctx, region) {
     if (constants.has(id)) return true
     const n = tree.node(id)
     const part = n && partOf(n.type)
-    if (!part || part.frames) return false
-    const fixed = part.source ? Boolean(ctx.constants?.includes(n.params?.name)) : graph.wires.filter((w) => w.to === id).every((w) => constant(srcNode(w.from)))
+    if (!part || part.frames || part.source) return false
+    const fixed = graph.wires.filter((w) => w.to === id).every((w) => constant(srcNode(w.from)))
     if (fixed) constants.add(id)
     return fixed
   }

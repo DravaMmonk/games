@@ -1,8 +1,21 @@
-import { Fragment, useMemo } from 'react'
-import { Strip } from 'sentence/view'
+import { useMemo } from 'react'
 import { CheckScenario } from './Checks.jsx'
+import { Formula } from '../ui/Formula.jsx'
 import { translationStatements } from '../ui/translation.js'
-import { L, T, Markup, RunDock, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
+import { T } from 'kernel/words'
+import { L, Markup, RowTable, RuleRows, RunDock, Verdict, usePlayback, PlayLayout, useSavedWork } from 'kernel/view'
+
+function worldColumns(inference, shown) {
+  return [
+    { key: 'name', label: T('检查项'), align: 'start', cell: (row) => L(row.name) },
+    inference
+      ? { key: 'expected', label: T('预期'), cell: (row) => L(row.expected) }
+      : { key: 'formula', label: T('公式'), align: 'start', cell: (row) => <Formula text={row.formula} /> },
+    { key: 'result', label: T('真值'), cell: (row) => shown > row.step
+      ? <span className={row.right === undefined ? undefined : row.right ? 'ck-right' : 'ck-wrong'}>{L(row.text)}</span>
+      : '—' },
+  ]
+}
 
 /** Write a scenario, then play it against the given works. */
 export default function ScenarioCheck({ screen, resource, play }) {
@@ -27,18 +40,12 @@ export default function ScenarioCheck({ screen, resource, play }) {
   const stage = (
     <div className={play.stage}>
       {resource.prompt && <p className="fo-say fo-prompt"><Markup text={resource.prompt} /></p>}
-      <section className="ck-scenarios">
-        {lines.map(({ strip, text, right, step, separator }, k) => (
-          <Fragment key={k}>
-            {separator && <hr className="ck-scenario-line" />}
-            <div className={`ck-scenario-row ${shown.at === step ? 'is-step' : ''}`}>
-              <Strip line={strip} label={T("句子")} />
-              {shown.list.length > step && <span className={right ? 'ck-right' : 'ck-wrong'}>{L(text)}</span>}
-            </div>
-          </Fragment>
-        ))}
-      </section>
+      {resource.board && <RuleRows {...resource.board} />}
       <CheckScenario fields={resource.fields(work, change)} />
+      <div className="ck ck-world">
+        <RowTable rows={lines} columns={worldColumns(resource.board, shown.list.length)}
+          rowClass={(k) => shown.at === lines[k].step ? 'is-on' : ''} />
+      </div>
     </div>
   )
   const results = verdict ? <Verdict pass={passed} compact>{verdict}</Verdict> : null

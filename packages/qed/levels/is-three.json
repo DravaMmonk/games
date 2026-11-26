@@ -1,6 +1,6 @@
 {
   "title": "@level.is-three.title",
-  "tray": "machine",
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.is-three.intro.0.t"
@@ -12,12 +12,6 @@
       "id": "is-three",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.is-three.tasks.is-three.inputs.0.label"
-        }
-      ],
       "backtrack": true,
       "tests": [
         {

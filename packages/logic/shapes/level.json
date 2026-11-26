@@ -1066,6 +1066,10 @@
                 "type": "text",
                 "optional": true
               },
+              "say": {
+                "type": "text",
+                "optional": true
+              },
               "words": {
                 "type": "list",
                 "of": {
@@ -2157,6 +2161,11 @@
                 "section": "read",
                 "optional": true
               },
+              "ruleFrom": {
+                "type": "task",
+                "section": "read",
+                "optional": true
+              },
               "words": {
                 "type": "list",
                 "of": {
@@ -2515,13 +2524,6 @@
                       },
                       "optional": true
                     },
-                    "rules": {
-                      "type": "list",
-                      "of": {
-                        "type": "str"
-                      },
-                      "optional": true
-                    },
                     "clauses": {
                       "type": "list",
                       "of": {
@@ -2580,13 +2582,6 @@
                         "of": {
                           "type": "str"
                         }
-                      },
-                      "optional": true
-                    },
-                    "rules": {
-                      "type": "list",
-                      "of": {
-                        "type": "str"
                       },
                       "optional": true
                     },

@@ -1,4 +1,5 @@
 import { SentenceRow, TreeButton, TreeList } from 'sentence/view'
+import { T } from 'kernel/words'
 import { Formula } from '../ui/Formula.jsx'
 import { ChoiceField, Field, InlineChoice, RowTable, Verdict, L } from 'kernel/view'
 
@@ -59,20 +60,18 @@ export function CheckScenario({ fields }) {
   const pick = (cell) => (
     <button key={cell.key} type="button" aria-pressed={cell.on} onClick={cell.change} title={L(cell.title)}>{L(cell.text)}</button>
   )
+  const columns = [
+    { key: 'name', label: T('情形设定'), align: 'start', cell: (field) => L(field.name) },
+    { key: 'value', label: T('取值'), align: 'start', cell: ({ name, cells, grid }) => (
+      <div role="group" aria-label={L(name)}>
+        {grid
+          ? <table className="ck-grid"><tbody>{grid.map((row, k) => <tr key={k}>{row.map((cell) => <td key={cell.key}>{pick(cell)}</td>)}</tr>)}</tbody></table>
+          : <span className="ck-scenario-cells">{cells.map(pick)}</span>}
+      </div>
+    ) },
+  ]
   return (
-    <section className="ck-scenario">
-      {fields.map(({ key, name, before, after, cells, grid }) => (
-        <div key={key} className="ck-field" role={name ? 'group' : undefined} aria-label={L(name)}>
-          {before && <span className={grid ? 'ck-grid-label' : undefined}>{L(before)}</span>}
-          {grid
-            ? <div className="kit-table-scroll">
-              <table className="ck-grid"><tbody>{grid.map((row, k) => <tr key={k}>{row.map((cell) => <td key={cell.key}>{pick(cell)}</td>)}</tr>)}</tbody></table>
-            </div>
-            : <span className="ck-scenario-cells">{cells.map(pick)}</span>}
-          {after && <span>{L(after)}</span>}
-        </div>
-      ))}
-    </section>
+    <div className="ck ck-world ck-world-settings"><RowTable rows={fields} columns={columns} /></div>
   )
 }
 

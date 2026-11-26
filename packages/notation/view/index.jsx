@@ -11,6 +11,7 @@ const paths = {
   'implies': 'M2 8h12m-4-4 4 4-4 4',
   'left': 'M14 8H2m4-4L2 8l4 4',
   'backward': 'M15 8H1m4-4L1 8l4 4',
+  'forward': 'M1 8h14m-4-4 4 4-4 4',
   'iff': 'M2 8h12M5 5 2 8l3 3m6-6 3 3-3 3',
   'entails': 'M1 6h11M1 10h11M10 3l5 5-5 5',
   'maps-to': 'M2 5v6m0-3h12m-4-4 4 4-4 4',

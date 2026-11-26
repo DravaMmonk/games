@@ -83,7 +83,7 @@ export function metasIn(x, out = new Set()) {
   return out
 }
 // The names of things in a side, free (a variable bound inside it is left out).
-function namesIn(x, out = new Set(), bound = new Set()) {
+export function namesIn(x, out = new Set(), bound = new Set()) {
   if (isTerm(x)) {
     if (x.t === 'var') { if (!bound.has(x.name)) out.add(x.name) } else { if (!x.args.length) out.add(x.f); x.args.forEach((a) => namesIn(a, out, bound)) }
     return out
@@ -280,7 +280,16 @@ export function unify(pairs, σ = {}, opts = {}) {
   const late = UNIFY_RULES.check(set.eqs, opts)
   if (late) return { fail: late.fail }
   const found = solutionOf(set.eqs)
-  return { σ: { ...Object.fromEntries(Object.entries(σ).map(([k, v]) => [k, instantiate(v, found)])), ...found } }
+  const composed = { ...Object.fromEntries(Object.entries(σ).map(([k, v]) => [k, instantiate(v, found)])), ...found }
+  // Filling an alias in a later step must also respect the original variable's scope.
+  if (opts.fixed?.length) {
+    for (const [name, side] of Object.entries(composed)) {
+      const variable = side.t ? tvar(name) : meta(name)
+      const why = blocked({ s: variable, t: side, bound: [] }, name, side, opts)
+      if (why) return { fail: why }
+    }
+  }
+  return { σ: composed }
 }
 
 /* ---------- rules ---------- */

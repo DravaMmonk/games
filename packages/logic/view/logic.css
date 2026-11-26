@@ -70,6 +70,9 @@
 .lg-application-result.is-pending .lg-occurrence:not(:disabled, [aria-disabled='true']) .lg-occurrence-frame::before { border: 1px dashed var(--accent-ink); background: color-mix(in srgb, var(--accent) 8%, transparent); }
 :is(.node.is-selected, .cl-sheet) .lg-application-result .lg-occurrence:not(:disabled, [aria-disabled='true'], [aria-pressed='true']):hover .lg-occurrence-frame::before,
 .lg-application-result.is-pending .lg-occurrence:not(:disabled, [aria-disabled='true']):hover .lg-occurrence-frame::before { background: color-mix(in srgb, var(--accent) 20%, transparent); }
+/* The place an unpicked card acts on in a frame that runs it again: the change it makes, dashed once it can be picked. */
+.lg-application-result .lg-occurrence.is-auto .lg-occurrence-frame::before,
+:is(.node.is-selected, .cl-sheet) .lg-application-result .lg-occurrence.is-auto .lg-occurrence-frame::before { background: color-mix(in srgb, var(--accent) 20%, transparent); }
 .lg-application-result .lg-occurrence:focus-visible { outline: 0; }
 .lg-application-result .lg-occurrence:focus-visible .lg-occurrence-frame::before { outline: 2px solid var(--accent-ink); outline-offset: 1px; }
 /* Words between boxes keep clear of the frames, and a sheet's lines stand far enough apart for a finger: the touch
@@ -123,19 +126,15 @@
 .ck-goal .tx-line { text-align: center; }
 
 /* A scenario as a player-written check. */
-.ck-scenarios { display: grid; gap: var(--sp-4); }
-.ck-scenario-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--sp-4); border-radius: var(--r-md); }
-.ck-scenario-row .ks-strip { margin: 0; }
-.ck-scenario-row.is-step { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); }
-.ck-scenario-line { margin: var(--sp-1) 0; border: 0; border-top: 1.5px solid var(--ink); }
-.ck-scenario { display: grid; gap: var(--sp-5); padding: var(--sp-5) var(--sp-6); border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hairline); }
-.ck-field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); font-size: 13.5px; }
-.ck-grid-label { min-width: 7em; color: var(--muted); }
-.ck-scenario-cells { display: flex; gap: var(--sp-3); }
-.ck-scenario button { min-width: 36px; height: 34px; padding: 0 var(--sp-4); border: 0; border-radius: var(--r-md); color: var(--muted); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: 14px var(--sans); cursor: pointer; }
-.ck-scenario button[aria-pressed='true'] { color: var(--paper); background: var(--accent); box-shadow: none; }
+.ck-world .rt-table { width: 100%; }
+.ck-scenario-cells { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.ck-world-settings button { min-width: 36px; min-height: 34px; padding: 0 var(--sp-3); border: 0; border-radius: var(--r-md); color: var(--ink); background: var(--canvas); box-shadow: inset 0 0 0 1px var(--line); font: inherit; cursor: pointer; }
+.ck-world-settings button[aria-pressed='true'] { color: var(--ink); background: color-mix(in srgb, var(--accent) 22%, var(--paper)); box-shadow: inset 0 0 0 1px var(--accent); }
+@media (pointer: coarse) {
+  .ck-world-settings button { min-width: 44px; min-height: 44px; }
+}
 .ck-grid { border-collapse: separate; border-spacing: 4px; }
-.ck-grid td { padding: 0; }
+.rt-table .ck-grid td { padding: 0; border: 0; }
 
 /* Scope board formula metrics to the game so the same settings reach its portalled sheets and popovers. */
 :is(.lg-machine-level, .lg-proof-level, .game:has(.lg-machine-level, .lg-proof-level)) { --formula-inline-padding: var(--sp-2); }
@@ -173,7 +172,7 @@
 .mr-rules { list-style: none; min-width: 0; max-block-size: 3lh; overflow: auto; scrollbar-width: thin; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-5); }
 .wb-above-dock .mr-rules { display: grid; gap: 0; max-block-size: none; overflow: visible; }
 .mr-rules li { color: var(--ink); }
-.mr-flow { --mr-box-width: 240px; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
+.mr-flow { --mr-box-width: 360px; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
 .mr.is-phone .mr-flow { --mr-box-width: 100%; }
 .mr-box { display: grid; align-content: center; justify-self: center; inline-size: max-content; min-inline-size: min(var(--mr-box-width), 100%); max-inline-size: 100%; overflow: auto; scrollbar-width: thin; text-align: start; border: 1px solid var(--hairline); border-radius: var(--r-sm); background: var(--paper); color: var(--ink); }
 .mr-box[data-wrap] { inline-size: min-content; }
@@ -314,6 +313,9 @@
 .lg-rule { min-width: 0; color: var(--ink); }
 .lg-rule + .pf-face { margin-block-start: var(--sp-1); }
 .lg-rule-lines { display: grid; gap: 1px; min-width: 0; }
+/* A rule's line: what the card matches against the state in the ink, the rest of the rule receding. */
+.lg-rule-line .tx-line { display: inline; }
+.lg-rule-rest { color: var(--muted); }
 .lg-rule.is-choice { display: grid; gap: var(--sp-1); }
 .lg-rule-options { display: grid; gap: var(--sp-1); min-width: 0; }
 .lg-rule-pick, .lg-rule-option { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); width: 100%; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--canvas); color: var(--ink); text-align: start; cursor: pointer; }
@@ -351,5 +353,17 @@
 @media (max-width: 760px) {
   .lg-panel-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
   .lg-panel-group { gap: var(--sp-5); }
+}
+/* The side of ⊢ a part works on (SequentSide.jsx): the side picked framed as a place picked on a card. */
+.pf-setting:has(> .pf-control > .lg-side) > .pf-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.lg-side { display: inline-flex; align-items: baseline; gap: var(--sp-1); font: 500 var(--formula-size)/1.4 var(--sans); color: var(--ink); }
+.lg-side-pick { position: relative; padding: 0 var(--sp-1); border: 1px solid transparent; border-radius: var(--r-xs); background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
+.lg-side-pick[aria-checked='true'] { border: 1.5px solid var(--accent); background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--ink); }
+.lg-side-pick:not([aria-checked='true'], :disabled):hover { border: 1px dashed var(--accent-ink); }
+.lg-side-pick:disabled { cursor: default; }
+.lg-side-pick:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 1px; }
+@media (pointer: coarse) {
+  .cl-sheet .lg-side { gap: var(--sp-3); padding-block: var(--sp-3); }
+  .cl-sheet .lg-side-pick:not(:disabled)::after { content: ""; position: absolute; inset: -14px calc(-1 * var(--sp-2)); min-inline-size: 44px; }
 }
 .lg-pending { font: 500 var(--fs-ui)/1.4 var(--sans); color: var(--accent-ink); }

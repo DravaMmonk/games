@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.simplifier.title",
-  "at": "sp-rw",
+  "at": "sp-simp",
   "body": ["@glossary.entries.simplifier.body.0"],
   "see": ["rewrite"]
 }

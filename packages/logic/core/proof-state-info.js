@@ -1,5 +1,5 @@
 import { sameJson } from 'kernel'
-import { metasIn } from './schematic.js'
+import { instantiate, metasIn } from './schematic.js'
 
 /** Presentation data for a single candidate, with indices in its current goal order. */
 export function proofStateInfo(state, equal = sameJson) {
@@ -57,7 +57,7 @@ export function proofStateDiff(before, after, { change, did, equal = sameJson } 
   }
 
   const count = after.goals.length - before.goals.length
-  if (['rule', 'assumption', 'rw', 'rwHyps'].includes(did?.op)) {
+  if (['rule', 'forward', 'assumption', 'rw', 'rwHyps'].includes(did?.op)) {
     const target = did.goalIndex ?? 0
     for (const [index] of before.goals.entries()) {
       if (index === target && count < 0) closed.push(index)
@@ -74,5 +74,9 @@ export function proofStateDiff(before, after, { change, did, equal = sameJson } 
     for (let i = overlap; i < end; i++) closed.push(i)
     for (let i = overlap; i < end + count; i++) added.push(i)
   }
-  return { changed, added, closed }
+  if (did?.op !== 'forward') return { changed, added, closed }
+  const original = before.goals[0].hyps.map(hyp => instantiate(hyp, after.inst ?? {}))
+  const addedHyps = after.goals.slice(0, count + 1).flatMap(({ hyps }, goalIndex) =>
+    hyps.flatMap((formula, hyp) => original.some(known => equal(known, formula)) ? [] : [{ goalIndex, hyp }]))
+  return { changed, added, closed, addedHyps }
 }

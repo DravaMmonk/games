@@ -101,9 +101,9 @@ const CONTENT = {
     ] },
     proofLevel('rows', { symbolicWords: { Rain: L('A'), Wet: L('B'), Slip: L('C') }, cases: [], brief: L('b'), tests: [{ premises: { p: 'Rain → Wet', q: 'Wet → Slip' }, goal: 'Rain → Wet ∧ Slip' }],
       solution: box('f = impI[A=Rain](body: c)', ["m1 = mp(p, f.body)", "m2 = mp(q, m1)", "c = andI(m1, m2)"], 'f') }),
-    one({ id: 'negate', kind: 'logic/machine', title: L('negate'), adds: ['raa', 'impI', 'rule'], want: 'logic/becomes', inputs: [{ name: 'in', label: L('目标', 'Goal') }], backtrack: true, brief: L('b'),
+    one({ id: 'negate', kind: 'logic/machine', title: L('negate'), adds: ['raa', 'impI'], directRuleCards: true, want: 'logic/becomes', inputs: [{ name: 'in', label: L('目标', 'Goal') }], backtrack: true, brief: L('b'),
       tests: [{ goal: 'Wet', hyps: ['Rain → Wet', 'Rain'], becomes: [['Rain → Wet; Rain; ¬Wet ⊢ ⊥']] }],
-      solution: ["c0r0 = raa()", "c1r0 = impI()", "c0 = rule(in, c0r0)", "c1 = rule(c0, c1r0)", 'out <- c1'] }),
+      solution: ['c0 = logic/directBackward-raa(in)', 'c1 = logic/directBackward-impI(c0)', 'out <- c1'] }),
   ],
 }
 CONTENT.wordSets = CONTENT.registries.wordset
@@ -339,10 +339,19 @@ test('a proof tray groups disjunction rules and leaves truth gates off the proof
 test('a machine reference can use rule cards granted by its task', () => {
   const content = structuredClone(CONTENT)
   const level = content.levels.at(-1)
-  level.tasks[0].rules = { own: { name: L('Own rule'), premises: [], conclusion: 'A' } }
+  const type = 'logic/directBackward-own'
+  Object.assign(level.tasks[0], {
+    want: 'logic/proved',
+    rules: { own: { name: L('Own rule'), premises: [], conclusion: 'Rain' } },
+    tests: [{ goal: 'Rain' }],
+    solution: [`axiom = ${type}(in)`, 'out <- axiom'],
+  })
   const logic = logicWorks(withProgressFixture(content))
   const task = logic.LEVELS.at(-1).tasks[0]
-  assert.ok(logic.course.gives(task).includes('own'))
+  assert.deepEqual(logic.wrong, [])
+  const { offerIn } = logic.machineBoards.forTask(task)
+  assert.ok(offerIn(task, new Set()).types.includes(type))
+  assert.equal(runMachine(task, task.solution).pass, true)
 })
 
 test('a machine task opens saved work, then a passing board, then the unlocked reference', () => {
@@ -376,7 +385,8 @@ test('a direct tray splits learned rules by reference use and carries them acros
   const iff = { name: L('Substitution'), family: 'logic/rule', icon: 'ArrowRightLeft', op: 'logic/iffSubst' }
   const box = 'logic/directBackward-impI'
   const join = 'logic/directBackward-andI'
-  const variants = ['logic/directBackward-iff', 'logic/directRewrite-iff']
+  const forwardJoin = 'logic/directForward-andI'
+  const rewrite = 'logic/directRewrite-iff'
   const machine = (id, tray, goal, solution, withholds) => ({
     id, title: L(id), tray, withholds, tasks: [{ id, kind: 'logic/machine', want: 'logic/becomes',
       tests: [{ goal }], solution,
@@ -388,7 +398,7 @@ test('a direct tray splits learned rules by reference use and carries them acros
     trays: {
       shared: { items: ['andI', 'iff', 'impI'] },
       proof: { items: [{ id: 'if', items: ['impI'] }, { id: 'iff', items: ['iff'] }, { id: 'and', items: ['andI'] }] },
-      legacy: { items: ['impI'] },
+      successor: { items: ['impI'] },
     },
     registries: {
       'circuit/tray': { shared: { directRuleCards: true } },
@@ -404,12 +414,10 @@ test('a direct tray splits learned rules by reference use and carries them acros
         cases: [{ A: 'Rain' }], solution: ['goal <- p'] }),
       { ...machine('open', 'shared', 'Rain → Rain', use(box)), adds: ['impI'] },
       machine('split', 'shared', 'Rain ∧ Wind', use(join)),
-      machine('paired', 'shared', 'Rain ∧ Wind', [
-        `split = ${join}(in)`, `rewrite = ${variants[1]}(split)`, `backward = ${variants[0]}(rewrite)`, 'out <- backward',
-      ]),
+      machine('paired', 'shared', 'Rain ∧ Wind', [`split = ${join}(in)`, `rewrite = ${rewrite}(split)`, 'out <- rewrite']),
       machine('parallel', 'shared', 'Rain ∧ Wind', use(join)),
-      machine('later', 'legacy', 'Rain'),
-      machine('restricted', 'legacy', 'Rain', undefined, ['impI']),
+      machine('later', 'successor', 'Rain'),
+      machine('restricted', 'successor', 'Rain', undefined, ['impI']),
     ],
   })
   const logic = logicWorks(levelContent)
@@ -419,15 +427,17 @@ test('a direct tray splits learned rules by reference use and carries them acros
     const flags = new Set()
     return { offer: view.offerIn(task, flags), has: view.holdsIn(task, flags) }
   }
-  assert.deepEqual(at('open').offer, { shown: [box], folded: [...variants, join], types: [box, ...variants, join] })
-  assert.deepEqual(at('split').offer, { shown: [join], folded: [box, ...variants], types: [join, box, ...variants] })
-  assert.deepEqual(at('paired').offer, { shown: [...variants, join], folded: [box], types: [...variants, join, box] })
+  assert.deepEqual(at('open').offer, { shown: [box], folded: [rewrite, join, forwardJoin], types: [box, rewrite, join, forwardJoin] })
+  assert.deepEqual(at('split').offer, { shown: [join], folded: [box, rewrite, forwardJoin], types: [join, box, rewrite, forwardJoin] })
+  assert.deepEqual(at('paired').offer, { shown: [rewrite, join], folded: [box, forwardJoin], types: [rewrite, join, box, forwardJoin] })
   assert.deepEqual(at('later').offer.shown, [])
   assert.ok(at('later').offer.folded.includes(box))
   assert.ok(at('split').has(box))
   assert.ok(!at('parallel').has(box) && at('parallel').has(join))
   assert.ok(!at('open').has('impI'))
-  assert.ok(at('later').has(box) && at('later').has(join) && at('later').has('impI'))
+  assert.ok(at('later').has(box) && at('later').has(join))
+  assert.ok(!at('later').has('impI'))
+  assert.ok(!at('later').offer.types.includes('impI'))
   assert.ok(!at('restricted').has(box) && at('restricted').has(join))
 })
 
@@ -435,6 +445,8 @@ test('a bound card only offers and runs the rule choices held by its task', () =
   const { mp, andE } = logicParts.parts
   const apply = 'logic/directBackward-mp'
   const split = 'logic/directBackward-andE'
+  const forwardApply = 'logic/directForward-mp'
+  const forwardSplit = 'logic/directForward-andE'
   const blockApply = ['mp.use=impE', 'mp.use=cut']
   const blockSplit = ['andE.use=conjE']
   const task = (id, extra) => ({ id, step: L(id), kind: 'logic/machine', want: 'logic/becomes',
@@ -466,12 +478,15 @@ test('a bound card only offers and runs the rule choices held by its task', () =
   assert.deepEqual(logic.wrong, [])
   const [limited, unrestricted, removed] = logic.LEVELS[0].tasks
   const offerAt = task => logic.machineBoards.forTask(task).offerIn(task, new Set())
-  assert.deepEqual(offerAt(limited), { shown: [apply], folded: [split], types: [apply, split] })
+  assert.deepEqual(offerAt(limited), { shown: [apply], folded: [forwardApply, split, forwardSplit], types: [apply, forwardApply, split, forwardSplit] })
   assert.ok(!offerAt(removed).types.includes(split))
+  assert.ok(offerAt(removed).types.includes(forwardSplit))
   const has = logic.machineBoards.forTask(limited).holdsIn(limited, new Set())
   const choices = type => RULE_CHOICES.run([], {}, { task: limited, node: { type } }).map(({ value }) => value)
   assert.deepEqual(choices(apply), ['mp'])
   assert.deepEqual(choices(split), ['conjunct1', 'conjunct2'])
+  assert.deepEqual(choices(forwardApply), ['mp'])
+  assert.deepEqual(choices(forwardSplit), ['conjE'])
   assert.deepEqual(directCardsOf(limited).get(apply).definition.settings[0].default, ['mp'])
   assert.equal(directCardsOf(limited).get(apply).definition.settings[0].when, 'false')
   assert.equal(directCardsOf(limited).get(split).defaultRule, null)

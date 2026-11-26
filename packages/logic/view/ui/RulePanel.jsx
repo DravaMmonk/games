@@ -7,9 +7,8 @@ import { L, usePlainProse } from 'kernel/view'
 import { tr } from 'kernel/words'
 import { mark } from 'notation'
 import { NotationLabel } from 'notation/view'
-import { FormulaText } from 'kernel/view'
 import { directCardsOf } from '../../core/machine.js'
-import { statementLines } from './BoundRule.jsx'
+import { RuleLine } from './BoundRule.jsx'
 
 // A source part's cards, backwards before rewrite, as one row; parts that are no bound rule gather in a run.
 function rowsOf(items, cards) {
@@ -53,7 +52,7 @@ function Rows({ items, cards, place }) {
           <button key={item.type} type="button" className="lg-panel-card" aria-label={plain(item.label)} onClick={() => place(item.type)}>
             <NotationLabel label={mark(card.direction)} />
             <span className="lg-rule-lines formula-row">
-              {card.entries.flatMap((entry) => statementLines(entry.statements)).map((line, k) => <FormulaText key={k} text={line} />)}
+              {card.entries.flatMap((entry) => entry.statements.map((statement, k) => <RuleLine key={`${entry.key}-${k}`} entry={entry} statement={statement} direction={card.direction} />))}
             </span>
           </button>
         ))}

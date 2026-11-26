@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.rewrite.title",
-  "at": "sp-rw",
+  "at": "machine-rewrite",
   "body": ["@glossary.entries.rewrite.body.0"],
   "see": ["simplifier", "equivalence"]
 }

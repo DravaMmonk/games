@@ -1,7 +1,7 @@
 {
   "title": "@level.s-lem.title",
-  "adds": ["rule"],
-  "tray": "machine",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.s-lem.intro.0.t"
@@ -12,13 +12,12 @@
       "id": "s-lem",
       "kind": "logic/machine",
       "want": "logic/proved",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.s-lem.tasks.s-lem.inputs.0.label"
-        }
-      ],
       "backtrack": true,
+      "brief": "@level.s-lem.tasks.s-lem.brief",
+      "hint": [
+        "@level.s-lem.tasks.s-lem.hint.0",
+        "@level.s-lem.tasks.s-lem.hint.1"
+      ],
       "tests": [
         {
           "goal": "¬¬Rain → Rain"
@@ -27,22 +26,15 @@
           "goal": "(¬Rain → Rain) → Rain"
         }
       ],
-      "brief": "@level.s-lem.tasks.s-lem.brief",
-      "hint": [
-        "@level.s-lem.tasks.s-lem.hint.0",
-        "@level.s-lem.tasks.s-lem.hint.1"
-      ],
       "solution": [
-        "c0r0 = impI()",
-        "c1r0 = raa()",
-        "c0 = rule(in, c0r0)",
-        "c1 = rule(c0, c1r0)",
-        "c2 = auto(c1)",
-        "out <- c2"
+        "a = logic/directBackward-qed_impI(in)",
+        "b = logic/directBackward-qed_raa(a)",
+        "c = auto(b)",
+        "out <- c"
       ],
       "naive": [
-        "c0 = auto(in)",
-        "out <- c0"
+        "c = auto(in)",
+        "out <- c"
       ]
     }
   ]

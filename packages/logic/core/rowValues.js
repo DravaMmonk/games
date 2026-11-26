@@ -21,6 +21,7 @@ export function declarationValues(level, rules, change, scope) {
   const words = (value) => say(value, level.notation)
   const chips = premiseChips(level)
   const singleRule = level.play === 'logic/rule' || level.ruleAudit
+  const inference = level.play === 'logic/rule' && Boolean(level.say)
   const editableDeclaration = change && !singleRule
   const numbered = rules.length > 1
   const problems = editableDeclaration ? problemsOf(level, rules, chips) : []
@@ -34,10 +35,10 @@ export function declarationValues(level, rules, change, scope) {
     head: level.target ? { name: singleRule ? T("结论") : T("待验证结论"), goal: words(sentenceOf(level, level.target)), end: T('为真。') } : null,
     empty: T('无可推导情形'),
     rows: rules.map((rule, k) => ({
-      name: T("可推导情形"), mark: numbered ? k + 1 : undefined,
+      name: inference ? T('前提') : T("可推导情形"), mark: numbered ? k + 1 : undefined,
       toggle: !auto && level.thing && { on: rule.binds.length > 0, label: T("任取 {binder}", {binder}), run: () => withRule(k, (r) => ({ ...r, binds: r.binds.length ? [] : [binder] })) },
       slots: rule.needs.map((need, j) => ({ text: whole(need) ? words(need) : null, fixed: j < (level.fixedPremises ?? 0), bad: problems.some((p) => p.row === k && p.slot === j) })),
-      end: rule.needs.length > 1 ? T('均为真。') : T('为真。'),
+      end: !inference && (rule.needs.length > 1 ? T('均为真。') : T('为真。')),
       empty: T('无需前提'),
       add: { label: numbered ? T("给可推导情形 {k} 添加前提", {k: k + 1}) : T("添加前提"), text: rule.needs.length ? null : T('添加前提'), run: () => withRule(k, (r) => ({ ...r, needs: [...r.needs, null] })) },
       drop: editableDeclaration && { label: numbered ? T("删除可推导情形 {k}", {k: k + 1}) : T("删除可推导情形"), run: () => change(without(rules, k)) },

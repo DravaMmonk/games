@@ -5,15 +5,11 @@
     "desc": "@course.eras.simplifier.chapter.desc"
   },
   "levels": [
-    "qed/sp-rw",
-    "qed/sp-laws",
-    "qed/sp-dm",
-    "qed/sp-where",
     "qed/sp-back",
     "qed/sp-repeat",
     "qed/sp-simp",
+    "qed/au-iff",
     "qed/sp-nnf",
-    "qed/sp-cnf",
     "qed/sp-order"
   ]
 }

@@ -1,23 +1,26 @@
 {
   "title": "@level.sp-nnf.title",
-  "tray": "machine",
+  "after": "@level.sp-nnf.after",
+  "withholds": ["mp.use=impE", "mp.use=cut", "andE.use=conjE", "allE.use=spec"],
+  "tray": "prover",
   "intro": [
     {
       "t": "@level.sp-nnf.intro.0.t"
-    }
+    },
+    { "t": "@level.sp-nnf.intro.1.t" }
   ],
+  "opens": ["dneg-sp-rw-desc", "arrow-sp-rw-desc", "dist-sp-rw-desc"],
   "tasks": [
     {
       "id": "sp-nnf",
       "kind": "logic/machine",
       "want": "logic/becomes",
-      "inputs": [
-        {
-          "name": "in",
-          "label": "@level.sp-nnf.tasks.sp-nnf.inputs.0.label"
-        }
+      "step": "@level.sp-nnf.tasks.sp-nnf.step",
+      "brief": "@level.sp-nnf.tasks.sp-nnf.brief",
+      "hint": [
+        "@level.sp-nnf.tasks.sp-nnf.hint.0",
+        "@level.sp-nnf.tasks.sp-nnf.hint.1"
       ],
-      "backtrack": true,
       "tests": [
         {
           "goal": "¬(Rain → Wet)",
@@ -50,20 +53,86 @@
               "∀x. ¬Bird(x) ∨ Flies(x)"
             ]
           ]
-        }
-      ],
-      "brief": "@level.sp-nnf.tasks.sp-nnf.brief",
-      "hint": [
-        "@level.sp-nnf.tasks.sp-nnf.hint.0",
-        "@level.sp-nnf.tasks.sp-nnf.hint.1"
+        },
+        { "goal": "Sat ↔ Rest", "becomes": [["(¬Sat ∨ Rest) ∧ (¬Rest ∨ Sat)"]] }
       ],
       "solution": [
-        "c0r0 = arrow[use=[\"arrow.elim\"]]()",
-        "c0r1 = dneg[use=[\"dneg.elim\"]](c0r0)",
-        "c0r2 = dm[use=[\"dm.notOr\", \"dm.notAnd\", \"dm.notEx\", \"dm.notAll\"]](c0r1)",
-        "c0 = simp(in, c0r2)",
+        "c0 = repeat(in, body: s7) {",
+        "  body {",
+        "    s1 = logic/directRewrite-qed_iff[use=[\"iff.elim\"],at=goal-0](c0.body)",
+        "    s2 = logic/directRewrite-qed_arrow[use=[\"arrow.elim\"],at=goal-0](s1)",
+        "    s3 = logic/directRewrite-qed_dneg[use=[\"dneg.elim\"],at=goal-0](s2)",
+        "    s4 = logic/directRewrite-qed_dm[use=[\"dm.notOr\"],at=goal-0](s3)",
+        "    s5 = logic/directRewrite-qed_dm[use=[\"dm.notAnd\"],at=goal-0](s4)",
+        "    s6 = logic/directRewrite-qed_dm[use=[\"dm.notEx\"],at=goal-0](s5)",
+        "    s7 = logic/directRewrite-qed_dm[use=[\"dm.notAll\"],at=goal-0](s6)",
+        "  }",
+        "}",
         "out <- c0"
+      ],
+      "naive": [
+        "t1 = logic/directRewrite-qed_iff[use=[\"iff.elim\"],at=goal-0](in)",
+        "t2 = logic/directRewrite-qed_arrow[use=[\"arrow.elim\"],at=goal-0](t1)",
+        "t3 = logic/directRewrite-qed_dneg[use=[\"dneg.elim\"],at=goal-0](t2)",
+        "t4 = logic/directRewrite-qed_dm[use=[\"dm.notOr\"],at=goal-0](t3)",
+        "t5 = logic/directRewrite-qed_dm[use=[\"dm.notAnd\"],at=goal-0](t4)",
+        "t6 = logic/directRewrite-qed_dm[use=[\"dm.notEx\"],at=goal-0](t5)",
+        "t7 = logic/directRewrite-qed_dm[use=[\"dm.notAll\"],at=goal-0](t6)",
+        "out <- t7"
       ]
+    },
+    {
+      "id": "sp-nnf-cnf",
+      "kind": "logic/machine",
+      "want": "logic/becomes",
+      "step": "@level.sp-nnf.tasks.sp-nnf-cnf.step",
+      "carries": true,
+      "brief": "@level.sp-nnf.tasks.sp-nnf-cnf.brief",
+      "hint": ["@level.sp-nnf.tasks.sp-nnf-cnf.hint.0", "@level.sp-nnf.tasks.sp-nnf-cnf.hint.1"],
+      "tests": [
+        { "goal": "Rain ∨ (Wind ∧ Wet)", "becomes": [["(Rain ∨ Wind) ∧ (Rain ∨ Wet)"]] },
+        {
+          "goal": "¬(Rain ∧ Wind) ∨ (Wet ∧ Slip)",
+          "becomes": [["(¬Rain ∨ ¬Wind ∨ Wet) ∧ (¬Rain ∨ ¬Wind ∨ Slip)"]]
+        },
+        {
+          "goal": "(Rain → Wet) ∧ (Wind ∨ (Rain ∧ Slip))",
+          "becomes": [["(¬Rain ∨ Wet) ∧ ((Wind ∨ Rain) ∧ (Wind ∨ Slip))"]]
+        },
+        { "goal": "¬(Rain ∨ (Wind ∧ Wet))", "becomes": [["¬Rain ∧ (¬Wind ∨ ¬Wet)"]] },
+        { "goal": "¬(Rain → (Wind ∧ Wet))", "becomes": [["Rain ∧ (¬Wind ∨ ¬Wet)"]] }
+      ],
+      "solution": [
+        "c0 = repeat(in, body: s9) {",
+        "  body {",
+        "    s1 = logic/directRewrite-qed_iff[use=[\"iff.elim\"],at=goal-0](c0.body)",
+        "    s2 = logic/directRewrite-qed_arrow[use=[\"arrow.elim\"],at=goal-0](s1)",
+        "    s3 = logic/directRewrite-qed_dneg[use=[\"dneg.elim\"],at=goal-0](s2)",
+        "    s4 = logic/directRewrite-qed_dm[use=[\"dm.notOr\"],at=goal-0](s3)",
+        "    s5 = logic/directRewrite-qed_dm[use=[\"dm.notAnd\"],at=goal-0](s4)",
+        "    s6 = logic/directRewrite-qed_dm[use=[\"dm.notEx\"],at=goal-0](s5)",
+        "    s7 = logic/directRewrite-qed_dm[use=[\"dm.notAll\"],at=goal-0](s6)",
+        "    s8 = logic/directRewrite-qed_dist[use=[\"dist.orAndR\"],at=goal-0](s7)",
+        "    s9 = logic/directRewrite-qed_dist[use=[\"dist.orAndL\"],at=goal-0](s8)",
+        "  }",
+        "}",
+        "out <- c0"
+      ],
+      "naive": [
+        "c0 = repeat(in, body: s7) {",
+        "  body {",
+        "    s1 = logic/directRewrite-qed_iff[use=[\"iff.elim\"],at=goal-0](c0.body)",
+        "    s2 = logic/directRewrite-qed_arrow[use=[\"arrow.elim\"],at=goal-0](s1)",
+        "    s3 = logic/directRewrite-qed_dneg[use=[\"dneg.elim\"],at=goal-0](s2)",
+        "    s4 = logic/directRewrite-qed_dm[use=[\"dm.notOr\"],at=goal-0](s3)",
+        "    s5 = logic/directRewrite-qed_dm[use=[\"dm.notAnd\"],at=goal-0](s4)",
+        "    s6 = logic/directRewrite-qed_dm[use=[\"dm.notEx\"],at=goal-0](s5)",
+        "    s7 = logic/directRewrite-qed_dm[use=[\"dm.notAll\"],at=goal-0](s6)",
+        "  }",
+        "}",
+        "out <- c0"
+      ],
+      "publishes": [{ "part": "cnf", "variant": "base" }]
     }
   ]
 }

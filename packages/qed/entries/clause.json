@@ -1,6 +1,6 @@
 {
   "title": "@glossary.entries.clause.title",
-  "at": "sp-cnf",
+  "at": "sp-nnf",
   "body": ["@glossary.entries.clause.body.0"],
   "see": ["resolution"]
 }

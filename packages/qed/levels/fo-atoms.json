@@ -54,6 +54,21 @@
       ]
     },
     {
+      "id": "fo-atoms-as-long-as",
+      "kind": "logic/translate",
+      "step": "@level.fo-atoms.tasks.fo-atoms-as-long-as.step",
+      "decoys": [
+        "Parent(i, j) ∧ ¬Likes(j, i)",
+        "Bird(h) ∨ Human(h)",
+        "Likes(i, j) → Human(j)"
+      ],
+      "say": "@level.fo-atoms.tasks.fo-atoms-as-long-as.say",
+      "target": "Human(j) → Likes(i, j)",
+      "hint": [
+        "@level.fo-atoms.tasks.fo-atoms-as-long-as.hint.0"
+      ]
+    },
+    {
       "id": "fo-atoms-3",
       "kind": "logic/translate",
       "step": "@level.fo-atoms.tasks.fo-atoms-3.step",

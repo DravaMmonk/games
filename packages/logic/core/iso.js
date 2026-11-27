@@ -56,7 +56,7 @@ function introduce(level, rules, test, goal) {
 
 /**
  * Whether a test's goal follows from its premises by Apply, Take one (on the things known) and Example (for a goal
- * "there is"), and by the declared sentence's elimination rule (one case per way, a thing a way takes named afresh)
+ * "there is" other than the one declared), and by the declared sentence's elimination rule (one case per way, a thing a way takes named afresh)
  * once the declared sentence is reached.
  */
 export function follows(level, rules, test) {
@@ -80,7 +80,9 @@ export function follows(level, rules, test) {
     return known
   }
   const goal = read(test.goal)
-  const reached = (known, own) => knows(known, goal) || (goal.op === '∃' && [...things, ...own].some((t) => knows(known, subst(goal.body, goal.v, t))))
+  // A declaration of "there is" itself decides how its own sentence comes in: Example is its intro rule, not a given.
+  const declared = goal.op === '∃' && same(goal, read(level.target))
+  const reached = (known, own) => knows(known, goal) || (goal.op === '∃' && !declared && [...things, ...own].some((t) => knows(known, subst(goal.body, goal.v, t))))
   // The premises first, as far as Apply and Take one reach (A and A → ⊥ give ⊥); the elimination rule then applies
   // when the declared sentence is among what they reach, not only among the premises written.
   const known = reach(test.given.map(read), [])

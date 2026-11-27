@@ -17,65 +17,29 @@
         {
           "rules": [
             {
-              "binds": [
-                "x"
-              ],
+              "binds": [],
               "needs": [
-                "Q(x)"
+                "∀x. P(x)"
               ]
             }
           ]
         }
       ],
-      "slots": [
-        {
-          "make": false,
-          "fixed": [
-            "goal",
-            "make"
-          ]
-        },
-        {
-          "given": [
-            "∃y. P(y)"
-          ],
-          "keep": [
-            "∃y. P(y)"
-          ],
-          "make": false,
-          "fixed": [
-            "make"
-          ]
-        }
-      ],
+      "slots": 1,
       "answer": [
         {
           "given": [
-            "Q(h)"
+            "P(h)"
           ],
-          "make": false
-        },
-        {
-          "given": [
-            "∃y. P(y)"
-          ],
-          "goal": "∃y. Q(y)",
-          "make": false
+          "make": true
         }
       ],
       "naive": [
         {
           "given": [
-            "P(h)"
+            "∀x. P(x)"
           ],
-          "make": false
-        },
-        {
-          "given": [
-            "∃y. P(y)"
-          ],
-          "goal": "P(h)",
-          "make": false
+          "make": true
         }
       ],
       "intro": [
@@ -92,7 +56,7 @@
       "target": "∃y. P(y)",
       "sentences": [
         "P(x)",
-        "Q(x)"
+        "∀x. P(x)"
       ],
       "tests": [
         {
@@ -155,7 +119,6 @@
         "h",
         "i"
       ],
-      "thing": true,
       "cases": [
         {
           "P": "Human",
@@ -165,10 +128,6 @@
           "P": "Bird",
           "Q": "Flies"
         }
-      ],
-      "adds": [
-        "exE",
-        "exI"
       ]
     },
     {
@@ -186,6 +145,7 @@
         "@level.decl-ex.tasks.decl-ex-2.hint.0",
         "@level.decl-ex.tasks.decl-ex-2.hint.1"
       ],
+      "after": "@level.decl-ex.tasks.decl-ex-2.after",
       "declare": "@level.decl-ex.tasks.decl-ex-2.declare",
       "target": "∃y. P(y)",
       "sentences": [
@@ -271,6 +231,10 @@
           "P": "Bird",
           "Q": "Flies"
         }
+      ],
+      "adds": [
+        "exE",
+        "exI"
       ]
     },
     {

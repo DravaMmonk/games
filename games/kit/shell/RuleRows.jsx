@@ -13,10 +13,11 @@ import { FormulaText } from './FormulaText.jsx'
 // function's rows, each right side a term) are both this.
 //
 //   head     { name, body } | null
-//   rows     [{ name, head?, slots: [{ text (null: nothing whole yet), bad?, fixed?, on?, result? } | { live }], end?, empty? (what a row with no slot
+//   rows     [{ name, head?, slots: [{ text (null: nothing whole yet), bad?, fixed?, on?, result?, cases? } | { live }], end?, empty? (what a row with no slot
 //             says when only read), add?: { label, text?, run() }, drop?: { label, run() } }]
 //            (`live`: what the slot is written with in place, such as a sentence's strip with its tray under the rows;
-//            `on`: the slot a run is at; `result`: { text, right? } what a run found for it, after it)
+//            `on`: the slot a run is at; `result`: { text, right? } what a run found for it, after it; `cases`:
+//            [{ text, on?, result? }] what the slot's sentence breaks into, listed under it)
 //   editor   { title(row, slot), render(row, slot), close?(row, slot) } | null
 //   more     { text, run() } | null       blank   what an unfinished slot says       wide   names as wide as they read
 //   empty    what the table says when it has no rows
@@ -54,7 +55,8 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
             {row.toggle && <span className="rr-lead"><button type="button" aria-pressed={row.toggle.on} disabled={!editor} onClick={row.toggle.run}>{L(row.toggle.label)}</button></span>}
             {!row.slots.length && !editor && row.empty && <i className="rr-empty">{L(row.empty)}</i>}
             {row.slots.map((slot, j) => (
-              <span key={j} className={`rr-item${slot.live ? ' is-live' : ''}`}>
+              <span key={j} className={`rr-item${slot.live ? ' is-live' : ''}${slot.cases?.length ? ' has-cases' : ''}`}>
+                <span className="rr-line">
                 {slot.live ?? <button
                   type="button"
                   ref={(el) => { buttons.current[`${k}.${j}`] = el }}
@@ -69,6 +71,17 @@ export default function RuleRows({ head = null, rows, editor = null, more = null
                 {slot.result && <b className={`rr-result${slot.result.right === undefined ? '' : slot.result.right ? ' is-right' : ' is-wrong'}`}>{L(slot.result.text)}</b>}
                 {/* What comes between two slots stays with the one before it, so a wrapped row never starts with it. */}
                 {j < row.slots.length - 1 ? <span className="rr-sep">；</span> : row.end && <span className="rr-end">{L(row.end)}</span>}
+                </span>
+                {slot.cases?.length > 0 && (
+                  <ol className="rr-cases">
+                    {slot.cases.map((c, i) => (
+                      <li key={i} className={c.on ? 'is-on' : ''}>
+                        <FormulaText text={c.text} />
+                        {c.result && <b className={`rr-result${c.result.right === undefined ? '' : c.result.right ? ' is-right' : ' is-wrong'}`}>{L(c.result.text)}</b>}
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </span>
             ))}
             {editor && row.add && <button type="button" className="rr-add" onClick={() => add(k)} aria-label={L(row.add.label)}><Plus size={14} />{L(row.add.text)}</button>}

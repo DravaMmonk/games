@@ -5,7 +5,7 @@ import { say } from './notation.js'
 import { cases, inOrder, property } from 'kernel'
 import { builtWorld, claimIn, MAX_WORLD } from './fol.js'
 import { holds } from './models.js'
-import { atom, parse } from './formula.js'
+import { atom, parse, subst, tvar } from './formula.js'
 
 const MARKS = ['①', '②', '③', '④']
 
@@ -107,7 +107,7 @@ export function traceOf(f, m) {
   }
   const leaf = (f, env) => {
     const value = holds(f, m, env)
-    frames.push({ bind: { ...env }, atoms: f.prop ? [] : atoms(f, env), value })
+    frames.push({ leaf: f, bind: { ...env }, atoms: f.prop ? [] : atoms(f, env), value })
     return value
   }
   const go = (f, env) => {
@@ -125,6 +125,24 @@ export function traceOf(f, m) {
   }
   return { frames, value: go(f, {}) }
 }
+
+/**
+ * Every quantifier-free part of a sentence under every choice its quantifiers could make, in the order a run reads them
+ * (traceOf, which stops early, reads some of them): [{ leaf, bind }].
+ */
+export function instancesOf(f, m) {
+  const out = []
+  const go = (g, env) => {
+    if (!quantified(g) || g.prop) return void out.push({ leaf: g, bind: env })
+    if (g.op === '∀' || g.op === '∃') for (const d of m.domain) go(g.body, { ...env, [g.v]: d })
+    else for (const sub of [g.a, g.b]) if (sub) go(sub, env)
+  }
+  go(f, {})
+  return out
+}
+const sameBind = (a, b) => Object.keys(a).length === Object.keys(b).length && Object.entries(a).every(([v, d]) => b[v] === d)
+// A quantifier-free part with each variable as the thing it stands for, by the number the world draws it with.
+const instanceText = (leaf, bind, notation) => say(Object.entries(bind).reduce((f, [v, d]) => subst(f, v, tvar(String(d + 1))), leaf), notation)
 
 export function worldCheck(level) {
   const { vocab } = level
@@ -167,10 +185,17 @@ export function worldCheck(level) {
   // counterexample needs it (the meaning has no such need: only the translation is compared with it).
   const report = (world) => {
     const malformed = worldShape(world)
-    if (malformed) return { fail: malformed, run: { steps: [{ failed: malformed.why }], results: [] } }
+    if (malformed) return { fail: malformed, run: { steps: [{ failed: malformed.why }], results: [], cases: [] } }
     const model = builtWorld(world, vocab)
     const fail = judgeClaims(world, claimIn(level, world))
-    const traced = sentences.map((s) => ({ ...s, ...traceOf(read(s.f), model) }))
+    const parsed = sentences.map((s) => read(s.f))
+    const traced = sentences.map((s, k) => ({ ...s, ...traceOf(parsed[k], model) }))
+    // Each sentence's instances in this world, listed as the world is built; a sentence with no quantifier has none.
+    const listed = sentences.map((_, k) => {
+      const all = instancesOf(parsed[k], model)
+      return all.length === 1 && !Object.keys(all[0].bind).length ? [] : all
+    })
+    const caseOf = (k, frame) => listed[k].findIndex((c) => c.leaf === frame.leaf && sameBind(c.bind, frame.bind))
     const meant = level.meant ? traced[0].value : null
     const results = traced.map((s, k) => ({
       at: s.at,
@@ -180,10 +205,11 @@ export function worldCheck(level) {
     // The failing check counts the sentences a counterexample needs (claimIn): the translation alone, or every one.
     const last = fail ? fail.check + (level.meant ? 1 : 0) : traced.length - 1
     const steps = traced.slice(0, last + 1).flatMap((s, k) => [
-      ...s.frames.map((frame) => ({ sentence: k, frame })),
+      ...s.frames.map((frame) => ({ sentence: k, frame, case: caseOf(k, frame), value: truth(frame.value) })),
       k === last && fail ? { sentence: k, done: true, failed: fail.why } : { sentence: k, done: true },
     ])
-    return { fail, run: { steps, results } }
+    const cases = listed.map((list, k) => list.map(({ leaf, bind }) => ({ at: sentences[k].at, text: instanceText(leaf, bind, notation) })))
+    return { fail, run: { steps, results, cases } }
   }
   return {
     judge,

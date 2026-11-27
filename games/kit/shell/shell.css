@@ -625,6 +625,13 @@ button.formula-pick, .formula-option { cursor: pointer; }
 :root { --formula-face: KaTeX_Main, 'Times New Roman', var(--sans); }
 .rr-body { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4) 0; }
 .rr-item { display: inline-flex; align-items: center; }
+.rr-line { display: inline-flex; align-items: center; }
+.rr-item.has-cases { flex-direction: column; align-items: flex-start; align-self: flex-start; }
+.rr-body:has(> .has-cases) { align-items: flex-start; }
+.rr-cases { margin: var(--sp-3) 0 0; padding: 0 0 0 var(--sp-4); display: grid; gap: var(--sp-1); border-left: 1px solid var(--hairline); list-style: none; }
+.rr-cases li { min-height: 1.9em; display: flex; align-items: center; padding: 0 var(--sp-3); border-radius: var(--r-sm); color: var(--muted); font-size: 13.5px; transition: background 140ms ease, color 140ms ease; }
+.rr-cases li.is-on { color: var(--ink); background: color-mix(in srgb, var(--accent) 11%, transparent); }
+.rr-cases .rr-result { height: 1.6em; font-size: 12px; }
 .rr-sep { padding: 0 var(--sp-3) 0 var(--sp-1); color: var(--faint); }
 .rr-end { margin-left: var(--sp-4); color: var(--muted); font-size: 13.5px; white-space: nowrap; }
 .rr-slot { cursor: pointer; transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease; }

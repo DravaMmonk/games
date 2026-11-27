@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { traceOf, worldCheck, worldEdits, worldOf, worldParts } from '../core/worldValues.js'
+import { instancesOf, traceOf, worldCheck, worldEdits, worldOf, worldParts } from '../core/worldValues.js'
 import { builtWorld } from '../core/fol.js'
 import { parse } from '../core/formula.js'
 import { queryCheck } from '../core/formulaWork.js'
@@ -16,7 +16,7 @@ test('counterexample checks reject an empty domain and formula text before evalu
   for (const work of [wrong, { size: 0, preds: {} }, null]) {
     const { fail, run } = check.report(work)
     assert.equal(fail.why.en, 'Enter valid scenario settings.')
-    assert.deepEqual(run, { steps: [{ failed: fail.why }], results: [] })
+    assert.deepEqual(run, { steps: [{ failed: fail.why }], results: [], cases: [] })
   }
 })
 
@@ -45,6 +45,16 @@ test('a run reads a sentence a quantifier step at a time and stops as soon as th
   const exists = traceOf(parse('∃y. ∀x. Likes(x, y)'), model)
   assert.equal(exists.value, false)
   assert.deepEqual(exists.frames.map((f) => f.bind), [{ y: 0, x: 0 }, { y: 0, x: 1 }, { y: 1, x: 0 }])
+})
+
+test('a world lists every instance of a sentence, and a run marks the ones it reads', () => {
+  const model = builtWorld({ size: 2, preds: { Likes: ['0,0', '1,1'] } }, { preds: [['Likes', 2]], consts: [] })
+  assert.deepEqual(instancesOf(parse('∃y. ∀x. Likes(x, y)'), model).map((c) => c.bind), [{ y: 0, x: 0 }, { y: 0, x: 1 }, { y: 1, x: 0 }, { y: 1, x: 1 }])
+  const { steps, cases } = check.run({ size: 2, preds: { Likes: ['0,0', '1,1'] } })
+  assert.deepEqual(cases.map((list) => list.length), [4, 4])
+  assert.deepEqual(cases[0][1].text.en, 'Likes(1, 2)')
+  // The translation's ∃ gives up on y = 1 after x = 1: its last instance is never read.
+  assert.deepEqual(steps.filter((step) => step.sentence === 1 && !step.done).map((step) => step.case), [0, 1, 2])
 })
 
 test('a world is edited a fact at a time, and a structure reads back as one', () => {

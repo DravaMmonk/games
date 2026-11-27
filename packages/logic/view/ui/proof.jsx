@@ -11,7 +11,7 @@ import { choicesOf } from '../../core/choices.js'
 import { vocabulary } from '../../core/fol.js'
 import { sentencePicker } from '../../core/sentenceLanguage.js'
 import { scriptLines } from '../../core/script.js'
-import { runProof } from '../../core/proof.js'
+import { runProof, withSoleInstances } from '../../core/proof.js'
 import { bindsThing, followNames, reservedIn } from '../../core/names.js'
 import { proofMarkedTextOf, proofReadout, proofTextOf as textOf } from '../../core/circuit-readouts.js'
 import { Formula, typesetOne } from './Formula.jsx'
@@ -54,8 +54,9 @@ export const proofScreen = {
     }
   },
   context: (task, test) => ({ task, text: textOf(task, test) }),
-  // A box moved into or out of another takes another name, and the cards inside it follow (names.js).
-  ready: (board, task, _parts, before) => (before ? followNames(before, board, bindsThing(task.parts), reservedIn(task)) : board),
+  // A box moved into or out of another takes another name, and the cards inside it follow (names.js); an instance card
+  // with one thing to pick takes it.
+  ready: (board, task, _parts, before) => withSoleInstances(before ? followNames(before, board, bindsThing(task.parts), reservedIn(task)) : board, task),
   // A sentence on a card (and the goal wanted) is typeset in TeX, as every formula is.
   typeset: typesetOne(proofReadout.show),
   card: {

@@ -505,6 +505,25 @@ function pickable(values, ctx) {
 }
 
 /**
+ * A board whose instance cards (logic/allE) left unset take the one thing or sentence they could pick, where there is
+ * only one: nothing is left to choose, so the card is set rather than waiting.
+ */
+export function withSoleInstances(board, level) {
+  const sets = (node) => (level.partResources?.[node.type] ?? node.type) === 'logic/allE' && !node.params?.t
+  if (!board?.nodes?.some(sets)) return board
+  const offer = choicesOf(level).instance
+  let changed = false
+  const nodes = board.nodes.map((node) => {
+    if (!sets(node)) return node
+    const options = pickable(offer, { graph: board, node, task: level })
+    if (options.length !== 1) return node
+    changed = true
+    return { ...node, params: { ...node.params, t: options[0] } }
+  })
+  return changed ? { ...board, nodes } : board
+}
+
+/**
  * What a proof card's settings offer, worked out on the screen for its task (ctx.task, ctx.text: a formula in the
  * test's words; ../ui/proof.js): the particular things to name, the things to choose, the instances to put in (a
  * thing, or a sentence where the level has a ∀ over sentences), and the places a rewrite may replace.
@@ -598,7 +617,7 @@ const LOGIC_TESTS = {
     const consts = level.consts ?? []
     const reserved = reservedIn(level)
     const parts = workshopParts ?? level.parts
-    const run = runBoard(circuit, { parts, bind: premisesOf(test, consts), ctx: { consts, reserved, notation: level.notation, subst: test.subst, exists: choicesOf(level).exists, lemmas: level.lemmas, proofs: level.proofs } })
+    const run = runBoard(withSoleInstances(circuit, level), { parts, bind: premisesOf(test, consts), ctx: { consts, reserved, notation: level.notation, subst: test.subst, exists: choicesOf(level).exists, lemmas: level.lemmas, proofs: level.proofs } })
     return { ...run, trace: [], outputs: { goal: run.outputs.goal }, names: shownNames(circuit, parts, reserved) }
   },
   // A test may ask for the proof's term too (chapter 7): the same up to the names it binds.

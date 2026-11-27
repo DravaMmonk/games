@@ -3,7 +3,8 @@ import { cases, inOrder, property } from 'kernel'
 import { sideOf } from "kernel"
 import { T } from 'kernel/words'
 import { difference, extent, structureOf, vocabulary } from './fol.js'
-import { freeVars, parse } from './formula.js'
+import { BOT, and, ex, freeVars, not, parse } from './formula.js'
+import { countermodelSearch } from './models.js'
 import { chipsOf, complete, straysOf } from './formulaTree.js'
 import { sentenceLanguage, STRAY } from './sentenceLanguage.js'
 import { say } from './notation.js'
@@ -63,8 +64,25 @@ export function query(level) {
     // The family is not on the board while the sentence is built: the failure shows it.
     return { want, got, why: { zh: message('zh'), en: message('en') }, lines: worldDescription(model, notation, level.vocab.preds, world) }
   })
+  // Families can agree by chance: a query that picks the same people in both may still mean something else. A small
+  // world where the two pick differently shows it.
+  const anywhere = (tree) => {
+    for (const [mine, other, first] of [[tree, target, true], [target, tree, false]]) {
+      const { model } = countermodelSearch([ex('x', and(mine, not(other)))], BOT)
+      if (!model) continue
+      const spoken = vocabulary([tree, target])
+      const d = extent(mine, model).find((k) => !extent(other, model).includes(k))
+      const thing = { zh: thingName(notation, null, 'zh')(d), en: thingName(notation, null, 'en')(d) }
+      return {
+        why: first ? T('在以下情形中，你写的查询多选了 {thing}：', { thing }) : T('在以下情形中，你写的查询漏掉了 {thing}：', { thing }),
+        world: worldOf(model, spoken),
+        parts: worldParts(spoken, notation),
+      }
+    }
+    return null
+  }
   return {
-    judge: inOrder(formulaReady(['x']), judge),
+    judge: inOrder(formulaReady(['x']), judge, anywhere),
     prompt: level.say,
     chips: () => chips,
     language: sentenceLanguage(notation, 'formula', ['x']),
@@ -92,7 +110,7 @@ export function queryCheck(level) {
   const report = (picked) => {
     const rows = shown.map((row, k) => ({ ...row, right: same(picked[k] ?? [], row.want) }))
     const at = rows.findIndex((row) => !row.right)
-    const fail = at < 0 ? null : { check: at, why: T('{title}：查询选中的是{got}，和预期不符。', { title: rows[at].world.title, got: named(rows[at].world, rows[at].want) }) }
+    const fail = at < 0 ? null : { check: at, why: T('{title}：预期和查询的结果不符。', { title: rows[at].world.title }) }
     return { rows, fail }
   }
   return {
@@ -110,7 +128,8 @@ export function queryCheck(level) {
       const { rows, fail } = report(picked)
       return {
         steps: rows.slice(0, fail ? fail.check + 1 : undefined).map((_, k) => (k === fail?.check ? { failed: fail.why } : {})),
-        lines: rows.map((row, k) => ({ text: named(row.world, row.want), right: row.right, step: k })),
+        // A family whose expectation is wrong shows only that it is: its result would give the answer away.
+        lines: rows.map((row, k) => ({ text: row.right ? named(row.world, row.want) : T('不符'), right: row.right, step: k })),
       }
     },
     go: T('运行'), done: T('全部相符'),

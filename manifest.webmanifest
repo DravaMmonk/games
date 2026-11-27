@@ -1,0 +1,16 @@
+{
+  "name": "图灵模拟器 · Turing Simulator",
+  "short_name": "图灵模拟器",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f1eb",
+  "theme_color": "#f3f1eb",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any"
+    }
+  ]
+}

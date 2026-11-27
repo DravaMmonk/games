@@ -19,6 +19,21 @@
   ],
   "tasks": [
     {
+      "id": "fo-some-things",
+      "kind": "logic/translate",
+      "step": "@level.fo-some.tasks.fo-some-things.step",
+      "brief": "@level.fo-some.tasks.fo-some-things.brief",
+      "say": "@level.fo-some.tasks.fo-some-things.say",
+      "target": "∃x. Flies(x)",
+      "decoys": [
+        "∃x. Bird(x)"
+      ],
+      "hint": [
+        "@level.fo-some.tasks.fo-some-things.hint.0"
+      ],
+      "consts": ["h", "i", "j", "k", "l", "m", "n"]
+    },
+    {
       "id": "fo-some-1",
       "kind": "logic/translate",
       "step": "@level.fo-some.tasks.fo-some-1.step",

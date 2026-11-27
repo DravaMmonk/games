@@ -10,6 +10,29 @@
   ],
   "tasks": [
     {
+      "id": "fo-all-things",
+      "kind": "logic/translate",
+      "step": "@level.fo-all.tasks.fo-all-things.step",
+      "brief": "@level.fo-all.tasks.fo-all-things.brief",
+      "say": "@level.fo-all.tasks.fo-all-things.say",
+      "target": "∀x. Mortal(x)",
+      "decoys": [
+        "∀x. Human(x)"
+      ],
+      "hint": [
+        "@level.fo-all.tasks.fo-all-things.hint.0"
+      ],
+      "consts": [
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n"
+      ]
+    },
+    {
       "id": "fo-all-1",
       "kind": "logic/translate",
       "step": "@level.fo-all.tasks.fo-all-1.step",

@@ -8,21 +8,21 @@
     "qed/try-rules",
     "qed/try-rule-box",
     "qed/machine-cite",
-    "qed/machine-open",
     "qed/machine-derive",
-    "qed/machine-skip",
+    "qed/machine-open",
     "qed/machine-forward",
-    "qed/machine-meta",
+    "qed/machine-skip",
     "qed/machine-forward-link",
+    "qed/machine-meta",
     "qed/machine-meta-order"
   ],
   "rows": [
     ["qed/try-rules"],
     ["qed/try-rule-box"],
     ["qed/machine-cite"],
-    ["qed/machine-open", "qed/machine-derive"],
-    ["qed/machine-skip", "qed/machine-forward"],
-    ["qed/machine-meta", "qed/machine-forward-link"],
-    ["qed/machine-meta-order", null]
+    ["qed/machine-derive", "qed/machine-open"],
+    ["qed/machine-forward", "qed/machine-skip"],
+    ["qed/machine-forward-link", "qed/machine-meta"],
+    [null, "qed/machine-meta-order"]
   ]
 }

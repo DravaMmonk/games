@@ -12,8 +12,8 @@
     "qed/or",
     "qed/bot",
     "qed/notI",
-    "qed/decl-equiv",
     "qed/contra",
+    "qed/decl-equiv",
     "qed/iffUse",
     "qed/machine-backward-and",
     "qed/curry",
@@ -34,8 +34,10 @@
       "qed/notI"
     ],
     [
-      "qed/decl-equiv",
       "qed/contra"
+    ],
+    [
+      "qed/decl-equiv"
     ],
     [
       "qed/iffUse"

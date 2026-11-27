@@ -8,6 +8,44 @@
   ],
   "tasks": [
     {
+      "id": "curry-2",
+      "kind": "logic/proof",
+      "step": "@level.curry.tasks.curry-2.step",
+      "tests": [
+        {
+          "premises": {
+            "p": "A → (B → C)"
+          },
+          "goal": "A ∧ B → C"
+        }
+      ],
+      "cases": [
+        {
+          "A": "Sat",
+          "B": "Rain",
+          "C": "Rest"
+        },
+        {
+          "A": "Alarm",
+          "B": "Coffee",
+          "C": "Awake"
+        }
+      ],
+      "hint": [
+        "@level.curry.tasks.curry-2.hint.0"
+      ],
+      "solution": [
+        "f = impI[A=\"A & B\"](body: m2) {",
+        "  body {",
+        "    e = andE(f.body)",
+        "    m1 = mp(p, e.left)",
+        "    m2 = mp(m1, e.right)",
+        "  }",
+        "}",
+        "goal <- f"
+      ]
+    },
+    {
       "id": "curry-1",
       "kind": "logic/proof",
       "step": "@level.curry.tasks.curry-1.step",
@@ -44,44 +82,6 @@
         "        m = mp(p, c)",
         "      }",
         "    }",
-        "  }",
-        "}",
-        "goal <- f"
-      ]
-    },
-    {
-      "id": "curry-2",
-      "kind": "logic/proof",
-      "step": "@level.curry.tasks.curry-2.step",
-      "tests": [
-        {
-          "premises": {
-            "p": "A → (B → C)"
-          },
-          "goal": "A ∧ B → C"
-        }
-      ],
-      "cases": [
-        {
-          "A": "Sat",
-          "B": "Rain",
-          "C": "Rest"
-        },
-        {
-          "A": "Alarm",
-          "B": "Coffee",
-          "C": "Awake"
-        }
-      ],
-      "hint": [
-        "@level.curry.tasks.curry-2.hint.0"
-      ],
-      "solution": [
-        "f = impI[A=\"A & B\"](body: m2) {",
-        "  body {",
-        "    e = andE(f.body)",
-        "    m1 = mp(p, e.left)",
-        "    m2 = mp(m1, e.right)",
         "  }",
         "}",
         "goal <- f"

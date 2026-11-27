@@ -99,7 +99,7 @@ export function queryCheck(level) {
     initial: worlds.map(() => []),
     answer: shown.map((row) => row.want),
     prompt: level.say,
-    board: { className: 'lg-rule-table', rows: [{ name: T('结论'), head: true, slots: [{ text: say(target, notation) }] }] },
+    board: { className: 'lg-rule-table', rows: [{ name: T('逻辑语言'), head: true, slots: [{ text: say(target, notation) }] }] },
     worlds: shown.map(({ world, model }) => ({
       title: world.title,
       lines: worldDescription(model, notation, level.vocab.preds, world),

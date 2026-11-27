@@ -35,7 +35,7 @@ export default function LookupCheck({ screen, resource, play }) {
         </span>
       ),
     },
-    { key: 'sentence', label: T('句子', {}, 'column'), span: (k) => (k ? 0 : rows.length), cell: () => L(T('结论')) },
+    { key: 'sentence', label: T('句子', {}, 'column'), span: (k) => (k ? 0 : rows.length), cell: () => L(T('逻辑语言')) },
     {
       key: 'expected', label: T('预期结果'), align: 'start',
       cell: (row) => (

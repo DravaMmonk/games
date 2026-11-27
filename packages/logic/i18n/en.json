@@ -259,6 +259,7 @@
     "结果里有 ⊥，可这组子句是可满足的：证明器「证」出了假话": "The result holds ⊥, yet these clauses can all hold: the proof assistant “proved” something false",
     "结果里还没有空子句 ⊥": "The result has no empty clause ⊥ yet",
     "结论": "Conclusion",
+    "逻辑语言": "Logical form",
     "结论「{zh}」在这种情形下仍然成立，无法构成反例。": "The conclusion “{zh}” still holds in this scenario, so this scenario is no counterexample.",
     "结论（固定）": "Conclusion (fixed)",
     "给可推导情形 {k} 添加前提": "Add a premise to row {k}",

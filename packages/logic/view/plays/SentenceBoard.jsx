@@ -29,7 +29,7 @@ export default function SentenceBoard({ screen, resource, play }) {
       layout={({ tools, strip, note, chips }) => (
         <BoardStage
           className={play.stage} say={resource.prompt}
-          rows={{ className: 'lg-rule-table', rows: [{ name: T('结论'), head: true, slots: [{ live: strip }] }] }}
+          rows={{ className: 'lg-rule-table', rows: [{ name: T('逻辑语言'), head: true, slots: [{ live: strip }] }] }}
           workspace={<div className="lg-tray">{tools}{note}{chips}</div>}
         />
       )}
